@@ -122,10 +122,10 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                if (SpoilsLog.IsEnabled && party == PartyBase.MainParty)
+                if (SpoilsLog.Verbose && party == PartyBase.MainParty)
                 {
                     int before = GetSpoils(party, element.Character);
-                    SpoilsLog.Log("RAID", party, "  " + SpoilsLog.Describe(element.Character) + " x" + element.Number
+                    SpoilsLog.LogVerbose("RAID", party, "  " + SpoilsLog.Describe(element.Character) + " x" + element.Number
                         + ": +" + points + " (pool " + before + " -> " + (before + points) + ")");
                 }
                 AddSpoils(party, element.Character, points);

@@ -32,12 +32,21 @@ namespace RBMCampaign
         // stack. The hour the stack's men run out of the food they last bought.
         private static Dictionary<string, int> _fedUntilHours = new Dictionary<string, int>();
 
+        // Same key, same granularity: the hour before which a stack that has just splurged on a luxury
+        // will not splurge again, so the indulgence stays an occasional treat rather than a daily habit.
+        private static Dictionary<string, int> _luxuryCooldownUntilHours = new Dictionary<string, int>();
+
         public static void SyncData(IDataStore dataStore)
         {
             dataStore.SyncData("RBM_troopFedUntilHours", ref _fedUntilHours);
             if (_fedUntilHours == null)
             {
                 _fedUntilHours = new Dictionary<string, int>();
+            }
+            dataStore.SyncData("RBM_troopLuxuryCooldown", ref _luxuryCooldownUntilHours);
+            if (_luxuryCooldownUntilHours == null)
+            {
+                _luxuryCooldownUntilHours = new Dictionary<string, int>();
             }
             SpoilsLog.Log("SAVE", (dataStore.IsSaving ? "saved " : "loaded ") + _fedUntilHours.Count + " fed-until entries");
         }
@@ -119,13 +128,17 @@ namespace RBMCampaign
             }
             BuyFood(mobileParty, settlement);
             SpendOnFun(mobileParty, settlement);
+            MaybeBuyLuxury(mobileParty, settlement);
         }
 
         /// <summary>
         /// Taverns, dice and worse. A stack spends against what it earns in a day for every day it
         /// idles in a settlement -- more than it earns, at the default, so an idle garrison town eats
-        /// the savings its men marched in with. A stack with an empty purse spends nothing: the pool
-        /// is never driven negative, so carousing cannot put a soldier in debt.
+        /// the savings its men marched in with. A stack whose purse is over its cap has nothing left to
+        /// save for, so it blows the excess on fun far faster than its wage alone -- and the further
+        /// over the cap it sits, the harder it spends, the surplus bite scaling by how many times over
+        /// its ceiling the purse stands. A stack with an empty purse spends nothing: the pool is never
+        /// driven negative, so carousing cannot put a soldier in debt.
         /// </summary>
         private static void SpendOnFun(MobileParty mobileParty, Settlement settlement)
         {
@@ -152,8 +165,28 @@ namespace RBMCampaign
                 }
                 // An hour's worth of the day's wage. Veterans earn more and so drink better.
                 float dailyWage = wageModel.GetCharacterWage(element.Character) * element.Number;
-                int spend = MathF.Min(purse, MathF.Round(dailyWage / 24f
-                    * RBMConfig.RBMConfig.troopSettlementFunWageFraction));
+                float funFraction = RBMConfig.RBMConfig.troopSettlementFunWageFraction;
+                int spend = MathF.Round(dailyWage / 24f * funFraction);
+                // Over the cap the men have nothing left to save for, so the excess above it is drunk
+                // away on top of the wage bite -- and the further over the cap they sit, the harder they
+                // spend: the surplus bite scales by how many times over its ceiling the purse stands, so
+                // a purse well over cap empties far faster than one only just above it.
+                int cap = SpoilsPool.GetSpoilsCap(party, element.Character);
+                int surplus = purse - cap;
+                if (surplus > 0)
+                {
+                    if (cap <= 0)
+                    {
+                        // Nothing to save for at all: the whole surplus is fair game.
+                        spend += surplus;
+                    }
+                    else
+                    {
+                        float overRatio = (float)purse / cap;
+                        spend += MathF.Round(surplus / 24f * funFraction * overRatio);
+                    }
+                }
+                spend = MathF.Min(purse, spend);
                 if (spend <= 0)
                 {
                     continue;
@@ -166,10 +199,11 @@ namespace RBMCampaign
             {
                 CreditSettlement(settlement, spentTotal);
             }
-            if (spentTotal > 0 && SpoilsLog.IsEnabled && party == PartyBase.MainParty)
+            if (spentTotal > 0 && SpoilsLog.IsEnabled)
             {
-                // Hourly, so once a day per settlement is enough to see the rate without flooding.
-                SpoilsLog.LogOnce("fun-" + settlement.StringId + "-" + (NowHours / 24), "FUN", party,
+                // Hourly, so once a day per party per settlement is enough to see the rate without
+                // flooding -- the party is in the key so stacks from different parties do not collide.
+                SpoilsLog.LogOnce("fun-" + party.Id + "-" + settlement.StringId + "-" + (NowHours / 24), "FUN", party,
                     SpoilsLog.Describe(party) + " carousing in " + settlement.Name
                     + ": " + spentTotal + " spoils this hour");
             }
@@ -198,7 +232,9 @@ namespace RBMCampaign
         {
             if (party.MemberRoster.FindIndexOfTroop(character) < 0)
             {
-                _fedUntilHours.Remove(SpoilsPool.Key(party, character));
+                string key = SpoilsPool.Key(party, character);
+                _fedUntilHours.Remove(key);
+                _luxuryCooldownUntilHours.Remove(key);
             }
         }
 
@@ -273,6 +309,18 @@ namespace RBMCampaign
             foreach (string key in stale)
             {
                 _fedUntilHours.Remove(key);
+            }
+            stale.Clear();
+            foreach (string key in _luxuryCooldownUntilHours.Keys)
+            {
+                if (SpoilsPool.KeyBelongsToParty(key, party.Party))
+                {
+                    stale.Add(key);
+                }
+            }
+            foreach (string key in stale)
+            {
+                _luxuryCooldownUntilHours.Remove(key);
             }
         }
 

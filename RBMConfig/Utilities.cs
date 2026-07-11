@@ -376,11 +376,17 @@ namespace RBMConfig
             TroopSpoilsGoldSpillMultiplier.InnerText = RBMConfig.troopSpoilsGoldSpillMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopSpoilsWarChestGoldPerTier = xmlconfig.CreateElement("TroopSpoilsWarChestGoldPerTier");
             TroopSpoilsWarChestGoldPerTier.InnerText = RBMConfig.troopSpoilsWarChestGoldPerTier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopLuxuryCooldownDays = xmlconfig.CreateElement("TroopLuxuryCooldownDays");
+            TroopLuxuryCooldownDays.InnerText = RBMConfig.troopLuxuryCooldownDays.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopLuxurySpendChance = xmlconfig.CreateElement("TroopLuxurySpendChance");
+            TroopLuxurySpendChance.InnerText = RBMConfig.troopLuxurySpendChance.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             RBMCampaign.AppendChild(RBMCampaignEnabled);
             RBMCampaign.AppendChild(TroopUpgradeCostMultiplier);
             XmlElement SpoilsLoggingEnabled = xmlconfig.CreateElement("SpoilsLoggingEnabled");
             SpoilsLoggingEnabled.InnerText = RBMConfig.spoilsLoggingEnabled ? "1" : "0";
+            XmlElement SpoilsVerboseLoggingEnabled = xmlconfig.CreateElement("SpoilsVerboseLoggingEnabled");
+            SpoilsVerboseLoggingEnabled.InnerText = RBMConfig.spoilsVerboseLoggingEnabled ? "1" : "0";
 
             RBMCampaign.AppendChild(TroopUpgradeSpoilsLootMultiplier);
             RBMCampaign.AppendChild(TroopLootPiecesPerMan);
@@ -393,7 +399,10 @@ namespace RBMConfig
             RBMCampaign.AppendChild(TroopRaidSpoilsMultiplier);
             RBMCampaign.AppendChild(TroopSpoilsGoldSpillMultiplier);
             RBMCampaign.AppendChild(TroopSpoilsWarChestGoldPerTier);
+            RBMCampaign.AppendChild(TroopLuxuryCooldownDays);
+            RBMCampaign.AppendChild(TroopLuxurySpendChance);
             RBMCampaign.AppendChild(SpoilsLoggingEnabled);
+            RBMCampaign.AppendChild(SpoilsVerboseLoggingEnabled);
             Config.AppendChild(RBMCampaign);
 
             xmlconfig.AppendChild(Config);

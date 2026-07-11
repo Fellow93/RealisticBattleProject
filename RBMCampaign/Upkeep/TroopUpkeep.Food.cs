@@ -37,6 +37,8 @@ namespace RBMCampaign
             int foodDays = RBMConfig.RBMConfig.troopSettlementFoodDays;
             TroopRoster roster = party.MemberRoster;
             List<FoodStall> stalls = null;
+            int totalSpent = 0;
+            int stacksFed = 0;
             for (int i = 0; i < roster.Count; i++)
             {
                 TroopRosterElement element = roster.GetElementCopyAtIndex(i);
@@ -53,7 +55,19 @@ namespace RBMCampaign
                 // Snapshotted once and drawn down as the stacks buy, since taking the last of an item
                 // removes it from the roster and reindexes everything behind it.
                 stalls = stalls ?? SnapshotFoodStalls(market);
-                FeedStack(party, settlement, market, stalls, element, wanted, foodDays);
+                int spent = FeedStack(party, settlement, market, stalls, element, wanted, foodDays);
+                if (spent > 0)
+                {
+                    totalSpent += spent;
+                    stacksFed++;
+                }
+            }
+
+            // The party-level line, always: what the party spent feeding itself, without naming stacks.
+            if (SpoilsLog.IsEnabled && totalSpent > 0)
+            {
+                SpoilsLog.Log("FOOD", party, SpoilsLog.Describe(party) + " provisioned " + stacksFed
+                    + (stacksFed == 1 ? " stack" : " stacks") + " in " + settlement.Name + " for " + totalSpent + " spoils");
             }
         }
 
@@ -102,7 +116,8 @@ namespace RBMCampaign
             return MathF.Round(dailyWage * RBMConfig.RBMConfig.troopFoodWageFraction * MenPerFoodPerDay);
         }
 
-        private static void FeedStack(PartyBase party, Settlement settlement, ItemRoster market, List<FoodStall> stalls, TroopRosterElement element, int wanted, int foodDays)
+        /// <summary>Provisions one stack off the stalls; returns the spoils it spent, for the party tally.</summary>
+        private static int FeedStack(PartyBase party, Settlement settlement, ItemRoster market, List<FoodStall> stalls, TroopRosterElement element, int wanted, int foodDays)
         {
             int budget = SpoilsPool.GetSpoils(party, element.Character);
             int spent = 0;
@@ -116,7 +131,7 @@ namespace RBMCampaign
 
             if (bought <= 0)
             {
-                return;
+                return 0;
             }
 
             // Half the food buys half the days. A stack that could only part-provision itself comes
@@ -126,15 +141,16 @@ namespace RBMCampaign
             SpoilsPool.AddSpoils(party, element.Character, -spent);
             CreditSettlement(settlement, spent);
 
-            if (SpoilsLog.IsEnabled && party == PartyBase.MainParty)
+            if (SpoilsLog.Verbose)
             {
-                SpoilsLog.Log("FOOD", party, SpoilsLog.Describe(element.Character) + " x" + element.Number
+                SpoilsLog.LogVerbose("FOOD", party, SpoilsLog.Describe(party) + " " + SpoilsLog.Describe(element.Character) + " x" + element.Number
                     + " in " + settlement.Name + ": bought " + bought + " of " + wanted + " food for "
                     + spent + " spoils (would pay up to " + ceiling + " an item)"
                     + ", fed " + (fedHours / 24f).ToString("0.0") + " days"
                     + " (pool " + (SpoilsPool.GetSpoils(party, element.Character) + spent)
                     + " -> " + SpoilsPool.GetSpoils(party, element.Character) + ")");
             }
+            return spent;
         }
 
         /// <summary>

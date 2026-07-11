@@ -66,6 +66,9 @@ namespace RBMConfig
         public TextViewModel SpoilsLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> SpoilsLoggingEnabled { get; }
 
+        public TextViewModel SpoilsVerboseLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> SpoilsVerboseLoggingEnabled { get; }
+
         private float _troopUpgradeCostMultiplier;
 
         [DataSourceProperty]
@@ -340,7 +343,7 @@ namespace RBMConfig
             }
             set
             {
-                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 10f);
                 if (snapped != _troopFoodWageFraction)
                 {
                     _troopFoodWageFraction = snapped;
@@ -364,7 +367,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_042}Wage Spent on Food").ToString();
+                return new TextObject("{=RBM_CON_042}Spoils Spent on Food").ToString();
             }
         }
 
@@ -382,7 +385,7 @@ namespace RBMConfig
             }
             set
             {
-                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 3f);
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 10f);
                 if (snapped != _troopSettlementFunWageFraction)
                 {
                     _troopSettlementFunWageFraction = snapped;
@@ -406,7 +409,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_043}Wage Drunk Away").ToString();
+                return new TextObject("{=RBM_CON_043}Spoils Spent on Fun").ToString();
             }
         }
 
@@ -506,6 +509,15 @@ namespace RBMConfig
             }
         }
 
+        [DataSourceProperty]
+        public string SpoilsVerboseLoggingt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_049}Verbose Logging").ToString();
+            }
+        }
+
         private float _troopSpoilsGoldSpillMultiplier;
 
         [DataSourceProperty]
@@ -546,7 +558,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel TroopSpoilsGoldSpillMultiplierHint { get; } = Hint("{=RBM_CON_060}Share of a stack's surplus spoils handed up to you as gold once its own men are provisioned. Default 1.00.");
+        public BasicTooltipViewModel TroopSpoilsGoldSpillMultiplierHint { get; } = Hint("{=RBM_CON_060}Share of a stack's surplus spoils handed up to you as gold once its own men are provisioned. Default 0.25.");
 
         private float _troopSpoilsWarChestGoldPerTier;
 
@@ -589,6 +601,91 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel TroopSpoilsWarChestGoldPerTierHint { get; } = Hint("{=RBM_CON_061}Gold a man holds back from the surplus he hands up, scaled by his tier. Default 25.");
+
+        private float _troopLuxuryCooldownDays;
+
+        /// <summary>Whole days, so the slider is discrete. Zero lets a stack indulge on every roll.</summary>
+        [DataSourceProperty]
+        public float TroopLuxuryCooldownDays
+        {
+            get
+            {
+                return _troopLuxuryCooldownDays;
+            }
+            set
+            {
+                float snapped = MathF.Clamp(MathF.Round(value), 0f, 120f);
+                if (snapped != _troopLuxuryCooldownDays)
+                {
+                    _troopLuxuryCooldownDays = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopLuxuryCooldownDays");
+                    OnPropertyChanged("TroopLuxuryCooldownDaysValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopLuxuryCooldownDaysValue
+        {
+            get
+            {
+                return _troopLuxuryCooldownDays.ToString("0");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopLuxuryCooldownDayst
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_047}Luxury Cooldown (Days)").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopLuxuryCooldownDaysHint { get; } = Hint("{=RBM_CON_063}Days a stack waits after buying a luxury before it splurges again. Default 20.");
+
+        private float _troopLuxurySpendChance;
+
+        [DataSourceProperty]
+        public float TroopLuxurySpendChance
+        {
+            get
+            {
+                return _troopLuxurySpendChance;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                if (snapped != _troopLuxurySpendChance)
+                {
+                    _troopLuxurySpendChance = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopLuxurySpendChance");
+                    OnPropertyChanged("TroopLuxurySpendChanceValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopLuxurySpendChanceValue
+        {
+            get
+            {
+                return _troopLuxurySpendChance.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopLuxurySpendChancet
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_048}Luxury Buy Chance").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopLuxurySpendChanceHint { get; } = Hint("{=RBM_CON_064}Chance each idle hour that an over-cap stack buys a luxury from the settlement. Default 0.02.");
 
         [DataSourceProperty]
         public string ThrustModifiert
@@ -1032,6 +1129,10 @@ namespace RBMConfig
             SpoilsLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_039}Spoils Logging"));
             SpoilsLoggingEnabled = new SelectorVM<SelectorItemVM>(spoilsLoggingOptions, 0, null);
 
+            List<string> spoilsVerboseLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            SpoilsVerboseLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_049}Verbose Logging"));
+            SpoilsVerboseLoggingEnabled = new SelectorVM<SelectorItemVM>(spoilsVerboseLoggingOptions, 0, null);
+
             if (RBMConfig.rbmCombatEnabled)
             {
                 RBMCombatEnabled.SelectedIndex = 1;
@@ -1074,13 +1175,16 @@ namespace RBMConfig
             _troopLootOverlookChancePerTier = MathF.Clamp(RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
             _troopWageSpoilsFraction = MathF.Clamp(RBMConfig.troopWageSpoilsFraction, 0f, 1f);
             _troopSettlementFoodDays = MathF.Clamp(RBMConfig.troopSettlementFoodDays, 0f, 60f);
-            _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 1f);
-            _troopSettlementFunWageFraction = MathF.Clamp(RBMConfig.troopSettlementFunWageFraction, 0f, 3f);
+            _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 10f);
+            _troopSettlementFunWageFraction = MathF.Clamp(RBMConfig.troopSettlementFunWageFraction, 0f, 10f);
             _settlementProsperityPerGoldSpent = MathF.Clamp(RBMConfig.settlementProsperityPerGoldSpent, 0.01f, 1f);
             _troopRaidSpoilsMultiplier = MathF.Clamp(RBMConfig.troopRaidSpoilsMultiplier, 0f, 10f);
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
+            SpoilsVerboseLoggingEnabled.SelectedIndex = RBMConfig.spoilsVerboseLoggingEnabled ? 1 : 0;
             _troopSpoilsGoldSpillMultiplier = MathF.Clamp(RBMConfig.troopSpoilsGoldSpillMultiplier, 0f, 1f);
             _troopSpoilsWarChestGoldPerTier = MathF.Clamp(RBMConfig.troopSpoilsWarChestGoldPerTier, 0f, 1000f);
+            _troopLuxuryCooldownDays = MathF.Clamp(RBMConfig.troopLuxuryCooldownDays, 0f, 120f);
+            _troopLuxurySpendChance = MathF.Clamp(RBMConfig.troopLuxurySpendChance, 0f, 1f);
         }
 
         /// <summary>
@@ -1266,8 +1370,11 @@ namespace RBMConfig
             RBMConfig.settlementProsperityPerGoldSpent = _settlementProsperityPerGoldSpent;
             RBMConfig.troopRaidSpoilsMultiplier = _troopRaidSpoilsMultiplier;
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.spoilsVerboseLoggingEnabled = SpoilsVerboseLoggingEnabled.SelectedIndex == 1;
             RBMConfig.troopSpoilsGoldSpillMultiplier = _troopSpoilsGoldSpillMultiplier;
             RBMConfig.troopSpoilsWarChestGoldPerTier = (int)MathF.Round(_troopSpoilsWarChestGoldPerTier);
+            RBMConfig.troopLuxuryCooldownDays = (int)MathF.Round(_troopLuxuryCooldownDays);
+            RBMConfig.troopLuxurySpendChance = _troopLuxurySpendChance;
 
             RBMConfig.saveXmlConfig();
             //RBMConfig.parseXmlConfig();
@@ -1317,9 +1424,12 @@ namespace RBMConfig
             TroopSettlementFunWageFraction = 1.5f;
             SettlementProsperityPerGoldSpent = 0.02f;
             TroopRaidSpoilsMultiplier = 0.25f;
-            TroopSpoilsGoldSpillMultiplier = 1f;
+            TroopSpoilsGoldSpillMultiplier = 0.25f;
             TroopSpoilsWarChestGoldPerTier = 25f;
+            TroopLuxuryCooldownDays = 20f;
+            TroopLuxurySpendChance = 0.02f;
             SpoilsLoggingEnabled.SelectedIndex = 1;
+            SpoilsVerboseLoggingEnabled.SelectedIndex = 1;
         }
 
         private void ExecuteCancel()

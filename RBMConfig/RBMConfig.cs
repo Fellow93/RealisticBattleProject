@@ -73,15 +73,28 @@ namespace RBMConfig
         // handed up to its keeper as gold each day. 1 sweeps it all, turning a fully-upgraded veteran
         // army into passive income; 0 leaves spoils a closed loop, spent only on troops, food and drink;
         // a value between drains the overflow down to the cap over several days.
-        public static float troopSpoilsGoldSpillMultiplier = 1f;
+        public static float troopSpoilsGoldSpillMultiplier = 0.25f;
 
         // The war chest a man keeps back from the spill, per tier he holds: a tier 6 veteran keeps six
         // times what this sets, a tier 1 recruit keeps one. On top of what his stack needs for its own
         // upgrades, so a stack still saving for better kit never has it swept away.
         public static int troopSpoilsWarChestGoldPerTier = 25;
 
+        // Days a stack waits after buying a luxury before it will indulge again, so the splurge stays
+        // an occasional treat rather than a daily habit. Kept per stack. Zero lets it buy on every roll.
+        public static int troopLuxuryCooldownDays = 20;
+
+        // The chance, each hour a stack idles in a settlement holding more spoils than its cap, that it
+        // buys a luxury off the market. Small: over a full day's stay the odds add up. Zero stops it.
+        public static float troopLuxurySpendChance = 0.02f;
+
         // Writes every spoils pool change, loot award and upgrade to rbm_spoils.log next to this config.
         public static bool spoilsLoggingEnabled = true;
+
+        // Whether that log carries the full per-stack detail or only the party-level summaries. On, it
+        // reads as now: a line per stack. Off, individual-soldier lines are dropped and only what each
+        // party did is kept. No effect unless logging above is on.
+        public static bool spoilsVerboseLoggingEnabled = true;
 
         //RBMAI
         public static bool hitStopEnabled = true;
@@ -215,9 +228,12 @@ namespace RBMConfig
             troopSettlementFunWageFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSettlementFunWageFraction", "1.5"), CultureInfo.InvariantCulture);
             settlementProsperityPerGoldSpent = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SettlementProsperityPerGoldSpent", "0.02"), CultureInfo.InvariantCulture);
             troopRaidSpoilsMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopRaidSpoilsMultiplier", "0.25"), CultureInfo.InvariantCulture);
-            troopSpoilsGoldSpillMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsGoldSpillMultiplier", "1"), CultureInfo.InvariantCulture);
+            troopSpoilsGoldSpillMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsGoldSpillMultiplier", "0.25"), CultureInfo.InvariantCulture);
             troopSpoilsWarChestGoldPerTier = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsWarChestGoldPerTier", "25"), CultureInfo.InvariantCulture);
+            troopLuxuryCooldownDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLuxuryCooldownDays", "20"), CultureInfo.InvariantCulture);
+            troopLuxurySpendChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLuxurySpendChance", "0.02"), CultureInfo.InvariantCulture);
             spoilsLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsLoggingEnabled", "1").Equals("1");
+            spoilsVerboseLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsVerboseLoggingEnabled", "1").Equals("1");
 
             // RBMAI
             hitStopEnabled = ReadOrCreate("/Config/RBMAI", "HitStopEnabled", "1").Equals("1");
@@ -319,7 +335,10 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopRaidSpoilsMultiplier"), troopRaidSpoilsMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsGoldSpillMultiplier"), troopSpoilsGoldSpillMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsWarChestGoldPerTier"), troopSpoilsWarChestGoldPerTier.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLuxuryCooldownDays"), troopLuxuryCooldownDays.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLuxurySpendChance"), troopLuxurySpendChance.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsLoggingEnabled"), spoilsLoggingEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsVerboseLoggingEnabled"), spoilsVerboseLoggingEnabled);
             //RBMAI
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/HitStopEnabled"), hitStopEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureEnabled"), postureEnabled);

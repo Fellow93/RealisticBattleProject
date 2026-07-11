@@ -28,8 +28,9 @@ namespace RBMCampaign
 
         /// <summary>
         /// The most a stack can usefully hold: enough to upgrade every man down its dearest path, plus
-        /// a war chest scaled to its tier. A top-tier troop has no upgrade to save for, so its ceiling
-        /// is just that war chest and nearly all its loot and wage become coin.
+        /// a war chest scaled to its tier. A top-tier troop has no upgrade to save for, so in its place
+        /// its own equipment sets the headroom -- an elite is worth its kit and holds a purse to match,
+        /// rather than collapsing to the war chest alone.
         /// </summary>
         public static int GetSpoilsCap(PartyBase party, CharacterObject character)
         {
@@ -40,12 +41,19 @@ namespace RBMCampaign
             }
             int dearestUpgrade = 0;
             CharacterObject[] targets = character.UpgradeTargets;
-            if (targets != null)
+            if (targets != null && targets.Length > 0)
             {
                 for (int i = 0; i < targets.Length; i++)
                 {
                     dearestUpgrade = MathF.Max(dearestUpgrade, GetSpoilsCostForUpgrade(character, targets[i]));
                 }
+            }
+            else
+            {
+                // No dearer kit to save for -- a top-tier troop. Value its own equipment in the upgrade's
+                // place, scaled by the same multiplier an upgrade cost uses, so cap and upgrade price are
+                // quoted in the one coin and an elite's ceiling scales with how dear its gear is.
+                dearestUpgrade = MathF.Round(GetEquipmentValue(character) * RBMConfig.RBMConfig.troopUpgradeCostMultiplier);
             }
             return (dearestUpgrade + GetWarChestPerMan(character)) * stackSize;
         }
@@ -100,9 +108,9 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                if (SpoilsLog.IsEnabled && party == PartyBase.MainParty)
+                if (SpoilsLog.Verbose && party == PartyBase.MainParty)
                 {
-                    SpoilsLog.Log("SPILL", party, SpoilsLog.Describe(element.Character) + " x" + element.Number
+                    SpoilsLog.LogVerbose("SPILL", party, SpoilsLog.Describe(element.Character) + " x" + element.Number
                         + ": over cap by " + surplus + ", handed up " + spill + " as gold (pool " + purse
                         + " -> " + (purse - spill) + ", cap " + cap + ")");
                 }

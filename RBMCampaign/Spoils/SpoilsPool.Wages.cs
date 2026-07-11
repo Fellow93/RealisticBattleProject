@@ -48,6 +48,8 @@ namespace RBMCampaign
                 return;
             }
             PartyWageModel wageModel = Campaign.Current.Models.PartyWageModel;
+            int grantedTotal = 0;
+            int stacksPaid = 0;
             for (int i = 0; i < roster.Count; i++)
             {
                 TroopRosterElement element = roster.GetElementCopyAtIndex(i);
@@ -62,14 +64,23 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                if (SpoilsLog.IsEnabled && party == PartyBase.MainParty)
+                if (SpoilsLog.Verbose && party == PartyBase.MainParty)
                 {
-                    SpoilsLog.Log("WAGE", party, SpoilsLog.Describe(element.Character) + " x" + element.Number
+                    SpoilsLog.LogVerbose("WAGE", party, SpoilsLog.Describe(element.Character) + " x" + element.Number
                         + ": wage " + wage
                         + " -> +" + granted + " spoils (pool " + GetSpoils(party, element.Character)
                         + " -> " + (GetSpoils(party, element.Character) + granted) + ")");
                 }
                 AddSpoils(party, element.Character, granted);
+                grantedTotal += granted;
+                stacksPaid++;
+            }
+
+            // The party-level line, always: the day's wage-into-spoils, without naming stacks.
+            if (SpoilsLog.IsEnabled && party == PartyBase.MainParty && grantedTotal > 0)
+            {
+                SpoilsLog.Log("WAGE", party, SpoilsLog.Describe(party) + " drew " + grantedTotal
+                    + " spoils from the day's wages across " + stacksPaid + (stacksPaid == 1 ? " stack" : " stacks"));
             }
         }
     }

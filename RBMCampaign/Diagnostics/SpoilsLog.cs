@@ -51,6 +51,16 @@ namespace RBMCampaign
             get { return RBMConfig.RBMConfig.spoilsLoggingEnabled; }
         }
 
+        /// <summary>
+        /// True when the log should carry the full per-stack detail. With it off the party-level summary
+        /// lines still write, but the individual-soldier lines beneath them are dropped, so the log reads
+        /// as what each party did rather than what each of its stacks did. Requires logging on at all.
+        /// </summary>
+        public static bool Verbose
+        {
+            get { return RBMConfig.RBMConfig.spoilsLoggingEnabled && RBMConfig.RBMConfig.spoilsVerboseLoggingEnabled; }
+        }
+
         // Logs live under their own tree next to the config rather than loose beside it, and each
         // module's logs get their own folder: the spoils log is the campaign module's, so logs/campaign.
         private static string LogFolderPath
@@ -141,7 +151,10 @@ namespace RBMCampaign
                     Field("troopRaidSpoilsMultiplier", RC.troopRaidSpoilsMultiplier),
                     Field("troopSpoilsGoldSpillMultiplier", RC.troopSpoilsGoldSpillMultiplier),
                     Field("troopSpoilsWarChestGoldPerTier", RC.troopSpoilsWarChestGoldPerTier),
-                    Field("spoilsLoggingEnabled", RC.spoilsLoggingEnabled))),
+                    Field("troopLuxuryCooldownDays", RC.troopLuxuryCooldownDays),
+                    Field("troopLuxurySpendChance", RC.troopLuxurySpendChance),
+                    Field("spoilsLoggingEnabled", RC.spoilsLoggingEnabled),
+                    Field("spoilsVerboseLoggingEnabled", RC.spoilsVerboseLoggingEnabled))),
                 Member("ai", Obj(2,
                     Field("hitStopEnabled", RC.hitStopEnabled),
                     Field("postureEnabled", RC.postureEnabled),
@@ -219,6 +232,25 @@ namespace RBMCampaign
 
         public static void Log(string category, string message)
         {
+            Emit(category, "", message);
+        }
+
+        /// <summary>A per-stack detail line, written only when verbose logging is on.</summary>
+        public static void LogVerbose(string category, PartyBase party, string message)
+        {
+            if (!Verbose)
+            {
+                return;
+            }
+            Emit(category, PartyToken(party), message);
+        }
+
+        public static void LogVerbose(string category, string message)
+        {
+            if (!Verbose)
+            {
+                return;
+            }
             Emit(category, "", message);
         }
 

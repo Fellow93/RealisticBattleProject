@@ -285,6 +285,7 @@
     <Compile Include="Spoils\RBMSpoilsCampaignBehavior.cs" />
     <Compile Include="Upkeep\TroopUpkeep.cs" />
     <Compile Include="Upkeep\TroopUpkeep.Food.cs" />
+    <Compile Include="Upkeep\TroopUpkeep.Luxury.cs" />
     <Compile Include="Upkeep\RBMTroopUpkeepCampaignBehavior.cs" />
     <Compile Include="Upgrades\RBMCampaignPatches.cs" />
     <Compile Include="Upgrades\SpoilsUpgradePatches.cs" />

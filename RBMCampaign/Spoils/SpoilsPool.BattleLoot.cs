@@ -300,7 +300,7 @@ namespace RBMCampaign
 
             if (claimants.Count == 0)
             {
-                SpoilsLog.Log("LOOT", party, "  tier " + (itemTier + 1) + " (" + pieces + " pieces): no claimant in "
+                SpoilsLog.LogVerbose("LOOT", party, "  tier " + (itemTier + 1) + " (" + pieces + " pieces): no claimant in "
                     + SpoilsLog.Describe(party) + ", discarded");
                 return 0;
             }
@@ -325,7 +325,7 @@ namespace RBMCampaign
 
             if (remaining > 0)
             {
-                SpoilsLog.Log("LOOT", party, "  tier " + (itemTier + 1) + ": " + remaining
+                SpoilsLog.LogVerbose("LOOT", party, "  tier " + (itemTier + 1) + ": " + remaining
                     + " of " + pieces + " pieces left lying in " + SpoilsLog.Describe(party)
                     + " (overlooked, full, or no arms to carry them)");
             }
@@ -386,10 +386,10 @@ namespace RBMCampaign
                     continue;
                 }
                 int points = MathF.Round(taken * valuePerPiece);
-                if (SpoilsLog.IsEnabled)
+                if (SpoilsLog.Verbose)
                 {
                     int before = GetSpoils(party, element.Character);
-                    SpoilsLog.Log("LOOT", party, "  tier " + (itemTier + 1) + " -> " + SpoilsLog.Describe(element.Character)
+                    SpoilsLog.LogVerbose("LOOT", party, "  tier " + (itemTier + 1) + " -> " + SpoilsLog.Describe(element.Character)
                         + " x" + element.Number + " in " + SpoilsLog.Describe(party)
                         + ": " + taken + " pieces, +" + points + " (pool " + before + " -> " + (before + points)
                         + ", arms left " + (GetCarryRoom(carried, element) - taken)
