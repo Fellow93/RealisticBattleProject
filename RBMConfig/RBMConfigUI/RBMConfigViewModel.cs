@@ -297,7 +297,7 @@ namespace RBMConfig
             }
             set
             {
-                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 3), 0f, 1f);
                 if (snapped != _troopWageGearFraction)
                 {
                     _troopWageGearFraction = snapped;
@@ -312,7 +312,7 @@ namespace RBMConfig
         {
             get
             {
-                return _troopWageGearFraction.ToString("0.00");
+                return _troopWageGearFraction.ToString("0.000");
             }
         }
 
@@ -560,47 +560,47 @@ namespace RBMConfig
             }
         }
 
-        private float _troopSpoilsGoldSpillPerManPerDay;
+        private float _troopSpoilsGoldSpillFraction;
 
         [DataSourceProperty]
-        public float TroopSpoilsGoldSpillPerManPerDay
+        public float TroopSpoilsGoldSpillFraction
         {
             get
             {
-                return _troopSpoilsGoldSpillPerManPerDay;
+                return _troopSpoilsGoldSpillFraction;
             }
             set
             {
-                float snapped = MathF.Clamp((float)System.Math.Round(value), 0f, 500f);
-                if (snapped != _troopSpoilsGoldSpillPerManPerDay)
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                if (snapped != _troopSpoilsGoldSpillFraction)
                 {
-                    _troopSpoilsGoldSpillPerManPerDay = snapped;
-                    OnPropertyChangedWithValue(snapped, "TroopSpoilsGoldSpillPerManPerDay");
-                    OnPropertyChanged("TroopSpoilsGoldSpillPerManPerDayValue");
+                    _troopSpoilsGoldSpillFraction = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopSpoilsGoldSpillFraction");
+                    OnPropertyChanged("TroopSpoilsGoldSpillFractionValue");
                 }
             }
         }
 
         [DataSourceProperty]
-        public string TroopSpoilsGoldSpillPerManPerDayValue
+        public string TroopSpoilsGoldSpillFractionValue
         {
             get
             {
-                return ((int)_troopSpoilsGoldSpillPerManPerDay).ToString();
+                return _troopSpoilsGoldSpillFraction.ToString("0.00");
             }
         }
 
         [DataSourceProperty]
-        public string TroopSpoilsGoldSpillPerManPerDayt
+        public string TroopSpoilsGoldSpillFractiont
         {
             get
             {
-                return new TextObject("{=RBM_CON_045}Spill per Man / Day").ToString();
+                return new TextObject("{=RBM_CON_045}Surplus Handed Up").ToString();
             }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel TroopSpoilsGoldSpillPerManPerDayHint { get; } = Hint("{=RBM_CON_060}Most gold one man's share of a stack's surplus spoils can trickle up to you in a day, once his own upgrades are provisioned. A flat daily cap, so a deep surplus drains slowly. Default 10.");
+        public BasicTooltipViewModel TroopSpoilsGoldSpillFractionHint { get; } = Hint("{=RBM_CON_060}Most of a man's share of a stack's surplus spoils that can hand up to you as gold in a day, once his own upgrades are provisioned -- priced as this share of his battle kit, the way wages are, so a better-armed man hands up more. A daily cap, so a deep surplus drains slowly. Default 0.02.");
 
         private float _troopSpoilsWarChestGoldPerTier;
 
@@ -1266,7 +1266,7 @@ namespace RBMConfig
             _troopRaidSpoilsMultiplier = MathF.Clamp(RBMConfig.troopRaidSpoilsMultiplier, 0f, 10f);
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
             SpoilsVerboseLoggingEnabled.SelectedIndex = RBMConfig.spoilsVerboseLoggingEnabled ? 1 : 0;
-            _troopSpoilsGoldSpillPerManPerDay = MathF.Clamp(RBMConfig.troopSpoilsGoldSpillPerManPerDay, 0f, 500f);
+            _troopSpoilsGoldSpillFraction = MathF.Clamp(RBMConfig.troopSpoilsGoldSpillFraction, 0f, 1f);
             _troopSpoilsWarChestGoldPerTier = MathF.Clamp(RBMConfig.troopSpoilsWarChestGoldPerTier, 0f, 1000f);
             _troopLuxuryCooldownDays = MathF.Clamp(RBMConfig.troopLuxuryCooldownDays, 0f, 120f);
             _troopLuxurySpendChance = MathF.Clamp(RBMConfig.troopLuxurySpendChance, 0f, 1f);
@@ -1458,7 +1458,7 @@ namespace RBMConfig
             RBMConfig.troopRaidSpoilsMultiplier = _troopRaidSpoilsMultiplier;
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
             RBMConfig.spoilsVerboseLoggingEnabled = SpoilsVerboseLoggingEnabled.SelectedIndex == 1;
-            RBMConfig.troopSpoilsGoldSpillPerManPerDay = (int)MathF.Round(_troopSpoilsGoldSpillPerManPerDay);
+            RBMConfig.troopSpoilsGoldSpillFraction = _troopSpoilsGoldSpillFraction;
             RBMConfig.troopSpoilsWarChestGoldPerTier = (int)MathF.Round(_troopSpoilsWarChestGoldPerTier);
             RBMConfig.troopLuxuryCooldownDays = (int)MathF.Round(_troopLuxuryCooldownDays);
             RBMConfig.troopLuxurySpendChance = _troopLuxurySpendChance;
@@ -1513,7 +1513,7 @@ namespace RBMConfig
             TroopSettlementFunWageFraction = 1.5f;
             SettlementProsperityPerGoldSpent = 0.02f;
             TroopRaidSpoilsMultiplier = 0.25f;
-            TroopSpoilsGoldSpillPerManPerDay = 10f;
+            TroopSpoilsGoldSpillFraction = 0.02f;
             TroopSpoilsWarChestGoldPerTier = 25f;
             TroopLuxuryCooldownDays = 20f;
             TroopLuxurySpendChance = 0.02f;

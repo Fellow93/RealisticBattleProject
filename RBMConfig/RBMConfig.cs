@@ -74,12 +74,13 @@ namespace RBMConfig
         // Zero leaves raiding paying the party but not its men.
         public static float troopRaidSpoilsMultiplier = 0.25f;
 
-        // The most gold one man's share of a stack's surplus spoils -- what it holds over what its
-        // upgrades could use -- can hand up to its keeper in a single day. A flat per-man daily ceiling,
-        // so even a stack sitting far over its cap drains up as a slow trickle rather than a lump: a
-        // 50-man stack at 10 hands up at most 500 a day, and a deep surplus takes many days to empty.
-        // 0 leaves spoils a closed loop, spent only on troops, food and drink.
-        public static int troopSpoilsGoldSpillPerManPerDay = 10;
+        // The most of a man's share of a stack's surplus spoils -- what it holds over what its upgrades
+        // could use -- that can hand up to its keeper in a single day, priced as this share of the man's
+        // battle kit rather than a flat sum, the same way wages are. A better-armed man hands up more,
+        // and the ceiling scales with the troop instead of a hand-tuned number. A per-man daily ceiling,
+        // so even a stack sitting far over its cap drains up as a slow trickle rather than a lump: a deep
+        // surplus takes many days to empty. 0 leaves spoils a closed loop, spent only on troops, food and drink.
+        public static float troopSpoilsGoldSpillFraction = 0.02f;
 
         // The war chest a man keeps back from the spill, per tier he holds: a tier 6 veteran keeps six
         // times what this sets, a tier 1 recruit keeps one. On top of what his stack needs for its own
@@ -241,7 +242,7 @@ namespace RBMConfig
             troopSettlementFunWageFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSettlementFunWageFraction", "1.5"), CultureInfo.InvariantCulture);
             settlementProsperityPerGoldSpent = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SettlementProsperityPerGoldSpent", "0.02"), CultureInfo.InvariantCulture);
             troopRaidSpoilsMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopRaidSpoilsMultiplier", "0.25"), CultureInfo.InvariantCulture);
-            troopSpoilsGoldSpillPerManPerDay = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsGoldSpillPerManPerDay", "10"), CultureInfo.InvariantCulture);
+            troopSpoilsGoldSpillFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsGoldSpillFraction", "0.02"), CultureInfo.InvariantCulture);
             troopSpoilsWarChestGoldPerTier = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsWarChestGoldPerTier", "25"), CultureInfo.InvariantCulture);
             troopLuxuryCooldownDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLuxuryCooldownDays", "20"), CultureInfo.InvariantCulture);
             troopLuxurySpendChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLuxurySpendChance", "0.02"), CultureInfo.InvariantCulture);
@@ -348,7 +349,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSettlementFunWageFraction"), troopSettlementFunWageFraction.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SettlementProsperityPerGoldSpent"), settlementProsperityPerGoldSpent.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopRaidSpoilsMultiplier"), troopRaidSpoilsMultiplier.ToString(CultureInfo.InvariantCulture));
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsGoldSpillPerManPerDay"), troopSpoilsGoldSpillPerManPerDay.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsGoldSpillFraction"), troopSpoilsGoldSpillFraction.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsWarChestGoldPerTier"), troopSpoilsWarChestGoldPerTier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLuxuryCooldownDays"), troopLuxuryCooldownDays.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLuxurySpendChance"), troopLuxurySpendChance.ToString(CultureInfo.InvariantCulture));

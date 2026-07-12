@@ -70,16 +70,17 @@ namespace RBMCampaign
         /// the player's from an AI lord's -- while the per-stack detail is the player's own. Applies to
         /// every party -- an AI lord's surplus funds his own upgrades from the same treasury they draw on.
         /// <para>
-        /// troopSpoilsGoldSpillPerManPerDay is a flat ceiling on how much each man's share can hand up
-        /// in a day, so the spill is always a slow trickle rather than a lump: however deep a stack's
+        /// troopSpoilsGoldSpillFraction ceilings how much each man's share can hand up in a day, priced
+        /// as a share of his battle kit -- the same way a wage is -- rather than a flat sum, so a
+        /// better-armed man hands up more and the trickle scales with the troop. However deep a stack's
         /// surplus, only this much per man drains up daily, and a large overflow empties over many days.
         /// 0 keeps spoils a closed loop, spent only on troops, food and drink.
         /// </para>
         /// </remarks>
         public static void SpillSurplusToGold(PartyBase party)
         {
-            int perManPerDay = RBMConfig.RBMConfig.troopSpoilsGoldSpillPerManPerDay;
-            if (perManPerDay <= 0)
+            float spillFraction = RBMConfig.RBMConfig.troopSpoilsGoldSpillFraction;
+            if (spillFraction <= 0f)
             {
                 return;
             }
@@ -98,25 +99,17 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                int purse = GetSpoils(party, element.Character);
-                int cap = GetSpoilsCap(party, element.Character);
-                int surplus = purse - cap;
-                if (surplus <= 0)
-                {
-                    continue;
-                }
-                // A flat daily ceiling, scaled by the number of men in the stack: the surplus drains up
-                // no faster than this, so a deep purse trickles out over many days instead of in one lump.
-                int dailyCap = perManPerDay * MathF.Max(1, element.Number);
-                int spill = MathF.Min(surplus, dailyCap);
+                int spill = GetStackDailySpill(party, element.Character, element.Number, spillFraction);
                 if (spill <= 0)
                 {
                     continue;
                 }
                 if (SpoilsLog.Verbose && party == PartyBase.MainParty)
                 {
+                    int purse = GetSpoils(party, element.Character);
+                    int cap = GetSpoilsCap(party, element.Character);
                     SpoilsLog.LogVerbose("SPILL", party, SpoilsLog.Describe(element.Character) + " x" + element.Number
-                        + ": over cap by " + surplus + ", trickled up " + spill + " as gold (pool " + purse
+                        + ": over cap by " + (purse - cap) + ", trickled up " + spill + " as gold (pool " + purse
                         + " -> " + (purse - spill) + ", cap " + cap + ")");
                 }
                 AddSpoils(party, element.Character, -spill);
@@ -138,6 +131,59 @@ namespace RBMCampaign
                 SpoilsLog.Log("SPILL", party, SpoilsLog.Describe(party) + " handed up " + spilledTotal
                     + " gold in surplus spoils to " + payee.Name);
             }
+        }
+
+        /// <summary>
+        /// The gold one stack would hand up on a daily tick: its surplus over the cap, ceilinged by a
+        /// share of the man's battle kit per head. Zero when the stack sits at or under its cap. The one
+        /// place the daily trickle is priced, so the spill that drains the pool and the projection the
+        /// finance breakdown shows can never quote a different number. Read-only.
+        /// </summary>
+        private static int GetStackDailySpill(PartyBase party, CharacterObject character, int number, float spillFraction)
+        {
+            int surplus = GetSpoils(party, character) - GetSpoilsCap(party, character);
+            if (surplus <= 0)
+            {
+                return 0;
+            }
+            // The daily ceiling, priced as a share of the man's battle kit -- horse and harness included,
+            // the way a wage is -- and scaled by the number of men in the stack: the surplus drains up no
+            // faster than this, so a deep purse trickles out over many days, and a richer-equipped stack
+            // hands up more than a levy sitting on the same overflow.
+            int perManPerDay = MathF.Round(GetEquipmentValueWithMount(character) * spillFraction);
+            int dailyCap = perManPerDay * MathF.Max(1, number);
+            return MathF.Max(0, MathF.Min(surplus, dailyCap));
+        }
+
+        /// <summary>
+        /// What a party's stacks would, between them, hand up as gold on the next daily tick, priced from
+        /// the pools as they stand. The finance breakdown draws its "troop spoils" line from this, so the
+        /// coin the player is shown to expect is the coin the tick will actually spill. Read-only -- it
+        /// touches no purse, so it is safe to call as often as a tooltip is drawn.
+        /// </summary>
+        public static int ProjectDailySpill(PartyBase party)
+        {
+            float spillFraction = RBMConfig.RBMConfig.troopSpoilsGoldSpillFraction;
+            if (!IsEnabled || spillFraction <= 0f || party == null)
+            {
+                return 0;
+            }
+            TroopRoster roster = party.MemberRoster;
+            if (roster == null)
+            {
+                return 0;
+            }
+            int projected = 0;
+            for (int i = 0; i < roster.Count; i++)
+            {
+                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+                if (element.Character.IsHero)
+                {
+                    continue;
+                }
+                projected += GetStackDailySpill(party, element.Character, element.Number, spillFraction);
+            }
+            return projected;
         }
     }
 }

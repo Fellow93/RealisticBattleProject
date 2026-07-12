@@ -113,7 +113,7 @@
 	<string id="RBM_CON_057" text="A day's wage a man drinks away for each day he sits idle in a settlement. Default 1.50." />
 	<string id="RBM_CON_058" text="Prosperity a settlement gains for every gold your men spend in it. Default 0.02." />
 	<string id="RBM_CON_059" text="Share of a raid's plunder its soldiers keep for themselves as spoils. Default 0.25." />
-	<string id="RBM_CON_060" text="Share of a stack's surplus spoils handed up to you as gold once its own men are provisioned. Default 0.25." />
+	<string id="RBM_CON_060" text="Share of a stack's surplus spoils handed up to you as gold once its own men are provisioned. Default 0.02." />
 	<string id="RBM_CON_061" text="Gold a man holds back from the surplus he hands up, scaled by his tier. Default 25." />
 	<string id="RBM_CON_063" text="Days a stack waits after buying a luxury before it splurges again. Default 20." />
 	<string id="RBM_CON_064" text="Chance each idle hour that an over-cap stack buys a luxury from the settlement. Default 0.02." />
@@ -121,6 +121,7 @@
 	<string id="RBM_CON_067" text="Wage as Share of Gear" />
 	<string id="RBM_CON_068" text="Daily wage as a share of a troop's battle-gear value, replacing the flat per-tier wage. Zero keeps vanilla wages. Default 0.01." />
 	<string id="RBM_CON_062" text="Reset to Default" />
+	<string id="RBM_CON_069" text="Troop Spoils" />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_005" text="Salvaged into spoils: {AMOUNT}" />

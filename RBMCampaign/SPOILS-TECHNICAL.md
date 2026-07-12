@@ -23,7 +23,7 @@ Master switch: `IsEnabled => troopUpgradeCostMultiplier > 0f` (`Spoils/SpoilsPoo
 | `troopFoodWageFraction` | `0.5f` | food price ceiling, as a share of daily wage |
 | `troopSettlementFunWageFraction` | `1.5f` | carousing, as a multiple of daily wage |
 | `settlementProsperityPerGoldSpent` | `0.02f` | prosperity/hearth gained per gold spent locally |
-| `troopSpoilsGoldSpillPerManPerDay` | `10` | daily surplus-spill ceiling per man (`0` = closed loop) |
+| `troopSpoilsGoldSpillFraction` | `0.02f` | daily surplus-spill ceiling per man, as a share of his gear value (`0` = closed loop) |
 | `troopSpoilsWarChestGoldPerTier` | `25` | retained war chest, per tier held |
 | `troopLuxuryCooldownDays` | `20` | cooldown between over-cap luxury splurges |
 | `troopLuxurySpendChance` | `0.02f` | per-check chance an over-cap stack buys a luxury |
@@ -268,15 +268,17 @@ GetSpoilsCap = (dearestUpgrade + warChestPerMan) * stackSize
 Each daily tick (after the wage deposit), the overflow is swept up as gold:
 
 ```
-perManPerDay = troopSpoilsGoldSpillPerManPerDay              // default 10; 0 = closed loop, nothing spills
+perManPerDay = Round(GetEquipmentValueWithMount(char) * troopSpoilsGoldSpillFraction)  // gear-priced, like a wage; default 0.02; 0 = closed loop
 surplus = GetSpoils - GetSpoilsCap
 if surplus > 0:
-    dailyCap = perManPerDay * Max(1, element.Number)         // e.g. a 50-man stack spills ≤ 500/day
+    dailyCap = perManPerDay * Max(1, element.Number)         // richer-equipped stacks hand up more
     spill    = Min(surplus, dailyCap)
     → GiveGoldAction.ApplyBetweenCharacters(null, payee, spill, true)   // null giver mints the coin
 ```
 
-Payee is `party.Owner` (or `LeaderHero` if the owner is dead). A flat daily ceiling means a deep surplus drains over several days rather than all at once — turning a fully-upgraded elite stack into steady passive income rather than stranded loot.
+Payee is `party.Owner` (or `LeaderHero` if the owner is dead). The per-man daily ceiling means a deep surplus drains over several days rather than all at once — turning a fully-upgraded elite stack into steady passive income rather than stranded loot.
+
+The per-stack spill is factored into `GetStackDailySpill` (read-only), which both the live spill above and `ProjectDailySpill` (a party's whole-roster projection) call, so display and reality quote the same trickle. For the player, `SpoilsFinanceLine` postfixes `DefaultClanFinanceModel.CalculateClanGoldChange` and adds a **"Troop Spoils"** line — `Σ ProjectDailySpill` over `Clan.PlayerClan.WarPartyComponents` — but only on the display path (`applyWithdrawals == false`); the apply path is left alone so the tick's `GiveGoldAction` is not double-counted.
 
 ---
 
