@@ -23,7 +23,7 @@ Master switch: `IsEnabled => troopUpgradeCostMultiplier > 0f` (`Spoils/SpoilsPoo
 | `troopFoodWageFraction` | `0.5f` | food price ceiling, as a share of daily wage |
 | `troopSettlementFunWageFraction` | `1.5f` | carousing, as a multiple of daily wage |
 | `settlementProsperityPerGoldSpent` | `0.02f` | prosperity/hearth moved per gold of worth, both ways — trade/carousing add, militia & production drain, villager produce returns home (`0` = layer off) |
-| `troopSpoilsWarChestGoldPerTier` | `25` | retained war chest per tier; the flush threshold above which upkeep spends surplus |
+| `troopSpoilsCapDays` | `20` | days of keep (wage + field maintenance) a stack holds before upkeep spends the surplus; the flush threshold |
 | `troopLuxuryCooldownDays` | `20` | cooldown between over-cap luxury splurges |
 | `troopLuxurySpendChance` | `0.02f` | per-check chance an over-cap stack buys a luxury |
 
@@ -265,17 +265,18 @@ where goods actually move. Full per-hook detail in `ARCHITECTURE.md → Settleme
 
 ---
 
-## 9. The spoils cap + war chest (`Spoils/SpoilsPool.Cap.cs`)
+## 9. The spoils cap — days of keep (`Spoils/SpoilsPool.Cap.cs`)
 
-What a stack counts itself flush against:
+What a stack counts itself flush against: a configured number of days' worth of its own keep — its
+daily wage and its daily field maintenance together. Priced the same for every tier (a veteran's
+dearer wage and kit already deepen his days' keep), so there is no separate war chest and top-tier
+troops with no upgrade to save for are held to the same rule.
 
 ```
-warChestPerMan(char) = troopSpoilsWarChestGoldPerTier * Max(1, char.Tier)     // deeper purse for higher tiers
+dailyWage        = PartyWageModel.GetCharacterWage(char) * stackSize
+dailyMaintenance = DailyMaintenanceCost(char, stackSize)                      // §7's per-stack upkeep
 
-dearestUpgrade = max over UpgradeTargets of GetSpoilsCostForUpgrade(char, target)
-              // top-tier troop (no targets): Round(GetEquipmentValue(char) * troopUpgradeCostMultiplier)
-
-GetSpoilsCap = (dearestUpgrade + warChestPerMan) * stackSize
+GetSpoilsCap = (dailyWage + dailyMaintenance) * troopSpoilsCapDays            // 0 days ⇒ cap 0
 ```
 
 The cap is a behavioural threshold, not a hard limit: a purse can hold more than its cap (loot and wage both fill past it), but once over, upkeep draws the surplus down — carousing bites harder (§8) and only over-cap stacks splurge on luxuries (§10). Nothing over the cap is minted back to your gold; spoils are a **closed loop** spent only on upgrades, food and drink.

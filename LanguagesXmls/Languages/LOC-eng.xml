@@ -95,7 +95,7 @@
 	<string id="RBM_CON_042" text="Spoils Spent on Food" />
 	<string id="RBM_CON_043" text="Spoils Spent on Fun" />
 	<string id="RBM_CON_044" text="Raid Plunder Pocketed" />
-	<string id="RBM_CON_046" text="War Chest per Tier" />
+	<string id="RBM_CON_046" text="Spoils Cap (Days of Keep)" />
 	<string id="RBM_CON_047" text="Luxury Cooldown (Days)" />
 	<string id="RBM_CON_048" text="Luxury Buy Chance" />
 	<string id="RBM_CON_049" text="Verbose Logging" />
@@ -110,7 +110,7 @@
 	<string id="RBM_CON_057" text="A day's wage a man drinks away for each day he sits idle in a settlement. Default 1.50." />
 	<string id="RBM_CON_058" text="How much Prosperity, or a village's Hearth, a gold moves at a settlement, both ways: trade and carousing there add it, its militia's wages and every good it produces drain it. Default 0.02." />
 	<string id="RBM_CON_059" text="Share of a raid's plunder its soldiers keep for themselves as spoils. Default 0.25." />
-	<string id="RBM_CON_061" text="Gold a man holds back from the surplus he hands up, scaled by his tier. Default 25." />
+	<string id="RBM_CON_061" text="Days of keep a stack holds in its purse before upkeep spends the surplus: this many days of its wage and its field maintenance together. Default 20." />
 	<string id="RBM_CON_063" text="Days a stack waits after buying a luxury before it splurges again. Default 20." />
 	<string id="RBM_CON_064" text="Chance each idle hour that an over-cap stack buys a luxury from the settlement. Default 0.02." />
 	<string id="RBM_CON_066" text="Share of a beaten enemy's killed and wounded spoils the victors carry off; the rest is lost. Default 0.75." />

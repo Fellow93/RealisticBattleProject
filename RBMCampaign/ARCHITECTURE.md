@@ -105,11 +105,12 @@ free, though — they drain their settlement daily; see *Settlement prosperity f
 ### 4. The spoils cap (`SpoilsPool.GetSpoilsCap`, `Spoils/SpoilsPool.Cap.cs`)
 
 Not a sink of its own — a ceiling the sinks above read. Each stack's cap
-`GetSpoilsCap` = `(dearest upgrade cost + war chest) × stackSize`, where the per-man war chest is
-`troopSpoilsWarChestGoldPerTier × character.Tier` (a veteran keeps a deeper purse than a recruit). A
-top-tier troop has no upgrade target, so its upgrade headroom is replaced by its own equipment value
-(`GetEquipmentValue × troopUpgradeCostMultiplier`) — an elite holds a purse worthy of its kit rather
-than collapsing to the war chest alone.
+`GetSpoilsCap` = `(dailyWage + dailyMaintenance) × troopSpoilsCapDays`, i.e. a configured number of
+days' worth of the stack's own keep — its daily wage (`PartyWageModel.GetCharacterWage × stackSize`)
+and its daily field maintenance (`DailyMaintenanceCost`, the same per-stack upkeep §7 charges). Priced
+the same for every tier: a veteran's dearer wage and kit already make his days' keep the deeper purse,
+so there is no separate war chest and a top-tier troop with no upgrade to save for is held to the same
+rule. `troopSpoilsCapDays` is 0–60 (default 20); 0 collapses the cap to nothing.
 
 The cap governs *behaviour*, not storage: a purse may sit over its cap (loot and wage both fill past
 it), but once it does, upkeep starts drawing the surplus down — carousing bites harder (§3) and only
@@ -191,7 +192,7 @@ All under `/Config/RBMCampaign` in the config XML, wired into the in-game settin
 | `TroopLootOverlookChancePerTier` | 0.5 | Chance a troop overlooks kit one tier below him (compounds per tier). |
 | `TroopWageTierBase` | 50 | Daily wage = base × tier for non-heroes, replacing vanilla's wage table. 0 keeps vanilla. |
 | `TroopRaidSpoilsMultiplier` | 0.25 | Plunder soldiers pocket sacking a settlement — of a village's `Hearth × RaidDamage`, or a stormed town's `Prosperity`. 0 disables plunder spoils. |
-| `TroopSpoilsWarChestGoldPerTier` | 25 | Per-man war chest in `GetSpoilsCap`, multiplied by `character.Tier` — the flush threshold above which upkeep spends surplus on drink/luxuries. Slider 0–1000. |
+| `TroopSpoilsCapDays` | 20 | Days of keep (daily wage + daily field maintenance) a stack holds in `GetSpoilsCap` — the flush threshold above which upkeep spends surplus on drink/luxuries. Slider 0–60, discrete. |
 | `TroopSettlementFoodDays` | 20 | Days of food a stack buys per trip. |
 | `TroopFoodWageFraction` | 0.5 | Food price ceiling a man will pay, relative to his wage. |
 | `TroopSettlementFunWageFraction` | 1.5 | Carousing spend per day idled, as a multiple of daily wage. |

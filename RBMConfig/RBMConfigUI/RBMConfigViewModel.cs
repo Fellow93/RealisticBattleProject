@@ -755,47 +755,47 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopLeaderSpoilsCutFractionHint { get; } = Hint("{=RBM_CON_080}Base share of the spoils a party's men gather -- off a battlefield, a raid or a sack -- that their leader skims into his own purse as gold before the rest settles into the stacks. Multiplied by the leader's clan tier plus one, so a tier-0 or clanless leader takes this share once and a tier-6 house seven times it. Zero leaves the men all they take. Default 0.05.");
 
-        private float _troopSpoilsWarChestGoldPerTier;
+        private float _troopSpoilsCapDays;
 
         [DataSourceProperty]
-        public float TroopSpoilsWarChestGoldPerTier
+        public float TroopSpoilsCapDays
         {
             get
             {
-                return _troopSpoilsWarChestGoldPerTier;
+                return _troopSpoilsCapDays;
             }
             set
             {
-                float snapped = MathF.Clamp((float)System.Math.Round(value), 0f, 1000f);
-                if (snapped != _troopSpoilsWarChestGoldPerTier)
+                float snapped = MathF.Clamp((float)System.Math.Round(value), 0f, 60f);
+                if (snapped != _troopSpoilsCapDays)
                 {
-                    _troopSpoilsWarChestGoldPerTier = snapped;
-                    OnPropertyChangedWithValue(snapped, "TroopSpoilsWarChestGoldPerTier");
-                    OnPropertyChanged("TroopSpoilsWarChestGoldPerTierValue");
+                    _troopSpoilsCapDays = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopSpoilsCapDays");
+                    OnPropertyChanged("TroopSpoilsCapDaysValue");
                 }
             }
         }
 
         [DataSourceProperty]
-        public string TroopSpoilsWarChestGoldPerTierValue
+        public string TroopSpoilsCapDaysValue
         {
             get
             {
-                return ((int)_troopSpoilsWarChestGoldPerTier).ToString();
+                return ((int)_troopSpoilsCapDays).ToString();
             }
         }
 
         [DataSourceProperty]
-        public string TroopSpoilsWarChestGoldPerTiert
+        public string TroopSpoilsCapDayst
         {
             get
             {
-                return new TextObject("{=RBM_CON_046}War Chest per Tier").ToString();
+                return new TextObject("{=RBM_CON_046}Spoils Cap (Days of Keep)").ToString();
             }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel TroopSpoilsWarChestGoldPerTierHint { get; } = Hint("{=RBM_CON_061}Gold a man holds back from the surplus he hands up, scaled by his tier. Default 25.");
+        public BasicTooltipViewModel TroopSpoilsCapDaysHint { get; } = Hint("{=RBM_CON_061}Days of keep a stack holds in its purse before upkeep spends the surplus: this many days of its wage and its field maintenance together. Default 20.");
 
         private float _troopLuxuryCooldownDays;
 
@@ -1513,7 +1513,7 @@ namespace RBMConfig
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
             SpoilsVerboseLoggingEnabled.SelectedIndex = RBMConfig.spoilsVerboseLoggingEnabled ? 1 : 0;
             _troopLeaderSpoilsCutFraction = MathF.Clamp(RBMConfig.troopLeaderSpoilsCutFraction, 0f, 1f);
-            _troopSpoilsWarChestGoldPerTier = MathF.Clamp(RBMConfig.troopSpoilsWarChestGoldPerTier, 0f, 1000f);
+            _troopSpoilsCapDays = MathF.Clamp(RBMConfig.troopSpoilsCapDays, 0f, 60f);
             _troopLuxuryCooldownDays = MathF.Clamp(RBMConfig.troopLuxuryCooldownDays, 0f, 120f);
             _troopLuxurySpendChance = MathF.Clamp(RBMConfig.troopLuxurySpendChance, 0f, 1f);
             _troopFallenSpoilsCaptureFraction = MathF.Clamp(RBMConfig.troopFallenSpoilsCaptureFraction, 0f, 1f);
@@ -1711,7 +1711,7 @@ namespace RBMConfig
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
             RBMConfig.spoilsVerboseLoggingEnabled = SpoilsVerboseLoggingEnabled.SelectedIndex == 1;
             RBMConfig.troopLeaderSpoilsCutFraction = _troopLeaderSpoilsCutFraction;
-            RBMConfig.troopSpoilsWarChestGoldPerTier = (int)MathF.Round(_troopSpoilsWarChestGoldPerTier);
+            RBMConfig.troopSpoilsCapDays = (int)MathF.Round(_troopSpoilsCapDays);
             RBMConfig.troopLuxuryCooldownDays = (int)MathF.Round(_troopLuxuryCooldownDays);
             RBMConfig.troopLuxurySpendChance = _troopLuxurySpendChance;
             RBMConfig.troopFallenSpoilsCaptureFraction = _troopFallenSpoilsCaptureFraction;
@@ -1771,7 +1771,7 @@ namespace RBMConfig
             MilitiaWageModifier = 0.2f;
             TroopRaidSpoilsMultiplier = 0.25f;
             TroopLeaderSpoilsCutFraction = 0.05f;
-            TroopSpoilsWarChestGoldPerTier = 25f;
+            TroopSpoilsCapDays = 20f;
             TroopLuxuryCooldownDays = 20f;
             TroopLuxurySpendChance = 0.02f;
             TroopFallenSpoilsCaptureFraction = 0.75f;

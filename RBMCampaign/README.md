@@ -83,6 +83,6 @@ Everything sits in the in-game RBM config under the campaign section, or in the 
 | `TroopSpoilsHealGoldPerTier` | 10 | Gold a wounded man's stack pays local surgeons, per tier, to mend faster while resting in a settlement. 0 turns paid healing off. |
 | `TroopSpoilsHealFractionPerHour` | 0.05 | The most of a stack's wounded that paid healing can mend in a single hour. |
 | `SettlementProsperityPerGoldSpent` | 0.02 | Prosperity (or Hearth) a gold moves at a settlement, both ways — trade and carousing there add it, its militia's daily wages and every good it produces drain it. 0 turns all of it off. |
-| `TroopSpoilsWarChestGoldPerTier` | 25 | Gold a man keeps back on top of his stack's upgrade needs, per tier he holds (a tier 6 keeps 6× this), before it counts itself flush and spends the surplus on drink and luxuries. |
+| `TroopSpoilsCapDays` | 20 | Days of keep a stack holds in its purse — this many days of its daily wage and its daily field maintenance together — before it counts itself flush and spends the surplus on drink and luxuries. |
 | `SpoilsLoggingEnabled` | 1 | Writes what the system is doing to the log, for debugging. |
 | `SpoilsVerboseLoggingEnabled` | 1 | Whether that log carries per-stack detail or only party-level summaries. No effect unless logging is on. |
