@@ -288,6 +288,7 @@
     <Compile Include="Upkeep\TroopUpkeep.Luxury.cs" />
     <Compile Include="Upkeep\RBMTroopUpkeepCampaignBehavior.cs" />
     <Compile Include="Upgrades\RBMCampaignPatches.cs" />
+    <Compile Include="Wages\GearBasedWageModel.cs" />
     <Compile Include="Upgrades\SpoilsUpgradePatches.cs" />
     <Compile Include="Upgrades\PartyScreenStagedUpgrades.cs" />
     <Compile Include="UI\SpoilsBarWidget.cs" />

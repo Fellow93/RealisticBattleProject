@@ -144,6 +144,7 @@ namespace RBMCampaign
                     Field("troopLootPiecesPerMan", RC.troopLootPiecesPerMan),
                     Field("troopLootOverlookChancePerTier", RC.troopLootOverlookChancePerTier),
                     Field("troopWageSpoilsFraction", RC.troopWageSpoilsFraction),
+                    Field("troopWageGearFraction", RC.troopWageGearFraction),
                     Field("troopSettlementFoodDays", RC.troopSettlementFoodDays),
                     Field("troopFoodWageFraction", RC.troopFoodWageFraction),
                     Field("troopSettlementFunWageFraction", RC.troopSettlementFunWageFraction),

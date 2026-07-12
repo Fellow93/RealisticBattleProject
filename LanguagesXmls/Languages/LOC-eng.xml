@@ -118,6 +118,8 @@
 	<string id="RBM_CON_063" text="Days a stack waits after buying a luxury before it splurges again. Default 20." />
 	<string id="RBM_CON_064" text="Chance each idle hour that an over-cap stack buys a luxury from the settlement. Default 0.02." />
 	<string id="RBM_CON_066" text="Share of a beaten enemy's killed and wounded spoils the victors carry off; the rest is lost. Default 0.75." />
+	<string id="RBM_CON_067" text="Wage as Share of Gear" />
+	<string id="RBM_CON_068" text="Daily wage as a share of a troop's battle-gear value, replacing the flat per-tier wage. Zero keeps vanilla wages. Default 0.01." />
 	<string id="RBM_CON_062" text="Reset to Default" />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />

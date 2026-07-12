@@ -286,6 +286,48 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopWageSpoilsFractionHint { get; } = Hint("{=RBM_CON_054}Share of a man's daily wage that returns to you as spoils. Default 0.50.");
 
+        private float _troopWageGearFraction;
+
+        [DataSourceProperty]
+        public float TroopWageGearFraction
+        {
+            get
+            {
+                return _troopWageGearFraction;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                if (snapped != _troopWageGearFraction)
+                {
+                    _troopWageGearFraction = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopWageGearFraction");
+                    OnPropertyChanged("TroopWageGearFractionValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopWageGearFractionValue
+        {
+            get
+            {
+                return _troopWageGearFraction.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopWageGearFractiont
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_067}Wage as Share of Gear").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopWageGearFractionHint { get; } = Hint("{=RBM_CON_068}Daily wage as a share of a troop's battle-gear value, replacing the flat per-tier wage. Zero keeps vanilla wages. Default 0.01.");
+
         private float _troopSettlementFoodDays;
 
         /// <summary>
@@ -1216,6 +1258,7 @@ namespace RBMConfig
             _troopLootPiecesPerMan = MathF.Clamp(RBMConfig.troopLootPiecesPerMan, 1f, 10f);
             _troopLootOverlookChancePerTier = MathF.Clamp(RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
             _troopWageSpoilsFraction = MathF.Clamp(RBMConfig.troopWageSpoilsFraction, 0f, 1f);
+            _troopWageGearFraction = MathF.Clamp(RBMConfig.troopWageGearFraction, 0f, 1f);
             _troopSettlementFoodDays = MathF.Clamp(RBMConfig.troopSettlementFoodDays, 0f, 60f);
             _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 10f);
             _troopSettlementFunWageFraction = MathF.Clamp(RBMConfig.troopSettlementFunWageFraction, 0f, 10f);
@@ -1407,6 +1450,7 @@ namespace RBMConfig
             RBMConfig.troopLootPiecesPerMan = MathF.Round(_troopLootPiecesPerMan);
             RBMConfig.troopLootOverlookChancePerTier = _troopLootOverlookChancePerTier;
             RBMConfig.troopWageSpoilsFraction = _troopWageSpoilsFraction;
+            RBMConfig.troopWageGearFraction = _troopWageGearFraction;
             RBMConfig.troopSettlementFoodDays = (int)MathF.Round(_troopSettlementFoodDays);
             RBMConfig.troopFoodWageFraction = _troopFoodWageFraction;
             RBMConfig.troopSettlementFunWageFraction = _troopSettlementFunWageFraction;
@@ -1463,6 +1507,7 @@ namespace RBMConfig
             TroopLootPiecesPerMan = 3f;
             TroopLootOverlookChancePerTier = 0.5f;
             TroopWageSpoilsFraction = 0.5f;
+            TroopWageGearFraction = 0.01f;
             TroopSettlementFoodDays = 20f;
             TroopFoodWageFraction = 0.5f;
             TroopSettlementFunWageFraction = 1.5f;

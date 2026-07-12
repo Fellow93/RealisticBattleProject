@@ -12,6 +12,8 @@ namespace RBMCampaign
         // A troop template's equipment does not change at runtime, so this never goes stale.
         private static readonly Dictionary<CharacterObject, int> _equipmentValueCache = new Dictionary<CharacterObject, int>();
 
+        private static readonly Dictionary<CharacterObject, int> _mountedEquipmentValueCache = new Dictionary<CharacterObject, int>();
+
         private static readonly Dictionary<CharacterObject, List<Equipment>> _battleEquipmentCache = new Dictionary<CharacterObject, List<Equipment>>();
 
         /// <summary>
@@ -53,10 +55,10 @@ namespace RBMCampaign
             return cached;
         }
 
-        private static int GetSetValue(Equipment equipment)
+        private static int GetSetValue(Equipment equipment, bool includeMount = false)
         {
             int value = 0;
-            foreach (EquipmentElement item in EnumerateEquipmentSlots(equipment))
+            foreach (EquipmentElement item in EnumerateEquipmentSlots(equipment, includeMount))
             {
                 value += item.ItemValue;
             }
@@ -87,7 +89,31 @@ namespace RBMCampaign
             return value;
         }
 
-        private static IEnumerable<EquipmentElement> EnumerateEquipmentSlots(Equipment equipment)
+        /// <summary>
+        /// What a man of this troop is worth in kit including his horse and its harness, averaged over
+        /// his battle sets. Wages are drawn against this: a lancer's mount is a real part of what it
+        /// costs to keep him in the field. Upgrades are not, so their pricing keeps to the mount-less
+        /// <see cref="GetEquipmentValue"/> -- a rider does not buy his horse anew each time he is promoted.
+        /// </summary>
+        public static int GetEquipmentValueWithMount(CharacterObject character)
+        {
+            int cached;
+            if (_mountedEquipmentValueCache.TryGetValue(character, out cached))
+            {
+                return cached;
+            }
+            List<Equipment> sets = GetBattleEquipments(character);
+            int total = 0;
+            foreach (Equipment equipment in sets)
+            {
+                total += GetSetValue(equipment, includeMount: true);
+            }
+            int value = (sets.Count == 0) ? 0 : total / sets.Count;
+            _mountedEquipmentValueCache[character] = value;
+            return value;
+        }
+
+        private static IEnumerable<EquipmentElement> EnumerateEquipmentSlots(Equipment equipment, bool includeMount = false)
         {
             if (equipment == null)
             {
@@ -105,6 +131,17 @@ namespace RBMCampaign
                 if (!equipment[i].IsEmpty)
                 {
                     yield return equipment[i];
+                }
+            }
+            if (includeMount)
+            {
+                // Horse (10) then HorseHarness (11): the two slots the armor and weapon loops above stop short of.
+                for (EquipmentIndex i = EquipmentIndex.Horse; i <= EquipmentIndex.HorseHarness; i++)
+                {
+                    if (!equipment[i].IsEmpty)
+                    {
+                        yield return equipment[i];
+                    }
                 }
             }
         }
