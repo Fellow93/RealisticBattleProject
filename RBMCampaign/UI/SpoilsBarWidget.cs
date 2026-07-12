@@ -103,7 +103,7 @@ namespace RBMCampaign
             int cap = SpoilsPool.GetSpoilsCap(party, character);
             if (cap > 0)
             {
-                properties.Add(new TooltipProperty(new TextObject("{=RBM_SPOILS_018}Spoils Cap").ToString(),
+                properties.Add(new TooltipProperty(new TextObject("{=RBM_SPOILS_018}Spoils Reserve").ToString(),
                     cap.ToString(), 0));
             }
 

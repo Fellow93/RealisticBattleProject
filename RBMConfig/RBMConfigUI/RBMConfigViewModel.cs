@@ -790,7 +790,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("{=RBM_CON_046}Spoils Cap (Days of Keep)").ToString();
+                return new TextObject("{=RBM_CON_046}Spoils Reserve (Days of Keep)").ToString();
             }
         }
 

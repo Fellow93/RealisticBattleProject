@@ -95,7 +95,7 @@
 	<string id="RBM_CON_042" text="Spoils Spent on Food" />
 	<string id="RBM_CON_043" text="Spoils Spent on Fun" />
 	<string id="RBM_CON_044" text="Raid Plunder Pocketed" />
-	<string id="RBM_CON_046" text="Spoils Cap (Days of Keep)" />
+	<string id="RBM_CON_046" text="Spoils Reserve (Days of Keep)" />
 	<string id="RBM_CON_047" text="Luxury Cooldown (Days)" />
 	<string id="RBM_CON_048" text="Luxury Buy Chance" />
 	<string id="RBM_CON_049" text="Verbose Logging" />
@@ -147,7 +147,7 @@
 	<string id="RBM_SPOILS_015" text="No friendly town nearby to supply this upgrade." />
 		<string id="RBM_SPOILS_016" text="You take a leader's cut of {AMOUNT} gold from the spoils." />
 		<string id="RBM_SPOILS_017" text="Troop maintenance ({COVERED} of {TOTAL} met by spoils)" />
-		<string id="RBM_SPOILS_018" text="Spoils Cap" />
+		<string id="RBM_SPOILS_018" text="Spoils Reserve" />
 	<string id="RBM_SPOILS_004" text="Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. The veterans pick first, and the further beneath a man a piece lies the likelier he is to step over it, so what they overlook falls to greener troops. What his men do not spend on their own upgrades they spend on food and drink in the settlements you stop in." />
 	<string id="RBM_CON_016" text="RBM Combat" />
 	<string id="RBM_CON_017" text="Module Status" />
