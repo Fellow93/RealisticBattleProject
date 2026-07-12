@@ -37,8 +37,6 @@ namespace RBMCampaign
             }
 
             DepositWageSpoils(party, roster);
-            // After the day's wage has landed, so a stack cannot spill coin it is about to be handed.
-            SpillSurplusToGold(party);
         }
 
         private static void DepositWageSpoils(PartyBase party, TroopRoster roster)
@@ -66,15 +64,10 @@ namespace RBMCampaign
                 }
                 // The stack's wage, not one man's, so a small troop's half-point is not rounded away.
                 int wage = wageModel.GetCharacterWage(element.Character) * element.Number;
+                // The men skim their whole share of the day's wage into their purse, cap or no cap.
+                // Spoils are a closed loop now -- what lands here is spent on upgrades, food and drink,
+                // never handed back to the owner as gold.
                 int granted = MathF.Round(wage * RBMConfig.RBMConfig.troopWageSpoilsFraction);
-                // Wage tops a stack's purse up to its cap and no further. Past the cap the men have
-                // everything their upgrades and war chest need, so any more wage-spoils would only spill
-                // straight back out as minted gold on the same tick -- the treasury pays the wage, then
-                // has it conjured back. Let only battlefield loot, real earned value, ever carry a purse
-                // over cap and feed the spill dividend; the wage the men do not skim stays spent, as a
-                // wage is, rather than doubling as new gold.
-                int room = MathF.Max(0, GetSpoilsCap(party, element.Character) - GetSpoils(party, element.Character));
-                granted = MathF.Min(granted, room);
                 if (granted <= 0)
                 {
                     continue;

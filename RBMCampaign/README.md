@@ -8,9 +8,9 @@ Vanilla charges a flat, hand-authored gold number to upgrade a troop. RBM replac
 
 And troops can only upgrade where there's a town to outfit them. A stack upgrades only while a friendly or neutral town sits within reach on the map, and the new kit is bought from that town — march too far from friendly ground and your men make do with what they have until you bring them back within a short ride of a market. (Turn `TroopUpgradeRequireSupplyTown` off to upgrade anywhere, the way vanilla does.)
 
-## Wages are priced by the kit
+## Wages scale with tier
 
-Vanilla pays a soldier by his tier. RBM pays him by his gear: a man's daily wage becomes a flat share of what his battle equipment is worth — horse and harness included — the same value his upgrades and his loot are measured against. A levy in rags costs almost nothing to keep; a fully-plated cavalryman costs a great deal, whatever rung of the tree they share. (Set `TroopWageGearFraction` to zero to keep vanilla's tier-based wage.)
+Vanilla pays a soldier by his tier off a hand-authored table. RBM keeps the tier but turns it into one clean dial: a man's daily wage is a flat base value multiplied by his tier, so each rung of the tree costs proportionally more to keep in the field — a tier-3 man three times a tier-1's keep. (Set `TroopWageTierBase` to zero to keep vanilla's wage.)
 
 ## Spoils: where the money comes from
 
@@ -26,7 +26,7 @@ How that loot gets divided is the interesting part. **Veterans pick first**, but
 
 **Storming towns.** Take a town or castle by siege and the men who stormed it sack it, pocketing plunder scaled to the settlement's prosperity — a rich town is a far bigger prize than a village, enough to fund a whole wave of upgrades. Only a capture by storm sacks the place: a fief handed to you by barter, gift or a council vote leaves its wealth alone. The plunder goes to the party credited with the capture.
 
-**Wages.** Half of what you pay a stack each day (by default) goes straight back into its own purse. This doesn't cost you extra gold — it's a statement about where their pay was already going: mending what the march wore through, replacing what couldn't be mended.
+**Wages.** All of what you pay a stack each day (by default) goes straight back into its own purse. This doesn't cost you extra gold — it's a statement about where their pay was already going: mending what the march wore through, replacing what couldn't be mended.
 
 ## Where the money goes
 
@@ -40,7 +40,7 @@ How that loot gets divided is the interesting part. **Veterans pick first**, but
 
 **Healing.** A stack resting in a settlement pays the local surgeons out of its own purse to mend its wounded faster than they'd knit on the march. A veteran costs more to patch up than a recruit, and only a little of the wounded is mended each hour, so a bad convalescence still means a stay in town — it just costs the stack the kit it was saving for. This runs on top of the game's own free daily healing, so an empty-pursed stack still recovers, only slower.
 
-**Surplus handed up as gold.** A stack keeps only what it can still put to use — enough to finish its own upgrades, plus a war chest that grows with the men's tier (a veteran keeps a deeper purse than a recruit) — and hands a share of the rest up to you as gold each day. A top-tier stack has nothing left to buy, so nearly everything it loots and earns comes straight back to your treasury: an elite army you've stopped upgrading becomes a passive income instead of a pile of stranded loot. How fast the surplus is swept up is a dial. It's priced as a share of each man's kit per day, so however deep a stack's overflow, only so much drains up daily and a large surplus empties over many days — and a better-armed stack, worth more, hands up more. Raise the dial and it drains faster, lower it and slower, at zero spoils stay a closed loop spent only on troops, food and drink.
+Spoils are a **closed loop**: what a stack loots and earns is only ever spent on its own upgrades, food and drink — none of it is handed back to your treasury as gold. A stack keeps saving toward its next upgrade and a war chest that grows with the men's tier; once it holds more than that, the surplus goes to drink and the odd luxury rather than sitting idle.
 
 ## The settlement economy
 
@@ -48,7 +48,7 @@ Coin doesn't vanish when it changes hands in a town or village — it settles in
 
 **Trade feeds the place.** Whatever your soldiers spend there on food and drink stays where they spent it, and so does ordinary trade — every purchase made at a market, yours or any other party's, a caravan's or a lord's, feeds the settlement it was bought from. A busy market grows the town that hosts it.
 
-**Militia earn their keep.** The other way round, a settlement pays for the militia that defend it. Each day their wages — priced off their kit, like every other troop — are drawn straight out of the place they hold: a town or castle's Prosperity, a village's Hearth. A settlement that raises more militia than its economy can carry bleeds for it, and because militia swells with prosperity in the first place, the drain reins itself in.
+**Militia earn their keep.** The other way round, a settlement pays for the militia that defend it. Each day their wages — scaled to each man's tier, like every other troop — are drawn straight out of the place they hold: a town or castle's Prosperity, a village's Hearth. A settlement that raises more militia than its economy can carry bleeds for it, and because militia swells with prosperity in the first place, the drain reins itself in.
 
 **Making things costs something.** So does production. Every good a settlement turns out — a workshop's wares in a town, a village's crops and raw goods — is worked out of its own back: the item's worth is drawn off the town's Prosperity or the village's Hearth. A place only comes out ahead where its goods actually sell: production spends it down, trade builds it back up, and idle stock that no one carries off is just wealth spent and waiting on a buyer.
 
@@ -73,8 +73,8 @@ Everything sits in the in-game RBM config under the campaign section, or in the 
 | `TroopLootPiecesPerMan` | 3 | Pieces of kit one soldier can carry away from a field. |
 | `TroopLootOverlookChancePerTier` | 0.5 | Chance a soldier walks past a piece of gear, per tier it lies beneath him. |
 | `TroopFallenSpoilsCaptureFraction` | 0.75 | Share of a beaten enemy's fallen-and-wounded purse the victors capture; the rest is lost in the rout. |
-| `TroopWageGearFraction` | 0.01 | A troop's daily wage as a share of its kit's worth, replacing the vanilla tier wage. 0 keeps the vanilla wage. |
-| `TroopWageSpoilsFraction` | 0.5 | Share of a stack's daily wage that returns to its own purse. |
+| `TroopWageTierBase` | 50 | A troop's daily wage — this base value times its tier, replacing vanilla's wage table. 0 keeps the vanilla wage. |
+| `TroopWageSpoilsFraction` | 1.0 | Share of a stack's daily wage that returns to its own purse. |
 | `TroopRaidSpoilsMultiplier` | 0.25 | Plunder its soldiers pocket as spoils when they sack a settlement — a share of a raided village's wealth, or of a stormed town's prosperity. 0 turns plunder spoils off. |
 | `TroopSettlementFoodDays` | 20 | Days of rations a stack buys for itself when it reaches a market. |
 | `TroopFoodWageFraction` | 0.5 | Share of a day's wage a man will spend on a day's food before calling it extravagant. |
@@ -84,7 +84,6 @@ Everything sits in the in-game RBM config under the campaign section, or in the 
 | `TroopSpoilsHealGoldPerTier` | 10 | Gold a wounded man's stack pays local surgeons, per tier, to mend faster while resting in a settlement. 0 turns paid healing off. |
 | `TroopSpoilsHealFractionPerHour` | 0.05 | The most of a stack's wounded that paid healing can mend in a single hour. |
 | `SettlementProsperityPerGoldSpent` | 0.02 | Prosperity (or Hearth) a gold moves at a settlement, both ways — trade and carousing there add it, its militia's daily wages and every good it produces drain it. 0 turns all of it off. |
-| `TroopSpoilsGoldSpillFraction` | 0.02 | Most of one man's share of a stack's surplus spoils — what it holds over what its upgrades could use — that can hand up to you in a day, priced as this share of his battle kit the way a wage is, so a better-armed man hands up more. A daily cap, so a deep surplus drains slowly; 0 keeps spoils a closed loop. |
-| `TroopSpoilsWarChestGoldPerTier` | 25 | Gold a man keeps back from the spill, per tier he holds (a tier 6 keeps 6× this). On top of what his stack needs for its own upgrades. |
+| `TroopSpoilsWarChestGoldPerTier` | 25 | Gold a man keeps back on top of his stack's upgrade needs, per tier he holds (a tier 6 keeps 6× this), before it counts itself flush and spends the surplus on drink and luxuries. |
 | `SpoilsLoggingEnabled` | 1 | Writes what the system is doing to the log, for debugging. |
 | `SpoilsVerboseLoggingEnabled` | 1 | Whether that log carries per-stack detail or only party-level summaries. No effect unless logging is on. |

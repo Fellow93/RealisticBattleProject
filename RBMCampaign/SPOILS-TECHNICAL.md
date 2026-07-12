@@ -16,15 +16,15 @@ Master switch: `IsEnabled => troopUpgradeCostMultiplier > 0f` (`Spoils/SpoilsPoo
 | `troopUpgradeSpoilsLootMultiplier` | `1f` | battlefield salvage share |
 | `troopLootPiecesPerMan` | `3` | loot carry capacity |
 | `troopLootOverlookChancePerTier` | `0.5f` | per-tier overlook probability |
-| `troopWageSpoilsFraction` | `0.5f` | daily wage deposited to purse |
+| `troopWageTierBase` | `50` | daily wage = base × tier for non-heroes (`0` = vanilla wage) |
+| `troopWageSpoilsFraction` | `1.0f` | daily wage deposited to purse |
 | `troopRaidSpoilsMultiplier` | `0.25f` | raid **and** siege plunder pot |
 | `troopFallenSpoilsCaptureFraction` | `0.75f` | share of a beaten enemy's purse captured |
 | `troopSettlementFoodDays` | `20` | days of rations bought at market (`0` disables food) |
 | `troopFoodWageFraction` | `0.5f` | food price ceiling, as a share of daily wage |
 | `troopSettlementFunWageFraction` | `1.5f` | carousing, as a multiple of daily wage |
 | `settlementProsperityPerGoldSpent` | `0.02f` | prosperity/hearth moved per gold of worth, both ways — trade/carousing add, militia & production drain, villager produce returns home (`0` = layer off) |
-| `troopSpoilsGoldSpillFraction` | `0.02f` | daily surplus-spill ceiling per man, as a share of his gear value (`0` = closed loop) |
-| `troopSpoilsWarChestGoldPerTier` | `25` | retained war chest, per tier held |
+| `troopSpoilsWarChestGoldPerTier` | `25` | retained war chest per tier; the flush threshold above which upkeep spends surplus |
 | `troopLuxuryCooldownDays` | `20` | cooldown between over-cap luxury splurges |
 | `troopLuxurySpendChance` | `0.02f` | per-check chance an over-cap stack buys a luxury |
 
@@ -203,10 +203,10 @@ Daily, per non-hero stack, on every party:
 
 ```
 wage    = wageModel.GetCharacterWage(character) * element.Number
-granted = Round(wage * troopWageSpoilsFraction)                 // default half the stack's wage
+granted = Round(wage * troopWageSpoilsFraction)                 // default the stack's whole wage
 ```
 
-Daily tick order matters: **wage deposit runs, then surplus spill** — a stack is topped up before the day's overflow is swept.
+`GetCharacterWage` is itself overridden for non-heroes (`Wages/TierBasedWageModel.cs`): the daily wage is `troopWageTierBase × character.Tier`, replacing vanilla's wage table (`0` keeps vanilla). At the default fraction `1.0` a stack's whole wage lands in its purse — the party's gold is untouched, so this only reinterprets where the pay went. Spoils are a **closed loop**: nothing is handed back to gold.
 
 ---
 
@@ -258,7 +258,7 @@ The inputs (all gate on `rate > 0`):
 | Food / drink / luxury | `TroopUpkeep`, visiting stacks | spend | + |
 | Market purchase | `MarketTradeProsperity` postfix on `SellItemsAction.Apply` | `number × GetItemPrice` | + (settlement bought from) |
 | Villager produce sale | `VillagerTradeHearth` postfix on `SellGoodsForTradeAction.ApplyByVillagerTrade` | Δ`PartyTradeGold` | + (home village) |
-| Militia wages | `MilitiaUpkeep` on `DailyTickSettlementEvent` | gear wage × `settlement.Militia` | − |
+| Militia wages | `MilitiaUpkeep` on `DailyTickSettlementEvent` | wage × `settlement.Militia` | − |
 | Production | `ProductionUpkeep` on `OnItemProducedEvent` | `item.Value × count` | − |
 
 Money spent in a settlement stays there; goods made there cost it; goods sold return it — netting
@@ -266,9 +266,9 @@ where goods actually move. Full per-hook detail in `ARCHITECTURE.md → Settleme
 
 ---
 
-## 9. Surplus spill + war chest (`Spoils/SpoilsPool.Spill.cs`)
+## 9. The spoils cap + war chest (`Spoils/SpoilsPool.Cap.cs`)
 
-What a stack is allowed to keep:
+What a stack counts itself flush against:
 
 ```
 warChestPerMan(char) = troopSpoilsWarChestGoldPerTier * Max(1, char.Tier)     // deeper purse for higher tiers
@@ -279,20 +279,9 @@ dearestUpgrade = max over UpgradeTargets of GetSpoilsCostForUpgrade(char, target
 GetSpoilsCap = (dearestUpgrade + warChestPerMan) * stackSize
 ```
 
-Each daily tick (after the wage deposit), the overflow is swept up as gold:
+The cap is a behavioural threshold, not a hard limit: a purse can hold more than its cap (loot and wage both fill past it), but once over, upkeep draws the surplus down — carousing bites harder (§8) and only over-cap stacks splurge on luxuries (§10). Nothing over the cap is minted back to your gold; spoils are a **closed loop** spent only on upgrades, food and drink.
 
-```
-perManPerDay = Round(GetEquipmentValueWithMount(char) * troopSpoilsGoldSpillFraction)  // gear-priced, like a wage; default 0.02; 0 = closed loop
-surplus = GetSpoils - GetSpoilsCap
-if surplus > 0:
-    dailyCap = perManPerDay * Max(1, element.Number)         // richer-equipped stacks hand up more
-    spill    = Min(surplus, dailyCap)
-    → GiveGoldAction.ApplyBetweenCharacters(null, payee, spill, true)   // null giver mints the coin
-```
-
-Payee is `party.Owner` (or `LeaderHero` if the owner is dead). The per-man daily ceiling means a deep surplus drains over several days rather than all at once — turning a fully-upgraded elite stack into steady passive income rather than stranded loot.
-
-The per-stack spill is factored into `GetStackDailySpill` (read-only), which both the live spill above and `ProjectDailySpill` (a party's whole-roster projection) call, so display and reality quote the same trickle. For the player, `SpoilsFinanceLine` postfixes `DefaultClanFinanceModel.CalculateClanGoldChange` and adds a **"Troop Spoils"** line — `Σ ProjectDailySpill` over `Clan.PlayerClan.WarPartyComponents` — but only on the display path (`applyWithdrawals == false`); the apply path is left alone so the tick's `GiveGoldAction` is not double-counted.
+`GetPartyPayee` (owner if alive, else `LeaderHero`) lives in this file too — the party-leader spoils cut pays through it.
 
 ---
 

@@ -28,7 +28,7 @@ namespace RBMCampaign
             bool isForHire = characterObject.Occupation == Occupation.Mercenary || characterObject.Occupation == Occupation.Gangster || characterObject.Occupation == Occupation.CaravanGuard;
 
             ExplainedNumber stat = new ExplainedNumber((upgradeTargetEquipmentCost - characterEquipmentCost) * goldFactor);
-            // A stack-keyed purse can be priced for any party (the daily spill and the cap value every
+            // A stack-keyed purse can be priced for any party (the cap values every
             // stack), and a settlement-owned PartyBase has no MobileParty to read perks off. The perks
             // simply do not apply then; the base multiplier below still does.
             MobileParty mobileParty = party?.MobileParty;

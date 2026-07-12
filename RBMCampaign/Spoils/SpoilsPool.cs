@@ -152,7 +152,7 @@ namespace RBMCampaign
         /// <summary>
         /// Clears every purse and ration held by a party now exempt from the system. A save made before
         /// villagers were exempted carries pools their owners can no longer spend or prune, so they are
-        /// swept once when a session launches. Nothing is spilled back to gold: an exempt party was never
+        /// swept once when a session launches. Nothing is paid back to gold: an exempt party was never
         /// meant to hold spoils, so its stranded pool is dropped rather than paid out.
         /// </summary>
         public static void PruneExemptParties()

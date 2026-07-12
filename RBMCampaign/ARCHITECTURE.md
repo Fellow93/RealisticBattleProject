@@ -102,32 +102,20 @@ never goes negative.
 infinite prosperity faucet). Only visiting field parties spend in settlements. (Militia are not
 free, though — they drain their settlement daily; see *Settlement prosperity flows* below.)
 
-### 4. Surplus spilled to party gold (`SpoilsPool.SpillSurplusToGold`)
+### 4. The spoils cap (`SpoilsPool.GetSpoilsCap`, `Spoils/SpoilsPool.Cap.cs`)
 
-Runs on the daily tick (`OnDailyTickParty`, after the wage deposit). Each stack's ceiling
+Not a sink of its own — a ceiling the sinks above read. Each stack's cap
 `GetSpoilsCap` = `(dearest upgrade cost + war chest) × stackSize`, where the per-man war chest is
-`troopSpoilsWarChestGoldPerTier × character.Tier` (a veteran keeps a deeper purse than a recruit);
-anything over it is drawn out of the purse — but no more than
-`Round(GetEquipmentValueWithMount(character) × troopSpoilsGoldSpillFraction) × stackSize` a day — and
-minted into the party owner's/leader's gold via `GiveGoldAction.ApplyBetweenCharacters(null, payee, …)`
-(1:1, a point of spoils = a gold piece). The per-man daily cap is priced as a share of the man's battle
-kit (horse and harness included), the same way a wage is, so a better-armed man hands up more; it keeps
-the spill a slow trickle: however deep the surplus, only that much per man drains up each day, so a
-large overflow empties over many days; 0 disables it (closed loop). A top-tier troop has no upgrade target, so its upgrade headroom is
-replaced by its own equipment value (`GetEquipmentValue × troopUpgradeCostMultiplier`) — an elite
-holds a purse worthy of its kit rather than collapsing to the war chest alone. Silent like the wage
-deposit (logged under `SPILL`, no player message); applies to AI too (funds their own upgrade
-treasury).
+`troopSpoilsWarChestGoldPerTier × character.Tier` (a veteran keeps a deeper purse than a recruit). A
+top-tier troop has no upgrade target, so its upgrade headroom is replaced by its own equipment value
+(`GetEquipmentValue × troopUpgradeCostMultiplier`) — an elite holds a purse worthy of its kit rather
+than collapsing to the war chest alone.
 
-For the player, the spill is surfaced as a **"Troop Spoils" line in the clan finance breakdown** (the
-denar tooltip and the clan finance screen), so the coin is accounted for beside wages and tariffs.
-`SpoilsFinanceLine` postfixes `DefaultClanFinanceModel.CalculateClanGoldChange` and, on the *display*
-path only (`applyWithdrawals == false`, player clan), adds `SpoilsPool.ProjectDailySpill` summed over
-the clan's war parties. It is never added on the apply path — the real gold still arrives via the daily
-tick's `GiveGoldAction`, so counting it in the finance net too would pay it twice. The line is a
-projection from the current pools (read-only, side-effect free), the same way every other breakdown line
-projects the day to come; `ProjectDailySpill` and the actual spill both price the trickle through the
-shared `GetStackDailySpill`, so the number shown and the number handed up can never diverge.
+The cap governs *behaviour*, not storage: a purse may sit over its cap (loot and wage both fill past
+it), but once it does, upkeep starts drawing the surplus down — carousing bites harder (§3) and only
+over-cap stacks splurge on luxuries. Nothing over the cap is handed back to your gold: spoils are a
+**closed loop**, spent only on upgrades, food and drink. `GetPartyPayee` (owner if alive, else
+`LeaderHero`) also lives here — the party-leader spoils cut pays through it.
 
 ## Settlement prosperity flows
 
@@ -142,7 +130,7 @@ food/drink/luxury spending above already feeds it.
   for coin) it gains `number × GetItemPrice(pre-trade) × rate`. Covers player, caravans, lords;
   selling *to* a settlement is left alone. Log `TRADE`, throttled once/buyer/settlement/day.
 - **Militia upkeep** (`Upkeep/MilitiaUpkeep.cs`) — `DailyTickSettlementEvent`. Drains the militia's
-  gear-based daily wage × rate. Wage read off the real `MilitiaPartyComponent.MobileParty` roster
+  daily wage × rate. Wage read off the real `MilitiaPartyComponent.MobileParty` roster
   when one exists (elites included, via `TroopWage`), else the culture's rank-and-file militia
   average × `settlement.Militia`. Log `MILITIA` (the daily tick is throttle enough).
 - **Production drain** (`Upkeep/ProductionUpkeep.cs`) — `OnItemProducedEvent`. Every produced item
@@ -201,10 +189,10 @@ All under `/Config/RBMCampaign` in the config XML, wired into the in-game settin
 | `TroopUpgradeSpoilsLootMultiplier` | 1 | How much battlefield loot yields. |
 | `TroopLootPiecesPerMan` | 3 | Pieces of kit one man can carry off a field. |
 | `TroopLootOverlookChancePerTier` | 0.5 | Chance a troop overlooks kit one tier below him (compounds per tier). |
-| `TroopWageSpoilsFraction` | 0.5 | Share of daily wage deposited into spoils. |
+| `TroopWageTierBase` | 50 | Daily wage = base × tier for non-heroes, replacing vanilla's wage table. 0 keeps vanilla. |
+| `TroopWageSpoilsFraction` | 1.0 | Share of daily wage deposited into spoils. |
 | `TroopRaidSpoilsMultiplier` | 0.25 | Plunder soldiers pocket sacking a settlement — of a village's `Hearth × RaidDamage`, or a stormed town's `Prosperity`. 0 disables plunder spoils. |
-| `TroopSpoilsGoldSpillFraction` | 0.02 | Per-man daily ceiling on the surplus over `GetSpoilsCap` minted into party gold on the daily tick, priced as this share of the man's gear value (mount included) the way a wage is — a slow trickle regardless of surplus depth. 0 keeps spoils a closed loop. |
-| `TroopSpoilsWarChestGoldPerTier` | 25 | Per-man war chest in `GetSpoilsCap`, multiplied by `character.Tier`. Slider 0–1000. |
+| `TroopSpoilsWarChestGoldPerTier` | 25 | Per-man war chest in `GetSpoilsCap`, multiplied by `character.Tier` — the flush threshold above which upkeep spends surplus on drink/luxuries. Slider 0–1000. |
 | `TroopSettlementFoodDays` | 20 | Days of food a stack buys per trip. |
 | `TroopFoodWageFraction` | 0.5 | Food price ceiling a man will pay, relative to his wage. |
 | `TroopSettlementFunWageFraction` | 1.5 | Carousing spend per day idled, as a multiple of daily wage. |

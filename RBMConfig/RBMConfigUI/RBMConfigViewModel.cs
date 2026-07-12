@@ -288,49 +288,53 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel TroopWageSpoilsFractionHint { get; } = Hint("{=RBM_CON_054}Share of a man's daily wage that returns to you as spoils. Default 0.50.");
+        public BasicTooltipViewModel TroopWageSpoilsFractionHint { get; } = Hint("{=RBM_CON_054}Share of a man's daily wage that returns to you as spoils. Default 1.00.");
 
-        private float _troopWageGearFraction;
+        private float _troopWageTierBase;
 
+        /// <summary>
+        /// A flat gold base multiplied by the troop's tier. Whole numbers, so the slider is discrete;
+        /// float only because SliderWidget binds float. Rounded to an int on save.
+        /// </summary>
         [DataSourceProperty]
-        public float TroopWageGearFraction
+        public float TroopWageTierBase
         {
             get
             {
-                return _troopWageGearFraction;
+                return _troopWageTierBase;
             }
             set
             {
-                float snapped = MathF.Clamp((float)System.Math.Round(value, 3), 0f, 1f);
-                if (snapped != _troopWageGearFraction)
+                float snapped = MathF.Clamp(MathF.Round(value), 0f, 300f);
+                if (snapped != _troopWageTierBase)
                 {
-                    _troopWageGearFraction = snapped;
-                    OnPropertyChangedWithValue(snapped, "TroopWageGearFraction");
-                    OnPropertyChanged("TroopWageGearFractionValue");
+                    _troopWageTierBase = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopWageTierBase");
+                    OnPropertyChanged("TroopWageTierBaseValue");
                 }
             }
         }
 
         [DataSourceProperty]
-        public string TroopWageGearFractionValue
+        public string TroopWageTierBaseValue
         {
             get
             {
-                return _troopWageGearFraction.ToString("0.000");
+                return _troopWageTierBase.ToString("0");
             }
         }
 
         [DataSourceProperty]
-        public string TroopWageGearFractiont
+        public string TroopWageTierBaset
         {
             get
             {
-                return new TextObject("{=RBM_CON_067}Wage as Share of Gear").ToString();
+                return new TextObject("{=RBM_CON_067}Wage Base per Tier").ToString();
             }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel TroopWageGearFractionHint { get; } = Hint("{=RBM_CON_068}Daily wage as a share of a troop's battle-gear value, replacing the flat per-tier wage. Zero keeps vanilla wages. Default 0.01.");
+        public BasicTooltipViewModel TroopWageTierBaseHint { get; } = Hint("{=RBM_CON_068}Daily wage is this base value multiplied by the troop's tier, replacing the vanilla wage. Zero keeps vanilla wages. Default 50.");
 
         private float _troopSettlementFoodDays;
 
@@ -657,48 +661,6 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_070}Upgrade Near Town").ToString();
             }
         }
-
-        private float _troopSpoilsGoldSpillFraction;
-
-        [DataSourceProperty]
-        public float TroopSpoilsGoldSpillFraction
-        {
-            get
-            {
-                return _troopSpoilsGoldSpillFraction;
-            }
-            set
-            {
-                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
-                if (snapped != _troopSpoilsGoldSpillFraction)
-                {
-                    _troopSpoilsGoldSpillFraction = snapped;
-                    OnPropertyChangedWithValue(snapped, "TroopSpoilsGoldSpillFraction");
-                    OnPropertyChanged("TroopSpoilsGoldSpillFractionValue");
-                }
-            }
-        }
-
-        [DataSourceProperty]
-        public string TroopSpoilsGoldSpillFractionValue
-        {
-            get
-            {
-                return _troopSpoilsGoldSpillFraction.ToString("0.00");
-            }
-        }
-
-        [DataSourceProperty]
-        public string TroopSpoilsGoldSpillFractiont
-        {
-            get
-            {
-                return new TextObject("{=RBM_CON_045}Surplus Handed Up").ToString();
-            }
-        }
-
-        [DataSourceProperty]
-        public BasicTooltipViewModel TroopSpoilsGoldSpillFractionHint { get; } = Hint("{=RBM_CON_060}Most of a man's share of a stack's surplus spoils that can hand up to you as gold in a day, once his own upgrades are provisioned -- priced as this share of his battle kit, the way wages are, so a better-armed man hands up more. A daily cap, so a deep surplus drains slowly. Default 0.02.");
 
         private float _troopLeaderSpoilsCutFraction;
 
@@ -1489,7 +1451,7 @@ namespace RBMConfig
             _troopLootPiecesPerMan = MathF.Clamp(RBMConfig.troopLootPiecesPerMan, 1f, 10f);
             _troopLootOverlookChancePerTier = MathF.Clamp(RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
             _troopWageSpoilsFraction = MathF.Clamp(RBMConfig.troopWageSpoilsFraction, 0f, 1f);
-            _troopWageGearFraction = MathF.Clamp(RBMConfig.troopWageGearFraction, 0f, 1f);
+            _troopWageTierBase = MathF.Clamp((float)RBMConfig.troopWageTierBase, 0f, 300f);
             _troopSettlementFoodDays = MathF.Clamp(RBMConfig.troopSettlementFoodDays, 0f, 60f);
             _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 10f);
             _troopSettlementFunWageFraction = MathF.Clamp(RBMConfig.troopSettlementFunWageFraction, 0f, 10f);
@@ -1498,7 +1460,6 @@ namespace RBMConfig
             _troopRaidSpoilsMultiplier = MathF.Clamp(RBMConfig.troopRaidSpoilsMultiplier, 0f, 10f);
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
             SpoilsVerboseLoggingEnabled.SelectedIndex = RBMConfig.spoilsVerboseLoggingEnabled ? 1 : 0;
-            _troopSpoilsGoldSpillFraction = MathF.Clamp(RBMConfig.troopSpoilsGoldSpillFraction, 0f, 1f);
             _troopLeaderSpoilsCutFraction = MathF.Clamp(RBMConfig.troopLeaderSpoilsCutFraction, 0f, 1f);
             _troopSpoilsWarChestGoldPerTier = MathF.Clamp(RBMConfig.troopSpoilsWarChestGoldPerTier, 0f, 1000f);
             _troopLuxuryCooldownDays = MathF.Clamp(RBMConfig.troopLuxuryCooldownDays, 0f, 120f);
@@ -1687,7 +1648,7 @@ namespace RBMConfig
             RBMConfig.troopLootPiecesPerMan = MathF.Round(_troopLootPiecesPerMan);
             RBMConfig.troopLootOverlookChancePerTier = _troopLootOverlookChancePerTier;
             RBMConfig.troopWageSpoilsFraction = _troopWageSpoilsFraction;
-            RBMConfig.troopWageGearFraction = _troopWageGearFraction;
+            RBMConfig.troopWageTierBase = (int)MathF.Round(_troopWageTierBase);
             RBMConfig.troopSettlementFoodDays = (int)MathF.Round(_troopSettlementFoodDays);
             RBMConfig.troopFoodWageFraction = _troopFoodWageFraction;
             RBMConfig.troopSettlementFunWageFraction = _troopSettlementFunWageFraction;
@@ -1696,7 +1657,6 @@ namespace RBMConfig
             RBMConfig.troopRaidSpoilsMultiplier = _troopRaidSpoilsMultiplier;
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
             RBMConfig.spoilsVerboseLoggingEnabled = SpoilsVerboseLoggingEnabled.SelectedIndex == 1;
-            RBMConfig.troopSpoilsGoldSpillFraction = _troopSpoilsGoldSpillFraction;
             RBMConfig.troopLeaderSpoilsCutFraction = _troopLeaderSpoilsCutFraction;
             RBMConfig.troopSpoilsWarChestGoldPerTier = (int)MathF.Round(_troopSpoilsWarChestGoldPerTier);
             RBMConfig.troopLuxuryCooldownDays = (int)MathF.Round(_troopLuxuryCooldownDays);
@@ -1749,15 +1709,14 @@ namespace RBMConfig
             TroopUpgradeRequireSupplyTown.SelectedIndex = 1;
             TroopLootPiecesPerMan = 3f;
             TroopLootOverlookChancePerTier = 0.5f;
-            TroopWageSpoilsFraction = 0.5f;
-            TroopWageGearFraction = 0.01f;
+            TroopWageSpoilsFraction = 1.0f;
+            TroopWageTierBase = 50f;
             TroopSettlementFoodDays = 20f;
             TroopFoodWageFraction = 0.5f;
             TroopSettlementFunWageFraction = 1.5f;
             SettlementProsperityPerGoldSpent = 0.02f;
             MilitiaWageModifier = 0.2f;
             TroopRaidSpoilsMultiplier = 0.25f;
-            TroopSpoilsGoldSpillFraction = 0.02f;
             TroopLeaderSpoilsCutFraction = 0.05f;
             TroopSpoilsWarChestGoldPerTier = 25f;
             TroopLuxuryCooldownDays = 20f;

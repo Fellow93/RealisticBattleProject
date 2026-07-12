@@ -279,9 +279,8 @@
     <Compile Include="Spoils\SpoilsPool.Casualties.cs" />
     <Compile Include="Spoils\SpoilsPool.Plunder.cs" />
     <Compile Include="Spoils\SpoilsPool.Wages.cs" />
-    <Compile Include="Spoils\SpoilsPool.Spill.cs" />
+    <Compile Include="Spoils\SpoilsPool.Cap.cs" />
     <Compile Include="Spoils\SpoilsPool.LeaderCut.cs" />
-    <Compile Include="Spoils\SpoilsFinanceLine.cs" />
     <Compile Include="Spoils\SpoilsPool.Transfers.cs" />
     <Compile Include="Spoils\SpoilsTransferOnPartyScreen.cs" />
     <Compile Include="Spoils\RBMSpoilsCampaignBehavior.cs" />
@@ -295,7 +294,7 @@
     <Compile Include="Upkeep\VillagerTradeHearth.cs" />
     <Compile Include="Upkeep\RBMTroopUpkeepCampaignBehavior.cs" />
     <Compile Include="Upgrades\RBMCampaignPatches.cs" />
-    <Compile Include="Wages\GearBasedWageModel.cs" />
+    <Compile Include="Wages\TierBasedWageModel.cs" />
     <Compile Include="Upgrades\SpoilsUpgradePatches.cs" />
     <Compile Include="Upgrades\PartyScreenStagedUpgrades.cs" />
     <Compile Include="Upgrades\UpgradeSupply.cs" />

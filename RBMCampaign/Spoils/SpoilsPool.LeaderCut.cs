@@ -15,10 +15,10 @@ namespace RBMCampaign
     /// by the tier plus one, and even a tier-0 or clanless leader still takes the base share.
     /// </summary>
     /// <remarks>
-    /// Conserving, the way the surplus spill is: the cut is drawn out of the same purses the gather just
+    /// Conserving: the cut is drawn out of the same purses the gather just
     /// filled and handed to the leader as gold one-for-one, so no coin is minted from nothing -- it is
-    /// only moved from the stacks' pool into their keeper's treasury. Paid to the same pocket the surplus
-    /// spills to (see <see cref="GetSpillPayee"/>): the party's owner if one is alive, else the hero
+    /// only moved from the stacks' pool into their keeper's treasury. Paid to the party's payee
+    /// (see <see cref="GetPartyPayee"/>): the party's owner if one is alive, else the hero
     /// leading it, so an AI lord pays himself and the player's parties pay the player.
     /// </remarks>
     public static partial class SpoilsPool
@@ -36,7 +36,7 @@ namespace RBMCampaign
             {
                 return 0;
             }
-            Hero payee = GetSpillPayee(party);
+            Hero payee = GetPartyPayee(party);
             if (payee == null || !payee.IsAlive)
             {
                 return 0;
@@ -62,7 +62,7 @@ namespace RBMCampaign
                 return 0;
             }
             // Null giver mints the coin into the payee's purse, the mirror of how an upgrade pays gold out
-            // to a null receiver and how the surplus spill hands its gold up.
+            // to a null receiver.
             GiveGoldAction.ApplyBetweenCharacters(null, payee, drawn, true);
             if (SpoilsLog.IsEnabled)
             {
