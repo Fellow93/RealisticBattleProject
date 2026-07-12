@@ -1,7 +1,9 @@
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
@@ -27,21 +29,121 @@ namespace RBMCampaign
     /// spoils first; whatever the purse cannot cover falls to the party leader, out of his gold.
     /// </summary>
     /// <remarks>
-    /// Applied to every party on the daily tick, alongside the wage that fills the purse -- the wage is
-    /// deposited first, so the day's pay can meet the day's upkeep before the leader is asked for a
-    /// penny. A point of spoils is a gold piece, so the cost drains one-for-one. The leader's share is
-    /// paid to a null receiver, the same way an upgrade's gold cost is spent, so no coin is minted --
-    /// it only leaves his treasury.
+    /// Charged once per clan per day, off the clan finance model's apply pass
+    /// (<see cref="MaintenanceFinanceLine"/>): every party the clan's leader keeps has its stacks' purses
+    /// drained for their share, and whatever the purses cannot meet is folded into the clan's daily gold
+    /// change. Routing the shortfall through the finance number rather than a separate transfer means it
+    /// shows in the Daily Gold Change message and the finance breakdown, and the leader pays it through the
+    /// very channel wages run through. A point of spoils is a gold piece, so the cost drains one-for-one.
     /// </remarks>
     public static partial class SpoilsPool
     {
         /// <summary>
-        /// Charges the day's maintenance to a party: drains each stack's spoils for its share and bills
-        /// the leader for whatever the purses fall short of. Returns the day's tally.
+        /// Days of maintenance a fresh recruit brings with him. A man mustered from a village or town
+        /// arrives with his kit already seen to and a few days' keep put by against the coming march,
+        /// so his stack's purse is seeded rather than starting bare -- the day's wage paid forward.
         /// </summary>
-        public static MaintenanceResult ChargeMaintenance(PartyBase party)
+        public const int RecruitMaintenanceDays = 5;
+
+        /// <summary>
+        /// The daily cost of keeping one stack of <paramref name="number"/> men of this troop in the
+        /// field: a share of the whole worth of their kit, horse and harness included. The stack's cost,
+        /// not one man's, so a small troop's fraction is not rounded away. Shared by the daily charge and
+        /// the recruit seed so both price a day's upkeep the same way.
+        /// </summary>
+        private static int DailyMaintenanceCost(CharacterObject character, int number)
         {
-            return ComputeMaintenance(party, apply: true);
+            float fraction = RBMConfig.RBMConfig.troopMaintenanceFraction;
+            if (fraction <= 0f || number <= 0)
+            {
+                return 0;
+            }
+            return MathF.Round(fraction * GetEquipmentValueWithMount(character) * number);
+        }
+
+        /// <summary>
+        /// Charges a clan the day's maintenance across every party its leader keeps: drains each stack's
+        /// spoils for its share and returns the tally, whose shortfall the caller folds into the clan's
+        /// daily gold change. Run once per clan per day from the finance model's apply pass, so the
+        /// deduction shows in the Daily Gold Change message and the leader truly pays it. Passed
+        /// <paramref name="apply"/> false it projects the same tally without touching a purse, for the
+        /// finance breakdown the display pass draws.
+        /// </summary>
+        public static MaintenanceResult ChargeClanMaintenance(Clan clan, bool apply)
+        {
+            MaintenanceResult total = default(MaintenanceResult);
+            if (!IsEnabled || RBMConfig.RBMConfig.troopMaintenanceFraction <= 0f || clan == null)
+            {
+                return total;
+            }
+            // The clan's own war parties -- the very ones whose wages it already pays (the game charges
+            // wages off this same list). Maintenance mirrors the wage: charged for the parties the leader
+            // keeps and folded into the one daily gold change he settles. Caravans keep their own purse and
+            // pay their own way, so they are left out here as they are from the leader's wage bill.
+            foreach (WarPartyComponent warParty in clan.WarPartyComponents)
+            {
+                MobileParty mobileParty = warParty?.MobileParty;
+                if (mobileParty == null || !mobileParty.IsActive)
+                {
+                    continue;
+                }
+                MaintenanceResult m = ComputeMaintenance(mobileParty.Party, apply);
+                total.Total += m.Total;
+                total.Covered += m.Covered;
+                total.Shortfall += m.Shortfall;
+            }
+            return total;
+        }
+
+        /// <summary>
+        /// Seeds a freshly recruited stack's purse with several days' maintenance, so a man drawn from a
+        /// settlement arrives with his kit in order and a little put by against the coming march rather
+        /// than penniless. Added on top of whatever the stack already carries. No gold changes hands --
+        /// the recruit brings the spoils with him.
+        /// </summary>
+        public static void SeedRecruitMaintenance(PartyBase party, CharacterObject character, int amount)
+        {
+            if (!IsEnabled || party == null || character == null || character.IsHero || amount <= 0 || IsExemptParty(party))
+            {
+                return;
+            }
+            // A bandit party keeps no war-chest; it is charged no maintenance, so it is seeded none.
+            if (party.MobileParty != null && party.MobileParty.IsBandit)
+            {
+                return;
+            }
+            int seed = DailyMaintenanceCost(character, amount) * RecruitMaintenanceDays;
+            if (seed <= 0)
+            {
+                return;
+            }
+            AddSpoils(party, character, seed);
+            if (SpoilsLog.IsEnabled && party == PartyBase.MainParty)
+            {
+                SpoilsLog.Log("RECRUIT", party, SpoilsLog.Describe(party) + " recruited "
+                    + SpoilsLog.Describe(character) + " x" + amount + "; seeded " + seed + " spoils ("
+                    + RecruitMaintenanceDays + " days' maintenance)");
+            }
+        }
+
+        /// <summary>
+        /// A stack mustered from a village or town arrives with a few days' maintenance already in its
+        /// purse. Prisoners pressed into service and volunteers picked up on the road carry a null
+        /// settlement and bring nothing -- only a proper muster from a settlement is seeded.
+        /// </summary>
+        public static void OnTroopRecruited(Hero recruiterHero, Settlement recruitmentSettlement,
+            Hero recruitmentSource, CharacterObject troop, int amount)
+        {
+            if (recruitmentSettlement == null || !(recruitmentSettlement.IsVillage || recruitmentSettlement.IsTown))
+            {
+                return;
+            }
+            PartyBase party = recruiterHero?.PartyBelongedTo?.Party;
+            if (party == null)
+            {
+                return;
+            }
+            SeedRecruitMaintenance(party, troop, amount);
         }
 
         /// <summary>
@@ -94,9 +196,8 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                // The stack's cost, not one man's, so a small troop's fraction is not rounded away. Priced
-                // off the mounted worth: a lancer's horse is a real part of what it costs to keep him.
-                int cost = MathF.Round(fraction * GetEquipmentValueWithMount(element.Character) * element.Number);
+                // Priced off the mounted worth: a lancer's horse is a real part of what it costs to keep him.
+                int cost = DailyMaintenanceCost(element.Character, element.Number);
                 if (cost <= 0)
                 {
                     continue;
@@ -116,24 +217,16 @@ namespace RBMCampaign
                 }
             }
 
+            // Only the purses are moved here; the shortfall the men cannot meet is left for the clan's
+            // daily gold change to carry (see ChargeClanMaintenance), so the leader pays it once, through
+            // the finance number rather than a separate transfer.
             result.Shortfall = result.Total - result.Covered;
-            if (apply && result.Shortfall > 0)
-            {
-                // The men could not meet the day's upkeep out of their purses; their keeper makes up the
-                // difference from his own gold. Paid to a null receiver -- the coin leaves the field, not
-                // moves to another purse -- the mirror of how an upgrade's gold cost is spent.
-                Hero payer = GetPartyPayee(party);
-                if (payer != null && payer.IsAlive)
-                {
-                    GiveGoldAction.ApplyBetweenCharacters(payer, null, result.Shortfall, true);
-                }
-            }
 
             if (apply && SpoilsLog.IsEnabled && party == PartyBase.MainParty && result.Total > 0)
             {
-                SpoilsLog.Log("UPKEEP", party, SpoilsLog.Describe(party) + " paid " + result.Total
+                SpoilsLog.Log("UPKEEP", party, SpoilsLog.Describe(party) + " owed " + result.Total
                     + " maintenance across " + stacksCharged + (stacksCharged == 1 ? " stack" : " stacks")
-                    + " (spoils covered " + result.Covered + ", leader paid " + result.Shortfall + ")");
+                    + " (spoils covered " + result.Covered + ", " + result.Shortfall + " to clan gold)");
             }
             return result;
         }

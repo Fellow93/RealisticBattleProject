@@ -16,6 +16,8 @@ namespace RBMCampaign
             CampaignEvents.DailyTickPartyEvent.AddNonSerializedListener(this, SpoilsPool.OnDailyTickParty);
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, SpoilsPool.OnMobilePartyDestroyed);
             CampaignEvents.PlayerUpgradedTroopsEvent.AddNonSerializedListener(this, SpoilsPool.OnPlayerUpgradedTroops);
+            // A stack mustered from a village or town brings a few days' maintenance in its purse.
+            CampaignEvents.OnTroopRecruitedEvent.AddNonSerializedListener(this, SpoilsPool.OnTroopRecruited);
         }
 
         private void OnSessionLaunched(CampaignGameStarter starter)
