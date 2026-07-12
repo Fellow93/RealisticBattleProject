@@ -71,6 +71,50 @@ namespace RBMCampaign
             return whole + ((MBRandom.RandomFloat < exact - whole) ? 1L : 0L);
         }
 
+        /// <summary>
+        /// The noble line of each culture -- its elite troop tree, rooted at EliteBasicTroop -- so a
+        /// knight can be told from a footman of equal tier when the field is stripped. Cached per
+        /// culture: troop objects live for the whole game process, so the set never goes stale.
+        /// </summary>
+        private static readonly Dictionary<CultureObject, HashSet<CharacterObject>> _nobleLineByCulture = new Dictionary<CultureObject, HashSet<CharacterObject>>();
+
+        /// <summary>Whether a troop belongs to its culture's elite (noble) upgrade line.</summary>
+        private static bool IsNobleLineTroop(CharacterObject character)
+        {
+            if (character == null || character.Culture == null)
+            {
+                return false;
+            }
+            HashSet<CharacterObject> line;
+            if (!_nobleLineByCulture.TryGetValue(character.Culture, out line))
+            {
+                line = BuildNobleLine(character.Culture.EliteBasicTroop);
+                _nobleLineByCulture[character.Culture] = line;
+            }
+            return line.Contains(character);
+        }
+
+        /// <summary>Every troop reachable by upgrade from the elite root, the whole noble tree.</summary>
+        private static HashSet<CharacterObject> BuildNobleLine(CharacterObject root)
+        {
+            HashSet<CharacterObject> line = new HashSet<CharacterObject>();
+            if (root == null)
+            {
+                return line;
+            }
+            List<CharacterObject> frontier = new List<CharacterObject> { root };
+            for (int i = 0; i < frontier.Count; i++)
+            {
+                CharacterObject troop = frontier[i];
+                if (troop == null || !line.Add(troop) || troop.UpgradeTargets == null)
+                {
+                    continue;
+                }
+                frontier.AddRange(troop.UpgradeTargets);
+            }
+            return line;
+        }
+
         /// <summary>Pieces of kit one man will carry off a field, however much of it he sees.</summary>
         private static int GetCarryCapacity(int menInStack)
         {
@@ -317,8 +361,18 @@ namespace RBMCampaign
                     claimants.Add(element);
                 }
             }
-            // Highest troop tier first, so the veterans take their pick before the recruits.
-            claimants.Sort((a, b) => b.Character.Tier.CompareTo(a.Character.Tier));
+            // Highest troop tier first, so the veterans take their pick before the recruits, and the
+            // noble line ahead of the levy of its own tier: a knight stoops for the good kit before
+            // the footman standing beside him ever reaches it.
+            claimants.Sort((a, b) =>
+            {
+                int byTier = b.Character.Tier.CompareTo(a.Character.Tier);
+                if (byTier != 0)
+                {
+                    return byTier;
+                }
+                return IsNobleLineTroop(b.Character).CompareTo(IsNobleLineTroop(a.Character));
+            });
 
             if (claimants.Count == 0)
             {
@@ -334,7 +388,12 @@ namespace RBMCampaign
             {
                 int groupEnd = groupStart;
                 int groupTier = claimants[groupStart].Character.Tier;
-                while (groupEnd < claimants.Count && claimants[groupEnd].Character.Tier == groupTier)
+                // The noble line of a tier is its own rank, ahead of that tier's levy: split the
+                // group on it so the nobles take their share before the commoners see the rest.
+                bool groupNoble = IsNobleLineTroop(claimants[groupStart].Character);
+                while (groupEnd < claimants.Count
+                    && claimants[groupEnd].Character.Tier == groupTier
+                    && IsNobleLineTroop(claimants[groupEnd].Character) == groupNoble)
                 {
                     groupEnd++;
                 }
