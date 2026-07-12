@@ -382,6 +382,8 @@ namespace RBMConfig
             TroopRaidSpoilsMultiplier.InnerText = RBMConfig.troopRaidSpoilsMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopSpoilsGoldSpillFraction = xmlconfig.CreateElement("TroopSpoilsGoldSpillFraction");
             TroopSpoilsGoldSpillFraction.InnerText = RBMConfig.troopSpoilsGoldSpillFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopLeaderSpoilsCutFraction = xmlconfig.CreateElement("TroopLeaderSpoilsCutFraction");
+            TroopLeaderSpoilsCutFraction.InnerText = RBMConfig.troopLeaderSpoilsCutFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopSpoilsWarChestGoldPerTier = xmlconfig.CreateElement("TroopSpoilsWarChestGoldPerTier");
             TroopSpoilsWarChestGoldPerTier.InnerText = RBMConfig.troopSpoilsWarChestGoldPerTier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopLuxuryCooldownDays = xmlconfig.CreateElement("TroopLuxuryCooldownDays");
@@ -416,6 +418,7 @@ namespace RBMConfig
             RBMCampaign.AppendChild(MilitiaWageModifier);
             RBMCampaign.AppendChild(TroopRaidSpoilsMultiplier);
             RBMCampaign.AppendChild(TroopSpoilsGoldSpillFraction);
+            RBMCampaign.AppendChild(TroopLeaderSpoilsCutFraction);
             RBMCampaign.AppendChild(TroopSpoilsWarChestGoldPerTier);
             RBMCampaign.AppendChild(TroopLuxuryCooldownDays);
             RBMCampaign.AppendChild(TroopLuxurySpendChance);

@@ -96,6 +96,14 @@ namespace RBMConfig
         // surplus takes many days to empty. 0 leaves spoils a closed loop, spent only on troops, food and drink.
         public static float troopSpoilsGoldSpillFraction = 0.02f;
 
+        // The base share of the spoils a party's men gather -- off a battlefield, a raid or a sack -- that
+        // their leader skims into his own purse as gold before the rest settles into the stacks: a
+        // commander's cut. Multiplied by the leader's clan tier plus one, so a tier-0 or clanless leader
+        // takes this share once over and a tier-6 dynasty seven times it. Drawn out of the same purses the
+        // gather just filled, so it moves coin from the men's pool into their keeper's treasury rather than
+        // minting any. 0 leaves the men all they take.
+        public static float troopLeaderSpoilsCutFraction = 0.05f;
+
         // The war chest a man keeps back from the spill, per tier he holds: a tier 6 veteran keeps six
         // times what this sets, a tier 1 recruit keeps one. On top of what his stack needs for its own
         // upgrades, so a stack still saving for better kit never has it swept away.
@@ -271,6 +279,7 @@ namespace RBMConfig
             militiaWageModifier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "MilitiaWageModifier", "0.2"), CultureInfo.InvariantCulture);
             troopRaidSpoilsMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopRaidSpoilsMultiplier", "0.25"), CultureInfo.InvariantCulture);
             troopSpoilsGoldSpillFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsGoldSpillFraction", "0.02"), CultureInfo.InvariantCulture);
+            troopLeaderSpoilsCutFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLeaderSpoilsCutFraction", "0.05"), CultureInfo.InvariantCulture);
             troopSpoilsWarChestGoldPerTier = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsWarChestGoldPerTier", "25"), CultureInfo.InvariantCulture);
             troopLuxuryCooldownDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLuxuryCooldownDays", "20"), CultureInfo.InvariantCulture);
             troopLuxurySpendChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLuxurySpendChance", "0.02"), CultureInfo.InvariantCulture);
@@ -383,6 +392,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/MilitiaWageModifier"), militiaWageModifier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopRaidSpoilsMultiplier"), troopRaidSpoilsMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsGoldSpillFraction"), troopSpoilsGoldSpillFraction.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLeaderSpoilsCutFraction"), troopLeaderSpoilsCutFraction.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsWarChestGoldPerTier"), troopSpoilsWarChestGoldPerTier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLuxuryCooldownDays"), troopLuxuryCooldownDays.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLuxurySpendChance"), troopLuxurySpendChance.ToString(CultureInfo.InvariantCulture));

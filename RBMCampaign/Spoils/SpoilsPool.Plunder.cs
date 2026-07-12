@@ -77,9 +77,11 @@ namespace RBMCampaign
                 long divisor = (totalContribution > 0L) ? totalContribution : attackers.Parties.Count;
                 int share = MathF.Round(pot * ((float)weight / divisor));
                 int granted = GrantSpoilsWeightedByTier(raider.Party, share, "RAID");
+                int leaderCut = ApplyLeaderCut(raider.Party, granted);
                 if (raider.Party == PartyBase.MainParty && granted > 0)
                 {
                     AnnounceRaidSpoilsToPlayer(settlement, granted);
+                    AnnounceLeaderCutToPlayer(leaderCut);
                 }
             }
         }
@@ -151,9 +153,11 @@ namespace RBMCampaign
             }
 
             int granted = GrantSpoilsWeightedByTier(captor, MathF.Round(pot), "RAID");
+            int leaderCut = ApplyLeaderCut(captor, granted);
             if (captor == PartyBase.MainParty && granted > 0)
             {
                 AnnounceSackSpoilsToPlayer(settlement, granted);
+                AnnounceLeaderCutToPlayer(leaderCut);
             }
         }
 

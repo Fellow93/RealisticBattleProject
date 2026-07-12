@@ -700,6 +700,48 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopSpoilsGoldSpillFractionHint { get; } = Hint("{=RBM_CON_060}Most of a man's share of a stack's surplus spoils that can hand up to you as gold in a day, once his own upgrades are provisioned -- priced as this share of his battle kit, the way wages are, so a better-armed man hands up more. A daily cap, so a deep surplus drains slowly. Default 0.02.");
 
+        private float _troopLeaderSpoilsCutFraction;
+
+        [DataSourceProperty]
+        public float TroopLeaderSpoilsCutFraction
+        {
+            get
+            {
+                return _troopLeaderSpoilsCutFraction;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                if (snapped != _troopLeaderSpoilsCutFraction)
+                {
+                    _troopLeaderSpoilsCutFraction = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopLeaderSpoilsCutFraction");
+                    OnPropertyChanged("TroopLeaderSpoilsCutFractionValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopLeaderSpoilsCutFractionValue
+        {
+            get
+            {
+                return _troopLeaderSpoilsCutFraction.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopLeaderSpoilsCutFractiont
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_079}Leader's Cut").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopLeaderSpoilsCutFractionHint { get; } = Hint("{=RBM_CON_080}Base share of the spoils a party's men gather -- off a battlefield, a raid or a sack -- that their leader skims into his own purse as gold before the rest settles into the stacks. Multiplied by the leader's clan tier plus one, so a tier-0 or clanless leader takes this share once and a tier-6 house seven times it. Zero leaves the men all they take. Default 0.05.");
+
         private float _troopSpoilsWarChestGoldPerTier;
 
         [DataSourceProperty]
@@ -1457,6 +1499,7 @@ namespace RBMConfig
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
             SpoilsVerboseLoggingEnabled.SelectedIndex = RBMConfig.spoilsVerboseLoggingEnabled ? 1 : 0;
             _troopSpoilsGoldSpillFraction = MathF.Clamp(RBMConfig.troopSpoilsGoldSpillFraction, 0f, 1f);
+            _troopLeaderSpoilsCutFraction = MathF.Clamp(RBMConfig.troopLeaderSpoilsCutFraction, 0f, 1f);
             _troopSpoilsWarChestGoldPerTier = MathF.Clamp(RBMConfig.troopSpoilsWarChestGoldPerTier, 0f, 1000f);
             _troopLuxuryCooldownDays = MathF.Clamp(RBMConfig.troopLuxuryCooldownDays, 0f, 120f);
             _troopLuxurySpendChance = MathF.Clamp(RBMConfig.troopLuxurySpendChance, 0f, 1f);
@@ -1654,6 +1697,7 @@ namespace RBMConfig
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
             RBMConfig.spoilsVerboseLoggingEnabled = SpoilsVerboseLoggingEnabled.SelectedIndex == 1;
             RBMConfig.troopSpoilsGoldSpillFraction = _troopSpoilsGoldSpillFraction;
+            RBMConfig.troopLeaderSpoilsCutFraction = _troopLeaderSpoilsCutFraction;
             RBMConfig.troopSpoilsWarChestGoldPerTier = (int)MathF.Round(_troopSpoilsWarChestGoldPerTier);
             RBMConfig.troopLuxuryCooldownDays = (int)MathF.Round(_troopLuxuryCooldownDays);
             RBMConfig.troopLuxurySpendChance = _troopLuxurySpendChance;
@@ -1714,6 +1758,7 @@ namespace RBMConfig
             MilitiaWageModifier = 0.2f;
             TroopRaidSpoilsMultiplier = 0.25f;
             TroopSpoilsGoldSpillFraction = 0.02f;
+            TroopLeaderSpoilsCutFraction = 0.05f;
             TroopSpoilsWarChestGoldPerTier = 25f;
             TroopLuxuryCooldownDays = 20f;
             TroopLuxurySpendChance = 0.02f;

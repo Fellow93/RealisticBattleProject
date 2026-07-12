@@ -217,9 +217,10 @@ namespace RBMCampaign
                 SpoilsLog.Log("LOOT", victor.Party, SpoilsLog.Describe(victor.Party) + ": contribution " + victor.ContributionToBattle
                     + "/" + totalContribution + ", share " + share.ToString("0.000"));
                 int granted = GrantToParty(victor.Party, spoilsByTier, piecesByTier, share);
+                int leaderCut = ApplyLeaderCut(victor.Party, granted);
                 if (victor.Party == PartyBase.MainParty)
                 {
-                    AnnounceSpoilsToPlayer(granted);
+                    AnnounceSpoilsToPlayer(granted, leaderCut);
                 }
             }
         }
@@ -232,12 +233,28 @@ namespace RBMCampaign
         /// A victory can still grant nothing: a small party with its arms already full, or one whose
         /// men walked past everything the field had left. Saying so is more use than saying nothing.
         /// </remarks>
-        private static void AnnounceSpoilsToPlayer(int granted)
+        private static void AnnounceSpoilsToPlayer(int granted, int leaderCut)
         {
             TextObject message = new TextObject((granted > 0)
                 ? "{=RBM_SPOILS_009}Your men strip the fallen and recover {AMOUNT} in spoils."
                 : "{=RBM_SPOILS_010}Your men find nothing on the fallen they can use.");
             message.SetTextVariable("AMOUNT", granted);
+            InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+            AnnounceLeaderCutToPlayer(leaderCut);
+        }
+
+        /// <summary>
+        /// Notes the leader's cut to the player when there is one, so the gold that lands in his purse is
+        /// not a silent mystery next to the spoils message that just told him what his men recovered.
+        /// </summary>
+        private static void AnnounceLeaderCutToPlayer(int leaderCut)
+        {
+            if (leaderCut <= 0)
+            {
+                return;
+            }
+            TextObject message = new TextObject("{=RBM_SPOILS_016}You take a leader's cut of {AMOUNT} gold from the spoils.");
+            message.SetTextVariable("AMOUNT", leaderCut);
             InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
         }
 
