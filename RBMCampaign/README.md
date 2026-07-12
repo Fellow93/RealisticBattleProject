@@ -74,7 +74,6 @@ Everything sits in the in-game RBM config under the campaign section, or in the 
 | `TroopLootOverlookChancePerTier` | 0.5 | Chance a soldier walks past a piece of gear, per tier it lies beneath him. |
 | `TroopFallenSpoilsCaptureFraction` | 0.75 | Share of a beaten enemy's fallen-and-wounded purse the victors capture; the rest is lost in the rout. |
 | `TroopWageTierBase` | 50 | A troop's daily wage — this base value times its tier, replacing vanilla's wage table. 0 keeps the vanilla wage. |
-| `TroopWageSpoilsFraction` | 1.0 | Share of a stack's daily wage that returns to its own purse. |
 | `TroopRaidSpoilsMultiplier` | 0.25 | Plunder its soldiers pocket as spoils when they sack a settlement — a share of a raided village's wealth, or of a stormed town's prosperity. 0 turns plunder spoils off. |
 | `TroopSettlementFoodDays` | 20 | Days of rations a stack buys for itself when it reaches a market. |
 | `TroopFoodWageFraction` | 0.5 | Share of a day's wage a man will spend on a day's food before calling it extravagant. |

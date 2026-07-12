@@ -17,7 +17,6 @@ Master switch: `IsEnabled => troopUpgradeCostMultiplier > 0f` (`Spoils/SpoilsPoo
 | `troopLootPiecesPerMan` | `3` | loot carry capacity |
 | `troopLootOverlookChancePerTier` | `0.5f` | per-tier overlook probability |
 | `troopWageTierBase` | `50` | daily wage = base × tier for non-heroes (`0` = vanilla wage) |
-| `troopWageSpoilsFraction` | `1.0f` | daily wage deposited to purse |
 | `troopRaidSpoilsMultiplier` | `0.25f` | raid **and** siege plunder pot |
 | `troopFallenSpoilsCaptureFraction` | `0.75f` | share of a beaten enemy's purse captured |
 | `troopSettlementFoodDays` | `20` | days of rations bought at market (`0` disables food) |
@@ -203,10 +202,10 @@ Daily, per non-hero stack, on every party:
 
 ```
 wage    = wageModel.GetCharacterWage(character) * element.Number
-granted = Round(wage * troopWageSpoilsFraction)                 // default the stack's whole wage
+granted = wage                                                  // the stack's whole wage
 ```
 
-`GetCharacterWage` is itself overridden for non-heroes (`Wages/TierBasedWageModel.cs`): the daily wage is `troopWageTierBase × character.Tier`, replacing vanilla's wage table (`0` keeps vanilla). At the default fraction `1.0` a stack's whole wage lands in its purse — the party's gold is untouched, so this only reinterprets where the pay went. Spoils are a **closed loop**: nothing is handed back to gold.
+`GetCharacterWage` is itself overridden for non-heroes (`Wages/TierBasedWageModel.cs`): the daily wage is `troopWageTierBase × character.Tier`, replacing vanilla's wage table (`0` keeps vanilla). A stack's whole wage lands in its purse — the party's gold is untouched, so this only reinterprets where the pay went. Spoils are a **closed loop**: nothing is handed back to gold.
 
 ---
 

@@ -45,10 +45,6 @@ namespace RBMCampaign
 
         private static void DepositWageSpoils(PartyBase party, TroopRoster roster)
         {
-            if (RBMConfig.RBMConfig.troopWageSpoilsFraction <= 0f)
-            {
-                return;
-            }
             // A bandit party keeps no war-chest and pays no wage, so there is nothing to skim into
             // spoils. Bandit troops in a lord's party are another matter -- the lord pays their wage,
             // so that stack draws its spoils like any other.
@@ -68,10 +64,10 @@ namespace RBMCampaign
                 }
                 // The stack's wage, not one man's, so a small troop's half-point is not rounded away.
                 int wage = wageModel.GetCharacterWage(element.Character) * element.Number;
-                // The men skim their whole share of the day's wage into their purse, cap or no cap.
-                // Spoils are a closed loop now -- what lands here is spent on upgrades, food and drink,
-                // never handed back to the owner as gold.
-                int granted = MathF.Round(wage * RBMConfig.RBMConfig.troopWageSpoilsFraction);
+                // The men skim their whole day's wage into their purse, cap or no cap. Spoils are a
+                // closed loop now -- what lands here is spent on upgrades, food and drink, never handed
+                // back to the owner as gold.
+                int granted = wage;
                 if (granted <= 0)
                 {
                     continue;

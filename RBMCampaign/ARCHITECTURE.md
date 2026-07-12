@@ -65,7 +65,7 @@ a capture to one hero rather than splitting across a besieging army. Player gets
 
 ### 4. Wages (`SpoilsPool.OnDailyTickParty`)
 
-Each day, `troopWageSpoilsFraction` of every non-hero stack's wage is deposited into its purse.
+Each day, every non-hero stack's full wage is deposited into its purse.
 **The party's actual gold is untouched** — this only reinterprets where some of the wage
 notionally went (kit maintenance). Applies to every party in the world.
 
@@ -190,7 +190,6 @@ All under `/Config/RBMCampaign` in the config XML, wired into the in-game settin
 | `TroopLootPiecesPerMan` | 3 | Pieces of kit one man can carry off a field. |
 | `TroopLootOverlookChancePerTier` | 0.5 | Chance a troop overlooks kit one tier below him (compounds per tier). |
 | `TroopWageTierBase` | 50 | Daily wage = base × tier for non-heroes, replacing vanilla's wage table. 0 keeps vanilla. |
-| `TroopWageSpoilsFraction` | 1.0 | Share of daily wage deposited into spoils. |
 | `TroopRaidSpoilsMultiplier` | 0.25 | Plunder soldiers pocket sacking a settlement — of a village's `Hearth × RaidDamage`, or a stormed town's `Prosperity`. 0 disables plunder spoils. |
 | `TroopSpoilsWarChestGoldPerTier` | 25 | Per-man war chest in `GetSpoilsCap`, multiplied by `character.Tier` — the flush threshold above which upkeep spends surplus on drink/luxuries. Slider 0–1000. |
 | `TroopSettlementFoodDays` | 20 | Days of food a stack buys per trip. |

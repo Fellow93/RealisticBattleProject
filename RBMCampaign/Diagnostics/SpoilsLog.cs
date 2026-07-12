@@ -162,7 +162,6 @@ namespace RBMCampaign
                     Field("troopUpgradeSupplyRadius", RC.troopUpgradeSupplyRadius),
                     Field("troopLootPiecesPerMan", RC.troopLootPiecesPerMan),
                     Field("troopLootOverlookChancePerTier", RC.troopLootOverlookChancePerTier),
-                    Field("troopWageSpoilsFraction", RC.troopWageSpoilsFraction),
                     Field("troopWageTierBase", RC.troopWageTierBase),
                     Field("troopMaintenanceFraction", RC.troopMaintenanceFraction),
                     Field("troopSettlementFoodDays", RC.troopSettlementFoodDays),

@@ -87,7 +87,6 @@
 	<string id="RBM_CON_032" text="Troop Upgrade Cost" />
 	<string id="RBM_CON_033" text="Realistic Battle Mod" />
 	<string id="RBM_CON_035" text="Battle Spoils Loot" />
-	<string id="RBM_CON_036" text="Wage Kept as Spoils" />
 	<string id="RBM_CON_037" text="Kit Pieces per Man" />
 	<string id="RBM_CON_038" text="Prosperity per Gold" />
 	<string id="RBM_CON_039" text="Spoils Logging" />
@@ -106,7 +105,6 @@
 	<string id="RBM_CON_051" text="Multiplier on the worth of the kit your men salvage from a battlefield. Default 1.00." />
 	<string id="RBM_CON_052" text="How many pieces of kit a single soldier can carry off a field. Default 3." />
 	<string id="RBM_CON_053" text="Chance a man steps over a piece of kit one tier beneath him, leaving it for greener troops. Default 0.50." />
-	<string id="RBM_CON_054" text="Share of a man's daily wage that returns to you as spoils. Default 1.00." />
 	<string id="RBM_CON_055" text="Days of food a man buys when he passes through a settlement. 0 stops him buying any. Default 20." />
 	<string id="RBM_CON_056" text="Share of a day's wage a man spends to feed himself for a day. Default 0.50." />
 	<string id="RBM_CON_057" text="A day's wage a man drinks away for each day he sits idle in a settlement. Default 1.50." />

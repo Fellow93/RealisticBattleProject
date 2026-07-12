@@ -248,48 +248,6 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopLootOverlookChancePerTierHint { get; } = Hint("{=RBM_CON_053}Chance a man steps over a piece of kit one tier beneath him, leaving it for greener troops. Default 0.50.");
 
-        private float _troopWageSpoilsFraction;
-
-        [DataSourceProperty]
-        public float TroopWageSpoilsFraction
-        {
-            get
-            {
-                return _troopWageSpoilsFraction;
-            }
-            set
-            {
-                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
-                if (snapped != _troopWageSpoilsFraction)
-                {
-                    _troopWageSpoilsFraction = snapped;
-                    OnPropertyChangedWithValue(snapped, "TroopWageSpoilsFraction");
-                    OnPropertyChanged("TroopWageSpoilsFractionValue");
-                }
-            }
-        }
-
-        [DataSourceProperty]
-        public string TroopWageSpoilsFractionValue
-        {
-            get
-            {
-                return _troopWageSpoilsFraction.ToString("0.00");
-            }
-        }
-
-        [DataSourceProperty]
-        public string TroopWageSpoilsFractiont
-        {
-            get
-            {
-                return new TextObject("{=RBM_CON_036}Wage Kept as Spoils").ToString();
-            }
-        }
-
-        [DataSourceProperty]
-        public BasicTooltipViewModel TroopWageSpoilsFractionHint { get; } = Hint("{=RBM_CON_054}Share of a man's daily wage that returns to you as spoils. Default 1.00.");
-
         private float _troopWageTierBase;
 
         /// <summary>
@@ -1496,7 +1454,6 @@ namespace RBMConfig
             TroopUpgradeRequireSupplyTown.SelectedIndex = RBMConfig.troopUpgradeRequireSupplyTown ? 1 : 0;
             _troopLootPiecesPerMan = MathF.Clamp(RBMConfig.troopLootPiecesPerMan, 1f, 10f);
             _troopLootOverlookChancePerTier = MathF.Clamp(RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
-            _troopWageSpoilsFraction = MathF.Clamp(RBMConfig.troopWageSpoilsFraction, 0f, 1f);
             _troopWageTierBase = MathF.Clamp((float)RBMConfig.troopWageTierBase, 0f, 300f);
             _troopMaintenanceFraction = MathF.Clamp(RBMConfig.troopMaintenanceFraction, 0f, 0.05f);
             _troopSettlementFoodDays = MathF.Clamp(RBMConfig.troopSettlementFoodDays, 0f, 60f);
@@ -1694,7 +1651,6 @@ namespace RBMConfig
             RBMConfig.troopUpgradeRequireSupplyTown = TroopUpgradeRequireSupplyTown.SelectedIndex == 1;
             RBMConfig.troopLootPiecesPerMan = MathF.Round(_troopLootPiecesPerMan);
             RBMConfig.troopLootOverlookChancePerTier = _troopLootOverlookChancePerTier;
-            RBMConfig.troopWageSpoilsFraction = _troopWageSpoilsFraction;
             RBMConfig.troopWageTierBase = (int)MathF.Round(_troopWageTierBase);
             RBMConfig.troopMaintenanceFraction = _troopMaintenanceFraction;
             RBMConfig.troopSettlementFoodDays = (int)MathF.Round(_troopSettlementFoodDays);
@@ -1757,7 +1713,6 @@ namespace RBMConfig
             TroopUpgradeRequireSupplyTown.SelectedIndex = 1;
             TroopLootPiecesPerMan = 3f;
             TroopLootOverlookChancePerTier = 0.5f;
-            TroopWageSpoilsFraction = 1.0f;
             TroopWageTierBase = 50f;
             TroopSettlementFoodDays = 20f;
             TroopFoodWageFraction = 0.5f;
