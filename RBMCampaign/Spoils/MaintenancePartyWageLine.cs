@@ -33,15 +33,11 @@ namespace RBMCampaign
                 {
                     return;
                 }
+                // Two lines beside the wages: the day's maintenance and the spoils that met it. They net to
+                // the shortfall the party truly adds on top of its wage, and both show even when its purse
+                // covers the upkeep whole. A wage is a positive cost here, so maintenance adds (+1).
                 MaintenanceResult m = SpoilsPool.ProjectDailyMaintenance(mobileParty.Party);
-                if (m.Total <= 0)
-                {
-                    return;
-                }
-                // Only the leader-paid remainder is real gold on top of wages; the spoils-met share is shown
-                // in the line's text, not added to the total, so the tooltip's foot stays the coin the party
-                // truly lays out.
-                __result.Add(-m.Shortfall, SpoilsPool.BuildMaintenanceLineText(m.Total, m.Covered));
+                SpoilsPool.AddMaintenanceBreakdown(ref __result, m, 1f);
             }
         }
     }

@@ -34,27 +34,23 @@ namespace RBMCampaign
                 if (applyWithdrawals)
                 {
                     // The authoritative once-a-day pass: drain the purses and charge the remainder to the
-                    // clan through its daily gold change, so it lands in the Daily Gold Change message.
+                    // clan through its daily gold change, so it lands in the Daily Gold Change message. The
+                    // cost and its spoils credit net to the shortfall; descriptions are off here, so only
+                    // that net reaches the number.
                     MaintenanceResult charged = SpoilsPool.ChargeClanMaintenance(clan, apply: true);
-                    if (charged.Shortfall > 0)
-                    {
-                        __result.Add(-charged.Shortfall, SpoilsPool.BuildMaintenanceLineText(charged.Total, charged.Covered));
-                    }
+                    SpoilsPool.AddMaintenanceBreakdown(ref __result, charged, -1f);
                     return;
                 }
 
                 // Display only, and only the player reads a finance breakdown. Projected, never drained; the
-                // line shows whenever there is upkeep at all, so a stack whose spoils cover it in full still
-                // reads "0 to pay" rather than vanishing.
+                // maintenance cost and the spoils that met it both show, so a stack whose purse covers its
+                // upkeep in full still reads its maintenance rather than vanishing.
                 if (clan != Clan.PlayerClan)
                 {
                     return;
                 }
                 MaintenanceResult projected = SpoilsPool.ChargeClanMaintenance(clan, apply: false);
-                if (projected.Total > 0)
-                {
-                    __result.Add(-projected.Shortfall, SpoilsPool.BuildMaintenanceLineText(projected.Total, projected.Covered));
-                }
+                SpoilsPool.AddMaintenanceBreakdown(ref __result, projected, -1f);
             }
         }
     }

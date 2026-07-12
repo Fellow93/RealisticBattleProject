@@ -94,8 +94,9 @@ namespace RBMCampaign
             }
 
             PartyBase party = PartyBase.MainParty;
+            int stackSize = SpoilsPool.GetStackSize(party, character);
             properties.Add(new TooltipProperty(new TextObject("{=RBM_SPOILS_001}Spoils Stockpile").ToString(),
-                SpoilsPool.GetAvailableSpoils(party, character).ToString(), 0));
+                FormatStackAndPerMan(SpoilsPool.GetAvailableSpoils(party, character), stackSize), 0));
 
             // The soft cap this stack is measured against: the days of keep it will hold before its
             // upkeep spends the surplus on food and drink. A behavioural threshold, not a hard ceiling --
@@ -104,7 +105,7 @@ namespace RBMCampaign
             if (cap > 0)
             {
                 properties.Add(new TooltipProperty(new TextObject("{=RBM_SPOILS_018}Spoils Reserve").ToString(),
-                    cap.ToString(), 0));
+                    FormatStackAndPerMan(cap, stackSize), 0));
             }
 
             // A branching troop has an upgrade cost per branch, so one number could only ever describe
@@ -135,6 +136,25 @@ namespace RBMCampaign
 
             properties.Add(new TooltipProperty("", new TextObject("{=RBM_SPOILS_004}Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. The veterans pick first, and the further beneath a man a piece lies the likelier he is to step over it, so what they overlook falls to greener troops. What his men do not spend on their own upgrades they spend on food and drink in the settlements you stop in.").ToString(), 0, false, TooltipProperty.TooltipPropertyFlags.MultiLine));
             return properties;
+        }
+
+        /// <summary>
+        /// A whole-stack purse figure written as the sum with its per-man share in brackets, so the player
+        /// reads both what the stack holds together and what one man's share of it comes to. The sum stays
+        /// the authoritative number (it is what the system charges and caps against); the per-man share is
+        /// the sum split evenly across the men. A single-man stack needs no bracket -- the two are one.
+        /// </summary>
+        private static string FormatStackAndPerMan(int total, int stackSize)
+        {
+            if (stackSize <= 1)
+            {
+                return total.ToString();
+            }
+            int perMan = MathF.Round((float)total / stackSize);
+            return new TextObject("{=RBM_SPOILS_019}{TOTAL} ({PER} / man)")
+                .SetTextVariable("TOTAL", total)
+                .SetTextVariable("PER", perMan)
+                .ToString();
         }
 
         /// <summary>Bound to the view model's TroopID, which is the troop's CharacterObject.StringId.</summary>

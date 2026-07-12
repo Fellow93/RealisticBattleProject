@@ -173,16 +173,27 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The breakdown line both the clan finance tooltip and the party-wage tooltip draw: names the
-        /// cost as maintenance and says how much of it the men's own spoils met, so the gold figure
-        /// beside it reads as what the party is left to pay. Freshly built each call -- an ExplainedNumber
-        /// keeps the reference, so a shared instance would have its numbers overwritten by the next party.
+        /// Writes the day's maintenance into a finance/wage breakdown as two lines -- the whole cost, then
+        /// the share the men's own spoils met as an offsetting credit -- so the two net to just the coin the
+        /// party is left to pay while both stay on the page. Drawn this way rather than as a single net line
+        /// because an <see cref="ExplainedNumber"/> drops a zero-valued line: a stack whose spoils cover its
+        /// upkeep in full would otherwise vanish from the tooltip, hiding the maintenance the player wanted
+        /// to see. <paramref name="expenseSign"/> is -1 where the number counts expenses as negative (the
+        /// clan finance change) and +1 where it counts costs as positive (the party wage), so the same
+        /// tally reads correctly on either. Freshly built each call: an ExplainedNumber keeps the reference,
+        /// so a shared TextObject would have its number overwritten by the next party.
         /// </summary>
-        public static TextObject BuildMaintenanceLineText(int total, int covered)
+        public static void AddMaintenanceBreakdown(ref ExplainedNumber breakdown, MaintenanceResult maintenance, float expenseSign)
         {
-            return new TextObject("{=RBM_SPOILS_017}Troop maintenance ({COVERED} of {TOTAL} met by spoils)")
-                .SetTextVariable("COVERED", covered)
-                .SetTextVariable("TOTAL", total);
+            if (maintenance.Total <= 0)
+            {
+                return;
+            }
+            breakdown.Add(expenseSign * maintenance.Total, new TextObject("{=RBM_SPOILS_017}Troop maintenance"));
+            if (maintenance.Covered > 0)
+            {
+                breakdown.Add(-expenseSign * maintenance.Covered, new TextObject("{=RBM_SPOILS_020}Met by troop spoils"));
+            }
         }
 
         private static MaintenanceResult ComputeMaintenance(PartyBase party, bool apply)
