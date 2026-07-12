@@ -21,7 +21,11 @@ namespace RBMCampaign
         // The item flows receiverParty -> payerParty and the gold flows the other way, so a party BUYING
         // from a settlement is the case where the settlement is the receiverParty (it gives up the goods
         // and takes the coin).
-        private static void Postfix(PartyBase receiverParty, PartyBase payerParty, ItemRosterElement subject, int number)
+        //
+        // Runs BEFORE the sale so the price is read off the pre-trade supply. Apply removes the goods from
+        // the town's roster as it runs, and GetItemPrice climbs as supply falls, so sampling it afterward
+        // would price the whole lot at the depleted, dearest supply and over-credit the settlement.
+        private static void Prefix(PartyBase receiverParty, PartyBase payerParty, ItemRosterElement subject, int number)
         {
             if (number <= 0 || RBMConfig.RBMConfig.settlementProsperityPerGoldSpent <= 0f)
             {
@@ -56,8 +60,8 @@ namespace RBMCampaign
             }
 
             // The buyer pays the market's buy price, so isSelling is false. Priced off the pre-trade
-            // supply and multiplied out -- close enough to the gross the game charged for a prosperity
-            // nudge, without simulating the per-unit price creep of a large lot.
+            // supply (this is a Prefix) and multiplied out -- close enough to the gross the game charged
+            // for a prosperity nudge, without simulating the per-unit price creep of a large lot.
             int gross = number * town.GetItemPrice(subject.EquipmentElement, buyer, false);
             if (gross <= 0)
             {

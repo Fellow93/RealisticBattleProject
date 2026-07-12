@@ -43,11 +43,19 @@ namespace RBMCampaign
                 {
                     return;
                 }
+                // The spill runs on every party on the daily tick and pays its own spill-payee, not only the
+                // clan's war parties: a player caravan's guard stacks spill into the player's gold too. Walk
+                // every active party and count the ones whose spill would land in this clan, off the same
+                // payee rule the tick uses, so the line matches the gold that actually arrives.
                 int projected = 0;
-                foreach (WarPartyComponent warParty in clan.WarPartyComponents)
+                foreach (MobileParty mobileParty in MobileParty.All)
                 {
-                    MobileParty mobileParty = warParty.MobileParty;
-                    if (mobileParty != null && mobileParty.IsActive)
+                    if (mobileParty == null || !mobileParty.IsActive)
+                    {
+                        continue;
+                    }
+                    Hero payee = SpoilsPool.GetSpillPayee(mobileParty.Party);
+                    if (payee != null && payee.Clan == clan)
                     {
                         projected += SpoilsPool.ProjectDailySpill(mobileParty.Party);
                     }

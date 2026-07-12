@@ -77,6 +77,21 @@ namespace RBMCampaign
         /// 0 keeps spoils a closed loop, spent only on troops, food and drink.
         /// </para>
         /// </remarks>
+        /// <summary>
+        /// Who the surplus a party spills is paid to: its owner if one is alive, else the hero leading it.
+        /// The finance breakdown projects the spill off the same rule, so the line the player is shown and
+        /// the gold the tick actually mints can never name a different pocket. Null when no one can be paid.
+        /// </summary>
+        public static Hero GetSpillPayee(PartyBase party)
+        {
+            if (party == null)
+            {
+                return null;
+            }
+            Hero payee = (party.Owner != null && party.Owner.IsAlive) ? party.Owner : party.LeaderHero;
+            return (payee != null && payee.IsAlive) ? payee : null;
+        }
+
         public static void SpillSurplusToGold(PartyBase party)
         {
             float spillFraction = RBMConfig.RBMConfig.troopSpoilsGoldSpillFraction;
@@ -84,7 +99,7 @@ namespace RBMCampaign
             {
                 return;
             }
-            Hero payee = (party.Owner != null && party.Owner.IsAlive) ? party.Owner : party.LeaderHero;
+            Hero payee = GetSpillPayee(party);
             TroopRoster roster = party.MemberRoster;
             if (payee == null || !payee.IsAlive || roster == null)
             {

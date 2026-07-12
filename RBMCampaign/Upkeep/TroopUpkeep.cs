@@ -56,6 +56,9 @@ namespace RBMCampaign
             get { return (int)CampaignTime.Now.ToHours; }
         }
 
+        /// <summary>The most of a stack's over-cap surplus that carousing can spend in a single hour.</summary>
+        private const float MaxSurplusFunFractionPerHour = 0.25f;
+
         /// <summary>Men per food item per day: the rate the game's own consumption model eats at.</summary>
         private static int MenPerFoodPerDay
         {
@@ -183,7 +186,12 @@ namespace RBMCampaign
                     else
                     {
                         float overRatio = (float)purse / cap;
-                        spend += MathF.Round(surplus / 24f * funFraction * overRatio);
+                        int surplusBite = MathF.Round(surplus / 24f * funFraction * overRatio);
+                        // However many times over the cap the purse stands, no more than this share of the
+                        // surplus is blown in a single hour, so a stack sitting far over cap still drains
+                        // gradually rather than dumping its whole purse into prosperity the hour it arrives.
+                        surplusBite = MathF.Min(surplusBite, MathF.Round(surplus * MaxSurplusFunFractionPerHour));
+                        spend += surplusBite;
                     }
                 }
                 spend = MathF.Min(purse, spend);
@@ -362,8 +370,21 @@ namespace RBMCampaign
                 {
                     return;
                 }
-                // The base is negative, so a negative factor shrinks how much is eaten.
+                // The base is negative, so a negative factor shrinks how much is eaten. The unfed fraction
+                // is measured over the member roster only, but the base also feeds the party's prisoners
+                // (NumberOfPrisoners/2, see DefaultMobilePartyFoodConsumptionModel). Scaling the whole base
+                // by the members' provisioning would stop feeding the prisoners too, so their portion is
+                // added back at the share the factor just removed from it.
                 __result.AddFactor(unfed - 1f, _ownRations);
+                int prisonerFood = (party?.Party != null) ? party.Party.NumberOfPrisoners / 2 : 0;
+                if (prisonerFood > 0)
+                {
+                    // Prisoners eat regardless of how the soldiers are provisioned. AddFactor multiplied the
+                    // base -- prisoners included -- by unfed, so restore prisonerBase * (1 - unfed), the part
+                    // of their ration the members' factor wrongly cancelled. Negative: it is consumption.
+                    float prisonerBase = -(float)prisonerFood / MenPerFoodPerDay;
+                    __result.Add(prisonerBase * (1f - unfed), _ownRations);
+                }
             }
         }
     }
