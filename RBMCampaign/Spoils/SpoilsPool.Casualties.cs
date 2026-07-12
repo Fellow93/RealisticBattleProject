@@ -211,23 +211,38 @@ namespace RBMCampaign
                 int partyShare = (int)((long)amount * weight / divisor);
                 if (partyShare > 0)
                 {
-                    GrantSpoilsWeightedByTier(victor.Party, partyShare);
+                    int took = GrantSpoilsWeightedByTier(victor.Party, partyShare, "CAPTURE");
+                    LogCapturedToParty(victor.Party, took);
                     distributed += partyShare;
                 }
             }
             int remainder = amount - distributed;
             if (remainder > 0 && topIndex >= 0)
             {
-                GrantSpoilsWeightedByTier(winner.Parties[topIndex].Party, remainder);
+                int took = GrantSpoilsWeightedByTier(winner.Parties[topIndex].Party, remainder, "CAPTURE");
+                LogCapturedToParty(winner.Parties[topIndex].Party, took);
+            }
+        }
+
+        /// <summary>The summary line for a party's cut of captured enemy spoils, split by tier weight.</summary>
+        private static void LogCapturedToParty(PartyBase party, int took)
+        {
+            if (SpoilsLog.IsEnabled && took > 0)
+            {
+                SpoilsLog.Log("CAPTURE", party, SpoilsLog.Describe(party) + " took " + took + " in fallen enemy spoils, split by tier weight");
             }
         }
 
         /// <summary>
         /// Hands a lump of spoils to a party's stacks by weight -- head count times troop tier -- so a
         /// veteran stack takes a larger cut than a green one of the same size. Rounding leftovers fall to
-        /// the heaviest-weighted stack so none of the lump is lost.
+        /// the heaviest-weighted stack so none of the lump is lost. Verbose per-stack lines log under
+        /// <paramref name="logCategory"/>; the caller writes any summary, since the reason a lump is split
+        /// differs (enemy spoils captured off the field vs. a wiped comrade stack's purse recovered).
         /// </summary>
-        private static int GrantSpoilsWeightedByTier(PartyBase party, int amount)
+        /// <returns>How much was actually distributed -- the whole of <paramref name="amount"/> unless the
+        /// party has no non-hero stacks left to take it, in which case nothing is granted.</returns>
+        private static int GrantSpoilsWeightedByTier(PartyBase party, int amount, string logCategory)
         {
             TroopRoster roster = party?.MemberRoster;
             if (roster == null || amount <= 0)
@@ -275,7 +290,7 @@ namespace RBMCampaign
                 if (SpoilsLog.Verbose)
                 {
                     int after = GetSpoils(party, element.Character);
-                    SpoilsLog.LogVerbose("CAPTURE", party, "  " + SpoilsLog.Describe(element.Character) + " x" + element.Number
+                    SpoilsLog.LogVerbose(logCategory, party, "  " + SpoilsLog.Describe(element.Character) + " x" + element.Number
                         + " (weight " + weight + "): +" + share + " (pool " + (after - share) + " -> " + after + ")");
                 }
             }
@@ -284,10 +299,6 @@ namespace RBMCampaign
             {
                 AddSpoils(party, roster.GetElementCopyAtIndex(topIndex).Character, remainder);
                 distributed += remainder;
-            }
-            if (SpoilsLog.IsEnabled && distributed > 0)
-            {
-                SpoilsLog.Log("CAPTURE", party, SpoilsLog.Describe(party) + " took " + distributed + " in fallen enemy spoils, split by tier weight");
             }
             return distributed;
         }
@@ -363,9 +374,10 @@ namespace RBMCampaign
 
         /// <summary>
         /// A wiped stack's purse, minus what a battlefield swallows, handed to the surviving stacks by
-        /// head count so every man left standing takes an even cut. With no survivors to take it -- the
-        /// whole party fell -- there is no one to carry it and all of it is lost, which the party's own
-        /// destruction would have pruned anyway.
+        /// tier weight -- head count times troop tier -- the same split the fallen enemy's captured spoils
+        /// take, so a veteran comrade inherits a larger cut than a green one of the same size. With no
+        /// survivors to take it -- the whole party fell -- there is no one to carry it and all of it is
+        /// lost, which the party's own destruction would have pruned anyway.
         /// </summary>
         private static void DistributeFallenPurse(PartyBase party, CharacterObject fallen, int purse)
         {
@@ -373,57 +385,21 @@ namespace RBMCampaign
             AddSpoils(party, fallen, -purse);
 
             int recovered = MathF.Round(purse * FallenPurseRecoveryFraction);
-            List<TroopRosterElement> heirs = new List<TroopRosterElement>();
-            int totalMen = 0;
-            if (recovered > 0)
-            {
-                TroopRoster roster = party.MemberRoster;
-                for (int i = 0; i < roster.Count; i++)
-                {
-                    TroopRosterElement element = roster.GetElementCopyAtIndex(i);
-                    if (!element.Character.IsHero && element.Number > 0)
-                    {
-                        heirs.Add(element);
-                        totalMen += element.Number;
-                    }
-                }
-            }
+            int distributed = (recovered > 0) ? GrantSpoilsWeightedByTier(party, recovered, "CASUALTY") : 0;
 
-            if (totalMen <= 0)
+            if (SpoilsLog.IsEnabled)
             {
-                if (SpoilsLog.IsEnabled)
+                if (distributed > 0)
+                {
+                    SpoilsLog.Log("CASUALTY", party, "the whole stack of " + SpoilsLog.Describe(fallen) + " fell in "
+                        + SpoilsLog.Describe(party) + ": purse " + purse + ", comrades split " + distributed
+                        + " by tier weight, " + (purse - distributed) + " lost");
+                }
+                else
                 {
                     SpoilsLog.Log("CASUALTY", party, "the whole stack of " + SpoilsLog.Describe(fallen) + " fell in "
                         + SpoilsLog.Describe(party) + " with no comrades to take its purse; all " + purse + " lost");
                 }
-                return;
-            }
-
-            // Floor each stack's cut, then hand the rounding remainder to the largest so the whole of the
-            // recovered sum reaches the men and only the intended share is lost.
-            int distributed = 0;
-            int largest = 0;
-            for (int i = 0; i < heirs.Count; i++)
-            {
-                int share = (int)((long)recovered * heirs[i].Number / totalMen);
-                AddSpoils(party, heirs[i].Character, share);
-                distributed += share;
-                if (heirs[i].Number > heirs[largest].Number)
-                {
-                    largest = i;
-                }
-            }
-            int remainder = recovered - distributed;
-            if (remainder > 0)
-            {
-                AddSpoils(party, heirs[largest].Character, remainder);
-            }
-
-            if (SpoilsLog.IsEnabled)
-            {
-                SpoilsLog.Log("CASUALTY", party, "the whole stack of " + SpoilsLog.Describe(fallen) + " fell in "
-                    + SpoilsLog.Describe(party) + ": purse " + purse + ", comrades split " + recovered
-                    + " among " + totalMen + " men, " + (purse - recovered) + " lost");
             }
         }
     }

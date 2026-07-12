@@ -2,7 +2,6 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
@@ -12,8 +11,9 @@ namespace RBMCampaign
 {
     /// <summary>
     /// Plunder from settlements: a sacked village pays its raiders in coin and plate, and a town
-    /// taken by storm is sacked outright. Unlike battlefield salvage, plunder is shared by the head
-    /// rather than fought over piece by piece, so every man of a raiding party takes an even cut.
+    /// taken by storm is sacked outright. Unlike battlefield salvage, which is fought over piece by
+    /// piece, plunder is a lump the party splits by tier weight -- the same split captured spoils
+    /// take -- so a veteran takes a larger cut than a green recruit of the same stack size.
     /// </summary>
     public static partial class SpoilsPool
     {
@@ -27,8 +27,8 @@ namespace RBMCampaign
         /// The pot is the share of the village's hearth the raid actually stripped
         /// (<see cref="RaidEventComponent.RaidDamage"/> is that share, 0 to 1), scaled by
         /// troopRaidSpoilsMultiplier. It is split among the raiding parties by their contribution, the
-        /// way battlefield salvage is, and then evenly among each party's men, since plunder is shared
-        /// by the head and not fought over piece by piece the way kit off a field is.
+        /// way battlefield salvage is, and then among each party's men by tier weight, the same split
+        /// captured enemy spoils take.
         /// </remarks>
         public static void OnRaidCompleted(BattleSideEnum winnerSide, RaidEventComponent raidEvent)
         {
@@ -76,63 +76,12 @@ namespace RBMCampaign
                 long weight = (totalContribution > 0L) ? MathF.Max(0, raider.ContributionToBattle) : 1L;
                 long divisor = (totalContribution > 0L) ? totalContribution : attackers.Parties.Count;
                 int share = MathF.Round(pot * ((float)weight / divisor));
-                int granted = GrantFlatSpoilsToParty(raider.Party, share);
+                int granted = GrantSpoilsWeightedByTier(raider.Party, share, "RAID");
                 if (raider.Party == PartyBase.MainParty && granted > 0)
                 {
                     AnnounceRaidSpoilsToPlayer(settlement, granted);
                 }
             }
-        }
-
-        /// <summary>
-        /// Splits a lump of spoils across a party's stacks by head count, so plunder falls to every man
-        /// alike rather than to whoever happened to be highest tier. Heroes take no share. Returns what
-        /// was actually handed out, which rounding can leave a hair under the pot.
-        /// </summary>
-        private static int GrantFlatSpoilsToParty(PartyBase party, int amount)
-        {
-            TroopRoster roster = party?.MemberRoster;
-            if (roster == null || amount <= 0)
-            {
-                return 0;
-            }
-            int totalMen = 0;
-            for (int i = 0; i < roster.Count; i++)
-            {
-                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
-                if (!element.Character.IsHero)
-                {
-                    totalMen += element.Number;
-                }
-            }
-            if (totalMen <= 0)
-            {
-                return 0;
-            }
-
-            int granted = 0;
-            for (int i = 0; i < roster.Count; i++)
-            {
-                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
-                if (element.Character.IsHero)
-                {
-                    continue;
-                }
-                int points = (int)((long)amount * element.Number / totalMen);
-                if (points <= 0)
-                {
-                    continue;
-                }
-                if (SpoilsLog.Verbose && party == PartyBase.MainParty)
-                {
-                    int before = GetSpoils(party, element.Character);
-                    SpoilsLog.LogVerbose("RAID", party, "  " + SpoilsLog.Describe(element.Character) + " x" + element.Number
-                        + ": +" + points + " (pool " + before + " -> " + (before + points) + ")");
-                }
-                AddSpoils(party, element.Character, points);
-                granted += points;
-            }
-            return granted;
         }
 
         private static void AnnounceRaidSpoilsToPlayer(Settlement settlement, int granted)
@@ -185,7 +134,7 @@ namespace RBMCampaign
                     + (oldOwner != null ? " from " + (oldOwner.Name != null ? oldOwner.Name.ToString() : oldOwner.StringId) : ""));
             }
 
-            int granted = GrantFlatSpoilsToParty(captor, MathF.Round(pot));
+            int granted = GrantSpoilsWeightedByTier(captor, MathF.Round(pot), "RAID");
             if (captor == PartyBase.MainParty && granted > 0)
             {
                 AnnounceSackSpoilsToPlayer(settlement, granted);
