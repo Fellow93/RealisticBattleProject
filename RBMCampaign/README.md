@@ -30,7 +30,7 @@ How that loot gets divided is the interesting part. **Veterans pick first**, but
 
 **Drink.** Every hour your party idles in a settlement, the men spend on taverns, dice and worse — at the default, more than they earn in a day. **A garrison parked in a town will drink its way out of ever affording better armor.** They never go into debt; an empty purse spends nothing.
 
-And whatever they spend in a settlement stays there: food and drink money raises the town's Prosperity or the village's Hearth.
+And whatever is spent in a settlement stays there: food and drink money raises the town's Prosperity or the village's Hearth. So does ordinary trade — every purchase made at a market, yours or any other party's, a caravan's or a lord's, feeds the settlement it was bought from at the same rate. A busy market grows the place that hosts it.
 
 **Surplus handed up as gold.** A stack keeps only what it can still put to use — enough to finish its own upgrades, plus a war chest that grows with the men's tier (a veteran keeps a deeper purse than a recruit) — and hands a share of the rest up to you as gold each day. A top-tier stack has nothing left to buy, so nearly everything it loots and earns comes straight back to your treasury: an elite army you've stopped upgrading becomes a passive income instead of a pile of stranded loot. How much of the surplus is swept up is a dial — at the default it all comes up at once, lower and it drains down to the cap over several days, at zero spoils stay a closed loop spent only on troops, food and drink.
 
@@ -55,7 +55,7 @@ Everything sits in the in-game RBM config under the campaign section, or in the 
 | `TroopSettlementFoodDays` | 20 | Days of rations a stack buys for itself when it reaches a market. |
 | `TroopFoodWageFraction` | 0.5 | Share of a day's wage a man will spend on a day's food before calling it extravagant. |
 | `TroopSettlementFunWageFraction` | 1.5 | Drink and dice, as a multiple of the daily wage, per day idled in a settlement. |
-| `SettlementProsperityPerGoldSpent` | 0.02 | Prosperity (or Hearth) a settlement gains per gold your men spend there. |
+| `SettlementProsperityPerGoldSpent` | 0.02 | Prosperity (or Hearth) a settlement gains per gold spent in it, from any source — your men's food and drink, and every party's market purchases alike. |
 | `TroopSpoilsGoldSpillFraction` | 0.02 | Most of one man's share of a stack's surplus spoils — what it holds over what its upgrades could use — that can hand up to you in a day, priced as this share of his battle kit the way a wage is, so a better-armed man hands up more. A daily cap, so a deep surplus drains slowly; 0 keeps spoils a closed loop. |
 | `TroopSpoilsWarChestGoldPerTier` | 25 | Gold a man keeps back from the spill, per tier he holds (a tier 6 keeps 6× this). On top of what his stack needs for its own upgrades. |
 | `SpoilsLoggingEnabled` | 1 | Writes what the system is doing to the log, for debugging. |

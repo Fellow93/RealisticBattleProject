@@ -210,7 +210,7 @@ namespace RBMCampaign
         }
 
         /// <summary>Coin spent in a settlement stays there. A point of spoils is a gold piece.</summary>
-        private static void CreditSettlement(Settlement settlement, int spoilsSpent)
+        internal static void CreditSettlement(Settlement settlement, int spoilsSpent)
         {
             float gain = spoilsSpent * RBMConfig.RBMConfig.settlementProsperityPerGoldSpent;
             if (gain <= 0f)

@@ -498,7 +498,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel SettlementProsperityPerGoldSpentHint { get; } = Hint("{=RBM_CON_058}Prosperity a settlement gains for every gold your men spend in it. Default 0.02.");
+        public BasicTooltipViewModel SettlementProsperityPerGoldSpentHint { get; } = Hint("{=RBM_CON_058}Prosperity, or a village's Hearth, a settlement gains per gold spent in it, from any source: your men carousing and any party buying at its market alike. Default 0.02.");
 
         private float _troopRaidSpoilsMultiplier;
 

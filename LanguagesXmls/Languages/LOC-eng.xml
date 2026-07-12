@@ -111,7 +111,7 @@
 	<string id="RBM_CON_055" text="Days of food a man buys when he passes through a settlement. 0 stops him buying any. Default 20." />
 	<string id="RBM_CON_056" text="Share of a day's wage a man spends to feed himself for a day. Default 0.50." />
 	<string id="RBM_CON_057" text="A day's wage a man drinks away for each day he sits idle in a settlement. Default 1.50." />
-	<string id="RBM_CON_058" text="Prosperity a settlement gains for every gold your men spend in it. Default 0.02." />
+	<string id="RBM_CON_058" text="Prosperity, or a village's Hearth, a settlement gains per gold spent in it, from any source: your men carousing and any party buying at its market alike. Default 0.02." />
 	<string id="RBM_CON_059" text="Share of a raid's plunder its soldiers keep for themselves as spoils. Default 0.25." />
 	<string id="RBM_CON_060" text="Share of a stack's surplus spoils handed up to you as gold once its own men are provisioned. Default 0.02." />
 	<string id="RBM_CON_061" text="Gold a man holds back from the surplus he hands up, scaled by his tier. Default 25." />
