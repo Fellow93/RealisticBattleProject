@@ -279,6 +279,9 @@
     <Compile Include="Spoils\SpoilsPool.Casualties.cs" />
     <Compile Include="Spoils\SpoilsPool.Plunder.cs" />
     <Compile Include="Spoils\SpoilsPool.Wages.cs" />
+    <Compile Include="Spoils\SpoilsPool.Maintenance.cs" />
+    <Compile Include="Spoils\MaintenanceFinanceLine.cs" />
+    <Compile Include="Spoils\MaintenancePartyWageLine.cs" />
     <Compile Include="Spoils\SpoilsPool.Cap.cs" />
     <Compile Include="Spoils\SpoilsPool.LeaderCut.cs" />
     <Compile Include="Spoils\SpoilsPool.Transfers.cs" />

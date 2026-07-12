@@ -37,6 +37,10 @@ namespace RBMCampaign
             }
 
             DepositWageSpoils(party, roster);
+
+            // After the day's wage has filled the purse, the day's upkeep draws it back down: the pay
+            // meets the maintenance before the leader is asked to cover any shortfall out of his gold.
+            ChargeMaintenance(party);
         }
 
         private static void DepositWageSpoils(PartyBase party, TroopRoster roster)

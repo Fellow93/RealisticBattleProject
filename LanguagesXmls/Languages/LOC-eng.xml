@@ -130,6 +130,8 @@
 	<string id="RBM_CON_078" text="Share of their gear-based wage a settlement's militia cost the place that keeps them, drawn from Prosperity or Hearth. Zero makes militia free to garrison. Default 0.20." />
 		<string id="RBM_CON_079" text="Leader's Cut" />
 		<string id="RBM_CON_080" text="Base share of the spoils a party's men gather -- off a battlefield, a raid or a sack -- that their leader skims into his own purse as gold before the rest settles into the stacks. Multiplied by the leader's clan tier plus one, so a tier-0 or clanless leader takes this share once and a tier-6 house seven times it. Zero leaves the men all they take. Default 0.05." />
+		<string id="RBM_CON_081" text="Daily Maintenance" />
+		<string id="RBM_CON_082" text="Daily upkeep per soldier as a share of his whole kit's worth -- gear, horse and harness. Paid first from the men's own spoils; any shortfall falls to the party leader's gold. Zero stops maintenance. Default 0.005." />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_005" text="Salvaged into spoils: {AMOUNT}" />
@@ -144,6 +146,7 @@
 	<string id="RBM_SPOILS_012" text="A Man's Kit Is Worth" />
 	<string id="RBM_SPOILS_015" text="No friendly town nearby to supply this upgrade." />
 		<string id="RBM_SPOILS_016" text="You take a leader's cut of {AMOUNT} gold from the spoils." />
+		<string id="RBM_SPOILS_017" text="Troop maintenance ({COVERED} of {TOTAL} met by spoils)" />
 	<string id="RBM_SPOILS_004" text="Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. The veterans pick first, and the further beneath a man a piece lies the likelier he is to step over it, so what they overlook falls to greener troops. What his men do not spend on their own upgrades they spend on food and drink in the settlements you stop in." />
 	<string id="RBM_CON_016" text="RBM Combat" />
 	<string id="RBM_CON_017" text="Module Status" />

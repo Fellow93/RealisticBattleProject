@@ -59,6 +59,12 @@ namespace RBMConfig
         // per-tier wage the game hands out. A base of zero leaves the vanilla wage untouched.
         public static int troopWageTierBase = 50;
 
+        // The daily cost of keeping a soldier in the field, as a share of his whole kit's worth -- his
+        // gear, his horse and its armour alike. A lancer in full harness costs more to maintain than a
+        // spearman, in proportion to what he carries. Paid first out of the stack's own spoils; whatever
+        // the purse cannot cover falls to the party leader, out of his gold. Zero stops maintenance.
+        public static float troopMaintenanceFraction = 0.005f;
+
         // How long a stack's men stay fed on one visit to a settlement. They buy exactly the food they
         // will eat over that span at the game's own rate of one item per twenty men per day, so at 20
         // days each man carries off one item. Zero stops troops buying food.
@@ -263,6 +269,7 @@ namespace RBMConfig
             troopLootOverlookChancePerTier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLootOverlookChancePerTier", "0.5"), CultureInfo.InvariantCulture);
             troopWageSpoilsFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopWageSpoilsFraction", "1.0"), CultureInfo.InvariantCulture);
             troopWageTierBase = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopWageTierBase", "50"), CultureInfo.InvariantCulture);
+            troopMaintenanceFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopMaintenanceFraction", "0.005"), CultureInfo.InvariantCulture);
             troopSettlementFoodDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSettlementFoodDays", "20"), CultureInfo.InvariantCulture);
             troopFoodWageFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopFoodWageFraction", "0.5"), CultureInfo.InvariantCulture);
             troopSettlementFunWageFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSettlementFunWageFraction", "1.5"), CultureInfo.InvariantCulture);
@@ -375,6 +382,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLootOverlookChancePerTier"), troopLootOverlookChancePerTier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopWageSpoilsFraction"), troopWageSpoilsFraction.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopWageTierBase"), troopWageTierBase.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopMaintenanceFraction"), troopMaintenanceFraction.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSettlementFoodDays"), troopSettlementFoodDays.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopFoodWageFraction"), troopFoodWageFraction.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSettlementFunWageFraction"), troopSettlementFunWageFraction.ToString(CultureInfo.InvariantCulture));

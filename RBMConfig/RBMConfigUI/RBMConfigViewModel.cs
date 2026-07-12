@@ -336,6 +336,52 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopWageTierBaseHint { get; } = Hint("{=RBM_CON_068}Daily wage is this base value multiplied by the troop's tier, replacing the vanilla wage. Zero keeps vanilla wages. Default 50.");
 
+        private float _troopMaintenanceFraction;
+
+        /// <summary>
+        /// A small share of a troop's whole kit worth (gear, horse and harness) spent per day on upkeep.
+        /// Snapped to thousandths so the 0.005 default and its neighbours are reachable on the slider.
+        /// </summary>
+        [DataSourceProperty]
+        public float TroopMaintenanceFraction
+        {
+            get
+            {
+                return _troopMaintenanceFraction;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 3), 0f, 0.05f);
+                if (snapped != _troopMaintenanceFraction)
+                {
+                    _troopMaintenanceFraction = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopMaintenanceFraction");
+                    OnPropertyChanged("TroopMaintenanceFractionValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopMaintenanceFractionValue
+        {
+            get
+            {
+                return _troopMaintenanceFraction.ToString("0.000");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopMaintenanceFractiont
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_081}Daily Maintenance").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopMaintenanceFractionHint { get; } = Hint("{=RBM_CON_082}Daily upkeep per soldier as a share of his whole kit's worth -- gear, horse and harness. Paid first from the men's own spoils; any shortfall falls to the party leader's gold. Zero stops maintenance. Default 0.005.");
+
         private float _troopSettlementFoodDays;
 
         /// <summary>
@@ -1452,6 +1498,7 @@ namespace RBMConfig
             _troopLootOverlookChancePerTier = MathF.Clamp(RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
             _troopWageSpoilsFraction = MathF.Clamp(RBMConfig.troopWageSpoilsFraction, 0f, 1f);
             _troopWageTierBase = MathF.Clamp((float)RBMConfig.troopWageTierBase, 0f, 300f);
+            _troopMaintenanceFraction = MathF.Clamp(RBMConfig.troopMaintenanceFraction, 0f, 0.05f);
             _troopSettlementFoodDays = MathF.Clamp(RBMConfig.troopSettlementFoodDays, 0f, 60f);
             _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 10f);
             _troopSettlementFunWageFraction = MathF.Clamp(RBMConfig.troopSettlementFunWageFraction, 0f, 10f);
@@ -1649,6 +1696,7 @@ namespace RBMConfig
             RBMConfig.troopLootOverlookChancePerTier = _troopLootOverlookChancePerTier;
             RBMConfig.troopWageSpoilsFraction = _troopWageSpoilsFraction;
             RBMConfig.troopWageTierBase = (int)MathF.Round(_troopWageTierBase);
+            RBMConfig.troopMaintenanceFraction = _troopMaintenanceFraction;
             RBMConfig.troopSettlementFoodDays = (int)MathF.Round(_troopSettlementFoodDays);
             RBMConfig.troopFoodWageFraction = _troopFoodWageFraction;
             RBMConfig.troopSettlementFunWageFraction = _troopSettlementFunWageFraction;
