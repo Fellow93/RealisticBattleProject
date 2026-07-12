@@ -100,6 +100,21 @@ namespace RBMCampaign
             }
         }
 
+        // SupplyTown gate (player side): refuse the staged upgrade command when no friendly town is in
+        // reach of the main party. Runs before TrackStagedUpgrade (Priority.First) so no spoils are
+        // reserved for an upgrade that will not happen. Delete this class to remove the player-side gate;
+        // the tooltip note in RBMCampaignPatches.NoteSupplyTownInUpgradeHint tells the player why.
+        [HarmonyPatch(typeof(PartyScreenLogic))]
+        [HarmonyPatch("UpgradeTroop")]
+        private class GateUpgradeOnSupplyTown
+        {
+            [HarmonyPriority(Priority.First)]
+            private static bool Prefix()
+            {
+                return UpgradeSupply.CanUpgradeNear(MobileParty.MainParty);
+            }
+        }
+
         [HarmonyPatch(typeof(PartyScreenLogic))]
         [HarmonyPatch("Reset")]
         private class ClearOnReset

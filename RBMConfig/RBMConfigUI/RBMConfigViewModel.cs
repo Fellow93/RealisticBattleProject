@@ -69,6 +69,10 @@ namespace RBMConfig
         public TextViewModel SpoilsVerboseLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> SpoilsVerboseLoggingEnabled { get; }
 
+        // SupplyTown gate: on/off toggle for gating upgrades on a nearby friendly town.
+        public TextViewModel TroopUpgradeRequireSupplyTownText { get; }
+        public SelectorVM<SelectorItemVM> TroopUpgradeRequireSupplyTown { get; }
+
         private float _troopUpgradeCostMultiplier;
 
         [DataSourceProperty]
@@ -557,6 +561,58 @@ namespace RBMConfig
             get
             {
                 return new TextObject("{=RBM_CON_049}Verbose Logging").ToString();
+            }
+        }
+
+        // SupplyTown gate: radius slider (whole map units) + the toggle's row label.
+        private float _troopUpgradeSupplyRadius;
+
+        [DataSourceProperty]
+        public float TroopUpgradeSupplyRadius
+        {
+            get
+            {
+                return _troopUpgradeSupplyRadius;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value), 0f, 200f);
+                if (snapped != _troopUpgradeSupplyRadius)
+                {
+                    _troopUpgradeSupplyRadius = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopUpgradeSupplyRadius");
+                    OnPropertyChanged("TroopUpgradeSupplyRadiusValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopUpgradeSupplyRadiusValue
+        {
+            get
+            {
+                return _troopUpgradeSupplyRadius.ToString("0");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopUpgradeSupplyRadiust
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_071}Upgrade Supply Range").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopUpgradeSupplyRadiusHint { get; } = Hint("{=RBM_CON_072}How near, in map units, a friendly or neutral town must be for a party to upgrade its troops. Needs 'Upgrade Near Town' on. Default 30.");
+
+        [DataSourceProperty]
+        public string TroopUpgradeRequireSupplyTownt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_070}Upgrade Near Town").ToString();
             }
         }
 
@@ -1217,6 +1273,11 @@ namespace RBMConfig
             SpoilsVerboseLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_049}Verbose Logging"));
             SpoilsVerboseLoggingEnabled = new SelectorVM<SelectorItemVM>(spoilsVerboseLoggingOptions, 0, null);
 
+            // SupplyTown gate: Enabled is the default, so its option carries the "(Default)" tag.
+            List<string> troopUpgradeRequireSupplyTownOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            TroopUpgradeRequireSupplyTownText = new TextViewModel(new TextObject("{=RBM_CON_070}Upgrade Near Town"));
+            TroopUpgradeRequireSupplyTown = new SelectorVM<SelectorItemVM>(troopUpgradeRequireSupplyTownOptions, 0, null);
+
             if (RBMConfig.rbmCombatEnabled)
             {
                 RBMCombatEnabled.SelectedIndex = 1;
@@ -1255,6 +1316,8 @@ namespace RBMConfig
 
             _troopUpgradeCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeCostMultiplier, 0f, 2f);
             _troopUpgradeSpoilsLootMultiplier = MathF.Clamp(RBMConfig.troopUpgradeSpoilsLootMultiplier, 0f, 5f);
+            _troopUpgradeSupplyRadius = MathF.Clamp(RBMConfig.troopUpgradeSupplyRadius, 0f, 200f);
+            TroopUpgradeRequireSupplyTown.SelectedIndex = RBMConfig.troopUpgradeRequireSupplyTown ? 1 : 0;
             _troopLootPiecesPerMan = MathF.Clamp(RBMConfig.troopLootPiecesPerMan, 1f, 10f);
             _troopLootOverlookChancePerTier = MathF.Clamp(RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
             _troopWageSpoilsFraction = MathF.Clamp(RBMConfig.troopWageSpoilsFraction, 0f, 1f);
@@ -1447,6 +1510,8 @@ namespace RBMConfig
 
             RBMConfig.troopUpgradeCostMultiplier = _troopUpgradeCostMultiplier;
             RBMConfig.troopUpgradeSpoilsLootMultiplier = _troopUpgradeSpoilsLootMultiplier;
+            RBMConfig.troopUpgradeSupplyRadius = _troopUpgradeSupplyRadius;
+            RBMConfig.troopUpgradeRequireSupplyTown = TroopUpgradeRequireSupplyTown.SelectedIndex == 1;
             RBMConfig.troopLootPiecesPerMan = MathF.Round(_troopLootPiecesPerMan);
             RBMConfig.troopLootOverlookChancePerTier = _troopLootOverlookChancePerTier;
             RBMConfig.troopWageSpoilsFraction = _troopWageSpoilsFraction;
@@ -1504,6 +1569,8 @@ namespace RBMConfig
             // Campaign / spoils
             TroopUpgradeCostMultiplier = 1f;
             TroopUpgradeSpoilsLootMultiplier = 1f;
+            TroopUpgradeSupplyRadius = 30f;
+            TroopUpgradeRequireSupplyTown.SelectedIndex = 1;
             TroopLootPiecesPerMan = 3f;
             TroopLootOverlookChancePerTier = 0.5f;
             TroopWageSpoilsFraction = 0.5f;

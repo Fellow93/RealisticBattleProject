@@ -356,6 +356,10 @@ namespace RBMConfig
             TroopUpgradeCostMultiplier.InnerText = RBMConfig.troopUpgradeCostMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopUpgradeSpoilsLootMultiplier = xmlconfig.CreateElement("TroopUpgradeSpoilsLootMultiplier");
             TroopUpgradeSpoilsLootMultiplier.InnerText = RBMConfig.troopUpgradeSpoilsLootMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopUpgradeRequireSupplyTown = xmlconfig.CreateElement("TroopUpgradeRequireSupplyTown");
+            TroopUpgradeRequireSupplyTown.InnerText = RBMConfig.troopUpgradeRequireSupplyTown ? "1" : "0";
+            XmlElement TroopUpgradeSupplyRadius = xmlconfig.CreateElement("TroopUpgradeSupplyRadius");
+            TroopUpgradeSupplyRadius.InnerText = RBMConfig.troopUpgradeSupplyRadius.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopLootPiecesPerMan = xmlconfig.CreateElement("TroopLootPiecesPerMan");
             TroopLootPiecesPerMan.InnerText = RBMConfig.troopLootPiecesPerMan.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopLootOverlookChancePerTier = xmlconfig.CreateElement("TroopLootOverlookChancePerTier");
@@ -393,6 +397,8 @@ namespace RBMConfig
             SpoilsVerboseLoggingEnabled.InnerText = RBMConfig.spoilsVerboseLoggingEnabled ? "1" : "0";
 
             RBMCampaign.AppendChild(TroopUpgradeSpoilsLootMultiplier);
+            RBMCampaign.AppendChild(TroopUpgradeRequireSupplyTown);
+            RBMCampaign.AppendChild(TroopUpgradeSupplyRadius);
             RBMCampaign.AppendChild(TroopLootPiecesPerMan);
             RBMCampaign.AppendChild(TroopLootOverlookChancePerTier);
             RBMCampaign.AppendChild(TroopWageSpoilsFraction);

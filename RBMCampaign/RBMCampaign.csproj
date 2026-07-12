@@ -296,6 +296,7 @@
     <Compile Include="Wages\GearBasedWageModel.cs" />
     <Compile Include="Upgrades\SpoilsUpgradePatches.cs" />
     <Compile Include="Upgrades\PartyScreenStagedUpgrades.cs" />
+    <Compile Include="Upgrades\UpgradeSupply.cs" />
     <Compile Include="UI\SpoilsBarWidget.cs" />
     <Compile Include="UI\SpoilsBarPrefabPatch.cs" />
     <Compile Include="UI\SpoilsPartyTooltip.cs" />

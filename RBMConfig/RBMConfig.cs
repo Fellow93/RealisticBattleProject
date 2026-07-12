@@ -32,6 +32,15 @@ namespace RBMConfig
 
         public static float troopUpgradeSpoilsLootMultiplier = 1f;
 
+        // SupplyTown gate: troops may only be upgraded while a friendly or neutral town is within
+        // TroopUpgradeSupplyRadius map units of the party, and the upgrade buys its kit from that town.
+        // False (0) restores upgrade-anywhere and the plain gold sink.
+        public static bool troopUpgradeRequireSupplyTown = true;
+
+        // How near, in campaign-map units, a friendly town must be to supply a party's upgrades. Roughly
+        // a short march at the default; raise it to be lenient, lower it to force troops back to town.
+        public static float troopUpgradeSupplyRadius = 30f;
+
         // Pieces of kit one man carries off a battlefield, however much of it he sees lying there.
         public static int troopLootPiecesPerMan = 3;
 
@@ -233,6 +242,8 @@ namespace RBMConfig
             // Invariant culture: on comma-decimal locales "0.1" would otherwise parse as 1.
             troopUpgradeCostMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeCostMultiplier", "1"), CultureInfo.InvariantCulture);
             troopUpgradeSpoilsLootMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeSpoilsLootMultiplier", "1"), CultureInfo.InvariantCulture);
+            troopUpgradeRequireSupplyTown = ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeRequireSupplyTown", "1").Equals("1");
+            troopUpgradeSupplyRadius = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeSupplyRadius", "30"), CultureInfo.InvariantCulture);
             troopLootPiecesPerMan = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLootPiecesPerMan", "3"), CultureInfo.InvariantCulture);
             troopLootOverlookChancePerTier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLootOverlookChancePerTier", "0.5"), CultureInfo.InvariantCulture);
             troopWageSpoilsFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopWageSpoilsFraction", "0.5"), CultureInfo.InvariantCulture);
@@ -340,6 +351,8 @@ namespace RBMConfig
             //RBMCampaign
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeCostMultiplier"), troopUpgradeCostMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeSpoilsLootMultiplier"), troopUpgradeSpoilsLootMultiplier.ToString(CultureInfo.InvariantCulture));
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeRequireSupplyTown"), troopUpgradeRequireSupplyTown);
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeSupplyRadius"), troopUpgradeSupplyRadius.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLootPiecesPerMan"), troopLootPiecesPerMan.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLootOverlookChancePerTier"), troopLootOverlookChancePerTier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopWageSpoilsFraction"), troopWageSpoilsFraction.ToString(CultureInfo.InvariantCulture));

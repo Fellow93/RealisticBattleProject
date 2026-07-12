@@ -1,5 +1,6 @@
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Library;
 
 namespace RBMCampaign
@@ -158,6 +159,18 @@ namespace RBMCampaign
                     + ", pool " + GetSpoils(party, character));
             }
             ClearSpoilsIfStackGone(party, character);
+
+            // SupplyTown gate: the screen already took the player's gold, so this only moves the worth of
+            // the promotion into the town that outfitted it and pulls value-appropriate kit from its
+            // market. Off when the feature is off.
+            if (UpgradeSupply.IsEnabled)
+            {
+                Town town;
+                if (UpgradeSupply.TryGetSupplyTown(MobileParty.MainParty, out town))
+                {
+                    UpgradeSupply.SupplyUpgradeFromTown(town, party, character, upgradeTarget, count);
+                }
+            }
         }
     }
 }

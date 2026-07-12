@@ -158,6 +158,8 @@ namespace RBMCampaign
                 Member("campaign", Obj(2,
                     Field("troopUpgradeCostMultiplier", RC.troopUpgradeCostMultiplier),
                     Field("troopUpgradeSpoilsLootMultiplier", RC.troopUpgradeSpoilsLootMultiplier),
+                    Field("troopUpgradeRequireSupplyTown", RC.troopUpgradeRequireSupplyTown),
+                    Field("troopUpgradeSupplyRadius", RC.troopUpgradeSupplyRadius),
                     Field("troopLootPiecesPerMan", RC.troopLootPiecesPerMan),
                     Field("troopLootOverlookChancePerTier", RC.troopLootOverlookChancePerTier),
                     Field("troopWageSpoilsFraction", RC.troopWageSpoilsFraction),

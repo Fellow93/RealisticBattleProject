@@ -122,6 +122,9 @@
 	<string id="RBM_CON_068" text="Daily wage as a share of a troop's battle-gear value, replacing the flat per-tier wage. Zero keeps vanilla wages. Default 0.01." />
 	<string id="RBM_CON_062" text="Reset to Default" />
 	<string id="RBM_CON_069" text="Troop Spoils" />
+	<string id="RBM_CON_070" text="Upgrade Near Town" />
+	<string id="RBM_CON_071" text="Upgrade Supply Range" />
+	<string id="RBM_CON_072" text="How near, in map units, a friendly or neutral town must be for a party to upgrade its troops. Needs 'Upgrade Near Town' on. Default 30." />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_005" text="Salvaged into spoils: {AMOUNT}" />
@@ -134,6 +137,7 @@
 	<string id="RBM_SPOILS_013" text="Your men plunder {SETTLEMENT} and pocket {AMOUNT} in spoils." />
 	<string id="RBM_SPOILS_014" text="Your men sack {SETTLEMENT} and pocket {AMOUNT} in spoils." />
 	<string id="RBM_SPOILS_012" text="A Man's Kit Is Worth" />
+	<string id="RBM_SPOILS_015" text="No friendly town nearby to supply this upgrade." />
 	<string id="RBM_SPOILS_004" text="Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. The veterans pick first, and the further beneath a man a piece lies the likelier he is to step over it, so what they overlook falls to greener troops. What his men do not spend on their own upgrades they spend on food and drink in the settlements you stop in." />
 	<string id="RBM_CON_016" text="RBM Combat" />
 	<string id="RBM_CON_017" text="Module Status" />

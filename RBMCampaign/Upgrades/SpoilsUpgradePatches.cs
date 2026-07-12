@@ -7,6 +7,7 @@ using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
@@ -37,6 +38,11 @@ namespace RBMCampaign
         [HarmonyPatch("UpgradeReadyTroops")]
         private class OverrideUpgradeReadyTroops
         {
+            // SupplyTown gate: the town outfitting the party currently being processed. Resolved once at
+            // the top of each Prefix pass and read back in ApplyEffects; the campaign tick is
+            // single-threaded so this scratch field is safe.
+            private static Town _supplyTown;
+
             private static bool Prefix(PartyBase party)
             {
                 // Vanilla dereferences party.MobileParty unguarded further down, so anything that
@@ -47,6 +53,23 @@ namespace RBMCampaign
                 }
                 if (party == PartyBase.MainParty || !party.IsActive)
                 {
+                    return false;
+                }
+
+                // SupplyTown gate: resolve the town that will outfit this party's upgrades and skip the
+                // party when the feature is on and nothing supplies it -- neither a friendly settlement it
+                // is stationed in nor a friendly city within reach. One call does the gate and the town.
+                _supplyTown = null;
+                if (UpgradeSupply.IsEnabled && !UpgradeSupply.CanUpgradeNear(party.MobileParty, out _supplyTown))
+                {
+                    // Once per party per day, and only when it actually has troops that could promote, so
+                    // the reason an AI army is stuck at low tiers is visible without flooding the log.
+                    if (SpoilsLog.IsEnabled && HasUpgradeableTroop(party.MemberRoster))
+                    {
+                        SpoilsLog.LogOnce("nosupply-" + party.Id + "-" + (int)(CampaignTime.Now.ToHours / 24),
+                            "UPGRADE", party, SpoilsLog.Describe(party) + " held off upgrading: no friendly town within "
+                            + RBMConfig.RBMConfig.troopUpgradeSupplyRadius + " units");
+                    }
                     return false;
                 }
 
@@ -63,6 +86,22 @@ namespace RBMCampaign
                     if (options.Count > 0)
                     {
                         UpgradeTroop(party, i, SelectPossibleUpgrade(options));
+                    }
+                }
+                return false;
+            }
+
+            // A cheap upper bound on "would this party like to upgrade": any non-hero stack that has an
+            // upgrade path. Skips the XP/gold checks -- it only gates a once-a-day denial log, so a party
+            // of green troops it slightly over-reports is fine, and a party of top-tier men is skipped.
+            private static bool HasUpgradeableTroop(TroopRoster roster)
+            {
+                for (int i = 0; i < roster.Count; i++)
+                {
+                    CharacterObject character = roster.GetElementCopyAtIndex(i).Character;
+                    if (character != null && !character.IsHero && character.UpgradeTargets != null && character.UpgradeTargets.Length > 0)
+                    {
+                        return true;
                     }
                 }
                 return false;
@@ -199,6 +238,13 @@ namespace RBMCampaign
                 {
                     SkillLevelingManager.OnUpgradeTroops(party, option.Target, option.UpgradeTarget, option.Count);
                     GiveGoldAction.ApplyBetweenCharacters(payer, null, option.TotalGoldCost, true);
+                    // SupplyTown gate: the worth of the promotion settles into the town that outfitted it
+                    // and value-appropriate kit leaves its market. Off when the feature is off, leaving
+                    // the plain gold sink above as the party's only cost.
+                    if (UpgradeSupply.IsEnabled)
+                    {
+                        UpgradeSupply.SupplyUpgradeFromTown(_supplyTown, party, option.Target, option.UpgradeTarget, option.Count);
+                    }
                 }
             }
         }

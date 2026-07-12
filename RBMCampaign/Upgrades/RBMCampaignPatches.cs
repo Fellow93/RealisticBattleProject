@@ -178,6 +178,25 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// SupplyTown gate: when the main party has no friendly town within reach, its upgrade arrows are
+        /// refused (see PartyScreenStagedUpgrades.GateUpgradeOnSupplyTown), so the tooltip says why rather
+        /// than leaving the arrow looking merely unresponsive. Delete this class to remove the note.
+        /// </summary>
+        [HarmonyPatch(typeof(CampaignUIHelper))]
+        [HarmonyPatch("GetUpgradeHint")]
+        private class NoteSupplyTownInUpgradeHint
+        {
+            private static void Postfix(ref string __result)
+            {
+                if (__result == null || UpgradeSupply.CanUpgradeNear(MobileParty.MainParty))
+                {
+                    return;
+                }
+                __result += "\n" + new TextObject("{=RBM_SPOILS_015}No friendly town nearby to supply this upgrade.").ToString();
+            }
+        }
+
+        /// <summary>
         /// A shown hint is a snapshot: BasicTooltipViewModel.ExecuteBeginHint reads the text once on
         /// hover-begin and hands it to the tooltip layer, and nothing polls it after that. Under spoils
         /// every upgrade shifts the "Spoils cover / You pay" split, so a tooltip the player is still
