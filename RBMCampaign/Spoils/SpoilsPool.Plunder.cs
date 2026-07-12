@@ -114,7 +114,10 @@ namespace RBMCampaign
                 return;
             }
             Town town = settlement?.Town;
-            PartyBase captor = (capturerHero ?? newOwner)?.PartyBelongedTo?.Party;
+            // Only the hero who actually took the place sacks it. Falling back to newOwner would credit the
+            // whole prosperity-scaled pot to whoever ends up holding the fief -- which on a siege can be a
+            // lord awarded it by council vote rather than the besieger -- so a missing capturer means no sack.
+            PartyBase captor = capturerHero?.PartyBelongedTo?.Party;
             if (town == null || captor == null)
             {
                 return;

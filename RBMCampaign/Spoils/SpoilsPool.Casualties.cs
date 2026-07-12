@@ -213,7 +213,10 @@ namespace RBMCampaign
                 {
                     int took = GrantSpoilsWeightedByTier(victor.Party, partyShare, "CAPTURE");
                     LogCapturedToParty(victor.Party, took);
-                    distributed += partyShare;
+                    // Count what was actually delivered, not what was allotted: a hero-only victor party
+                    // (no non-hero stack to take a cut) grants nothing, and its unallotted share must fall
+                    // to the remainder below rather than vanish.
+                    distributed += took;
                 }
             }
             int remainder = amount - distributed;
@@ -335,6 +338,11 @@ namespace RBMCampaign
             {
                 return;
             }
+            // Two passes so the order stacks appear in the died roster cannot change the outcome. A wiped
+            // stack redistributes its recovered purse to the survivors, so if that ran before a surviving
+            // stack's own partial-casualty loss, that loss would be computed off a purse already inflated
+            // by the inheritance and a slice of the inherited spoils would be destroyed twice. Take every
+            // per-man loss from the stacks that held first, then redistribute the wiped stacks' purses.
             for (int i = 0; i < died.Count; i++)
             {
                 TroopRosterElement element = died.GetElementCopyAtIndex(i);
@@ -344,31 +352,39 @@ namespace RBMCampaign
                     continue;
                 }
                 int purse = GetSpoils(party, character);
-                if (purse <= 0)
+                if (purse <= 0 || GetStackSize(party, character) <= 0)
                 {
                     continue;
                 }
+                // Some fell, some held: the fallen carried their per-man share to the grave.
                 int survivors = GetStackSize(party, character);
-                if (survivors <= 0)
+                int lost = (int)((long)purse * element.Number / (survivors + element.Number));
+                if (lost > 0)
                 {
-                    // The whole stack is gone: recover what the comrades can and split it, lose the rest.
-                    DistributeFallenPurse(party, character, purse);
-                }
-                else
-                {
-                    // Some fell, some held: the fallen carried their per-man share to the grave.
-                    int lost = (int)((long)purse * element.Number / (survivors + element.Number));
-                    if (lost > 0)
+                    AddSpoils(party, character, -lost);
+                    if (SpoilsLog.IsEnabled)
                     {
-                        AddSpoils(party, character, -lost);
-                        if (SpoilsLog.IsEnabled)
-                        {
-                            SpoilsLog.Log("CASUALTY", party, element.Number + " of " + SpoilsLog.Describe(character)
-                                + " x" + (survivors + element.Number) + " fell in " + SpoilsLog.Describe(party)
-                                + ": lost their share " + lost + " (pool " + purse + " -> " + (purse - lost) + ")");
-                        }
+                        SpoilsLog.Log("CASUALTY", party, element.Number + " of " + SpoilsLog.Describe(character)
+                            + " x" + (survivors + element.Number) + " fell in " + SpoilsLog.Describe(party)
+                            + ": lost their share " + lost + " (pool " + purse + " -> " + (purse - lost) + ")");
                     }
                 }
+            }
+            for (int i = 0; i < died.Count; i++)
+            {
+                TroopRosterElement element = died.GetElementCopyAtIndex(i);
+                CharacterObject character = element.Character;
+                if (character.IsHero || element.Number <= 0)
+                {
+                    continue;
+                }
+                int purse = GetSpoils(party, character);
+                if (purse <= 0 || GetStackSize(party, character) > 0)
+                {
+                    continue;
+                }
+                // The whole stack is gone: recover what the comrades can and split it, lose the rest.
+                DistributeFallenPurse(party, character, purse);
             }
         }
 
