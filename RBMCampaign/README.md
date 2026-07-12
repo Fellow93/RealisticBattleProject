@@ -32,6 +32,12 @@ How that loot gets divided is the interesting part. **Veterans pick first**, but
 
 And whatever is spent in a settlement stays there: food and drink money raises the town's Prosperity or the village's Hearth. So does ordinary trade — every purchase made at a market, yours or any other party's, a caravan's or a lord's, feeds the settlement it was bought from at the same rate. A busy market grows the place that hosts it.
 
+**Militia earn their keep.** The other way round, a settlement now pays for the militia that defend it. Each day their wages — priced off their kit, like every other troop — are drawn straight out of the place they hold: a town or castle's Prosperity, a village's Hearth, at the same rate trade pours in. A town that raises more militia than its economy can carry bleeds prosperity for it, and because militia swells with prosperity in the first place, the drain reins itself in.
+
+**Making things costs something.** So does production. Every good a settlement turns out — a workshop's wares in a town, a village's crops and raw goods — is worked out of its own back: the item's worth is drawn off the town's Prosperity or the village's Hearth at that same rate. A place only comes out ahead where its goods actually sell: production spends it down, trade builds it back up, and idle stock that no one carries off is just wealth spent and waiting on a buyer.
+
+**Produce sold brings the coin home.** When a village's own people cart its produce to town and sell it, the takings feed the Hearth of the village it came from — not the town it was sold at — at the same rate. That closes the village's loop: it bleeds Hearth growing its goods and wins it back once they find a buyer, so a village on a busy trade road thrives and one whose produce rots on the road withers.
+
 **Surplus handed up as gold.** A stack keeps only what it can still put to use — enough to finish its own upgrades, plus a war chest that grows with the men's tier (a veteran keeps a deeper purse than a recruit) — and hands a share of the rest up to you as gold each day. A top-tier stack has nothing left to buy, so nearly everything it loots and earns comes straight back to your treasury: an elite army you've stopped upgrading becomes a passive income instead of a pile of stranded loot. How much of the surplus is swept up is a dial — at the default it all comes up at once, lower and it drains down to the cap over several days, at zero spoils stay a closed loop spent only on troops, food and drink.
 
 ## What this changes about how you play
@@ -55,7 +61,7 @@ Everything sits in the in-game RBM config under the campaign section, or in the 
 | `TroopSettlementFoodDays` | 20 | Days of rations a stack buys for itself when it reaches a market. |
 | `TroopFoodWageFraction` | 0.5 | Share of a day's wage a man will spend on a day's food before calling it extravagant. |
 | `TroopSettlementFunWageFraction` | 1.5 | Drink and dice, as a multiple of the daily wage, per day idled in a settlement. |
-| `SettlementProsperityPerGoldSpent` | 0.02 | Prosperity (or Hearth) a settlement gains per gold spent in it, from any source — your men's food and drink, and every party's market purchases alike. |
+| `SettlementProsperityPerGoldSpent` | 0.02 | Prosperity (or Hearth) a gold moves at a settlement, both ways — trade and carousing there add it, its militia's daily wages and every good it produces drain it. 0 turns all of it off. |
 | `TroopSpoilsGoldSpillFraction` | 0.02 | Most of one man's share of a stack's surplus spoils — what it holds over what its upgrades could use — that can hand up to you in a day, priced as this share of his battle kit the way a wage is, so a better-armed man hands up more. A daily cap, so a deep surplus drains slowly; 0 keeps spoils a closed loop. |
 | `TroopSpoilsWarChestGoldPerTier` | 25 | Gold a man keeps back from the spill, per tier he holds (a tier 6 keeps 6× this). On top of what his stack needs for its own upgrades. |
 | `SpoilsLoggingEnabled` | 1 | Writes what the system is doing to the log, for debugging. |

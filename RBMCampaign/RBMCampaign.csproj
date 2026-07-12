@@ -288,6 +288,9 @@
     <Compile Include="Upkeep\TroopUpkeep.Food.cs" />
     <Compile Include="Upkeep\TroopUpkeep.Luxury.cs" />
     <Compile Include="Upkeep\MarketTradeProsperity.cs" />
+    <Compile Include="Upkeep\MilitiaUpkeep.cs" />
+    <Compile Include="Upkeep\ProductionUpkeep.cs" />
+    <Compile Include="Upkeep\VillagerTradeHearth.cs" />
     <Compile Include="Upkeep\RBMTroopUpkeepCampaignBehavior.cs" />
     <Compile Include="Upgrades\RBMCampaignPatches.cs" />
     <Compile Include="Wages\GearBasedWageModel.cs" />

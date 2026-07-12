@@ -498,7 +498,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel SettlementProsperityPerGoldSpentHint { get; } = Hint("{=RBM_CON_058}Prosperity, or a village's Hearth, a settlement gains per gold spent in it, from any source: your men carousing and any party buying at its market alike. Default 0.02.");
+        public BasicTooltipViewModel SettlementProsperityPerGoldSpentHint { get; } = Hint("{=RBM_CON_058}How much Prosperity, or a village's Hearth, a gold moves at a settlement, both ways: trade and carousing there add it, its militia's wages and every good it produces drain it. Default 0.02.");
 
         private float _troopRaidSpoilsMultiplier;
 
