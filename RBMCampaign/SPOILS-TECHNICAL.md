@@ -22,7 +22,7 @@ Master switch: `IsEnabled => troopUpgradeCostMultiplier > 0f` (`Spoils/SpoilsPoo
 | `troopSettlementFoodDays` | `20` | days of rations bought at market (`0` disables food) |
 | `troopFoodWageFraction` | `0.5f` | food price ceiling, as a share of daily wage |
 | `troopSettlementFunWageFraction` | `1.5f` | carousing, as a multiple of daily wage |
-| `settlementProsperityPerGoldSpent` | `0.02f` | prosperity/hearth gained per gold spent locally |
+| `settlementProsperityPerGoldSpent` | `0.02f` | prosperity/hearth moved per gold of worth, both ways — trade/carousing add, militia & production drain, villager produce returns home (`0` = layer off) |
 | `troopSpoilsGoldSpillFraction` | `0.02f` | daily surplus-spill ceiling per man, as a share of his gear value (`0` = closed loop) |
 | `troopSpoilsWarChestGoldPerTier` | `25` | retained war chest, per tier held |
 | `troopLuxuryCooldownDays` | `20` | cooldown between over-cap luxury splurges |
@@ -240,15 +240,29 @@ spend = Min(purse, spend)                                                    // 
 
 The surplus bite scales by how many times over its cap the purse stands, so a bloated garrison drinks faster. At the `1.5` default the base rate alone exceeds a day's wage per day idled. Spending credits the settlement (see below).
 
-### Prosperity / hearth from local spending
+### Prosperity / hearth flows
+
+One rate, `settlementProsperityPerGoldSpent`, moves a settlement's Prosperity (town/castle) or
+Hearth (village) in **both** directions. `TroopUpkeep.CreditSettlement` (`internal`) is the add:
 
 ```
-gain = spoilsSpent * settlementProsperityPerGoldSpent      // default 0.02 per gold
-Town    → Prosperity += gain
+gain = goldWorth * settlementProsperityPerGoldSpent        // default 0.02 per gold
+Town    → Prosperity += gain            (drains subtract, clamped at 0)
 Village → Hearth     += gain
 ```
 
-Shared by food, drink, and luxury spending — money spent in a settlement stays there.
+The inputs (all gate on `rate > 0`):
+
+| Source | Hook | `goldWorth` | Dir |
+|---|---|---|---|
+| Food / drink / luxury | `TroopUpkeep`, visiting stacks | spend | + |
+| Market purchase | `MarketTradeProsperity` postfix on `SellItemsAction.Apply` | `number × GetItemPrice` | + (settlement bought from) |
+| Villager produce sale | `VillagerTradeHearth` postfix on `SellGoodsForTradeAction.ApplyByVillagerTrade` | Δ`PartyTradeGold` | + (home village) |
+| Militia wages | `MilitiaUpkeep` on `DailyTickSettlementEvent` | gear wage × `settlement.Militia` | − |
+| Production | `ProductionUpkeep` on `OnItemProducedEvent` | `item.Value × count` | − |
+
+Money spent in a settlement stays there; goods made there cost it; goods sold return it — netting
+where goods actually move. Full per-hook detail in `ARCHITECTURE.md → Settlement prosperity flows`.
 
 ---
 

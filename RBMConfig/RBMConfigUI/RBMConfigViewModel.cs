@@ -469,7 +469,7 @@ namespace RBMConfig
             }
             set
             {
-                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0.01f, 1f);
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
                 if (snapped != _settlementProsperityPerGoldSpent)
                 {
                     _settlementProsperityPerGoldSpent = snapped;
@@ -1262,7 +1262,7 @@ namespace RBMConfig
             _troopSettlementFoodDays = MathF.Clamp(RBMConfig.troopSettlementFoodDays, 0f, 60f);
             _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 10f);
             _troopSettlementFunWageFraction = MathF.Clamp(RBMConfig.troopSettlementFunWageFraction, 0f, 10f);
-            _settlementProsperityPerGoldSpent = MathF.Clamp(RBMConfig.settlementProsperityPerGoldSpent, 0.01f, 1f);
+            _settlementProsperityPerGoldSpent = MathF.Clamp(RBMConfig.settlementProsperityPerGoldSpent, 0f, 1f);
             _troopRaidSpoilsMultiplier = MathF.Clamp(RBMConfig.troopRaidSpoilsMultiplier, 0f, 10f);
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
             SpoilsVerboseLoggingEnabled.SelectedIndex = RBMConfig.spoilsVerboseLoggingEnabled ? 1 : 0;
