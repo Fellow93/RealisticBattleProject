@@ -17,18 +17,18 @@ namespace RBMCampaign
         /// same price, paid out of different pockets. Zero means the upgrade needs no spoils, so
         /// callers must not divide by it.
         /// </summary>
-        public static int GetSpoilsCostForUpgrade(CharacterObject character, CharacterObject upgradeTarget)
+        public static int GetSpoilsCostForUpgrade(PartyBase party, CharacterObject character, CharacterObject upgradeTarget)
         {
             if (!IsEnabled)
             {
                 return 0;
             }
-            int delta = GetEquipmentValue(upgradeTarget) - GetEquipmentValue(character);
-            if (delta <= 0)
-            {
-                return 0;
-            }
-            return MathF.Max(1, MathF.Round(delta * RBMConfig.RBMConfig.troopUpgradeCostMultiplier));
+            // The full per-man price the gold path would charge, perks and all: a point of spoils is a gold
+            // piece, so a man the stockpile covers is charged exactly what the gold path would have. Routing
+            // through the same builder is what keeps "spoils cover / you pay" honest -- a cost-reducing perk
+            // (Sound Reserves, Renowned Archer, the Khuzait feat, Contractors) discounts both pockets alike,
+            // rather than the tooltip quoting the discounted price while the purse pays the undiscounted one.
+            return RBMCampaignPatches.GetFullUpgradeGoldCost(party, character, upgradeTarget);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace RBMCampaign
         /// </summary>
         public static float GetCoveredMen(PartyBase party, CharacterObject character, CharacterObject upgradeTarget)
         {
-            int spoilsCost = GetSpoilsCostForUpgrade(character, upgradeTarget);
+            int spoilsCost = GetSpoilsCostForUpgrade(party, character, upgradeTarget);
             return spoilsCost <= 0 ? 0f : (float)GetAvailableSpoils(party, character) / spoilsCost;
         }
 
@@ -75,7 +75,7 @@ namespace RBMCampaign
         /// <summary>Whole men the stockpile outfits outright, capped at the stack.</summary>
         public static int GetFreeUpgradeCount(PartyBase party, CharacterObject character, CharacterObject upgradeTarget)
         {
-            int spoilsCost = GetSpoilsCostForUpgrade(character, upgradeTarget);
+            int spoilsCost = GetSpoilsCostForUpgrade(party, character, upgradeTarget);
             if (spoilsCost <= 0)
             {
                 return 0;
@@ -86,7 +86,7 @@ namespace RBMCampaign
         /// <summary>Spoils drawn down by upgrading <paramref name="count"/> men, never more than the stockpile holds.</summary>
         public static int GetBatchSpoilsSpend(PartyBase party, CharacterObject character, CharacterObject upgradeTarget, int count)
         {
-            int spoilsCost = GetSpoilsCostForUpgrade(character, upgradeTarget);
+            int spoilsCost = GetSpoilsCostForUpgrade(party, character, upgradeTarget);
             if (spoilsCost <= 0 || count <= 0)
             {
                 return 0;
@@ -139,21 +139,21 @@ namespace RBMCampaign
         public static void OnPlayerUpgradedTroops(CharacterObject character, CharacterObject upgradeTarget, int count)
         {
             PartyBase party = PartyBase.MainParty;
-            int spend = PartyScreenStagedUpgrades.ConsumeStagedSpoils(party, character);
+            // Draw this branch's reservation, and recover the size the source stack stood at before its
+            // men left -- both accounting for other branches of the same source upgraded this same visit.
+            int stackSizeBefore;
+            int spend = PartyScreenStagedUpgrades.ConsumeStagedUpgrade(party, character, upgradeTarget, count, out stackSizeBefore);
             // A cheaper-kitted upgrade salvages the surplus into the purse of the men who now hold it,
             // the upgradeTarget stack, so it survives the old stack emptying out beneath them.
             int credit = GetSpoilsCreditForUpgrade(character, upgradeTarget) * count;
             AddSpoils(party, character, -spend);
             AddSpoils(party, upgradeTarget, credit);
-            // The roster has already moved the men, so the old stack now holds count fewer: adding them
-            // back recovers the size it upgraded from, which is how big a share the leavers carry.
-            int stackSizeBefore = GetStackSize(party, character) + count;
             int carried = CarrySpoilsOnUpgrade(party, character, upgradeTarget, count, stackSizeBefore);
             if (SpoilsLog.IsEnabled && (spend > 0 || credit > 0 || carried > 0))
             {
                 SpoilsLog.Log("UPGRADE", party, "player upgraded " + count + "x " + SpoilsLog.Describe(character)
                     + " -> " + SpoilsLog.Describe(upgradeTarget)
-                    + "| spoils spent " + spend + " of " + (GetSpoilsCostForUpgrade(character, upgradeTarget) * count) + " needed"
+                    + "| spoils spent " + spend + " of " + (GetSpoilsCostForUpgrade(party, character, upgradeTarget) * count) + " needed"
                     + (credit > 0 ? ", salvaged " + credit + " into " + SpoilsLog.Describe(upgradeTarget) + "'s purse" : "")
                     + (carried > 0 ? ", carried " + carried + " of the purse along" : "")
                     + ", pool " + GetSpoils(party, character));

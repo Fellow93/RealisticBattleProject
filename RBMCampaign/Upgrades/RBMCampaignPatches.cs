@@ -28,21 +28,28 @@ namespace RBMCampaign
             bool isForHire = characterObject.Occupation == Occupation.Mercenary || characterObject.Occupation == Occupation.Gangster || characterObject.Occupation == Occupation.CaravanGuard;
 
             ExplainedNumber stat = new ExplainedNumber((upgradeTargetEquipmentCost - characterEquipmentCost) * goldFactor);
-            if (party.MobileParty.HasPerk(DefaultPerks.Steward.SoundReserves))
+            // A stack-keyed purse can be priced for any party (the daily spill and the cap value every
+            // stack), and a settlement-owned PartyBase has no MobileParty to read perks off. The perks
+            // simply do not apply then; the base multiplier below still does.
+            MobileParty mobileParty = party?.MobileParty;
+            if (mobileParty != null)
             {
-                PerkHelper.AddPerkBonusForParty(DefaultPerks.Steward.SoundReserves, party.MobileParty, isPrimaryBonus: true, ref stat);
-            }
-            if (characterObject.IsRanged && party.MobileParty.HasPerk(DefaultPerks.Bow.RenownedArcher, checkSecondaryRole: true))
-            {
-                PerkHelper.AddPerkBonusForParty(DefaultPerks.Bow.RenownedArcher, party.MobileParty, isPrimaryBonus: false, ref stat);
-            }
-            if (characterObject.IsMounted && PartyBaseHelper.HasFeat(party, DefaultCulturalFeats.KhuzaitRecruitUpgradeFeat))
-            {
-                stat.AddFactor(DefaultCulturalFeats.KhuzaitRecruitUpgradeFeat.EffectBonus, GameTexts.FindText("str_culture"));
-            }
-            if (isForHire && party.MobileParty.HasPerk(DefaultPerks.Steward.Contractors))
-            {
-                PerkHelper.AddPerkBonusForParty(DefaultPerks.Steward.Contractors, party.MobileParty, isPrimaryBonus: true, ref stat);
+                if (mobileParty.HasPerk(DefaultPerks.Steward.SoundReserves))
+                {
+                    PerkHelper.AddPerkBonusForParty(DefaultPerks.Steward.SoundReserves, mobileParty, isPrimaryBonus: true, ref stat);
+                }
+                if (characterObject.IsRanged && mobileParty.HasPerk(DefaultPerks.Bow.RenownedArcher, checkSecondaryRole: true))
+                {
+                    PerkHelper.AddPerkBonusForParty(DefaultPerks.Bow.RenownedArcher, mobileParty, isPrimaryBonus: false, ref stat);
+                }
+                if (characterObject.IsMounted && PartyBaseHelper.HasFeat(party, DefaultCulturalFeats.KhuzaitRecruitUpgradeFeat))
+                {
+                    stat.AddFactor(DefaultCulturalFeats.KhuzaitRecruitUpgradeFeat.EffectBonus, GameTexts.FindText("str_culture"));
+                }
+                if (isForHire && mobileParty.HasPerk(DefaultPerks.Steward.Contractors))
+                {
+                    PerkHelper.AddPerkBonusForParty(DefaultPerks.Steward.Contractors, mobileParty, isPrimaryBonus: true, ref stat);
+                }
             }
 
             // ExplainedNumber resolves to base * (1 + sum of factors), so a 0.1x
@@ -94,7 +101,7 @@ namespace RBMCampaign
                 SpoilsLog.LogOnce("goldcost-" + characterObject.StringId + "-" + upgradeTarget.StringId, "GOLD", party,
                     SpoilsLog.Describe(characterObject) + " -> " + SpoilsLog.Describe(upgradeTarget)
                     + " | equip " + SpoilsPool.GetEquipmentValue(characterObject) + " -> " + SpoilsPool.GetEquipmentValue(upgradeTarget)
-                    + ", spoils cost " + SpoilsPool.GetSpoilsCostForUpgrade(characterObject, upgradeTarget)
+                    + ", spoils cost " + SpoilsPool.GetSpoilsCostForUpgrade(party, characterObject, upgradeTarget)
                     + ", stockpile " + SpoilsPool.GetAvailableSpoils(party, characterObject)
                     + ", next man pays " + goldFactor.ToString("0.00") + " of full"
                     + ", gold " + stat.RoundedResultNumber + " in " + SpoilsLog.Describe(party));

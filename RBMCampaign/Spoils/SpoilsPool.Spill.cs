@@ -45,7 +45,7 @@ namespace RBMCampaign
             {
                 for (int i = 0; i < targets.Length; i++)
                 {
-                    dearestUpgrade = MathF.Max(dearestUpgrade, GetSpoilsCostForUpgrade(character, targets[i]));
+                    dearestUpgrade = MathF.Max(dearestUpgrade, GetSpoilsCostForUpgrade(party, character, targets[i]));
                 }
             }
             else

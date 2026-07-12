@@ -106,7 +106,7 @@ namespace RBMCampaign
                     false, TooltipProperty.TooltipPropertyFlags.Title));
                 foreach (CharacterObject upgradeTarget in character.UpgradeTargets)
                 {
-                    int spoilsCost = SpoilsPool.GetSpoilsCostForUpgrade(character, upgradeTarget);
+                    int spoilsCost = SpoilsPool.GetSpoilsCostForUpgrade(party, character, upgradeTarget);
                     int freeUpgrades = SpoilsPool.GetFreeUpgradeCount(party, character, upgradeTarget);
                     TextObject value = new TextObject((freeUpgrades > 0)
                         ? "{=RBM_SPOILS_008}{COST}  ({FREE} free)"
@@ -177,7 +177,7 @@ namespace RBMCampaign
 
             PartyBase party = PartyBase.MainParty;
             int stockpile = SpoilsPool.GetAvailableSpoils(party, character);
-            int spoilsCost = GetPrimarySpoilsCost(character);
+            int spoilsCost = GetPrimarySpoilsCost(party, character);
 
             if (spoilsCost > 0)
             {
@@ -208,11 +208,11 @@ namespace RBMCampaign
         /// takes. Zero when the troop has nowhere to go, or when the branch is worth no more in kit
         /// than what he already wears.
         /// </summary>
-        private static int GetPrimarySpoilsCost(CharacterObject character)
+        private static int GetPrimarySpoilsCost(PartyBase party, CharacterObject character)
         {
             return character.UpgradeTargets.Length == 0
                 ? 0
-                : SpoilsPool.GetSpoilsCostForUpgrade(character, character.UpgradeTargets[0]);
+                : SpoilsPool.GetSpoilsCostForUpgrade(party, character, character.UpgradeTargets[0]);
         }
 
         private static CharacterObject ResolveTroop(string troopId)
