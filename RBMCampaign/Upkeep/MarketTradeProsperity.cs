@@ -1,4 +1,5 @@
 using HarmonyLib;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -63,6 +64,19 @@ namespace RBMCampaign
                 return;
             }
             TroopUpkeep.CreditSettlement(settlement, gross);
+
+            if (SpoilsLog.IsEnabled)
+            {
+                // Market trade fires far too often to log every transaction -- caravans and lords
+                // haggle across the whole map. Throttled to the first buy per party per settlement
+                // each day, the same way carousing is, enough to see the rate without flooding.
+                float gain = gross * RBMConfig.RBMConfig.settlementProsperityPerGoldSpent;
+                int day = (int)(CampaignTime.Now.ToHours / 24);
+                SpoilsLog.LogOnce("trade-" + payerParty.Id + "-" + settlement.StringId + "-" + day, "TRADE", payerParty,
+                    SpoilsLog.Describe(payerParty) + " buying at " + settlement.Name
+                    + ": " + gross + " gold -> +" + gain.ToString("0.00")
+                    + (settlement.Town != null ? " prosperity" : " hearth") + " (first buy of the day)");
+            }
         }
     }
 }

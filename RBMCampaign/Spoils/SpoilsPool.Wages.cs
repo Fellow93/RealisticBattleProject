@@ -47,6 +47,13 @@ namespace RBMCampaign
             {
                 return;
             }
+            // A bandit party keeps no war-chest and pays no wage, so there is nothing to skim into
+            // spoils. Bandit troops in a lord's party are another matter -- the lord pays their wage,
+            // so that stack draws its spoils like any other.
+            if (party?.MobileParty != null && party.MobileParty.IsBandit)
+            {
+                return;
+            }
             PartyWageModel wageModel = Campaign.Current.Models.PartyWageModel;
             int grantedTotal = 0;
             int stacksPaid = 0;
