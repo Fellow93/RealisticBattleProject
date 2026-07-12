@@ -17,7 +17,10 @@ namespace RBMCampaign
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, SpoilsPool.OnMobilePartyDestroyed);
             CampaignEvents.PlayerUpgradedTroopsEvent.AddNonSerializedListener(this, SpoilsPool.OnPlayerUpgradedTroops);
             // A stack mustered from a village or town brings a few days' maintenance in its purse.
+            // OnTroopRecruited is the AI/action path (carries the settlement); OnUnitRecruited is the
+            // player's recruit screen (one man at a time into the main party, no settlement arg).
             CampaignEvents.OnTroopRecruitedEvent.AddNonSerializedListener(this, SpoilsPool.OnTroopRecruited);
+            CampaignEvents.OnUnitRecruitedEvent.AddNonSerializedListener(this, SpoilsPool.OnUnitRecruited);
         }
 
         private void OnSessionLaunched(CampaignGameStarter starter)

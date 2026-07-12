@@ -386,6 +386,53 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopSettlementFoodDaysHint { get; } = Hint("{=RBM_CON_055}Days of food a man buys when he passes through a settlement. 0 stops him buying any. Default 20.");
 
+        private float _recruitMaintenanceDays;
+
+        /// <summary>
+        /// Whole days of maintenance a recruit brings in his purse, so the slider is discrete. Zero is
+        /// meaningful -- it seeds a fresh recruit nothing -- so the floor is 0. Float because that is what
+        /// SliderWidget binds; rounded to an int on save.
+        /// </summary>
+        [DataSourceProperty]
+        public float RecruitMaintenanceDays
+        {
+            get
+            {
+                return _recruitMaintenanceDays;
+            }
+            set
+            {
+                float snapped = MathF.Clamp(MathF.Round(value), 0f, 30f);
+                if (snapped != _recruitMaintenanceDays)
+                {
+                    _recruitMaintenanceDays = snapped;
+                    OnPropertyChangedWithValue(snapped, "RecruitMaintenanceDays");
+                    OnPropertyChanged("RecruitMaintenanceDaysValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string RecruitMaintenanceDaysValue
+        {
+            get
+            {
+                return _recruitMaintenanceDays.ToString("0");
+            }
+        }
+
+        [DataSourceProperty]
+        public string RecruitMaintenanceDayst
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_083}Recruit Maintenance Days").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel RecruitMaintenanceDaysHint { get; } = Hint("{=RBM_CON_084}Days of maintenance a recruit mustered from a village or town brings in his stack's purse, priced off the same daily upkeep. 0 seeds nothing. Default 5.");
+
         private float _troopFoodWageFraction;
 
         [DataSourceProperty]
@@ -1457,6 +1504,7 @@ namespace RBMConfig
             _troopWageTierBase = MathF.Clamp((float)RBMConfig.troopWageTierBase, 0f, 300f);
             _troopMaintenanceFraction = MathF.Clamp(RBMConfig.troopMaintenanceFraction, 0f, 0.05f);
             _troopSettlementFoodDays = MathF.Clamp(RBMConfig.troopSettlementFoodDays, 0f, 60f);
+            _recruitMaintenanceDays = MathF.Clamp(RBMConfig.recruitMaintenanceDays, 0f, 30f);
             _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 10f);
             _troopSettlementFunWageFraction = MathF.Clamp(RBMConfig.troopSettlementFunWageFraction, 0f, 10f);
             _settlementProsperityPerGoldSpent = MathF.Clamp(RBMConfig.settlementProsperityPerGoldSpent, 0f, 1f);
@@ -1654,6 +1702,7 @@ namespace RBMConfig
             RBMConfig.troopWageTierBase = (int)MathF.Round(_troopWageTierBase);
             RBMConfig.troopMaintenanceFraction = _troopMaintenanceFraction;
             RBMConfig.troopSettlementFoodDays = (int)MathF.Round(_troopSettlementFoodDays);
+            RBMConfig.recruitMaintenanceDays = (int)MathF.Round(_recruitMaintenanceDays);
             RBMConfig.troopFoodWageFraction = _troopFoodWageFraction;
             RBMConfig.troopSettlementFunWageFraction = _troopSettlementFunWageFraction;
             RBMConfig.settlementProsperityPerGoldSpent = _settlementProsperityPerGoldSpent;
@@ -1715,6 +1764,7 @@ namespace RBMConfig
             TroopLootOverlookChancePerTier = 0.5f;
             TroopWageTierBase = 50f;
             TroopSettlementFoodDays = 20f;
+            RecruitMaintenanceDays = 5f;
             TroopFoodWageFraction = 0.5f;
             TroopSettlementFunWageFraction = 1.5f;
             SettlementProsperityPerGoldSpent = 0.02f;

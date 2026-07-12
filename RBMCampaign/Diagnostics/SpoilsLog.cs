@@ -165,6 +165,7 @@ namespace RBMCampaign
                     Field("troopWageTierBase", RC.troopWageTierBase),
                     Field("troopMaintenanceFraction", RC.troopMaintenanceFraction),
                     Field("troopSettlementFoodDays", RC.troopSettlementFoodDays),
+                    Field("recruitMaintenanceDays", RC.recruitMaintenanceDays),
                     Field("troopFoodWageFraction", RC.troopFoodWageFraction),
                     Field("troopSettlementFunWageFraction", RC.troopSettlementFunWageFraction),
                     Field("settlementProsperityPerGoldSpent", RC.settlementProsperityPerGoldSpent),

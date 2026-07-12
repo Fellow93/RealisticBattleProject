@@ -39,13 +39,6 @@ namespace RBMCampaign
     public static partial class SpoilsPool
     {
         /// <summary>
-        /// Days of maintenance a fresh recruit brings with him. A man mustered from a village or town
-        /// arrives with his kit already seen to and a few days' keep put by against the coming march,
-        /// so his stack's purse is seeded rather than starting bare -- the day's wage paid forward.
-        /// </summary>
-        public const int RecruitMaintenanceDays = 5;
-
-        /// <summary>
         /// The daily cost of keeping one stack of <paramref name="number"/> men of this troop in the
         /// field: a share of the whole worth of their kit, horse and harness included. The stack's cost,
         /// not one man's, so a small troop's fraction is not rounded away. Shared by the daily charge and
@@ -112,7 +105,12 @@ namespace RBMCampaign
             {
                 return;
             }
-            int seed = DailyMaintenanceCost(character, amount) * RecruitMaintenanceDays;
+            int days = RBMConfig.RBMConfig.recruitMaintenanceDays;
+            if (days <= 0)
+            {
+                return;
+            }
+            int seed = DailyMaintenanceCost(character, amount) * days;
             if (seed <= 0)
             {
                 return;
@@ -122,14 +120,16 @@ namespace RBMCampaign
             {
                 SpoilsLog.Log("RECRUIT", party, SpoilsLog.Describe(party) + " recruited "
                     + SpoilsLog.Describe(character) + " x" + amount + "; seeded " + seed + " spoils ("
-                    + RecruitMaintenanceDays + " days' maintenance)");
+                    + days + " days' maintenance)");
             }
         }
 
         /// <summary>
-        /// A stack mustered from a village or town arrives with a few days' maintenance already in its
-        /// purse. Prisoners pressed into service and volunteers picked up on the road carry a null
-        /// settlement and bring nothing -- only a proper muster from a settlement is seeded.
+        /// A lord's party mustering from a village or town: the AI recruit path, which alone carries the
+        /// settlement and the recruiter. Prisoners pressed into service and volunteers picked up on the
+        /// road carry a null settlement and bring nothing -- only a proper muster from a settlement is
+        /// seeded. The player's own muster does not come here (it fires <see cref="OnUnitRecruited"/>
+        /// instead), so the main party is passed over to keep the two paths from seeding one recruit twice.
         /// </summary>
         public static void OnTroopRecruited(Hero recruiterHero, Settlement recruitmentSettlement,
             Hero recruitmentSource, CharacterObject troop, int amount)
@@ -139,11 +139,28 @@ namespace RBMCampaign
                 return;
             }
             PartyBase party = recruiterHero?.PartyBelongedTo?.Party;
-            if (party == null)
+            if (party == null || party == PartyBase.MainParty)
             {
                 return;
             }
             SeedRecruitMaintenance(party, troop, amount);
+        }
+
+        /// <summary>
+        /// The player's own muster from a settlement's notables, one man at a time into the main party --
+        /// the recruit-screen path, which carries neither settlement nor party. The screen only opens
+        /// inside a village or town, so the main party's current settlement stands in for the "from a
+        /// settlement" gate. Prisoners pressed into service and mercenaries hired in a tavern reach this
+        /// event too, but only a recruit made while the party sits in a village or town is seeded.
+        /// </summary>
+        public static void OnUnitRecruited(CharacterObject character, int amount)
+        {
+            Settlement settlement = MobileParty.MainParty?.CurrentSettlement;
+            if (settlement == null || !(settlement.IsVillage || settlement.IsTown))
+            {
+                return;
+            }
+            SeedRecruitMaintenance(PartyBase.MainParty, character, amount);
         }
 
         /// <summary>
