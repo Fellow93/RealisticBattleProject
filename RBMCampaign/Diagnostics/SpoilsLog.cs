@@ -17,13 +17,21 @@ namespace RBMCampaign
     /// only ever shows a bar. This writes it all to rbm_spoils.log next to the RBM config so the
     /// numbers can be checked after the fact.
     ///
-    /// Enabled by the SpoilsLogging config flag. Truncated once per launch.
+    /// Enabled by the SpoilsLogging config flag. One file per play session, created when the
+    /// campaign starts rather than at module load.
     /// </summary>
     internal static class SpoilsLog
     {
         private static readonly HashSet<string> _oncePerKey = new HashSet<string>();
         private static readonly object _fileLock = new object();
         private static bool _fileLogFailed;
+
+        // The log file is not opened at module load. Lines emitted before a campaign starts (the
+        // early hook-install traces) buffer here and are flushed into the campaign log when it is
+        // opened, so a session yields a single file rather than a near-empty one from load time plus
+        // the real one. If no campaign is started this session they are only ever printed to Debug.
+        private static bool _fileOpened;
+        private static readonly StringBuilder _pending = new StringBuilder();
 
         // The campaign day is printed once, as a divider, whenever it rolls over, rather than on every
         // line; this holds the last day written so a change can be spotted. -1 means "nothing yet".
@@ -79,10 +87,12 @@ namespace RBMCampaign
             {
                 _oncePerKey.Clear();
                 _fileLogFailed = false;
+                _fileOpened = false;
                 _lastDayKey = -1;
                 _lastCategory = null;
                 if (!IsEnabled)
                 {
+                    _pending.Length = 0;
                     return;
                 }
                 try
@@ -92,6 +102,13 @@ namespace RBMCampaign
                         "RBM spoils log — " + DateTime.Now + Environment.NewLine
                         + "Columns:  time  ·  category  ·  party  ·  message"
                         + "   (campaign day is shown in the ═══ dividers, not on every line)" + Environment.NewLine);
+                    _fileOpened = true;
+                    // Drain anything logged before the campaign opened the file (the early traces).
+                    if (_pending.Length > 0)
+                    {
+                        File.AppendAllText(LogFilePath, _pending.ToString());
+                        _pending.Length = 0;
+                    }
                 }
                 catch
                 {
@@ -438,6 +455,12 @@ namespace RBMCampaign
             }
             lock (_fileLock)
             {
+                if (!_fileOpened)
+                {
+                    // No campaign log yet: hold the line until StartCampaignLog opens the file and flushes.
+                    _pending.Append(message).Append(Environment.NewLine);
+                    return;
+                }
                 for (int attempt = 0; attempt < 5; attempt++)
                 {
                     try

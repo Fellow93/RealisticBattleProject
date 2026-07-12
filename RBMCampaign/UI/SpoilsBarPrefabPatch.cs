@@ -29,7 +29,9 @@ namespace RBMCampaign
         /// </summary>
         public static void ApplyEarly(Harmony harmony)
         {
-            SpoilsLog.Reset();
+            // Do not open the log here: this runs at module load, before any campaign. The early
+            // traces below buffer in SpoilsLog until StartCampaignLog opens the campaign log and
+            // flushes them in, so a session produces one file rather than a near-empty one plus it.
             try
             {
                 harmony.CreateClassProcessor(typeof(SkipGeneratedPartyScreenPrefab)).Patch();
