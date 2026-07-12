@@ -386,6 +386,10 @@ namespace RBMConfig
             TroopLuxuryCooldownDays.InnerText = RBMConfig.troopLuxuryCooldownDays.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopLuxurySpendChance = xmlconfig.CreateElement("TroopLuxurySpendChance");
             TroopLuxurySpendChance.InnerText = RBMConfig.troopLuxurySpendChance.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopSpoilsHealGoldPerTier = xmlconfig.CreateElement("TroopSpoilsHealGoldPerTier");
+            TroopSpoilsHealGoldPerTier.InnerText = RBMConfig.troopSpoilsHealGoldPerTier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopSpoilsHealFractionPerHour = xmlconfig.CreateElement("TroopSpoilsHealFractionPerHour");
+            TroopSpoilsHealFractionPerHour.InnerText = RBMConfig.troopSpoilsHealFractionPerHour.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopFallenSpoilsCaptureFraction = xmlconfig.CreateElement("TroopFallenSpoilsCaptureFraction");
             TroopFallenSpoilsCaptureFraction.InnerText = RBMConfig.troopFallenSpoilsCaptureFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
@@ -412,6 +416,8 @@ namespace RBMConfig
             RBMCampaign.AppendChild(TroopSpoilsWarChestGoldPerTier);
             RBMCampaign.AppendChild(TroopLuxuryCooldownDays);
             RBMCampaign.AppendChild(TroopLuxurySpendChance);
+            RBMCampaign.AppendChild(TroopSpoilsHealGoldPerTier);
+            RBMCampaign.AppendChild(TroopSpoilsHealFractionPerHour);
             RBMCampaign.AppendChild(TroopFallenSpoilsCaptureFraction);
             RBMCampaign.AppendChild(SpoilsLoggingEnabled);
             RBMCampaign.AppendChild(SpoilsVerboseLoggingEnabled);

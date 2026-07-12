@@ -827,6 +827,90 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopFallenSpoilsCaptureFractionHint { get; } = Hint("{=RBM_CON_066}Share of a beaten enemy's killed and wounded spoils the victors carry off; the rest is lost. Default 0.75.");
 
+        private float _troopSpoilsHealGoldPerTier;
+
+        [DataSourceProperty]
+        public float TroopSpoilsHealGoldPerTier
+        {
+            get
+            {
+                return _troopSpoilsHealGoldPerTier;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value), 0f, 100f);
+                if (snapped != _troopSpoilsHealGoldPerTier)
+                {
+                    _troopSpoilsHealGoldPerTier = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopSpoilsHealGoldPerTier");
+                    OnPropertyChanged("TroopSpoilsHealGoldPerTierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopSpoilsHealGoldPerTierValue
+        {
+            get
+            {
+                return ((int)_troopSpoilsHealGoldPerTier).ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopSpoilsHealGoldPerTiert
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_073}Heal Cost per Tier").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopSpoilsHealGoldPerTierHint { get; } = Hint("{=RBM_CON_074}Gold a wounded man's stack pays to mend him faster while resting in a settlement, scaled by his tier. Zero stops paid healing. Default 10.");
+
+        private float _troopSpoilsHealFractionPerHour;
+
+        [DataSourceProperty]
+        public float TroopSpoilsHealFractionPerHour
+        {
+            get
+            {
+                return _troopSpoilsHealFractionPerHour;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                if (snapped != _troopSpoilsHealFractionPerHour)
+                {
+                    _troopSpoilsHealFractionPerHour = snapped;
+                    OnPropertyChangedWithValue(snapped, "TroopSpoilsHealFractionPerHour");
+                    OnPropertyChanged("TroopSpoilsHealFractionPerHourValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopSpoilsHealFractionPerHourValue
+        {
+            get
+            {
+                return _troopSpoilsHealFractionPerHour.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TroopSpoilsHealFractionPerHourt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_075}Heal Rate per Hour").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopSpoilsHealFractionPerHourHint { get; } = Hint("{=RBM_CON_076}Most of a stack's wounded that paid healing mends in one hour, so a deep purse buys a faster recovery, not an instant one. Default 0.05.");
+
         [DataSourceProperty]
         public string ThrustModifiert
         {
@@ -1334,6 +1418,8 @@ namespace RBMConfig
             _troopLuxuryCooldownDays = MathF.Clamp(RBMConfig.troopLuxuryCooldownDays, 0f, 120f);
             _troopLuxurySpendChance = MathF.Clamp(RBMConfig.troopLuxurySpendChance, 0f, 1f);
             _troopFallenSpoilsCaptureFraction = MathF.Clamp(RBMConfig.troopFallenSpoilsCaptureFraction, 0f, 1f);
+            _troopSpoilsHealGoldPerTier = MathF.Clamp(RBMConfig.troopSpoilsHealGoldPerTier, 0f, 100f);
+            _troopSpoilsHealFractionPerHour = MathF.Clamp(RBMConfig.troopSpoilsHealFractionPerHour, 0f, 1f);
         }
 
         /// <summary>
@@ -1528,6 +1614,8 @@ namespace RBMConfig
             RBMConfig.troopLuxuryCooldownDays = (int)MathF.Round(_troopLuxuryCooldownDays);
             RBMConfig.troopLuxurySpendChance = _troopLuxurySpendChance;
             RBMConfig.troopFallenSpoilsCaptureFraction = _troopFallenSpoilsCaptureFraction;
+            RBMConfig.troopSpoilsHealGoldPerTier = (int)MathF.Round(_troopSpoilsHealGoldPerTier);
+            RBMConfig.troopSpoilsHealFractionPerHour = _troopSpoilsHealFractionPerHour;
 
             RBMConfig.saveXmlConfig();
             //RBMConfig.parseXmlConfig();
@@ -1585,6 +1673,8 @@ namespace RBMConfig
             TroopLuxuryCooldownDays = 20f;
             TroopLuxurySpendChance = 0.02f;
             TroopFallenSpoilsCaptureFraction = 0.75f;
+            TroopSpoilsHealGoldPerTier = 10f;
+            TroopSpoilsHealFractionPerHour = 0.05f;
             SpoilsLoggingEnabled.SelectedIndex = 1;
             SpoilsVerboseLoggingEnabled.SelectedIndex = 1;
         }

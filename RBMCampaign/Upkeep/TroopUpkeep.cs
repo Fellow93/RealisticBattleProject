@@ -125,7 +125,15 @@ namespace RBMCampaign
         public static void OnHourlyTickParty(MobileParty mobileParty)
         {
             Settlement settlement = mobileParty?.CurrentSettlement;
-            if (settlement == null || !IsVisitor(mobileParty))
+            if (settlement == null)
+            {
+                return;
+            }
+            // Paid healing draws on a stack's own finite purse and only mends men who are actually down, so
+            // it is not the standing faucet of prosperity that free provisioning and carousing would be: a
+            // garrison or militia holding a settlement mends its wounded there like any party passing through.
+            HealWounded(mobileParty, settlement);
+            if (!IsVisitor(mobileParty))
             {
                 return;
             }
