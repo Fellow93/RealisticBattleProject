@@ -97,6 +97,16 @@ namespace RBMCampaign
             properties.Add(new TooltipProperty(new TextObject("{=RBM_SPOILS_001}Spoils Stockpile").ToString(),
                 SpoilsPool.GetAvailableSpoils(party, character).ToString(), 0));
 
+            // The soft cap this stack is measured against: the days of keep it will hold before its
+            // upkeep spends the surplus on food and drink. A behavioural threshold, not a hard ceiling --
+            // a purse may sit above it -- so it is named plainly beside the stockpile the player reads it against.
+            int cap = SpoilsPool.GetSpoilsCap(party, character);
+            if (cap > 0)
+            {
+                properties.Add(new TooltipProperty(new TextObject("{=RBM_SPOILS_018}Spoils Cap").ToString(),
+                    cap.ToString(), 0));
+            }
+
             // A branching troop has an upgrade cost per branch, so one number could only ever describe
             // the branch the template happens to list first. Name them all and let the stockpile speak
             // for itself against each.
