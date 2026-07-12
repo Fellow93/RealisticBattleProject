@@ -376,6 +376,8 @@ namespace RBMConfig
             TroopSettlementFunWageFraction.InnerText = RBMConfig.troopSettlementFunWageFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement SettlementProsperityPerGoldSpent = xmlconfig.CreateElement("SettlementProsperityPerGoldSpent");
             SettlementProsperityPerGoldSpent.InnerText = RBMConfig.settlementProsperityPerGoldSpent.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement MilitiaWageModifier = xmlconfig.CreateElement("MilitiaWageModifier");
+            MilitiaWageModifier.InnerText = RBMConfig.militiaWageModifier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopRaidSpoilsMultiplier = xmlconfig.CreateElement("TroopRaidSpoilsMultiplier");
             TroopRaidSpoilsMultiplier.InnerText = RBMConfig.troopRaidSpoilsMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopSpoilsGoldSpillFraction = xmlconfig.CreateElement("TroopSpoilsGoldSpillFraction");
@@ -411,6 +413,7 @@ namespace RBMConfig
             RBMCampaign.AppendChild(TroopFoodWageFraction);
             RBMCampaign.AppendChild(TroopSettlementFunWageFraction);
             RBMCampaign.AppendChild(SettlementProsperityPerGoldSpent);
+            RBMCampaign.AppendChild(MilitiaWageModifier);
             RBMCampaign.AppendChild(TroopRaidSpoilsMultiplier);
             RBMCampaign.AppendChild(TroopSpoilsGoldSpillFraction);
             RBMCampaign.AppendChild(TroopSpoilsWarChestGoldPerTier);

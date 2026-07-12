@@ -28,7 +28,8 @@ namespace RBMCampaign
                 return;
             }
 
-            float wageGold = MilitiaWageGold(settlement);
+            // Militia are part-time defenders, so the place pays only a fraction of their full wage.
+            float wageGold = MilitiaWageGold(settlement) * RBMConfig.RBMConfig.militiaWageModifier;
             float drain = wageGold * rate;
             if (drain <= 0f)
             {

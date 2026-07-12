@@ -129,6 +129,8 @@
 	<string id="RBM_CON_074" text="Gold a wounded man's stack pays to mend him faster while resting in a settlement, scaled by his tier. Zero stops paid healing. Default 10." />
 	<string id="RBM_CON_075" text="Heal Rate per Hour" />
 	<string id="RBM_CON_076" text="Most of a stack's wounded that paid healing mends in one hour, so a deep purse buys a faster recovery, not an instant one. Default 0.05." />
+	<string id="RBM_CON_077" text="Militia Wage Modifier" />
+	<string id="RBM_CON_078" text="Share of their gear-based wage a settlement's militia cost the place that keeps them, drawn from Prosperity or Hearth. Zero makes militia free to garrison. Default 0.20." />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_005" text="Salvaged into spoils: {AMOUNT}" />
