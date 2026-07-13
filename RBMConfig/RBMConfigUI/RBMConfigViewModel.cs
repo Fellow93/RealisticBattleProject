@@ -1298,6 +1298,62 @@ namespace RBMConfig
             }
         }
 
+        // Campaign config category headers. Plain literal TextObjects (no {=KEY}) to sidestep
+        // the LOC-eng.xml key-collision issue; these are collapsible sub-section titles.
+        [DataSourceProperty]
+        public string CampaignCatModulet
+        {
+            get
+            {
+                return new TextObject("Module & Diagnostics").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string CampaignCatUpgradest
+        {
+            get
+            {
+                return new TextObject("Troop Upgrades").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string CampaignCatSpoilst
+        {
+            get
+            {
+                return new TextObject("Battle & Raid Spoils").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string CampaignCatWagest
+        {
+            get
+            {
+                return new TextObject("Wages & Maintenance").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string CampaignCatUpkeept
+        {
+            get
+            {
+                return new TextObject("Settlement Upkeep").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string CampaignCatProsperityt
+        {
+            get
+            {
+                return new TextObject("Prosperity & Economy").ToString();
+            }
+        }
+
         public List<string> thrustModifierList = new List<string> { new TextObject("0.01").ToString(), new TextObject("0.05").ToString(), new TextObject("0.10").ToString(), new TextObject("0.15").ToString(),
                                                                 new TextObject("0.20").ToString(), new TextObject("0.25").ToString(), new TextObject("0.30").ToString(), new TextObject("0.35").ToString(),
                                                                 new TextObject("0.40").ToString(), new TextObject("0.45").ToString(), new TextObject("0.50").ToString(), new TextObject("0.55").ToString(),
