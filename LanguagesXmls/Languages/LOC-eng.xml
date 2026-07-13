@@ -154,7 +154,7 @@
 		<string id="RBM_SPOILS_018" text="Spoils Reserve" />
 		<string id="RBM_SPOILS_019" text="{TOTAL} ({PER} / man)" />
 		<string id="RBM_SPOILS_019" text="{TOTAL} ({PER} / man)" />
-		<string id="RBM_SPOILS_020" text="Met by troop spoils" />
+		<string id="RBM_SPOILS_020" text="Maintenance paid from troop spoils" />
 	<string id="RBM_SPOILS_021" text="Includes mount: {AMOUNT}" />
 	<string id="RBM_SPOILS_004" text="Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. The veterans pick first, and the further beneath a man a piece lies the likelier he is to step over it, so what they overlook falls to greener troops. What his men do not spend on their own upgrades they spend on food and drink in the settlements you stop in." />
 	<string id="RBM_CON_016" text="RBM Combat" />

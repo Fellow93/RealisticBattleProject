@@ -193,7 +193,7 @@ namespace RBMCampaign
             breakdown.Add(expenseSign * maintenance.Total, new TextObject("{=RBM_SPOILS_017}Troop maintenance"));
             if (maintenance.Covered > 0)
             {
-                breakdown.Add(-expenseSign * maintenance.Covered, new TextObject("{=RBM_SPOILS_020}Met by troop spoils"));
+                breakdown.Add(-expenseSign * maintenance.Covered, new TextObject("{=RBM_SPOILS_020}Maintenance paid from troop spoils"));
             }
         }
 
