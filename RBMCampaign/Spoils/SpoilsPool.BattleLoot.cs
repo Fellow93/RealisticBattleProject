@@ -289,8 +289,9 @@ namespace RBMCampaign
         /// </summary>
         /// <remarks>
         /// Each man is stripped of one battle set drawn at random, the way the game dressed him when
-        /// it spawned him. Over a stack this averages to the same value GetEquipmentValue prices an
-        /// upgrade against, so a troop cannot yield kit worth more than it costs to replace.
+        /// it spawned him, mount and harness included. Over a stack this averages to the same value
+        /// GetEquipmentValueWithMount prices him at, so a troop cannot yield kit worth more than the
+        /// whole of what it was carrying.
         /// </remarks>
         private static void CountStrippedEquipment(long[] spoilsByTier, long[] piecesByTier, TroopRoster roster, ref long intactValue)
         {
@@ -312,7 +313,9 @@ namespace RBMCampaign
                 }
                 for (int man = 0; man < element.Number; man++)
                 {
-                    foreach (EquipmentElement item in EnumerateEquipmentSlots(sets[MBRandom.RandomInt(sets.Count)]))
+                    // includeMount: a fallen rider's horse and its harness are stripped from the field
+                    // alongside his arms and armour, and salvage the same random fraction of their worth.
+                    foreach (EquipmentElement item in EnumerateEquipmentSlots(sets[MBRandom.RandomInt(sets.Count)], includeMount: true))
                     {
                         int tier = GetItemTier(item.Item);
                         intactValue += item.ItemValue;
