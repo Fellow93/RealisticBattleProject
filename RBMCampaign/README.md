@@ -8,6 +8,8 @@ Vanilla charges a flat, hand-authored gold number to upgrade a troop. RBM replac
 
 And troops can only upgrade where there's a town to outfit them. A stack upgrades only while a friendly or neutral town sits within reach on the map, and the new kit is bought from that town — march too far from friendly ground and your men make do with what they have until you bring them back within a short ride of a market. (Turn `TroopUpgradeRequireSupplyTown` off to upgrade anywhere, the way vanilla does.)
 
+A troop stepping up to a mounted tier is priced its horse and harness in gold like any other kit, rather than needing a live horse pulled from your baggage train — none is consumed. (Turn `TroopUpgradeChargeMountValue` off to restore vanilla's horse-item requirement.)
+
 ## Wages scale with tier
 
 Vanilla pays a soldier by his tier off a hand-authored table. RBM keeps the tier but turns it into one clean dial: a man's daily wage is a flat base value multiplied by his tier, so each rung of the tree costs proportionally more to keep in the field — a tier-3 man three times a tier-1's keep. (Set `TroopWageTierBase` to zero to keep vanilla's wage.)
@@ -32,6 +34,8 @@ How that loot gets divided is the interesting part. **Veterans pick first**, but
 
 **Upgrades.** When you upgrade a stack, its spoils are spent one man at a time. If the stockpile covers three men, those three upgrade free and the fourth pays full price out of your treasury. The party screen tooltip spells this out — a **Spoils cover: X** line and a **You pay: Y** line — and there's a spoils bar on each troop card showing how full the stockpile is.
 
+**Maintenance.** Every day in the field a stack pays to keep its own kit serviceable — a small share of everything it carries, so a lancer in full harness costs more to maintain than a spearman. It comes out of the stack's own purse first; whatever the purse can't cover falls to you, drawn from your treasury. Fresh recruits arrive with a few days of upkeep already put by, rather than penniless. (Set `TroopMaintenanceFraction` to zero to stop it.)
+
 **Food.** When your party stops in a town or village, soldiers buy their own rations off the local market — real items, taken from that settlement's actual stock, at that settlement's actual prices. While a stack is carrying its own food, it doesn't eat out of your party's food stores at all. Better-paid troops buy better food: a man will spend up to half a day's wage on a day's rations, so a recruit buys grain and a veteran buys meat and cheese. If a starving village has nothing on the stalls, your men leave hungry.
 
 **Drink.** Every hour your party idles in a settlement, the men spend on taverns, dice and worse — at the default, more than they earn in a day. **A garrison parked in a town will drink its way out of ever affording better armor.** They never go into debt; an empty purse spends nothing.
@@ -40,7 +44,9 @@ How that loot gets divided is the interesting part. **Veterans pick first**, but
 
 **Healing.** A stack resting in a settlement pays the local surgeons out of its own purse to mend its wounded faster than they'd knit on the march. A veteran costs more to patch up than a recruit, and only a little of the wounded is mended each hour, so a bad convalescence still means a stay in town — it just costs the stack the kit it was saving for. This runs on top of the game's own free daily healing, so an empty-pursed stack still recovers, only slower.
 
-Spoils are a **closed loop**: what a stack loots and earns is only ever spent on its own upgrades, food and drink — none of it is handed back to your treasury as gold. A stack keeps saving toward its next upgrade and a war chest that grows with the men's tier; once it holds more than that, the surplus goes to drink and the odd luxury rather than sitting idle.
+**A commander's cut.** Before the rest settles into the stacks, the party leader skims a share of everything his men gather — off a battlefield, a raid or a sack — straight into his own purse as gold. A greater lord takes a larger cut: the share is multiplied by his clan's standing, so a landless captain takes it once over and a great dynasty many times it. This is the one place spoils turn back into treasury gold. (Set `TroopLeaderSpoilsCutFraction` to zero to leave the men everything they take.)
+
+Otherwise spoils are a **closed loop**: what a stack loots and earns is spent on its own upgrades, upkeep, food and drink, not handed back as gold. A stack keeps saving toward its next upgrade and a war chest that grows with the men's tier; once it holds more than that, the surplus goes to drink and the odd luxury rather than sitting idle.
 
 ## The settlement economy
 
@@ -48,7 +54,9 @@ Coin doesn't vanish when it changes hands in a town or village — it settles in
 
 **Trade feeds the place.** Whatever your soldiers spend there on food and drink stays where they spent it, and so does ordinary trade — every purchase made at a market, yours or any other party's, a caravan's or a lord's, feeds the settlement it was bought from. A busy market grows the town that hosts it.
 
-**Militia earn their keep.** The other way round, a settlement pays for the militia that defend it. Each day their wages — scaled to each man's tier, like every other troop — are drawn straight out of the place they hold: a town or castle's Prosperity, a village's Hearth. A settlement that raises more militia than its economy can carry bleeds for it, and because militia swells with prosperity in the first place, the drain reins itself in.
+**Militia earn their keep.** The other way round, a settlement pays for the militia that defend it. Each day a fraction of their wages — scaled to each man's tier, like every other troop, but discounted because they're part-time defenders — is drawn straight out of the place they hold: a town or castle's Prosperity, a village's Hearth. A settlement that raises more militia than its economy can carry bleeds for it, and because militia swells with prosperity in the first place, the drain reins itself in.
+
+**Upkeep enriches the nearest fort.** The coin your army spends maintaining its kit in the field has to be spent somewhere, so a share of every party's daily maintenance settles as Prosperity into the nearest fortified town or castle — never a village. An army campaigning near a friendly stronghold quietly feeds it.
 
 **Making things costs something.** So does production. Every good a settlement turns out — a workshop's wares in a town, a village's crops and raw goods — is worked out of its own back: the item's worth is drawn off the town's Prosperity or the village's Hearth. A place only comes out ahead where its goods actually sell: production spends it down, trade builds it back up, and idle stock that no one carries off is just wealth spent and waiting on a buyer.
 
@@ -70,10 +78,14 @@ Everything sits in the in-game RBM config under the campaign section, or in the 
 | `TroopUpgradeSpoilsLootMultiplier` | 1 | How much of a battlefield's salvage your men actually carry off. |
 | `TroopUpgradeRequireSupplyTown` | 1 | Troops may upgrade only while a friendly or neutral town is within reach, buying the new kit there. **0 lets them upgrade anywhere.** |
 | `TroopUpgradeSupplyRadius` | 30 | How near, in map units, that supplying town must be — roughly a short march. |
+| `TroopUpgradeChargeMountValue` | 1 | Price a mounted upgrade's horse and harness into its gold cost instead of consuming a horse item from the baggage. **0 restores vanilla's horse-item requirement.** |
 | `TroopLootPiecesPerMan` | 3 | Pieces of kit one soldier can carry away from a field. |
 | `TroopLootOverlookChancePerTier` | 0.5 | Chance a soldier walks past a piece of gear, per tier it lies beneath him. |
 | `TroopFallenSpoilsCaptureFraction` | 0.75 | Share of a beaten enemy's fallen-and-wounded purse the victors capture; the rest is lost in the rout. |
 | `TroopWageTierBase` | 50 | A troop's daily wage — this base value times its tier, replacing vanilla's wage table. 0 keeps the vanilla wage. |
+| `TroopMaintenanceFraction` | 0.005 | Daily field-upkeep cost as a share of a stack's whole kit worth, paid from its purse and overflowing onto your gold. 0 stops maintenance. |
+| `RecruitMaintenanceDays` | 5 | Days of upkeep a freshly recruited stack arrives with already in its purse. 0 seeds nothing. |
+| `TroopLeaderSpoilsCutFraction` | 0.05 | Base share of gathered spoils the party leader skims into his own gold, multiplied by his clan tier + 1. **The one place spoils become treasury gold.** 0 leaves the men everything. |
 | `TroopRaidSpoilsMultiplier` | 0.25 | Plunder its soldiers pocket as spoils when they sack a settlement — a share of a raided village's wealth, or of a stormed town's prosperity. 0 turns plunder spoils off. |
 | `TroopSettlementFoodDays` | 20 | Days of rations a stack buys for itself when it reaches a market. |
 | `TroopFoodWageFraction` | 0.5 | Share of a day's wage a man will spend on a day's food before calling it extravagant. |
@@ -83,6 +95,8 @@ Everything sits in the in-game RBM config under the campaign section, or in the 
 | `TroopSpoilsHealGoldPerTier` | 10 | Gold a wounded man's stack pays local surgeons, per tier, to mend faster while resting in a settlement. 0 turns paid healing off. |
 | `TroopSpoilsHealFractionPerHour` | 0.05 | The most of a stack's wounded that paid healing can mend in a single hour. |
 | `SettlementProsperityPerGoldSpent` | 0.02 | Prosperity (or Hearth) a gold moves at a settlement, both ways — trade and carousing there add it, its militia's daily wages and every good it produces drain it. 0 turns all of it off. |
+| `MilitiaWageModifier` | 0.2 | Share of their tier-scaled gear wage a settlement's militia actually cost the place, since they're part-time. 0 makes militia free to garrison. |
+| `MaintenanceProsperityFraction` | 0.5 | Share of a party's daily maintenance spend that settles as Prosperity into the nearest fortress town or castle. 0 stops it. |
 | `TroopSpoilsCapDays` | 20 | Days of keep a stack holds in its purse — this many days of its daily wage and its daily field maintenance together — before it counts itself flush and spends the surplus on drink and luxuries. |
 | `SpoilsLoggingEnabled` | 1 | Writes what the system is doing to the log, for debugging. |
 | `SpoilsVerboseLoggingEnabled` | 1 | Whether that log carries per-stack detail or only party-level summaries. No effect unless logging is on. |
