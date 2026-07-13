@@ -296,11 +296,14 @@ namespace RBMCampaign
             // A garrison or a party stopped in a fortress enriches the place it sits in; a marching party
             // enriches the nearest city or castle. FindNearestFortificationToMobileParty ranges over towns
             // and castles alike but never villages, exactly the "castle or city, not village" we want.
+            // Only a friendly or neutral fortress is enriched: coin spent mending kit lands where the party
+            // can trade, not in an enemy's coffers -- a besieging party sitting on a hostile fortress feeds
+            // it nothing, and the search passes over enemy holds to reach the nearest one it is at peace with.
             Settlement settlement = mobileParty.CurrentSettlement;
-            if (settlement == null || !(settlement.IsTown || settlement.IsCastle))
+            if (settlement == null || !(settlement.IsTown || settlement.IsCastle) || !IsFriendlyOrNeutral(mobileParty, settlement))
             {
                 settlement = SettlementHelper.FindNearestFortificationToMobileParty(mobileParty,
-                    MobileParty.NavigationType.Default, null);
+                    MobileParty.NavigationType.Default, s => IsFriendlyOrNeutral(mobileParty, s));
             }
             if (settlement == null)
             {
@@ -315,6 +318,26 @@ namespace RBMCampaign
                     + maintenanceTotal + " -> " + toProsperity + " gold to " + settlement.Name
                     + " (+" + gain.ToString("0.00") + " prosperity)");
             }
+        }
+
+        /// <summary>
+        /// True when the party is at peace with the fortress's owner -- its own holds and any it is not at
+        /// war with. An enemy fortress is passed over so a party's upkeep never enriches a faction it is
+        /// fighting. A null faction on either side reads as not-friendly, so nothing is credited on doubt.
+        /// </summary>
+        private static bool IsFriendlyOrNeutral(MobileParty mobileParty, Settlement settlement)
+        {
+            if (settlement == null)
+            {
+                return false;
+            }
+            IFaction partyFaction = mobileParty?.MapFaction;
+            IFaction settlementFaction = settlement.MapFaction;
+            if (partyFaction == null || settlementFaction == null)
+            {
+                return false;
+            }
+            return partyFaction == settlementFaction || !partyFaction.IsAtWarWith(settlementFaction);
         }
     }
 }
