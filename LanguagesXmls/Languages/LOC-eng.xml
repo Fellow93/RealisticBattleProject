@@ -132,6 +132,8 @@
 		<string id="RBM_CON_082" text="Daily upkeep per soldier as a share of his whole kit's worth -- gear, horse and harness. Paid first from the men's own spoils; any shortfall falls to the party leader's gold. Zero stops maintenance. Default 0.005." />
 		<string id="RBM_CON_083" text="Recruit Maintenance Days" />
 		<string id="RBM_CON_084" text="Days of maintenance a recruit mustered from a village or town brings in his stack's purse, priced off the same daily upkeep. 0 seeds nothing. Default 5." />
+		<string id="RBM_CON_085" text="Maintenance to Prosperity" />
+		<string id="RBM_CON_086" text="Share of a party's daily troop maintenance that settles into the Prosperity of the nearest city or castle, never a village. Scaled by Prosperity per Gold. Default 0.50." />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_005" text="Salvaged into spoils: {AMOUNT}" />

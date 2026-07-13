@@ -559,6 +559,48 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel SettlementProsperityPerGoldSpentHint { get; } = Hint("{=RBM_CON_058}How much Prosperity, or a village's Hearth, a gold moves at a settlement, both ways: trade and carousing there add it, its militia's wages and every good it produces drain it. Default 0.02.");
 
+        private float _maintenanceProsperityFraction;
+
+        [DataSourceProperty]
+        public float MaintenanceProsperityFraction
+        {
+            get
+            {
+                return _maintenanceProsperityFraction;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                if (snapped != _maintenanceProsperityFraction)
+                {
+                    _maintenanceProsperityFraction = snapped;
+                    OnPropertyChangedWithValue(snapped, "MaintenanceProsperityFraction");
+                    OnPropertyChanged("MaintenanceProsperityFractionValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string MaintenanceProsperityFractionValue
+        {
+            get
+            {
+                return _maintenanceProsperityFraction.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string MaintenanceProsperityFractiont
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_085}Maintenance to Prosperity").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel MaintenanceProsperityFractionHint { get; } = Hint("{=RBM_CON_086}Share of a party's daily troop maintenance that settles into the Prosperity of the nearest city or castle, never a village. Scaled by Prosperity per Gold. Default 0.50.");
+
         private float _militiaWageModifier;
 
         [DataSourceProperty]
@@ -1508,6 +1550,7 @@ namespace RBMConfig
             _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 10f);
             _troopSettlementFunWageFraction = MathF.Clamp(RBMConfig.troopSettlementFunWageFraction, 0f, 10f);
             _settlementProsperityPerGoldSpent = MathF.Clamp(RBMConfig.settlementProsperityPerGoldSpent, 0f, 1f);
+            _maintenanceProsperityFraction = MathF.Clamp(RBMConfig.maintenanceProsperityFraction, 0f, 1f);
             _militiaWageModifier = MathF.Clamp(RBMConfig.militiaWageModifier, 0f, 1f);
             _troopRaidSpoilsMultiplier = MathF.Clamp(RBMConfig.troopRaidSpoilsMultiplier, 0f, 10f);
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
@@ -1706,6 +1749,7 @@ namespace RBMConfig
             RBMConfig.troopFoodWageFraction = _troopFoodWageFraction;
             RBMConfig.troopSettlementFunWageFraction = _troopSettlementFunWageFraction;
             RBMConfig.settlementProsperityPerGoldSpent = _settlementProsperityPerGoldSpent;
+            RBMConfig.maintenanceProsperityFraction = _maintenanceProsperityFraction;
             RBMConfig.militiaWageModifier = _militiaWageModifier;
             RBMConfig.troopRaidSpoilsMultiplier = _troopRaidSpoilsMultiplier;
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
