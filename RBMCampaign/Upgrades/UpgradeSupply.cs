@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
@@ -119,6 +120,11 @@ namespace RBMCampaign
         /// market and the worth of the promotion settles into the town's prosperity, the same
         /// buy-then-credit path the food and luxury spending already run. A soft sink -- it buys what
         /// the market has and never holds an upgrade up for want of stock.
+        ///
+        /// The stock pulled matches the slots the promotion actually improves: a mounted upgrade takes a
+        /// horse, a barding upgrade takes horse armour, a body upgrade takes body armour, a new sidearm
+        /// takes a one-handed weapon, and so on -- each of the tier the new gear is worth. Only when no
+        /// slot reads as improved does it fall back to pulling one generic in-band item per man.
         /// </summary>
         // TODO: a future revision may turn this into a hard gate -- no suitable stock in the town, no
         // upgrade -- rather than the soft sink it is now.
@@ -140,27 +146,54 @@ namespace RBMCampaign
 
             ItemRoster market = town.Settlement.ItemRoster;
             int bought = 0;
+            int wanted = 0;
             if (market != null)
             {
-                for (int man = 0; man < count; man++)
+                List<SpoilsPool.SlotPurchase> slots = SpoilsPool.GetUpgradedSlots(character, upgradeTarget);
+                if (slots.Count > 0)
                 {
-                    int index = FindKitInStock(market, perManValue);
-                    if (index < 0)
+                    // Buy the actual gear the promotion adds: for each slot it improves, pull one item of
+                    // that class and tier per upgraded man -- best effort against what the market holds.
+                    wanted = slots.Count * count;
+                    foreach (SpoilsPool.SlotPurchase slot in slots)
                     {
-                        break; // soft sink: nothing suitable left, the rest of the batch is outfitted off-screen
+                        for (int man = 0; man < count; man++)
+                        {
+                            int index = FindKitInStock(market, slot.ItemType, slot.Value);
+                            if (index < 0)
+                            {
+                                break; // soft sink: this class is out of stock, the rest are outfitted off-screen
+                            }
+                            market.AddToCounts(market.GetItemAtIndex(index), -1);
+                            bought++;
+                        }
                     }
-                    market.AddToCounts(market.GetItemAtIndex(index), -1);
-                    bought++;
+                }
+                else
+                {
+                    // No slot read as improved (the troops' first sets differ from the averaged price):
+                    // fall back to pulling one generic in-band item per man, as this did before slot-aware.
+                    wanted = count;
+                    for (int man = 0; man < count; man++)
+                    {
+                        int index = FindKitInStock(market, perManValue);
+                        if (index < 0)
+                        {
+                            break;
+                        }
+                        market.AddToCounts(market.GetItemAtIndex(index), -1);
+                        bought++;
+                    }
                 }
             }
             // Logged whenever a supply lands, not only when stock was pulled: the prosperity credit
             // above happens even to a bare market, and the shortfall is worth seeing on its own line.
             if (SpoilsLog.IsEnabled)
             {
-                SpoilsLog.Log("UPGRADE", buyer, SpoilsLog.Describe(buyer) + " supplied " + bought + "/" + count
-                    + "x " + SpoilsLog.Describe(upgradeTarget) + " kit from " + town.Settlement.Name
-                    + " (~" + perManValue + " each), " + (perManValue * count) + " into its prosperity"
-                    + (bought < count ? " — market short " + (count - bought) : ""));
+                SpoilsLog.Log("UPGRADE", buyer, SpoilsLog.Describe(buyer) + " supplied " + bought + "/" + wanted
+                    + " item(s) for " + count + "x " + SpoilsLog.Describe(upgradeTarget) + " kit from " + town.Settlement.Name
+                    + " (~" + perManValue + " each man), " + (perManValue * count) + " into its prosperity"
+                    + (bought < wanted ? " — market short " + (wanted - bought) : ""));
             }
         }
 
@@ -183,9 +216,48 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The in-stock market item closest in worth to <paramref name="targetValue"/>, kept inside a
-        /// half-to-double band so a promotion never spends its coin on something wildly off. Food is
-        /// never kit. -1 when the market holds nothing in band.
+        /// The in-stock market item of class <paramref name="itemType"/> closest in worth to
+        /// <paramref name="targetValue"/>, kept inside a half-to-double band so a promotion never spends
+        /// its coin on something wildly off tier. -1 when the market holds nothing of that class in band.
+        /// Matching the class is what makes a horse upgrade pull a horse and a body upgrade pull body armour.
+        /// </summary>
+        private static int FindKitInStock(ItemRoster market, ItemObject.ItemTypeEnum itemType, int targetValue)
+        {
+            int best = -1;
+            int bestDelta = int.MaxValue;
+            int low = targetValue / 2;
+            int high = targetValue * 2;
+            for (int i = 0; i < market.Count; i++)
+            {
+                if (market.GetElementNumber(i) <= 0)
+                {
+                    continue;
+                }
+                ItemObject item = market.GetItemAtIndex(i);
+                if (item == null || item.ItemType != itemType)
+                {
+                    continue;
+                }
+                int value = item.Value;
+                if (value < low || value > high)
+                {
+                    continue;
+                }
+                int delta = MathF.Abs(value - targetValue);
+                if (delta < bestDelta)
+                {
+                    bestDelta = delta;
+                    best = i;
+                }
+            }
+            return best;
+        }
+
+        /// <summary>
+        /// The in-stock market item closest in worth to <paramref name="targetValue"/>, of any class, kept
+        /// inside a half-to-double band so a promotion never spends its coin on something wildly off. Food
+        /// is never kit. -1 when the market holds nothing in band. The fallback for when the slot diff comes
+        /// back empty and there is no specific class to match.
         /// </summary>
         private static int FindKitInStock(ItemRoster market, int targetValue)
         {

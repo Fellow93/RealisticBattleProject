@@ -126,6 +126,79 @@ namespace RBMCampaign
             return MountValueUpgrade.IsEnabled ? GetEquipmentValueWithMount(character) : GetEquipmentValue(character);
         }
 
+        /// <summary>
+        /// A single slot a promotion improves: the class of item that fills it (so the supply town parts
+        /// with the right kind of stock -- a horse for a mount, harness for a barding, a cuirass for a body
+        /// upgrade, a sword for a sidearm) and roughly what that item is worth (so it parts with stock of
+        /// the right tier). One per improved slot; the town buys one per upgraded man.
+        /// </summary>
+        public struct SlotPurchase
+        {
+            public readonly ItemObject.ItemTypeEnum ItemType;
+            public readonly int Value;
+
+            public SlotPurchase(ItemObject.ItemTypeEnum itemType, int value)
+            {
+                ItemType = itemType;
+                Value = value;
+            }
+        }
+
+        /// <summary>
+        /// The slots a promotion actually improves, each paired with the class and worth of the item that
+        /// fills it, so the supply town can part with stock of the matching kind and tier rather than one
+        /// generic item worth the whole upgrade. Compares a representative battle set of each troop slot by
+        /// slot; a slot counts only where the target's gear outvalues the source's. The mount and its
+        /// harness are included only when the "charge mount value" feature has the promotion paying for them,
+        /// matching how the upgrade is priced. Empty when no slot reads as improved (e.g. the two troops'
+        /// first sets differ in a way the averaged price does not), leaving the caller to fall back to a
+        /// generic buy.
+        /// </summary>
+        public static List<SlotPurchase> GetUpgradedSlots(CharacterObject character, CharacterObject upgradeTarget)
+        {
+            List<SlotPurchase> result = new List<SlotPurchase>();
+            Equipment from = GetRepresentativeEquipment(character);
+            Equipment to = GetRepresentativeEquipment(upgradeTarget);
+            if (from == null || to == null)
+            {
+                return result;
+            }
+            // Armour, then weapons, then -- only when the mount is being paid for -- the horse and its
+            // harness: the same slots GetSetValue prices, walked so each can be attributed on its own.
+            AddImprovedSlots(result, from, to, EquipmentIndex.ArmorItemBeginSlot, EquipmentIndex.ArmorItemEndSlot);
+            AddImprovedSlots(result, from, to, EquipmentIndex.WeaponItemBeginSlot, EquipmentIndex.NumAllWeaponSlots);
+            if (MountValueUpgrade.IsEnabled)
+            {
+                AddImprovedSlots(result, from, to, EquipmentIndex.Horse, EquipmentIndex.HorseHarness + 1);
+            }
+            return result;
+        }
+
+        /// <summary>Appends a <see cref="SlotPurchase"/> for each slot in [begin, end) the target dearer-kits.</summary>
+        private static void AddImprovedSlots(List<SlotPurchase> result, Equipment from, Equipment to, EquipmentIndex begin, EquipmentIndex end)
+        {
+            for (EquipmentIndex i = begin; i < end; i++)
+            {
+                EquipmentElement target = to[i];
+                if (target.IsEmpty || target.Item == null)
+                {
+                    continue;
+                }
+                // Only slots the promotion actually improves; a same-or-cheaper slot buys nothing.
+                if (target.ItemValue > from[i].ItemValue)
+                {
+                    result.Add(new SlotPurchase(target.Item.ItemType, target.ItemValue));
+                }
+            }
+        }
+
+        /// <summary>The battle set that stands for a troop when diffing kit slot by slot -- its first.</summary>
+        private static Equipment GetRepresentativeEquipment(CharacterObject character)
+        {
+            List<Equipment> sets = GetBattleEquipments(character);
+            return (sets.Count > 0) ? sets[0] : null;
+        }
+
         private static IEnumerable<EquipmentElement> EnumerateEquipmentSlots(Equipment equipment, bool includeMount = false)
         {
             if (equipment == null)
