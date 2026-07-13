@@ -73,6 +73,10 @@ namespace RBMConfig
         public TextViewModel TroopUpgradeRequireSupplyTownText { get; }
         public SelectorVM<SelectorItemVM> TroopUpgradeRequireSupplyTown { get; }
 
+        // Charge mount in gold: on/off toggle for dropping the horse-item requirement and pricing the mount.
+        public TextViewModel TroopUpgradeChargeMountValueText { get; }
+        public SelectorVM<SelectorItemVM> TroopUpgradeChargeMountValue { get; }
+
         private float _troopUpgradeCostMultiplier;
 
         [DataSourceProperty]
@@ -752,6 +756,18 @@ namespace RBMConfig
             get
             {
                 return new TextObject("{=RBM_CON_070}Upgrade Near Town").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopUpgradeChargeMountValueHint { get; } = Hint("{=RBM_CON_088}Upgrading into a mounted troop no longer needs a horse in the baggage train and consumes none; the horse and harness are paid for in gold/spoils instead. Off restores the vanilla horse-item requirement. Default on.");
+
+        [DataSourceProperty]
+        public string TroopUpgradeChargeMountValuet
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_087}Buy Mounts For Upgrades").ToString();
             }
         }
 
@@ -1501,6 +1517,11 @@ namespace RBMConfig
             TroopUpgradeRequireSupplyTownText = new TextViewModel(new TextObject("{=RBM_CON_070}Upgrade Near Town"));
             TroopUpgradeRequireSupplyTown = new SelectorVM<SelectorItemVM>(troopUpgradeRequireSupplyTownOptions, 0, null);
 
+            // Charge mount in gold: Enabled is the default, so its option carries the "(Default)" tag.
+            List<string> troopUpgradeChargeMountValueOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            TroopUpgradeChargeMountValueText = new TextViewModel(new TextObject("{=RBM_CON_087}Buy Mounts For Upgrades"));
+            TroopUpgradeChargeMountValue = new SelectorVM<SelectorItemVM>(troopUpgradeChargeMountValueOptions, 0, null);
+
             if (RBMConfig.rbmCombatEnabled)
             {
                 RBMCombatEnabled.SelectedIndex = 1;
@@ -1541,6 +1562,7 @@ namespace RBMConfig
             _troopUpgradeSpoilsLootMultiplier = MathF.Clamp(RBMConfig.troopUpgradeSpoilsLootMultiplier, 0f, 5f);
             _troopUpgradeSupplyRadius = MathF.Clamp(RBMConfig.troopUpgradeSupplyRadius, 0f, 200f);
             TroopUpgradeRequireSupplyTown.SelectedIndex = RBMConfig.troopUpgradeRequireSupplyTown ? 1 : 0;
+            TroopUpgradeChargeMountValue.SelectedIndex = RBMConfig.troopUpgradeChargeMountValue ? 1 : 0;
             _troopLootPiecesPerMan = MathF.Clamp(RBMConfig.troopLootPiecesPerMan, 1f, 10f);
             _troopLootOverlookChancePerTier = MathF.Clamp(RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
             _troopWageTierBase = MathF.Clamp((float)RBMConfig.troopWageTierBase, 0f, 300f);
@@ -1740,6 +1762,7 @@ namespace RBMConfig
             RBMConfig.troopUpgradeSpoilsLootMultiplier = _troopUpgradeSpoilsLootMultiplier;
             RBMConfig.troopUpgradeSupplyRadius = _troopUpgradeSupplyRadius;
             RBMConfig.troopUpgradeRequireSupplyTown = TroopUpgradeRequireSupplyTown.SelectedIndex == 1;
+            RBMConfig.troopUpgradeChargeMountValue = TroopUpgradeChargeMountValue.SelectedIndex == 1;
             RBMConfig.troopLootPiecesPerMan = MathF.Round(_troopLootPiecesPerMan);
             RBMConfig.troopLootOverlookChancePerTier = _troopLootOverlookChancePerTier;
             RBMConfig.troopWageTierBase = (int)MathF.Round(_troopWageTierBase);
@@ -1804,6 +1827,7 @@ namespace RBMConfig
             TroopUpgradeSpoilsLootMultiplier = 1f;
             TroopUpgradeSupplyRadius = 30f;
             TroopUpgradeRequireSupplyTown.SelectedIndex = 1;
+            TroopUpgradeChargeMountValue.SelectedIndex = 1;
             TroopLootPiecesPerMan = 3f;
             TroopLootOverlookChancePerTier = 0.5f;
             TroopWageTierBase = 50f;

@@ -113,6 +113,19 @@ namespace RBMCampaign
             return value;
         }
 
+        /// <summary>
+        /// The kit value an upgrade is priced against. When the "charge mount value" feature is on the
+        /// horse is bought with gold rather than pulled from the baggage train, so the mount counts;
+        /// otherwise pricing keeps to the mount-less value as it always has. One switch read by both the
+        /// gold cost and the salvage credit, so the two sides of an upgrade always agree on whether the
+        /// horse counts. The cost is a differential of two of these, so a same-mount upgrade only ever
+        /// charges the difference in horse quality -- a rider does not re-buy his mount on every promotion.
+        /// </summary>
+        public static int GetUpgradeEquipmentValue(CharacterObject character)
+        {
+            return MountValueUpgrade.IsEnabled ? GetEquipmentValueWithMount(character) : GetEquipmentValue(character);
+        }
+
         private static IEnumerable<EquipmentElement> EnumerateEquipmentSlots(Equipment equipment, bool includeMount = false)
         {
             if (equipment == null)

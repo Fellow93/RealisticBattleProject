@@ -41,6 +41,11 @@ namespace RBMConfig
         // a short march at the default; raise it to be lenient, lower it to force troops back to town.
         public static float troopUpgradeSupplyRadius = 30f;
 
+        // Charge the mount in gold: a troop upgrading into a mounted tier no longer needs a horse item in
+        // the baggage train (none is consumed); the horse and harness are priced into the upgrade cost
+        // instead. False (0) restores the native horse-item requirement and mount-less upgrade pricing.
+        public static bool troopUpgradeChargeMountValue = true;
+
         // Pieces of kit one man carries off a battlefield, however much of it he sees lying there.
         public static int troopLootPiecesPerMan = 3;
 
@@ -270,6 +275,7 @@ namespace RBMConfig
             troopUpgradeSpoilsLootMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeSpoilsLootMultiplier", "1"), CultureInfo.InvariantCulture);
             troopUpgradeRequireSupplyTown = ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeRequireSupplyTown", "1").Equals("1");
             troopUpgradeSupplyRadius = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeSupplyRadius", "30"), CultureInfo.InvariantCulture);
+            troopUpgradeChargeMountValue = ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeChargeMountValue", "1").Equals("1");
             troopLootPiecesPerMan = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLootPiecesPerMan", "3"), CultureInfo.InvariantCulture);
             troopLootOverlookChancePerTier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLootOverlookChancePerTier", "0.5"), CultureInfo.InvariantCulture);
             troopWageTierBase = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopWageTierBase", "50"), CultureInfo.InvariantCulture);
@@ -384,6 +390,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeSpoilsLootMultiplier"), troopUpgradeSpoilsLootMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeRequireSupplyTown"), troopUpgradeRequireSupplyTown);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeSupplyRadius"), troopUpgradeSupplyRadius.ToString(CultureInfo.InvariantCulture));
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeChargeMountValue"), troopUpgradeChargeMountValue);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLootPiecesPerMan"), troopLootPiecesPerMan.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLootOverlookChancePerTier"), troopLootOverlookChancePerTier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopWageTierBase"), troopWageTierBase.ToString(CultureInfo.InvariantCulture));

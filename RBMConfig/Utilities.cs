@@ -360,6 +360,8 @@ namespace RBMConfig
             TroopUpgradeRequireSupplyTown.InnerText = RBMConfig.troopUpgradeRequireSupplyTown ? "1" : "0";
             XmlElement TroopUpgradeSupplyRadius = xmlconfig.CreateElement("TroopUpgradeSupplyRadius");
             TroopUpgradeSupplyRadius.InnerText = RBMConfig.troopUpgradeSupplyRadius.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopUpgradeChargeMountValue = xmlconfig.CreateElement("TroopUpgradeChargeMountValue");
+            TroopUpgradeChargeMountValue.InnerText = RBMConfig.troopUpgradeChargeMountValue ? "1" : "0";
             XmlElement TroopLootPiecesPerMan = xmlconfig.CreateElement("TroopLootPiecesPerMan");
             TroopLootPiecesPerMan.InnerText = RBMConfig.troopLootPiecesPerMan.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopLootOverlookChancePerTier = xmlconfig.CreateElement("TroopLootOverlookChancePerTier");
@@ -409,6 +411,7 @@ namespace RBMConfig
             RBMCampaign.AppendChild(TroopUpgradeSpoilsLootMultiplier);
             RBMCampaign.AppendChild(TroopUpgradeRequireSupplyTown);
             RBMCampaign.AppendChild(TroopUpgradeSupplyRadius);
+            RBMCampaign.AppendChild(TroopUpgradeChargeMountValue);
             RBMCampaign.AppendChild(TroopLootPiecesPerMan);
             RBMCampaign.AppendChild(TroopLootOverlookChancePerTier);
             RBMCampaign.AppendChild(TroopWageTierBase);

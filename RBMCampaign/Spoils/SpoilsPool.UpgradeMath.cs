@@ -44,12 +44,34 @@ namespace RBMCampaign
             {
                 return 0;
             }
-            int surplus = GetEquipmentValue(character) - GetEquipmentValue(upgradeTarget);
+            int surplus = GetUpgradeEquipmentValue(character) - GetUpgradeEquipmentValue(upgradeTarget);
             if (surplus <= 0)
             {
                 return 0;
             }
             return MathF.Max(1, MathF.Round(surplus * RBMConfig.RBMConfig.troopUpgradeCostMultiplier));
+        }
+
+        /// <summary>
+        /// The gold within an upgrade's cost that pays for the mount: the horse and harness the target
+        /// gains over the source, priced at the same multiplier as the rest of the upgrade. Zero when the
+        /// "buy mounts" feature is off or the target rides no dearer a mount than the source, so the
+        /// tooltip only names a mount cost when there is one. A breakdown figure for the player, not a
+        /// pricing input -- it does not fold in the cost-reducing perks that discount the whole quote.
+        /// </summary>
+        public static int GetMountValueInUpgrade(CharacterObject character, CharacterObject upgradeTarget)
+        {
+            if (!MountValueUpgrade.IsEnabled)
+            {
+                return 0;
+            }
+            int mountDelta = (GetEquipmentValueWithMount(upgradeTarget) - GetEquipmentValue(upgradeTarget))
+                           - (GetEquipmentValueWithMount(character) - GetEquipmentValue(character));
+            if (mountDelta <= 0)
+            {
+                return 0;
+            }
+            return MathF.Max(1, MathF.Round(mountDelta * RBMConfig.RBMConfig.troopUpgradeCostMultiplier));
         }
 
         /// <summary>

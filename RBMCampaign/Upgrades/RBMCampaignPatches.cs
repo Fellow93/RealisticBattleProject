@@ -22,8 +22,8 @@ namespace RBMCampaign
         /// </summary>
         public static ExplainedNumber BuildUpgradeGoldCost(PartyBase party, CharacterObject characterObject, CharacterObject upgradeTarget, float goldFactor)
         {
-            int characterEquipmentCost = SpoilsPool.GetEquipmentValue(characterObject);
-            int upgradeTargetEquipmentCost = SpoilsPool.GetEquipmentValue(upgradeTarget);
+            int characterEquipmentCost = SpoilsPool.GetUpgradeEquipmentValue(characterObject);
+            int upgradeTargetEquipmentCost = SpoilsPool.GetUpgradeEquipmentValue(upgradeTarget);
 
             bool isForHire = characterObject.Occupation == Occupation.Mercenary || characterObject.Occupation == Occupation.Gangster || characterObject.Occupation == Occupation.CaravanGuard;
 
@@ -161,6 +161,19 @@ namespace RBMCampaign
                 if (__result == null)
                 {
                     return;
+                }
+                // Name the horse's share of the cost whenever the upgrade buys a mount, in every case
+                // below -- spoils-covered, part-paid or salvage -- so a rider's dearer promotion reads as
+                // "so much of this is the horse" rather than an unexplained jump over its foot equivalent.
+                if (!areUpgradesDisabled && SpoilsPool.IsEnabled && character != null
+                    && index >= 0 && index < character.UpgradeTargets.Length)
+                {
+                    int mount = SpoilsPool.GetMountValueInUpgrade(character, character.UpgradeTargets[index]);
+                    if (mount > 0)
+                    {
+                        __result += "\n" + new TextObject("{=RBM_SPOILS_021}Includes mount: {AMOUNT}")
+                            .SetTextVariable("AMOUNT", mount).ToString() + CoinIcon;
+                    }
                 }
                 if (__state > 0)
                 {

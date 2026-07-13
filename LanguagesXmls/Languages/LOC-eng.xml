@@ -134,6 +134,8 @@
 		<string id="RBM_CON_084" text="Days of maintenance a recruit mustered from a village or town brings in his stack's purse, priced off the same daily upkeep. 0 seeds nothing. Default 5." />
 		<string id="RBM_CON_085" text="Maintenance to Prosperity" />
 		<string id="RBM_CON_086" text="Share of a party's daily troop maintenance that settles into the Prosperity of the nearest city or castle, never a village. Scaled by Prosperity per Gold. Default 0.50." />
+		<string id="RBM_CON_087" text="Buy Mounts For Upgrades" />
+		<string id="RBM_CON_088" text="Upgrading into a mounted troop no longer needs a horse in the baggage train and consumes none; the horse and harness are paid for in gold/spoils instead. Off restores the vanilla horse-item requirement. Default on." />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_005" text="Salvaged into spoils: {AMOUNT}" />
@@ -153,6 +155,7 @@
 		<string id="RBM_SPOILS_019" text="{TOTAL} ({PER} / man)" />
 		<string id="RBM_SPOILS_019" text="{TOTAL} ({PER} / man)" />
 		<string id="RBM_SPOILS_020" text="Met by troop spoils" />
+	<string id="RBM_SPOILS_021" text="Includes mount: {AMOUNT}" />
 	<string id="RBM_SPOILS_004" text="Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. The veterans pick first, and the further beneath a man a piece lies the likelier he is to step over it, so what they overlook falls to greener troops. What his men do not spend on their own upgrades they spend on food and drink in the settlements you stop in." />
 	<string id="RBM_CON_016" text="RBM Combat" />
 	<string id="RBM_CON_017" text="Module Status" />
