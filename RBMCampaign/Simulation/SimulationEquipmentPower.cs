@@ -242,6 +242,16 @@ namespace RBMCampaign
         // auto-resolve has never once let them.
         private const float BraceBonus = 1.6f;
 
+        private const int ZoneHead = 0;
+
+        private const int ZoneBody = 1;
+
+        private const int ZoneArm = 2;
+
+        private const int ZoneLeg = 3;
+
+        private const int ZoneCount = 4;
+
         /// <summary>Where the blows land, as a share of them. The four zones Bannerlord's armour actually has.</summary>
         private struct HitZones
         {
@@ -329,13 +339,84 @@ namespace RBMCampaign
             bool strikerIsAttacker = battle != null && strikerParty != null
                 && battle.AttackerSide != null && strikerParty.Side == BattleSideEnum.Attacker;
 
-            float correction = GetCorrection(strikerTroop, struckTroop,
-                SimulationBattleState.Get(battle), strikerIsAttacker, spend: true);
-            if (correction == 1f)
+            SimulationBattleState.BattleState state = SimulationBattleState.Get(battle);
+
+            // Explain rather than GetCorrection, so the blow can be written down as it is struck. This is the real
+            // battle -- the one the game is actually fighting, and the one the campaign will live with -- and it is
+            // the only account of it that cannot drift from the truth.
+            Breakdown breakdown;
+            Explain(strikerTroop, struckTroop, out breakdown, state, strikerIsAttacker, spend: true);
+
+            float vanillaDamage = __result.ResultNumber;
+            float correction = breakdown.Correction;
+
+            if (correction != 1f)
+            {
+                __result = new ExplainedNumber(vanillaDamage * correction);
+            }
+
+            RecordHit(state, strikerTroop, struckTroop, strikerIsAttacker, battle, breakdown, vanillaDamage);
+        }
+
+        /// <summary>
+        /// Write the blow down, exactly as it fell. Whether it put the man down is not known yet -- the game decides
+        /// that in the next breath, in ApplySimulationDamageToSelectedTroop -- so the record is parked where that
+        /// verdict can be written into it (see SimulationDownedMarker).
+        /// </summary>
+        private static void RecordHit(SimulationBattleState.BattleState state, CharacterObject strikerTroop,
+            CharacterObject struckTroop, bool strikerIsAttacker, MapEvent battle, Breakdown breakdown, float vanillaDamage)
+        {
+            // Whatever the last blow was, it is answered. Clearing this FIRST is load-bearing: the game calls
+            // ApplySimulationDamageToSelectedTroop after every blow, including the ones we decline to write down,
+            // and if LastHit were left pointing at an earlier record then this blow's verdict would be written into
+            // THAT one -- turning somebody else's kill back into a miss.
+            SimulationBattleState.LastHit = null;
+
+            if (state == null || battle == null || !SimulationLog.IsEnabled || !RBMConfig.RBMConfig.simulationLogHits)
             {
                 return;
             }
-            __result = new ExplainedNumber(__result.ResultNumber * correction);
+
+            // A blow the model zeroed is not a blow. In the volley a man who is not shooting never swung at anybody
+            // -- he is a bowshot away with his shield up -- so he rolls no body part, splinters no shield, kills no
+            // horse, and does not go in the book. Writing him down as a "closing" blow that dealt nothing was
+            // recording an event that did not happen, four thousand times a battle, and burying the volley's actual
+            // story -- the archers, and who was allowed to answer them -- under the noise of men doing nothing.
+            if (breakdown.Correction <= 0f)
+            {
+                return;
+            }
+
+            float finalDamage = vanillaDamage * breakdown.Correction;
+            int hitPoints = struckTroop.MaxHitPoints();
+
+            HitRecord hit = new HitRecord();
+            hit.Round = state.Round;
+            hit.VolleyPhase = SimulationBattleState.IsVolleyPhase(state);
+            hit.SkirmishPhase = SimulationBattleState.IsSkirmishPhase(state);
+            hit.StrikerIsAttacker = strikerIsAttacker;
+            hit.Striker = strikerTroop;
+            hit.Struck = struckTroop;
+            hit.Phase = breakdown.Phase ?? "-";
+            hit.Weapon = breakdown.Weapon;
+            hit.BodyPart = ZoneName(breakdown.BodyPart);
+            hit.ArmorMet = breakdown.ArmorMet;
+            hit.ShieldBlock = breakdown.ShieldBlock;
+            hit.Braced = breakdown.Braced;
+            hit.ChargeBonus = breakdown.ChargeBonus;
+            hit.Closing = breakdown.Closing;
+            hit.VanillaDamage = vanillaDamage;
+            hit.Correction = breakdown.Correction;
+            hit.FinalDamage = finalDamage;
+            hit.StruckHitPoints = hitPoints;
+            // What he has LEFT is not known yet -- the game subtracts this blow in the next breath. The
+            // downed-marker fills it in from the game's own books once it has.
+            hit.HitPointsLeft = -1f;
+            hit.AttackersLeft = (battle.AttackerSide != null) ? battle.AttackerSide.NumRemainingSimulationTroops : 0;
+            hit.DefendersLeft = (battle.DefenderSide != null) ? battle.DefenderSide.NumRemainingSimulationTroops : 0;
+
+            state.Trace.Add(hit);
+            SimulationBattleState.LastHit = hit;
         }
 
         /// <summary>
@@ -380,6 +461,29 @@ namespace RBMCampaign
             public float TierTerm;
 
             public float Correction;
+
+            // What the man was actually DOING, so a traced blow can say so rather than leave it to be inferred
+            // from the numbers. The matchup table alone could never show this: it asks what a blow WOULD do,
+            // outside any battle, and a blow outside a battle is never in a volley and never out of arrows.
+
+            /// <summary>"shoot", "throw", or "melee".</summary>
+            public string Phase;
+
+            /// <summary>The weapon it came off: the arrow, the javelin, or the heaviest thing in the pool he drew from.</summary>
+            public string Weapon;
+
+            /// <summary>Which part of him it found -- ZoneHead/Body/Arm/Leg, or -1 for the reference tables, which
+            /// take the expectation over all four and so land nowhere in particular.</summary>
+            public int BodyPart;
+
+            /// <summary>He set a spear against a horse.</summary>
+            public bool Braced;
+
+            /// <summary>What the charge added, as a multiplier. 1 when he is not charging, or no longer is.</summary>
+            public float ChargeBonus;
+
+            /// <summary>The lines had not met yet and he was walking into arrows with nothing to answer them.</summary>
+            public bool Closing;
         }
 
         internal static bool Explain(CharacterObject strikerTroop, CharacterObject struckTroop, out Breakdown breakdown,
@@ -411,52 +515,91 @@ namespace RBMCampaign
             // Where in the battle this blow falls, and what the two men have left to spend.
             SimulationBattleState.TroopState strikerState = (state != null) ? state.For(strikerTroop, strikerIsAttacker) : null;
             SimulationBattleState.TroopState struckState = (state != null) ? state.For(struckTroop, !strikerIsAttacker) : null;
-            bool volley = SimulationBattleState.IsVolleyPhase(state);
 
-            // THE VOLLEY. While the lines are still closing, a bowman is doing the only thing he is for -- and the
-            // man walking toward him is doing nothing at all but walking. This is the whole of what auto-resolve
-            // never modelled: it threw archers into a melee brawl at contact range and wondered why they were bad.
-            //
+            // What the horse still has in it. A footman hacking upward is mostly hacking at the horse, and horses
+            // die; when one does its rider keeps none of its barding and none of its height -- and he is no longer
+            // a horseman for the purpose of anything below, including whether the cavalry are still fighting each
+            // other. A man whose horse is dead has left the skirmish, whatever else he is doing.
+            float horsesAlive = (struckState != null && struck.IsMounted)
+                ? SimulationBattleState.HorsesAlive(struckState)
+                : 1f;
+            bool struckStillMounted = struck.IsMounted && horsesAlive > 0.5f;
+
+            // A BATTLE HAS THREE ACTS. The volley, while the lines are far apart and the bowmen have the field. The
+            // skirmish, on the ground between them -- javelins in the air, and the horse of each side riding out at
+            // each other before the foot are anywhere near. And then the lines meet, which is the only act
+            // auto-resolve has ever known about, and the least interesting of the three.
+            bool volley = SimulationBattleState.IsVolleyPhase(state);
+            bool skirmish = SimulationBattleState.IsSkirmishPhase(state);
+            bool approaching = volley || skirmish;
+
+            // THE OPENING ROUNDS BELONG TO THE DEFENDER. He is standing on his ground with his enemy in the open and
+            // the whole field to shoot across; the attacker is still coming, too far out to answer, and eats it.
+            // That is what it means to advance on a prepared position, and it is the reason storming one is
+            // expensive.
+            bool mayLoose = !(volley && strikerIsAttacker && state != null
+                && state.Round <= SimulationBattleState.DefenderOnlyRounds);
+
             // Whether he still HAS arrows is a question about the clock, not about how many blows he happens to
             // have thrown: a quiver empties per minute, not per swing. Nothing is spent here -- the round counter
             // is the spending.
             bool shooting = striker.IsRanged
                 && striker.Shot.IsValid
+                && mayLoose
                 && SimulationBattleState.HasAmmo(state, strikerState, strikerIsAttacker);
-            // Otherwise the quiver is empty. He draws from his melee arsenal like anybody else, and his armour
-            // was never meant for that.
+            // Otherwise the quiver is empty (or he is not yet in range). He draws from his melee arsenal like
+            // anybody else, and his armour was never meant for that.
 
-            // AND THE THROW. A footman with javelins on his back is not doing nothing while the lines close -- he is
-            // doing the most dangerous thing he will do all battle. He hurls two or three, they go through shields
-            // and mail, and then they are gone and he is a man with a knife. That is the whole life of a skirmisher,
-            // and auto-resolve has never once let him live it: his javelins were either ignored entirely or -- worse
-            // -- treated as the weapon he swung for the whole battle, an axe thrown on an infinite loop.
-            //
-            // He throws only while the lines are closing (afterwards he is in among them, and you do not throw a
-            // spear at a man who is already inside your guard), only if he is not better employed shooting, and only
-            // while he has any left.
+            // THE SKIRMISH, and the javelins come off his back HERE -- not during the long approach. A man does not
+            // hurl a spear at somebody a bowshot away; he carries it until the ground between the lines is close
+            // enough to cross with it, and then he throws it, and then it is gone and he is a man with a knife.
+            // That is the whole life of a skirmisher, and auto-resolve has never once let him live it: his javelins
+            // were either ignored entirely or -- worse -- treated as the weapon he swung for the whole battle, an
+            // axe thrown on an infinite loop.
             bool throwing = !shooting
-                && volley
+                && skirmish
                 && striker.Thrown.IsValid
                 && striker.Thrown.Magnitude > 0f
                 && SimulationBattleState.HasJavelins(state, strikerState, striker.ThrownPerMan);
+
+            // AND THE HORSE MEET THE HORSE. Each side's cavalry ride out at each other across the open ground while
+            // the foot are still walking -- which is what cavalry have always done, and what auto-resolve has never
+            // let them do: it held every horseman back until the infantry lines collided and then threw him into the
+            // press, where a horse is worth least. Here they have the field to themselves, and they fight the only
+            // enemy who can reach them.
+            bool cavalryClash = skirmish && striker.IsMounted && struckStillMounted;
 
             // A thrown weapon IS a missile, and everything that follows from that follows: it goes to the mass of
             // the man rather than to whatever a footman can reach, and the shield it meets is a shield held up
             // against something in flight, which is a far better shield than one held against a swordsman.
             bool missile = shooting || throwing;
 
-            // What the horse still has in it. A footman hacking upward is mostly hacking at the horse, and horses
-            // die; when one does its rider keeps none of its barding and none of its height.
-            float horsesAlive = (struckState != null && struck.IsMounted)
-                ? SimulationBattleState.HorsesAlive(struckState)
-                : 1f;
-            bool struckStillMounted = struck.IsMounted && horsesAlive > 0.5f;
+            // Whether this man is FIGHTING at all, or merely getting closer to it. Once the lines have met, everyone
+            // is. Before that, only three kinds of man are: the one shooting, the one throwing, and the horseman who
+            // has found another horseman. Everybody else is walking, and pays for it.
+            bool engaged = !approaching || missile || cavalryClash;
 
-            // What this man's weapon does to that man's armour -- meeting it where a blow from him would really
-            // have landed -- less whatever his shield turns aside, which no armour value can express: a shield
-            // does not blunt a blow, it stops it. And a shield that has been stopping blows all battle is kindling.
-            float armor = WeightedArmor(struck, striker, horsesAlive, struckStillMounted, missile);
+            // AND IN THE VOLLEY, A MAN WHO IS NOT SHOOTING DOES NOTHING AT ALL.
+            //
+            // Not a weak blow -- NO blow. The lines are a bowshot apart. There is nothing there to hit: no sword
+            // reaches that far, and a man walking toward an enemy he cannot touch is not fighting badly, he is not
+            // fighting. The volley is the archers' round and nobody else's, which is the entire reason it is worth
+            // having archers.
+            //
+            // It used to be a closing PENALTY -- a hundredth of a blow, but a blow -- and across four thousand of
+            // them that adds up to a real body count landed by men who were, at the time, several hundred yards
+            // away with their shields up.
+            //
+            // Nothing is spent here either: he splinters no shield and kills no horse, because he never reached one.
+            if (volley && !shooting)
+            {
+                breakdown.Phase = "closing";
+                breakdown.Weapon = "-";
+                breakdown.BodyPart = -1;
+                breakdown.Closing = true;
+                breakdown.Correction = 0f;
+                return true;
+            }
 
             // The board comes up. It turns aside more arrows than blows -- an arrow flies in from one direction and
             // sticks where it lands, while a swordsman feints, comes round the edge, and waits for it to drop.
@@ -468,29 +611,50 @@ namespace RBMCampaign
 
             // The blow. A bowman looses his shot, a skirmisher hurls a javelin, and everyone else draws from the
             // weapons on his belt -- at random against a man on foot, and reaching for the spear when it is a horse
-            // bearing down on him.
-            float actual;
-            bool braced = false;
-            if (shooting)
+            // bearing down on him. And it lands SOMEWHERE on him: a real blow rolls a body part, meets the armour
+            // standing over that part, and is worth what RBM says a blow to that part is worth. The reference tables
+            // take the expectation over all four instead, since they are asking about a matchup and not a moment.
+            HitZones zones = GetHitZones(striker.IsMounted, missile, struckStillMounted);
+
+            int zoneHit;
+            float armor;
+            SimulationWeaponModel.WeaponProfile drawn;
+            bool braced;
+            float actual = Blow(striker, struck, rbmCombat, zones, horsesAlive, struckStillMounted,
+                shooting, throwing, roll: spend, out zoneHit, out armor, out drawn, out braced);
+
+            breakdown.Phase = shooting ? "shoot" : (throwing ? "throw" : (cavalryClash ? "horse" : "melee"));
+            breakdown.Weapon = drawn.WeaponType;
+            breakdown.BodyPart = zoneHit;
+
+            // THE ARCHERS GET THEIR TURNS BACK.
+            //
+            // Vanilla hands a side pow(men, 0.6) blows a round and picks who throws each one uniformly from the
+            // WHOLE side -- so an archer is chosen only as often as archers are common. In the volley nobody else
+            // does anything at all, so in a typical army four blows in five are spent on men standing still, and the
+            // archers are not shooting slowly, they are being SKIPPED. Their own infantry are eating their turns.
+            //
+            // This gives them back the tick allocation they would have had if the volley were a battle between the
+            // archers alone. It is NOT 1/share -- that would hand a side's whole volley to whatever archers it
+            // happens to own, so one bowman in a hundred would loose as many shafts as a hundred bowmen, and how
+            // many archers you brought would stop mattering. See SimulationBattleState.VolleyFocus.
+            if (shooting && volley)
             {
-                actual = ShotDamage(striker, armor, struck.IsPlate, rbmCombat);
-            }
-            else if (throwing)
-            {
-                actual = ExpectedDamage(striker.Thrown, armor, struck.IsPlate, rbmCombat);
-            }
-            else
-            {
-                SimulationWeaponModel.WeaponProfile drawn;
-                actual = MeleeDamage(striker, armor, struck.IsPlate, rbmCombat, struckStillMounted, out drawn, out braced);
+                actual *= SimulationBattleState.VolleyFocus(state, strikerIsAttacker);
             }
 
-            // The charge: weight and speed, spent once. A lancer at the gallop is a different thing from the same
-            // man five minutes later, hemmed in and hacking downward from a standing horse. A horseman flinging a
-            // javelin is not charging either -- he is riding past at a distance, which is the point of javelins.
-            if (striker.IsMounted && !missile && striker.ChargeDamage > 0f && state != null)
+            // The charge: weight and speed, spent at the moment of contact and gone a few rounds after it. A lancer
+            // at the gallop is a different thing from the same man five minutes later, hemmed in and hacking
+            // downward from a standing horse. A horseman flinging a javelin is not charging either -- he is riding
+            // past at a distance, which is the point of javelins.
+            //
+            // It fires only once the lines have MET. While they are still closing a horseman has nobody to ride
+            // down, and a charge delivered into empty ground is not a charge.
+            breakdown.ChargeBonus = 1f;
+            if (striker.IsMounted && !missile && engaged && striker.ChargeDamage > 0f && state != null)
             {
-                actual *= 1f + (striker.ChargeDamage * 0.01f * ChargeDecay(state));
+                breakdown.ChargeBonus = 1f + (striker.ChargeDamage * 0.01f * ChargeDecay(state, struckStillMounted));
+                actual *= breakdown.ChargeBonus;
             }
 
             // Braced steel. A spear set against a horse is the answer infantry have always had to cavalry, and
@@ -499,6 +663,7 @@ namespace RBMCampaign
             if (braced && !striker.IsMounted)
             {
                 actual *= BraceBonus;
+                breakdown.Braced = true;
             }
 
             float blocked = actual * shieldBlock;
@@ -553,17 +718,32 @@ namespace RBMCampaign
             // above 1 widens the gap between a well-found soldier and a ragged one.
             float correction = MathF.Pow(equipmentRatio / tierTerm, RBMConfig.RBMConfig.simulationEquipmentPowerWeight);
 
-            // And if the lines have not met yet, a man with nothing but a sword is not fighting. He is walking, into
-            // arrows. A man who is shooting or throwing is doing his work, and pays nothing.
-            if (volley && !missile)
-            {
-                correction *= ClosingPenalty;
-            }
-
             // Wide, because a real mismatch is meant to be lopsided now -- a spear through an unarmoured looter
             // should put him down, and his club should ring off a mail hauberk. But not unbounded: a single
             // simulated blow must not become a massacre on the strength of one freak pairing.
-            breakdown.Correction = MBMath.ClampFloat(correction, 0.1f, 8f);
+            //
+            // The clamp bounds the EQUIPMENT term and nothing else, which is why it is taken here, before the
+            // closing penalty rather than after it.
+            correction = MBMath.ClampFloat(correction, 0.1f, 8f);
+
+            // The SKIRMISH, for a man with no javelin and no horse. He is close enough now that a blow is at least
+            // conceivable -- the ground between the lines is not a bowshot any more -- but he is still walking, past
+            // a cavalry battle he can do nothing about and under javelins he cannot answer. So he pays the closing
+            // penalty here. (In the VOLLEY he pays no penalty because he lands no blow: see above.)
+            //
+            // This is applied AFTER the clamp, and it has to be. Inside it, 0.08 times anything below 1.25 landed
+            // under the 0.1 floor -- so every walking infantryman in Calradia came out at exactly 0.1, and a
+            // Hireling Elite Pikeman in plate was worth precisely as much as a naked recruit for as long as the
+            // lines were closing. The trace showed it in one glance: sixty-four walking blows, every one of them
+            // 0.10. A phase of the battle is not an equipment mismatch and has no business inside a clamp that
+            // exists to bound one.
+            if (!engaged)
+            {
+                correction *= ClosingPenalty;
+                breakdown.Closing = true;
+            }
+
+            breakdown.Correction = correction;
             return true;
         }
 
@@ -982,14 +1162,6 @@ namespace RBMCampaign
                         // zones with a sword's damage, and his `actual` met different armour from his `baseline`.
                         bool shooting = kit.IsRanged && kit.Shot.IsValid;
 
-                        // Each striker meets the typical man of the other arm where HIS blows would land -- so a
-                        // footman is priced against a rider's legs, and a rider against a footman's head. This is
-                        // the SAME function the live blow calls, deliberately: it is the only way to be sure the
-                        // rider in the baseline is sitting on the same horse as the rider in the battle. He was not
-                        // -- the baseline used a 4-argument overload that knows nothing about horses, so the
-                        // typical cavalryman had no barding and no mount under him at all.
-                        float armor = WeightedArmor(typical[k], kit, 1f, bucketMounted[k], shooting);
-
                         // Drawn the same way it will be drawn in the battle -- the shot for a bowman, and for
                         // everyone else the average of his belt, narrowed to his spears when the arm he faces
                         // rides. The polearm preference belongs HERE as well as in the blow, or a spearman would
@@ -1007,17 +1179,21 @@ namespace RBMCampaign
                         // throwing it -- which is why it is taken here, striker by striker, and not once at the end.
                         float blocked = shooting ? _typicalShieldBlockVsMissile[k] : _typicalShieldBlock[k];
 
-                        if (shooting)
-                        {
-                            sum += ShotDamage(kit, armor, typical[k].IsPlate, rbmCombat) * (1f - blocked);
-                        }
-                        else
-                        {
-                            SimulationWeaponModel.WeaponProfile drawn;
-                            bool braced;
-                            sum += MeleeDamage(kit, armor, typical[k].IsPlate, rbmCombat, bucketMounted[k], out drawn, out braced)
-                                 * (1f - blocked);
-                        }
+                        // The SAME function the live blow calls, deliberately -- and here asked for the expectation
+                        // rather than a roll, since a baseline is a matchup and not a moment. It has to be the same
+                        // function or the body-part multipliers would sit in the blow and not in the baseline, and
+                        // every striker in Calradia would read as unusually good (or bad) purely because of where
+                        // his blows happen to land.
+                        HitZones zones = GetHitZones(kit.IsMounted, shooting, bucketMounted[k]);
+
+                        int zoneHit;
+                        float armor;
+                        SimulationWeaponModel.WeaponProfile drawn;
+                        bool braced;
+                        sum += Blow(kit, typical[k], rbmCombat, zones, 1f, bucketMounted[k],
+                                    shooting, throwing: false, roll: false,
+                                    zoneHit: out zoneHit, armorMet: out armor, drawn: out drawn, braced: out braced)
+                             * (1f - blocked);
                     }
                     float mean = sum / strikers.Count;
                     _baselineDamage[s][k] = mean;
@@ -1406,6 +1582,99 @@ namespace RBMCampaign
             return struckMounted ? FootVsMounted : FootVsFoot;
         }
 
+        /// <summary>
+        /// What a blow is WORTH where it lands, which is not the same question as what armour it meets there.
+        /// Straight out of RBM's own DamageRework.GetBodyPartDamageMultiplier -- a head is worth half again, and an
+        /// arm or a leg between half and seven-tenths. A head hit is three times a leg hit, and the model had every
+        /// blow in Calradia worth exactly the same wherever it landed.
+        ///
+        /// RBM's table is over six bones; this model has Bannerlord's four ARMOUR zones, so two of them fold:
+        ///   - Body  = chest (0.9) and abdomen (1.0). Taken at 0.95.
+        ///   - Arm   = the arms (0.5/0.6/0.7) and the shoulders (0.6/0.6/0.7), which share an armour value here.
+        /// Head, Neck and Legs map across untouched.
+        /// </summary>
+        private static float BodyPartMultiplier(int zone, DamageTypes damageType)
+        {
+            bool ordinary = damageType == DamageTypes.Pierce
+                || damageType == DamageTypes.Cut
+                || damageType == DamageTypes.Blunt;
+
+            switch (zone)
+            {
+                case ZoneHead:
+                    return ordinary ? 1.5f : 1f;
+
+                case ZoneBody:
+                    return ordinary ? 0.95f : 1f;
+
+                case ZoneArm:
+                    if (damageType == DamageTypes.Pierce) { return 0.55f; }
+                    if (damageType == DamageTypes.Cut) { return 0.6f; }
+                    if (damageType == DamageTypes.Blunt) { return 0.7f; }
+                    return 1f;
+
+                case ZoneLeg:
+                    if (damageType == DamageTypes.Pierce) { return 0.5f; }
+                    if (damageType == DamageTypes.Cut) { return 0.6f; }
+                    if (damageType == DamageTypes.Blunt) { return 0.7f; }
+                    return 1f;
+
+                default:
+                    return 1f;
+            }
+        }
+
+        internal static string ZoneName(int zone)
+        {
+            switch (zone)
+            {
+                case ZoneHead: return "head";
+                case ZoneBody: return "body";
+                case ZoneArm: return "arm";
+                case ZoneLeg: return "leg";
+                default: return "-";
+            }
+        }
+
+        /// <summary>The armour standing over one zone of this man, the horse under him included where it belongs.</summary>
+        private static float ZoneArmor(TroopKit struck, int zone, float horsesAlive)
+        {
+            switch (zone)
+            {
+                case ZoneHead: return struck.Head;
+                case ZoneBody: return struck.Body + (struck.HorseBody * horsesAlive);
+                case ZoneArm: return struck.Arm;
+                case ZoneLeg: return struck.Leg + (struck.HorseLeg * horsesAlive);
+                default: return 0f;
+            }
+        }
+
+        private static float ZoneShare(HitZones zones, int zone)
+        {
+            switch (zone)
+            {
+                case ZoneHead: return zones.Head;
+                case ZoneBody: return zones.Body;
+                case ZoneArm: return zones.Arm;
+                case ZoneLeg: return zones.Leg;
+                default: return 0f;
+            }
+        }
+
+        /// <summary>
+        /// Which part of him the blow found. Drawn from the distribution for this matchup -- so a footman hacking
+        /// upward at a rider really does find the legs most of the time, and a rider cutting downward really does
+        /// find the head.
+        /// </summary>
+        private static int RollZone(HitZones zones)
+        {
+            float roll = MBRandom.RandomFloat;
+            if ((roll -= zones.Head) < 0f) { return ZoneHead; }
+            if ((roll -= zones.Body) < 0f) { return ZoneBody; }
+            if ((roll -= zones.Arm) < 0f) { return ZoneArm; }
+            return ZoneLeg;
+        }
+
         /// <summary>The armour a blow actually meets: this man's zones, weighted by where blows of this kind land.</summary>
         private static float WeightedArmor(float head, float body, float arm, float leg, HitZones zones)
         {
@@ -1426,12 +1695,28 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// A charge is spent in the first shock and is gone by the third round -- after which a horseman is a man
-        /// on a horse, hemmed in, with no room to build the speed that made him terrible.
+        /// A charge is spent in the first shock and is gone a few rounds later -- after which a horseman is a man on
+        /// a horse, hemmed in, with no room to build the speed that made him terrible.
+        ///
+        /// It is measured from CONTACT, not from the first round of the battle, and that is the whole of the fix.
+        /// The charge used to decay from round one -- but on open ground the lines take four rounds to close, and
+        /// the charge was three, so it had decayed to nothing before there was anybody to charge INTO. In four
+        /// thousand blows of a real battle the model fired seven charges, all of them in forests, where the approach
+        /// is one round. A cavalry charge that is spent before it arrives is not a cavalry charge.
         /// </summary>
-        private static float ChargeDecay(SimulationBattleState.BattleState state)
+        private static float ChargeDecay(SimulationBattleState.BattleState state, bool struckMounted)
         {
-            return MBMath.ClampFloat(1f - ((state.Round - 1) / (float)ChargeRounds), 0f, 1f);
+            // A horseman meets a horseman in the SKIRMISH, out on the open ground, long before he meets a footman --
+            // whom he cannot reach until the lines close. So the two have different moments of contact, and each
+            // gets his charge in full at his own. Measuring both from one instant would have spent a lancer's charge
+            // on the enemy cavalry and left him nothing for the infantry he rides down two rounds later, or the
+            // reverse.
+            int contact = struckMounted
+                ? SimulationBattleState.CavalryContactRound(state)
+                : SimulationBattleState.ContactRound(state);
+
+            int since = state.Round - contact;
+            return MBMath.ClampFloat(1f - (since / (float)ChargeRounds), 0f, 1f);
         }
 
         private static bool IsPolearm(string weaponType)
@@ -1441,17 +1726,93 @@ namespace RBMCampaign
                 || weaponType == "LowGripPolearm";
         }
 
+        /// <summary>What the blow is, once we know where it landed: the shot, the throw, or what he drew from his belt.</summary>
+        private static float PhaseDamage(TroopKit striker, TroopKit struck, float armor, bool rbmCombat,
+            bool struckStillMounted, bool shooting, bool throwing, int zone,
+            out SimulationWeaponModel.WeaponProfile drawn, out bool braced)
+        {
+            drawn = default(SimulationWeaponModel.WeaponProfile);
+            braced = false;
+
+            if (shooting)
+            {
+                drawn = striker.Shot;
+                return ShotDamage(striker, armor, struck.IsPlate, rbmCombat, zone);
+            }
+            if (throwing)
+            {
+                drawn = striker.Thrown;
+                return ExpectedDamage(striker.Thrown, armor, struck.IsPlate, rbmCombat, zone);
+            }
+            return MeleeDamage(striker, armor, struck.IsPlate, rbmCombat, struckStillMounted, zone, out drawn, out braced);
+        }
+
+        /// <summary>
+        /// One blow, landing somewhere on him.
+        ///
+        /// A blow does not meet an average of a man. It meets his HEAD, or his leg, and those are different armour
+        /// and different consequences -- RBM pays a head half again and a leg about half. So a real blow ROLLS a
+        /// body part from the distribution for this matchup and meets that one: a footman hacking upward at a rider
+        /// really does find the legs most of the time, and the rider cutting downward really does find the head.
+        ///
+        /// The reference tables (and every baseline) instead want the EXPECTATION, so they get the average over all
+        /// four zones -- each zone's own armour, each zone's own multiplier, averaged AFTER. Which is the same rule
+        /// as everywhere else in this model: a mace and a sabre must meet the armour separately, and so must a head
+        /// and a shin. Averaging the armour first and applying one multiplier to the result gives a blow that landed
+        /// nowhere, on a man who is the mean of himself.
+        /// </summary>
+        private static float Blow(TroopKit striker, TroopKit struck, bool rbmCombat, HitZones zones,
+            float horsesAlive, bool struckStillMounted, bool shooting, bool throwing, bool roll,
+            out int zoneHit, out float armorMet, out SimulationWeaponModel.WeaponProfile drawn, out bool braced)
+        {
+            if (roll)
+            {
+                zoneHit = RollZone(zones);
+                armorMet = ZoneArmor(struck, zoneHit, horsesAlive);
+                return PhaseDamage(striker, struck, armorMet, rbmCombat, struckStillMounted, shooting, throwing,
+                    zoneHit, out drawn, out braced);
+            }
+
+            zoneHit = -1;
+            armorMet = 0f;
+            drawn = default(SimulationWeaponModel.WeaponProfile);
+            braced = false;
+
+            float damage = 0f;
+            for (int z = 0; z < ZoneCount; z++)
+            {
+                float share = ZoneShare(zones, z);
+                if (share <= 0f)
+                {
+                    continue;
+                }
+                float zoneArmor = ZoneArmor(struck, z, horsesAlive);
+                armorMet += share * zoneArmor;
+
+                SimulationWeaponModel.WeaponProfile zoneDrawn;
+                bool zoneBraced;
+                damage += share * PhaseDamage(striker, struck, zoneArmor, rbmCombat, struckStillMounted,
+                    shooting, throwing, z, out zoneDrawn, out zoneBraced);
+
+                // The weapon he drew and whether he braced are facts about the man and his enemy, not about which
+                // shin the blow found -- so any zone answers them.
+                drawn = zoneDrawn;
+                braced = zoneBraced;
+            }
+            return damage;
+        }
+
         /// <summary>
         /// What this man's shot achieves against that armour -- averaged over the arrows he actually carries,
         /// because he does not carry one kind. Each shaft meets the armour on its own terms and the mean is taken
         /// afterwards, which is the only order that can be right when a bodkin halves armour and a broadhead does
         /// not.
         /// </summary>
-        private static float ShotDamage(TroopKit kit, float armor, bool victimIsPlate, bool rbmCombat)
+        private static float ShotDamage(TroopKit kit, float armor, bool victimIsPlate, bool rbmCombat, int zone)
         {
             if (kit.Shots == null || kit.Shots.Length == 0)
             {
-                return ExpectedDamage(kit.Shot, armor, victimIsPlate, rbmCombat);
+                return ExpectedDamage(kit.Shot, armor, victimIsPlate, rbmCombat, zone);
             }
 
             float damage = 0f;
@@ -1459,7 +1820,7 @@ namespace RBMCampaign
             for (int i = 0; i < kit.Shots.Length; i++)
             {
                 ShotOption option = kit.Shots[i];
-                damage += ExpectedDamage(option.Profile, armor, victimIsPlate, rbmCombat) * option.Weight;
+                damage += ExpectedDamage(option.Profile, armor, victimIsPlate, rbmCombat, zone) * option.Weight;
                 weight += option.Weight;
             }
 
@@ -1480,7 +1841,7 @@ namespace RBMCampaign
         /// exactly the condition for setting a spear against a horse, so the caller need not test the weapon twice.
         /// </summary>
         private static float MeleeDamage(TroopKit kit, float armor, bool victimIsPlate, bool rbmCombat,
-            bool targetMounted, out SimulationWeaponModel.WeaponProfile shown, out bool braced)
+            bool targetMounted, int zone, out SimulationWeaponModel.WeaponProfile shown, out bool braced)
         {
             shown = default(SimulationWeaponModel.WeaponProfile);
             braced = false;
@@ -1503,7 +1864,7 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                damage += ExpectedDamage(option.Profile, armor, victimIsPlate, rbmCombat) * option.Weight;
+                damage += ExpectedDamage(option.Profile, armor, victimIsPlate, rbmCombat, zone) * option.Weight;
                 weight += option.Weight;
 
                 // The weapon shown in the log is the heaviest of the pool actually drawn from -- a label for the
@@ -1937,15 +2298,21 @@ namespace RBMCampaign
         /// used at all under RBM (a blow is its class and its wielder's training), and the weapon's quality shows
         /// itself as PENETRATION, dividing the armour threshold, rather than as force.
         /// </summary>
-        private static float ExpectedDamage(SimulationWeaponModel.WeaponProfile profile, float armor, bool victimIsPlate, bool rbmCombat)
+        private static float ExpectedDamage(SimulationWeaponModel.WeaponProfile profile, float armor, bool victimIsPlate,
+            bool rbmCombat, int zone)
         {
             if (!profile.IsValid || profile.Magnitude <= 0f)
             {
                 return 0f;
             }
-            return rbmCombat
+            float damage = rbmCombat
                 ? SimulationWeaponModel.RbmDamage(profile, armor, victimIsPlate)
                 : SimulationWeaponModel.VanillaDamage(profile.Magnitude, armor, profile.DamageType);
+
+            // And what it is worth where it landed. RBM pays a head half again and an arm or a leg about half, and
+            // it pays them by DAMAGE TYPE -- so this has to be inside the per-weapon loop, where the type is known.
+            // A pool of a mace and a spear does not share one multiplier any more than it shares one armour rule.
+            return damage * BodyPartMultiplier(zone, profile.DamageType);
         }
     }
 }

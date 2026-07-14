@@ -32,6 +32,7 @@ namespace RBMCampaign
         // A battle that somehow cannot resolve must not hang the campaign thread.
         private const int MaxRounds = 500;
 
+
         /// <summary>
         /// One man in the line, and the lord whose banner he stands under. The lord matters: vanilla passes the
         /// STRIKER'S OWN party into SimulateHit, so a captain's power modifier reaches his own men and nobody
@@ -44,6 +45,16 @@ namespace RBMCampaign
             public CharacterObject Character;
 
             public float LeaderModifier;
+
+            /// <summary>
+            /// What this man has soaked so far -- EVERY man, since SimulationTroopHitPoints now gives a line trooper
+            /// the health a lord has always had. The replay must model the same battle the game fights, or the A/B
+            /// numbers describe a battle nobody had.
+            /// </summary>
+            public float Damage;
+
+            /// <summary>The company he marches with, whose lord's perks decide how much he can take.</summary>
+            public PartyBase Party;
         }
 
         /// <summary>One party in the line of battle, for the log to name rather than lump into its neighbour.</summary>
@@ -243,6 +254,7 @@ namespace RBMCampaign
                         Soldier soldier = default(Soldier);
                         soldier.Character = element.Character;
                         soldier.LeaderModifier = leaderModifier;
+                        soldier.Party = party;
                         into.Add(soldier);
                     }
                 }
@@ -269,7 +281,15 @@ namespace RBMCampaign
             return (leaderParty.Name != null) ? leaderParty.Name.ToString() : leaderParty.Id;
         }
 
-        /// <summary>Fight the snapshot <paramref name="samples"/> times over and average what happened.</summary>
+
+        /// <summary>
+        /// Fight the snapshot <paramref name="samples"/> times over and average what happened.
+        ///
+        /// This produces the A/B NUMBERS and nothing else. It does not trace the blows -- the blow-by-blow is taken
+        /// from the real battle now, in SimulateHit's postfix, because a reimplementation of vanilla's loop can
+        /// drift from vanilla's loop, and this one did: it gave heroes a line trooper's single roll where the game
+        /// accumulates their damage, and quietly killed every lord in the log.
+        /// </summary>
         internal static ShadowResult Run(BattleSnapshot snapshot, bool applyCorrection, int samples)
         {
             ShadowResult result = default(ShadowResult);
@@ -351,6 +371,12 @@ namespace RBMCampaign
                 int defenderTicks;
                 int attackerTicks;
                 ComputeTicks(snapshot, defenders.Count, attackers.Count, out defenderTicks, out attackerTicks);
+
+                // The real battle's allocation is doubled (SimulationRoundCounter). The replay must feel the same
+                // round, or the two are counting different battles -- and the phases, which are measured in ROUNDS,
+                // would cover a different share of each.
+                defenderTicks *= SimulationRoundCounter.TickMultiplier;
+                attackerTicks *= SimulationRoundCounter.TickMultiplier;
                 if (defenderTicks + attackerTicks <= 0)
                 {
                     return;
@@ -421,26 +447,47 @@ namespace RBMCampaign
             float struckSurplus = MathF.Max(struckMorale - 50f, 0f);
             damage *= 1f + ((strikerShortfall - struckSurplus) * 0.005f);
 
+            float vanillaDamage = damage;
+            SimulationEquipmentPower.Breakdown breakdown = default(SimulationEquipmentPower.Breakdown);
+            breakdown.Correction = 1f;
+
             if (applyCorrection)
             {
                 // spend: true -- the arrow really is loosed and the shield really is splintered, in this replay's
                 // own private battle state. Without that the replay would run a model the game does not run.
-                damage *= SimulationEquipmentPower.GetCorrection(striker, struck, state, strikerIsAttacker, spend: true);
+                //
+                // Explain rather than GetCorrection, because the breakdown is the whole point of a trace: the
+                // correction alone is a number, and a number does not tell you the man was out of arrows.
+                SimulationEquipmentPower.Explain(striker, struck, out breakdown, state, strikerIsAttacker, spend: true);
+                damage *= breakdown.Correction;
             }
 
             int blow = (int)damage;
-            if (blow <= 0)
-            {
-                return;
-            }
 
-            // ApplySimulationDamageToSelectedTroop: a blow rolled against the man's hit points puts him down.
-            // Whether he is then killed or merely wounded is left out; either way he is out of the battle, and
-            // it is the battle we are comparing.
-            if (MBRandom.RandomInt(struck.MaxHitPoints()) < blow)
+            // The same pool the real battle gives him -- his lord's perks included. MaxHitPoints() alone is the flat
+            // hundred nobody actually fights with any more.
+            int hitPoints = SimulationTroopHitPoints.MaxHitPoints(struck, struckSoldier.Party);
+
+            // ApplySimulationDamageToSelectedTroop, and it has two branches -- so this has two branches.
+            //
+            // A line trooper is rolled against his hit points and is either untouched or out of the battle. There
+            // is no pool and nothing accumulates: RandomInt(maxHitPoints) < damage, once, and that is the whole of
+            // it. A HERO does accumulate -- AddHeroDamage -- and falls only when it has added up.
+            //
+            // Whether the man is then killed or merely wounded is left out; either way he is out of the battle,
+            // and it is the battle we are comparing.
+            // Every man is worn down now, lord and levy alike -- there is no coin-flip left in it. A blow is
+            // subtracted, and when there is nothing left to subtract from, he falls. Mirrors the prefix in
+            // SimulationTroopHitPoints, which is what the real battle actually runs.
+            struckSoldier.Damage += damage;
+            struckSide[victimIndex] = struckSoldier;
+            bool downed = struckSoldier.Damage >= hitPoints;
+
+            if (downed)
             {
                 struckSide.RemoveAt(victimIndex);
             }
+
         }
 
         /// <summary>How many blows each side gets this round, as DefaultCombatSimulationModel hands them out.</summary>

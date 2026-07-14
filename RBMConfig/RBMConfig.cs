@@ -191,6 +191,13 @@ namespace RBMConfig
         // nothing -- a simulated battle is heavily random -- so the replays are averaged. Higher is steadier
         // and slower; the cost lands once, when a battle ends. No effect unless logging above is on.
         public static int simulationLogSamples = 20;
+        // Writes out one replay of each battle BLOW BY BLOW: every man who swung, what he was doing at the time
+        // (shooting, hurling a javelin, charging, setting a spear, or just walking into arrows while the lines
+        // closed), what armour he met, what his shield turned aside, what vanilla alone would have hit for, and
+        // what the model made of it. The averages say a battle went one way and the matchup table says what a blow
+        // would do in the abstract; neither can tell you the archers ran dry in round fifteen. Only this can.
+        // Bounded to the opening rounds -- a large battle throws tens of thousands of blows. Needs the log above.
+        public static bool simulationLogHits = true;
 
         //RBMAI
         public static bool hitStopEnabled = true;
@@ -347,6 +354,7 @@ namespace RBMConfig
             simulationShieldBlockChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationShieldBlockChance", "0.4"), CultureInfo.InvariantCulture);
             simulationLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationLoggingEnabled", "1").Equals("1");
             simulationLogSamples = int.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationLogSamples", "20"), CultureInfo.InvariantCulture);
+            simulationLogHits = ReadOrCreate("/Config/RBMCampaign", "SimulationLogHits", "1").Equals("1");
 
             // RBMAI
             hitStopEnabled = ReadOrCreate("/Config/RBMAI", "HitStopEnabled", "1").Equals("1");
@@ -469,6 +477,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationShieldBlockChance"), simulationShieldBlockChance.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLoggingEnabled"), simulationLoggingEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLogSamples"), simulationLogSamples.ToString(CultureInfo.InvariantCulture));
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLogHits"), simulationLogHits);
             //RBMAI
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/HitStopEnabled"), hitStopEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureEnabled"), postureEnabled);

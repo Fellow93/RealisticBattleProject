@@ -168,6 +168,27 @@ Bannerlord keeps armour in four zones, so those are the four we can weight. Each
 
 Two footmen are eye to eye, so it is the chest and shoulders and arms that catch it and the legs almost never — a man does not stoop to hack at ankles. But a man on foot hacking upward at a horseman finds the rider's **legs and lower body** at his eye level, while the rider cutting downward finds the footman's **head and shoulders**. This is why barding is worth a great deal against infantry and nearly nothing against another lancer: the infantry are the ones swinging where it is. An arrow ignores all of this and goes to the mass of the man.
 
+### And a blow is worth what it is worth *where it lands*
+
+Where a blow falls decides two separate things, and only one of them is armour. RBM's own `DamageRework.GetBodyPartDamageMultiplier`:
+
+| | Pierce | Cut | Blunt |
+|---|---|---|---|
+| Head / Neck | **1.5** | **1.5** | **1.5** |
+| Abdomen | 1.0 | 1.0 | 1.0 |
+| Chest | 0.9 | 0.9 | 0.9 |
+| Shoulders | 0.6 | 0.6 | 0.7 |
+| Arms | 0.5 | 0.6 | 0.7 |
+| Legs | 0.5 | 0.6 | 0.7 |
+
+**A head hit is worth three times a leg hit.** RBM's table is over six bones; this model has Bannerlord's four armour zones, so shoulders fold into `Arm` and chest+abdomen into `Body` (0.95). Head and legs map across untouched.
+
+So **a real blow rolls a body part** from the distribution for its matchup, meets the armour standing over *that* part, and is paid what a blow to that part is worth. It does not meet an average of a man. The reference tables and the baselines take the expectation over all four zones instead — each zone's own armour, each zone's own multiplier, **averaged after** — because they are asking about a matchup, not a moment.
+
+That ordering is the same rule as everywhere else here: a mace and a sabre must meet armour separately, and so must a head and a shin. Averaging the armour first and applying one multiplier to the result yields a blow that landed nowhere, on a man who is the mean of himself.
+
+This is also what makes the hit-zone tables above *matter*. Before it, they moved which armour a blow met and nothing else — so a rider cutting down at heads and a footman hacking up at shins were, once the armour washed out, throwing the same blow.
+
 The horse's own barding and bulk answer at the leg and body — but they are kept **apart** from the rider's armour, because a horse can be killed and a dead one answers nothing.
 
 ### Shields
@@ -192,6 +213,40 @@ Shields **degrade**. What a shield stops, it eats, and a wooden board that has t
 
 The tick allocation is called once at the top of every round, and it is the **only** place the simulation ever says a round has turned. A blow cannot say it — a blow does not know how many came before it. So the battle's clock is read from there, and everything spent *over* a battle rather than in an instant hangs off it.
 
+### A battle has three acts
+
+Auto-resolve has only ever known about the third.
+
+| | | |
+|---|---|---|
+| **1. The volley** | the lines are far apart | The bowmen have the field, **and nobody else does anything at all.** In the first round only the **defender** may loose — the attacker is still too far out to answer. |
+| **2. The skirmish** (3 rounds) | the ground between them | The javelins come off their backs and are hurled. And the **horse meet the horse**: each side's cavalry ride out at each other in the open, long before the foot are anywhere near. Everyone else is still walking, and pays the closing penalty. |
+| **3. The lines meet** | the brawl | Everything auto-resolve has always imagined a battle to be — and the least interesting of the three. |
+
+**In the volley, a man who is not shooting lands no blow.** Not a weak one — *none*. The lines are a bowshot apart: no sword reaches that far, and a man walking toward an enemy he cannot touch is not fighting badly, he is not fighting. The volley is the archers' round and nobody else's, which is the entire reason it is worth having archers.
+
+**And the archers get their turns back.** This is subtler, and it is not a damage question at all — it is a question about whose *turn* it is. Vanilla hands a side `pow(men, 0.6)` blows in a round and then picks the man who throws each one **uniformly from the whole side**. So an archer is chosen only as often as archers are common. Once nobody but an archer does anything, four blows in five of a typical army's round are spent on men standing still — and the archers are not shooting *slowly*, they are being **skipped**. Their own infantry are eating their turns.
+
+So during the volley an archer's shot is multiplied by `share^-0.4`, giving him back the tick allocation he would have had if the volley were a battle between the archers alone (`pow(share·men, 0.6)` rather than `share·pow(men, 0.6)`).
+
+| archers on the side | multiplier |
+|---|---|
+| all of them | ×1.00 |
+| half | ×1.32 |
+| a fifth | ×1.90 |
+| a twentieth | ×3.31 |
+
+Note what this is **not**: it is not `1/share`. That is the obvious fix and it is badly wrong — it would hand the side's entire volley to whatever archers it happens to own, so one bowman in a hundred would loose as many shafts as a hundred bowmen, and *how many archers you brought would stop mattering*. That is the one thing a volley must depend on. More archers still means more shooting here — just sublinearly, exactly as vanilla scales everything else.
+
+This was a closing *penalty* before — a hundredth of a blow, but a blow — and across four thousand of them it added up to a real body count landed by men who were, at the time, several hundred yards away with their shields up. Nothing is spent by such a man either: he splinters no shield and kills no horse, because he never reached one.
+
+In the **skirmish** the closing penalty does apply, and should: the ground between the lines is not a bowshot any more, so a blow is at least conceivable — but he is still walking, past a cavalry battle he can do nothing about and under javelins he cannot answer.
+
+Two consequences worth stating, because both were wrong before and both matter:
+
+- **A javelin is thrown in the skirmish, not the volley.** A man does not hurl a spear at somebody a bowshot away. He carries it across the open ground and throws it when he is close enough, and then it is gone and he is a man with a knife.
+- **A horseman has two moments of contact, and gets his charge at each.** He meets the enemy cavalry in the skirmish; he cannot reach their infantry until the lines close. Measuring both from one instant would spend a lancer's charge on the enemy horse and leave him nothing for the foot he rides down two rounds later.
+
 ### The volley
 
 While the lines are closing, a bowman is doing the only thing he is for, and the man walking toward him is doing nothing at all but walking. This is the whole of what auto-resolve never modelled: it threw archers into a melee brawl at contact range and wondered why they were bad.
@@ -200,15 +255,22 @@ How long the approach lasts is a question about the ground:
 
 | Context | Volley rounds |
 |---|---|
-| Siege assault | 5 |
-| Plain / steppe / desert / dune / snow | 4 |
-| Siege (not an assault) | 4 |
-| River, sea, village, naval raid | 2 |
-| **Forest** | **1** |
+| **Siege** (assault or not) | **12** |
+| Plain, steppe, desert, dune, snow, river, forest | 6 |
+| Naval raid, sea, open sea, river crossing | 4 |
+| **Village** | **2** |
 
-Across an open plain a man walks a long way under arrows; in a wood he is on you before the second shaft is nocked. Storming a wall is the longest walk of all, and everyone on it is shooting at you the whole way.
+Storming a wall is the longest approach there is, and everyone on it is shooting at you the whole way with nowhere to go but forward. A village is the opposite: there is no ground to cross at all — the fighting starts in among the houses, at arm's length, the moment anyone arrives. Ships closing on one another is a short thing, and then it is boarding and butchery.
 
 During the volley, a man who is **not** shooting or throwing pays a **closing penalty** — he is walking, into arrows, and achieving very nearly nothing.
+
+### The opening rounds belong to the defender
+
+For the first **two** rounds, only the defender may loose. He is standing on his ground with his enemy in the open and the whole field to shoot across; the attacker is still coming, too far out to answer, and eats it. That is what it means to advance on a prepared position, and it is why storming one is expensive.
+
+The attacker is not merely out-shot in those rounds — he is doing **nothing at all**, because a man in the volley who is not shooting lands no blow (see above). Two rounds of free fire is the price of crossing open ground at somebody who is already there.
+
+Javelins are unaffected: nobody throws during the volley at all, so there is nothing to delay.
 
 ### Ammunition — counted in rounds, not blows
 
@@ -230,7 +292,9 @@ He hurls one per round, so **the bundle on his back is the number of rounds he c
 
 ### The charge, and the horse under him
 
-A charge is weight and speed, and it is **spent once**. A lancer at the gallop is a different thing from the same man five minutes later, hemmed in and hacking downward from a standing horse. So the horse's `ChargeDamage` is paid in full in the first round and decays to nothing by the fourth.
+A charge is weight and speed, and it is **spent once**. A lancer at the gallop is a different thing from the same man five minutes later, hemmed in and hacking downward from a standing horse. So the horse's `ChargeDamage` is paid in full at contact and decays to nothing over the next three rounds.
+
+**At contact** — which is the entire point, and was got wrong. The charge used to decay from round *one*. But on open ground the lines take four rounds to close and the charge lasts three, so it had decayed to nothing before there was anybody to charge *into*. In four thousand blows of a real battle the model fired **seven** charges, every one of them in a forest, where the approach is a single round. A cavalry charge that is spent before it arrives is not a cavalry charge. It now fires when the lines meet, and not before: while they are still closing, a horseman has nobody to ride down.
 
 And a footman hacking upward at a rider is mostly hacking at the **horse**. Horses die. When one does, its rider is a man on foot in cavalry harness: he loses the barding that was answering those blows, and the blows start finding his head instead of his legs.
 
@@ -239,6 +303,33 @@ And a footman hacking upward at a rider is mostly hacking at the **horse**. Hors
 A spear set against a horse is the answer infantry have had to cavalry for three thousand years, and auto-resolve has never once let them use it. A braced polearm lands **half again as hard** on a horseman.
 
 This one is a deliberate thumb on the scale and is *not* built into the baseline — see §8.
+
+---
+
+## 6a. Every soldier has hit points
+
+Vanilla gives a line trooper **no health at all**. His life is one coin-flip per blow:
+
+```csharp
+else if (MBRandom.RandomInt(_selectedSimulationTroop.MaxHitPoints()) < damage)
+```
+
+Eight damage against a hundred hit points is not eight points off a bar — it is an **eight per cent chance the man is simply gone**, and a ninety-two per cent chance the blow never happened. Nothing accumulates. A veteran in plate who has been hacked at for twenty rounds is as fresh as the moment he arrived, and a recruit's lucky swing can kill a champion outright. Only a **hero** got a real pool (`AddHeroDamage`) — four lines higher up in the same method.
+
+The game does know who each man is: `MapEventSide` keeps a `UniqueTroopDescriptor` for the soldier it has selected. So a pool is possible, and RBM keeps one, per battle, for every man.
+
+The roll is not replaced — it is **bent**. `RandomInt(maxHitPoints)` returns `0 … maxHitPoints-1`, so rewriting `damage` in a prefix makes the outcome certain in either direction:
+
+```
+still standing  ->  damage = 0             ->  RandomInt(max) < 0    is never true, and he lives
+worn through    ->  damage = maxHitPoints  ->  RandomInt(max) < max  is always true, and he falls
+```
+
+Everything downstream then runs exactly as it always did — the surgeon's survival roll deciding dead-or-wounded, the `BattleObserver`, the casualty books, the player's kill event. None of it is reimplemented, so none of it can drift. The XP survives too: `MapEvent` awards it from its *own* copy of the damage, and a `ref` prefix only rewrites the callee's.
+
+**What it changes in play.** The *mean* is untouched — expected blows to kill a man is `maxHP / damage` either way. What collapses is the **variance**. Men die in the order they are worn down; no recruit fluke-kills a champion, and twenty grazes finally add up to a corpse instead of twenty separate near-misses. Battles get less swingy and the better army wins more reliably.
+
+And every part of the equipment model bites harder, which is the real prize: armour that halves a blow now genuinely **doubles a man's life**, instead of halving a lottery ticket.
 
 ---
 
@@ -299,6 +390,7 @@ In the XML, under `/Config/RBMCampaign`:
 | `SimulationShieldBlockChance` | 0.4 | What a *typical* shield-bearer turns aside. Better shields scale up from here, poorer ones down. |
 | `SimulationLoggingEnabled` | 1 | The A/B log (§10). |
 | `SimulationLogSamples` | 20 | Replays per battle, per side of the comparison. |
+| `SimulationLogHits` | 1 | The blow-by-blow trace (§10). Needs the log above. Bounded to the first 400 blows of one replay. |
 
 Only the two **enabled/disabled** toggles appear in the in-game config screen — *Detailed Auto Resolve* and *Detailed Auto Resolve Logging*. The numeric knobs are XML-only, deliberately.
 
@@ -324,11 +416,34 @@ day 1085-016  ·  FieldBattle  ·  PlainBattle  ·  PLAYER
     delta                 +20%        -47.4         +2.2
 ```
 
-followed by every troop's kit as the model reads it — item by item, with the raw numbers off each item, because RBM builds its melee weapons from crafting pieces at runtime and no XML on disk can be trusted to say what a weapon finally is — and then **every blow of the battle, worked through**: armour met, shield block, actual, baseline, equipment ratio, tier term, correction.
+Then three things, and they answer three different questions.
+
+**The kit, as the model reads it** — item by item, with the raw numbers off each item. RBM builds its melee weapons from crafting pieces at runtime, so no XML on disk can be trusted to say what a weapon finally is; only this can. It also prints how many weapons are on the belt, how many kinds of arrow are in the quiver, and whether one of them is a spear.
+
+**The matchup table** — every striker against every struck, worked through: armour met, shield block, actual, baseline, equipment ratio, tier term, correction. Note what this is and is not. It asks what a blow **would** do, *outside any battle* — so nobody in it is ever in a volley, nobody is ever out of arrows, and no shield is ever splintered. It is a reference table, not a record of the fight.
+
+**The battle, blow by blow** — one replay of it, round by round, every man who swung:
+
+```
+  the battle, blow by blow (one replay of it):
+    striker              -> struck                what        weapon        armor  blk%   vanilla  x corr  =  dealt   hp   result
+
+    ── round 1  ·  VOLLEY, the lines are still closing  ·  22 v 20
+    A Aserai Archer      -> Imperial Recruit      shoot       Arrow         26.71 33.58     31.4    1.53     48.0   40
+    D Imperial Recruit   -> Aserai Tribesman      walking     OneHandedPol   30.8 34.46     28.2    0.11      3.1   45
+    A Harami             -> Aserai Recruit        throw       Javelin       22.35 34.46     40.1    2.87    115.1   40   DOWN
+
+    ── round 5  ·  the lines have met  ·  19 v 14
+    D Aserai Recruit     -> Nomad Bandit          braced      OneHandedPol  35.35     0     22.4    5.16    115.6   40   DOWN
+```
+
+This is the only place the model's *story* can be read. The averages say a battle went one way; the matchup table says what a blow would do in the abstract. Neither can tell you that the archers ran dry in round fifteen and spent the rest of the fight being cut down with knives in their hands, or that the lancers' charge was spent by round four and they were never dangerous again. `what` is what the man was actually doing — `shoot`, `throw`, `melee`, `CHARGE`, `braced`, or `walking` (in the volley with nothing to answer arrows with, eating the closing penalty).
+
+Bounded to the first 400 blows of a single replay: an 850-a-side battle throws tens of thousands, and the opening rounds are where the story is anyway. It says so when it truncates.
 
 A battle cannot be fought twice — the real one mutates the rosters it resolves — so it is *replayed* instead. The replay does not reproduce perks, morale drift, or the wounded-versus-killed split. **That is fine, and it is the point: both replays are wrong in exactly the same way, so what differs between them is the model and nothing else.**
 
-The model has been designed wrong several times on reasoning that looked perfectly sound from the inside, and the log caught every one. It is made to account for itself rather than be argued with.
+The model has been designed wrong several times on reasoning that looked perfectly sound from the inside, and the log caught every one. It is made to account for itself rather than be argued with. The blow-by-blow trace exists because of a specific lesson: every state-driven feature — the volley, the arrows running out, the charge decaying, the shields splintering — was **invisible in the log by construction**, since the only per-blow table asked its question outside any battle. A model whose most interesting half cannot be seen is a model that will be wrong for a long time before anyone notices.
 
 ---
 
@@ -361,4 +476,4 @@ Everything else is read from the game's own equations and item data, or measured
 
 - **Reinforcements that join mid-battle** are not counted. The muster and the snapshot are taken at the top of the first round — the first moment the battle can be seen whole, and before a blow has landed. A party arriving at round five breaks the "opening rosters" premise the whole replay rests on, so there is no honest snapshot to take.
 - **A stack, not a soldier.** The simulation hands us troop *types*, never individual men — a blow is struck by "an Imperial Archer", not by a man with eleven arrows left. So arrows, shields and horses are tracked per stack and scaled by headcount. That is an abstraction, and it is the honest limit of what the game gives us to work with.
-- **The closing penalty is partly swallowed by the clamp floor.** `0.08` applied before a floor of `0.1` means the effective penalty is `0.1` for most infantry.
+- **The trace is the whole battle.** A large fight is several thousand lines. That is deliberate — the arrows running dry, the charge decaying, the shieldwall splintering all happen *late*, and a truncated trace hid exactly the half of the model only the trace could show. The log folder keeps its last ten files.

@@ -57,8 +57,13 @@ namespace RBMCampaign
                 return;
             }
 
-            // The battle is done: let go of its arrows, its splintered shields and its dead horses, or the
-            // campaign will carry the memory of every fight ever fought in it.
+            // The blows of the battle that was ACTUALLY fought, recorded as they landed. Taken BEFORE the state is
+            // forgotten, obviously -- and the ordering here is load-bearing, since Forget drops the trace with
+            // everything else.
+            List<HitRecord> trace = SimulationBattleState.TakeTrace(mapEvent);
+
+            // Now the battle is done: let go of its arrows, its splintered shields and its dead horses, or the
+            // campaign will carry the memory of every fight it ever fought.
             SimulationBattleState.Forget(mapEvent);
 
             SimulationShadow.BattleSnapshot snapshot = SimulationShadow.Take(mapEvent);
@@ -67,15 +72,19 @@ namespace RBMCampaign
                 return;
             }
 
+            // The replay is now only ever asked for the A/B NUMBERS -- what this battle would have been without the
+            // model, which is the one thing that cannot be observed and must be simulated. The blow-by-blow above is
+            // the real thing and needs no replay at all.
             int samples = (RC.simulationLogSamples > 0) ? RC.simulationLogSamples : 1;
             SimulationShadow.ShadowResult withoutModel = SimulationShadow.Run(snapshot, applyCorrection: false, samples: samples);
             SimulationShadow.ShadowResult withModel = SimulationShadow.Run(snapshot, applyCorrection: true, samples: samples);
 
-            SimulationLog.Write(Format(mapEvent, snapshot, withoutModel, withModel));
+            SimulationLog.Write(Format(mapEvent, snapshot, withoutModel, withModel, trace));
         }
 
         private static string Format(MapEvent mapEvent, SimulationShadow.BattleSnapshot snapshot,
-            SimulationShadow.ShadowResult withoutModel, SimulationShadow.ShadowResult withModel)
+            SimulationShadow.ShadowResult withoutModel, SimulationShadow.ShadowResult withModel,
+            List<HitRecord> trace)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -106,8 +115,101 @@ namespace RBMCampaign
             sb.Append("    delta          ").Append(Delta(withoutModel, withModel)).Append("\n");
 
             AppendWorking(sb, snapshot);
+            AppendTrace(sb, trace);
 
             return sb.ToString().Replace("\n", System.Environment.NewLine);
+        }
+
+        /// <summary>
+        /// The battle itself, blow by blow -- THE REAL ONE, the battle the game actually fought and the campaign
+        /// will actually live with. Not a replay of it.
+        ///
+        /// Every blow here was recorded as it landed, from inside SimulateHit's postfix, and whether it put its man
+        /// down is the game's own verdict rather than our re-roll. That distinction is not pedantry: this WAS taken
+        /// from the shadow replay, and the replay had quietly got heroes wrong -- giving a lord the single roll of a
+        /// line trooper where the game accumulates his damage -- so the log was killing every lord in it. A
+        /// reimplementation can drift from the thing it reimplements, and when it does, it lies with confidence.
+        ///
+        /// This is the thing the log has never had. The averages say a battle went one way; the matchup table says
+        /// what a blow WOULD do. Neither can tell you the archers ran out of arrows in round fifteen and spent the
+        /// rest of the fight being cut down with knives in their hands, or that the lancers' charge was spent by
+        /// round four and they were never dangerous again. That story only exists in the blows.
+        /// </summary>
+        private static void AppendTrace(StringBuilder sb, List<HitRecord> trace)
+        {
+            if (trace == null || trace.Count == 0)
+            {
+                return;
+            }
+
+            sb.Append("\n");
+            sb.Append("  the battle, blow by blow -- THE REAL ONE, as the game actually fought it (")
+              .Append(trace.Count).Append(" blows):").Append("\n");
+            sb.Append("      striker            -> struck                what     weapon            armor   blk%   vanilla  x corr  =  dealt   odds").Append("\n");
+            sb.Append("    (a trooper has no health bar: the damage is rolled against his hit points, so it is a").Append("\n");
+            sb.Append("     CHANCE he is finished. Only heroes have a pool, and theirs is shown as hp left.)").Append("\n");
+
+            int round = -1;
+            foreach (HitRecord hit in trace)
+            {
+                // A round header, whenever the clock turns. The volley is called out by name: it is the part of a
+                // battle auto-resolve never had, and half the model's story happens inside it.
+                if (hit.Round != round)
+                {
+                    round = hit.Round;
+                    sb.Append("\n    ── round ").Append(round)
+                      .Append(hit.VolleyPhase
+                          ? "  ·  VOLLEY -- the bowmen have the field, the foot are walking into it"
+                          : (hit.SkirmishPhase
+                              ? "  ·  SKIRMISH -- javelins in the air, and the horse are at each other"
+                              : "  ·  THE LINES HAVE MET"))
+                      .Append("  ·  ").Append(hit.AttackersLeft).Append(" v ").Append(hit.DefendersLeft)
+                      .Append("\n");
+                }
+
+                // What he did, and whatever was remarkable about it. A man who is neither shooting nor throwing
+                // during the volley is not fighting at all -- he is walking into arrows -- and the trace says so.
+                // "closing", not "walking": a horseman crossing the ground is not strolling, and calling him that
+                // is what hid the fact that his charge was being spent on the approach and taxed as a stroll.
+                string what = hit.Phase;
+                if (hit.Closing)
+                {
+                    what = "closing";
+                }
+                else if (hit.ChargeBonus > 1.01f)
+                {
+                    what = "CHARGE";
+                }
+                else if (hit.Braced)
+                {
+                    what = "braced";
+                }
+
+                // Clip one short of the pad, always. A name that fills its column exactly leaves no gap, and
+                // "Imperial Coast Guard" ran straight into "shoot".
+                sb.Append("    ").Append(hit.StrikerIsAttacker ? "A " : "D ")
+                  .Append(Clip(Name(hit.Striker), 19).PadRight(20))
+                  .Append("-> ").Append(Clip(Name(hit.Struck), 21).PadRight(22))
+                  .Append(Clip(what, 8).PadRight(9))
+                  .Append(Clip(hit.Weapon ?? "-", 15).PadRight(16))
+                  .Append(Clip(hit.BodyPart ?? "-", 5).PadRight(6))
+                  .Append(Num(hit.ArmorMet, 7))
+                  .Append(Num(hit.ShieldBlock * 100f, 7))
+                  .Append(Num(hit.VanillaDamage, 10))
+                  .Append(Num(hit.Correction, 8))
+                  .Append(Num(hit.FinalDamage, 9))
+                  // For a trooper: the odds this blow finished him, because that IS the blow -- vanilla rolls the
+                  // damage against his hit points and there is no bar behind it. For a hero, who really does have
+                  // a pool, what is left of it.
+                  // What is left of the man. EVERY man has a pool now, lord and levy alike, so this is no longer
+                  // a chance-of-death but an actual figure: he is worn down, and when it reaches nothing he falls.
+                  .Append((hit.HitPointsLeft >= 0f)
+                      ? ("  hp " + SimulationLog.Fmt(hit.HitPointsLeft).PadLeft(5) + "/" + hit.StruckHitPoints)
+                      : "")
+                  .Append(hit.Downed ? "   DOWN" : "")
+                  .Append("\n");
+            }
+
         }
 
         /// <summary>
