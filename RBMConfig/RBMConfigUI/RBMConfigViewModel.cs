@@ -344,6 +344,98 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopMaintenanceFractionHint { get; } = Hint("{=RBM_CON_082}Daily upkeep per soldier as a share of his whole kit's worth -- gear, horse and harness. Paid first from the men's own spoils; any shortfall falls to the party leader's gold. Zero stops maintenance. Default 0.005.");
 
+        private float _mercenaryMaintenancePurseFraction;
+
+        /// <summary>
+        /// How much of a mercenary company's daily maintenance its own purses may cover; the employer meets
+        /// the rest. Snapped to hundredths so the 0.5 default and its neighbours are reachable on the slider.
+        /// </summary>
+        [DataSourceProperty]
+        public float MercenaryMaintenancePurseFraction
+        {
+            get
+            {
+                return _mercenaryMaintenancePurseFraction;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                if (snapped != _mercenaryMaintenancePurseFraction)
+                {
+                    _mercenaryMaintenancePurseFraction = snapped;
+                    OnPropertyChangedWithValue(snapped, "MercenaryMaintenancePurseFraction");
+                    OnPropertyChanged("MercenaryMaintenancePurseFractionValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string MercenaryMaintenancePurseFractionValue
+        {
+            get
+            {
+                return _mercenaryMaintenancePurseFraction.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string MercenaryMaintenancePurseFractiont
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_089}Mercenary Maintenance Share").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel MercenaryMaintenancePurseFractionHint { get; } = Hint("{=RBM_CON_090}Share of daily maintenance a mercenary company under a kingdom's pay meets from its own spoils; its employer covers the rest, any shortfall falling to the party leader's gold. Default 0.50.");
+
+        private float _independentMaintenancePurseFraction;
+
+        /// <summary>
+        /// How much of an independent clan's daily maintenance its own purses may cover -- one sworn to no
+        /// kingdom. Snapped to hundredths so the 1.0 default and its neighbours are reachable on the slider.
+        /// </summary>
+        [DataSourceProperty]
+        public float IndependentMaintenancePurseFraction
+        {
+            get
+            {
+                return _independentMaintenancePurseFraction;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 1f);
+                if (snapped != _independentMaintenancePurseFraction)
+                {
+                    _independentMaintenancePurseFraction = snapped;
+                    OnPropertyChangedWithValue(snapped, "IndependentMaintenancePurseFraction");
+                    OnPropertyChanged("IndependentMaintenancePurseFractionValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string IndependentMaintenancePurseFractionValue
+        {
+            get
+            {
+                return _independentMaintenancePurseFraction.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string IndependentMaintenancePurseFractiont
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_091}Independent Maintenance Share").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel IndependentMaintenancePurseFractionHint { get; } = Hint("{=RBM_CON_092}Share of daily maintenance an independent clan -- one sworn to no kingdom -- meets from its own spoils; any shortfall falls to the party leader's gold. Sworn vassals and rulers pay none from their purses. Default 1.00.");
+
         private float _troopSettlementFoodDays;
 
         /// <summary>
@@ -1623,6 +1715,8 @@ namespace RBMConfig
             _troopLootOverlookChancePerTier = MathF.Clamp(RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
             _troopWageTierBase = MathF.Clamp((float)RBMConfig.troopWageTierBase, 0f, 300f);
             _troopMaintenanceFraction = MathF.Clamp(RBMConfig.troopMaintenanceFraction, 0f, 0.05f);
+            _mercenaryMaintenancePurseFraction = MathF.Clamp(RBMConfig.mercenaryMaintenancePurseFraction, 0f, 1f);
+            _independentMaintenancePurseFraction = MathF.Clamp(RBMConfig.independentMaintenancePurseFraction, 0f, 1f);
             _troopSettlementFoodDays = MathF.Clamp(RBMConfig.troopSettlementFoodDays, 0f, 60f);
             _recruitMaintenanceDays = MathF.Clamp(RBMConfig.recruitMaintenanceDays, 0f, 30f);
             _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 10f);
@@ -1823,6 +1917,8 @@ namespace RBMConfig
             RBMConfig.troopLootOverlookChancePerTier = _troopLootOverlookChancePerTier;
             RBMConfig.troopWageTierBase = (int)MathF.Round(_troopWageTierBase);
             RBMConfig.troopMaintenanceFraction = _troopMaintenanceFraction;
+            RBMConfig.mercenaryMaintenancePurseFraction = _mercenaryMaintenancePurseFraction;
+            RBMConfig.independentMaintenancePurseFraction = _independentMaintenancePurseFraction;
             RBMConfig.troopSettlementFoodDays = (int)MathF.Round(_troopSettlementFoodDays);
             RBMConfig.recruitMaintenanceDays = (int)MathF.Round(_recruitMaintenanceDays);
             RBMConfig.troopFoodWageFraction = _troopFoodWageFraction;

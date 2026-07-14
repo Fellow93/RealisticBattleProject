@@ -136,6 +136,10 @@
 		<string id="RBM_CON_086" text="Share of a party's daily troop maintenance that settles into the Prosperity of the nearest city or castle, never a village. Scaled by Prosperity per Gold. Default 0.50." />
 		<string id="RBM_CON_087" text="Buy Mounts For Upgrades" />
 		<string id="RBM_CON_088" text="Upgrading into a mounted troop no longer needs a horse in the baggage train and consumes none; the horse and harness are paid for in gold/spoils instead. Off restores the vanilla horse-item requirement. Default on." />
+		<string id="RBM_CON_089" text="Mercenary Maintenance Share" />
+		<string id="RBM_CON_090" text="Share of daily maintenance a mercenary company under a kingdom's pay meets from its own spoils; its employer covers the rest, any shortfall falling to the party leader's gold. Default 0.50." />
+		<string id="RBM_CON_091" text="Independent Maintenance Share" />
+		<string id="RBM_CON_092" text="Share of daily maintenance an independent clan -- one sworn to no kingdom -- meets from its own spoils; any shortfall falls to the party leader's gold. Sworn vassals and rulers pay none from their purses. Default 1.00." />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_005" text="Salvaged into spoils: {AMOUNT}" />

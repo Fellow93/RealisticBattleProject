@@ -217,6 +217,12 @@ namespace RBMCampaign
                 return result;
             }
 
+            // How much of each stack's cost its own purse may cover turns on the party's standing in the
+            // field, and is the same for every stack the party keeps, so it is read once here rather than
+            // per stack. Whatever the purse is not allowed to meet falls to the party leader's gold as
+            // any shortfall does, so Total stays the whole cost and only Covered/Shortfall move with it.
+            float purseFraction = ContractPurseFraction(party);
+
             int stacksCharged = 0;
             for (int i = 0; i < roster.Count; i++)
             {
@@ -231,7 +237,8 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                int fromSpoils = MathF.Min(GetSpoils(party, element.Character), cost);
+                int purseTarget = MathF.Round(cost * purseFraction);
+                int fromSpoils = MathF.Min(GetSpoils(party, element.Character), purseTarget);
                 if (apply && fromSpoils > 0)
                 {
                     AddSpoils(party, element.Character, -fromSpoils);
@@ -266,6 +273,33 @@ namespace RBMCampaign
                     + " (spoils covered " + result.Covered + ", " + result.Shortfall + " to clan gold)");
             }
             return result;
+        }
+
+        /// <summary>
+        /// How much of a stack's daily maintenance the men's own purse is allowed to cover, set by the
+        /// party's standing in the field. An independent lord's men fund their upkeep in full; a mercenary
+        /// company under a kingdom's pay meets only a part from its purses, its employer the rest; a sworn
+        /// vassal's or ruler's men pay none of it from their purses, their liege bearing the whole. Whatever
+        /// the purse is not allowed to meet always falls to the party leader's gold, as any shortfall does.
+        /// The clan is read off the same payee chain the spoils are paid to (owner if alive, else leader);
+        /// a party with no clan to answer to stands on its own and funds its upkeep in full.
+        /// </summary>
+        private static float ContractPurseFraction(PartyBase party)
+        {
+            Hero payee = GetPartyPayee(party);
+            Clan clan = payee?.Clan;
+            // No clan, or a clan sworn to no kingdom, answers to no liege -- its men pay their own way.
+            if (clan == null || clan.Kingdom == null)
+            {
+                return RBMConfig.RBMConfig.independentMaintenancePurseFraction;
+            }
+            // Hired swords in a kingdom's service share the burden: their purses meet a part, the crown the rest.
+            if (clan.IsUnderMercenaryService)
+            {
+                return RBMConfig.RBMConfig.mercenaryMaintenancePurseFraction;
+            }
+            // A sworn vassal or ruler bears the whole of it: none is met from the men's purses.
+            return 0f;
         }
 
         /// <summary>
