@@ -56,7 +56,7 @@ namespace RBMConfig
 
         // A troop's daily wage is this flat base value multiplied by its tier, replacing the vanilla
         // per-tier wage the game hands out. A base of zero leaves the vanilla wage untouched.
-        public static int troopWageTierBase = 50;
+        public static int troopWageTierBase = 20;
 
         // The daily cost of keeping a soldier in the field, as a share of his whole kit's worth -- his
         // gear, his horse and its armour alike. A lancer in full harness costs more to maintain than a
@@ -289,7 +289,7 @@ namespace RBMConfig
             troopUpgradeChargeMountValue = ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeChargeMountValue", "1").Equals("1");
             troopLootPiecesPerMan = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLootPiecesPerMan", "3"), CultureInfo.InvariantCulture);
             troopLootOverlookChancePerTier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLootOverlookChancePerTier", "0.5"), CultureInfo.InvariantCulture);
-            troopWageTierBase = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopWageTierBase", "50"), CultureInfo.InvariantCulture);
+            troopWageTierBase = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopWageTierBase", "20"), CultureInfo.InvariantCulture);
             troopMaintenanceFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopMaintenanceFraction", "0.005"), CultureInfo.InvariantCulture);
             mercenaryMaintenancePurseFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "MercenaryMaintenancePurseFraction", "0.5"), CultureInfo.InvariantCulture);
             independentMaintenancePurseFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "IndependentMaintenancePurseFraction", "1.0"), CultureInfo.InvariantCulture);

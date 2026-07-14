@@ -16,7 +16,7 @@ Master switch: `IsEnabled => troopUpgradeCostMultiplier > 0f` (`Spoils/SpoilsPoo
 | `troopUpgradeSpoilsLootMultiplier` | `1f` | battlefield salvage share |
 | `troopLootPiecesPerMan` | `3` | loot carry capacity |
 | `troopLootOverlookChancePerTier` | `0.5f` | per-tier overlook probability |
-| `troopWageTierBase` | `50` | daily wage = base × tier for non-heroes (`0` = vanilla wage) |
+| `troopWageTierBase` | `20` | daily wage = base × tier for non-heroes (`0` = vanilla wage) |
 | `troopRaidSpoilsMultiplier` | `0.25f` | raid **and** siege plunder pot |
 | `troopFallenSpoilsCaptureFraction` | `0.75f` | share of a beaten enemy's purse captured |
 | `troopSettlementFoodDays` | `20` | days of rations bought at market (`0` disables food) |

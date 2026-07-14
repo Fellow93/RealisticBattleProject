@@ -190,7 +190,7 @@ All under `/Config/RBMCampaign` in the config XML, wired into the in-game settin
 | `TroopUpgradeSpoilsLootMultiplier` | 1 | How much battlefield loot yields. |
 | `TroopLootPiecesPerMan` | 3 | Pieces of kit one man can carry off a field. |
 | `TroopLootOverlookChancePerTier` | 0.5 | Chance a troop overlooks kit one tier below him (compounds per tier). |
-| `TroopWageTierBase` | 50 | Daily wage = base × tier for non-heroes, replacing vanilla's wage table. 0 keeps vanilla. |
+| `TroopWageTierBase` | 20 | Daily wage = base × tier for non-heroes, replacing vanilla's wage table. 0 keeps vanilla. |
 | `TroopRaidSpoilsMultiplier` | 0.25 | Plunder soldiers pocket sacking a settlement — of a village's `Hearth × RaidDamage`, or a stormed town's `Prosperity`. 0 disables plunder spoils. |
 | `TroopSpoilsCapDays` | 20 | Days of keep (daily wage + daily field maintenance) a stack holds in `GetSpoilsCap` — the flush threshold above which upkeep spends surplus on drink/luxuries. Slider 0–60, discrete. |
 | `TroopSettlementFoodDays` | 20 | Days of food a stack buys per trip. |
