@@ -272,6 +272,7 @@
   <ItemGroup>
     <Compile Include="RBMCampaignPatcher.cs" />
     <Compile Include="Diagnostics\SpoilsLog.cs" />
+    <Compile Include="Diagnostics\LogRetention.cs" />
     <Compile Include="Spoils\SpoilsPool.cs" />
     <Compile Include="Spoils\SpoilsPool.Equipment.cs" />
     <Compile Include="Spoils\SpoilsPool.UpgradeMath.cs" />
@@ -305,6 +306,12 @@
     <Compile Include="UI\SpoilsBarWidget.cs" />
     <Compile Include="UI\SpoilsBarPrefabPatch.cs" />
     <Compile Include="UI\SpoilsPartyTooltip.cs" />
+    <Compile Include="Simulation\SimulationEquipmentPower.cs" />
+    <Compile Include="Simulation\SimulationWeaponModel.cs" />
+    <Compile Include="Simulation\SimulationBattleState.cs" />
+    <Compile Include="Simulation\SimulationShadow.cs" />
+    <Compile Include="Simulation\RBMSimulationCampaignBehavior.cs" />
+    <Compile Include="Diagnostics\SimulationLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

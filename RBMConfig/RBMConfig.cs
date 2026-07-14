@@ -160,6 +160,38 @@ namespace RBMConfig
         // party did is kept. No effect unless logging above is on.
         public static bool spoilsVerboseLoggingEnabled = true;
 
+        // Equipment-aware auto-resolve: when a map battle is simulated (auto-calc / "send troops"), scale
+        // each troop's simulated hitting power by the quality of its actual kit rather than its tier alone,
+        // so a well-armoured, well-armed troop resolves stronger than a ragged one of the same tier. The
+        // kit is valued by whichever combat model is running -- RBM's own per-item assessment when RBM
+        // Combat is on, raw vanilla item stats when it is off -- so auto-resolve tracks a fought battle.
+        // False (0) restores the vanilla tier-only simulation.
+        public static bool simulationEquipmentEnabled = true;
+
+        // How strongly kit quality bends the simulated outcome. 0 is vanilla (no effect); 1 applies the
+        // model at full strength; higher exaggerates the gap between good and poor equipment.
+        public static float simulationEquipmentPowerWeight = 1f;
+
+        // The share of blows an ordinary shield turns aside. A shield's worth in a fight is not the armour it
+        // adds -- it is the blows it stops outright, and nothing else in a troop's kit does that. A better
+        // shield than the common sort stops proportionally more, a poorer one less, so this sets the middle of
+        // the range rather than the whole of it. Zero makes shields count for nothing.
+        //
+        // Unlike almost everything else in the auto-resolve model, this figure is a judgement rather than a
+        // number read out of the game: how often a man in a line gets his shield in the way is not something
+        // the game records. Treat it as the dial it is.
+        public static float simulationShieldBlockChance = 0.4f;
+
+        // Writes every auto-resolved battle to its own log under logs/simulation, replayed both with the
+        // equipment model and without it, so what the model actually did to a battle can be read rather than
+        // guessed at. Costs nothing while off: no battle is snapshotted and no replay is run.
+        public static bool simulationLoggingEnabled = true;
+
+        // How many times each battle is replayed per side of the comparison. One roll of the dice says
+        // nothing -- a simulated battle is heavily random -- so the replays are averaged. Higher is steadier
+        // and slower; the cost lands once, when a battle ends. No effect unless logging above is on.
+        public static int simulationLogSamples = 20;
+
         //RBMAI
         public static bool hitStopEnabled = true;
 
@@ -310,6 +342,11 @@ namespace RBMConfig
             troopFallenSpoilsCaptureFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopFallenSpoilsCaptureFraction", "0.75"), CultureInfo.InvariantCulture);
             spoilsLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsLoggingEnabled", "1").Equals("1");
             spoilsVerboseLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsVerboseLoggingEnabled", "1").Equals("1");
+            simulationEquipmentEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentEnabled", "1").Equals("1");
+            simulationEquipmentPowerWeight = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentPowerWeight", "1"), CultureInfo.InvariantCulture);
+            simulationShieldBlockChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationShieldBlockChance", "0.4"), CultureInfo.InvariantCulture);
+            simulationLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationLoggingEnabled", "1").Equals("1");
+            simulationLogSamples = int.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationLogSamples", "20"), CultureInfo.InvariantCulture);
 
             // RBMAI
             hitStopEnabled = ReadOrCreate("/Config/RBMAI", "HitStopEnabled", "1").Equals("1");
@@ -427,6 +464,11 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopFallenSpoilsCaptureFraction"), troopFallenSpoilsCaptureFraction.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsLoggingEnabled"), spoilsLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsVerboseLoggingEnabled"), spoilsVerboseLoggingEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationEquipmentEnabled"), simulationEquipmentEnabled);
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationEquipmentPowerWeight"), simulationEquipmentPowerWeight.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationShieldBlockChance"), simulationShieldBlockChance.ToString(CultureInfo.InvariantCulture));
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLoggingEnabled"), simulationLoggingEnabled);
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLogSamples"), simulationLogSamples.ToString(CultureInfo.InvariantCulture));
             //RBMAI
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/HitStopEnabled"), hitStopEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureEnabled"), postureEnabled);

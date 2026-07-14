@@ -115,7 +115,7 @@
 	<string id="RBM_CON_064" text="Chance each idle hour that an over-cap stack buys a luxury from the settlement. Default 0.02." />
 	<string id="RBM_CON_066" text="Share of a beaten enemy's killed and wounded spoils the victors carry off; the rest is lost. Default 0.75." />
 	<string id="RBM_CON_067" text="Wage Base per Tier" />
-	<string id="RBM_CON_068" text="Daily wage is this base value multiplied by the troop's tier, replacing the vanilla wage. Zero keeps vanilla wages. Default 50." />
+	<string id="RBM_CON_068" text="Daily wage is this base value multiplied by the troop's tier, replacing the vanilla wage. Zero keeps vanilla wages. Default 20." />
 	<string id="RBM_CON_062" text="Reset to Default" />
 	<string id="RBM_CON_070" text="Upgrade Near Town" />
 	<string id="RBM_CON_071" text="Upgrade Supply Range" />
@@ -140,6 +140,8 @@
 		<string id="RBM_CON_090" text="Share of daily maintenance a mercenary company under a kingdom's pay meets from its own spoils; its employer covers the rest, any shortfall falling to the party leader's gold. Default 0.50." />
 		<string id="RBM_CON_091" text="Independent Maintenance Share" />
 		<string id="RBM_CON_092" text="Share of daily maintenance an independent clan -- one sworn to no kingdom -- meets from its own spoils; any shortfall falls to the party leader's gold. Sworn vassals and rulers pay none from their purses. Default 1.00." />
+		<string id="RBM_CON_093" text="Detailed Auto Resolve" />
+		<string id="RBM_CON_094" text="Detailed Auto Resolve Logging" />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_005" text="Salvaged into spoils: {AMOUNT}" />

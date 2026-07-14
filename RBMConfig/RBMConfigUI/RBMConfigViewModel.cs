@@ -69,6 +69,14 @@ namespace RBMConfig
         public TextViewModel SpoilsVerboseLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> SpoilsVerboseLoggingEnabled { get; }
 
+        // Equipment-aware auto-resolve: on/off only. Its strength (SimulationEquipmentPowerWeight) and the
+        // replay sample count stay in the config file -- they are tuning knobs, not settings to fiddle with here.
+        public TextViewModel SimulationEquipmentEnabledText { get; }
+        public SelectorVM<SelectorItemVM> SimulationEquipmentEnabled { get; }
+
+        public TextViewModel SimulationLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> SimulationLoggingEnabled { get; }
+
         // SupplyTown gate: on/off toggle for gating upgrades on a nearby friendly town.
         public TextViewModel TroopUpgradeRequireSupplyTownText { get; }
         public SelectorVM<SelectorItemVM> TroopUpgradeRequireSupplyTown { get; }
@@ -296,7 +304,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel TroopWageTierBaseHint { get; } = Hint("{=RBM_CON_068}Daily wage is this base value multiplied by the troop's tier, replacing the vanilla wage. Zero keeps vanilla wages. Default 50.");
+        public BasicTooltipViewModel TroopWageTierBaseHint { get; } = Hint("{=RBM_CON_068}Daily wage is this base value multiplied by the troop's tier, replacing the vanilla wage. Zero keeps vanilla wages. Default 20.");
 
         private float _troopMaintenanceFraction;
 
@@ -787,6 +795,24 @@ namespace RBMConfig
             get
             {
                 return new TextObject("{=RBM_CON_039}Spoils Logging").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string SimulationEquipmentt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_093}Detailed Auto Resolve").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string SimulationLoggingt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_094}Detailed Auto Resolve Logging").ToString();
             }
         }
 
@@ -1660,6 +1686,16 @@ namespace RBMConfig
             SpoilsVerboseLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_049}Verbose Logging"));
             SpoilsVerboseLoggingEnabled = new SelectorVM<SelectorItemVM>(spoilsVerboseLoggingOptions, 0, null);
 
+            // Equipment simulation: Enabled is the default, so its option carries the "(Default)" tag.
+            List<string> simulationEquipmentOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            SimulationEquipmentEnabledText = new TextViewModel(new TextObject("{=RBM_CON_093}Detailed Auto Resolve"));
+            SimulationEquipmentEnabled = new SelectorVM<SelectorItemVM>(simulationEquipmentOptions, 0, null);
+
+            // Detailed auto resolve logging: on by default, so its option carries the "(Default)" tag.
+            List<string> simulationLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            SimulationLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_094}Detailed Auto Resolve Logging"));
+            SimulationLoggingEnabled = new SelectorVM<SelectorItemVM>(simulationLoggingOptions, 0, null);
+
             // SupplyTown gate: Enabled is the default, so its option carries the "(Default)" tag.
             List<string> troopUpgradeRequireSupplyTownOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             TroopUpgradeRequireSupplyTownText = new TextViewModel(new TextObject("{=RBM_CON_070}Upgrade Near Town"));
@@ -1727,6 +1763,8 @@ namespace RBMConfig
             _troopRaidSpoilsMultiplier = MathF.Clamp(RBMConfig.troopRaidSpoilsMultiplier, 0f, 10f);
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
             SpoilsVerboseLoggingEnabled.SelectedIndex = RBMConfig.spoilsVerboseLoggingEnabled ? 1 : 0;
+            SimulationEquipmentEnabled.SelectedIndex = RBMConfig.simulationEquipmentEnabled ? 1 : 0;
+            SimulationLoggingEnabled.SelectedIndex = RBMConfig.simulationLoggingEnabled ? 1 : 0;
             _troopLeaderSpoilsCutFraction = MathF.Clamp(RBMConfig.troopLeaderSpoilsCutFraction, 0f, 1f);
             _troopSpoilsCapDays = MathF.Clamp(RBMConfig.troopSpoilsCapDays, 0f, 60f);
             _troopLuxuryCooldownDays = MathF.Clamp(RBMConfig.troopLuxuryCooldownDays, 0f, 120f);
@@ -1929,6 +1967,8 @@ namespace RBMConfig
             RBMConfig.troopRaidSpoilsMultiplier = _troopRaidSpoilsMultiplier;
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
             RBMConfig.spoilsVerboseLoggingEnabled = SpoilsVerboseLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.simulationEquipmentEnabled = SimulationEquipmentEnabled.SelectedIndex == 1;
+            RBMConfig.simulationLoggingEnabled = SimulationLoggingEnabled.SelectedIndex == 1;
             RBMConfig.troopLeaderSpoilsCutFraction = _troopLeaderSpoilsCutFraction;
             RBMConfig.troopSpoilsCapDays = (int)MathF.Round(_troopSpoilsCapDays);
             RBMConfig.troopLuxuryCooldownDays = (int)MathF.Round(_troopLuxuryCooldownDays);
@@ -1982,7 +2022,7 @@ namespace RBMConfig
             TroopUpgradeChargeMountValue.SelectedIndex = 1;
             TroopLootPiecesPerMan = 3f;
             TroopLootOverlookChancePerTier = 0.5f;
-            TroopWageTierBase = 50f;
+            TroopWageTierBase = 20f;
             TroopSettlementFoodDays = 20f;
             RecruitMaintenanceDays = 5f;
             TroopFoodWageFraction = 0.5f;
@@ -1999,6 +2039,8 @@ namespace RBMConfig
             TroopSpoilsHealFractionPerHour = 0.05f;
             SpoilsLoggingEnabled.SelectedIndex = 1;
             SpoilsVerboseLoggingEnabled.SelectedIndex = 1;
+            SimulationEquipmentEnabled.SelectedIndex = 1;
+            SimulationLoggingEnabled.SelectedIndex = 1;
         }
 
         private void ExecuteCancel()

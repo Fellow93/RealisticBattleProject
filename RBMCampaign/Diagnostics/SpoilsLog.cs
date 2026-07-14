@@ -98,6 +98,7 @@ namespace RBMCampaign
                 try
                 {
                     Directory.CreateDirectory(LogFolderPath);
+                    LogRetention.PruneOldest(LogFolderPath, "rbm_spoils_*.log");
                     File.WriteAllText(LogFilePath,
                         "RBM spoils log — " + DateTime.Now + Environment.NewLine
                         + "Columns:  time  ·  category  ·  party  ·  message"
