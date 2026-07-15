@@ -17,11 +17,11 @@ namespace RBMCampaign
     /// being hit. It never looks at what the man is wearing or carrying, and it cannot tell a mace from a
     /// sabre or mail from linen.
     ///
-    /// This postfix leaves every vanilla factor (side advantage, terrain, leader, perks, morale) intact and
-    /// replaces only the power ratio, with the damage the striker's actual weapon would actually land on the
-    /// struck man's actual armour -- run through the real armour equation of whichever combat model is live.
-    /// The matchup is therefore asymmetric, as a real one is: a lightly-armoured man with a great axe hits
-    /// hard and dies easily, which no single power number can say.
+    /// This postfix leaves vanilla's side advantage, leader modifier, perks and morale intact and replaces only
+    /// the power ratio, with the damage the striker's actual weapon would actually land on the struck man's
+    /// actual armour -- run through the real armour equation of whichever combat model is live. The matchup is
+    /// therefore asymmetric, as a real one is: a lightly-armoured man with a great axe hits hard and dies easily,
+    /// which no single power number can say.
     ///
     /// Tier is not merely adjusted here -- it is taken out and replaced. Vanilla decides a battle almost
     /// entirely on the tier number, which gives a tier-1 recruit only 1.41x the blow of a tier-0 looter, no
@@ -30,10 +30,12 @@ namespace RBMCampaign
     /// and real training in its place. A tier was only ever shorthand for those two things; having measured
     /// them, we do not also need the shorthand, and keeping it would charge for them twice.
     ///
-    /// What it does NOT touch is how the four arms of service compare. Vanilla prices that in
-    /// DefaultMilitaryPowerModel's terrain table -- cavalry worth a quarter more in the open, archers worth
-    /// half as much defending a wood -- and that table rides on the leader and context modifiers, which are
-    /// left whole. Each troop is judged against its own arm and no finer (see <see cref="GetBucket"/>), so an
+    /// It also lifts terrain back out of a FIELD blow. Vanilla priced how the four arms compare through
+    /// DefaultMilitaryPowerModel's context table -- cavalry worth a quarter more in the open, archers worth
+    /// half as much defending a wood -- but an arm's edge is meant to come from its horse and its lance now,
+    /// both already in the equipment ratio, not from the ground it stands on. So on a field battle the context
+    /// modifier is cancelled on both sides (see <see cref="GetTerrainNeutralizingFactor"/>); a siege keeps its
+    /// own. Each troop is still judged against its own arm and no finer (see <see cref="GetBucket"/>), so an
     /// archer is never taxed for carrying an archer's armour.
     ///
     /// Every baseline is measured off the game's own roster rather than assumed -- see
@@ -53,8 +55,13 @@ namespace RBMCampaign
         // training, and both of those are measured here directly. So tier is dropped from the baseline, and
         // dropped from vanilla's damage too (see GetCorrection) -- otherwise it would be counted twice.
         //
-        // Arm of service stays, because vanilla's context table has already priced what an archer is worth
-        // against a horseman, and re-litigating that here would only unbalance a thing already tuned.
+        // Arm of service stays as the bucket, but for a narrower reason than it once had. It used to lean on
+        // vanilla's context table having already priced what an archer is worth against a horseman; the field
+        // half of that table is now lifted out (see GetTerrainNeutralizingFactor), so on open ground nothing
+        // prices arm against arm any more -- by design, an arm's edge is its horse and its lance, both already in
+        // the equipment ratio. The bucket earns its place regardless: it normalises the damage units per arm, so
+        // a lance is measured against lances and not counted "better kit" than a spear for landing more raw force.
+        // (A siege still keeps vanilla's context, arm-vs-arm included.)
         //
         // A HERO IS NOT AN ARM OF SERVICE, and giving him a bucket of his own was a mistake of exactly the kind
         // this model has made before. The correction is a RATIO against the bucket's baseline, so a bucket cancels
@@ -361,7 +368,7 @@ namespace RBMCampaign
         private static int[] _bucketPopulation = new int[BucketCount];
 
         private static void Postfix(ref ExplainedNumber __result, CharacterObject strikerTroop, CharacterObject struckTroop,
-            PartyBase strikerParty, MapEvent battle)
+            PartyBase strikerParty, PartyBase struckParty, MapEvent battle)
         {
             // The battle is passed in so the blow can be placed in it: which round it falls in, whether the lines
             // have met yet, how many arrows this stack has left, whose shields are still whole, whose horses still
@@ -377,6 +384,23 @@ namespace RBMCampaign
             // the only account of it that cannot drift from the truth.
             Breakdown breakdown;
             Explain(strikerTroop, struckTroop, out breakdown, state, strikerIsAttacker, spend: true);
+
+            // The ground no longer favours an arm of service. Vanilla's blow carries GetContextModifier -- the
+            // (arm x terrain x side) table that hands cavalry a quarter more on open ground and docks it in a wood
+            // -- and the equipment correction above divides out only the tier base, so that table would otherwise
+            // ride untouched into the result. An arm's edge is meant to come from its horse and its lance now, both
+            // already priced in the equipment ratio, not from the field it happens to stand on. So on a field battle
+            // the context is lifted back out; a siege keeps its own, and the leader's modifier is not terrain and
+            // stays. Folded INTO the correction, not applied after it, so the log's Vanilla x Correction = Final
+            // identity holds and RecordHit writes the whole of what the model did (see GetTerrainNeutralizingFactor).
+            if (breakdown.Correction > 0f)
+            {
+                float terrainFactor = GetTerrainNeutralizingFactor(strikerTroop, struckTroop, strikerParty, struckParty);
+                if (terrainFactor != 1f)
+                {
+                    breakdown.Correction *= terrainFactor;
+                }
+            }
 
             float vanillaDamage = __result.ResultNumber;
             float correction = breakdown.Correction;
@@ -783,9 +807,13 @@ namespace RBMCampaign
             // tier term in would charge for the same thing twice, and it is the reason a recruit in mail could
             // not out-fight a looter in rags by more than the 1.41x his tier number allowed.
             //
-            // Only the tier BASE is removed. Vanilla's ratio also carries (1 + leaderModifier + contextModifier)
-            // on each side, and those survive untouched -- so the terrain table that makes cavalry worth a
-            // quarter more in the open, and the captain's perks, still say everything they said before.
+            // Only the tier BASE is removed HERE. Vanilla's ratio also carries (1 + leaderModifier +
+            // contextModifier) on each side. The leader modifier and the captain's perks are left whole and still
+            // say everything they said before. The context modifier -- the terrain-vs-arm table -- is NOT divided
+            // out here, because this method has no battle and so cannot know the terrain; the postfix lifts it out
+            // of field blows afterwards, folding the factor into breakdown.Correction (see
+            // GetTerrainNeutralizingFactor). A siege keeps its context; the reference/matchup tables, which have no
+            // battle at all, are terrain-blind by nature and leave it untouched.
             float tierTerm = MathF.Pow(VanillaTierPower(strikerTroop) / VanillaTierPower(struckTroop), 0.7f);
             breakdown.TierTerm = tierTerm;
             if (tierTerm <= 0f)
@@ -1047,6 +1075,95 @@ namespace RBMCampaign
                 power *= 1.5f;
             }
             return power;
+        }
+
+        /// <summary>
+        /// The factor that lifts vanilla's terrain-vs-arm bonus back out of a FIELD blow, leaving a siege alone.
+        ///
+        /// Vanilla (<c>DefaultCombatSimulationModel.SimulateHit</c>) prices a blow on
+        /// <c>pow(troopPower_s / troopPower_k, 0.7)</c>, where <c>troopPower = defaultPower * (1 + leader +
+        /// GetContextModifier)</c>. That context modifier is the <c>(arm x terrain x side)</c> table -- cavalry
+        /// worth a quarter more attacking on open ground, docked defending a wood -- and it does NOT cancel between
+        /// striker and struck, because they are different arms on different sides. The equipment correction divides
+        /// out only the DEFAULT (tier) term, so the context rides untouched into the result.
+        ///
+        /// So we recompute the ratio with the context zeroed on both sides and hand back
+        /// <c>neutralRatio / vanillaRatio</c> -- the factor that turns vanilla's terrain-laden blow into a
+        /// terrain-free one. The leader modifier is not terrain and is kept on both sides; a SIEGE keeps its full
+        /// vanilla context (the wall is its own fact, not "terrain" in the sense meant here) and gets 1 here.
+        ///
+        /// Recomputed through the live model, exactly as <see cref="VanillaTierPower"/> mirrors the tier base, so
+        /// that whatever context vanilla actually charged is what we lift -- no more, no less.
+        /// </summary>
+        private static float GetTerrainNeutralizingFactor(CharacterObject strikerTroop, CharacterObject struckTroop,
+            PartyBase strikerParty, PartyBase struckParty)
+        {
+            if (strikerTroop == null || struckTroop == null || strikerParty == null || struckParty == null
+                || strikerParty.MapEvent == null || struckParty.MapEvent == null
+                || strikerParty.MapEventSide == null || struckParty.MapEventSide == null)
+            {
+                return 1f;
+            }
+
+            MapEvent.PowerCalculationContext strikerContext = strikerParty.MapEvent.SimulationContext;
+            MapEvent.PowerCalculationContext struckContext = struckParty.MapEvent.SimulationContext;
+
+            // A siege keeps its whole context; and the Estimated context carries no modifier to begin with (vanilla
+            // skips GetContextModifier for it), so there is nothing there to lift.
+            if (strikerContext == MapEvent.PowerCalculationContext.Siege
+                || strikerContext == MapEvent.PowerCalculationContext.Estimated)
+            {
+                return 1f;
+            }
+
+            var model = Campaign.Current?.Models?.MilitaryPowerModel;
+            if (model == null)
+            {
+                return 1f;
+            }
+
+            float leaderStriker = LeaderModifierOf(strikerParty);
+            float leaderStruck = LeaderModifierOf(struckParty);
+
+            float contextStriker = model.GetContextModifier(strikerTroop, strikerParty.Side, strikerContext);
+            float contextStruck = model.GetContextModifier(struckTroop, struckParty.Side, struckContext);
+
+            // Neither man got anything from the ground: nothing to lift.
+            if (contextStriker == 0f && contextStruck == 0f)
+            {
+                return 1f;
+            }
+
+            float withTerrainStriker = 1f + leaderStriker + contextStriker;
+            float withTerrainStruck = 1f + leaderStruck + contextStruck;
+            float withoutTerrainStriker = 1f + leaderStriker;
+            float withoutTerrainStruck = 1f + leaderStruck;
+
+            // A pathological leader+context sum could reach zero or below, where vanilla's own pow() is already
+            // undefined; leave such a blow exactly as vanilla left it rather than invent a number for it.
+            if (withTerrainStriker <= 0f || withTerrainStruck <= 0f
+                || withoutTerrainStriker <= 0f || withoutTerrainStruck <= 0f)
+            {
+                return 1f;
+            }
+
+            float vanillaRatio = MathF.Pow(withTerrainStriker / withTerrainStruck, 0.7f);
+            float neutralRatio = MathF.Pow(withoutTerrainStriker / withoutTerrainStruck, 0.7f);
+            if (vanillaRatio <= 0f)
+            {
+                return 1f;
+            }
+            return neutralRatio / vanillaRatio;
+        }
+
+        /// <summary>
+        /// The side commander's power modifier, as vanilla caches it into <c>MapEventSide.LeaderSimulationModifier</c>
+        /// (an internal field): <c>LeaderParty.LeaderHero?.PowerModifier</c>. Recomputed off the public API so the
+        /// terrain fixup lifts the same leader term vanilla actually charged, and keeps it rather than removing it.
+        /// </summary>
+        private static float LeaderModifierOf(PartyBase party)
+        {
+            return party?.MapEventSide?.LeaderParty?.LeaderHero?.PowerModifier ?? 0f;
         }
 
         /// <summary>

@@ -66,7 +66,9 @@ weight    = SimulationEquipmentPowerWeight
 
 **Tier is replaced, not adjusted.** Dividing by `tierTerm` cancels vanilla's tier base out of the blow entirely, and the equipment ratio is put in its place. This is deliberate: a tier was only ever shorthand for *what kit does he carry and how well is he trained*, and both of those are now measured directly. Leaving vanilla's tier term in would charge for the same thing twice — and it was the reason a recruit in mail could not out-fight a looter in rags by more than the 1.41× his tier number allowed.
 
-What survives untouched is `(1 + leaderModifier + contextModifier)`, which sits on both sides of vanilla's ratio and cancels. So **the terrain table, the arm-vs-arm table, the captain's perks, the leader's Tactics, morale and routing all still apply exactly as before.** This changes what a blow *does*, not how a battle is shaped around it.
+What survives untouched is the `leaderModifier` half of `(1 + leaderModifier + contextModifier)`. So **the captain's perks, the leader's Tactics, morale and routing all still apply exactly as before.** This changes what a blow *does*, not how a battle is shaped around it.
+
+The `contextModifier` — the `(troop type | terrain | side)` table — is a different matter, and it does **not** simply cancel: the striker and the struck are different arms on different sides, so their context terms differ and both ride into vanilla's ratio. On a **field** battle that terrain-vs-arm bonus is now deliberately **lifted back out** — the postfix recomputes the ratio with the context zeroed on both sides and folds the difference into the blow's correction. An arm's edge is meant to come from its horse and its lance, both already priced in the equipment ratio, not from the ground it stands on. A **siege** keeps its full vanilla context (the wall is its own fact), and the leader modifier, being no kind of terrain, is kept everywhere. See `GetTerrainNeutralizingFactor`.
 
 ---
 

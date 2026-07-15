@@ -98,6 +98,16 @@ namespace RBMCampaign
                     header.Append("  armorThresholdModifier        = ").Append(Fmt(RC.armorThresholdModifier)).Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
 
+                    // Not a toggle -- a standing fact of the model, stated because it shapes every field blow below.
+                    // On a FIELD battle the terrain-vs-arm context modifier (cavalry a quarter more in the open, and
+                    // so on) is lifted back out and folded into each blow's Correction; an arm's edge comes from its
+                    // kit, already priced, not the ground. A SIEGE keeps its full vanilla context. So a field
+                    // Correction already has the terrain removed from it -- read it against a Vanilla figure that
+                    // still carries the terrain, which is why the two can differ even where the kit is even.
+                    header.Append("Field terrain: neutralized (arm-vs-terrain context lifted; siege keeps its own).")
+                          .Append(Environment.NewLine);
+                    header.Append(Environment.NewLine);
+
                     // Every correction is a ratio against these. A wrong baseline makes every blow wrong without
                     // making any single blow LOOK wrong, so it is written out where it can be checked at a glance.
                     header.Append(SimulationEquipmentPower.DescribeBaselines());
