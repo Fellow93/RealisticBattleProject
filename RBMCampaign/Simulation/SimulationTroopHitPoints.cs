@@ -1,8 +1,6 @@
 using HarmonyLib;
-using Helpers;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
@@ -69,34 +67,29 @@ namespace RBMCampaign
         internal static float LastHitPointsLeft = -1f;
 
         /// <summary>
-        /// What a man can take, WITH HIS COMMANDER COUNTED IN.
+        /// What a man can take in an auto-resolved battle: his OWN hit points, and only his own.
         ///
-        /// A map battle gives every soldier in Calradia a flat hundred hit points, and that is the whole of it.
-        /// DefaultCharacterStatsModel.MaxHitpoints starts at 100 and then adds perks through
-        /// AddPerkBonusForCharacter(perk, CHARACTER, ...) -- which asks the SOLDIER whether he has the perk, and a
-        /// soldier has no perks. So the entire list is dead for everyone but a hero. Your lord can have spent forty
-        /// years learning how to keep men alive and it does not add a single point to one of them.
+        /// A map battle gives every soldier a flat hundred to begin with -- DefaultCharacterStatsModel.MaxHitpoints
+        /// starts at 100 -- and a regular trooper keeps exactly that. His party's perks are NOT added to it. They
+        /// could be: a real MISSION, in SandboxAgentStatCalculateModel, hands a well-led foot line up to +28 hit
+        /// points (TwoHanded.ThickHides +5 and Polearm.HardyFrontline +5 to all, Athletics.WellBuilt +5 and
+        /// Polearm.HardKnock +3 on foot, OneHanded.UnwaveringDefense +10 for infantry) and a doctor-lord's men more
+        /// again through Medicine.MinisterOfHealth. For a while this method transcribed that whole block into the
+        /// sim so the two would agree. It no longer does, by design.
         ///
-        /// It is not that the perks do not exist. They do, and they are substantial -- they simply only ever fire
-        /// in a MISSION, in SandboxAgentStatCalculateModel, where a soldier is an Agent and his party is known:
+        /// A soldier's staying power in auto-resolve is meant to be his OWN armour and his own frame, not a bonus
+        /// his captain carries -- the same principle that took tier and terrain out of the blow. So the auto-resolve
+        /// deliberately diverges from the live mission here: a regular unit's pool is native's hundred, full stop.
+        /// A HERO is untouched -- his own MaxHitPoints() already carries his personal perks, and no party bonus was
+        /// ever added to him -- so he keeps every point he has.
         ///
-        ///     TwoHanded.ThickHides          +5   to all troops
-        ///     Polearm.HardyFrontline        +5   to all troops       (its PRIMARY bonus)
-        ///     Crossbow.PickedShots          +5   to ranged troops
-        ///     Athletics.WellBuilt           +5   to troops on foot
-        ///     Polearm.HardKnock             +3   to troops on foot
-        ///     OneHanded.UnwaveringDefense   +10  to INFANTRY on foot
-        ///     Medicine.MinisterOfHealth     scales with the leader's MEDICINE SKILL above the epic threshold
+        /// This also keeps the pool trick below sound in the plainest way there is. A regular unit's pool is now
+        /// EXACTLY native's hundred -- the very number vanilla rolls RandomInt against -- so "worn through" hands
+        /// back a damage of maxHitPoints and RandomInt(100) &lt; 100 is always true, while "still standing" hands
+        /// back zero. No perk can lift the pool over the roll's ceiling, because no perk is added.
         ///
-        /// So a well-led infantry line can be carrying +28 and a doctor-lord's men a great deal more -- and none of
-        /// it has ever reached an auto-resolved battle. Fight the battle yourself and your perks matter; press the
-        /// button and they evaporate. That is the bug.
-        ///
-        /// What follows is a TRANSCRIPTION of that mission block, not an approximation of it: the same perks, the
-        /// same primary/secondary slots, the same conditions (at-sea, mounted, ranged, infantry), and the same
-        /// PerkHelper.AddPerkBonusForParty call -- which asks MobileParty.HasPerk, and so consults the party's
-        /// leader AND its role-holders. Nothing is invented. `agent.HasMount` becomes troop.IsMounted, which is the
-        /// same question asked of a man who has no Agent.
+        /// (<paramref name="party"/> is no longer consulted -- a trooper's pool does not depend on his officers now.
+        /// It is kept in the signature to mirror the caller and leave the door open if that ever changes again.)
         /// </summary>
         internal static int MaxHitPoints(CharacterObject troop, PartyBase party)
         {
@@ -105,65 +98,9 @@ namespace RBMCampaign
                 return 100;
             }
 
-            // The base, and every perk the man himself owns. For a hero that is already the whole story -- his own
-            // Personal bonuses are in there, and native adds nothing else to him.
-            ExplainedNumber bonuses = new ExplainedNumber(troop.MaxHitPoints());
-            if (troop.IsHero)
-            {
-                return MathF.Round(bonuses.ResultNumber);
-            }
-
-            MobileParty mobileParty = (party != null) ? party.MobileParty : null;
-            if (mobileParty == null || mobileParty.LeaderHero == null)
-            {
-                return MathF.Round(bonuses.ResultNumber);
-            }
-
-            // --- SandboxAgentStatCalculateModel, transcribed. ---
-
-            if (!mobileParty.IsCurrentlyAtSea)
-            {
-                PerkHelper.AddPerkBonusForParty(DefaultPerks.TwoHanded.ThickHides, mobileParty, false, ref bonuses);
-                PerkHelper.AddPerkBonusForParty(DefaultPerks.Polearm.HardyFrontline, mobileParty, true, ref bonuses);
-            }
-
-            if (troop.IsRanged)
-            {
-                PerkHelper.AddPerkBonusForParty(DefaultPerks.Crossbow.PickedShots, mobileParty, false, ref bonuses);
-            }
-
-            // A man on a horse gets none of these: they are for the men standing in the line.
-            if (!troop.IsMounted)
-            {
-                if (!mobileParty.IsCurrentlyAtSea)
-                {
-                    PerkHelper.AddPerkBonusForParty(DefaultPerks.Athletics.WellBuilt, mobileParty, false, ref bonuses);
-                }
-
-                PerkHelper.AddPerkBonusForParty(DefaultPerks.Polearm.HardKnock, mobileParty, false, ref bonuses);
-
-                if (!mobileParty.IsCurrentlyAtSea && troop.IsInfantry)
-                {
-                    PerkHelper.AddPerkBonusForParty(DefaultPerks.OneHanded.UnwaveringDefense, mobileParty, false, ref bonuses);
-                }
-            }
-
-            // And the lord's own doctoring. This one is not a flat bonus at all -- it is his MEDICINE SKILL, every
-            // point of it above the threshold at which epic perks begin to pay.
-            CharacterObject leader = mobileParty.LeaderHero.CharacterObject;
-            if (leader != null && leader.GetPerkValue(DefaultPerks.Medicine.MinisterOfHealth))
-            {
-                int epicThreshold = Campaign.Current.Models.CharacterDevelopmentModel.MaxSkillRequiredForEpicPerkBonus;
-                int skill = leader.GetSkillValue(DefaultSkills.Medicine);
-                int bonus = (int)(MathF.Max(skill - epicThreshold, 0)
-                    * DefaultPerks.Medicine.MinisterOfHealth.PrimaryBonus);
-                if (bonus > 0)
-                {
-                    bonuses.Add(bonus);
-                }
-            }
-
-            int hitPoints = MathF.Round(bonuses.ResultNumber);
+            // Base only, hero or trooper alike: a soldier's own hit points -- his personal perks already in them for
+            // a hero, and nothing added for a trooper. Party and leader perks are deliberately left out; see above.
+            int hitPoints = troop.MaxHitPoints();
             return (hitPoints > 1) ? hitPoints : 1;
         }
 
@@ -185,9 +122,9 @@ namespace RBMCampaign
 
             UniqueTroopDescriptor selected = SelectedDescriptor(__instance);
 
-            // His officers count. Note this only ever RAISES the pool above native's hundred, which is what keeps
-            // the trick below sound: vanilla will roll RandomInt(nativeMax) and we hand it a damage of nativeMax or
-            // more, so "always true" stays always true.
+            // His own hundred, and nothing his officers carry -- a trooper's pool is native's max exactly (see
+            // MaxHitPoints). That equality is what keeps the trick below sound: vanilla rolls RandomInt(nativeMax)
+            // and we hand it a damage of nativeMax, so RandomInt(max) < max stays always true when he is worn through.
             int maxHitPoints = MaxHitPoints(troop, __instance.GetAllocatedTroopParty(selected));
             if (maxHitPoints <= 0)
             {
