@@ -169,8 +169,26 @@ namespace RBMConfig
         public static bool simulationEquipmentEnabled = true;
 
         // How strongly kit quality bends the simulated outcome. 0 is vanilla (no effect); 1 applies the
-        // model at full strength; higher exaggerates the gap between good and poor equipment.
+        // model at full strength; higher exaggerates the gap between good and poor equipment. In RATIO mode
+        // this is the exponent on the equipment ratio; in ABSOLUTE mode (below) it is only the on/off gate.
         public static float simulationEquipmentPowerWeight = 1f;
+
+        // ABSOLUTE DAMAGE. When true, a simulated blow is worth its own real magnitude rather than a ratio to a
+        // typical blow of its arm. The model still keeps every one of vanilla's surviving factors -- side
+        // advantage, the leader/captain modifier, all the Tactics/Scouting perks, and vanilla's own random
+        // spread -- and replaces only vanilla's tier-power CORE with the kit-derived blow. False restores the
+        // older ratio-against-baseline behaviour (clamped [0.1,8]). See SimulationEquipmentPower.Explain.
+        public static bool simulationAbsoluteDamage = true;
+
+        // The one calibration dial of absolute mode: how a blow's real magnitude maps onto the hit-point pool
+        // the casualty stage wears down. Vanilla's fixed 40 base set this scale for free; absolute mode owns it.
+        // Raise to make blows bite harder (battles kill faster), lower to soften them. TUNE VS A PAIRED LOG.
+        public static float simulationAbsoluteScale = 1f;
+
+        // The absolute per-blow ceiling, as a multiple of the struck man's hit-point pool. With the ratio clamp
+        // gone, this is what stops one freak kit pairing landing a blow many times a man's pool; no single blow
+        // may exceed this share of it. 0 disables the cap. Only applies in absolute mode.
+        public static float simulationAbsoluteBlowCap = 1.5f;
 
         // The share of blows an ordinary shield turns aside. A shield's worth in a fight is not the armour it
         // adds -- it is the blows it stops outright, and nothing else in a troop's kit does that. A better
@@ -372,6 +390,9 @@ namespace RBMConfig
             spoilsVerboseLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsVerboseLoggingEnabled", "1").Equals("1");
             simulationEquipmentEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentEnabled", "1").Equals("1");
             simulationEquipmentPowerWeight = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentPowerWeight", "1"), CultureInfo.InvariantCulture);
+            simulationAbsoluteDamage = ReadOrCreate("/Config/RBMCampaign", "SimulationAbsoluteDamage", "1").Equals("1");
+            simulationAbsoluteScale = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationAbsoluteScale", "1"), CultureInfo.InvariantCulture);
+            simulationAbsoluteBlowCap = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationAbsoluteBlowCap", "1.5"), CultureInfo.InvariantCulture);
             simulationShieldBlockChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationShieldBlockChance", "0.4"), CultureInfo.InvariantCulture);
             simulationDefenseSystem = ReadOrCreate("/Config/RBMCampaign", "SimulationDefenseSystem", "1").Equals("1");
             simulationArmTargeting = ReadOrCreate("/Config/RBMCampaign", "SimulationArmTargeting", "1").Equals("1");
@@ -497,6 +518,9 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsVerboseLoggingEnabled"), spoilsVerboseLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationEquipmentEnabled"), simulationEquipmentEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationEquipmentPowerWeight"), simulationEquipmentPowerWeight.ToString(CultureInfo.InvariantCulture));
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationAbsoluteDamage"), simulationAbsoluteDamage);
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationAbsoluteScale"), simulationAbsoluteScale.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationAbsoluteBlowCap"), simulationAbsoluteBlowCap.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationShieldBlockChance"), simulationShieldBlockChance.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationDefenseSystem"), simulationDefenseSystem);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationArmTargeting"), simulationArmTargeting);

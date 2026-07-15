@@ -308,6 +308,8 @@
     <Compile Include="UI\SpoilsPartyTooltip.cs" />
     <Compile Include="Simulation\SimulationArmTargeting.cs" />
     <Compile Include="Simulation\SimulationEquipmentPower.cs" />
+    <Compile Include="Simulation\SimulationMorale.cs" />
+    <Compile Include="Simulation\SimulationRout.cs" />
     <Compile Include="Simulation\SimulationWeaponModel.cs" />
     <Compile Include="Simulation\SimulationBattleState.cs" />
     <Compile Include="Simulation\SimulationBattleSnapshot.cs" />

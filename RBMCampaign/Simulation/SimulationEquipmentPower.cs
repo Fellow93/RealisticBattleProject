@@ -332,13 +332,42 @@ namespace RBMCampaign
         /// is why melee was a bloodbath rather than the slow grind it is, and why the heavy foot won battles the mobile
         /// arms decide on the field. So a landed melee blow is scaled by pow(random, this): a high exponent piles the
         /// draws down near nothing and leaves a thin tail up at full, so the AVERAGE landed blow is worth 1/(exp+1) of
-        /// the full -- at 2, a third. Shots and charges are exempt (an arrow is all-or-nothing, a charge is committed).
-        /// Tune vs a paired log: raise it to make melee more of a grind, lower it toward 1 to let blows land harder.
+        /// the full -- at 2, a third. Nothing lands whole every time now: shots and thrown weapons are spread too but
+        /// gently (RangedLandingExponent), and a charge more gently still (ChargeLandingExponent). Tune vs a paired
+        /// log: raise it to make melee more of a grind, lower it toward 1 to let blows land harder.
         /// </summary>
         private const float MeleeLandingExponent = 2f;
 
+        /// <summary>
+        /// The same idea for a RANGED blow, gentler. A shot or a thrown weapon that lands still varies with the range
+        /// it flew and the angle it met -- a plunging shaft at the end of its arc, a glancing hit off a curved helm --
+        /// so it is not worth full magnitude every time either. But a missile that connects carries real force more
+        /// OFTEN than a melee swing does: its failure modes (a clean miss, a shield got up in time) are already priced
+        /// elsewhere as accuracy and the block, not here. So the exponent is low -- at 0.5 the AVERAGE landed shot is
+        /// worth 1/(0.5+1) = two-thirds of the full. Applies to both fired and thrown missiles. Raise it toward the
+        /// melee value to nerf ranged harder, lower it toward 0 to let shots land nearer full. Tune vs a paired log:
+        /// this dial moves the ranged-vs-melee kill balance directly.
+        /// </summary>
+        private const float RangedLandingExponent = 0.5f;
+
+        /// <summary>
+        /// And for a CHARGE, gentler still than a shot. When a couched lance connects at the gallop it delivers
+        /// tremendous and fairly consistent force -- the old model was not wrong that a charge is committed -- but it
+        /// is not full EVERY time: the lance strikes a shade off-square, the horse is a step short of full speed, the
+        /// point catches a pauldron and skids. So a charge lands nearer full than an arrow does, but not always whole.
+        /// At 0.35 the AVERAGE landed charge is worth 1/(0.35+1) = about three-quarters of the full charged blow. This
+        /// is a cavalry-shock dial: raise it to blunt the charge, lower it toward 0 to let it land nearer full.
+        /// </summary>
+        private const float ChargeLandingExponent = 0.35f;
+
         /// <summary>A riposte is a fast jab off a parry, not a full swing: this fraction of the defender's own corrected blow.</summary>
         private const float RiposteScale = 0.5f;
+
+        // Vanilla's fixed base scale on a simulated blow -- the 40 in (0.5+0.5r)*40*pow(power,0.7)*advantage. Absolute
+        // mode divides it back out (along with the tier-power core) so the kit-derived blow sets the magnitude itself,
+        // while everything vanilla layered on top of that base -- advantage, leader/captain modifier, perks, the random
+        // spread -- rides through untouched. Kept as a named constant rather than a literal 40 for exactly this reason.
+        private const float VanillaBaseScale = 40f;
 
         // What a BLOCKED blow costs the shield, weapon by weapon. A shield is not worn by the damage it spares the
         // man; it is worn by the weapon that hits IT, and different weapons wear it very differently. These are the
@@ -358,11 +387,6 @@ namespace RBMCampaign
         private const float ShieldDmgMeleeCut = 0.8f;    // a sword cut chops it
         private const float ShieldDmgMeleeBlunt = 0.7f;  // a mace dents rather than splits
         private const float ShieldDmgMeleePierce = 0.12f; // a point glances off a board and barely marks it (RBM x0.09)
-
-        // What a man with a sword achieves while the lines are still closing, which is very nearly nothing: he is
-        // walking into arrows with his shield up. Not quite nought -- skirmishers do meet, and the front ranks of
-        // a charge do reach the line early -- but as near to it as makes no difference.
-        private const float ClosingPenalty = 0.08f;
 
         // A spear set for a horse. Infantry have answered cavalry this way for three thousand years and
         // auto-resolve has never once let them.
@@ -546,6 +570,25 @@ namespace RBMCampaign
 
             float vanillaDamage = __result.ResultNumber;
             float correction = breakdown.Correction;
+
+            // THE ABSOLUTE PER-BLOW CAP. In absolute mode the equipment ratio's [0.1,8] clamp is gone -- there is no
+            // ratio to clamp -- so nothing else stops one freak kit pairing (a great axe through linen, say) landing
+            // a blow worth many times the man's pool. No single blow may exceed this share of the struck man's own
+            // hit points. This is the only place the man being struck AND the assembled blow are both in reach. Folded
+            // back INTO the correction rather than applied to __result after it, so the log's vanilla x correction =
+            // dealt identity holds and RecordHit (which recomputes the dealt figure from breakdown.Correction) stays
+            // exact. A defended or zeroed blow (correction <= 0) is left alone. Ratio mode keeps its clamp and skips this.
+            if (RBMConfig.RBMConfig.simulationAbsoluteDamage && correction > 0f
+                && RBMConfig.RBMConfig.simulationAbsoluteBlowCap > 0f && vanillaDamage > 0f)
+            {
+                float pool = SimulationTroopHitPoints.MaxHitPoints(struckTroop, null);
+                float maxBlow = RBMConfig.RBMConfig.simulationAbsoluteBlowCap * pool;
+                if (vanillaDamage * correction > maxBlow)
+                {
+                    correction = maxBlow / vanillaDamage;
+                    breakdown.Correction = correction;
+                }
+            }
 
             if (correction != 1f)
             {
@@ -914,19 +957,24 @@ namespace RBMCampaign
             // has found another horseman. Everybody else is walking, and pays for it.
             bool engaged = !approaching || missile || cavalryClash;
 
-            // AND IN THE VOLLEY, A MAN WHO IS NOT SHOOTING DOES NOTHING AT ALL.
+            // A MAN STILL CLOSING THE DISTANCE DOES NOTHING AT ALL -- and that is the whole of the approach, not just
+            // the volley.
             //
-            // Not a weak blow -- NO blow. The lines are a bowshot apart. There is nothing there to hit: no sword
-            // reaches that far, and a man walking toward an enemy he cannot touch is not fighting badly, he is not
-            // fighting. The volley is the archers' round and nobody else's, which is the entire reason it is worth
-            // having archers.
+            // Not a weak blow -- NO blow. Whether the lines are a bowshot apart (the volley) or the ground between
+            // them is still being crossed (the skirmish), a footman with no javelin has nothing in front of him to
+            // hit: no sword reaches that far, and a man walking toward an enemy he cannot touch is not fighting badly,
+            // he is not fighting. The only men who ARE fighting before the lines meet are the three `engaged` names it
+            // wide -- the one shooting, the one throwing, and the horseman who has found another horseman. Everyone
+            // else is walking, and a walk is not a blow.
             //
-            // It used to be a closing PENALTY -- a hundredth of a blow, but a blow -- and across four thousand of
-            // them that adds up to a real body count landed by men who were, at the time, several hundred yards
-            // away with their shields up.
+            // This used to be split: the volley walker was zeroed here, but the SKIRMISH walker fell through and paid
+            // a token "closing PENALTY" of 0.08 instead -- a fraction of a blow, but a blow, landed by a man who by the
+            // phase's own definition was not yet in reach of anyone. That was a real body count dealt by men still
+            // crossing open ground, and it made no sense next to the volley walker who (rightly) dealt nothing. So the
+            // two are one case now: `approaching && !engaged` is a man closing, in either act, and he lands no blow.
             //
             // Nothing is spent here either: he splinters no shield and kills no horse, because he never reached one.
-            if (volley && !shooting)
+            if (approaching && !engaged)
             {
                 breakdown.Phase = "closing";
                 breakdown.Weapon = "-";
@@ -1196,16 +1244,13 @@ namespace RBMCampaign
                 return true;
             }
 
-            // Against what the average man of his arm does to the average man of the other's. This says how
-            // good the matchup is, and nothing about how senior either soldier is.
+            // Against what the average man of his arm does to the average man of the other's. In RATIO mode this
+            // is the pivot the whole correction turns on; in ABSOLUTE mode the damage no longer turns on it, but
+            // it is still measured -- the matchup table's equipment ratio and arm-aware target selection both read
+            // it -- so it is computed either way, and only the ratio-mode branch bails when it is missing.
             float baseline = GetBaselineDamage(strikerTroop, struckTroop);
             breakdown.Baseline = baseline;
-            if (baseline <= 0f)
-            {
-                return false;
-            }
-            float equipmentRatio = actual / baseline;
-            breakdown.EquipmentRatio = equipmentRatio;
+            breakdown.EquipmentRatio = (baseline > 0f) ? (actual / baseline) : 0f;
 
             // Vanilla priced this blow on tier and tier alone: pow(power_s / power_k, 0.7), where power is a
             // pure function of the number on the troop card. Divide that back out. A tier is not something a
@@ -1228,46 +1273,74 @@ namespace RBMCampaign
                 return false;
             }
 
-            // Weight is the whole dial: 0 leaves vanilla exactly as it was, 1 is the model at face value, and
-            // above 1 widens the gap between a well-found soldier and a ragged one.
-            float correction = MathF.Pow(equipmentRatio / tierTerm, RBMConfig.RBMConfig.simulationEquipmentPowerWeight);
-
-            // Wide, because a real mismatch is meant to be lopsided now -- a spear through an unarmoured looter
-            // should put him down, and his club should ring off a mail hauberk. But not unbounded: a single
-            // simulated blow must not become a massacre on the strength of one freak pairing.
-            //
-            // The clamp bounds the EQUIPMENT term and nothing else, which is why it is taken here, before the
-            // closing penalty rather than after it.
-            correction = MBMath.ClampFloat(correction, 0.1f, 8f);
-
-            // The SKIRMISH, for a man with no javelin and no horse. He is close enough now that a blow is at least
-            // conceivable -- the ground between the lines is not a bowshot any more -- but he is still walking, past
-            // a cavalry battle he can do nothing about and under javelins he cannot answer. So he pays the closing
-            // penalty here. (In the VOLLEY he pays no penalty because he lands no blow: see above.)
-            //
-            // This is applied AFTER the clamp, and it has to be. Inside it, 0.08 times anything below 1.25 landed
-            // under the 0.1 floor -- so every walking infantryman in Calradia came out at exactly 0.1, and a
-            // Hireling Elite Pikeman in plate was worth precisely as much as a naked recruit for as long as the
-            // lines were closing. The trace showed it in one glance: sixty-four walking blows, every one of them
-            // 0.10. A phase of the battle is not an equipment mismatch and has no business inside a clamp that
-            // exists to bound one.
-            if (!engaged)
+            float correction;
+            if (RBMConfig.RBMConfig.simulationAbsoluteDamage)
             {
-                correction *= ClosingPenalty;
-                breakdown.Closing = true;
+                // ABSOLUTE. The blow is worth its own real magnitude, not a ratio to a typical one. The postfix
+                // multiplies vanilla's number by this correction; setting it to (scale * actual) / (40 * tierTerm)
+                // cancels vanilla's 40 base scale AND its tier-power core (pow(power,0.7) = tierTerm * the leader/
+                // context part) and puts `actual` in their place. What is left of vanilla's number -- side
+                // advantage, the leader/captain modifier, every Tactics and Scouting perk, and its own random
+                // spread -- rides through the multiply untouched, which is how "keep all vanilla's factors" and
+                // "absolute damage" hold at once. `scale` is the sole calibration dial: it sets how a blow's real
+                // magnitude maps onto the hit-point pool the casualty stage wears down. TUNE IT VS A PAIRED LOG.
+                //
+                // No [0.1,8] clamp here: there is no ratio to clamp, and an absolute mismatch is meant to be
+                // lopsided. The upper end is instead bounded per blow against the struck man's own pool, in the
+                // postfix (simulationAbsoluteBlowCap), where the man being struck is known.
+                correction = (RBMConfig.RBMConfig.simulationAbsoluteScale * actual) / (VanillaBaseScale * tierTerm);
+            }
+            else
+            {
+                if (baseline <= 0f)
+                {
+                    return false;
+                }
+
+                // Weight is the whole dial: 0 leaves vanilla exactly as it was, 1 is the model at face value, and
+                // above 1 widens the gap between a well-found soldier and a ragged one.
+                correction = MathF.Pow(breakdown.EquipmentRatio / tierTerm, RBMConfig.RBMConfig.simulationEquipmentPowerWeight);
+
+                // Wide, because a real mismatch is meant to be lopsided now -- a spear through an unarmoured looter
+                // should put him down, and his club should ring off a mail hauberk. But not unbounded: a single
+                // simulated blow must not become a massacre on the strength of one freak pairing.
+                //
+                // The clamp bounds the EQUIPMENT term and nothing else, which is why it is taken here, before the
+                // closing penalty rather than after it.
+                correction = MBMath.ClampFloat(correction, 0.1f, 8f);
             }
 
-            // Most melee blows only glance -- see MeleeLandingExponent. A landed melee blow is worth a fraction of its
-            // full magnitude, mostly a small one, so melee is a grind. Folded INTO the correction (not applied after)
-            // so the log's vanilla x correction = dealt identity holds, and placed AFTER the ratio so it does not
-            // cancel against the baseline. Shots and charges land whole. On the reference tables it is the mean.
-            if (!missile && breakdown.ChargeBonus <= 1f)
+            // A man still closing the distance has already been handled: `approaching && !engaged` returned above with
+            // no blow at all. So every blow reaching here is one that genuinely landed -- a shot, a thrown javelin, a
+            // cavalry clash, or the melee of lines that have met -- and there is no closing penalty left to apply.
+
+            // A landed blow rarely bites at full force, and none of the three kinds lands whole every time. A melee
+            // swing mostly glances, so it is spread hard (MeleeLandingExponent); a shot or thrown weapon carries real
+            // force more often but still varies with the range it flew and the angle it met, so it is spread gently
+            // (RangedLandingExponent); and a charge -- the hardest and most committed of the three when it connects --
+            // is spread gentler still (ChargeLandingExponent), for the lance that strikes a shade off-square or the
+            // horse a step short of full gallop. Folded INTO the correction (not applied after) so the log's vanilla x
+            // correction = dealt identity holds, and placed AFTER the ratio so it does not cancel against the baseline.
+            // On the reference tables (spend == false) it is the mean of the draw, 1/(exp+1). Every real landed blow
+            // reaching here is a missile, a charge, or a melee, so a spread always applies.
+            float landingExponent;
+            if (missile)
             {
-                float meleeLanding = spend
-                    ? MathF.Pow(MBRandom.RandomFloat, MeleeLandingExponent)
-                    : (1f / (MeleeLandingExponent + 1f));
-                correction *= meleeLanding;
+                landingExponent = RangedLandingExponent;
             }
+            else if (breakdown.ChargeBonus > 1f)
+            {
+                landingExponent = ChargeLandingExponent;
+            }
+            else
+            {
+                landingExponent = MeleeLandingExponent;
+            }
+
+            float landing = spend
+                ? MathF.Pow(MBRandom.RandomFloat, landingExponent)
+                : (1f / (landingExponent + 1f));
+            correction *= landing;
 
             breakdown.Correction = correction;
             return true;

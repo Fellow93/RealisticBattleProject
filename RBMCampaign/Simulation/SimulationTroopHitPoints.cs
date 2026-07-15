@@ -63,7 +63,7 @@ namespace RBMCampaign
         /// its blows -- so this walks it back toward the field. Must stay >= 1: the pool trick in
         /// <see cref="MaxHitPoints"/> relies on the pool never dropping below the hundred vanilla rolls against.
         /// </summary>
-        internal const float LethalityHitPointScale = 2f;
+        internal const float LethalityHitPointScale = 1.25f;
 
         private static readonly AccessTools.FieldRef<MapEventSide, CharacterObject> SelectedTroop =
             AccessTools.FieldRefAccess<MapEventSide, CharacterObject>("_selectedSimulationTroop");
