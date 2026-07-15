@@ -127,7 +127,7 @@ namespace RBMCampaign
             sb.Append("\n");
             sb.Append("  the battle, blow by blow -- as the game actually fought it (")
               .Append(trace.Count).Append(" blows):").Append("\n");
-            sb.Append("      striker            -> struck                what     weapon            armor   blk%   vanilla  x corr  =  dealt   odds").Append("\n");
+            sb.Append("      striker            -> struck                what     defense       weapon            armor   def%   vanilla  x corr  =  dealt   odds").Append("\n");
 
             int round = -1;
             foreach (HitRecord hit in trace)
@@ -178,6 +178,9 @@ namespace RBMCampaign
                   .Append(Clip(Name(hit.Striker), 19).PadRight(20))
                   .Append("-> ").Append(Clip(Name(hit.Struck), 21).PadRight(22))
                   .Append(Clip(what, 8).PadRight(9))
+                  // How the blow was answered -- none / shield-block / weapon-block / parry / riposte -- so the
+                  // block, parry and riposte rates can be read straight off the log for tuning.
+                  .Append(Clip(hit.Defense ?? "none", 12).PadRight(13))
                   .Append(Clip(hit.Weapon ?? "-", 15).PadRight(16))
                   .Append(Clip(hit.BodyPart ?? "-", 5).PadRight(6))
                   .Append(Num(hit.ArmorMet, 7))
@@ -251,7 +254,7 @@ namespace RBMCampaign
 
             sb.Append("\n");
             sb.Append("  kit as the model sees it:").Append("\n");
-            sb.Append("    troop                            T  arm   head  body   arm   leg    mag  dmg     blk%  weapon           pen  kit").Append("\n");
+            sb.Append("    troop                            T  arm   head  neck torso shldr   arm   leg    mag  dmg     blk%  weapon           pen  kit").Append("\n");
             foreach (CharacterObject troop in attackers)
             {
                 AppendKit(sb, troop, "A");
@@ -290,7 +293,7 @@ namespace RBMCampaign
             sb.Append("    ").Append(side).Append(' ').Append(Clip(troop.Name != null ? troop.Name.ToString() : troop.StringId, 29).PadRight(29))
               .Append((troop.IsHero ? ("*" + tier) : tier.ToString()).PadLeft(2))
               .Append("  ").Append(arm)
-              .Append(Num(k.Head, 6)).Append(Num(k.Body, 6)).Append(Num(k.Arm, 6)).Append(Num(k.Leg, 6))
+              .Append(Num(k.Head, 6)).Append(Num(k.Neck, 6)).Append(Num(k.Torso, 6)).Append(Num(k.Shoulder, 6)).Append(Num(k.Arm, 6)).Append(Num(k.Leg, 6))
               .Append(Num(k.Magnitude, 7))
               .Append("  ").Append(k.DamageType.ToString().PadRight(6))
               .Append(Num(k.ShieldBlock * 100f, 5))

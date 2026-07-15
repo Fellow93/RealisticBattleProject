@@ -93,6 +93,8 @@ namespace RBMCampaign
                           .Append(RC.rbmCombatEnabled ? " RBM's" : " vanilla's").Append(")").Append(Environment.NewLine);
                     header.Append("  simulationEquipmentEnabled    = ").Append(RC.simulationEquipmentEnabled).Append(Environment.NewLine);
                     header.Append("  simulationEquipmentPowerWeight= ").Append(Fmt(RC.simulationEquipmentPowerWeight)).Append(Environment.NewLine);
+                    header.Append("  simulationArmTargeting        = ").Append(RC.simulationArmTargeting).Append(Environment.NewLine);
+                    header.Append("     (picks striker/struck by phase and arm; when on, VolleyFocus stands down)").Append(Environment.NewLine);
                     header.Append("  simulationLogHits             = ").Append(RC.simulationLogHits).Append(Environment.NewLine);
                     header.Append("  armorMultiplier               = ").Append(Fmt(RC.armorMultiplier)).Append(Environment.NewLine);
                     header.Append("  armorThresholdModifier        = ").Append(Fmt(RC.armorThresholdModifier)).Append(Environment.NewLine);

@@ -182,6 +182,26 @@ namespace RBMConfig
         // the game records. Treat it as the dial it is.
         public static float simulationShieldBlockChance = 0.4f;
 
+        // The skill-based defense system for auto-resolve melee: a discrete block/parry/riposte roll per blow
+        // rather than the old fractional shield-skim. A defender rolls to defend (chance from his own melee skill,
+        // easy behind a shield and roughly twice as hard with only a weapon); a successful defence either fully
+        // blocks the blow (a shield eats the whole of it; a weapon just deflects it) or -- when he out-skills his
+        // attacker -- parries and lands a counter-blow (a riposte) of his own. Ranged blows are answered by the
+        // shield alone. This is what makes landed melee lethality depend on training, which pulls the sim's
+        // ranged-to-melee kill balance back toward a real field battle. False (0) restores the fractional skim.
+        public static bool simulationDefenseSystem = true;
+
+        // Arm-aware target selection for auto-resolve. Vanilla picks both the striker and the man he strikes
+        // UNIFORMLY AT RANDOM from the whole side, arm-blind -- a melee footman is as likely to "hit" an enemy
+        // archer three ranks back as the man in front of him. This makes selection respect the battle's phase and
+        // the arms of service: in the volley the bows act, in the skirmish the horse and the javelins, and every
+        // striker reaches for the enemy he could actually reach (foot for the front line, archers for the massed
+        // foot, cavalry for cavalry in the open). It is a weighted preference, never a hard filter, and always
+        // degrades to random when the preferred arm is absent. When on, the volley's archer compensation
+        // (VolleyFocus) stands down, since the bows are now handed their turns directly. False (0) restores
+        // vanilla's arm-blind random selection and the VolleyFocus path unchanged.
+        public static bool simulationArmTargeting = true;
+
         // Writes every auto-resolved battle to its own log under logs/simulation, as it was actually fought: who
         // stood on each side, what they carried, how it ended. Costs nothing while off -- no battle is snapshotted
         // and no blow is recorded.
@@ -353,6 +373,8 @@ namespace RBMConfig
             simulationEquipmentEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentEnabled", "1").Equals("1");
             simulationEquipmentPowerWeight = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentPowerWeight", "1"), CultureInfo.InvariantCulture);
             simulationShieldBlockChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationShieldBlockChance", "0.4"), CultureInfo.InvariantCulture);
+            simulationDefenseSystem = ReadOrCreate("/Config/RBMCampaign", "SimulationDefenseSystem", "1").Equals("1");
+            simulationArmTargeting = ReadOrCreate("/Config/RBMCampaign", "SimulationArmTargeting", "1").Equals("1");
             simulationLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationLoggingEnabled", "1").Equals("1");
             simulationLogHits = ReadOrCreate("/Config/RBMCampaign", "SimulationLogHits", "1").Equals("1");
 
@@ -476,6 +498,8 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationEquipmentEnabled"), simulationEquipmentEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationEquipmentPowerWeight"), simulationEquipmentPowerWeight.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationShieldBlockChance"), simulationShieldBlockChance.ToString(CultureInfo.InvariantCulture));
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationDefenseSystem"), simulationDefenseSystem);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationArmTargeting"), simulationArmTargeting);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLoggingEnabled"), simulationLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLogHits"), simulationLogHits);
             //RBMAI

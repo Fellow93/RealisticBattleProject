@@ -5,7 +5,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.GauntletUI.Mission.Singleplayer;
 using TaleWorlds.MountAndBlade.ViewModelCollection.HUD.FormationMarker;
 using static TaleWorlds.Core.ItemObject;
 
@@ -21,6 +24,42 @@ namespace RBMAI
         }
 
         public static ConcurrentDictionary<Agent, AgentDamageDone> agentDamage = new ConcurrentDictionary<Agent, AgentDamageDone>();
+
+        private static bool? _missionLibraryLoaded;
+
+        /// <summary>
+        /// True when the "MissionLibrary" shared assembly is loaded. It is shipped by RTSCamera, RTSCamera.CommandSystem
+        /// AND BattleMiniMap (all by the same author) and carries the code that reads the formation arrangement grid
+        /// (LineFormation._units2D) by reflection and relies on its invariant -- that _units2D[i,j].FormationFileIndex
+        /// == i and .FormationRankIndex == j for every unit (see CheckFormationArrangementIntegrity). Any RBM mid-battle
+        /// formation reassignment transiently breaks that invariant; those mods then dereference a stale grid slot ->
+        /// native TickMission faults with an AccessViolationException (looks like a freeze). Keying on the shared
+        /// MissionLibrary (rather than each mod's name) covers all three at once -- confirmed both RTSCamera and
+        /// BattleMiniMap reproduce the freeze with RBM.
+        /// When present, RBM's split tactics do their membership move ONCE then hold stable (see the
+        /// _membershipSplitDone / doReassign latch), and the ManageFormationCounts prefix skips its class-reshuffle so
+        /// native keeps the grid consistent.
+        /// Detected via the loaded assemblies (not the module list) and cached: the answer cannot change mid-run.
+        /// </summary>
+        internal static bool IsFormationReshufflingUnsafe
+        {
+            get
+            {
+                if (_missionLibraryLoaded == null)
+                {
+                    try
+                    {
+                        _missionLibraryLoaded = AppDomain.CurrentDomain.GetAssemblies()
+                            .Any(a => a.GetName().Name.Equals("MissionLibrary", StringComparison.OrdinalIgnoreCase));
+                    }
+                    catch
+                    {
+                        _missionLibraryLoaded = false;
+                    }
+                }
+                return _missionLibraryLoaded.Value;
+            }
+        }
 
         internal static void ClassifyMountedAgent(Agent agent, List<Agent> skirmishers, List<Agent> melee)
         {
@@ -146,6 +185,83 @@ namespace RBMAI
             private static void Postfix(MissionFormationMarkerTargetVM __instance)
             {
                 __instance.FormationType = chooseIcon(__instance.Formation);
+            }
+        }
+
+        // Stabilizes the in-battle formation banner marker. Vanilla anchors each marker to
+        // Formation.CachedMedianPosition -- the world position of whichever single soldier is
+        // currently closest to the formation's centroid (GetMedianAgent). As units shuffle,
+        // that "median" soldier flips frame to frame, so the banner snaps erratically from man
+        // to man. We re-anchor to the formation's average position (a smooth centroid that
+        // barely moves when one soldier shifts) and ease it over time in world space, then
+        // reproject to screen. Distance/DistanceText and the count are left to native code.
+        [HarmonyPatch(typeof(MissionGauntletFormationMarker))]
+        [HarmonyPatch("UpdateMarkerPositions")]
+        private class OverrideMarkerPositions
+        {
+            // smoothed world-space anchor (XY) per formation, kept between ticks
+            private static readonly Dictionary<Formation, Vec2> smoothedWorld = new Dictionary<Formation, Vec2>();
+            private static readonly Vec3 heightOffset = new Vec3(0f, 0f, 3f, -1f);
+            private const float lerp = 0.25f;          // per-tick easing toward the average
+            private const float snapDistSq = 15f * 15f; // teleport threshold -> snap instead of ease
+
+            private static void Postfix(MissionGauntletFormationMarker __instance)
+            {
+                var camera = __instance.MissionScreen?.CombatCamera;
+                MissionFormationMarkerVM ds = Traverse.Create(__instance).Field("_dataSource").GetValue<MissionFormationMarkerVM>();
+                if (camera == null || ds == null)
+                {
+                    return;
+                }
+
+                HashSet<Formation> live = new HashSet<Formation>();
+                foreach (MissionFormationMarkerTargetVM target in ds.Targets)
+                {
+                    Formation f = target.Formation;
+                    if (f == null)
+                    {
+                        continue;
+                    }
+                    WorldPosition wp = f.CachedMedianPosition; // valid + carries a navmesh face
+                    Vec2 avg = f.CachedAveragePosition;
+                    if (!wp.IsValid || !avg.IsValid)
+                    {
+                        continue;
+                    }
+                    live.Add(f);
+
+                    // ease the world anchor toward the current average; snap on first sight / teleport
+                    Vec2 shown;
+                    if (smoothedWorld.TryGetValue(f, out Vec2 prev) && prev.DistanceSquared(avg) < snapDistSq)
+                    {
+                        shown = Vec2.Lerp(prev, avg, lerp);
+                    }
+                    else
+                    {
+                        shown = avg;
+                    }
+                    smoothedWorld[f] = shown;
+
+                    wp.SetVec2(shown);
+                    float x = 0f, y = 0f, w = 0f;
+                    MBWindowManager.WorldToScreen(camera, wp.GetGroundVec3() + heightOffset, ref x, ref y, ref w);
+                    if (!TaleWorlds.Library.MathF.IsValidValue(w) || !TaleWorlds.Library.MathF.IsValidValue(x) || !TaleWorlds.Library.MathF.IsValidValue(y))
+                    {
+                        continue;
+                    }
+
+                    target.WSign = (w < 0f) ? -1 : 1;
+                    target.ScreenPosition = new Vec2(x, y);
+                }
+
+                // drop entries for formations that no longer have a marker so we don't retain stale refs
+                if (smoothedWorld.Count > live.Count)
+                {
+                    foreach (Formation stale in smoothedWorld.Keys.Where(k => !live.Contains(k)).ToList())
+                    {
+                        smoothedWorld.Remove(stale);
+                    }
+                }
             }
         }
 

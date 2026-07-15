@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
@@ -51,12 +52,20 @@ namespace RBMCombat
         /// </summary>
         private float _linesMetAt = -1f;
 
+        /// <summary>
+        /// Whether this mission is one we actually log. Set once in <see cref="AfterStart"/> and read by every
+        /// callback after it -- a mission that is not a real battle is left alone entirely, no file opened.
+        /// </summary>
+        private bool _logging;
+
         public override void AfterStart()
         {
-            if (!BattleHitLog.IsEnabled)
+            _logging = false;
+            if (!BattleHitLog.IsEnabled || !IsRealBattle())
             {
                 return;
             }
+            _logging = true;
 
             StringBuilder header = new StringBuilder();
             header.Append("RBM battle log — every blow of a real battle, as it landed.").Append("\n");
@@ -84,7 +93,7 @@ namespace RBMCombat
         public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon affectorWeapon,
             in Blow blow, in AttackCollisionData attackCollisionData)
         {
-            if (!BattleHitLog.IsEnabled || affectedAgent == null || affectorAgent == null)
+            if (!_logging || affectedAgent == null || affectorAgent == null)
             {
                 return;
             }
@@ -149,11 +158,28 @@ namespace RBMCombat
 
         protected override void OnEndMission()
         {
-            if (!BattleHitLog.IsEnabled)
+            if (!_logging)
             {
                 return;
             }
             BattleHitLog.EndBattle(Summary());
+        }
+
+        /// <summary>
+        /// A real battle -- the kind the auto-resolve model is a claim ABOUT -- and nothing else. Town walks,
+        /// conversations, arenas and other friendly scenes share the mission plumbing but have no simulation to be
+        /// read against, so there is nothing to write down. The same set the rest of RBM treats as a battle: field,
+        /// siege, sally-out and naval fights, plus a hideout raid.
+        /// </summary>
+        private static bool IsRealBattle()
+        {
+            Mission m = Mission.Current;
+            if (m == null)
+            {
+                return false;
+            }
+            return m.IsFieldBattle || m.IsSiegeBattle || m.IsSallyOutBattle || m.IsNavalBattle
+                || (MapEvent.PlayerMapEvent != null && MapEvent.PlayerMapEvent.IsHideoutBattle);
         }
 
         /// <summary>

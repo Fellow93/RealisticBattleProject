@@ -8,6 +8,8 @@ public class RBMTacticAttackSplitArchers : TacticComponent
     private Formation leftArchers;
     private Formation rightArchers;
     private bool _hasBattleBeenJoined;
+    // Note: this tactic never reassigns agent.Formation (it only aliases existing ranged formations),
+    // so it needs no one-time-split latch and is already safe under BattleMiniMap (Tactics.IsFormationReshufflingUnsafe).
 
     private int waitCountMainFormation = 0;
     private int waitCountMainFormationMax = 30;
