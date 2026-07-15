@@ -9,10 +9,16 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
     protected Formation _flankingInfantry = null;
     protected Formation _leftFlankingInfantry = null;
     protected Formation _rightFlankingInfantry = null;
+    private bool _membershipSplitDone;
     private int side = MBRandom.RandomInt(2);
 
     protected void AssignTacticFormations()
     {
+        // Under BattleMiniMap (IsFormationReshufflingUnsafe) the physical agent moves are done ONCE;
+        // afterwards we keep refreshing refs/weights but never reshuffle again. Computed once at
+        // the top so both the main split and the straggler-cleanup below share the same gate.
+        bool doReassign = !RBMAI.Tactics.IsFormationReshufflingUnsafe || !_membershipSplitDone;
+
         ManageFormationCounts(3, 1, 2, 1);
 
         // Materialize immediately — lazy re-evaluation after agent moves gives inconsistent results
@@ -63,26 +69,33 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
                 }
                 flankersList = flankersList.OrderBy((Agent o) => o.CharacterPowerCached).ToList();
 
-                int j = 0;
-                foreach (Agent agent in flankersList)
+                if (doReassign)
                 {
-                    if (j < infCount / 6)
-                        agent.Formation = leftSlot;
-                    else if (j < infCount / 3)
-                        agent.Formation = rightSlot;
-                    else
-                        agent.Formation = _mainInfantry;
-                    j++;
+                    int j = 0;
+                    foreach (Agent agent in flankersList)
+                    {
+                        if (j < infCount / 6)
+                            agent.Formation = leftSlot;
+                        else if (j < infCount / 3)
+                            agent.Formation = rightSlot;
+                        else
+                            agent.Formation = _mainInfantry;
+                        j++;
+                    }
+                    foreach (Agent agent in mainList)
+                    {
+                        if (j < infCount / 6)
+                            agent.Formation = leftSlot;
+                        else if (j < infCount / 3)
+                            agent.Formation = rightSlot;
+                        else
+                            agent.Formation = _mainInfantry;
+                        j++;
+                    }
                 }
-                foreach (Agent agent in mainList)
+                if (RBMAI.Tactics.IsFormationReshufflingUnsafe)
                 {
-                    if (j < infCount / 6)
-                        agent.Formation = leftSlot;
-                    else if (j < infCount / 3)
-                        agent.Formation = rightSlot;
-                    else
-                        agent.Formation = _mainInfantry;
-                    j++;
+                    _membershipSplitDone = true;
                 }
 
                 // Set refs directly from slot objects — stable regardless of post-move ordering changes
@@ -97,9 +110,12 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
                     _rightFlankingInfantry.AI.IsMainFormation = false;
                 }
 
-                this.Team.TriggerOnFormationsChanged(leftSlot);
-                this.Team.TriggerOnFormationsChanged(rightSlot);
-                this.Team.TriggerOnFormationsChanged(_mainInfantry);
+                if (doReassign)
+                {
+                    this.Team.TriggerOnFormationsChanged(leftSlot);
+                    this.Team.TriggerOnFormationsChanged(rightSlot);
+                    this.Team.TriggerOnFormationsChanged(_mainInfantry);
+                }
             }
         }
 
@@ -131,15 +147,18 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
         _rangedCavalry = ChooseAndSortByPriority(nonEmptyFormations, (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 
         // Move lone infantry stragglers into the main formation
-        foreach (Formation formation in nonEmptyFormations)
+        if (doReassign)
         {
-            if (formation.CountOfUnits == 1)
+            foreach (Formation formation in nonEmptyFormations)
             {
-                formation.ApplyActionOnEachUnitViaBackupList((Agent agent) =>
+                if (formation.CountOfUnits == 1)
                 {
-                    if (!agent.IsRangedCached && !agent.HasMount && _mainInfantry != null)
-                        agent.Formation = _mainInfantry;
-                });
+                    formation.ApplyActionOnEachUnitViaBackupList((Agent agent) =>
+                    {
+                        if (!agent.IsRangedCached && !agent.HasMount && _mainInfantry != null)
+                            agent.Formation = _mainInfantry;
+                    });
+                }
             }
         }
 

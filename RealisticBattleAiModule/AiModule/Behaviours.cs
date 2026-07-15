@@ -1784,31 +1784,26 @@ namespace RBMAI
         [HarmonyPatch("SwitchUnitLocations")]
         private static bool PrefixSwitchUnitLocations(ref LineFormation __instance, IFormationUnit firstUnit, IFormationUnit secondUnit)
         {
-            if (firstUnit != null && ((Agent)firstUnit).Formation != null && ((Agent)firstUnit).IsActive() &&
-                secondUnit != null && ((Agent)secondUnit).Formation != null && ((Agent)secondUnit).IsActive())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            // Vanilla SwitchUnitLocations indexes _units2D[FormationFileIndex, FormationRankIndex] for BOTH
+            // units with no bounds check of its own. Only let it run when both units are live, in a formation,
+            // AND carry a non-negative (placed) arrangement index -- an unplaced unit (index -1) would drive a
+            // _units2D[-1, ...] access.
+            return firstUnit != null && ((Agent)firstUnit).Formation != null && ((Agent)firstUnit).IsActive()
+                && firstUnit.FormationFileIndex >= 0 && firstUnit.FormationRankIndex >= 0
+                && secondUnit != null && ((Agent)secondUnit).Formation != null && ((Agent)secondUnit).IsActive()
+                && secondUnit.FormationFileIndex >= 0 && secondUnit.FormationRankIndex >= 0;
         }
 
         [HarmonyPrefix]
         [HarmonyPatch("RemoveUnit", new Type[] { typeof(IFormationUnit), typeof(bool), typeof(bool) })]
         private static bool PrefixRemoveUnit(IFormationUnit unit, bool fillInTheGap, bool isRemovingFromAnUnavailablePosition = false)
         {
-            int formationFileIndex = unit.FormationFileIndex;
-            int formationRankIndex = unit.FormationRankIndex;
-            if (unit != null && ((Agent)unit).Formation != null && formationFileIndex != -1 && formationRankIndex != -1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            // Read the arrangement indices only AFTER confirming the unit and its formation are non-null --
+            // the previous order dereferenced unit.FormationFileIndex before the null check. Vanilla RemoveUnit
+            // indexes _units2D by these indices directly (warning, then dereferencing, on an out-of-range slot),
+            // so an unplaced unit (negative index) must not be handed to it.
+            return unit != null && ((Agent)unit).Formation != null
+                && unit.FormationFileIndex >= 0 && unit.FormationRankIndex >= 0;
         }
     }
 }

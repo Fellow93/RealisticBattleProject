@@ -73,13 +73,16 @@ namespace RBMCampaign
         // So a lord is bucketed as what he FIGHTS as -- horse or foot, bow or blade -- like any other soldier, and
         // his kit then speaks for itself through the equipment ratio, exactly as a tier-5 veteran's does against a
         // recruit. That his kit is nothing like a line troop's is the POINT, not a reason to hide it in a bucket.
-        private const int InfantryType = 0;
+        // The four arms of service. Internal, not private, because arm-aware target selection
+        // (SimulationArmTargeting) picks strikers and struck men by the same taxonomy the damage model prices
+        // them with -- there must be exactly ONE arm classifier, and it is this one (see ArmOf/GetBucket).
+        internal const int InfantryType = 0;
 
-        private const int ArcherType = 1;
+        internal const int ArcherType = 1;
 
-        private const int CavalryType = 2;
+        internal const int CavalryType = 2;
 
-        private const int HorseArcherType = 3;
+        internal const int HorseArcherType = 3;
 
         private const int TypeCount = 4;
 
@@ -124,9 +127,19 @@ namespace RBMCampaign
             // Armour is kept zone by zone rather than averaged into one number, because how much of it a blow
             // meets depends on who is throwing it and from what height. A lancer's leg harness is nearly all
             // that matters to the footman hacking up at him, and nearly nothing to the rider beside him.
+            //
+            // The zones are RBM's own bones (ArmorRework / GetBodyPartDamageMultiplier), folded only where a fold
+            // costs nothing: the neck stands apart from the head (it is as soft as the torso but worth a head's
+            // 1.5x), the shoulder apart from the arm (a cuirass plates the shoulder; only gloves reach the arm),
+            // and chest and abdomen alone are merged into Torso -- they carry the same armour and differ by a
+            // tenth in worth. So six zones, not vanilla's four.
             public float Head;
 
-            public float Body;
+            public float Neck;
+
+            public float Torso;
+
+            public float Shoulder;
 
             public float Arm;
 
@@ -199,6 +212,14 @@ namespace RBMCampaign
 
             public bool IsRanged;
 
+            /// <summary>
+            /// His melee skill -- the best of his one-handed, two-handed and polearm training. Read once when the kit
+            /// is built (the same GetSkillValue the damage path uses per weapon), and surfaced here as a plain LEVEL
+            /// so the defense roll can price how well he blocks and, against a lesser man, how often he parries. The
+            /// weapon profile carries the skill TYPE, never the level, which is why this has to be kept apart.
+            /// </summary>
+            public float MeleeSkill;
+
             public bool IsValid;
         }
 
@@ -236,18 +257,112 @@ namespace RBMCampaign
         // its shields and then throws them aside when the lines meet.
         private const float MissileShieldBonus = 1.35f;
 
+        // ---------------------------------------------------------------------------------------------------
+        // The skill-based defense system (block / parry / riposte), gated behind RBMConfig.simulationDefenseSystem.
+        //
+        // A melee blow is met by a single DEFENSE ROLL and, on a success, a block-vs-parry split:
+        //   - defenseChance is high and easy behind an intact shield, roughly twice as hard with a bare weapon (but
+        //     never nil -- a floor, so even a raw unshielded man turns the odd blow), and BOTH climb with the
+        //     DEFENDER'S OWN melee skill. A shattered shield (integrity 0) falls back to the weapon chance.
+        //   - a successful defence is a PARRY with probability parryShare, else a plain BLOCK. parryShare turns on
+        //     the defender's skill ADVANTAGE (his skill minus his attacker's) -- out-fighting a man turns your
+        //     defences into counters. A shield block dumps the whole blow onto the shield; a weapon block just
+        //     deflects it; a parry negates it and lands a RIPOSTE on the attacker.
+        // A ranged blow is answered by the shield alone (quality-based, skill-blind, better against a missile than a
+        // blade -- the existing GetShieldBlock), now to full negation onto the shield rather than a fractional skim.
+        //
+        // Two DISTINCT, non-overlapping uses of skill: the defender's ABSOLUTE skill raises the defense CHANCE; the
+        // skill GAP splits a defence into block-or-parry. Every number here is a starting point -- tune vs a paired log.
+
+        /// <summary>Behind an intact shield, before skill: a high, easy base chance to defend a melee blow.</summary>
+        private const float ShieldDefenseBase = 0.45f;
+
+        /// <summary>What the defender's own skill adds to the shield chance across the skill range (at saturation).</summary>
+        private const float ShieldDefenseSkillCoeff = 0.30f;
+
+        /// <summary>With only a weapon (or a broken shield): a non-zero FLOOR, so a low-skill man still blocks sometimes.</summary>
+        private const float WeaponDefenseFloor = 0.20f;
+
+        /// <summary>What skill adds to the weapon chance -- tuned so a weapon defence runs about half a shield one across the range (~2x harder).</summary>
+        private const float WeaponDefenseSkillCoeff = 0.18f;
+
+        /// <summary>No defence makes a man untouchable: the chance to defend a melee blow is capped here.</summary>
+        private const float DefenseChanceCap = 0.75f;
+
+        /// <summary>At equal skill, this share of successful defences are parries (counters) rather than plain blocks.</summary>
+        private const float ParryShareBase = 0.20f;
+
+        /// <summary>How much the skill ADVANTAGE (def - atk, as a fraction of the saturation level) tilts a defence toward a parry.</summary>
+        private const float ParryShareSkillGapCoeff = 0.5f;
+
+        /// <summary>The most of his defences a man can turn into counters, however far he out-skills his attacker.</summary>
+        private const float ParryShareCap = 0.6f;
+
+        /// <summary>
+        /// What is left of an archer's block chance when the man on him is on a horse. A bow is no parrying weapon and
+        /// a lightly-armed quiverman gets almost nothing in the way of a lance at the gallop -- so a horseman riding
+        /// him down meets a fraction of the defence a footman would, and no parry at all (there is no countering a
+        /// charge with a knife). This is the classic death of unsupported archers. Tune vs a paired log.
+        /// </summary>
+        private const float CavalryVsArcherDefenseFactor = 0.25f;
+
+        /// <summary>
+        /// What is left of an archer's shield block against INCOMING SHOTS. A man loosing arrows is watching his own
+        /// shot and his target, not the shafts coming back at him, and gets the board up late even when he carries
+        /// one. So a ranged troop turns aside fewer of the arrows sent at him than a shield-bearer minding his cover
+        /// would. Applies to the struck being ranged, whatever is shooting him. Tune vs a paired log.
+        /// </summary>
+        private const float ArcherVsRangedBlockFactor = 0.5f;
+
+        /// <summary>
+        /// How hard a charge hits, per point of the mount's charge stat. RBM's live combat prices a charge as MOMENTUM
+        /// -- velocity times the mass of horse, rider and barding, over seventy (see HorseChanges.ComputeBlowMagnitude-
+        /// FromHorseCharge) -- so a heavy destrier hits far harder than a pony. The sim has no velocity, so it leans on
+        /// the horse's own charge stat, which already tracks its heft, and turns it into a bonus on the blow: a heavy
+        /// warhorse now roughly half-again its blow or more, a light one much less. Raised from the old flat 0.01 to
+        /// carry that weight, and made a dial because a charge is now UNBLOCKABLE too -- if the horse comes out too
+        /// strong once both land, this is the number to pull back. A literal mass-and-velocity charge is the next step.
+        /// </summary>
+        private const float ChargeStrength = 0.02f;
+
+        /// <summary>
+        /// IN A REAL BATTLE ONLY A MINIMAL NUMBER OF MELEE BLOWS BITE AT FULL FORCE. Most are caught on armour, turned
+        /// by a shift of the body, land flat or land short -- a landed melee blow's magnitude is mostly a FRACTION of
+        /// the full, and only now and then does one land clean. The sim struck every un-blocked blow home whole, which
+        /// is why melee was a bloodbath rather than the slow grind it is, and why the heavy foot won battles the mobile
+        /// arms decide on the field. So a landed melee blow is scaled by pow(random, this): a high exponent piles the
+        /// draws down near nothing and leaves a thin tail up at full, so the AVERAGE landed blow is worth 1/(exp+1) of
+        /// the full -- at 2, a third. Shots and charges are exempt (an arrow is all-or-nothing, a charge is committed).
+        /// Tune vs a paired log: raise it to make melee more of a grind, lower it toward 1 to let blows land harder.
+        /// </summary>
+        private const float MeleeLandingExponent = 2f;
+
+        /// <summary>A riposte is a fast jab off a parry, not a full swing: this fraction of the defender's own corrected blow.</summary>
+        private const float RiposteScale = 0.5f;
+
+        // What a BLOCKED blow costs the shield, weapon by weapon. A shield is not worn by the damage it spares the
+        // man; it is worn by the weapon that hits IT, and different weapons wear it very differently. These are the
+        // RATIOS RBM's live combat uses (DamageRework.RBMComputeBlowDamageOnShield): a javelin all but destroys a
+        // board, a throwing axe splits it, an axe or sword chops it, an arrow wears it slowly, a mace dents it, and a
+        // point barely scratches it. Applied to the blow's own magnitude, so a harder blow chops more. The absolute
+        // scale is carried by ShieldDamageScale and the shield's own capacity (SimulationBattleState.ShieldCapacityPerMan),
+        // so only the ratios here matter -- and they are RBM's. Every number is a starting point -- tune vs a paired log.
+        private const float ShieldDamageScale = 1f;      // master dial: shield wear per block, against the capacity budget
+        private const float ShieldDmgJavelin = 6f;       // a thrown spear all but destroys a board (RBM x25)
+        private const float ShieldDmgThrowingAxe = 4f;   // splits it (RBM x10)
+        private const float ShieldDmgThrownPolearm = 3f; // a hurled spear (RBM x5)
+        private const float ShieldDmgThrowingKnife = 0.8f;
+        private const float ShieldDmgArrow = 1.2f;       // arrows wear a shield down over a volley (RBM x1.5)
+        private const float ShieldDmgOtherMissile = 0.15f; // sling stones and the like barely mark it (RBM x0.1)
+        private const float ShieldDmgMeleeAxe = 1.2f;    // an axe (or two-handed polearm) cut chops hardest (RBM x1.5)
+        private const float ShieldDmgMeleeCut = 0.8f;    // a sword cut chops it
+        private const float ShieldDmgMeleeBlunt = 0.7f;  // a mace dents rather than splits
+        private const float ShieldDmgMeleePierce = 0.12f; // a point glances off a board and barely marks it (RBM x0.09)
+
         // What a man with a sword achieves while the lines are still closing, which is very nearly nothing: he is
         // walking into arrows with his shield up. Not quite nought -- skirmishers do meet, and the front ranks of
         // a charge do reach the line early -- but as near to it as makes no difference.
         private const float ClosingPenalty = 0.08f;
-
-        // How often a horseman's blow is a charge and not a chop, on open ground where the horse has all the room it
-        // wants. A rider does not gallop through the melee at a steady speed for three rounds and then stop: he comes
-        // in at the gallop, kills, is hemmed in, backs out, finds room and comes again. Some of his blows carry the
-        // weight of the horse behind them and most do not, and which is which is a matter of where he happens to be.
-        // So it is a coin, not a countdown -- and how weighted the coin is falls with the room to ride (KitingRoom),
-        // from half his blows on the steppe to none at all on a wall or a village street.
-        private const float ChargeChance = 0.5f;
 
         // A spear set for a horse. Infantry have answered cavalry this way for three thousand years and
         // auto-resolve has never once let them.
@@ -282,20 +397,28 @@ namespace RBMCampaign
 
         private const int ZoneHead = 0;
 
-        private const int ZoneBody = 1;
+        private const int ZoneNeck = 1;
 
-        private const int ZoneArm = 2;
+        private const int ZoneTorso = 2;
 
-        private const int ZoneLeg = 3;
+        private const int ZoneShoulder = 3;
 
-        private const int ZoneCount = 4;
+        private const int ZoneArm = 4;
 
-        /// <summary>Where the blows land, as a share of them. The four zones Bannerlord's armour actually has.</summary>
+        private const int ZoneLeg = 5;
+
+        private const int ZoneCount = 6;
+
+        /// <summary>Where the blows land, as a share of them. RBM's own bones, folded to six (see TroopKit).</summary>
         private struct HitZones
         {
             public float Head;
 
-            public float Body;
+            public float Neck;
+
+            public float Torso;
+
+            public float Shoulder;
 
             public float Arm;
 
@@ -303,30 +426,37 @@ namespace RBMCampaign
         }
 
         // A blow does not land just anywhere: where it lands depends on where the two men are standing, and a
-        // simulated blow has no body part unless we give it one. Bannerlord keeps armour in four zones -- the
-        // neck, the shoulders and the abdomen a fighter thinks of separately all fall under Body -- so these are
-        // the four we can weight. Each set sums to 1: it is a distribution, not a set of multipliers.
+        // simulated blow has no body part unless we give it one. These are the six zones RBM's armour and its
+        // body-part worth actually distinguish. Each set sums to 1: it is a distribution, not a set of
+        // multipliers. The game itself has NO such table -- a real blow's bone is decided by collision geometry
+        // per swing -- so these are honest estimates of that geometry, not figures lifted from anywhere.
 
         // Foot against foot: the two are eye to eye, so it is the chest, the shoulders and the arms that catch
-        // it, the head often enough, and the legs almost never -- a man does not stoop to hack at ankles.
-        private static readonly HitZones FootVsFoot = new HitZones { Head = 0.20f, Body = 0.55f, Arm = 0.20f, Leg = 0.05f };
+        // it, the head often enough, the neck now and then, and the legs almost never -- a man does not stoop to
+        // hack at ankles.
+        private static readonly HitZones FootVsFoot = new HitZones { Head = 0.15f, Neck = 0.05f, Torso = 0.40f, Shoulder = 0.20f, Arm = 0.15f, Leg = 0.05f };
 
         // Foot against a rider: the horseman is above, and what is at a footman's eye level is the man's legs and
         // his lower body. This is why barding on a horse's flanks is worth so much, and it is what the model
         // could not see before.
-        private static readonly HitZones FootVsMounted = new HitZones { Head = 0.05f, Body = 0.40f, Arm = 0.10f, Leg = 0.45f };
+        private static readonly HitZones FootVsMounted = new HitZones { Head = 0.03f, Neck = 0.02f, Torso = 0.30f, Shoulder = 0.10f, Arm = 0.08f, Leg = 0.47f };
 
-        // A rider against a man on foot: he strikes downward, so it is the head, the shoulders and the chest that
-        // take it, and the legs are all but out of reach.
-        private static readonly HitZones MountedVsFoot = new HitZones { Head = 0.30f, Body = 0.50f, Arm = 0.15f, Leg = 0.05f };
+        // A rider against a man on foot: he strikes downward, so it is the head, the neck, the shoulders and the
+        // chest that take it, and the legs are all but out of reach.
+        private static readonly HitZones MountedVsFoot = new HitZones { Head = 0.22f, Neck = 0.08f, Torso = 0.32f, Shoulder = 0.18f, Arm = 0.15f, Leg = 0.05f };
 
         // Rider against rider: level with one another again, much as two footmen are, with rather more coming at
         // the legs across the horses.
-        private static readonly HitZones MountedVsMounted = new HitZones { Head = 0.20f, Body = 0.50f, Arm = 0.20f, Leg = 0.10f };
+        private static readonly HitZones MountedVsMounted = new HitZones { Head = 0.15f, Neck = 0.05f, Torso = 0.35f, Shoulder = 0.20f, Arm = 0.15f, Leg = 0.10f };
 
-        // An arrow does not care how tall its target is: it goes where it was aimed, and that is the mass of the
-        // man. So a missile keeps one distribution whether it is loosed at a footman or a horseman.
-        private static readonly HitZones Missile = new HitZones { Head = 0.15f, Body = 0.60f, Arm = 0.15f, Leg = 0.10f };
+        // An arrow loosed at a man on foot goes for the mass of him -- the torso above all, the head and shoulders
+        // next, the legs seldom.
+        private static readonly HitZones MissileVsFoot = new HitZones { Head = 0.12f, Neck = 0.03f, Torso = 0.50f, Shoulder = 0.15f, Arm = 0.10f, Leg = 0.10f };
+
+        // An arrow loosed at a rider meets a far larger, lower target -- the horse. A great share of shafts find it
+        // at the leg (its barding answers there), and fewer reach the man's head above. This is why a barded horse
+        // is worth so much against archery, and it is what a single missile table could not tell apart.
+        private static readonly HitZones MissileVsMounted = new HitZones { Head = 0.08f, Neck = 0.02f, Torso = 0.40f, Shoulder = 0.12f, Arm = 0.08f, Leg = 0.30f };
 
         private static bool _baselinesBuilt;
 
@@ -346,6 +476,11 @@ namespace RBMCampaign
 
         private static float _baselineThrustModifier;
 
+        // And which defence the baseline mitigation was built for: the skill-based ladder skims a matchup by a
+        // different figure (a chance to fully negate) than the old fractional block, so toggling the system mid
+        // session must rebuild, exactly as moving the shield chance does.
+        private static bool _baselineDefenseSystem;
+
         // The damage a typical troop of bucket [striker] lands on a typical troop of bucket [struck]. This is
         // the pivot the whole correction turns on.
         private static float[][] _baselineDamage;
@@ -363,6 +498,13 @@ namespace RBMCampaign
         private static float[] _typicalShieldBlock;
 
         private static float[] _typicalShieldBlockVsMissile;
+
+        // For the skill-based defense system: the share of MELEE blows the average man of each arm turns aside --
+        // block or parry alike, since both fully negate. Priced off his own skill and whether he carries a shield,
+        // so a bucket of trained shield infantry answers a blow far more often than a bucket of levy skirmishers.
+        // Kept clamped-then-averaged like the shield tables above, for the same reason: the mean of clamped chances
+        // is not the clamp of their mean.
+        private static float[] _typicalMeleeDefense;
 
         /// <summary>How many troop types went into each bucket's average -- printed, so a skewed population shows.</summary>
         private static int[] _bucketPopulation = new int[BucketCount];
@@ -411,6 +553,91 @@ namespace RBMCampaign
             }
 
             RecordHit(state, strikerTroop, struckTroop, strikerIsAttacker, battle, breakdown, vanillaDamage);
+
+            // AND THE PARRY BITES BACK. The defender out-fought his attacker, turned the blow, and answered it -- a
+            // counter the postfix owes because only here are the battle, the attacker's own side and his selected
+            // soldier all in reach. The riposte is spent on the ATTACKER's wound pool, wearing him toward a death
+            // the game will realise the next time he is struck; it is never itself blocked or parried, and it never
+            // reaches back into the simulation's kill loop mid-blow (see SimulationTroopHitPoints.ApplyRiposte).
+            if (breakdown.Riposte && battle != null && vanillaDamage > 0f)
+            {
+                ApplyRiposte(state, battle, strikerTroop, struckTroop, strikerIsAttacker, vanillaDamage);
+            }
+        }
+
+        /// <summary>
+        /// The counter a parrying defender lands on his attacker. Its size is the DEFENDER'S own corrected blow on
+        /// the striker, cut to a fast jab by <see cref="RiposteScale"/>: the reverse-direction correction
+        /// (struck-on-striker, asked without rolling or spending anything) priced against the same vanilla draw, so
+        /// a heavy man's riposte lands like a heavy man's blow and a lightly-armed one's like his. The reverse
+        /// correction reads the [struck][striker] cell of the same baseline table the forward blow read the other
+        /// way -- the baseline is bidirectional, and a riposte is simply an offence in the other direction. It
+        /// carries the striker's TYPICAL defence (baked into that reverse baseline) but is never rolled for a fresh
+        /// block -- consistent with "no recursion".
+        /// </summary>
+        private static void ApplyRiposte(SimulationBattleState.BattleState state, MapEvent battle,
+            CharacterObject strikerTroop, CharacterObject struckTroop, bool strikerIsAttacker, float vanillaDamage)
+        {
+            float reverseCorrection = GetCorrection(struckTroop, strikerTroop, state, !strikerIsAttacker, spend: false);
+            float riposteDamage = RiposteScale * vanillaDamage * reverseCorrection;
+            if (riposteDamage <= 0f)
+            {
+                return;
+            }
+
+            // The attacker's own side holds the soldier the counter falls on: the game selected him on that side
+            // before this blow, and has not moved on yet.
+            MapEventSide strikerSide = strikerIsAttacker ? battle.AttackerSide : battle.DefenderSide;
+            int maxHitPoints;
+            float hitPointsLeft = SimulationTroopHitPoints.ApplyRiposte(strikerSide, battle, riposteDamage, out maxHitPoints);
+
+            RecordRiposte(state, battle, struckTroop, strikerTroop, strikerIsAttacker, riposteDamage,
+                hitPointsLeft, maxHitPoints);
+        }
+
+        /// <summary>
+        /// Write a riposte into the book, right after the parry that earned it. The roles are reversed -- the
+        /// DEFENDER is the striker of this counter and the attacker the one struck -- and the down is left to the
+        /// ordinary path (ApplyRiposte only deepens the wound), so this row never claims a kill the casualty books
+        /// have not yet made.
+        /// </summary>
+        private static void RecordRiposte(SimulationBattleState.BattleState state, MapEvent battle,
+            CharacterObject defenderTroop, CharacterObject attackerTroop, bool strikerIsAttacker, float riposteDamage,
+            float hitPointsLeft, int maxHitPoints)
+        {
+            if (state == null || battle == null || !SimulationLog.IsEnabled || !RBMConfig.RBMConfig.simulationLogHits)
+            {
+                return;
+            }
+
+            HitRecord hit = new HitRecord();
+            hit.Round = state.Round;
+            hit.VolleyPhase = SimulationBattleState.IsVolleyPhase(state);
+            hit.SkirmishPhase = SimulationBattleState.IsSkirmishPhase(state);
+            // The defender is the one landing this blow, so its side is the OTHER side from the attacker's.
+            hit.StrikerIsAttacker = !strikerIsAttacker;
+            hit.Striker = defenderTroop;
+            hit.Struck = attackerTroop;
+            hit.Phase = "riposte";
+            hit.Defense = "riposte";
+            hit.Weapon = "-";
+            hit.BodyPart = "-";
+            hit.ArmorMet = 0f;
+            hit.ShieldBlock = 0f;
+            hit.Braced = false;
+            hit.ChargeBonus = 1f;
+            hit.VanillaDamage = 0f;
+            hit.Correction = 1f;
+            hit.FinalDamage = riposteDamage;
+            hit.StruckHitPoints = maxHitPoints;
+            hit.HitPointsLeft = hitPointsLeft;
+            // The wound is only deepened here; the man falls on his next incoming blow, by the ordinary path, so this
+            // row never claims the down itself.
+            hit.Downed = false;
+            hit.AttackersLeft = (battle.AttackerSide != null) ? battle.AttackerSide.NumRemainingSimulationTroops : 0;
+            hit.DefendersLeft = (battle.DefenderSide != null) ? battle.DefenderSide.NumRemainingSimulationTroops : 0;
+
+            state.Trace.Add(hit);
         }
 
         /// <summary>
@@ -437,13 +664,21 @@ namespace RBMCampaign
             // horse, and does not go in the book. Writing him down as a "closing" blow that dealt nothing was
             // recording an event that did not happen, four thousand times a battle, and burying the volley's actual
             // story -- the archers, and who was allowed to answer them -- under the noise of men doing nothing.
-            if (breakdown.Correction <= 0f)
+            //
+            // A DEFENDED blow is the exception: it too deals nothing (correction is 0), but it genuinely HAPPENED --
+            // a sword was turned by a shield, a spear parried -- and it is the only way the block and parry rates can
+            // be read off the log, so it is kept. breakdown.Defended tells the two cases apart.
+            if (breakdown.Correction <= 0f && !breakdown.Defended)
             {
                 return;
             }
 
             float finalDamage = vanillaDamage * breakdown.Correction;
-            int hitPoints = struckTroop.MaxHitPoints();
+            // The pool the wound system actually wears down and the roll is decided against -- native hundred WIDENED
+            // by LethalityHitPointScale for a trooper, his own for a hero. NOT the bare struckTroop.MaxHitPoints(),
+            // which is the unscaled native max: printing that made a man at 116 of his 150 read "116/100", left over
+            // max, and made the log look broken. This is the same figure the riposte rows and LastHitPointsLeft use.
+            int hitPoints = SimulationTroopHitPoints.MaxHitPoints(struckTroop, null);
 
             HitRecord hit = new HitRecord();
             hit.Round = state.Round;
@@ -457,6 +692,7 @@ namespace RBMCampaign
             hit.BodyPart = ZoneName(breakdown.BodyPart);
             hit.ArmorMet = breakdown.ArmorMet;
             hit.ShieldBlock = breakdown.ShieldBlock;
+            hit.Defense = breakdown.Defense ?? "none";
             hit.Braced = breakdown.Braced;
             hit.ChargeBonus = breakdown.ChargeBonus;
             hit.Closing = breakdown.Closing;
@@ -528,8 +764,8 @@ namespace RBMCampaign
             /// <summary>The weapon it came off: the arrow, the javelin, or the heaviest thing in the pool he drew from.</summary>
             public string Weapon;
 
-            /// <summary>Which part of him it found -- ZoneHead/Body/Arm/Leg, or -1 for the reference tables, which
-            /// take the expectation over all four and so land nowhere in particular.</summary>
+            /// <summary>Which part of him it found -- one of the six zones (ZoneHead..ZoneLeg), or -1 for the
+            /// reference tables, which take the expectation over all of them and so land nowhere in particular.</summary>
             public int BodyPart;
 
             /// <summary>He set a spear against a horse.</summary>
@@ -543,6 +779,23 @@ namespace RBMCampaign
 
             /// <summary>He swung at a horse archer who still had arrows, and the horse archer was not there.</summary>
             public bool Evaded;
+
+            /// <summary>
+            /// What answered the blow, for the log: "none" (it landed), "shield-block", "weapon-block", or "parry".
+            /// Only ever a discrete outcome on a LIVE rolled blow; the reference tables mitigate by expectation and
+            /// leave it "none".
+            /// </summary>
+            public string Defense;
+
+            /// <summary>
+            /// The blow was fully negated by a defence -- so it deals nothing, yet it still HAPPENED and must go in
+            /// the book (a blocked blow is not a non-event the way a man standing in the volley is). Correction is 0
+            /// on a defended blow, so this is what tells RecordHit to write it down anyway.
+            /// </summary>
+            public bool Defended;
+
+            /// <summary>The defence was a parry: the postfix owes the attacker a counter-blow. Only set on a live blow.</summary>
+            public bool Riposte;
         }
 
         internal static bool Explain(CharacterObject strikerTroop, CharacterObject struckTroop, out Breakdown breakdown,
@@ -683,13 +936,8 @@ namespace RBMCampaign
                 return true;
             }
 
-            // The board comes up. It turns aside more arrows than blows -- an arrow flies in from one direction and
-            // sticks where it lands, while a swordsman feints, comes round the edge, and waits for it to drop.
-            float shieldBlock = GetShieldBlock(struck.ShieldQuality, againstMissile: missile);
-            if (struckState != null && shieldBlock > 0f)
-            {
-                shieldBlock *= SimulationBattleState.ShieldIntegrity(struckState, struck.ShieldHitPoints);
-            }
+            // The board comes up once the blow is fully shaped, not before it -- the defence answers what is actually
+            // thrown, charge and brace and all. See the defence resolution below the blow.
 
             // The blow. A bowman looses his shot, a skirmisher hurls a javelin, and everyone else draws from the
             // weapons on his belt -- at random against a man on foot, and reaching for the spear when it is a horse
@@ -720,7 +968,17 @@ namespace RBMCampaign
             // archers alone. It is NOT 1/share -- that would hand a side's whole volley to whatever archers it
             // happens to own, so one bowman in a hundred would loose as many shafts as a hundred bowmen, and how
             // many archers you brought would stop mattering. See SimulationBattleState.VolleyFocus.
-            if (shooting && volley)
+            //
+            // BUT ONLY WHEN THE STRIKERS ARE PICKED AT RANDOM. VolleyFocus exists solely to undo the ticks the
+            // uniform selector wastes on non-archers in the volley: it hands the bows back the share of the round
+            // their own infantry were eating. When arm-aware selection is on (simulationArmTargeting), the selector
+            // hands the volley to the archers DIRECTLY -- there is no waste to undo -- so applying VolleyFocus as
+            // well would boost them a second time for a loss they no longer take. It is neutralised here (left at
+            // 1.0) in that case; the phase DEFINITION (IsVolleyPhase) still stands, only this compensation stands
+            // down. See SimulationArmTargeting. NOTE FOR CALIBRATION: forcing every volley striker to an archer is
+            // not identical to random-plus-focus -- it removes the archer-COUNT dependence VolleyFocus carried --
+            // so the volley's ranged output should be re-measured on a paired log with targeting on.
+            if (shooting && volley && !RBMConfig.RBMConfig.simulationArmTargeting)
             {
                 actual *= SimulationBattleState.VolleyFocus(state, strikerIsAttacker);
             }
@@ -731,19 +989,19 @@ namespace RBMCampaign
             // blows carry the horse behind them and the rest are just a man swinging from a saddle. A horseman
             // flinging a javelin is never charging -- he is riding past at a distance, which is the point of javelins.
             //
-            // How large that share is depends on the ground, and on exactly the same ground the horse archer's kiting
-            // depends on: it is room for the horse to run. On the open steppe he can chop, wheel out, find speed and
-            // come again, and half his blows carry the charge; in a wood the lanes are short and the horse never gets
-            // up to it; in a village street or on a wall there is no charge at all. `KitingRoom` is that same measure,
-            // so the two ride together off one terrain reading. See GetKitingRoom.
+            // How large that share is depends on the ground, but coarsely: a charge only wants room to hit hard, and
+            // any field gives it -- about half his blows carry the horse behind them on open plain and in a wood
+            // alike. A village street gives it a little, and a wall or a deck none. This is state.ChargeChance, its
+            // own terrain reading (see SimulationBattleState.GetChargeChance) -- NOT KitingRoom, which is the finer
+            // measure of how far a horse archer can flee, and still shortens among the trees where the charge does not.
             //
             // It fires only once he has MET somebody. While the lines are still closing he has nobody to ride down,
             // and a charge delivered into empty ground is not a charge.
             breakdown.ChargeBonus = 1f;
             if (strikerMounted && !missile && engaged && striker.ChargeDamage > 0f && state != null
-                && MBRandom.RandomFloat < ChargeChance * state.KitingRoom)
+                && MBRandom.RandomFloat < state.ChargeChance)
             {
-                breakdown.ChargeBonus = 1f + (striker.ChargeDamage * 0.01f);
+                breakdown.ChargeBonus = 1f + (striker.ChargeDamage * ChargeStrength);
                 actual *= breakdown.ChargeBonus;
             }
 
@@ -769,25 +1027,174 @@ namespace RBMCampaign
                 breakdown.Evaded = true;
             }
 
-            float blocked = actual * shieldBlock;
-            actual -= blocked;
-
-            if (spend && struckState != null)
+            // THE DEFENCE. However the blow was shaped -- charge, brace and evasion are all in it now -- the man it
+            // is aimed at gets to answer it. What a shield can take is denominated in this same simulated damage;
+            // see ShieldCapacityPerMan.
+            float shieldIntegrity = 1f;
+            bool hasShield = struck.ShieldQuality > 0f;
+            if (hasShield && struckState != null)
             {
-                // A shield takes what it stops, and a horse takes what a footman aims at its flank. A javelin does
-                // not go for the horse -- it goes where it was thrown, at the mass of the man -- so a throw is a
-                // missile here too, and leaves the animal alone. (What the shield can take is denominated in this
-                // same simulated damage; see ShieldCapacityPerMan.)
-                SimulationBattleState.DamageShield(struckState, blocked);
-                if (struckMounted && !strikerMounted && !missile)
+                shieldIntegrity = SimulationBattleState.ShieldIntegrity(struckState, struck.ShieldHitPoints);
+            }
+            // A shattered board is no board at all: a man behind it is thrown back on the harder bare-weapon defence.
+            bool intactShield = hasShield && shieldIntegrity > 0f;
+
+            if (RBMConfig.RBMConfig.simulationDefenseSystem)
+            {
+                // What a block would cost the shield -- the weapon's own toll on a board, NOT the damage it spares
+                // the man. Weapon-typed the way RBM's live combat types it (see ShieldDamageFromBlow).
+                float shieldDamage = ShieldDamageFromBlow(drawn, missile);
+                string defense = "none";
+
+                if (missile)
+                {
+                    // A missile is answered by the shield ALONE: no weapon block, no parry. The board turns aside
+                    // more shafts than blows, and here it either stops the whole of one -- onto the shield's own hit
+                    // points -- or it does not stop it at all.
+                    float blockChance = intactShield
+                        ? GetShieldBlock(struck.ShieldQuality, againstMissile: true) * shieldIntegrity
+                        : 0f;
+                    // An archer minds his shot, not the shafts coming back: even with a shield he gets it up late, so
+                    // he turns aside fewer incoming arrows than a shield-bearer would. See ArcherVsRangedBlockFactor.
+                    if (struck.IsRanged)
+                    {
+                        blockChance *= ArcherVsRangedBlockFactor;
+                    }
+                    breakdown.ShieldBlock = blockChance;
+                    if (spend)
+                    {
+                        if (blockChance > 0f && MBRandom.RandomFloat < blockChance)
+                        {
+                            if (spend && struckState != null)
+                            {
+                                SimulationBattleState.DamageShield(struckState, shieldDamage);
+                            }
+                            defense = "shield-block";
+                            actual = 0f;
+                        }
+                    }
+                    else
+                    {
+                        // The reference tables want the expectation: a blocked shaft lands nothing, so the mitigation
+                        // of the matchup is simply the chance the board is in the way.
+                        actual *= 1f - blockChance;
+                    }
+                }
+                else
+                {
+                    // A melee blow: one defence roll off the DEFENDER'S OWN skill -- easy behind a shield, about
+                    // twice as hard with a bare weapon -- and then, on a success, a block-vs-parry split off the
+                    // skill GAP between the two men.
+                    float defenseChance = intactShield
+                        ? ShieldDefenseChance(struck.MeleeSkill)
+                        : WeaponDefenseChance(struck.MeleeSkill);
+
+                    // A horseman riding an archer down: his block chance is cut hard and he cannot parry at all. See
+                    // CavalryVsArcherDefenseFactor. Applied before the branch so the live roll AND the reference-table
+                    // expectation below both carry it, keeping the correction honest.
+                    bool riddenDown = strikerMounted && struck.IsRanged;
+                    if (riddenDown)
+                    {
+                        defenseChance *= CavalryVsArcherDefenseFactor;
+                    }
+
+                    // A CHARGE is not answered by the defence at all. The weight of the horse is behind it -- no shield
+                    // turns it, no blade parries it, and no amount of skill helps the man it is aimed at. So a blow that
+                    // carried the charge (breakdown.ChargeBonus > 1, set by the charge roll above) simply lands.
+                    if (breakdown.ChargeBonus > 1f)
+                    {
+                        defenseChance = 0f;
+                    }
+
+                    breakdown.ShieldBlock = defenseChance;
+                    if (spend)
+                    {
+                        if (defenseChance > 0f && MBRandom.RandomFloat < defenseChance)
+                        {
+                            // No parry when he is being ridden down -- a bow does not answer a lance.
+                            float parryShare = riddenDown ? 0f : ParryShare(struck.MeleeSkill, striker.MeleeSkill);
+                            if (MBRandom.RandomFloat < parryShare)
+                            {
+                                // Parried, and to be answered. The counter itself is spent by the postfix, which
+                                // alone holds the battle and the attacker's own soldier to spend it on.
+                                defense = "parry";
+                                breakdown.Riposte = true;
+                            }
+                            else if (intactShield)
+                            {
+                                // A plain shield block: the man takes nothing, the board takes the weapon's toll.
+                                defense = "shield-block";
+                                if (spend && struckState != null)
+                                {
+                                    SimulationBattleState.DamageShield(struckState, shieldDamage);
+                                }
+                            }
+                            else
+                            {
+                                // A weapon deflection carries no hit points to spend: steel turns steel and is none
+                                // the worse for it.
+                                defense = "weapon-block";
+                            }
+                            actual = 0f;
+                        }
+                    }
+                    else
+                    {
+                        // The expectation, for the reference tables: a block and a parry both fully negate, so the
+                        // mitigation of a matchup is just the chance the defence lands, whichever kind it is.
+                        actual *= 1f - defenseChance;
+                    }
+                }
+
+                breakdown.Defense = defense;
+                breakdown.Defended = defense != "none";
+
+                // A defended blow -- shield, weapon or parry -- reaches neither the man nor the horse under him. One
+                // that got through still finds the animal a footman on foot was really hacking at. A javelin goes at
+                // the mass of the man, not the horse, so a throw leaves the animal alone.
+                if (spend && struckState != null && struckMounted && !strikerMounted && !missile)
                 {
                     SimulationBattleState.DamageHorse(struckState, actual);
                 }
             }
+            else
+            {
+                // The OLD fractional skim, kept whole for when the defense system is switched off: the board turns
+                // aside a capped share of every blow, and wears down by what it turns.
+                float shieldBlock = GetShieldBlock(struck.ShieldQuality, againstMissile: missile);
+                if (struckState != null && shieldBlock > 0f)
+                {
+                    shieldBlock *= shieldIntegrity;
+                }
+
+                float blocked = actual * shieldBlock;
+                actual -= blocked;
+
+                if (spend && struckState != null)
+                {
+                    SimulationBattleState.DamageShield(struckState, blocked);
+                    if (struckMounted && !strikerMounted && !missile)
+                    {
+                        SimulationBattleState.DamageHorse(struckState, actual);
+                    }
+                }
+
+                breakdown.ShieldBlock = shieldBlock;
+            }
 
             breakdown.ArmorMet = armor;
-            breakdown.ShieldBlock = shieldBlock;
             breakdown.Actual = actual;
+
+            // A defence that landed negated the whole blow: it deals nothing, full stop. This must short-circuit
+            // BEFORE the equipment ratio, because the correction clamp has a 0.1 floor -- run a zeroed blow through
+            // it and a blocked sword would still come out dealing a tenth of a hit. The blow is still written down
+            // (breakdown.Defended tells RecordHit to keep it), and a parry still owes its riposte, both carried on
+            // the breakdown; here we only stop the damage. Only ever true on a live rolled blow.
+            if (breakdown.Defended)
+            {
+                breakdown.Correction = 0f;
+                return true;
+            }
 
             // Against what the average man of his arm does to the average man of the other's. This says how
             // good the matchup is, and nothing about how senior either soldier is.
@@ -850,6 +1257,18 @@ namespace RBMCampaign
                 breakdown.Closing = true;
             }
 
+            // Most melee blows only glance -- see MeleeLandingExponent. A landed melee blow is worth a fraction of its
+            // full magnitude, mostly a small one, so melee is a grind. Folded INTO the correction (not applied after)
+            // so the log's vanilla x correction = dealt identity holds, and placed AFTER the ratio so it does not
+            // cancel against the baseline. Shots and charges land whole. On the reference tables it is the mean.
+            if (!missile && breakdown.ChargeBonus <= 1f)
+            {
+                float meleeLanding = spend
+                    ? MathF.Pow(MBRandom.RandomFloat, MeleeLandingExponent)
+                    : (1f / (MeleeLandingExponent + 1f));
+                correction *= meleeLanding;
+            }
+
             breakdown.Correction = correction;
             return true;
         }
@@ -859,7 +1278,11 @@ namespace RBMCampaign
         {
             public float Head;
 
-            public float Body;
+            public float Neck;
+
+            public float Torso;
+
+            public float Shoulder;
 
             public float Arm;
 
@@ -1016,7 +1439,9 @@ namespace RBMCampaign
             EnsureBaselines();
             TroopKit kit = GetKit(troop);
             info.Head = kit.Head;
-            info.Body = kit.Body;
+            info.Neck = kit.Neck;
+            info.Torso = kit.Torso;
+            info.Shoulder = kit.Shoulder;
             info.Arm = kit.Arm;
             info.Leg = kit.Leg;
             // What he shoots if he shoots, else the heaviest thing on his belt -- as a LABEL for his arsenal, with
@@ -1196,13 +1621,15 @@ namespace RBMCampaign
             float armorMultiplier = RBMConfig.RBMConfig.armorMultiplier;
             float armorThreshold = RBMConfig.RBMConfig.armorThresholdModifier;
             float thrustModifier = RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+            bool defenseSystem = RBMConfig.RBMConfig.simulationDefenseSystem;
 
             if (_baselinesBuilt
                 && _baselineRbmCombat == rbmCombat
                 && _baselineShieldBlockChance == shieldBlockChance
                 && _baselineArmorMultiplier == armorMultiplier
                 && _baselineArmorThreshold == armorThreshold
-                && _baselineThrustModifier == thrustModifier)
+                && _baselineThrustModifier == thrustModifier
+                && _baselineDefenseSystem == defenseSystem)
             {
                 return;
             }
@@ -1221,6 +1648,7 @@ namespace RBMCampaign
             _baselineArmorMultiplier = armorMultiplier;
             _baselineArmorThreshold = armorThreshold;
             _baselineThrustModifier = thrustModifier;
+            _baselineDefenseSystem = defenseSystem;
             _kitCache.Clear();
 
             List<TroopKit>[] byBucket = new List<TroopKit>[BucketCount];
@@ -1255,14 +1683,16 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                float head = 0f, body = 0f, arm = 0f, leg = 0f;
+                float head = 0f, neck = 0f, torso = 0f, shoulder = 0f, arm = 0f, leg = 0f;
                 float horseLeg = 0f, horseBody = 0f;
                 int mounted = 0;
                 int plate = 0;
                 foreach (TroopKit kit in byBucket[i])
                 {
                     head += kit.Head;
-                    body += kit.Body;
+                    neck += kit.Neck;
+                    torso += kit.Torso;
+                    shoulder += kit.Shoulder;
                     arm += kit.Arm;
                     leg += kit.Leg;
 
@@ -1286,7 +1716,9 @@ namespace RBMCampaign
                     }
                 }
                 typical[i].Head = head / count;
-                typical[i].Body = body / count;
+                typical[i].Neck = neck / count;
+                typical[i].Torso = torso / count;
+                typical[i].Shoulder = shoulder / count;
                 typical[i].Arm = arm / count;
                 typical[i].Leg = leg / count;
                 typical[i].HorseLeg = horseLeg / count;
@@ -1333,6 +1765,29 @@ namespace RBMCampaign
                 _typicalShieldBlockVsMissile[i] = missileBlockSum / byBucket[i].Count;
             }
 
+            // And, for the skill-based defense system, the share of MELEE blows the average man of each arm turns
+            // aside -- block or parry alike, since both fully negate, so the mitigation of a matchup is just the
+            // chance the defence lands. Shields are whole in the baseline (no battle has splintered them), so a
+            // shield-bearer draws the easy shield chance and everyone else the harder weapon one, each off his own
+            // skill. This is the denominator the live blow's own defence expectation is measured against, so the two
+            // MUST be computed by the same functions -- ShieldDefenseChance / WeaponDefenseChance, on both sides.
+            _typicalMeleeDefense = new float[BucketCount];
+            for (int i = 0; i < BucketCount; i++)
+            {
+                if (byBucket[i].Count == 0)
+                {
+                    continue;
+                }
+                float defenseSum = 0f;
+                foreach (TroopKit kit in byBucket[i])
+                {
+                    defenseSum += (kit.ShieldQuality > 0f)
+                        ? ShieldDefenseChance(kit.MeleeSkill)
+                        : WeaponDefenseChance(kit.MeleeSkill);
+                }
+                _typicalMeleeDefense[i] = defenseSum / byBucket[i].Count;
+            }
+
             // The damage a typical man of each tier lands on it, weapon and damage type included -- so a tier
             // that fields maces prices out against armour differently from one that fields sabres.
             _baselineDamage = new float[BucketCount][];
@@ -1373,7 +1828,14 @@ namespace RBMCampaign
                         // to hurt, when carrying a shield is simply what an infantryman does. And a shield answers
                         // an arrow better than a blow, so WHICH of the two figures applies depends on the man
                         // throwing it -- which is why it is taken here, striker by striker, and not once at the end.
-                        float blocked = shooting ? _typicalShieldBlockVsMissile[k] : _typicalShieldBlock[k];
+                        //
+                        // A missile is answered by the shield either way (the ranged path is unchanged by the defense
+                        // system). A MELEE blow, under the skill-based system, is mitigated instead by the chance the
+                        // defender's block or parry fully negates it -- the same figure his live blow expects, so the
+                        // ratio stays clean. Fall back to the old fractional block when the system is off.
+                        float blocked = shooting
+                            ? _typicalShieldBlockVsMissile[k]
+                            : (defenseSystem ? _typicalMeleeDefense[k] : _typicalShieldBlock[k]);
 
                         // The SAME function the live blow calls, deliberately -- and here asked for the expectation
                         // rather than a roll, since a baseline is a matchup and not a moment. It has to be the same
@@ -1426,6 +1888,33 @@ namespace RBMCampaign
         private static int GetBucket(CharacterObject troop)
         {
             return GetTroopType(troop);
+        }
+
+        /// <summary>
+        /// The arm this troop fights as -- InfantryType/ArcherType/CavalryType/HorseArcherType -- surfaced for
+        /// arm-aware target selection (SimulationArmTargeting). It is the SAME classifier the damage model buckets
+        /// by (GetBucket), deliberately, so selection and pricing never disagree about what a man is. Pure over the
+        /// troop template, so the caller may cache it by CharacterObject and never invalidate it.
+        /// </summary>
+        internal static int ArmOf(CharacterObject troop)
+        {
+            return (troop != null) ? GetBucket(troop) : -1;
+        }
+
+        /// <summary>
+        /// Whether this troop carries javelins, throwing axes or darts -- the mark of a foot skirmisher who still
+        /// has something to do in the skirmish phase (he hurls them as the lines close). Read off the same cached
+        /// kit the damage path uses, so it costs nothing after the kit is built. Used only to keep a javelin-armed
+        /// footman in the pool of active skirmish strikers; everyone else on foot is merely walking by then.
+        /// </summary>
+        internal static bool CarriesThrown(CharacterObject troop)
+        {
+            if (troop == null)
+            {
+                return false;
+            }
+            TroopKit kit = GetKit(troop);
+            return kit.IsValid && kit.Thrown.IsValid && kit.ThrownPerMan > 0f;
         }
 
         /// <summary>The four arms of service, split exactly as vanilla's own power model splits them.</summary>
@@ -1496,7 +1985,7 @@ namespace RBMCampaign
             // A troop template usually lists several battle sets and each man rolls one at random, so no single
             // set speaks for the stack: average the armour over all of them, and pool every melee weapon in every
             // set into the one arsenal the stack fights out of.
-            float head = 0f, body = 0f, arm = 0f, leg = 0f;
+            float head = 0f, neck = 0f, torso = 0f, shoulder = 0f, arm = 0f, leg = 0f;
             float horseLeg = 0f, horseBody = 0f;
             float shotMagnitude = 0f;
             float shieldQuality = 0f, shieldHitPoints = 0f;
@@ -1584,8 +2073,8 @@ namespace RBMCampaign
                     }
                 }
 
-                float setHead, setBody, setArm, setLeg;
-                GetArmorZones(set, out setHead, out setBody, out setArm, out setLeg);
+                float setHead, setNeck, setTorso, setShoulder, setArm, setLeg;
+                GetArmorZones(set, rbmCombat, out setHead, out setNeck, out setTorso, out setShoulder, out setArm, out setLeg);
                 if (IsPlateArmoured(set))
                 {
                     plateSets++;
@@ -1609,7 +2098,9 @@ namespace RBMCampaign
                 }
 
                 head += setHead;
-                body += setBody;
+                neck += setNeck;
+                torso += setTorso;
+                shoulder += setShoulder;
                 arm += setArm;
                 leg += setLeg;
                 horseLeg += setHorseLeg;
@@ -1632,7 +2123,9 @@ namespace RBMCampaign
             if (sets > 0)
             {
                 kit.Head = head / sets;
-                kit.Body = body / sets;
+                kit.Neck = neck / sets;
+                kit.Torso = torso / sets;
+                kit.Shoulder = shoulder / sets;
                 kit.Arm = arm / sets;
                 kit.Leg = leg / sets;
                 kit.HorseLeg = horseLeg / sets;
@@ -1672,6 +2165,10 @@ namespace RBMCampaign
                 kit.ShieldHitPoints = shieldHitPoints / sets;
                 kit.IsMounted = troop.IsMounted;
                 kit.IsRanged = troop.IsRanged;
+
+                // His fighting hand, for the defence roll: the best of his melee trainings. A troop template's skills
+                // are fixed and a hero's do not move mid-battle, so this rides in the cache with the rest of the kit.
+                kit.MeleeSkill = MeleeSkillOf(troop);
 
                 // A man is worth pricing if he can hit anything at all -- with a bow, or with what is on his belt.
                 kit.IsValid = (kit.Shot.IsValid && kit.Shot.Magnitude > 0f) || kit.Melee.Length > 0;
@@ -1739,10 +2236,24 @@ namespace RBMCampaign
         }
 
         /// <summary>The real armour points this kit carries, kept apart by the zone each protects.</summary>
-        private static void GetArmorZones(Equipment set, out float head, out float body, out float arm, out float leg)
+        private static void GetArmorZones(Equipment set, bool rbmCombat,
+            out float head, out float neck, out float torso, out float shoulder, out float arm, out float leg)
         {
+            // When RBM Combat is live it does not read a piece's rating straight off: a blow lands on a BONE, and
+            // RBM composes the armour over that bone from several pieces at once (ArmorRework.GetBaseArmor-
+            // EffectivenessForBodyPartRBMHuman). The simulated blow must meet the same armour the live one would,
+            // or it prices men into kit RBM would never actually let them fight in.
+            if (rbmCombat)
+            {
+                GetArmorZonesRbm(set, out head, out neck, out torso, out shoulder, out arm, out leg);
+                return;
+            }
+
+            // Vanilla combat: the raw component ratings, as native armour reads them, each zone taking the stat
+            // nearest to it. Native has no bone composition of its own worth mirroring, so this is deliberately
+            // plain -- the helm answers the head and neck, the body armour the torso and shoulder, and so on.
             head = 0f;
-            body = 0f;
+            float body = 0f;
             arm = 0f;
             leg = 0f;
             for (EquipmentIndex i = EquipmentIndex.NumAllWeaponSlots; i < EquipmentIndex.ArmorItemEndSlot; i++)
@@ -1758,6 +2269,72 @@ namespace RBMCampaign
                 arm += ac.ArmArmor;
                 leg += ac.LegArmor;
             }
+            neck = head;
+            torso = body;
+            shoulder = body;
+        }
+
+        /// <summary>
+        /// The armour over each zone as RBM Combat itself composes it, bone by bone. Mirrors RBMCombat's ArmorRework
+        /// getters (getHeadArmor / getNeckArmor / getChestArmor / getShoulderArmor / getArmArmor / getLegArmor)
+        /// exactly, modifiers and all:
+        ///   - Head     : the helmet's head rating.
+        ///   - Neck     : the helmet's arm rating plus the body armour's -- an aventail and a collar, both soft.
+        ///   - Torso    : the body armour's body rating (RBM's chest and abdomen carry the same value; merged here).
+        ///   - Shoulder : a cape's body and arm ratings, plus the body armour's arm rating -- a plated shoulder.
+        ///   - Arm      : the gloves' arm rating ALONE. The raw sum instead heaped every arm point a breastplate
+        ///                owns onto the bare forearm, arming men far past what RBM would allow in a fight.
+        ///   - Leg      : HALF the leg item's leg rating and HALF the body armour's -- a cuirass skirt covers the
+        ///                thigh, but only the thigh, so its full leg rating never reaches the shin.
+        /// The horse is handled apart from this, in the caller, exactly as before.
+        /// </summary>
+        private static void GetArmorZonesRbm(Equipment set,
+            out float head, out float neck, out float torso, out float shoulder, out float arm, out float leg)
+        {
+            head = 0f;
+            float headArm = 0f;  // the helmet's arm rating -- an aventail, which answers the neck
+            float bodyArm = 0f;  // the body armour's arm rating -- answers the neck AND the shoulder
+            float bodyOn = 0f;   // the body armour's body rating -- the torso proper
+            float capeOn = 0f;   // a cape's body and arm ratings -- answers the shoulder
+            float gloves = 0f;   // the gloves' arm rating -- the arm proper, and nothing else
+            leg = 0f;
+
+            for (EquipmentIndex i = EquipmentIndex.NumAllWeaponSlots; i < EquipmentIndex.ArmorItemEndSlot; i++)
+            {
+                EquipmentElement e = set[i];
+                ItemObject item = e.Item;
+                if (item == null || item.ArmorComponent == null)
+                {
+                    continue;
+                }
+                switch (item.ItemType)
+                {
+                    case ItemObject.ItemTypeEnum.HeadArmor:
+                        head += e.GetModifiedHeadArmor();
+                        headArm += e.GetModifiedArmArmor();
+                        break;
+                    case ItemObject.ItemTypeEnum.BodyArmor:
+                        bodyOn += e.GetModifiedBodyArmor();
+                        bodyArm += e.GetModifiedArmArmor();
+                        leg += e.GetModifiedLegArmor() * 0.5f;
+                        break;
+                    case ItemObject.ItemTypeEnum.LegArmor:
+                        leg += e.GetModifiedLegArmor() * 0.5f;
+                        break;
+                    case ItemObject.ItemTypeEnum.HandArmor:
+                        gloves += e.GetModifiedArmArmor();
+                        break;
+                    case ItemObject.ItemTypeEnum.Cape:
+                        capeOn += e.GetModifiedBodyArmor();
+                        capeOn += e.GetModifiedArmArmor();
+                        break;
+                }
+            }
+
+            neck = headArm + bodyArm;
+            torso = bodyOn;
+            shoulder = capeOn + bodyArm;
+            arm = gloves;
         }
 
         /// <summary>
@@ -1769,7 +2346,7 @@ namespace RBMCampaign
         {
             if (strikerRanged)
             {
-                return Missile;
+                return struckMounted ? MissileVsMounted : MissileVsFoot;
             }
             if (strikerMounted)
             {
@@ -1780,14 +2357,12 @@ namespace RBMCampaign
 
         /// <summary>
         /// What a blow is WORTH where it lands, which is not the same question as what armour it meets there.
-        /// Straight out of RBM's own DamageRework.GetBodyPartDamageMultiplier -- a head is worth half again, and an
-        /// arm or a leg between half and seven-tenths. A head hit is three times a leg hit, and the model had every
-        /// blow in Calradia worth exactly the same wherever it landed.
+        /// Straight out of RBM's own DamageRework.GetBodyPartDamageMultiplier -- a head or a neck is worth half
+        /// again, an arm or a leg between half and seven-tenths. A head hit is three times a leg hit, and the model
+        /// had every blow in Calradia worth exactly the same wherever it landed.
         ///
-        /// RBM's table is over six bones; this model has Bannerlord's four ARMOUR zones, so two of them fold:
-        ///   - Body  = chest (0.9) and abdomen (1.0). Taken at 0.95.
-        ///   - Arm   = the arms (0.5/0.6/0.7) and the shoulders (0.6/0.6/0.7), which share an armour value here.
-        /// Head, Neck and Legs map across untouched.
+        /// Every value here is RBM's own, bone for bone, save one fold: chest (0.9) and abdomen (1.0) are merged
+        /// into Torso at 0.95, because they carry the same armour and differ only here.
         /// </summary>
         private static float BodyPartMultiplier(int zone, DamageTypes damageType)
         {
@@ -1798,13 +2373,20 @@ namespace RBMCampaign
             switch (zone)
             {
                 case ZoneHead:
+                case ZoneNeck:
                     return ordinary ? 1.5f : 1f;
 
-                case ZoneBody:
+                case ZoneTorso:
                     return ordinary ? 0.95f : 1f;
 
+                case ZoneShoulder:
+                    if (damageType == DamageTypes.Pierce) { return 0.6f; }
+                    if (damageType == DamageTypes.Cut) { return 0.6f; }
+                    if (damageType == DamageTypes.Blunt) { return 0.7f; }
+                    return 1f;
+
                 case ZoneArm:
-                    if (damageType == DamageTypes.Pierce) { return 0.55f; }
+                    if (damageType == DamageTypes.Pierce) { return 0.5f; }
                     if (damageType == DamageTypes.Cut) { return 0.6f; }
                     if (damageType == DamageTypes.Blunt) { return 0.7f; }
                     return 1f;
@@ -1825,7 +2407,9 @@ namespace RBMCampaign
             switch (zone)
             {
                 case ZoneHead: return "head";
-                case ZoneBody: return "body";
+                case ZoneNeck: return "neck";
+                case ZoneTorso: return "torso";
+                case ZoneShoulder: return "shldr";
                 case ZoneArm: return "arm";
                 case ZoneLeg: return "leg";
                 default: return "-";
@@ -1838,7 +2422,9 @@ namespace RBMCampaign
             switch (zone)
             {
                 case ZoneHead: return struck.Head;
-                case ZoneBody: return struck.Body + (struck.HorseBody * horsesAlive);
+                case ZoneNeck: return struck.Neck;
+                case ZoneTorso: return struck.Torso + (struck.HorseBody * horsesAlive);
+                case ZoneShoulder: return struck.Shoulder;
                 case ZoneArm: return struck.Arm;
                 case ZoneLeg: return struck.Leg + (struck.HorseLeg * horsesAlive);
                 default: return 0f;
@@ -1850,7 +2436,9 @@ namespace RBMCampaign
             switch (zone)
             {
                 case ZoneHead: return zones.Head;
-                case ZoneBody: return zones.Body;
+                case ZoneNeck: return zones.Neck;
+                case ZoneTorso: return zones.Torso;
+                case ZoneShoulder: return zones.Shoulder;
                 case ZoneArm: return zones.Arm;
                 case ZoneLeg: return zones.Leg;
                 default: return 0f;
@@ -1866,15 +2454,18 @@ namespace RBMCampaign
         {
             float roll = MBRandom.RandomFloat;
             if ((roll -= zones.Head) < 0f) { return ZoneHead; }
-            if ((roll -= zones.Body) < 0f) { return ZoneBody; }
+            if ((roll -= zones.Neck) < 0f) { return ZoneNeck; }
+            if ((roll -= zones.Torso) < 0f) { return ZoneTorso; }
+            if ((roll -= zones.Shoulder) < 0f) { return ZoneShoulder; }
             if ((roll -= zones.Arm) < 0f) { return ZoneArm; }
             return ZoneLeg;
         }
 
         /// <summary>The armour a blow actually meets: this man's zones, weighted by where blows of this kind land.</summary>
-        private static float WeightedArmor(float head, float body, float arm, float leg, HitZones zones)
+        private static float WeightedArmor(float head, float neck, float torso, float shoulder, float arm, float leg, HitZones zones)
         {
-            return (head * zones.Head) + (body * zones.Body) + (arm * zones.Arm) + (leg * zones.Leg);
+            return (head * zones.Head) + (neck * zones.Neck) + (torso * zones.Torso)
+                + (shoulder * zones.Shoulder) + (arm * zones.Arm) + (leg * zones.Leg);
         }
 
         /// <summary>
@@ -1886,8 +2477,8 @@ namespace RBMCampaign
         {
             HitZones zones = GetHitZones(striker.IsMounted, shooting, struckStillMounted);
             float leg = struck.Leg + (struck.HorseLeg * horsesAlive);
-            float body = struck.Body + (struck.HorseBody * horsesAlive);
-            return WeightedArmor(struck.Head, body, struck.Arm, leg, zones);
+            float torso = struck.Torso + (struck.HorseBody * horsesAlive);
+            return WeightedArmor(struck.Head, struck.Neck, torso, struck.Shoulder, struck.Arm, leg, zones);
         }
 
         private static bool IsPolearm(string weaponType)
@@ -2434,6 +3025,120 @@ namespace RBMCampaign
                 block *= MissileShieldBonus;
             }
             return MBMath.ClampFloat(block, 0f, MaxShieldBlock);
+        }
+
+        /// <summary>
+        /// A man's fighting hand, as a plain skill LEVEL: the best of his one-handed, two-handed and polearm
+        /// training. It is what the defence roll is priced on -- how well he blocks, and, set against his attacker's,
+        /// how often his defence becomes a parry. Read with the same GetSkillValue the damage path uses per weapon,
+        /// but kept as the level rather than the type (WeaponProfile.Skill is the type and cannot answer this).
+        /// </summary>
+        private static float MeleeSkillOf(CharacterObject troop)
+        {
+            if (troop == null)
+            {
+                return 0f;
+            }
+            int oneHanded = troop.GetSkillValue(DefaultSkills.OneHanded);
+            int twoHanded = troop.GetSkillValue(DefaultSkills.TwoHanded);
+            int polearm = troop.GetSkillValue(DefaultSkills.Polearm);
+            int best = oneHanded;
+            if (twoHanded > best) { best = twoHanded; }
+            if (polearm > best) { best = polearm; }
+            return best;
+        }
+
+        /// <summary>Skill as a fraction of the saturation level, 0..1 -- the same curve the damage side saturates on.</summary>
+        private static float SkillFraction(float skill)
+        {
+            return MBMath.ClampFloat(skill / SkillSaturationLevel, 0f, 1f);
+        }
+
+        /// <summary>Behind an intact shield: a high, easy chance to defend a melee blow, climbing with the defender's own skill.</summary>
+        private static float ShieldDefenseChance(float defenderSkill)
+        {
+            return MBMath.ClampFloat(ShieldDefenseBase + (ShieldDefenseSkillCoeff * SkillFraction(defenderSkill)), 0f, DefenseChanceCap);
+        }
+
+        /// <summary>With only a weapon (or a broken shield): about half the shield chance -- a non-zero floor, plus what skill adds.</summary>
+        private static float WeaponDefenseChance(float defenderSkill)
+        {
+            return MBMath.ClampFloat(WeaponDefenseFloor + (WeaponDefenseSkillCoeff * SkillFraction(defenderSkill)), 0f, DefenseChanceCap);
+        }
+
+        /// <summary>
+        /// What share of a successful defence is a parry (a counter) rather than a plain block. It turns on the skill
+        /// ADVANTAGE the defender holds over his attacker: out-fight a man and your defences start biting back. A man
+        /// out-skilled parries the base share or less, never below nought.
+        /// </summary>
+        private static float ParryShare(float defenderSkill, float attackerSkill)
+        {
+            float gap = MBMath.ClampFloat((defenderSkill - attackerSkill) / SkillSaturationLevel, -1f, 1f);
+            return MBMath.ClampFloat(ParryShareBase + (ParryShareSkillGapCoeff * gap), 0f, ParryShareCap);
+        }
+
+        /// <summary>
+        /// What a blocked blow costs the shield, in the same hit-point units as SimulationBattleState.ShieldCapacityPerMan.
+        /// This is NOT the damage the block spared the man -- a shield is worn by the weapon that hits IT, and a point,
+        /// a blade and a hurled spear wear it wholly differently. Mirrors the ladder RBM's live combat uses in
+        /// DamageRework.RBMComputeBlowDamageOnShield: thrown weapons and chopping edges destroy a board, arrows wear it,
+        /// maces dent it, thrusts glance off it. The blow's own magnitude scales it, so a harder strike chops more.
+        /// </summary>
+        private static float ShieldDamageFromBlow(SimulationWeaponModel.WeaponProfile drawn, bool missile)
+        {
+            float mag = drawn.Magnitude;
+            if (mag <= 1f)
+            {
+                return 0f;
+            }
+
+            float factor;
+            if (missile)
+            {
+                switch (drawn.WeaponType)
+                {
+                    case "Javelin": factor = ShieldDmgJavelin; break;
+                    case "ThrowingAxe": factor = ShieldDmgThrowingAxe; break;
+                    case "ThrowingKnife": factor = ShieldDmgThrowingKnife; break;
+                    // A spear hurled overarm, not shot: it hits a shield like the heavy thrown weapon it is.
+                    case "OneHandedPolearm":
+                    case "LowGripPolearm": factor = ShieldDmgThrownPolearm; break;
+                    case "Arrow":
+                    case "Bolt": factor = ShieldDmgArrow; break;
+                    // Sling stones and anything else in flight barely mark a board.
+                    default: factor = ShieldDmgOtherMissile; break;
+                }
+            }
+            else
+            {
+                switch (drawn.DamageType)
+                {
+                    // A point glances off a board; it is the worst thing to bring against a shield and the best to
+                    // bring against the man behind it.
+                    case DamageTypes.Pierce: factor = ShieldDmgMeleePierce; break;
+                    case DamageTypes.Blunt: factor = ShieldDmgMeleeBlunt; break;
+                    default: // Cut -- an axe or a two-handed polearm bites deepest; a sword still chops.
+                        factor = IsChoppingEdge(drawn.WeaponType) ? ShieldDmgMeleeAxe : ShieldDmgMeleeCut;
+                        break;
+                }
+            }
+
+            return mag * factor * ShieldDamageScale;
+        }
+
+        /// <summary>The cutting weapons that bite a shield hardest -- axes and the great two-handed polearms.</summary>
+        private static bool IsChoppingEdge(string weaponType)
+        {
+            switch (weaponType)
+            {
+                case "OneHandedAxe":
+                case "TwoHandedAxe":
+                case "OneHandedBastardAxe":
+                case "TwoHandedPolearm":
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         private static bool IsShield(ItemObject item)

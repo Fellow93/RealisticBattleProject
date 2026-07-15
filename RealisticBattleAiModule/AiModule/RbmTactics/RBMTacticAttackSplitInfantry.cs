@@ -9,6 +9,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
     protected Formation _flankingInfantry = null;
     protected Formation _leftFlankingInfantry = null;
     protected Formation _rightFlankingInfantry = null;
+    private bool _membershipSplitDone;
     private int side = MBRandom.RandomInt(2);
 
     protected void AssignTacticFormations()
@@ -63,26 +64,36 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
                 }
                 flankersList = flankersList.OrderBy((Agent o) => o.CharacterPowerCached).ToList();
 
-                int j = 0;
-                foreach (Agent agent in flankersList)
+                // Under BattleMiniMap (IsFormationReshufflingUnsafe) the physical agent moves are done
+                // ONCE; afterwards we keep refreshing refs/weights but never reshuffle again.
+                bool doReassign = !RBMAI.Tactics.IsFormationReshufflingUnsafe || !_membershipSplitDone;
+                if (doReassign)
                 {
-                    if (j < infCount / 6)
-                        agent.Formation = leftSlot;
-                    else if (j < infCount / 3)
-                        agent.Formation = rightSlot;
-                    else
-                        agent.Formation = _mainInfantry;
-                    j++;
+                    int j = 0;
+                    foreach (Agent agent in flankersList)
+                    {
+                        if (j < infCount / 6)
+                            agent.Formation = leftSlot;
+                        else if (j < infCount / 3)
+                            agent.Formation = rightSlot;
+                        else
+                            agent.Formation = _mainInfantry;
+                        j++;
+                    }
+                    foreach (Agent agent in mainList)
+                    {
+                        if (j < infCount / 6)
+                            agent.Formation = leftSlot;
+                        else if (j < infCount / 3)
+                            agent.Formation = rightSlot;
+                        else
+                            agent.Formation = _mainInfantry;
+                        j++;
+                    }
                 }
-                foreach (Agent agent in mainList)
+                if (RBMAI.Tactics.IsFormationReshufflingUnsafe)
                 {
-                    if (j < infCount / 6)
-                        agent.Formation = leftSlot;
-                    else if (j < infCount / 3)
-                        agent.Formation = rightSlot;
-                    else
-                        agent.Formation = _mainInfantry;
-                    j++;
+                    _membershipSplitDone = true;
                 }
 
                 // Set refs directly from slot objects — stable regardless of post-move ordering changes
@@ -97,9 +108,12 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
                     _rightFlankingInfantry.AI.IsMainFormation = false;
                 }
 
-                this.Team.TriggerOnFormationsChanged(leftSlot);
-                this.Team.TriggerOnFormationsChanged(rightSlot);
-                this.Team.TriggerOnFormationsChanged(_mainInfantry);
+                if (doReassign)
+                {
+                    this.Team.TriggerOnFormationsChanged(leftSlot);
+                    this.Team.TriggerOnFormationsChanged(rightSlot);
+                    this.Team.TriggerOnFormationsChanged(_mainInfantry);
+                }
             }
         }
 

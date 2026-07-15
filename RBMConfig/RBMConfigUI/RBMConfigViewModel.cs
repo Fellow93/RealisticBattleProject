@@ -77,6 +77,10 @@ namespace RBMConfig
         public TextViewModel SimulationLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> SimulationLoggingEnabled { get; }
 
+        // Field-battle blow-by-blow log, the counterpart to the auto-resolve trace, meant to be read against it.
+        public TextViewModel BattleHitLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> BattleHitLoggingEnabled { get; }
+
         // SupplyTown gate: on/off toggle for gating upgrades on a nearby friendly town.
         public TextViewModel TroopUpgradeRequireSupplyTownText { get; }
         public SelectorVM<SelectorItemVM> TroopUpgradeRequireSupplyTown { get; }
@@ -813,6 +817,15 @@ namespace RBMConfig
             get
             {
                 return new TextObject("{=RBM_CON_094}Detailed Auto Resolve Logging").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string BattleHitLoggingt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_095}Field Battle Logging").ToString();
             }
         }
 
@@ -1696,6 +1709,12 @@ namespace RBMConfig
             SimulationLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_094}Detailed Auto Resolve Logging"));
             SimulationLoggingEnabled = new SelectorVM<SelectorItemVM>(simulationLoggingOptions, 0, null);
 
+            // Field battle logging: off by default -- a diagnostic for comparing a fought battle to the sim trace,
+            // so Disabled carries the "(Default)" tag.
+            List<string> battleHitLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
+            BattleHitLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_095}Field Battle Logging"));
+            BattleHitLoggingEnabled = new SelectorVM<SelectorItemVM>(battleHitLoggingOptions, 0, null);
+
             // SupplyTown gate: Enabled is the default, so its option carries the "(Default)" tag.
             List<string> troopUpgradeRequireSupplyTownOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             TroopUpgradeRequireSupplyTownText = new TextViewModel(new TextObject("{=RBM_CON_070}Upgrade Near Town"));
@@ -1765,6 +1784,7 @@ namespace RBMConfig
             SpoilsVerboseLoggingEnabled.SelectedIndex = RBMConfig.spoilsVerboseLoggingEnabled ? 1 : 0;
             SimulationEquipmentEnabled.SelectedIndex = RBMConfig.simulationEquipmentEnabled ? 1 : 0;
             SimulationLoggingEnabled.SelectedIndex = RBMConfig.simulationLoggingEnabled ? 1 : 0;
+            BattleHitLoggingEnabled.SelectedIndex = RBMConfig.battleHitLoggingEnabled ? 1 : 0;
             _troopLeaderSpoilsCutFraction = MathF.Clamp(RBMConfig.troopLeaderSpoilsCutFraction, 0f, 1f);
             _troopSpoilsCapDays = MathF.Clamp(RBMConfig.troopSpoilsCapDays, 0f, 60f);
             _troopLuxuryCooldownDays = MathF.Clamp(RBMConfig.troopLuxuryCooldownDays, 0f, 120f);
@@ -1969,6 +1989,7 @@ namespace RBMConfig
             RBMConfig.spoilsVerboseLoggingEnabled = SpoilsVerboseLoggingEnabled.SelectedIndex == 1;
             RBMConfig.simulationEquipmentEnabled = SimulationEquipmentEnabled.SelectedIndex == 1;
             RBMConfig.simulationLoggingEnabled = SimulationLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.battleHitLoggingEnabled = BattleHitLoggingEnabled.SelectedIndex == 1;
             RBMConfig.troopLeaderSpoilsCutFraction = _troopLeaderSpoilsCutFraction;
             RBMConfig.troopSpoilsCapDays = (int)MathF.Round(_troopSpoilsCapDays);
             RBMConfig.troopLuxuryCooldownDays = (int)MathF.Round(_troopLuxuryCooldownDays);
@@ -2041,6 +2062,7 @@ namespace RBMConfig
             SpoilsVerboseLoggingEnabled.SelectedIndex = 1;
             SimulationEquipmentEnabled.SelectedIndex = 1;
             SimulationLoggingEnabled.SelectedIndex = 1;
+            BattleHitLoggingEnabled.SelectedIndex = 0;
         }
 
         private void ExecuteCancel()

@@ -28,12 +28,19 @@ namespace RBMCampaign
         /// too thin now that a round is a PHASE with a job to do: a volley in which only the archers act, a skirmish
         /// in which only the javelins and the horse do. Too few men get their turn for a phase to say what it is for.
         ///
-        /// Doubling the allocation doubles how many soldiers take part in every phase of every round. Note it does
-        /// NOT double the casualties: the same men are being fought over, so the battle simply resolves in about half
-        /// as many rounds -- which in turn makes the volley and the skirmish a LARGER share of the whole fight, since
-        /// their lengths are counted in rounds and did not change.
+        /// Multiplying the allocation multiplies how many soldiers take part in every phase of every round. Note it
+        /// does NOT change the casualties: the same men are being fought over, so the battle simply resolves in
+        /// proportionally fewer rounds -- which in turn makes the volley and the skirmish a LARGER share of the whole
+        /// fight, since their lengths are counted in rounds and did not change. That larger ranged share is the point:
+        /// it is how the archers' edge -- the arm that actually decides a field battle -- gets to tell in the sim.
+        ///
+        /// Held at 3. It was 4 for a while -- pushed high to keep the widened lethality pool (a man soaks half again as
+        /// many blows) from lengthening the fight and diluting the ranged phases back toward melee. Eased to 3: fewer
+        /// men act each round, the fight runs a few more rounds, and the volley and skirmish give back a little of the
+        /// share they had -- the approach was carrying too much of the battle. Still well above vanilla's thin sample.
+        /// Raise it to compress the fight and grow the ranged phases; lower it to stretch the fight and grow the melee.
         /// </summary>
-        internal const int TickMultiplier = 2;
+        internal const int TickMultiplier = 4;
 
         private static void Postfix(MapEvent mapEvent, ref ValueTuple<int, int> __result)
         {
@@ -80,6 +87,13 @@ namespace RBMCampaign
 
         /// <summary>"shoot", "throw", "melee" -- or "-" when the model declined the blow entirely.</summary>
         public string Phase;
+
+        /// <summary>
+        /// What answered the blow: "none" (it landed), "shield-block", "weapon-block", "parry", or "riposte" for the
+        /// counter itself. This is what lets the block, parry and riposte rates be read straight off the log, which
+        /// is the whole point of the column -- the defense system is untunable without it.
+        /// </summary>
+        public string Defense;
 
         public string Weapon;
 
@@ -185,8 +199,14 @@ namespace RBMCampaign
         /// Rounds of shooting in a full quiver. Thirty-odd arrows at a couple of shafts a round is a bit over a
         /// dozen rounds of steady loosing -- long enough to matter in a set-piece battle, longer than a skirmish
         /// lasts at all.
+        ///
+        /// Raised from 14 to 30 alongside the skill-based defense system: with landed melee lethality now
+        /// skill-gated (most blows fully negated), a battle grinds on for more rounds before it resolves, and a
+        /// quiver that ran dry in fourteen rounds would have the archers reduced to knives for most of a longer
+        /// fight. This is a calibration target -- HasAmmo is Round <= AmmoRounds, so re-check the actual round
+        /// count once the defense system is measured on a paired log (TickMultiplier=4 already shrank rounds).
         /// </summary>
-        private const int AmmoRounds = 14;
+        private const int AmmoRounds = 30;
 
         // A shield eats the blow it stops -- but the two numbers have to be in the same units, and they were not.
         //
@@ -203,7 +223,15 @@ namespace RBMCampaign
         //
         // ShieldCapacityPerMan is a judgement, like the shield block chance itself: it is the simulated damage an
         // ordinary shield absorbs before it is kindling.
-        private const float ShieldCapacityPerMan = 25f;
+        //
+        // CALIBRATION TARGET. Raised from 25 to 600 (~24x) for the skill-based defense system. Under the old
+        // fractional skim a shield ate `actual * shieldBlock` -- a third to a half of every blow, eight to twenty
+        // points. A discrete SHIELD BLOCK now dumps the WHOLE blow onto the board (30 to 110), but only on the
+        // fraction of blows the man actually gets it in the way of. At ~25 points a whole-blow dump the old
+        // capacity broke a shield in a single block; 600 lets it soak roughly fifteen to twenty full blocks before
+        // it splinters, which is the order the field asks for. Too durable and shields never break and battles
+        // never resolve; too brittle and shields are useless -- tune against total downs (~1448) on a paired log.
+        private const float ShieldCapacityPerMan = 600f;
 
         private const float ReferenceShieldHitPoints = 800f;
 
@@ -255,6 +283,15 @@ namespace RBMCampaign
             /// cavalryman holding a bow. See HorseArcherEvasion.
             /// </summary>
             public float KitingRoom = 1f;
+
+            /// <summary>
+            /// How often a mounted man's melee blow carries the weight of the horse behind it, once the lines meet.
+            /// Kept SEPARATE from KitingRoom (which governs horse-archer evasion): the two used to ride one terrain
+            /// reading, but a charge is a coarser thing than a kite -- a horse finds room to hit hard on any open
+            /// field, wood or plain alike, while a horse archer's escape still shortens among the trees. So charge is
+            /// a flat field/village/none, and kiting keeps its gradient.
+            /// </summary>
+            public float ChargeChance = 0f;
 
             /// <summary>
             /// Whether this is a battle nobody fights on horseback. A siege has no horses in it at all -- the wall is
@@ -324,6 +361,7 @@ namespace RBMCampaign
                 state.VolleyRounds = GetVolleyRounds(mapEvent);
                 state.DefendersShootFromStores = mapEvent.IsSiegeAssault;
                 state.KitingRoom = GetKitingRoom(mapEvent);
+                state.ChargeChance = GetChargeChance(mapEvent);
                 state.Dismounted = IsDismounted(mapEvent);
                 state.AttackerCounts = Muster(mapEvent.AttackerSide);
                 state.DefenderCounts = Muster(mapEvent.DefenderSide);
@@ -468,8 +506,15 @@ namespace RBMCampaign
                 case MapEvent.PowerCalculationContext.RiverCrossingBattle:
                     return 4;
 
+                // Trees and water. There is little ground to cross and less of it open -- the lines are on each other
+                // almost at once, so the bows get only a few rounds before it is hand to hand. This matches the
+                // shortened charge and kiting a forest already carries (see GetChargeChance, GetKitingRoom).
+                case MapEvent.PowerCalculationContext.ForestBattle:
+                case MapEvent.PowerCalculationContext.RiverBattle:
+                    return 3;
+
                 default:
-                    // Plain, steppe, desert, dune, snow, river, forest: ground to cross, under arrows.
+                    // Plain, steppe, desert, dune, snow: open ground to cross, under arrows the whole way.
                     return 6;
             }
         }
@@ -514,6 +559,53 @@ namespace RBMCampaign
                 // and a man on foot occasionally gets his chance. It is a tenth of one.
                 default:
                     return 0.9f;
+            }
+        }
+
+        /// <summary>How often a mounted melee blow is a charge, by terrain -- separate from KitingRoom (see the note on
+        /// BattleState.ChargeChance). A charge only wants room to hit hard, which any open field gives it, wood or
+        /// plain; a village street gives it a little; a wall, a deck and a besieged gate give it none.</summary>
+        private const float FieldChargeChance = 0.5f;   // open field -- plain, steppe, desert
+        private const float ForestChargeChance = 0.4f;  // trees and water -- the horse charges a little less often
+        private const float VillageChargeChance = 0.15f; // riding between houses, room for the odd charge
+        // Every charge chance above is scaled this much across the board -- but NOT the naval and siege zeroes, which
+        // stay nothing (a wall and a deck have no charge to scale). Was 1.2 (a 20% lift); pulled to 0.9 -- with the
+        // charge landing unblocked and hitting harder now, the horse was charging too often and running whole battles.
+        private const float ChargeChanceBoost = 0.9f;
+
+        private static float GetChargeChance(MapEvent mapEvent)
+        {
+            // Storming a wall: no room to ride, so no charge -- and nothing to boost.
+            if (mapEvent.IsSiegeAssault)
+            {
+                return 0f;
+            }
+
+            switch (mapEvent.SimulationContext)
+            {
+                // A besieged gate, a deck, the open sea -- nowhere to bring a horse up to speed, and often no horse at
+                // all (see IsDismounted). No charge, and left out of the across-the-board boost.
+                case MapEvent.PowerCalculationContext.Siege:
+                case MapEvent.PowerCalculationContext.SeaBattle:
+                case MapEvent.PowerCalculationContext.OpenSeaBattle:
+                case MapEvent.PowerCalculationContext.NavalRaid:
+                    return 0f;
+
+                // Streets and houses: a horse still charges when a lane opens, but rarely.
+                case MapEvent.PowerCalculationContext.Village:
+                    return VillageChargeChance * ChargeChanceBoost;
+
+                // Trees and water: the lanes are shorter and the horse gets up to the charge a little less often than
+                // on the open plain -- but it is still a field, and still mostly charges. (The trees shorten a horse
+                // archer's kite further; that finer measure is KitingRoom's business, not this.)
+                case MapEvent.PowerCalculationContext.ForestBattle:
+                case MapEvent.PowerCalculationContext.RiverBattle:
+                case MapEvent.PowerCalculationContext.RiverCrossingBattle:
+                    return ForestChargeChance * ChargeChanceBoost;
+
+                // Open field -- plain, steppe, desert, dune, snow. All the room a charge wants.
+                default:
+                    return FieldChargeChance * ChargeChanceBoost;
             }
         }
 

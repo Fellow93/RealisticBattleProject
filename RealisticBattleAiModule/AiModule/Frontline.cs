@@ -704,6 +704,15 @@ namespace RBMAI
         [HarmonyPatch("ParallelUpdateFormationMovement")]
         private static void PostfixParallelUpdateFormationMovement(ref HumanAIComponent __instance, ref Agent ___Agent)
         {
+            // This runs on a native worker thread during the parallel formation-movement job and WRITES agent
+            // formation state (SetValue / SetFormationIntegrityData / SetFormationFrameDisabled). MissionLibrary mods
+            // (RTSCamera/CommandSystem/BattleMiniMap) also hook HumanAIComponent's parallel movement path; two mods
+            // mutating formation state on the same worker job races the native update -> use-after-free AVE. When one
+            // is present, stay off this path entirely and let native own it.
+            if (RBMAI.Tactics.IsFormationReshufflingUnsafe)
+            {
+                return;
+            }
             if (___Agent.IsActive() == false || ___Agent.Formation == null)
             {
                 return;
@@ -761,6 +770,12 @@ namespace RBMAI
         [HarmonyPatch("GetFormationFrame")]
         private static bool PrefixGetFormationFrame(ref bool __result, ref Agent ___Agent, ref HumanAIComponent __instance, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool limitIsMultiplier)
         {
+            // Also on the parallel formation-movement worker path -- see PostfixParallelUpdateFormationMovement.
+            // Defer to native (return true = run original) when a MissionLibrary mod is present.
+            if (RBMAI.Tactics.IsFormationReshufflingUnsafe)
+            {
+                return true;
+            }
             if (___Agent != null)
             {
                 var formation = ___Agent.Formation;

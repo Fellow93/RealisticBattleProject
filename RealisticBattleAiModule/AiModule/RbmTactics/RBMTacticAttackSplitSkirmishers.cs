@@ -8,6 +8,7 @@ using TaleWorlds.MountAndBlade;
 public class RBMTacticAttackSplitSkirmishers : TacticComponent
 {
     protected Formation _skirmishers;
+    private bool _membershipSplitDone;
     private int side = MBRandom.RandomInt(2);
     private int waitCountMainFormation = 0;
     private int waitCountMainFormationMax = 25;
@@ -70,29 +71,39 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
                 int skirmCap = Math.Max(1, (int)(allInfantry.Count * 0.2f));
                 skirmishersList = skirmishersList.OrderBy((Agent o) => o.CharacterPowerCached).ToList();
 
-                int assigned = 0;
-                foreach (Agent agent in skirmishersList)
+                // Under BattleMiniMap (IsFormationReshufflingUnsafe) the physical agent moves are done
+                // ONCE; afterwards we keep refreshing refs/weights but never reshuffle again.
+                bool doReassign = !RBMAI.Tactics.IsFormationReshufflingUnsafe || !_membershipSplitDone;
+                if (doReassign)
                 {
-                    if (assigned < skirmCap)
+                    int assigned = 0;
+                    foreach (Agent agent in skirmishersList)
                     {
-                        agent.Formation = skirmisherSlot;
-                        assigned++;
+                        if (assigned < skirmCap)
+                        {
+                            agent.Formation = skirmisherSlot;
+                            assigned++;
+                        }
+                        else
+                        {
+                            agent.Formation = _mainInfantry;
+                        }
                     }
-                    else
+                    foreach (Agent agent in meleeList)
                     {
                         agent.Formation = _mainInfantry;
                     }
+
+                    this.Team.TriggerOnFormationsChanged(skirmisherSlot);
+                    this.Team.TriggerOnFormationsChanged(_mainInfantry);
                 }
-                foreach (Agent agent in meleeList)
+                if (RBMAI.Tactics.IsFormationReshufflingUnsafe)
                 {
-                    agent.Formation = _mainInfantry;
+                    _membershipSplitDone = true;
                 }
 
                 _skirmishers = skirmisherSlot;
                 _skirmishers.AI.IsMainFormation = false;
-
-                this.Team.TriggerOnFormationsChanged(skirmisherSlot);
-                this.Team.TriggerOnFormationsChanged(_mainInfantry);
             }
         }
 
