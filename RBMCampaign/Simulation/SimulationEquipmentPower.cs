@@ -234,13 +234,44 @@ namespace RBMCampaign
         // a charge do reach the line early -- but as near to it as makes no difference.
         private const float ClosingPenalty = 0.08f;
 
-        // How long a charge is worth anything. By the third round the horsemen are hemmed in and hacking downward
-        // from a standing horse, which is a far poorer thing than a lance at the gallop.
-        private const int ChargeRounds = 3;
+        // How often a horseman's blow is a charge and not a chop, on open ground where the horse has all the room it
+        // wants. A rider does not gallop through the melee at a steady speed for three rounds and then stop: he comes
+        // in at the gallop, kills, is hemmed in, backs out, finds room and comes again. Some of his blows carry the
+        // weight of the horse behind them and most do not, and which is which is a matter of where he happens to be.
+        // So it is a coin, not a countdown -- and how weighted the coin is falls with the room to ride (KitingRoom),
+        // from half his blows on the steppe to none at all on a wall or a village street.
+        private const float ChargeChance = 0.5f;
 
         // A spear set for a horse. Infantry have answered cavalry this way for three thousand years and
         // auto-resolve has never once let them.
         private const float BraceBonus = 1.6f;
+
+        // THE HORSE ARCHER DOES NOT STAND THERE.
+        //
+        // He is not a cavalryman with a bow, and auto-resolve has always modelled him as one: a mounted man who rides
+        // into the line, gets hemmed in, and is hacked down by the infantry around him like anybody else. That is the
+        // one thing a horse archer never does. His entire art is the refusal of contact -- he shoots, and when the
+        // foot come at him he turns his horse and goes, and shoots again from where they cannot follow. An infantry
+        // line does not kill horse archers. It chases them until it is exhausted, and they kill it.
+        //
+        // So a footman's blow at a mounted archer who still has arrows is nearly nothing: not because he cannot fight
+        // -- his spear is as good as it ever was -- but because there is no one standing in front of him to put it
+        // into. This is the fraction of a foot blow that finds him anyway: the man who was caught turning, the horse
+        // gone lame, the pocket of ground with no way out.
+        //
+        // Two things end it, and only two.
+        //
+        //   THE QUIVER. When it is empty he is a lightly armoured man on a tired horse with a bow he cannot use, and
+        //   he must close, or run, or die. Everything the model already knows about ammunition (AmmoRounds, on the
+        //   battle's own clock) does the work here for free -- HasAmmo asked of the man being STRUCK.
+        //
+        //   HORSEMEN. A rider can catch a rider. Cavalry chase horse archers down, and this whole exemption is
+        //   silent about them: they are mounted, so it never applies, and their lances land in full. Which is
+        //   precisely why every steppe army in history feared the other side's cavalry and nothing else.
+        //
+        // And arrows find him regardless: an archer's shaft does not care how fast his horse is. Only MELEE from
+        // FOOT is refused, because only melee from foot requires him to be somewhere he can be reached.
+        private const float HorseArcherEvasion = 0.1f;
 
         private const int ZoneHead = 0;
 
@@ -405,6 +436,7 @@ namespace RBMCampaign
             hit.Braced = breakdown.Braced;
             hit.ChargeBonus = breakdown.ChargeBonus;
             hit.Closing = breakdown.Closing;
+            hit.Evaded = breakdown.Evaded;
             hit.VanillaDamage = vanillaDamage;
             hit.Correction = breakdown.Correction;
             hit.FinalDamage = finalDamage;
@@ -484,6 +516,9 @@ namespace RBMCampaign
 
             /// <summary>The lines had not met yet and he was walking into arrows with nothing to answer them.</summary>
             public bool Closing;
+
+            /// <summary>He swung at a horse archer who still had arrows, and the horse archer was not there.</summary>
+            public bool Evaded;
         }
 
         internal static bool Explain(CharacterObject strikerTroop, CharacterObject struckTroop, out Breakdown breakdown,
@@ -516,14 +551,37 @@ namespace RBMCampaign
             SimulationBattleState.TroopState strikerState = (state != null) ? state.For(strikerTroop, strikerIsAttacker) : null;
             SimulationBattleState.TroopState struckState = (state != null) ? state.For(struckTroop, !strikerIsAttacker) : null;
 
+            // A battle nobody rides in. A siege has no horses at all: the wall is stormed on foot and held on foot,
+            // and a cavalry troop here is a lance and a suit of barding with no animal under it. The kit is cached
+            // terrain-blind and still calls him mounted, so we undo it here -- and once he is not mounted, none of
+            // what follows treats him as though he were: no charge, no barding at the leg, no horse to be killed
+            // before he is, and no cavalry clash out in front. See SimulationBattleState.IsDismounted.
+            bool dismounted = state != null && state.Dismounted;
+            bool strikerMounted = striker.IsMounted && !dismounted;
+            bool struckMounted = struck.IsMounted && !dismounted;
+
             // What the horse still has in it. A footman hacking upward is mostly hacking at the horse, and horses
             // die; when one does its rider keeps none of its barding and none of its height -- and he is no longer
             // a horseman for the purpose of anything below, including whether the cavalry are still fighting each
-            // other. A man whose horse is dead has left the skirmish, whatever else he is doing.
-            float horsesAlive = (struckState != null && struck.IsMounted)
-                ? SimulationBattleState.HorsesAlive(struckState)
-                : 1f;
-            bool struckStillMounted = struck.IsMounted && horsesAlive > 0.5f;
+            // other. A man whose horse is dead has left the skirmish, whatever else he is doing. A man who never had
+            // one -- because there are no horses in a siege -- has zero alive from the first blow, which strips the
+            // barding the same way a killed mount would.
+            float horsesAlive = !struckMounted ? 0f
+                : (struckState != null)
+                    ? SimulationBattleState.HorsesAlive(struckState)
+                    : 1f;
+            bool struckStillMounted = struckMounted && horsesAlive > 0.5f;
+
+            // AND WHETHER THE MAN BEING STRUCK IS A HORSE ARCHER WHO IS STILL A HORSE ARCHER. Three things have to
+            // hold, and each of them is a real way for the steppe to lose its advantage: he must still have a horse
+            // under him, he must still have arrows to shoot (out of them, he has no reason to keep his distance and
+            // no way to profit by it), and there must be ground to ride in -- a wood or a village street or a
+            // breached wall gives him nowhere to go. See HorseArcherEvasion.
+            bool struckIsKiting = struckStillMounted
+                && struck.IsRanged
+                && state != null
+                && state.KitingRoom > 0f
+                && SimulationBattleState.HasAmmo(state, struckState, !strikerIsAttacker);
 
             // A BATTLE HAS THREE ACTS. The volley, while the lines are far apart and the bowmen have the field. The
             // skirmish, on the ground between them -- javelins in the air, and the horse of each side riding out at
@@ -567,7 +625,7 @@ namespace RBMCampaign
             // let them do: it held every horseman back until the infantry lines collided and then threw him into the
             // press, where a horse is worth least. Here they have the field to themselves, and they fight the only
             // enemy who can reach them.
-            bool cavalryClash = skirmish && striker.IsMounted && struckStillMounted;
+            bool cavalryClash = skirmish && strikerMounted && struckStillMounted;
 
             // A thrown weapon IS a missile, and everything that follows from that follows: it goes to the mass of
             // the man rather than to whatever a footman can reach, and the shield it meets is a shield held up
@@ -614,7 +672,7 @@ namespace RBMCampaign
             // bearing down on him. And it lands SOMEWHERE on him: a real blow rolls a body part, meets the armour
             // standing over that part, and is worth what RBM says a blow to that part is worth. The reference tables
             // take the expectation over all four instead, since they are asking about a matchup and not a moment.
-            HitZones zones = GetHitZones(striker.IsMounted, missile, struckStillMounted);
+            HitZones zones = GetHitZones(strikerMounted, missile, struckStillMounted);
 
             int zoneHit;
             float armor;
@@ -643,27 +701,48 @@ namespace RBMCampaign
                 actual *= SimulationBattleState.VolleyFocus(state, strikerIsAttacker);
             }
 
-            // The charge: weight and speed, spent at the moment of contact and gone a few rounds after it. A lancer
-            // at the gallop is a different thing from the same man five minutes later, hemmed in and hacking
-            // downward from a standing horse. A horseman flinging a javelin is not charging either -- he is riding
-            // past at a distance, which is the point of javelins.
+            // The charge: weight and speed, which a horseman has only some of the time. A lance at the gallop is a
+            // different thing from the same man hemmed in and hacking downward from a standing horse -- and over a
+            // long fight he is both, by turns, as he rides in, kills, backs out and comes again. So a share of his
+            // blows carry the horse behind them and the rest are just a man swinging from a saddle. A horseman
+            // flinging a javelin is never charging -- he is riding past at a distance, which is the point of javelins.
             //
-            // It fires only once the lines have MET. While they are still closing a horseman has nobody to ride
-            // down, and a charge delivered into empty ground is not a charge.
+            // How large that share is depends on the ground, and on exactly the same ground the horse archer's kiting
+            // depends on: it is room for the horse to run. On the open steppe he can chop, wheel out, find speed and
+            // come again, and half his blows carry the charge; in a wood the lanes are short and the horse never gets
+            // up to it; in a village street or on a wall there is no charge at all. `KitingRoom` is that same measure,
+            // so the two ride together off one terrain reading. See GetKitingRoom.
+            //
+            // It fires only once he has MET somebody. While the lines are still closing he has nobody to ride down,
+            // and a charge delivered into empty ground is not a charge.
             breakdown.ChargeBonus = 1f;
-            if (striker.IsMounted && !missile && engaged && striker.ChargeDamage > 0f && state != null)
+            if (strikerMounted && !missile && engaged && striker.ChargeDamage > 0f && state != null
+                && MBRandom.RandomFloat < ChargeChance * state.KitingRoom)
             {
-                breakdown.ChargeBonus = 1f + (striker.ChargeDamage * 0.01f * ChargeDecay(state, struckStillMounted));
+                breakdown.ChargeBonus = 1f + (striker.ChargeDamage * 0.01f);
                 actual *= breakdown.ChargeBonus;
             }
 
             // Braced steel. A spear set against a horse is the answer infantry have always had to cavalry, and
             // auto-resolve has never once let them use it. `braced` is already the right question asked and
             // answered: it is true exactly when he drew from his polearms, which he does only against a horse.
-            if (braced && !striker.IsMounted)
+            if (braced && !strikerMounted)
             {
                 actual *= BraceBonus;
                 breakdown.Braced = true;
+            }
+
+            // AND THE HORSE ARCHER RIDES AWAY FROM IT. A footman's spear cannot reach a man who is not standing in
+            // front of it, and a horse archer with arrows left never is: he is out at bow range, and if the foot come
+            // at him he turns and shoots them from somewhere else. Note where this sits -- AFTER the brace, quite
+            // deliberately. A spear set against a charge is no answer to a man who declines the charge; the spearman
+            // gets his full 1.6 and still hits nothing but air, and that is exactly the point. The lance and the
+            // arrow are untouched by any of it: this asks !striker.IsMounted and !missile, so cavalry and bowmen kill
+            // him at the ordinary rate, which is the only way he is ever killed.
+            if (struckIsKiting && !strikerMounted && !missile)
+            {
+                actual *= 1f - (state.KitingRoom * (1f - HorseArcherEvasion));
+                breakdown.Evaded = true;
             }
 
             float blocked = actual * shieldBlock;
@@ -676,7 +755,7 @@ namespace RBMCampaign
                 // missile here too, and leaves the animal alone. (What the shield can take is denominated in this
                 // same simulated damage; see ShieldCapacityPerMan.)
                 SimulationBattleState.DamageShield(struckState, blocked);
-                if (struck.IsMounted && !striker.IsMounted && !missile)
+                if (struckMounted && !strikerMounted && !missile)
                 {
                     SimulationBattleState.DamageHorse(struckState, actual);
                 }
@@ -1692,31 +1771,6 @@ namespace RBMCampaign
             float leg = struck.Leg + (struck.HorseLeg * horsesAlive);
             float body = struck.Body + (struck.HorseBody * horsesAlive);
             return WeightedArmor(struck.Head, body, struck.Arm, leg, zones);
-        }
-
-        /// <summary>
-        /// A charge is spent in the first shock and is gone a few rounds later -- after which a horseman is a man on
-        /// a horse, hemmed in, with no room to build the speed that made him terrible.
-        ///
-        /// It is measured from CONTACT, not from the first round of the battle, and that is the whole of the fix.
-        /// The charge used to decay from round one -- but on open ground the lines take four rounds to close, and
-        /// the charge was three, so it had decayed to nothing before there was anybody to charge INTO. In four
-        /// thousand blows of a real battle the model fired seven charges, all of them in forests, where the approach
-        /// is one round. A cavalry charge that is spent before it arrives is not a cavalry charge.
-        /// </summary>
-        private static float ChargeDecay(SimulationBattleState.BattleState state, bool struckMounted)
-        {
-            // A horseman meets a horseman in the SKIRMISH, out on the open ground, long before he meets a footman --
-            // whom he cannot reach until the lines close. So the two have different moments of contact, and each
-            // gets his charge in full at his own. Measuring both from one instant would have spent a lancer's charge
-            // on the enemy cavalry and left him nothing for the infantry he rides down two rounds later, or the
-            // reverse.
-            int contact = struckMounted
-                ? SimulationBattleState.CavalryContactRound(state)
-                : SimulationBattleState.ContactRound(state);
-
-            int since = state.Round - contact;
-            return MBMath.ClampFloat(1f - (since / (float)ChargeRounds), 0f, 1f);
         }
 
         private static bool IsPolearm(string weaponType)

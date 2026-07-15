@@ -245,7 +245,7 @@ In the **skirmish** the closing penalty does apply, and should: the ground betwe
 Two consequences worth stating, because both were wrong before and both matter:
 
 - **A javelin is thrown in the skirmish, not the volley.** A man does not hurl a spear at somebody a bowshot away. He carries it across the open ground and throws it when he is close enough, and then it is gone and he is a man with a knife.
-- **A horseman has two moments of contact, and gets his charge at each.** He meets the enemy cavalry in the skirmish; he cannot reach their infantry until the lines close. Measuring both from one instant would spend a lancer's charge on the enemy horse and leave him nothing for the foot he rides down two rounds later.
+- **A horseman has two moments of contact.** He meets the enemy cavalry in the skirmish; he cannot reach their infantry until the lines close. He may charge at either — but he is *engaged* only when he has actually found somebody, and until then he is riding across empty ground.
 
 ### The volley
 
@@ -292,17 +292,43 @@ He hurls one per round, so **the bundle on his back is the number of rounds he c
 
 ### The charge, and the horse under him
 
-A charge is weight and speed, and it is **spent once**. A lancer at the gallop is a different thing from the same man five minutes later, hemmed in and hacking downward from a standing horse. So the horse's `ChargeDamage` is paid in full at contact and decays to nothing over the next three rounds.
+A charge is weight and speed, and a horseman has it **some of the time**. A lance at the gallop is a different thing from the same man hemmed in and hacking downward from a standing horse — and over a long fight he is both, by turns: he rides in, kills, is boxed in, backs out, finds room and comes again. Which of his blows carries the horse behind it is a matter of where he happens to be at that moment.
 
-**At contact** — which is the entire point, and was got wrong. The charge used to decay from round *one*. But on open ground the lines take four rounds to close and the charge lasts three, so it had decayed to nothing before there was anybody to charge *into*. In four thousand blows of a real battle the model fired **seven** charges, every one of them in a forest, where the approach is a single round. A cavalry charge that is spent before it arrives is not a cavalry charge. It now fires when the lines meet, and not before: while they are still closing, a horseman has nobody to ride down.
+So the charge is a **coin, not a countdown**. On open ground a share of his blows (`ChargeChance`, 0.5) land at the gallop and are paid the horse's `ChargeDamage` in full; the rest are a man swinging a sword from a saddle. It does not decay, and it does not run out — a squadron with room to work is dangerous for as long as the battle lasts, which is what a squadron with room to work is.
+
+**How large that share is depends on the ground** — on exactly the same reading the horse archer's kiting hangs off, because it asks the same question: is there room for the horse to run? The coin is weighted by `KitingRoom` (0.9 on plain and steppe, 0.4 in a wood or a river, 0 in a village or on a wall). Half a lancer's blows carry the charge on the steppe; in a forest the lanes are short and the horse never builds the speed, so only a fifth do; boxed into a street or up a ladder there is no charge at all, which is exactly why you take cavalry *onto* open ground and dread being caught off it. It is the one measure, read once, driving both the man who rides away and the man who rides in.
+
+It fires only once he has met somebody: while the lines are still closing a horseman has nobody to ride down, and a charge delivered into empty ground is not a charge. He finds the enemy *cavalry* in the skirmish, well before the foot are in reach, and his blows there roll the same coin.
 
 And a footman hacking upward at a rider is mostly hacking at the **horse**. Horses die. When one does, its rider is a man on foot in cavalry harness: he loses the barding that was answering those blows, and the blows start finding his head instead of his legs.
+
+**And a siege — or a ship — has no horses in it at all.** This is a stronger thing than kiting room going to nothing, and kept separate from it. A horse hemmed into a village street is still a horse — it cannot charge, but it is there, catching blows at the leg and dying before its rider does. A horse on a wall or a deck does not exist: the game brings none to a storm, and none aboard a boarding action, and a cavalry troop in either is a lance and a suit of barding with no animal under it. So there a lancer is dismounted outright — no charge, no barding counted at the leg, no horse to be killed first, and no riding out to meet the enemy cavalry in front. A wall, a deck and a village street all read zero kiting room, but they are not the same zero: the village keeps its horses and the other two have none.
 
 ### Braced steel
 
 A spear set against a horse is the answer infantry have had to cavalry for three thousand years, and auto-resolve has never once let them use it. A braced polearm lands **half again as hard** on a horseman.
 
 This one is a deliberate thumb on the scale and is *not* built into the baseline — see §8.
+
+### The horse archer, and why nobody catches him
+
+A horse archer is **not a cavalryman with a bow**, and auto-resolve has always modelled him as one: a mounted man who rides into the line, gets hemmed in, and is hacked down by the infantry around him like anybody else. That is the one thing a horse archer never does. His whole art is the *refusal of contact* — he shoots, and when the foot come at him he turns his horse and goes, and shoots again from somewhere they cannot follow. An infantry line does not kill horse archers. It chases them until it is exhausted, and they kill it.
+
+He was always his own arm of service here (`HorseArcherType` — mounted *and* ranged, bucketed and baselined apart from the lancers), and he has always shot in the volley alongside the foot archers, and gone on shooting in every act of the battle for as long as his quiver holds out. What he could not do was **decline the melee**.
+
+So a foot melee blow at a mounted archer who still has arrows lands at **a tenth of its worth**. Not because the spearman is bad — his spear is as good as it ever was, and if he braced it he still gets his full half-again — but because there is nobody standing in front of him to put it into. The tenth that gets through is the man caught turning, the horse gone lame, the pocket of ground with no way out.
+
+**Three things end it, and only three:**
+
+| | |
+|---|---|
+| **The quiver runs dry** | The clock the model already keeps (§ *Ammunition*). Out of arrows, he has no reason to keep his distance and no way to profit by it — he is a lightly armoured man on a tired horse, and now the infantry get their turn. This is the *design*: the way to beat horse archers is to outlast them. |
+| **Cavalry** | A rider catches a rider. The exemption asks `!striker.IsMounted`, so it never applies to a horseman at all: lances land in full, at full charge. Which is exactly why every steppe army in history feared the other side's cavalry and very little else. |
+| **The ground** | It is scaled by the battle's **kiting room**, read off the same terrain the volley length is read off. Open country — plain, steppe, desert, dune, snow — is the horse's at `0.9`: not quite absolute, because even on the steppe there are hollows and broken ground and horses that stumble. A forest or a river crossing cuts it to `0.4`: the lanes are short, the horse cannot run, and a man on foot with an axe gets his chance. A village street, a ship's deck, a breached wall: **zero**. Nobody kites up a siege ladder. |
+
+Arrows find him regardless — a shaft does not care how fast his horse is — because only *melee from foot* requires him to be somewhere he can be reached.
+
+Like the brace, this is a deliberate thumb on the scale and is *not* in the baseline (§8), so it survives the division rather than cancelling in it. In the blow-by-blow trace it prints as **`KITED`**, which is worth its own word: a column of "melee" blows each dealing a tenth of nothing looks like a broken model, and is in fact infantry doing the one thing infantry cannot do.
 
 ---
 
@@ -388,9 +414,14 @@ In the XML, under `/Config/RBMCampaign`:
 | `SimulationEquipmentEnabled` | 1 | **Detailed auto resolve.** `0` restores vanilla's tier-only model entirely. |
 | `SimulationEquipmentPowerWeight` | 1 | The exponent on the whole correction. `0` = vanilla. `1` = the model at face value. Above 1 widens the gap between a well-found soldier and a ragged one. |
 | `SimulationShieldBlockChance` | 0.4 | What a *typical* shield-bearer turns aside. Better shields scale up from here, poorer ones down. |
-| `SimulationLoggingEnabled` | 1 | The A/B log (§10). |
-| `SimulationLogSamples` | 20 | Replays per battle, per side of the comparison. |
-| `SimulationLogHits` | 1 | The blow-by-blow trace (§10). Needs the log above. Bounded to the first 400 blows of one replay. |
+| `SimulationLoggingEnabled` | 1 | The battle log (§10): rosters, kit, matchup table, result. |
+| `SimulationLogHits` | 1 | The blow-by-blow trace (§10). Needs the log above. A large battle runs to several thousand lines. |
+
+And one knob that belongs to the field rather than the map, under `/Config/RBMCombat/Global`:
+
+| Key | Default | What it does |
+|---|---|---|
+| `BattleHitLoggingEnabled` | 0 | Writes every blow of the battles you fight **yourself** to `logs/battles/`, in the same columns, so the model can be checked against a real fight (§10). |
 
 Only the two **enabled/disabled** toggles appear in the in-game config screen — *Detailed Auto Resolve* and *Detailed Auto Resolve Logging*. The numeric knobs are XML-only, deliberately.
 
@@ -400,20 +431,15 @@ The baselines and kits are rebuilt if `rbmCombatEnabled`, `SimulationShieldBlock
 
 ## 10. Checking it rather than trusting it
 
-With logging on, every auto-resolved battle is written to `<configFolder>/logs/simulation/`, replayed **twenty times with the model and twenty times without**, from the same opening rosters:
+With logging on, every auto-resolved battle is written to `<configFolder>/logs/simulation/` **as it was actually fought** — not replayed, not averaged, not simulated a second time:
 
 ```
 day 1085-016  ·  FieldBattle  ·  PlainBattle  ·  PLAYER
   attacker : 12 parties  (852 men)
   defender : 15 parties  (934 men)
+  advantage: attacker 1.1, defender 1
 
-  ACTUAL  winner attacker  ·  casualties  attacker 721, defender 933
-
-  replayed 20x each:
-                     atk win%   atk losses   def losses
-    BASE (vanilla)         40%        830.1        891.2
-    RBM  (model on)        60%        782.7        893.4
-    delta                 +20%        -47.4         +2.2
+  RESULT  winner attacker  ·  casualties  attacker 721, defender 933
 ```
 
 Then three things, and they answer three different questions.
@@ -422,28 +448,46 @@ Then three things, and they answer three different questions.
 
 **The matchup table** — every striker against every struck, worked through: armour met, shield block, actual, baseline, equipment ratio, tier term, correction. Note what this is and is not. It asks what a blow **would** do, *outside any battle* — so nobody in it is ever in a volley, nobody is ever out of arrows, and no shield is ever splintered. It is a reference table, not a record of the fight.
 
-**The battle, blow by blow** — one replay of it, round by round, every man who swung:
+**The battle, blow by blow** — the fight itself, round by round, every man who swung, recorded as it landed:
 
 ```
-  the battle, blow by blow (one replay of it):
+  the battle, blow by blow -- as the game actually fought it (4192 blows):
     striker              -> struck                what        weapon        armor  blk%   vanilla  x corr  =  dealt   hp   result
 
-    ── round 1  ·  VOLLEY, the lines are still closing  ·  22 v 20
-    A Aserai Archer      -> Imperial Recruit      shoot       Arrow         26.71 33.58     31.4    1.53     48.0   40
-    D Imperial Recruit   -> Aserai Tribesman      walking     OneHandedPol   30.8 34.46     28.2    0.11      3.1   45
-    A Harami             -> Aserai Recruit        throw       Javelin       22.35 34.46     40.1    2.87    115.1   40   DOWN
+    ── round 1  ·  VOLLEY -- the bowmen have the field, the foot are walking into it  ·  22 v 20
+    A Aserai Archer      -> Imperial Recruit      shoot       Arrow         26.71 33.58     31.4    1.53     48.0   hp 52/100
+    A Harami             -> Aserai Recruit        throw       Javelin       22.35 34.46     40.1    2.87    115.1   hp  0/100   DOWN
 
-    ── round 5  ·  the lines have met  ·  19 v 14
-    D Aserai Recruit     -> Nomad Bandit          braced      OneHandedPol  35.35     0     22.4    5.16    115.6   40   DOWN
+    ── round 5  ·  THE LINES HAVE MET  ·  19 v 14
+    D Aserai Recruit     -> Nomad Bandit          braced      OneHandedPol  35.35     0     22.4    5.16    115.6   hp  0/100   DOWN
 ```
 
-This is the only place the model's *story* can be read. The averages say a battle went one way; the matchup table says what a blow would do in the abstract. Neither can tell you that the archers ran dry in round fifteen and spent the rest of the fight being cut down with knives in their hands, or that the lancers' charge was spent by round four and they were never dangerous again. `what` is what the man was actually doing — `shoot`, `throw`, `melee`, `CHARGE`, `braced`, or `walking` (in the volley with nothing to answer arrows with, eating the closing penalty).
+This is the only place the model's *story* can be read. The matchup table says what a blow would do in the abstract; it cannot tell you that the archers ran dry in round fifteen and spent the rest of the fight being cut down with knives in their hands, or that the lancers' charge was spent by round four and they were never dangerous again. `what` is what the man was actually doing — `shoot`, `throw`, `melee`, `CHARGE`, `braced`, or `closing` (in the volley with nothing to answer arrows with).
 
-Bounded to the first 400 blows of a single replay: an 850-a-side battle throws tens of thousands, and the opening rounds are where the story is anyway. It says so when it truncates.
+**Every blow here is a blow the game really struck**, taken from inside `SimulateHit` as it happened, and whether it put its man down is the game's own verdict. That is not pedantry, and it is why the log no longer replays anything. It used to: each battle was fought twenty more times with the model and twenty without, and the two averages set side by side. But a replay is a reimplementation of vanilla's loop, and a reimplementation **drifts** from the thing it reimplements. This one did — it gave heroes a line trooper's single roll where the game accumulates their damage, and quietly killed every lord in the log. It was answering, very confidently, a question about a battle nobody had fought.
 
-A battle cannot be fought twice — the real one mutates the rosters it resolves — so it is *replayed* instead. The replay does not reproduce perks, morale drift, or the wounded-versus-killed split. **That is fine, and it is the point: both replays are wrong in exactly the same way, so what differs between them is the model and nothing else.**
+The model has been designed wrong several times on reasoning that looked perfectly sound from the inside, and the log caught every one — but only ever where the log was recording the real thing. What is left here is exactly that, and nothing else.
 
-The model has been designed wrong several times on reasoning that looked perfectly sound from the inside, and the log caught every one. It is made to account for itself rather than be argued with. The blow-by-blow trace exists because of a specific lesson: every state-driven feature — the volley, the arrows running out, the charge decaying, the shields splintering — was **invisible in the log by construction**, since the only per-blow table asked its question outside any battle. A model whose most interesting half cannot be seen is a model that will be wrong for a long time before anyone notices.
+### And the battle you fight yourself, in the same columns
+
+Everything above is a claim about what a battle **is**: that the archers own the approach and are helpless once it is crossed, that a javelin is worth more than the man who throws it, that a charge is spent once, that armour and not tier decides who walks away. None of it can be argued into being true.
+
+So `BattleHitLoggingEnabled` (in `/Config/RBMCombat/Global`, off by default) writes the battles you fight **on the field** to `<configFolder>/logs/battles/` — one file per battle, every blow as it landed, in the same columns:
+
+```
+    striker            -> struck                what     weapon           part    armor      raw   absorb    dealt   hp
+
+    ── 0:22  ·  THE APPROACH -- no line has reached the other yet  ·  241 v 198
+    A Battanian Fian     -> Imperial Legionary   shoot    Arrow            head    38.4     92.1     51.7     40.4   hp 60/100
+    D Imperial Legionary -> Battanian Skirmisher throw    Javelin          body    24.1    121.6     37.2     84.4   hp 16/100   DOWN
+
+    ── 1:15  ·  THE LINES HAVE MET (at 1:04)  ·  198 v 171
+    A Battanian Wildling -> Imperial Legionary   melee    TwoHandedAxe     body    41.0     88.3     44.9     43.4   hp 12/100
+```
+
+Two differences, both forced by the thing being logged rather than chosen. A real battle has **seconds, not rounds**, so the headers count time. And it does not need a volley *model* — it simply notices the first melee blow anyone lands and says so, which is the real event the simulation's volley is an abstraction of. Everything logged before that line was landed across open ground by men who had not reached each other yet, and the tallies at the foot of the file say how much of the battle that was.
+
+That is the check. What share of the killing did the bowmen really do; what was a javelin really worth; did the charge really decide anything — asked of the field, and answerable against the map.
 
 ---
 
@@ -458,7 +502,7 @@ Everything else is read from the game's own equations and item data, or measured
 | Missile shield bonus | 1.35 | A shield is better against an arrow than a swordsman. |
 | Closing penalty | 0.08 | What a man with a sword achieves while walking into arrows. |
 | Brace bonus | 1.6 | A spear set against a horse. |
-| Charge rounds | 3 | How long a charge is worth anything. |
+| Charge chance | 0.5 | The share of a horseman's blows that carry the horse behind them, on open ground. Weighted down by kiting room off it. |
 | Ammo rounds | 14 | A quiver, in rounds of steady loosing. |
 | Shield capacity per man | 25 | Simulated damage an ordinary shield eats before it is kindling. |
 | Horse capacity | 260 | What a horse takes before it falls. |
@@ -474,6 +518,8 @@ Everything else is read from the game's own equations and item data, or measured
 
 ## 12. Known limits
 
-- **Reinforcements that join mid-battle** are not counted. The muster and the snapshot are taken at the top of the first round — the first moment the battle can be seen whole, and before a blow has landed. A party arriving at round five breaks the "opening rosters" premise the whole replay rests on, so there is no honest snapshot to take.
+- **Reinforcements that join mid-battle** are not counted. The muster and the snapshot are taken at the top of the first round — the first moment the battle can be seen whole, and before a blow has landed. A party arriving at round five is not in the rosters the arrows, shields and horses were all measured against.
 - **A stack, not a soldier.** The simulation hands us troop *types*, never individual men — a blow is struck by "an Imperial Archer", not by a man with eleven arrows left. So arrows, shields and horses are tracked per stack and scaled by headcount. That is an abstraction, and it is the honest limit of what the game gives us to work with.
 - **The trace is the whole battle.** A large fight is several thousand lines. That is deliberate — the arrows running dry, the charge decaying, the shieldwall splintering all happen *late*, and a truncated trace hid exactly the half of the model only the trace could show. The log folder keeps its last ten files.
+
+- **There is no A/B any more.** The log cannot tell you what this battle *would* have been without the model, because that battle does not exist and the only way to produce it was to reimplement vanilla's loop and run it — which is precisely how the log came to be lying. To compare, set `SimulationEquipmentEnabled` to `0` and fight the campaign; both logs are records of real battles.

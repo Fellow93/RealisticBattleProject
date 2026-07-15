@@ -97,6 +97,9 @@ namespace RBMCampaign
 
         public bool Closing;
 
+        /// <summary>The man struck at was a horse archer with arrows left, and he simply rode away from it.</summary>
+        public bool Evaded;
+
         /// <summary>What vanilla alone would have hit for, before the model had its say.</summary>
         public float VanillaDamage;
 
@@ -244,6 +247,24 @@ namespace RBMCampaign
             /// </summary>
             public bool DefendersShootFromStores;
 
+            /// <summary>
+            /// How much room there is to ride in. This is what a horse archer's whole art depends on: he does not
+            /// stand and trade blows, he keeps the distance and shoots, and a footman who wants to touch him has to
+            /// catch him first. On the steppe he never will. In a wood, or in among the houses of a village, or on a
+            /// siege ladder, there is nowhere to ride TO -- and a horse archer hemmed in is just a poorly armoured
+            /// cavalryman holding a bow. See HorseArcherEvasion.
+            /// </summary>
+            public float KitingRoom = 1f;
+
+            /// <summary>
+            /// Whether this is a battle nobody fights on horseback. A siege has no horses in it at all -- the wall is
+            /// stormed on foot and defended on foot, and the game leaves every mount in the camp. A cavalryman here is
+            /// a man in cavalry harness holding a lance, with no animal under him: he gets no charge, no barding at the
+            /// leg, and no horse to be killed before he is. The kit is cached terrain-blind and still says he is
+            /// mounted, so the fact that he cannot be has to be carried on the battle, not the man. See IsDismounted.
+            /// </summary>
+            public bool Dismounted;
+
             public readonly Dictionary<CharacterObject, TroopState> Attackers = new Dictionary<CharacterObject, TroopState>();
 
             public readonly Dictionary<CharacterObject, TroopState> Defenders = new Dictionary<CharacterObject, TroopState>();
@@ -302,30 +323,14 @@ namespace RBMCampaign
                 state = new BattleState();
                 state.VolleyRounds = GetVolleyRounds(mapEvent);
                 state.DefendersShootFromStores = mapEvent.IsSiegeAssault;
+                state.KitingRoom = GetKitingRoom(mapEvent);
+                state.Dismounted = IsDismounted(mapEvent);
                 state.AttackerCounts = Muster(mapEvent.AttackerSide);
                 state.DefenderCounts = Muster(mapEvent.DefenderSide);
                 state.AttackerRangedShare = RangedShare(state.AttackerCounts);
                 state.DefenderRangedShare = RangedShare(state.DefenderCounts);
                 _battles[mapEvent] = state;
             }
-            return state;
-        }
-
-        /// <summary>
-        /// A fresh battle with nothing spent yet, for the shadow replay -- which fights the same battle twenty times
-        /// over and must start each one with full quivers, whole shields and living horses. It cannot key off the
-        /// MapEvent like the real battle does: the real battle IS the MapEvent, and there is only one of it.
-        /// </summary>
-        internal static BattleState CreateDetached(int volleyRounds, bool defendersShootFromStores,
-            Dictionary<CharacterObject, int> attackerCounts, Dictionary<CharacterObject, int> defenderCounts)
-        {
-            BattleState state = new BattleState();
-            state.VolleyRounds = volleyRounds;
-            state.DefendersShootFromStores = defendersShootFromStores;
-            state.AttackerCounts = attackerCounts;
-            state.DefenderCounts = defenderCounts;
-            state.AttackerRangedShare = RangedShare(attackerCounts);
-            state.DefenderRangedShare = RangedShare(defenderCounts);
             return state;
         }
 
@@ -421,7 +426,7 @@ namespace RBMCampaign
                 // kit is re-measured here, once, rather than on every blow he throws.
                 SimulationEquipmentPower.ForgetHeroKits();
 
-                SimulationShadow.Recapture(mapEvent);
+                SimulationBattleSnapshot.Recapture(mapEvent);
             }
         }
 
@@ -435,8 +440,7 @@ namespace RBMCampaign
             return GetVolleyRounds(mapEvent.SimulationContext, mapEvent.IsSiegeAssault);
         }
 
-        /// <summary>The same question asked of a snapshot rather than a live battle, for the shadow replay.</summary>
-        internal static int GetVolleyRounds(MapEvent.PowerCalculationContext context, bool isSiegeAssault)
+        private static int GetVolleyRounds(MapEvent.PowerCalculationContext context, bool isSiegeAssault)
         {
             // A siege is the longest approach there is, whether you are storming the wall or grinding at it. Every
             // man on the parapet is shooting at you the whole way, and there is nowhere to go but forward.
@@ -467,6 +471,77 @@ namespace RBMCampaign
                 default:
                     // Plain, steppe, desert, dune, snow, river, forest: ground to cross, under arrows.
                     return 6;
+            }
+        }
+
+        /// <summary>
+        /// How much ground a horseman has to ride in, which is the whole question a horse archer's life turns on.
+        ///
+        /// It is the same question the volley asks -- how much field is there between the lines -- and it is answered
+        /// off the same terrain, because it is the same terrain. On the steppe there is nothing BUT room, and a
+        /// footman chasing a Khuzait on a pony will be chasing him at dusk. In a forest the room is gone: the horse
+        /// cannot get up to speed, the trees close the lanes, and a man on foot with an axe gets his chance. In a
+        /// village he is riding between houses, and on a wall he is not riding at all.
+        /// </summary>
+        private static float GetKitingRoom(MapEvent mapEvent)
+        {
+            // Storming a wall. Nobody kites up a ladder.
+            if (mapEvent.IsSiegeAssault)
+            {
+                return 0f;
+            }
+
+            switch (mapEvent.SimulationContext)
+            {
+                // A wall, a street, a deck. There is nowhere to ride to, and a horse archer caught in any of them is
+                // simply a lightly armoured man who is easier to reach than he would like to be.
+                case MapEvent.PowerCalculationContext.Siege:
+                case MapEvent.PowerCalculationContext.Village:
+                case MapEvent.PowerCalculationContext.SeaBattle:
+                case MapEvent.PowerCalculationContext.OpenSeaBattle:
+                case MapEvent.PowerCalculationContext.NavalRaid:
+                    return 0f;
+
+                // Trees and water. There is ground here, but it is broken ground -- the lanes are short, the horse
+                // cannot run, and the footman gets far closer than he ever would on the plain.
+                case MapEvent.PowerCalculationContext.ForestBattle:
+                case MapEvent.PowerCalculationContext.RiverBattle:
+                case MapEvent.PowerCalculationContext.RiverCrossingBattle:
+                    return 0.4f;
+
+                // Plain, steppe, desert, dune, snow. Open country, and open country belongs to the horse -- but not
+                // quite absolutely. Even on the steppe there are hollows and broken ground and horses that stumble,
+                // and a man on foot occasionally gets his chance. It is a tenth of one.
+                default:
+                    return 0.9f;
+            }
+        }
+
+        /// <summary>
+        /// A battle nobody fights mounted. A siege is stormed and held on foot -- the game brings no horses to a wall
+        /// at all -- and a ship is no place for one either: a boarding action is fought on foot across the decks. So a
+        /// cavalryman in either is a lance and a suit of horse harness with no animal under it. This is a stronger
+        /// thing than kiting room going to nothing: a horse hemmed into a village street is still a horse, and still
+        /// charges when it finds room and dies before its rider does. A horse that is not there does none of it. Kept
+        /// apart from GetKitingRoom for exactly that reason -- a wall, a deck and a village street all read zero room,
+        /// but the village keeps its horses and the other two have none, and those are not the same zero.
+        /// </summary>
+        private static bool IsDismounted(MapEvent mapEvent)
+        {
+            if (mapEvent.IsSiegeAssault)
+            {
+                return true;
+            }
+
+            switch (mapEvent.SimulationContext)
+            {
+                case MapEvent.PowerCalculationContext.Siege:
+                case MapEvent.PowerCalculationContext.SeaBattle:
+                case MapEvent.PowerCalculationContext.OpenSeaBattle:
+                case MapEvent.PowerCalculationContext.NavalRaid:
+                    return true;
+                default:
+                    return false;
             }
         }
 
@@ -519,12 +594,6 @@ namespace RBMCampaign
         internal static int ContactRound(BattleState state)
         {
             return (state != null) ? (state.VolleyRounds + SkirmishRounds + 1) : 1;
-        }
-
-        /// <summary>The round the cavalry reach each other, which is a good deal earlier.</summary>
-        internal static int CavalryContactRound(BattleState state)
-        {
-            return (state != null) ? (state.VolleyRounds + 1) : 1;
         }
 
         /// <summary>

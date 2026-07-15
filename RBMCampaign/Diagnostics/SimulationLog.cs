@@ -12,8 +12,8 @@ namespace RBMCampaign
     /// <summary>
     /// The auto-resolve model can only be judged by what it does to battles, and a battle resolves in a single
     /// silent instant on the campaign map. This writes each one out to its own log -- under logs/simulation,
-    /// apart from the spoils log, which is about something else entirely -- with the battle replayed both with
-    /// the equipment model and without it, so what the model actually changed can be read rather than assumed.
+    /// apart from the spoils log, which is about something else entirely -- as it was actually fought, so what
+    /// the model did can be read rather than assumed.
     ///
     /// Enabled by the SimulationLogging config flag. One file per play session.
     /// </summary>
@@ -82,12 +82,10 @@ namespace RBMCampaign
                     StringBuilder header = new StringBuilder();
                     header.Append("RBM simulation log — ").Append(DateTime.Now).Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
-                    header.Append("Every auto-resolved battle is replayed from its opening rosters, ")
-                          .Append(RC.simulationLogSamples).Append(" times with the equipment model")
-                          .Append(" and ").Append(RC.simulationLogSamples).Append(" times without it.").Append(Environment.NewLine);
-                    header.Append("  BASE  = vanilla simulation, equipment model off").Append(Environment.NewLine);
-                    header.Append("  RBM   = the same battle with the equipment model on").Append(Environment.NewLine);
-                    header.Append("  ACTUAL= what the game really did (one roll, not an average — expect scatter)").Append(Environment.NewLine);
+                    header.Append("Every auto-resolved battle is written down as it was fought: who stood on each side,")
+                          .Append(Environment.NewLine);
+                    header.Append("what they carried, how it ended, and then every blow of it as it landed.")
+                          .Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
                     header.Append("Settings:").Append(Environment.NewLine);
                     header.Append("  rbmCombatEnabled              = ").Append(RC.rbmCombatEnabled).Append(Environment.NewLine);
@@ -95,7 +93,7 @@ namespace RBMCampaign
                           .Append(RC.rbmCombatEnabled ? " RBM's" : " vanilla's").Append(")").Append(Environment.NewLine);
                     header.Append("  simulationEquipmentEnabled    = ").Append(RC.simulationEquipmentEnabled).Append(Environment.NewLine);
                     header.Append("  simulationEquipmentPowerWeight= ").Append(Fmt(RC.simulationEquipmentPowerWeight)).Append(Environment.NewLine);
-                    header.Append("  simulationLogSamples          = ").Append(RC.simulationLogSamples).Append(Environment.NewLine);
+                    header.Append("  simulationLogHits             = ").Append(RC.simulationLogHits).Append(Environment.NewLine);
                     header.Append("  armorMultiplier               = ").Append(Fmt(RC.armorMultiplier)).Append(Environment.NewLine);
                     header.Append("  armorThresholdModifier        = ").Append(Fmt(RC.armorThresholdModifier)).Append(Environment.NewLine);
                     header.Append(Environment.NewLine);

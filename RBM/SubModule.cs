@@ -200,6 +200,10 @@ namespace RBM
                     mission.AddMissionBehavior((MissionBehavior)(object)new PlayerArmorStatus());
                 }
             }
+            if (RBMConfig.RBMConfig.battleHitLoggingEnabled)
+            {
+                mission.AddMissionBehavior((MissionBehavior)(object)new BattleHitLogic());
+            }
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {
                 mission.AddMissionBehavior((MissionBehavior)(object)new AgentPanicFix());

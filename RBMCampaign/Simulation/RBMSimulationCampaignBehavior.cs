@@ -4,16 +4,19 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
-using RC = RBMConfig.RBMConfig;
 
 namespace RBMCampaign
 {
     /// <summary>
-    /// Watches every battle on the map, takes a snapshot of it before the first blow, and when it is over
-    /// replays it both ways -- with the equipment model and without -- into the simulation log, so the model's
-    /// effect on a real campaign's battles can be read off instead of guessed at.
+    /// Watches every battle on the map and writes down what happened in it: who stood on each side, what they were
+    /// carrying, and then every blow of the fight as it landed.
     ///
-    /// Costs nothing when the log is off: no snapshot is taken and no replay is run.
+    /// It does not replay anything. It used to -- twenty times with the model and twenty without, to say what the
+    /// model had changed -- but a replay is a reimplementation of vanilla's loop, and this one had drifted from it
+    /// (giving heroes a line trooper's single roll where the game accumulates their damage) and was reporting a
+    /// battle nobody had fought. A record of the real thing cannot be wrong in that way.
+    ///
+    /// Costs nothing when the log is off: no snapshot is taken and no blow is recorded.
     /// </summary>
     public class RBMSimulationCampaignBehavior : CampaignBehaviorBase
     {
@@ -36,18 +39,18 @@ namespace RBMCampaign
         /// <summary>
         /// A first, provisional picture of the battle -- and ONLY that.
         ///
-        /// The rosters have to be taken before the fighting, since by the end the dead are gone from them and there
-        /// is nothing left to replay. But this moment is too early to see the battle whole: a lord's allies and the
-        /// rest of his army have not attached themselves to the event yet, and a two-party army photographed here
-        /// comes out as one party. So an auto-resolved battle takes its picture again at the top of the first
-        /// simulated round, by which time everyone has arrived and nobody has died.
+        /// The rosters have to be taken before the fighting, since by the end the dead are gone from them. But this
+        /// moment is too early to see the battle whole: a lord's allies and the rest of his army have not attached
+        /// themselves to the event yet, and a two-party army photographed here comes out as one party. So an
+        /// auto-resolved battle takes its picture again at the top of the first simulated round, by which time
+        /// everyone has arrived and nobody has died.
         ///
         /// This one stands only for a battle the player fights himself, which never simulates a round and so never
         /// gets the better picture.
         /// </summary>
         private void OnMapEventStarted(MapEvent mapEvent, PartyBase attackerParty, PartyBase defenderParty)
         {
-            SimulationShadow.CaptureIfAbsent(mapEvent);
+            SimulationBattleSnapshot.CaptureIfAbsent(mapEvent);
         }
 
         private void OnMapEventEnded(MapEvent mapEvent)
@@ -57,33 +60,24 @@ namespace RBMCampaign
                 return;
             }
 
-            // The blows of the battle that was ACTUALLY fought, recorded as they landed. Taken BEFORE the state is
-            // forgotten, obviously -- and the ordering here is load-bearing, since Forget drops the trace with
-            // everything else.
+            // The blows of the battle as they landed. Taken BEFORE the state is forgotten, obviously -- and the
+            // ordering here is load-bearing, since Forget drops the trace with everything else.
             List<HitRecord> trace = SimulationBattleState.TakeTrace(mapEvent);
 
             // Now the battle is done: let go of its arrows, its splintered shields and its dead horses, or the
             // campaign will carry the memory of every fight it ever fought.
             SimulationBattleState.Forget(mapEvent);
 
-            SimulationShadow.BattleSnapshot snapshot = SimulationShadow.Take(mapEvent);
+            SimulationBattleSnapshot.BattleSnapshot snapshot = SimulationBattleSnapshot.Take(mapEvent);
             if (snapshot == null || !SimulationLog.IsEnabled)
             {
                 return;
             }
 
-            // The replay is now only ever asked for the A/B NUMBERS -- what this battle would have been without the
-            // model, which is the one thing that cannot be observed and must be simulated. The blow-by-blow above is
-            // the real thing and needs no replay at all.
-            int samples = (RC.simulationLogSamples > 0) ? RC.simulationLogSamples : 1;
-            SimulationShadow.ShadowResult withoutModel = SimulationShadow.Run(snapshot, applyCorrection: false, samples: samples);
-            SimulationShadow.ShadowResult withModel = SimulationShadow.Run(snapshot, applyCorrection: true, samples: samples);
-
-            SimulationLog.Write(Format(mapEvent, snapshot, withoutModel, withModel, trace));
+            SimulationLog.Write(Format(mapEvent, snapshot, trace));
         }
 
-        private static string Format(MapEvent mapEvent, SimulationShadow.BattleSnapshot snapshot,
-            SimulationShadow.ShadowResult withoutModel, SimulationShadow.ShadowResult withModel,
+        private static string Format(MapEvent mapEvent, SimulationBattleSnapshot.BattleSnapshot snapshot,
             List<HitRecord> trace)
         {
             StringBuilder sb = new StringBuilder();
@@ -100,19 +94,10 @@ namespace RBMCampaign
               .Append(", defender ").Append(SimulationLog.Fmt(snapshot.DefenderAdvantage)).Append("\n");
             sb.Append("\n");
 
-            // What really happened, for reference. One roll of the dice, so it will scatter around the averages
-            // below rather than match them -- it is the two replays that are the comparison.
-            sb.Append("  ACTUAL  winner ").Append(WinnerOf(mapEvent))
+            // How it ended. The game's own verdict, on the only battle there is.
+            sb.Append("  RESULT  winner ").Append(WinnerOf(mapEvent))
               .Append("  ·  casualties  attacker ").Append(mapEvent.AttackerSide.TroopCasualties)
               .Append(", defender ").Append(mapEvent.DefenderSide.TroopCasualties).Append("\n");
-            sb.Append("\n");
-
-            sb.Append("  replayed ").Append((RC.simulationLogSamples > 0) ? RC.simulationLogSamples : 1).Append("x each:").Append("\n");
-            sb.Append("                     atk win%   atk losses   def losses").Append("\n");
-            sb.Append("    BASE (vanilla) ").Append(Row(withoutModel)).Append("\n");
-            sb.Append("    RBM  (model on)").Append(Row(withModel)).Append("\n");
-
-            sb.Append("    delta          ").Append(Delta(withoutModel, withModel)).Append("\n");
 
             AppendWorking(sb, snapshot);
             AppendTrace(sb, trace);
@@ -121,16 +106,13 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The battle itself, blow by blow -- THE REAL ONE, the battle the game actually fought and the campaign
-        /// will actually live with. Not a replay of it.
+        /// The battle itself, blow by blow -- the battle the game actually fought and the campaign will actually
+        /// live with.
         ///
         /// Every blow here was recorded as it landed, from inside SimulateHit's postfix, and whether it put its man
-        /// down is the game's own verdict rather than our re-roll. That distinction is not pedantry: this WAS taken
-        /// from the shadow replay, and the replay had quietly got heroes wrong -- giving a lord the single roll of a
-        /// line trooper where the game accumulates his damage -- so the log was killing every lord in it. A
-        /// reimplementation can drift from the thing it reimplements, and when it does, it lies with confidence.
+        /// down is the game's own verdict rather than a re-roll of ours.
         ///
-        /// This is the thing the log has never had. The averages say a battle went one way; the matchup table says
+        /// This is the thing the log has never had. A summary says a battle went one way; the matchup table says
         /// what a blow WOULD do. Neither can tell you the archers ran out of arrows in round fifteen and spent the
         /// rest of the fight being cut down with knives in their hands, or that the lancers' charge was spent by
         /// round four and they were never dangerous again. That story only exists in the blows.
@@ -143,11 +125,9 @@ namespace RBMCampaign
             }
 
             sb.Append("\n");
-            sb.Append("  the battle, blow by blow -- THE REAL ONE, as the game actually fought it (")
+            sb.Append("  the battle, blow by blow -- as the game actually fought it (")
               .Append(trace.Count).Append(" blows):").Append("\n");
             sb.Append("      striker            -> struck                what     weapon            armor   blk%   vanilla  x corr  =  dealt   odds").Append("\n");
-            sb.Append("    (a trooper has no health bar: the damage is rolled against his hit points, so it is a").Append("\n");
-            sb.Append("     CHANCE he is finished. Only heroes have a pool, and theirs is shown as hp left.)").Append("\n");
 
             int round = -1;
             foreach (HitRecord hit in trace)
@@ -176,6 +156,13 @@ namespace RBMCampaign
                 {
                     what = "closing";
                 }
+                // He swung at a horse archer and the horse archer was thirty yards away by the time it landed. This
+                // is worth its own word in the trace: a line of "melee" blows all dealing a tenth of nothing looks
+                // like a broken model, and is in fact infantry doing the one thing infantry cannot do.
+                else if (hit.Evaded)
+                {
+                    what = "KITED";
+                }
                 else if (hit.ChargeBonus > 1.01f)
                 {
                     what = "CHARGE";
@@ -198,11 +185,8 @@ namespace RBMCampaign
                   .Append(Num(hit.VanillaDamage, 10))
                   .Append(Num(hit.Correction, 8))
                   .Append(Num(hit.FinalDamage, 9))
-                  // For a trooper: the odds this blow finished him, because that IS the blow -- vanilla rolls the
-                  // damage against his hit points and there is no bar behind it. For a hero, who really does have
-                  // a pool, what is left of it.
-                  // What is left of the man. EVERY man has a pool now, lord and levy alike, so this is no longer
-                  // a chance-of-death but an actual figure: he is worn down, and when it reaches nothing he falls.
+                  // What is left of the man. EVERY man has a pool now, lord and levy alike, so this is not a
+                  // chance-of-death but an actual figure: he is worn down, and when it reaches nothing he falls.
                   .Append((hit.HitPointsLeft >= 0f)
                       ? ("  hp " + SimulationLog.Fmt(hit.HitPointsLeft).PadLeft(5) + "/" + hit.StruckHitPoints)
                       : "")
@@ -218,7 +202,7 @@ namespace RBMCampaign
         /// log used to print the LEADING party's name beside the WHOLE side's headcount, which read as though one
         /// party had somehow fielded three hundred men.
         /// </summary>
-        private static void AppendSide(StringBuilder sb, string role, string name, int count, List<SimulationShadow.PartyLine> parties)
+        private static void AppendSide(StringBuilder sb, string role, string name, int count, List<SimulationBattleSnapshot.PartyLine> parties)
         {
             // The wounded, if there are any. A side of "one looter" against a battle that killed nine of them is
             // either a band already beaten half to death -- in which case the eight wounded ARE the missing nine --
@@ -226,7 +210,7 @@ namespace RBMCampaign
             int wounded = 0;
             if (parties != null)
             {
-                foreach (SimulationShadow.PartyLine party in parties)
+                foreach (SimulationBattleSnapshot.PartyLine party in parties)
                 {
                     wounded += party.Wounded;
                 }
@@ -242,7 +226,7 @@ namespace RBMCampaign
 
             sb.Append("  ").Append(role).Append(" : ").Append(parties.Count).Append(" parties")
               .Append("  (").Append(count).Append(" men").Append(woundedNote).Append(")").Append("\n");
-            foreach (SimulationShadow.PartyLine party in parties)
+            foreach (SimulationBattleSnapshot.PartyLine party in parties)
             {
                 sb.Append("             · ").Append(Clip(party.Name, 40).PadRight(40))
                   .Append(party.Count.ToString().PadLeft(5))
@@ -256,7 +240,7 @@ namespace RBMCampaign
         /// reasoning that looked perfectly sound from the inside, so it is made to print the numbers a battle
         /// was actually decided by: what each troop carries, and what every term of the correction came to.
         /// </summary>
-        private static void AppendWorking(StringBuilder sb, SimulationShadow.BattleSnapshot snapshot)
+        private static void AppendWorking(StringBuilder sb, SimulationBattleSnapshot.BattleSnapshot snapshot)
         {
             List<CharacterObject> attackers = TopTroops(snapshot.AttackerTroops, 3);
             List<CharacterObject> defenders = TopTroops(snapshot.DefenderTroops, 3);
@@ -374,16 +358,9 @@ namespace RBMCampaign
         /// The troop types that actually make up a side, commonest first -- a battle is decided by its bulk. Tallied
         /// across every party on the side, since which lord a man came with says nothing about how he fights.
         /// </summary>
-        private static List<CharacterObject> TopTroops(List<SimulationShadow.Soldier> troops, int count)
+        private static List<CharacterObject> TopTroops(Dictionary<CharacterObject, int> troops, int count)
         {
-            Dictionary<CharacterObject, int> tally = new Dictionary<CharacterObject, int>();
-            foreach (SimulationShadow.Soldier soldier in troops)
-            {
-                int n;
-                tally.TryGetValue(soldier.Character, out n);
-                tally[soldier.Character] = n + 1;
-            }
-            List<KeyValuePair<CharacterObject, int>> ordered = new List<KeyValuePair<CharacterObject, int>>(tally);
+            List<KeyValuePair<CharacterObject, int>> ordered = new List<KeyValuePair<CharacterObject, int>>(troops);
             ordered.Sort((x, y) => y.Value.CompareTo(x.Value));
 
             List<CharacterObject> result = new List<CharacterObject>();
@@ -392,32 +369,6 @@ namespace RBMCampaign
                 result.Add(ordered[i].Key);
             }
             return result;
-        }
-
-        private static string Row(SimulationShadow.ShadowResult r)
-        {
-            return Pad(SimulationLog.Fmt(r.AttackerWinRate * 100f) + "%", 11)
-                 + Pad(SimulationLog.Fmt(r.AttackerCasualties), 13)
-                 + Pad(SimulationLog.Fmt(r.DefenderCasualties), 12);
-        }
-
-        /// <summary>What the model did to this battle: the whole point of the record.</summary>
-        private static string Delta(SimulationShadow.ShadowResult baseline, SimulationShadow.ShadowResult model)
-        {
-            return Pad(Signed((model.AttackerWinRate - baseline.AttackerWinRate) * 100f) + "%", 11)
-                 + Pad(Signed(model.AttackerCasualties - baseline.AttackerCasualties), 13)
-                 + Pad(Signed(model.DefenderCasualties - baseline.DefenderCasualties), 12);
-        }
-
-        private static string Signed(float value)
-        {
-            string text = SimulationLog.Fmt(value);
-            return (value > 0f) ? ("+" + text) : text;
-        }
-
-        private static string Pad(string text, int width)
-        {
-            return text.PadLeft(width);
         }
 
         private static string WinnerOf(MapEvent mapEvent)

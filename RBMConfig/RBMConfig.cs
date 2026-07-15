@@ -182,21 +182,16 @@ namespace RBMConfig
         // the game records. Treat it as the dial it is.
         public static float simulationShieldBlockChance = 0.4f;
 
-        // Writes every auto-resolved battle to its own log under logs/simulation, replayed both with the
-        // equipment model and without it, so what the model actually did to a battle can be read rather than
-        // guessed at. Costs nothing while off: no battle is snapshotted and no replay is run.
+        // Writes every auto-resolved battle to its own log under logs/simulation, as it was actually fought: who
+        // stood on each side, what they carried, how it ended. Costs nothing while off -- no battle is snapshotted
+        // and no blow is recorded.
         public static bool simulationLoggingEnabled = true;
 
-        // How many times each battle is replayed per side of the comparison. One roll of the dice says
-        // nothing -- a simulated battle is heavily random -- so the replays are averaged. Higher is steadier
-        // and slower; the cost lands once, when a battle ends. No effect unless logging above is on.
-        public static int simulationLogSamples = 20;
-        // Writes out one replay of each battle BLOW BY BLOW: every man who swung, what he was doing at the time
-        // (shooting, hurling a javelin, charging, setting a spear, or just walking into arrows while the lines
-        // closed), what armour he met, what his shield turned aside, what vanilla alone would have hit for, and
-        // what the model made of it. The averages say a battle went one way and the matchup table says what a blow
-        // would do in the abstract; neither can tell you the archers ran dry in round fifteen. Only this can.
-        // Bounded to the opening rounds -- a large battle throws tens of thousands of blows. Needs the log above.
+        // And the battle itself, BLOW BY BLOW: every man who swung, what he was doing at the time (shooting,
+        // hurling a javelin, charging, setting a spear, or just walking into arrows while the lines closed), what
+        // armour he met, what his shield turned aside, what vanilla alone would have hit for, and what the model
+        // made of it. The matchup table says what a blow would do in the abstract; only this can tell you the
+        // archers ran dry in round fifteen. A large battle runs to several thousand lines. Needs the log above.
         public static bool simulationLogHits = true;
 
         //RBMAI
@@ -214,6 +209,12 @@ namespace RBMConfig
         public static bool realisticArrowArc = false;
 
         public static bool armorStatusUIEnabled = true;
+
+        // Writes every blow of a REAL battle -- the one fought on the field -- to logs/battles, in the same columns
+        // the auto-resolve trace uses, so what the simulation CLAIMS a battle is can be held against one that
+        // actually happened: who was shooting, who had reached anybody yet, what armour a blow met, what it did.
+        // Off by default. A real battle lands thousands of blows and each is a line.
+        public static bool battleHitLoggingEnabled = false;
         public static float armorMultiplier = 2f;
         public static bool armorPenetrationMessage = false;
         public static bool betterArrowVisuals = true;
@@ -353,7 +354,6 @@ namespace RBMConfig
             simulationEquipmentPowerWeight = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentPowerWeight", "1"), CultureInfo.InvariantCulture);
             simulationShieldBlockChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationShieldBlockChance", "0.4"), CultureInfo.InvariantCulture);
             simulationLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationLoggingEnabled", "1").Equals("1");
-            simulationLogSamples = int.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationLogSamples", "20"), CultureInfo.InvariantCulture);
             simulationLogHits = ReadOrCreate("/Config/RBMCampaign", "SimulationLogHits", "1").Equals("1");
 
             // RBMAI
@@ -372,6 +372,7 @@ namespace RBMConfig
 
             // RBMCombat Global
             armorStatusUIEnabled = ReadOrCreate("/Config/RBMCombat/Global", "ArmorStatusUIEnabled", "1").Equals("1");
+            battleHitLoggingEnabled = ReadOrCreate("/Config/RBMCombat/Global", "BattleHitLoggingEnabled", "0").Equals("1");
             realisticArrowArc = ReadOrCreate("/Config/RBMCombat/Global", "RealisticArrowArc", "0").Equals("1");
             armorMultiplier = float.Parse(ReadOrCreate("/Config/RBMCombat/Global", "ArmorMultiplier", "2"));
             armorPenetrationMessage = ReadOrCreate("/Config/RBMCombat/Global", "ArmorPenetrationMessage", "0").Equals("1");
@@ -476,7 +477,6 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationEquipmentPowerWeight"), simulationEquipmentPowerWeight.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationShieldBlockChance"), simulationShieldBlockChance.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLoggingEnabled"), simulationLoggingEnabled);
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLogSamples"), simulationLogSamples.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLogHits"), simulationLogHits);
             //RBMAI
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/HitStopEnabled"), hitStopEnabled);
@@ -506,6 +506,7 @@ namespace RBMConfig
             }
             //RBMCombat
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorStatusUIEnabled"), armorStatusUIEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BattleHitLoggingEnabled"), battleHitLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RealisticArrowArc"), realisticArrowArc);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorMultiplier"), armorMultiplier.ToString());
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorPenetrationMessage"), armorPenetrationMessage);
