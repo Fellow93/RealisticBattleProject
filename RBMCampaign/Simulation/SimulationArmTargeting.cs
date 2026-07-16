@@ -78,10 +78,12 @@ namespace RBMCampaign
         private static int _stage = StageDisarmed;
         private static int _strikerArm = -1;
 
-        // Arm by troop template. The arm is a fixed property of the template (GetTroopType reads IsMounted/IsRanged
-        // off the CharacterObject), so this is cached once per troop and never invalidated -- the list the selector
-        // draws from mutates every time a man falls, but a Vlandian Sergeant is infantry in the first round and the
-        // last. This is why the pick needs no per-round rebuild of arm buckets: classification does not go stale.
+        // Arm by troop template. For a LINE TROOP the arm is a fixed property of the template (GetTroopType reads
+        // IsMounted/IsRanged off the CharacterObject), so it is cached once and never goes stale -- a Vlandian
+        // Sergeant is infantry in the first round and the last, and the pick needs no per-round rebuild of arm
+        // buckets. A HERO is the exception: his arm is read off his OWN kit, which he re-equips between battles (buys
+        // a horse, picks up a bow), so his entry MUST be dropped each battle -- see ForgetHeroArms, called from
+        // AdvanceRound alongside SimulationEquipmentPower.ForgetHeroKits so selection and pricing never disagree.
         private static readonly Dictionary<CharacterObject, int> _armCache = new Dictionary<CharacterObject, int>();
 
         // The striking side's archer share, cached for the round it was computed in (see ArcherShare). One slot is
@@ -166,7 +168,10 @@ namespace RBMCampaign
         /// </summary>
         internal static void BeginHit(MapEvent battle, BattleSideEnum side)
         {
-            if (!RBMConfig.RBMConfig.simulationArmTargeting || battle == null)
+            // Its own toggle, AND the master switch: arm targeting routes volley shots onto foot soldiers trusting
+            // the equipment model's volley rule to nullify them, so with that model off (see SimulationEquipmentPower.
+            // SimulationEnabled) it must stand down too, or those shots land full vanilla damage before the lines meet.
+            if (!RBMConfig.RBMConfig.simulationArmTargeting || !SimulationEquipmentPower.SimulationEnabled || battle == null)
             {
                 _pendingEvent = null;
                 _stage = StageDisarmed;
@@ -384,7 +389,7 @@ namespace RBMCampaign
             return troop;
         }
 
-        /// <summary>The arm this candidate would strike as -- cached by template, never invalidated. -1 for a null.</summary>
+        /// <summary>The arm this candidate would strike as -- cached by template (heroes dropped each battle). -1 for a null.</summary>
         private static int ArmOf(CharacterObject troop)
         {
             if (troop == null)
@@ -398,6 +403,53 @@ namespace RBMCampaign
                 _armCache[troop] = arm;
             }
             return arm;
+        }
+
+        /// <summary>
+        /// Drop every HERO's cached arm at the opening of a battle. A line troop's arm is fixed and stays, but a hero
+        /// re-equips between fights and the damage model re-reads his kit each battle (ForgetHeroKits); left cached,
+        /// his arm classification here would drift from the kit priced there, and selection and pricing must never
+        /// disagree. Called from AdvanceRound alongside ForgetHeroKits. See _armCache.
+        /// </summary>
+        internal static void ForgetHeroArms()
+        {
+            List<CharacterObject> heroes = null;
+            foreach (KeyValuePair<CharacterObject, int> entry in _armCache)
+            {
+                if (entry.Key != null && entry.Key.IsHero)
+                {
+                    if (heroes == null)
+                    {
+                        heroes = new List<CharacterObject>();
+                    }
+                    heroes.Add(entry.Key);
+                }
+            }
+            if (heroes != null)
+            {
+                foreach (CharacterObject hero in heroes)
+                {
+                    _armCache.Remove(hero);
+                }
+            }
+        }
+
+        /// <summary>
+        /// A fresh session (new game or a loaded save). Drop the arm cache (its hero instances belong to the
+        /// torn-down campaign), let go of the cached archer-share side, and disarm the per-hit coordinator so no
+        /// stale MapEventSide from the old session is held or acted on. Called from OnSessionLaunched.
+        /// </summary>
+        internal static void ResetForNewSession()
+        {
+            _armCache.Clear();
+            _shareCachedSide = null;
+            _shareCachedRound = -1;
+            _shareCachedValue = 0f;
+            _pendingEvent = null;
+            _pendingStrikerSide = null;
+            _pendingStruckSide = null;
+            _stage = StageDisarmed;
+            _strikerArm = -1;
         }
 
         private static int PhaseOf(SimulationBattleState.BattleState state)

@@ -74,6 +74,10 @@ namespace RBMConfig
         public TextViewModel SimulationEquipmentEnabledText { get; }
         public SelectorVM<SelectorItemVM> SimulationEquipmentEnabled { get; }
 
+        // A beaten side breaks and runs in auto-resolve instead of fighting to the last man. On/off only.
+        public TextViewModel SimulationRoutEnabledText { get; }
+        public SelectorVM<SelectorItemVM> SimulationRoutEnabled { get; }
+
         public TextViewModel SimulationLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> SimulationLoggingEnabled { get; }
 
@@ -808,6 +812,15 @@ namespace RBMConfig
             get
             {
                 return new TextObject("{=RBM_CON_093}Detailed Auto Resolve").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string SimulationRoutt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_096}Auto Resolve Routing").ToString();
             }
         }
 
@@ -1704,6 +1717,11 @@ namespace RBMConfig
             SimulationEquipmentEnabledText = new TextViewModel(new TextObject("{=RBM_CON_093}Detailed Auto Resolve"));
             SimulationEquipmentEnabled = new SelectorVM<SelectorItemVM>(simulationEquipmentOptions, 0, null);
 
+            // Auto resolve routing: off by default, so Disabled carries the "(Default)" tag.
+            List<string> simulationRoutOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
+            SimulationRoutEnabledText = new TextViewModel(new TextObject("{=RBM_CON_096}Auto Resolve Routing"));
+            SimulationRoutEnabled = new SelectorVM<SelectorItemVM>(simulationRoutOptions, 0, null);
+
             // Detailed auto resolve logging: on by default, so its option carries the "(Default)" tag.
             List<string> simulationLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             SimulationLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_094}Detailed Auto Resolve Logging"));
@@ -1783,6 +1801,7 @@ namespace RBMConfig
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
             SpoilsVerboseLoggingEnabled.SelectedIndex = RBMConfig.spoilsVerboseLoggingEnabled ? 1 : 0;
             SimulationEquipmentEnabled.SelectedIndex = RBMConfig.simulationEquipmentEnabled ? 1 : 0;
+            SimulationRoutEnabled.SelectedIndex = RBMConfig.simulationRoutEnabled ? 1 : 0;
             SimulationLoggingEnabled.SelectedIndex = RBMConfig.simulationLoggingEnabled ? 1 : 0;
             BattleHitLoggingEnabled.SelectedIndex = RBMConfig.battleHitLoggingEnabled ? 1 : 0;
             _troopLeaderSpoilsCutFraction = MathF.Clamp(RBMConfig.troopLeaderSpoilsCutFraction, 0f, 1f);
@@ -1988,6 +2007,7 @@ namespace RBMConfig
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
             RBMConfig.spoilsVerboseLoggingEnabled = SpoilsVerboseLoggingEnabled.SelectedIndex == 1;
             RBMConfig.simulationEquipmentEnabled = SimulationEquipmentEnabled.SelectedIndex == 1;
+            RBMConfig.simulationRoutEnabled = SimulationRoutEnabled.SelectedIndex == 1;
             RBMConfig.simulationLoggingEnabled = SimulationLoggingEnabled.SelectedIndex == 1;
             RBMConfig.battleHitLoggingEnabled = BattleHitLoggingEnabled.SelectedIndex == 1;
             RBMConfig.troopLeaderSpoilsCutFraction = _troopLeaderSpoilsCutFraction;
@@ -2061,6 +2081,7 @@ namespace RBMConfig
             SpoilsLoggingEnabled.SelectedIndex = 1;
             SpoilsVerboseLoggingEnabled.SelectedIndex = 1;
             SimulationEquipmentEnabled.SelectedIndex = 1;
+            SimulationRoutEnabled.SelectedIndex = 0;
             SimulationLoggingEnabled.SelectedIndex = 1;
             BattleHitLoggingEnabled.SelectedIndex = 0;
         }

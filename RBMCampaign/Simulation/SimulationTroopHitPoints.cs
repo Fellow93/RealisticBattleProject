@@ -118,9 +118,19 @@ namespace RBMCampaign
                 return (int)(100 * LethalityHitPointScale);
             }
 
-            // Base only, hero or trooper alike: a soldier's own hit points -- his personal perks already in them for
-            // a hero, and nothing added for a trooper. Party and leader perks are deliberately left out; see above --
-            // then widened by the lethality scale, which lowers how hard a single simulated blow lands.
+            // A HERO keeps his OWN pool, UNSCALED. The lethality scale is a trooper knob (see above); a hero's pool is
+            // his own, and his Prefix excludes him from the wound trick entirely. But this method also feeds the
+            // absolute per-blow cap (SimulationEquipmentPower's simulationAbsoluteBlowCap x maxHitPoints) and the
+            // log's "hp X/Y" line -- scaling him there would cap his blows and print his pool ~25% high, so a lord
+            // would die faster than the cap dial says. Leave his MaxHitPoints() as it stands.
+            if (troop.IsHero)
+            {
+                int heroPoints = troop.MaxHitPoints();
+                return (heroPoints > 1) ? heroPoints : 1;
+            }
+
+            // A trooper's own hit points -- nothing his officers carry (see above) -- then widened by the lethality
+            // scale, which lowers how hard a single simulated blow lands.
             int hitPoints = (int)(troop.MaxHitPoints() * LethalityHitPointScale);
             return (hitPoints > 1) ? hitPoints : 1;
         }
@@ -128,6 +138,13 @@ namespace RBMCampaign
         private static void Prefix(MapEventSide __instance, ref int damage)
         {
             LastHitPointsLeft = -1f;
+
+            // With the equipment model off the whole overhaul stands down (see SimulationEquipmentPower.
+            // SimulationEnabled): no widened wound pools, no lethality scale -- vanilla's flat hundred decides the man.
+            if (!SimulationEquipmentPower.SimulationEnabled)
+            {
+                return;
+            }
 
             if (__instance == null || damage <= 0)
             {
@@ -257,6 +274,13 @@ namespace RBMCampaign
             {
                 _wounds.Remove(battle);
             }
+        }
+
+        /// <summary>A fresh session: the wound pools of the torn-down campaign's battles will never be reclaimed by
+        /// MapEventEnded, so drop them all. Called from OnSessionLaunched.</summary>
+        internal static void ResetForNewSession()
+        {
+            _wounds.Clear();
         }
     }
 }

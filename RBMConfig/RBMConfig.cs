@@ -220,6 +220,34 @@ namespace RBMConfig
         // vanilla's arm-blind random selection and the VolleyFocus path unchanged.
         public static bool simulationArmTargeting = true;
 
+        // A fired shot can simply MISS. Auto-resolve has never let one: every arrow the sim loosed connected with
+        // somebody, and the only thing that could stop one was a shield in the way -- so an archer's shafts all
+        // arrived, and the arm was worth what a bowman would be if he never missed. When on, a shot rolls to hit
+        // before it is a blow at all (so a missed shaft meets no armour, wears no shield and kills no horse), on the
+        // shooter's own bow or crossbow training above all, and then on what he shoots, how far (a volley arcs in and
+        // scatters; a closing skirmish is a flat shot at a man he can see), whether he looses from a moving horse and
+        // whether he shoots at one. Fired missiles only -- a thrown javelin is a committed throw and is left alone.
+        // False (0) restores the shot that always arrives.
+        public static bool simulationRangedMissEnabled = true;
+
+        // The base chance a shot goes wide, before any of it is priced: what an UNTRAINED man with a bow does, which
+        // every other term then works on (training cuts it hard, a crossbow cuts it, range and movement raise it). The
+        // master dial for the whole arm's accuracy: raise it to put more shafts in the dirt, 0 disables the roll.
+        //
+        // Like simulationShieldBlockChance, this is a judgement and not a number read out of the game -- how often a
+        // bowman in a line hits the man he meant to is not something Bannerlord records. Treat it as the dial it is,
+        // and note that it interacts with the ranged landing spread: see RangedLandingExponent's calibration note.
+        public static float simulationRangedMissChance = 0.35f;
+
+        // A beaten side breaks and runs instead of being fought to the last man. Vanilla's auto-resolve only routs a
+        // side when its STANDING campaign morale falls to nearly zero, which never moves during the simulated fight,
+        // so every auto-resolved battle grinds on to annihilation. When on, a side that falls far enough behind on
+        // the field (below a fraction of the enemy's remaining numbers) may break each round, with a chance that
+        // climbs the more lopsided the fight becomes; the break runs through vanilla's own Route(), so the fugitives
+        // survive and the pursuit and rewards behave. Sieges are left to vanilla. Off (0) by default -- vanilla's
+        // fight-to-the-last-man auto-resolve, which is what the game does without RBM.
+        public static bool simulationRoutEnabled = false;
+
         // Writes every auto-resolved battle to its own log under logs/simulation, as it was actually fought: who
         // stood on each side, what they carried, how it ended. Costs nothing while off -- no battle is snapshotted
         // and no blow is recorded.
@@ -396,6 +424,9 @@ namespace RBMConfig
             simulationShieldBlockChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationShieldBlockChance", "0.4"), CultureInfo.InvariantCulture);
             simulationDefenseSystem = ReadOrCreate("/Config/RBMCampaign", "SimulationDefenseSystem", "1").Equals("1");
             simulationArmTargeting = ReadOrCreate("/Config/RBMCampaign", "SimulationArmTargeting", "1").Equals("1");
+            simulationRangedMissEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationRangedMissEnabled", "1").Equals("1");
+            simulationRangedMissChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationRangedMissChance", "0.35"), CultureInfo.InvariantCulture);
+            simulationRoutEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationRoutEnabled", "0").Equals("1");
             simulationLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationLoggingEnabled", "1").Equals("1");
             simulationLogHits = ReadOrCreate("/Config/RBMCampaign", "SimulationLogHits", "1").Equals("1");
 
@@ -524,6 +555,9 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationShieldBlockChance"), simulationShieldBlockChance.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationDefenseSystem"), simulationDefenseSystem);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationArmTargeting"), simulationArmTargeting);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRangedMissEnabled"), simulationRangedMissEnabled);
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRangedMissChance"), simulationRangedMissChance.ToString(CultureInfo.InvariantCulture));
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRoutEnabled"), simulationRoutEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLoggingEnabled"), simulationLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLogHits"), simulationLogHits);
             //RBMAI

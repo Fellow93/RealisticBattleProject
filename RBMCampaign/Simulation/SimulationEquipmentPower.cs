@@ -151,6 +151,14 @@ namespace RBMCampaign
             public float HorseBody;
 
             /// <summary>
+            /// How much this troop's MOUNT can take before it falls -- its own health, not a flat figure for every
+            /// animal: the game's Monster hit points (200 for a horse) plus the item's extra_health, so a heavy
+            /// charger outlasts a courier's palfrey and a mule folds first. The pool a horse hit wears down, per
+            /// animal, in SimulationBattleState.HorsesAlive. Zero for a troop with no mount.
+            /// </summary>
+            public float HorseHealth;
+
+            /// <summary>
             /// The heaviest shot he looses, kept as the LABEL for his quiver and the test of whether he is a bowman
             /// at all. It is not what he is priced on -- see Shots.
             /// </summary>
@@ -219,6 +227,15 @@ namespace RBMCampaign
             /// weapon profile carries the skill TYPE, never the level, which is why this has to be kept apart.
             /// </summary>
             public float MeleeSkill;
+
+            /// <summary>
+            /// His SHOOTING hand, as a plain level, for the miss roll -- and it is the launcher's training, never the
+            /// shaft's: a man is trained in the bow, not in arrows (which is exactly what WeaponProfile.Skill carries
+            /// for a shot; see SimulationWeaponModel.GetMissileProfile). Read off the shot profile's own skill object,
+            /// so a crossbowman is priced on Crossbow and a bowman on Bow without either being guessed at. Zero for a
+            /// man who looses nothing, which is harmless -- nothing without a valid Shot ever rolls to hit.
+            /// </summary>
+            public float RangedSkill;
 
             public bool IsValid;
         }
@@ -307,6 +324,16 @@ namespace RBMCampaign
         private const float CavalryVsArcherDefenseFactor = 0.25f;
 
         /// <summary>
+        /// What is left of a MOUNTED man's block, shield and all. A rider sits high and busy -- he is managing a horse
+        /// with one hand, he cannot plant himself behind a board the way a footman digs in, and a shield slung for the
+        /// saddle does not come across as fast as one carried on the arm on foot. So a cavalryman turns aside a bit
+        /// less than the same man would standing, WITH his shield up, not only without it. Applies to any struck man
+        /// still on a live horse, against both blows and shots; it stacks with the archer factors above for a mounted
+        /// bowman. A "bit less", not a collapse -- 0.85 is ~15% off. Tune vs a paired log.
+        /// </summary>
+        private const float MountedDefenseFactor = 0.85f;
+
+        /// <summary>
         /// What is left of an archer's shield block against INCOMING SHOTS. A man loosing arrows is watching his own
         /// shot and his target, not the shafts coming back at him, and gets the board up late even when he carries
         /// one. So a ranged troop turns aside fewer of the arrows sent at him than a shield-bearer minding his cover
@@ -325,6 +352,22 @@ namespace RBMCampaign
         /// </summary>
         private const float ChargeStrength = 0.02f;
 
+        // A CHARGE WEARS THE HORSE THAT MAKES IT. Driving half a ton of animal into a man is violence done to the
+        // horse as much as by it -- and RBM's live combat hurts a charging horse for exactly this reason. So every
+        // charge feeds some damage back into the striker's OWN HorsesAlive pool (its own health per animal), and cavalry that
+        // spend a battle charging are worn down and finally unhorsed -- after which they fight, and die, as the foot
+        // do. This is the base toll per charge, in a blow's damage units, before the hard-target amplifiers below.
+        private const float ChargeSelfDamageBase = 4f;
+
+        // Multiplied when the horse charges a SPEARMAN. A set point is the one thing a charge dreads: the animal runs
+        // onto it and it rebounds into the horse far harder than a bare man does. Keyed on the struck carrying a
+        // polearm to brace -- the mirror of the reverse-charge bonus the spearman himself gets (AntiCavalryClosingBonus).
+        private const float ChargeSpearRebound = 2.5f;
+
+        // And a milder amplifier for an ARMOURED target: charging plate and mail jars the horse more than charging
+        // linen. Per point of the armour the blow actually met.
+        private const float ChargeArmorRebound = 0.01f;
+
         /// <summary>
         /// IN A REAL BATTLE ONLY A MINIMAL NUMBER OF MELEE BLOWS BITE AT FULL FORCE. Most are caught on armour, turned
         /// by a shift of the body, land flat or land short -- a landed melee blow's magnitude is mostly a FRACTION of
@@ -332,23 +375,131 @@ namespace RBMCampaign
         /// is why melee was a bloodbath rather than the slow grind it is, and why the heavy foot won battles the mobile
         /// arms decide on the field. So a landed melee blow is scaled by pow(random, this): a high exponent piles the
         /// draws down near nothing and leaves a thin tail up at full, so the AVERAGE landed blow is worth 1/(exp+1) of
-        /// the full -- at 2, a third. Nothing lands whole every time now: shots and thrown weapons are spread too but
-        /// gently (RangedLandingExponent), and a charge more gently still (ChargeLandingExponent). Tune vs a paired
-        /// log: raise it to make melee more of a grind, lower it toward 1 to let blows land harder.
+        /// the full -- at 0.5, two-thirds. A charge is exempt (its weight is committed and lands whole); shots and
+        /// thrown weapons are spread the SAME now (RangedLandingExponent), and only a charge lands harder.
+        ///
+        /// CALIBRATED against a paired real-vs-sim log (2026-07-15): at the old value of 2 (a third), sim melee landed
+        /// at ~0.4x the dealt of a real fought battle -- across every matchup and both sides, large n. The block/parry
+        /// system already removes the turned-aside blows, so spreading the survivors down to a third double-counted the
+        /// miss -- which is why melee is no HARSHER than ranged now, not harsher as first supposed. Lowered to 0.5,
+        /// ~doubling sim melee to sit near real. Tune vs the log: raise to grind melee down, lower toward 0 to land full.
         /// </summary>
-        private const float MeleeLandingExponent = 2f;
+        private const float MeleeLandingExponent = 1.5f;
 
         /// <summary>
-        /// The same idea for a RANGED blow, gentler. A shot or a thrown weapon that lands still varies with the range
-        /// it flew and the angle it met -- a plunging shaft at the end of its arc, a glancing hit off a curved helm --
-        /// so it is not worth full magnitude every time either. But a missile that connects carries real force more
-        /// OFTEN than a melee swing does: its failure modes (a clean miss, a shield got up in time) are already priced
-        /// elsewhere as accuracy and the block, not here. So the exponent is low -- at 0.5 the AVERAGE landed shot is
-        /// worth 1/(0.5+1) = two-thirds of the full. Applies to both fired and thrown missiles. Raise it toward the
-        /// melee value to nerf ranged harder, lower it toward 0 to let shots land nearer full. Tune vs a paired log:
-        /// this dial moves the ranged-vs-melee kill balance directly.
+        /// The melee exponent to use when the block/parry defence system is OFF (simulationDefenseSystem = 0). The 0.5
+        /// above corrects a double-count that ONLY exists because the defence system discretely removes turned-aside
+        /// blows before they reach this spread; with that system off, the old fractional-skim path removes nothing
+        /// here, so spreading survivors down to 0.5 (two-thirds) under-counts the miss and lands melee ~2x its
+        /// calibrated level -- the ranged-vs-melee winner flip. Held at the pre-defence-system calibration of 2 (a
+        /// third) for that path. See MeleeLandingExponent.
+        /// </summary>
+        private const float MeleeLandingExponentNoDefense = 2f;
+
+        /// <summary>
+        /// The same idea for a RANGED blow. A shot or a thrown weapon that lands still varies with the range it flew
+        /// and the angle it met -- a plunging shaft at the end of its arc, a glancing hit off a curved helm -- so it is
+        /// not worth full magnitude every time either. Its failure modes (a clean miss, a shield got up in time) are
+        /// priced elsewhere as accuracy and the block, not here. At 0.5 the AVERAGE landed shot is worth 1/(0.5+1) =
+        /// two-thirds of the full. Applies to FIRED missiles (bow, crossbow, sling); a thrown weapon is committed and
+        /// lands harder -- see ThrownLandingExponent. Sits at the SAME value as melee -- the paired log (see
+        /// MeleeLandingExponent) found the two land alike once each arm's own misses are priced separately -- so raise
+        /// it to nerf ranged harder, lower toward 0 to let shots land nearer full.
         /// </summary>
         private const float RangedLandingExponent = 0.5f;
+
+        /// <summary>
+        /// A THROWN weapon lands harder than a fired one. A javelin or a throwing axe at skirmish range is a committed,
+        /// short-range throw -- the man steps into it and lets fly at a target he can see -- not a shaft arcing in from
+        /// two hundred yards, so it does not glance the way a shot does. The paired log (2026-07-16) confirmed it: sim
+        /// javelins landed ~half of a real fought battle's against low-armour targets, where the armour absorbs almost
+        /// nothing and the shortfall is ALL in the throw -- because they were spread at the arrow rate. At 0.2 the
+        /// AVERAGE landed throw is worth 1/(0.2+1) = about five-sixths of the full: near-committed, but not quite the
+        /// whole of it (a javelin can still catch flat or land short). Lower toward 0 to land nearer full.
+        /// </summary>
+        private const float ThrownLandingExponent = 0.2f;
+
+        // AND THE ARROW THAT SIMPLY MISSES.
+        //
+        // RangedLandingExponent above says a landed shot is worth a fraction of the full, and its own comment names
+        // the two ways a shot fails -- "a clean miss, a shield got up in time" -- and says both are "priced elsewhere
+        // as accuracy and the block". The block was built. THE ACCURACY NEVER WAS. Every shot the sim ever loosed
+        // connected with somebody, and the only thing that could stop one was a board in the way. A bowman shooting
+        // at two hundred yards into a moving line does not hit a man with every shaft, and he never has: he looses
+        // into a space and hopes, and most of what he sends goes into the ground between the ranks.
+        //
+        // So a fired shot now rolls to hit BEFORE it is shaped at all. A missed shaft is not a weak blow -- it is no
+        // blow: it rolls no body part, meets no armour, wears no shield and kills no horse, exactly the way the
+        // `closing` walker below lands nothing. It is still written to the log (breakdown.Missed keeps the row), and
+        // that is the point -- the miss rate is the whole reason this exists and it must be readable off a paired log.
+        //
+        // Scoped to FIRED missiles (bow, crossbow, sling). A thrown javelin is a committed short-range throw at a man
+        // the thrower can see, and ThrownLandingExponent already lands it near full on purpose; giving it a miss roll
+        // as well would price the same commitment twice, in opposite directions.
+        //
+        // CALIBRATION, AND READ THIS BEFORE TUNING ANYTHING ELSE: this removes shots that RangedLandingExponent's
+        // spread was implicitly standing in for. That exponent was calibrated (2026-07-15) against a paired log with
+        // NO miss roll upstream, so it was carrying the misses itself, in magnitude space. With a discrete miss now
+        // taking them out first, ranged output falls by roughly (1 - missChance) and the arm is being charged for the
+        // same failure twice -- exactly the double-count MeleeLandingExponent's own comment describes on the melee
+        // side. Re-measure ranged on a paired log and expect to LOWER RangedLandingExponent toward 0 to compensate.
+
+        /// <summary>
+        /// How much of his misses a fully trained bowman removes. Accuracy is the most trained thing about an archer
+        /// -- it is what the whole of his training IS -- so skill bites harder here than anywhere else in the model.
+        /// At 0.6 a man at the saturation level (SkillSaturationLevel, 250) misses 40% as often as an untrained one:
+        /// a Fian's shafts find men, a levy's find dirt. Never to zero -- nobody hits every shot.
+        /// </summary>
+        private const float RangedMissSkillReduction = 0.6f;
+
+        /// <summary>
+        /// The volley is the long shot: the lines are a bowshot apart, the shaft arcs up and comes down somewhere in
+        /// a moving formation, and the man who loosed it never really aimed at anybody. Once the ground is closing
+        /// (the skirmish) he is shooting at a man he can see, flat, and he hits far more. Above 1: the volley scatters.
+        /// </summary>
+        private const float RangedMissVolleyFactor = 1.25f;
+
+        /// <summary>
+        /// Shooting FROM a moving horse. The whole trick of the steppe, and it is still much harder than standing on
+        /// your feet and drawing: he is timing the loose to the hoofbeat off a platform that will not hold still.
+        /// This does not touch the horse archer's evasion (HorseArcherEvasion) -- that is about what he suffers; this
+        /// is about what he delivers.
+        /// </summary>
+        private const float RangedMissMountedShooterFactor = 1.25f;
+
+        /// <summary>
+        /// And shooting AT a horseman. A man in a line is a standing target in a wall of standing targets; a horseman
+        /// is fast and he is not where he was when the arrow left the string. This prices the lead a bowman has to
+        /// take and mostly does not. (Cavalry ARE hit more often on the horse than the man -- that is a separate roll,
+        /// HorseHitChanceMissile, and it happens only once a shot has already connected.)
+        /// </summary>
+        private const float RangedMissMountedTargetFactor = 1.4f;
+
+        /// <summary>The ceiling, so no pairing of dials ever makes an arm that cannot hit anything at all.</summary>
+        private const float RangedMaxMissChance = 0.8f;
+
+        // What the launcher itself is worth in accuracy, keyed on the SHAFT's class -- which is how the shot profile
+        // names itself (WeaponProfile.WeaponType is the ammo's WeaponClass; see SimulationWeaponModel.GetMissileProfile).
+        // A bolt means a crossbow: a flat, fast, mechanically-aimed shot that a conscript can point and loose, and the
+        // one ranged weapon in Calradia that does not need a lifetime to shoot straight. An arrow means a bow, the
+        // middle case, and the one everything else is measured against. A stone means a sling, which is the least
+        // accurate thing on the field by a distance.
+        private const float MissFactorBolt = 0.7f;
+        private const float MissFactorArrow = 1f;
+        private const float MissFactorStone = 1.3f;
+
+        /// <summary>
+        /// The chance, PER BLOW, that a foot skirmisher who reaches the melee still carrying javelins hurls one at
+        /// point-blank rather than drawing his sidearm. A short skirmish (a wood, a village) can leave a heavy bundle
+        /// half-thrown when the lines meet, and a man does not simply drop three good javelins to fence with a knife
+        /// -- at arm's length they are the deadliest thing he owns. Not every blow, though: in the press he does not
+        /// always get the throw off, and the moment passes (HasJavelins still counts the bundle down by the round, so
+        /// the leftovers empty within a round or two of contact whether thrown or not). At 0.25, about a quarter of
+        /// his contact blows are the last javelins going in. Raise it to make leftover javelins bite harder at contact,
+        /// lower it
+        /// toward 0 to have him draw steel the moment the lines meet. Skirmish-phase throwing is unaffected.
+        /// </summary>
+        private const float ContactJavelinThrowChance = 0.25f;
 
         /// <summary>
         /// And for a CHARGE, gentler still than a shot. When a couched lance connects at the gallop it delivers
@@ -369,6 +520,14 @@ namespace RBMCampaign
         // spread -- rides through untouched. Kept as a named constant rather than a literal 40 for exactly this reason.
         private const float VanillaBaseScale = 40f;
 
+        // NOTE (2026-07-15): an OFFENSE COMPRESSION term once sat here -- `actual` pulled toward a baseline by an
+        // exponent, to rein the elite's per-blow offense in. It was removed. Compressing toward ANY roster-derived
+        // baseline (global OR per-matchup) drags the whole battle's level down, because a battle of real troops fights
+        // ABOVE the roster mean, which is weighed down by looters and militia -- so every blow ends up above the
+        // baseline and gets pulled toward it. The paired log confirmed it twice (level collapsed to ~0.4x real both
+        // times). The elite over-delivery is a SKILL-space problem (the sim reads a skilled man off his damage
+        // CEILING), not a magnitude-space one, and must be fixed there if at all -- see SimulationWeaponModel.
+
         // What a BLOCKED blow costs the shield, weapon by weapon. A shield is not worn by the damage it spares the
         // man; it is worn by the weapon that hits IT, and different weapons wear it very differently. These are the
         // RATIOS RBM's live combat uses (DamageRework.RBMComputeBlowDamageOnShield): a javelin all but destroys a
@@ -377,6 +536,7 @@ namespace RBMCampaign
         // scale is carried by ShieldDamageScale and the shield's own capacity (SimulationBattleState.ShieldCapacityPerMan),
         // so only the ratios here matter -- and they are RBM's. Every number is a starting point -- tune vs a paired log.
         private const float ShieldDamageScale = 1f;      // master dial: shield wear per block, against the capacity budget
+
         private const float ShieldDmgJavelin = 6f;       // a thrown spear all but destroys a board (RBM x25)
         private const float ShieldDmgThrowingAxe = 4f;   // splits it (RBM x10)
         private const float ShieldDmgThrownPolearm = 3f; // a hurled spear (RBM x5)
@@ -391,6 +551,16 @@ namespace RBMCampaign
         // A spear set for a horse. Infantry have answered cavalry this way for three thousand years and
         // auto-resolve has never once let them.
         private const float BraceBonus = 1.6f;
+
+        // AND THE HORSE RUNS ONTO THE POINT. A set spear against a CHARGING horse is not merely aimed better -- it is
+        // driven home by the horse's own momentum, the same weight that powers the beast's charge, now spent against
+        // the man it is charging. So a braced blow that meets a closing horse carries a bonus sourced from the STRUCK
+        // horse's charge power (its ChargeDamage), through the same ChargeStrength dial the cavalry's own charge uses:
+        // a heavy destrier impales itself far harder than a pony. This is the SHARE of that reverse momentum the
+        // spearman keeps -- a horse onto a spear is a two-way wreck, so not the whole of it. It fires only when the
+        // horse is actually closing (the same terrain-gated chance the cavalry charge fires by), which on open ground
+        // is most of the time. THE cavalry-vs-spear-infantry balance dial: raise it to punish the charge harder.
+        private const float AntiCavalryClosingBonus = 0.5f;
 
         // THE HORSE ARCHER DOES NOT STAND THERE.
         //
@@ -419,6 +589,22 @@ namespace RBMCampaign
         // FOOT is refused, because only melee from foot requires him to be somewhere he can be reached.
         private const float HorseArcherEvasion = 0.1f;
 
+        // HORSE OR MAN.
+        //
+        // A blow at a mounted troop is a blow at TWO things -- the man and the animal under him -- and it finds
+        // only one of them, never both. The horse is the bigger target and the lower one, so a footman hacking
+        // upward is mostly hacking at it; a horseman fighting another horseman is aiming at the man he means to
+        // unseat and rarely wastes a stroke on the mount; an arrow is loosed at the mass of the rider and only now
+        // and then takes the horse instead. A blow that finds the horse wears the horse ALONE -- its own pool, met
+        // through its own barding -- and never touches the rider, his armour, his defence or his wound pool. A blow
+        // that finds the rider meets HIS armour, not the barding, because the barding is the horse's and the horse
+        // was not hit. These are the shares that decide which it is; they are dials for the cavalry balance and are
+        // meant to be TUNED VS A PAIRED LOG (foot infantry should ground a squadron over a fight, not in a round).
+        private const float HorseHitChanceFootMelee = 0.45f;
+
+        private const float HorseHitChanceMountedMelee = 0.15f;
+        private const float HorseHitChanceMissile = 0.22f;
+
         private const int ZoneHead = 0;
 
         private const int ZoneNeck = 1;
@@ -432,6 +618,11 @@ namespace RBMCampaign
         private const int ZoneLeg = 5;
 
         private const int ZoneCount = 6;
+
+        /// <summary>Not a part of the man at all -- the horse under him. A blow marked with this found the animal,
+        /// wore its pool, and dealt the rider nothing. Kept out of the 0..ZoneCount range so the zone loops and the
+        /// zone-armour/zone-share tables never touch it.</summary>
+        private const int ZoneHorse = 6;
 
         /// <summary>Where the blows land, as a share of them. RBM's own bones, folded to six (see TroopKit).</summary>
         private struct HitZones
@@ -463,6 +654,14 @@ namespace RBMCampaign
         // Foot against a rider: the horseman is above, and what is at a footman's eye level is the man's legs and
         // his lower body. This is why barding on a horse's flanks is worth so much, and it is what the model
         // could not see before.
+        //
+        // A SPEAR IS THE EXCEPTION, and it is why this table is not the whole of foot-against-horse. The legs are
+        // where a footman's reach ends, not where he wants to strike -- a man with a sword cannot get past them. A
+        // polearm gives him back the height the horse took: he sets it at the rider's chest and face and does not
+        // stoop to the animal's shins. So a spearman at a horseman rolls FootVsFoot, the same spread two footmen
+        // trade, and only a man WITHOUT a spear is reduced to the legs. See GetHitZones -- the pool he draws from
+        // narrows to his polearms in the same breath (MeleeDamage's preferPolearms), and the two must agree: it
+        // would be nonsense to price the blow as the spear and then aim it as though he were swinging a hatchet.
         private static readonly HitZones FootVsMounted = new HitZones { Head = 0.03f, Neck = 0.02f, Torso = 0.30f, Shoulder = 0.10f, Arm = 0.08f, Leg = 0.47f };
 
         // A rider against a man on foot: he strikes downward, so it is the head, the neck, the shoulders and the
@@ -536,6 +735,14 @@ namespace RBMCampaign
         private static void Postfix(ref ExplainedNumber __result, CharacterObject strikerTroop, CharacterObject struckTroop,
             PartyBase strikerParty, PartyBase struckParty, MapEvent battle)
         {
+            // With the model off the whole overhaul stands down: leave the vanilla blow untouched (Explain would keep
+            // Correction at 1, but the terrain lift and the absolute cap below would still bend it, and RecordHit
+            // would fill the log with junk "-" rows for a model that priced nothing). Return before any of that.
+            if (!SimulationEnabled)
+            {
+                return;
+            }
+
             // The battle is passed in so the blow can be placed in it: which round it falls in, whether the lines
             // have met yet, how many arrows this stack has left, whose shields are still whole, whose horses still
             // stand. A blow that knows none of that cannot spend anything, and a battle in which nothing is spent
@@ -710,8 +917,15 @@ namespace RBMCampaign
             //
             // A DEFENDED blow is the exception: it too deals nothing (correction is 0), but it genuinely HAPPENED --
             // a sword was turned by a shield, a spear parried -- and it is the only way the block and parry rates can
-            // be read off the log, so it is kept. breakdown.Defended tells the two cases apart.
-            if (breakdown.Correction <= 0f && !breakdown.Defended)
+            // be read off the log, so it is kept. breakdown.Defended tells the two cases apart. A HORSE HIT is kept
+            // for the same reason: it dealt the rider nothing, but it wore the mount, and that is the only way the
+            // horse toll can be read off the log. breakdown.HorseHit marks it.
+            //
+            // A MISS is the third of these, and the most important of the three to keep: an arrow was loosed and it
+            // went wide, which is an event and not a non-event, and the miss RATE is the only thing the accuracy
+            // system can be calibrated against. Drop these rows and the log would show a volley of nothing but hits
+            // and swear the archers were deadly. breakdown.Missed marks it.
+            if (breakdown.Correction <= 0f && !breakdown.Defended && !breakdown.HorseHit && !breakdown.Missed)
             {
                 return;
             }
@@ -820,6 +1034,15 @@ namespace RBMCampaign
             /// <summary>The lines had not met yet and he was walking into arrows with nothing to answer them.</summary>
             public bool Closing;
 
+            /// <summary>
+            /// The shaft went wide. Like a defended blow it deals nothing (correction is 0), and like a defended blow
+            /// it genuinely HAPPENED -- an arrow was loosed and a man was shot at -- so this tells RecordHit to keep
+            /// the row. It has to: the miss rate is the only thing this system is FOR, and if the misses are not in
+            /// the book there is no way to calibrate it. Distinct from Closing, which is a man who never shot at all.
+            /// Only ever set on a live rolled blow; the reference tables mitigate by expectation and never miss.
+            /// </summary>
+            public bool Missed;
+
             /// <summary>He swung at a horse archer who still had arrows, and the horse archer was not there.</summary>
             public bool Evaded;
 
@@ -839,6 +1062,32 @@ namespace RBMCampaign
 
             /// <summary>The defence was a parry: the postfix owes the attacker a counter-blow. Only set on a live blow.</summary>
             public bool Riposte;
+
+            /// <summary>
+            /// The blow found the HORSE, not the man. Like a defended blow it deals the rider nothing (correction is
+            /// 0), yet it genuinely happened -- it wore the mount toward being killed -- so this is what tells
+            /// RecordHit to keep the row. Only ever set on a live rolled blow against a still-mounted target.
+            /// </summary>
+            public bool HorseHit;
+        }
+
+        /// <summary>
+        /// The master switch for the whole auto-resolve overhaul. The equipment-aware damage model is the heart of
+        /// it, and every auxiliary system was built to work WITH that model -- the size-ramped tick multiplier, the
+        /// morale removal, the per-trooper wound pools, the strength rout, arm-aware targeting. With the model off,
+        /// each of those on its own leaves the battle a half-applied hybrid that is neither the vanilla tier-only sim
+        /// nor RBM's: arm targeting in particular deliberately routes volley shots onto foot soldiers expecting the
+        /// damage model to nullify them, and with the model gone those land full vanilla damage before the lines even
+        /// meet. So when this is false, they ALL stand down and the battle is vanilla's own. This is the one condition
+        /// they read; it mirrors the gate at the top of <see cref="Explain"/>.
+        /// </summary>
+        internal static bool SimulationEnabled
+        {
+            get
+            {
+                return RBMConfig.RBMConfig.simulationEquipmentEnabled
+                    && RBMConfig.RBMConfig.simulationEquipmentPowerWeight > 0f;
+            }
         }
 
         internal static bool Explain(CharacterObject strikerTroop, CharacterObject struckTroop, out Breakdown breakdown,
@@ -847,7 +1096,7 @@ namespace RBMCampaign
             breakdown = default(Breakdown);
             breakdown.Correction = 1f;
 
-            if (!RBMConfig.RBMConfig.simulationEquipmentEnabled || RBMConfig.RBMConfig.simulationEquipmentPowerWeight <= 0f)
+            if (!SimulationEnabled)
             {
                 return false;
             }
@@ -888,7 +1137,7 @@ namespace RBMCampaign
             // barding the same way a killed mount would.
             float horsesAlive = !struckMounted ? 0f
                 : (struckState != null)
-                    ? SimulationBattleState.HorsesAlive(struckState)
+                    ? SimulationBattleState.HorsesAlive(struckState, struck.HorseHealth)
                     : 1f;
             bool struckStillMounted = struckMounted && horsesAlive > 0.5f;
 
@@ -916,7 +1165,7 @@ namespace RBMCampaign
             // That is what it means to advance on a prepared position, and it is the reason storming one is
             // expensive.
             bool mayLoose = !(volley && strikerIsAttacker && state != null
-                && state.Round <= SimulationBattleState.DefenderOnlyRounds);
+                && state.Progress <= SimulationBattleState.DefenderOnlyRounds);
 
             // Whether he still HAS arrows is a question about the clock, not about how many blows he happens to
             // have thrown: a quiver empties per minute, not per swing. Nothing is spent here -- the round counter
@@ -934,11 +1183,22 @@ namespace RBMCampaign
             // That is the whole life of a skirmisher, and auto-resolve has never once let him live it: his javelins
             // were either ignored entirely or -- worse -- treated as the weapon he swung for the whole battle, an
             // axe thrown on an infinite loop.
-            bool throwing = !shooting
-                && skirmish
+            bool hasThrowable = !shooting
                 && striker.Thrown.IsValid
                 && striker.Thrown.Magnitude > 0f
                 && SimulationBattleState.HasJavelins(state, strikerState, striker.ThrownPerMan);
+
+            // He throws all through the skirmish; and if the lines MEET while there are still javelins on his back --
+            // a heavy bundle a short skirmish could not empty -- a foot skirmisher will SOMETIMES loose the last of
+            // them at point-blank as the enemy closes, rather than always drawing his sidearm untouched. HasJavelins
+            // (in hasThrowable) is what "still has javelins" means, so this only fires for a man who genuinely has some
+            // left. Only on a live blow (spend) -- the reference tables and the riposte's reverse pass never roll --
+            // and only on foot; a horseman in the press is charging or hacking, not skirmishing. The roll sits inside
+            // the && so it is drawn only for a foot javelineer actually at contact. See ContactJavelinThrowChance.
+            bool throwing = hasThrowable
+                && (skirmish
+                    || (!approaching && spend && !strikerMounted
+                        && MBRandom.RandomFloat < ContactJavelinThrowChance));
 
             // AND THE HORSE MEET THE HORSE. Each side's cavalry ride out at each other across the open ground while
             // the foot are still walking -- which is what cavalry have always done, and what auto-resolve has never
@@ -984,6 +1244,39 @@ namespace RBMCampaign
                 return true;
             }
 
+            // THE SHAFT GOES WIDE, and it goes wide BEFORE it is a blow at all.
+            //
+            // Note where this sits: above the hit zones, above the horse-or-man roll, above the shield. That order is
+            // the whole meaning of it. An arrow that missed did not find a leg, did not find the horse, and was not
+            // turned by a board -- it is in the ground behind the man, and none of those questions were ever asked.
+            // A shot must MISS before it can be blocked, never the other way about, or the model would be crediting
+            // shields with stopping arrows that were never going to hit anybody.
+            //
+            // Fired shots only (`shooting`); a thrown javelin is committed and lands -- see the miss constants.
+            float missChance = 0f;
+            if (shooting && RBMConfig.RBMConfig.simulationRangedMissEnabled)
+            {
+                missChance = ShotMissChance(striker, strikerMounted, struckStillMounted, volley);
+
+                // A live shot rolls it and is done. The reference tables cannot -- they are asking what a matchup
+                // does, not what one arrow did -- so they take the expectation instead, just below the blow, the
+                // same way they take the shield's. Nothing is spent on a miss: no shaft is deducted here because the
+                // quiver empties by the ROUND and not by the blow (see HasAmmo), so a wasted arrow already counts.
+                if (spend && missChance > 0f && MBRandom.RandomFloat < missChance)
+                {
+                    // "shoot" / "miss": the trace reads it as the act and its outcome, so the miss RATE comes straight
+                    // off the log the way the block and parry rates do -- miss rows over shoot rows. That is the only
+                    // thing this system can be calibrated against, and it is why the row is kept at all.
+                    breakdown.Phase = "shoot";
+                    breakdown.Weapon = striker.Shot.IsValid ? striker.Shot.WeaponType : "-";
+                    breakdown.BodyPart = -1;
+                    breakdown.Defense = "miss";
+                    breakdown.Missed = true;
+                    breakdown.Correction = 0f;
+                    return true;
+                }
+            }
+
             // The board comes up once the blow is fully shaped, not before it -- the defence answers what is actually
             // thrown, charge and brace and all. See the defence resolution below the blow.
 
@@ -992,14 +1285,96 @@ namespace RBMCampaign
             // bearing down on him. And it lands SOMEWHERE on him: a real blow rolls a body part, meets the armour
             // standing over that part, and is worth what RBM says a blow to that part is worth. The reference tables
             // take the expectation over all four instead, since they are asking about a matchup and not a moment.
-            HitZones zones = GetHitZones(strikerMounted, missile, struckStillMounted);
+            // IS THE HORSE BEHIND THIS ONE? Asked here, ahead of the body part, because the answer decides the body
+            // part -- see the zone override below. What the charge is WORTH is still settled further down with the
+            // rest of the multipliers (the ChargeBonus block); this is only the coin-flip, taken early and kept.
+            //
+            // A CHARGE IS A HORSE SLAMMING INTO A MAN ON FOOT, and that is the whole of it (!struckStillMounted). It is
+            // not something two horsemen do to each other: they close at the same height and much the same speed, there
+            // is no standing line for either to break, and neither is a wall for the other to hit. What happens when
+            // squadrons meet is a melee on horseback -- lance, sword, the horses turning -- and the model already has
+            // that, in MountedVsMounted and the cavalry-clash phase. It is not a charge, and it must not draw the
+            // charge's weight or its unblockability, which is what let two riders slam each other every other blow.
+            //
+            // Only a live blow rolls it. The reference tables take the charge as an expectation blended over all his
+            // blows (spend == false, the else-branch below), so there is no single charge for them to aim, and they
+            // roll the zone the ordinary way -- the same split hitHorse makes just below, and for the same reason.
+            // The chance itself is the ground's (GetChargeChance), thinned by how many men that side still has on foot
+            // to be charged -- a horse needs a crowd to break, and twenty men in a bandit scrap are not one. Read
+            // against the STRUCK side, whose foot these are. See SimulationBattleState.ChargeChanceAgainst.
+            bool chargeEligible = strikerMounted && !missile && engaged && !struckStillMounted
+                && striker.ChargeDamage > 0f && state != null;
+            float chargeChance = chargeEligible
+                ? SimulationBattleState.ChargeChanceAgainst(state, !strikerIsAttacker)
+                : 0f;
+            bool charging = chargeEligible && spend && MBRandom.RandomFloat < chargeChance;
+
+            HitZones zones = GetHitZones(strikerMounted, missile, struckStillMounted, striker.HasPolearm);
+
+            // HORSE OR MAN. Before the blow is even shaped, a stroke at a mounted troop is committed to one target or
+            // the other. Only a LIVE blow rolls it (the reference tables ask what a matchup does to the MAN, and the
+            // horse is not part of that question -- so they take the man every time, spend == false below); only while
+            // the horse is still under him (a dead mount leaves an ordinary footman, struckStillMounted); and the
+            // chance is set by who is swinging -- a footman mostly finds the animal, a horseman mostly the rider, an
+            // arrow mostly the rider (the HorseHitChance constants). A blow that finds the horse is resolved wholly
+            // against the barding just below and, at the foot of the method, wears the horse pool and returns dealing
+            // the rider nothing; it skips his defence entirely, because no shield on his arm answers a spear in the
+            // animal's chest -- which is exactly how foot infantry bring a squadron down.
+            bool hitHorse = false;
+            if (spend && struckStillMounted)
+            {
+                float horseHitChance = missile ? HorseHitChanceMissile
+                    : (strikerMounted ? HorseHitChanceMountedMelee : HorseHitChanceFootMelee);
+                hitHorse = MBRandom.RandomFloat < horseHitChance;
+            }
 
             int zoneHit;
             float armor;
             SimulationWeaponModel.WeaponProfile drawn;
             bool braced;
-            float actual = Blow(striker, struck, rbmCombat, zones, horsesAlive, struckStillMounted,
-                shooting, throwing, roll: spend, out zoneHit, out armor, out drawn, out braced);
+            float actual;
+            if (hitHorse)
+            {
+                // Straight at the animal. The barding is the only armour in the way, and the blow is worth the torso's
+                // multiplier -- a horse is one great mass, not a head and a shin. The weapon he drew and whether he set
+                // it (a spear braced for the horse) come back as for any blow, because the charge and the brace below
+                // still shape a stroke that lands on the mount.
+                armor = HorseArmor(struck);
+                actual = PhaseDamage(striker, struck, armor, rbmCombat, struckStillMounted,
+                    shooting, throwing, ZoneTorso, out drawn, out braced);
+                zoneHit = ZoneHorse;
+            }
+            else if (charging)
+            {
+                // A CHARGE TAKES HIM IN THE CHEST, and there is no roll about it. Every other blow in this model is a
+                // stroke aimed somewhere and it may find a head or a shin -- a charge is not aimed at all. It is a
+                // horse arriving, and what a horse arrives at is the middle of a man: the lance is couched level and
+                // the animal's own breast is at chest height. Nobody charges a footman in the ankle.
+                //
+                // The struck man is always on foot here -- a charge is only ever a horse against a standing man, and
+                // chargeEligible has already said so.
+                armor = ZoneArmor(struck, ZoneTorso, horsesAlive);
+                actual = PhaseDamage(striker, struck, armor, rbmCombat, struckStillMounted,
+                    shooting, throwing, ZoneTorso, out drawn, out braced);
+                zoneHit = ZoneTorso;
+            }
+            else
+            {
+                actual = Blow(striker, struck, rbmCombat, zones, horsesAlive, struckStillMounted,
+                    shooting, throwing, roll: spend, out zoneHit, out armor, out drawn, out braced);
+            }
+
+            // And the reference tables' half of the miss. A live shot already returned above if it went wide; this is
+            // the matchup question -- what an archer of this sort is worth against a man of that sort -- and the
+            // answer has to carry the shafts that never arrive. So the blow is worth what it does times how often it
+            // lands, which is the same expectation the shield block takes for the same reason. Folded into `actual`
+            // (not the correction) so it sits in the same place the shield's does, ahead of the baseline and ratio:
+            // the equipment ratio and arm-aware target selection both read this figure, and both SHOULD see an
+            // inaccurate archer as the weaker striker he is.
+            if (!spend && missChance > 0f)
+            {
+                actual *= 1f - missChance;
+            }
 
             breakdown.Phase = shooting ? "shoot" : (throwing ? "throw" : (cavalryClash ? "horse" : "melee"));
             breakdown.Weapon = drawn.WeaponType;
@@ -1031,11 +1406,13 @@ namespace RBMCampaign
                 actual *= SimulationBattleState.VolleyFocus(state, strikerIsAttacker);
             }
 
-            // The charge: weight and speed, which a horseman has only some of the time. A lance at the gallop is a
-            // different thing from the same man hemmed in and hacking downward from a standing horse -- and over a
-            // long fight he is both, by turns, as he rides in, kills, backs out and comes again. So a share of his
-            // blows carry the horse behind them and the rest are just a man swinging from a saddle. A horseman
-            // flinging a javelin is never charging -- he is riding past at a distance, which is the point of javelins.
+            // The charge: weight and speed, which a horseman has only some of the time, and only against a man standing
+            // on the ground. A lance at the gallop is a different thing from the same man hemmed in and hacking
+            // downward from a standing horse -- and over a long fight he is both, by turns, as he rides in, kills,
+            // backs out and comes again. So a share of his blows carry the horse behind them and the rest are just a
+            // man swinging from a saddle. A horseman flinging a javelin is never charging -- he is riding past at a
+            // distance, which is the point of javelins -- and a horseman fighting another horseman is never charging
+            // either, whatever the ground gives him. See chargeEligible, where all of that is settled.
             //
             // How large that share is depends on the ground, but coarsely: a charge only wants room to hit hard, and
             // any field gives it -- about half his blows carry the horse behind them on open plain and in a wood
@@ -1046,11 +1423,47 @@ namespace RBMCampaign
             // It fires only once he has MET somebody. While the lines are still closing he has nobody to ride down,
             // and a charge delivered into empty ground is not a charge.
             breakdown.ChargeBonus = 1f;
-            if (strikerMounted && !missile && engaged && striker.ChargeDamage > 0f && state != null
-                && MBRandom.RandomFloat < state.ChargeChance)
+            if (chargeEligible)
             {
-                breakdown.ChargeBonus = 1f + (striker.ChargeDamage * ChargeStrength);
-                actual *= breakdown.ChargeBonus;
+                float chargeMagnitude = striker.ChargeDamage * ChargeStrength;
+                if (spend)
+                {
+                    // A live blow either carries the horse or it does not -- rolled up above `charging`, ahead of the
+                    // body part, because a charge that lands takes the man in the chest and the zone had to know.
+                    if (charging)
+                    {
+                        breakdown.ChargeBonus = 1f + chargeMagnitude;
+                        actual *= breakdown.ChargeBonus;
+
+                        // And the charge wears the horse that made it. The animal takes damage from its own impact --
+                        // more onto a set spear, more into armour -- fed into its own stack's HorsesAlive pool, so a
+                        // squadron that charges all battle is ground down and finally unhorsed. Scaled by the charge's
+                        // own weight (a heavy destrier hits harder and suffers more), then amplified by what it hit.
+                        if (strikerState != null)
+                        {
+                            float horseSelfDamage = ChargeSelfDamageBase * breakdown.ChargeBonus;
+                            // A set spear rebounds the charge. The man setting it is on his own two feet by
+                            // construction now -- a charge only ever happens against a standing man (chargeEligible) --
+                            // so the polearm is the only question left to ask.
+                            if (struck.HasPolearm)
+                            {
+                                horseSelfDamage *= ChargeSpearRebound;
+                            }
+                            horseSelfDamage *= 1f + (armor * ChargeArmorRebound);
+                            SimulationBattleState.DamageHorse(strikerState, horseSelfDamage);
+                        }
+                    }
+                }
+                else
+                {
+                    // The reference tables and the riposte's reverse-correction pass (spend == false, live state) take
+                    // the EXPECTATION instead -- blended by the terrain-read charge chance rather than rolled -- so a
+                    // reverse correction is deterministic and never stochastically spiked with a full unblockable
+                    // charge on a single coin-flip. Pool wear is spend-gated and skipped on this pass. Mirror of the
+                    // spend / !spend split the defence and missile-block use below.
+                    breakdown.ChargeBonus = 1f + (chargeChance * chargeMagnitude);
+                    actual *= breakdown.ChargeBonus;
+                }
             }
 
             // Braced steel. A spear set against a horse is the answer infantry have always had to cavalry, and
@@ -1058,7 +1471,33 @@ namespace RBMCampaign
             // answered: it is true exactly when he drew from his polearms, which he does only against a horse.
             if (braced && !strikerMounted)
             {
-                actual *= BraceBonus;
+                float braceBonus = BraceBonus;
+
+                // The reverse charge: when the horse is CLOSING, its own momentum drives it onto the point, and the
+                // braced blow carries a share of the same weight (struck.ChargeDamage x ChargeStrength) that powers a
+                // cavalry charge -- mirror of the charge roll above, sourced from the STRUCK horse and gated by the
+                // same terrain-read (state.ChargeChance), so on open ground it lands most of the time. This is the one
+                // thing that made a charge onto set spears the wreck it was. It stays a normal melee blow for landing
+                // (no charge exemption), so the glancing spread still applies -- a deliberate, milder choice.
+                if (struckStillMounted && state != null && struck.ChargeDamage > 0f)
+                {
+                    float closingBonus = struck.ChargeDamage * ChargeStrength * AntiCavalryClosingBonus;
+
+                    // The same thinned chance the charge itself rolls, read from the other end: here the horse is the
+                    // STRUCK and the man setting the spear is the striker, so the foot being charged are the STRIKER's
+                    // side. Pass strikerIsAttacker, not its negation -- the charge roll above passes the negation, and
+                    // the two are opposite for the same reason. If a horse charges rarely into a thin crowd, then it
+                    // is also rarely closing onto the spear of a man in that crowd, and the brace must agree.
+                    float closingChance = SimulationBattleState.ChargeChanceAgainst(state, strikerIsAttacker);
+
+                    // Same spend / !spend split as the charge above: a live blow rolls the closing charge, the
+                    // reference and reverse-correction passes take its expectation so they stay deterministic.
+                    braceBonus += spend
+                        ? (MBRandom.RandomFloat < closingChance ? closingBonus : 0f)
+                        : closingChance * closingBonus;
+                }
+
+                actual *= braceBonus;
                 breakdown.Braced = true;
             }
 
@@ -1077,7 +1516,9 @@ namespace RBMCampaign
 
             // THE DEFENCE. However the blow was shaped -- charge, brace and evasion are all in it now -- the man it
             // is aimed at gets to answer it. What a shield can take is denominated in this same simulated damage;
-            // see ShieldCapacityPerMan.
+            // see ShieldCapacityPerMan. A blow at the HORSE skips all of this: a shield on the rider's arm and a
+            // parry from his blade guard the man, not the animal under him, so a horse hit meets no personal defence
+            // (both branches gate on !hitHorse) and falls straight to the horse-routing exit below.
             float shieldIntegrity = 1f;
             bool hasShield = struck.ShieldQuality > 0f;
             if (hasShield && struckState != null)
@@ -1087,7 +1528,7 @@ namespace RBMCampaign
             // A shattered board is no board at all: a man behind it is thrown back on the harder bare-weapon defence.
             bool intactShield = hasShield && shieldIntegrity > 0f;
 
-            if (RBMConfig.RBMConfig.simulationDefenseSystem)
+            if (!hitHorse && RBMConfig.RBMConfig.simulationDefenseSystem)
             {
                 // What a block would cost the shield -- the weapon's own toll on a board, NOT the damage it spares
                 // the man. Weapon-typed the way RBM's live combat types it (see ShieldDamageFromBlow).
@@ -1107,6 +1548,12 @@ namespace RBMCampaign
                     if (struck.IsRanged)
                     {
                         blockChance *= ArcherVsRangedBlockFactor;
+                    }
+                    // And a man on a horse blocks a bit less than the same man on foot, board and all -- high, busy,
+                    // and slow to bring the shield across from the saddle. See MountedDefenseFactor.
+                    if (struckStillMounted)
+                    {
+                        blockChance *= MountedDefenseFactor;
                     }
                     breakdown.ShieldBlock = blockChance;
                     if (spend)
@@ -1146,6 +1593,14 @@ namespace RBMCampaign
                         defenseChance *= CavalryVsArcherDefenseFactor;
                     }
 
+                    // A man on a horse blocks a bit less than the same man on foot, shield and all -- high, busy, and
+                    // slow to bring the board across from the saddle. Stacks with the ridden-down cut for a mounted
+                    // bowman. Applied before the branch so the live roll and the reference expectation both carry it.
+                    if (struckStillMounted)
+                    {
+                        defenseChance *= MountedDefenseFactor;
+                    }
+
                     // A CHARGE is not answered by the defence at all. The weight of the horse is behind it -- no shield
                     // turns it, no blade parries it, and no amount of skill helps the man it is aimed at. So a blow that
                     // carried the charge (breakdown.ChargeBonus > 1, set by the charge roll above) simply lands.
@@ -1159,8 +1614,16 @@ namespace RBMCampaign
                     {
                         if (defenseChance > 0f && MBRandom.RandomFloat < defenseChance)
                         {
-                            // No parry when he is being ridden down -- a bow does not answer a lance.
-                            float parryShare = riddenDown ? 0f : ParryShare(struck.MeleeSkill, striker.MeleeSkill);
+                            // No parry when he is being ridden down -- a bow does not answer a lance. And no riposte
+                            // FROM a horse against a man on foot: a rider does not fence a footman blade-to-blade for a
+                            // counter -- he fights by reach and height, not a parry-riposte between equals at one level
+                            // -- so a mounted defender still turns the blow (it falls to a block just below) but lands
+                            // no counter on the infantryman beneath him. Cavalry may still riposte each OTHER; this
+                            // bars it only against foot attackers, and only while the horse is alive to keep him up.
+                            bool noRiposteFromHorse = struckStillMounted && !strikerMounted;
+                            float parryShare = (riddenDown || noRiposteFromHorse)
+                                ? 0f
+                                : ParryShare(struck.MeleeSkill, striker.MeleeSkill);
                             if (MBRandom.RandomFloat < parryShare)
                             {
                                 // Parried, and to be answered. The counter itself is spent by the postfix, which
@@ -1196,16 +1659,11 @@ namespace RBMCampaign
 
                 breakdown.Defense = defense;
                 breakdown.Defended = defense != "none";
-
-                // A defended blow -- shield, weapon or parry -- reaches neither the man nor the horse under him. One
-                // that got through still finds the animal a footman on foot was really hacking at. A javelin goes at
-                // the mass of the man, not the horse, so a throw leaves the animal alone.
-                if (spend && struckState != null && struckMounted && !strikerMounted && !missile)
-                {
-                    SimulationBattleState.DamageHorse(struckState, actual);
-                }
+                // The blow reaches the man or it does not; the horse under him is no longer wounded as a side effect
+                // of a stroke aimed at the rider. A blow meant for the horse was split off at the top (hitHorse) and
+                // never enters this branch -- the animal is worn only by a stroke that genuinely found it.
             }
-            else
+            else if (!hitHorse)
             {
                 // The OLD fractional skim, kept whole for when the defense system is switched off: the board turns
                 // aside a capped share of every blow, and wears down by what it turns.
@@ -1221,13 +1679,28 @@ namespace RBMCampaign
                 if (spend && struckState != null)
                 {
                     SimulationBattleState.DamageShield(struckState, blocked);
-                    if (struckMounted && !strikerMounted && !missile)
-                    {
-                        SimulationBattleState.DamageHorse(struckState, actual);
-                    }
                 }
 
                 breakdown.ShieldBlock = shieldBlock;
+            }
+
+            // THE HORSE, AND THE STROKE THAT FOUND IT. A blow committed to the animal is done here: it wore no
+            // personal defence and it wounds no rider. What it deals to the mount is the whole assembled blow --
+            // charge, brace and all -- and the horse pool takes it; once that pool is spent the beast falls and its
+            // rider fights the rest of the battle on foot (SimulationBattleState.HorsesAlive strips his barding, his
+            // charge and his height the moment it does). The rider takes nothing, so the correction is nil the way a
+            // defended blow's is, and breakdown.HorseHit keeps the row in the book.
+            if (hitHorse)
+            {
+                breakdown.ArmorMet = armor;
+                breakdown.Actual = actual;
+                breakdown.HorseHit = true;
+                if (spend && struckState != null)
+                {
+                    SimulationBattleState.DamageHorse(struckState, MathF.Max(0f, actual));
+                }
+                breakdown.Correction = 0f;
+                return true;
             }
 
             breakdown.ArmorMet = armor;
@@ -1314,17 +1787,20 @@ namespace RBMCampaign
             // no blow at all. So every blow reaching here is one that genuinely landed -- a shot, a thrown javelin, a
             // cavalry clash, or the melee of lines that have met -- and there is no closing penalty left to apply.
 
-            // A landed blow rarely bites at full force, and none of the three kinds lands whole every time. A melee
-            // swing mostly glances, so it is spread hard (MeleeLandingExponent); a shot or thrown weapon carries real
-            // force more often but still varies with the range it flew and the angle it met, so it is spread gently
-            // (RangedLandingExponent); and a charge -- the hardest and most committed of the three when it connects --
-            // is spread gentler still (ChargeLandingExponent), for the lance that strikes a shade off-square or the
-            // horse a step short of full gallop. Folded INTO the correction (not applied after) so the log's vanilla x
-            // correction = dealt identity holds, and placed AFTER the ratio so it does not cancel against the baseline.
-            // On the reference tables (spend == false) it is the mean of the draw, 1/(exp+1). Every real landed blow
-            // reaching here is a missile, a charge, or a melee, so a spread always applies.
+            // A landed blow rarely bites at full force, and none of the four kinds lands whole every time. A melee
+            // swing (MeleeLandingExponent) and a FIRED shot (RangedLandingExponent) glance the most -- two-thirds on
+            // average. A THROWN weapon is committed and lands harder (ThrownLandingExponent, ~five-sixths), and a
+            // CHARGE harder still (ChargeLandingExponent, ~three-quarters) -- both for the blow that catches a shade
+            // off-square rather than one that arcs in from afar. Folded INTO the correction (not applied after) so the
+            // log's vanilla x correction = dealt identity holds, and placed AFTER the ratio so it does not cancel
+            // against the baseline. On the reference tables (spend == false) it is the mean of the draw, 1/(exp+1).
+            // Every real landed blow reaching here is a throw, a fired shot, a charge, or a melee, so a spread applies.
             float landingExponent;
-            if (missile)
+            if (throwing)
+            {
+                landingExponent = ThrownLandingExponent;
+            }
+            else if (missile)
             {
                 landingExponent = RangedLandingExponent;
             }
@@ -1334,7 +1810,11 @@ namespace RBMCampaign
             }
             else
             {
-                landingExponent = MeleeLandingExponent;
+                // 0.5 is calibrated for the defence system removing turned-aside blows upstream; with it off, nothing
+                // is removed here, so use the pre-defence-system exponent to avoid landing melee ~2x too hard.
+                landingExponent = RBMConfig.RBMConfig.simulationDefenseSystem
+                    ? MeleeLandingExponent
+                    : MeleeLandingExponentNoDefense;
             }
 
             float landing = spend
@@ -1915,7 +2395,7 @@ namespace RBMCampaign
                         // function or the body-part multipliers would sit in the blow and not in the baseline, and
                         // every striker in Calradia would read as unusually good (or bad) purely because of where
                         // his blows happen to land.
-                        HitZones zones = GetHitZones(kit.IsMounted, shooting, bucketMounted[k]);
+                        HitZones zones = GetHitZones(kit.IsMounted, shooting, bucketMounted[k], kit.HasPolearm);
 
                         int zoneHit;
                         float armor;
@@ -1990,14 +2470,64 @@ namespace RBMCampaign
             return kit.IsValid && kit.Thrown.IsValid && kit.ThrownPerMan > 0f;
         }
 
-        /// <summary>The four arms of service, split exactly as vanilla's own power model splits them.</summary>
+        // Whether a troop carries a sling, cached by template. A template's kit is fixed; a hero's is cleared with
+        // his kit in ForgetHeroKits, since a slinger hero is a thing that could change between battles.
+        private static readonly Dictionary<CharacterObject, bool> _slingCache = new Dictionary<CharacterObject, bool>();
+
+        /// <summary>
+        /// A SLINGER IS AN ARCHER. The game classes a man who carries a sling as INFANTRY -- CharacterObject.IsRanged
+        /// comes back false -- because a sling is a shepherd's sidearm, not a soldier's trade. But on the field he
+        /// does exactly what a bowman does: he stands off and slings while the lines are apart, and closes to his belt
+        /// weapon only when the stones run out. Auto-resolve should field him as that skirmisher -- shooting in the
+        /// volley, struck as a shooter, bucketed with the archers -- so a sling in his kit makes him ranged HERE,
+        /// whatever the card says. A bow or crossbow already sets IsRanged, so this only ever catches the sling: the
+        /// one ranged arm the game hides among the foot.
+        /// </summary>
+        private static bool CarriesSling(CharacterObject troop)
+        {
+            bool has;
+            if (_slingCache.TryGetValue(troop, out has))
+            {
+                return has;
+            }
+
+            has = false;
+            foreach (Equipment set in EnumerateBattleEquipments(troop))
+            {
+                for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
+                {
+                    ItemObject item = set[i].Item;
+                    if (item != null && item.ItemType == ItemObject.ItemTypeEnum.Sling)
+                    {
+                        has = true;
+                        break;
+                    }
+                }
+                if (has)
+                {
+                    break;
+                }
+            }
+
+            _slingCache[troop] = has;
+            return has;
+        }
+
+        /// <summary>troop.IsRanged, but a slinger counts too (see CarriesSling). The one ranged test for the whole model.</summary>
+        internal static bool IsRangedTroop(CharacterObject troop)
+        {
+            return troop.IsRanged || CarriesSling(troop);
+        }
+
+        /// <summary>The four arms of service, split exactly as vanilla's own power model splits them (a slinger being ranged).</summary>
         private static int GetTroopType(CharacterObject troop)
         {
+            bool ranged = IsRangedTroop(troop);
             if (troop.IsMounted)
             {
-                return troop.IsRanged ? HorseArcherType : CavalryType;
+                return ranged ? HorseArcherType : CavalryType;
             }
-            return troop.IsRanged ? ArcherType : InfantryType;
+            return ranged ? ArcherType : InfantryType;
         }
 
         /// <summary>
@@ -2059,7 +2589,7 @@ namespace RBMCampaign
             // set speaks for the stack: average the armour over all of them, and pool every melee weapon in every
             // set into the one arsenal the stack fights out of.
             float head = 0f, neck = 0f, torso = 0f, shoulder = 0f, arm = 0f, leg = 0f;
-            float horseLeg = 0f, horseBody = 0f;
+            float horseLeg = 0f, horseBody = 0f, horseHealth = 0f;
             float shotMagnitude = 0f;
             float shieldQuality = 0f, shieldHitPoints = 0f;
             float charge = 0f;
@@ -2085,7 +2615,7 @@ namespace RBMCampaign
                 // belt do -- a man looses one arrow at a time, so an archer issued two quivers must not out-shoot
                 // the same archer issued one.
                 SimulationWeaponModel.WeaponProfile setShot = default(SimulationWeaponModel.WeaponProfile);
-                if (troop.IsRanged)
+                if (IsRangedTroop(troop))
                 {
                     List<SimulationWeaponModel.WeaponProfile> setShots = CollectShotProfiles(troop, set, rbmCombat);
                     if (setShots.Count > 0)
@@ -2162,6 +2692,11 @@ namespace RBMCampaign
                 {
                     setHorseLeg += horse.HorseComponent.HitPointBonus * 0.05f;
                     charge += horse.HorseComponent.ChargeDamage;
+                    // What the animal itself can take before it falls -- the mount's own Monster health (200 for a
+                    // horse, less for a mule) plus this item's extra_health. This is the pool a horse hit wears, and
+                    // it is the whole of what makes one mount tougher than another; averaged over his sets below like
+                    // everything else, so a troop mounted in only some of his sets is only sometimes horsed.
+                    horseHealth += horse.HorseComponent.HitPoints + horse.HorseComponent.HitPointBonus;
                 }
                 ItemObject harness = set[EquipmentIndex.HorseHarness].Item;
                 if (harness != null && harness.ArmorComponent != null)
@@ -2203,6 +2738,7 @@ namespace RBMCampaign
                 kit.Leg = leg / sets;
                 kit.HorseLeg = horseLeg / sets;
                 kit.HorseBody = horseBody / sets;
+                kit.HorseHealth = horseHealth / sets;
                 kit.ChargeDamage = charge / sets;
                 kit.IsPlate = (plateSets * 2) > sets;
 
@@ -2237,11 +2773,19 @@ namespace RBMCampaign
                 kit.ShieldQuality = shieldQuality / sets;
                 kit.ShieldHitPoints = shieldHitPoints / sets;
                 kit.IsMounted = troop.IsMounted;
-                kit.IsRanged = troop.IsRanged;
+                kit.IsRanged = IsRangedTroop(troop);
 
                 // His fighting hand, for the defence roll: the best of his melee trainings. A troop template's skills
                 // are fixed and a hero's do not move mid-battle, so this rides in the cache with the rest of the kit.
                 kit.MeleeSkill = MeleeSkillOf(troop);
+
+                // And his shooting hand, for the miss roll. Taken off the shot profile's OWN skill object rather than
+                // by asking which launcher he seems to carry: the profile already resolved that (it is the launcher's
+                // RelevantSkill, since no one is trained in arrows), so a crossbowman is read on Crossbow and a bowman
+                // on Bow with nothing inferred. Rides in the cache with the rest -- a template's skills do not move.
+                kit.RangedSkill = (kit.Shot.IsValid && kit.Shot.Skill != null)
+                    ? troop.GetSkillValue(kit.Shot.Skill)
+                    : 0f;
 
                 // A man is worth pricing if he can hit anything at all -- with a bow, or with what is on his belt.
                 kit.IsValid = (kit.Shot.IsValid && kit.Shot.Magnitude > 0f) || kit.Melee.Length > 0;
@@ -2258,10 +2802,32 @@ namespace RBMCampaign
         /// </summary>
         internal static void ForgetHeroKits()
         {
+            // Both caches, independently. The sling flag can be set by CarriesSling (through ArmOf/GetBucket) for a
+            // hero the kit path never built -- an arm classification before any damage was priced -- so scanning only
+            // _kitCache would leave that hero's stale sling flag behind. Evict heroes from each cache on its own keys.
+            EvictHeroes(_kitCache);
+            EvictHeroes(_slingCache);
+        }
+
+        /// <summary>
+        /// A fresh session (new game or a loaded save). The kit and sling caches are keyed by CharacterObject; a
+        /// hero's instance belongs to the campaign being torn down and would sit here orphaned for the life of the
+        /// process. Cleared wholesale -- line-troop templates simply rebuild on next use. Baselines are float means,
+        /// hold no object refs and self-rebuild on config change, so they are left alone. Called from OnSessionLaunched.
+        /// </summary>
+        internal static void ResetForNewSession()
+        {
+            _kitCache.Clear();
+            _slingCache.Clear();
+        }
+
+        /// <summary>Drop every hero-keyed entry from a per-troop cache, on that cache's own keys. See ForgetHeroKits.</summary>
+        private static void EvictHeroes<TValue>(Dictionary<CharacterObject, TValue> cache)
+        {
             List<CharacterObject> heroes = null;
-            foreach (KeyValuePair<CharacterObject, TroopKit> entry in _kitCache)
+            foreach (KeyValuePair<CharacterObject, TValue> entry in cache)
             {
-                if (entry.Key.IsHero)
+                if (entry.Key != null && entry.Key.IsHero)
                 {
                     if (heroes == null)
                     {
@@ -2274,7 +2840,7 @@ namespace RBMCampaign
             {
                 foreach (CharacterObject hero in heroes)
                 {
-                    _kitCache.Remove(hero);
+                    cache.Remove(hero);
                 }
             }
         }
@@ -2386,17 +2952,21 @@ namespace RBMCampaign
                         head += e.GetModifiedHeadArmor();
                         headArm += e.GetModifiedArmArmor();
                         break;
+
                     case ItemObject.ItemTypeEnum.BodyArmor:
                         bodyOn += e.GetModifiedBodyArmor();
                         bodyArm += e.GetModifiedArmArmor();
                         leg += e.GetModifiedLegArmor() * 0.5f;
                         break;
+
                     case ItemObject.ItemTypeEnum.LegArmor:
                         leg += e.GetModifiedLegArmor() * 0.5f;
                         break;
+
                     case ItemObject.ItemTypeEnum.HandArmor:
                         gloves += e.GetModifiedArmArmor();
                         break;
+
                     case ItemObject.ItemTypeEnum.Cape:
                         capeOn += e.GetModifiedBodyArmor();
                         capeOn += e.GetModifiedArmArmor();
@@ -2413,9 +2983,11 @@ namespace RBMCampaign
         /// <summary>
         /// Which way the blows fall in this particular matchup. The live combat path reads armour at the exact
         /// body part struck; a simulated blow has no body part, so it is given the one it would most likely have
-        /// found, and that depends entirely on who is swinging at whom.
+        /// found, and that depends entirely on who is swinging at whom -- and, for a footman meeting a horse, on
+        /// whether he has a spear in his hands (see the note on FootVsMounted).
         /// </summary>
-        private static HitZones GetHitZones(bool strikerMounted, bool strikerRanged, bool struckMounted)
+        private static HitZones GetHitZones(bool strikerMounted, bool strikerRanged, bool struckMounted,
+            bool strikerHasPolearm)
         {
             if (strikerRanged)
             {
@@ -2425,7 +2997,13 @@ namespace RBMCampaign
             {
                 return struckMounted ? MountedVsMounted : MountedVsFoot;
             }
-            return struckMounted ? FootVsMounted : FootVsFoot;
+            if (!struckMounted)
+            {
+                return FootVsFoot;
+            }
+
+            // Foot at a rider. The spear reaches him; anything shorter finds the legs and the horse.
+            return strikerHasPolearm ? FootVsFoot : FootVsMounted;
         }
 
         /// <summary>
@@ -2489,19 +3067,36 @@ namespace RBMCampaign
             }
         }
 
-        /// <summary>The armour standing over one zone of this man, the horse under him included where it belongs.</summary>
+        /// <summary>
+        /// The armour standing over one zone of THE MAN. The barding is no longer folded in here: a blow at the
+        /// rider meets the rider's own armour, because a blow that would have met the horse's barding is a blow that
+        /// hit the horse instead (see the HorseHitChance roll in Explain and <see cref="HorseArmor"/>), and that is
+        /// resolved apart from this. The horsesAlive argument is thus vestigial on this path and kept only so the
+        /// callers need not change; it still governs whether the man is mounted at all, upstream.
+        /// </summary>
         private static float ZoneArmor(TroopKit struck, int zone, float horsesAlive)
         {
             switch (zone)
             {
                 case ZoneHead: return struck.Head;
                 case ZoneNeck: return struck.Neck;
-                case ZoneTorso: return struck.Torso + (struck.HorseBody * horsesAlive);
+                case ZoneTorso: return struck.Torso;
                 case ZoneShoulder: return struck.Shoulder;
                 case ZoneArm: return struck.Arm;
-                case ZoneLeg: return struck.Leg + (struck.HorseLeg * horsesAlive);
+                case ZoneLeg: return struck.Leg;
                 default: return 0f;
             }
+        }
+
+        /// <summary>
+        /// The armour a blow meets when it finds the HORSE rather than the man -- the harness over its flank and the
+        /// beast's own bulk, which is all it has to answer a blade (the two barding components composed at
+        /// <see cref="GetArmorZonesRbm"/>'s caller, now the horse's alone). A dead horse is never the thing struck --
+        /// the roll is gated on struckStillMounted -- so this is never asked of a mount that is not there.
+        /// </summary>
+        private static float HorseArmor(TroopKit struck)
+        {
+            return struck.HorseBody + struck.HorseLeg;
         }
 
         private static float ZoneShare(HitZones zones, int zone)
@@ -2548,10 +3143,9 @@ namespace RBMCampaign
         /// </summary>
         private static float WeightedArmor(TroopKit struck, TroopKit striker, float horsesAlive, bool struckStillMounted, bool shooting)
         {
-            HitZones zones = GetHitZones(striker.IsMounted, shooting, struckStillMounted);
-            float leg = struck.Leg + (struck.HorseLeg * horsesAlive);
-            float torso = struck.Torso + (struck.HorseBody * horsesAlive);
-            return WeightedArmor(struck.Head, struck.Neck, torso, struck.Shoulder, struck.Arm, leg, zones);
+            HitZones zones = GetHitZones(striker.IsMounted, shooting, struckStillMounted, striker.HasPolearm);
+            // The man's own armour, barding excluded -- a blow at the horse is met by the horse (see HorseArmor).
+            return WeightedArmor(struck.Head, struck.Neck, struck.Torso, struck.Shoulder, struck.Arm, struck.Leg, zones);
         }
 
         private static bool IsPolearm(string weaponType)
@@ -3121,6 +3715,64 @@ namespace RBMCampaign
             return best;
         }
 
+        /// <summary>
+        /// The chance a fired shot goes wide of the man it was aimed at. See the miss constants above the landing
+        /// exponents for what each term is and why. Deterministic -- it is the CHANCE, not the roll -- so the live
+        /// blow rolls against it and the reference tables take it as an expectation, the way they do the shield.
+        /// </summary>
+        private static float ShotMissChance(TroopKit striker, bool strikerMounted, bool struckMounted, bool volley)
+        {
+            float chance = RBMConfig.RBMConfig.simulationRangedMissChance;
+            if (chance <= 0f)
+            {
+                return 0f;
+            }
+
+            // What he is shooting, and how much of a lifetime it takes to shoot it straight.
+            chance *= ShotAccuracyFactor(striker.Shot.WeaponType);
+
+            // And how much of that lifetime he has actually had. The largest term by far, as it should be.
+            chance *= 1f - (RangedMissSkillReduction * SkillFraction(striker.RangedSkill));
+
+            // The long arcing shot into a formation nobody is aiming at in particular.
+            if (volley)
+            {
+                chance *= RangedMissVolleyFactor;
+            }
+
+            // Loosed from a moving horse.
+            if (strikerMounted)
+            {
+                chance *= RangedMissMountedShooterFactor;
+            }
+
+            // At a man who is not where he was when it left the string.
+            if (struckMounted)
+            {
+                chance *= RangedMissMountedTargetFactor;
+            }
+
+            return MBMath.ClampFloat(chance, 0f, RangedMaxMissChance);
+        }
+
+        /// <summary>
+        /// The launcher's own accuracy, read off the shaft it throws -- a bolt means a crossbow, an arrow a bow, a
+        /// stone a sling. Anything the switch does not name (a mod's own ammunition class) falls through at the bow's
+        /// rate, which is the middle of the three and the only sane default.
+        /// </summary>
+        private static float ShotAccuracyFactor(string weaponType)
+        {
+            if (weaponType == WeaponClass.Bolt.ToString())
+            {
+                return MissFactorBolt;
+            }
+            if (weaponType == WeaponClass.Stone.ToString())
+            {
+                return MissFactorStone;
+            }
+            return MissFactorArrow;
+        }
+
         /// <summary>Skill as a fraction of the saturation level, 0..1 -- the same curve the damage side saturates on.</summary>
         private static float SkillFraction(float skill)
         {
@@ -3209,6 +3861,7 @@ namespace RBMCampaign
                 case "OneHandedBastardAxe":
                 case "TwoHandedPolearm":
                     return true;
+
                 default:
                     return false;
             }

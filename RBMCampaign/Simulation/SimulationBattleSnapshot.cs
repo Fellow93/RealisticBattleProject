@@ -109,6 +109,13 @@ namespace RBMCampaign
             Recapture(mapEvent);
         }
 
+        /// <summary>A fresh session (new game or a loaded save): drop every snapshot of the torn-down campaign's
+        /// battles, which will never be handed over now. Called from OnSessionLaunched.</summary>
+        internal static void ResetForNewSession()
+        {
+            _snapshots.Clear();
+        }
+
         /// <summary>The battle's picture, forgotten as it is handed over. Null if it was never taken.</summary>
         internal static BattleSnapshot Take(MapEvent mapEvent)
         {

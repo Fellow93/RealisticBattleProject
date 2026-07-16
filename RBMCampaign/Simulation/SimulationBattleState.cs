@@ -34,18 +34,32 @@ namespace RBMCampaign
         /// fight, since their lengths are counted in rounds and did not change. That larger ranged share is the point:
         /// it is how the archers' edge -- the arm that actually decides a field battle -- gets to tell in the sim.
         ///
-        /// Held at 3. It was 4 for a while -- pushed high to keep the widened lethality pool (a man soaks half again as
-        /// many blows) from lengthening the fight and diluting the ranged phases back toward melee. Eased to 3: fewer
-        /// men act each round, the fight runs a few more rounds, and the volley and skirmish give back a little of the
-        /// share they had -- the approach was carrying too much of the battle. Still well above vanilla's thin sample.
-        /// Raise it to compress the fight and grow the ranged phases; lower it to stretch the fight and grow the melee.
+        /// Held at 4 -- pushed high to keep the widened lethality pool (a man soaks half again as many blows) from
+        /// lengthening the fight and diluting the ranged phases back toward melee. Well above vanilla's thin sample.
+        /// Note this is only the FULL-SIZE multiplier now: EffectiveTickMultiplier ramps it down for a small fight,
+        /// and the phase boundaries are denominated in size-normalised Progress (see BattleState.Progress) rather than
+        /// raw rounds, so shrinking the multiplier no longer whips a small battle through its ranged phases. Raise it
+        /// to compress a full-size fight and grow the ranged phases; lower it to stretch the fight and grow the melee.
         /// </summary>
         internal const int TickMultiplier = 4;
 
+
         private static void Postfix(MapEvent mapEvent, ref ValueTuple<int, int> __result)
         {
-            __result = new ValueTuple<int, int>(__result.Item1 * TickMultiplier, __result.Item2 * TickMultiplier);
-            SimulationBattleState.AdvanceRound(mapEvent);
+            // With the equipment model off the whole overhaul stands down (see SimulationEquipmentPower.
+            // SimulationEnabled): leave vanilla's tick allocation untouched and do not advance our round clock.
+            if (!SimulationEquipmentPower.SimulationEnabled)
+            {
+                return;
+            }
+
+            float mult = TickMultiplier;
+            __result = new ValueTuple<int, int>(
+                Math.Max(1, MathF.Round(__result.Item1 * mult)),
+                Math.Max(1, MathF.Round(__result.Item2 * mult)));
+            // The size-normalised pace of THIS round: 1 at full size, less when the multiplier is ramped down. It is
+            // how much of the fight this round carries, and it is what the phase boundaries are counted in.
+            SimulationBattleState.AdvanceRound(mapEvent, mult / TickMultiplier);
         }
     }
 
@@ -203,8 +217,9 @@ namespace RBMCampaign
         /// Raised from 14 to 30 alongside the skill-based defense system: with landed melee lethality now
         /// skill-gated (most blows fully negated), a battle grinds on for more rounds before it resolves, and a
         /// quiver that ran dry in fourteen rounds would have the archers reduced to knives for most of a longer
-        /// fight. This is a calibration target -- HasAmmo is Round <= AmmoRounds, so re-check the actual round
-        /// count once the defense system is measured on a paired log (TickMultiplier=4 already shrank rounds).
+        /// fight. This is a calibration target -- HasAmmo is Progress &lt;= AmmoRounds (Progress, so the quiver holds
+        /// a constant amount of FIGHTING however the battle is paced; equal to the round count at full size), so
+        /// re-check it once the defense system is measured on a paired log (TickMultiplier=4 already shrank rounds).
         /// </summary>
         private const int AmmoRounds = 30;
 
@@ -238,7 +253,12 @@ namespace RBMCampaign
         /// <summary>The floor, for a shield whose item data says nothing useful.</summary>
         private const float ShieldCapacityFloor = 200f;
 
-        /// <summary>A horse is a big target and a footman is hacking at it. This is what one can take before it falls.</summary>
+        /// <summary>
+        /// The fallback a horse can take before it falls, for the rare mount whose own health did not come through
+        /// (a troop the kit could read no Horse item off). Every real animal brings its OWN health now -- the game's
+        /// Monster hit points plus its extra_health, carried on TroopKit.HorseHealth -- so a destrier outlasts a
+        /// courier's palfrey. See HorsesAlive.
+        /// </summary>
         private const float HorseCapacity = 260f;
 
         internal class TroopState
@@ -263,8 +283,27 @@ namespace RBMCampaign
 
         internal class BattleState
         {
-            /// <summary>Rounds fought. The lines are still closing while this is under VolleyRounds.</summary>
+            /// <summary>Rounds fought, raw. Kept for the log and for physical per-round counts (javelins thrown). The
+            /// PHASE boundaries read <see cref="Progress"/>, not this, so they hold a constant share of the fight
+            /// whatever the battle's size.</summary>
             public int Round;
+
+            /// <summary>
+            /// How much FIGHTING has happened, normalised so that one full-size round is worth 1. Each round adds
+            /// EffectiveTickMultiplier / TickMultiplier -- exactly 1 at full battle size (so Progress == Round and
+            /// every phase boundary is byte-identical to the old round-count), and LESS in a small battle or a
+            /// thinned-out endgame, where a round carries proportionally less of the fight. The volley, the skirmish
+            /// and the quiver (VolleyRounds, SkirmishRounds, AmmoRounds) are all denominated in these units, so a
+            /// small skirmish no longer whips through its ranged phases in a handful of thin rounds, and archers in a
+            /// long endgame do not run their quiver dry while a full-size fight would still have arrows. See
+            /// SimulationRoundCounter.EffectiveTickMultiplier.
+            /// </summary>
+            public float Progress;
+
+            /// <summary>The raw round on which the skirmish began -- the first round <see cref="Progress"/> passed
+            /// <see cref="VolleyRounds"/>. Javelins are a physical count (a man throws his bundle one per round), so
+            /// HasJavelins counts RAW rounds from here, not progress. -1 until the skirmish opens.</summary>
+            public int SkirmishStartRound = -1;
 
             public int VolleyRounds;
 
@@ -315,6 +354,16 @@ namespace RBMCampaign
             public Dictionary<CharacterObject, int> DefenderCounts = new Dictionary<CharacterObject, int>();
 
             /// <summary>
+            /// How many parties stood on each side when the muster was last taken. A party can still attach to a
+            /// running map event after round 1 (reinforcements, a relief force, an army catching up), and its troops
+            /// would fall through the round-1 muster and be handed the one-man fallback by <see cref="For"/>. When
+            /// this count grows, the side is re-mustered so the newcomers get their real strength. -1 until round 1.
+            /// </summary>
+            public int AttackerPartyCount = -1;
+
+            public int DefenderPartyCount = -1;
+
+            /// <summary>
             /// What share of each side can shoot. This is needed because vanilla hands a side pow(men, 0.6) blows a
             /// round and then picks who throws each one UNIFORMLY FROM THE WHOLE SIDE -- so an archer only gets a
             /// turn as often as archers are common. In the volley, when nobody but an archer does anything at all,
@@ -324,6 +373,31 @@ namespace RBMCampaign
             public float AttackerRangedShare = 1f;
 
             public float DefenderRangedShare = 1f;
+
+            /// <summary>
+            /// What share of each side fights on its feet -- infantry and archers alike, everyone the charge is
+            /// allowed to hit. Taken from the muster once, the same way <see cref="AttackerRangedShare"/> is, and
+            /// used to read a live foot count off the side's remaining strength without walking the rosters again.
+            /// See <see cref="ChargeChanceAgainst"/>.
+            /// </summary>
+            public float AttackerFootShare = 1f;
+
+            public float DefenderFootShare = 1f;
+
+            /// <summary>
+            /// How many men each side still has ON FOOT, refreshed every round. This is the crowd a horse has to
+            /// charge, and how big it is decides how often one can: see <see cref="ChargeChanceAgainst"/>.
+            ///
+            /// It is the side's LIVE strength times its muster foot share, not a fresh roster walk -- the walk is
+            /// what the round-1 muster and RefreshReinforcements go out of their way to avoid doing per round, and
+            /// this must not undo that. The cost is an assumption: that losses fall on foot and horse alike, so the
+            /// share holds as the side is ground down. It does not hold exactly -- infantry die first and hardest --
+            /// which makes this read the foot a little HIGH late in a battle, and so the charge a little too free
+            /// exactly when the line is breaking. Worth knowing before this number is trusted too far.
+            /// </summary>
+            public float AttackerFoot;
+
+            public float DefenderFoot;
 
             public TroopState For(CharacterObject troop, bool attacker)
             {
@@ -436,10 +510,21 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Called once per round, from the tick allocation. That is the only place the simulation tells us a round
-        /// has turned -- a blow cannot, since it does not know how many came before it.
+        /// A fresh session (new game OR a save loaded). Every battle held here belongs to the campaign being torn
+        /// down -- its MapEvent objects will never end now, so their MapEventEnded cleanup will never run and they
+        /// would sit here orphaned for the life of the process. Dropped wholesale. Called from OnSessionLaunched.
         /// </summary>
-        internal static void AdvanceRound(MapEvent mapEvent)
+        internal static void ResetForNewSession()
+        {
+            _battles.Clear();
+        }
+
+        /// <summary>
+        /// Called once per round, from the tick allocation. That is the only place the simulation tells us a round
+        /// has turned -- a blow cannot, since it does not know how many came before it. <paramref name="pace"/> is
+        /// how much of the fight this round carried, normalised to 1 at full battle size (see BattleState.Progress).
+        /// </summary>
+        internal static void AdvanceRound(MapEvent mapEvent, float pace)
         {
             BattleState state = Get(mapEvent);
             if (state == null)
@@ -448,6 +533,16 @@ namespace RBMCampaign
             }
 
             state.Round++;
+            // Never let a round advance the fight by nothing (a zero or negative pace would freeze the phases and hang
+            // the volley forever); one full-size round is 1, a thin small-battle round a fraction of that.
+            state.Progress += MBMath.ClampFloat(pace, 0.01f, 1f);
+
+            // The skirmish opens the first round the volley's progress is spent. Pinned to the RAW round because a
+            // javelin is a physical count -- a man throws his bundle one per round from here (see HasJavelins).
+            if (state.SkirmishStartRound < 0 && state.Progress > state.VolleyRounds)
+            {
+                state.SkirmishStartRound = state.Round;
+            }
 
             // The first round is the first moment the battle can be seen WHOLE. MapEventStarted fires before a
             // lord's allies and the rest of his army have attached themselves to the event, so anything counted
@@ -457,14 +552,99 @@ namespace RBMCampaign
             {
                 state.AttackerCounts = Muster(mapEvent.AttackerSide);
                 state.DefenderCounts = Muster(mapEvent.DefenderSide);
+                state.AttackerPartyCount = CountParties(mapEvent.AttackerSide);
+                state.DefenderPartyCount = CountParties(mapEvent.DefenderSide);
                 state.AttackerRangedShare = RangedShare(state.AttackerCounts);
                 state.DefenderRangedShare = RangedShare(state.DefenderCounts);
+                state.AttackerFootShare = FootShare(state.AttackerCounts);
+                state.DefenderFootShare = FootShare(state.DefenderCounts);
 
                 // A lord's armour and training are fixed for the length of a battle but not between battles, so his
-                // kit is re-measured here, once, rather than on every blow he throws.
+                // kit is re-measured here, once, rather than on every blow he throws. His ARM classification is read
+                // off that same kit, so it is dropped in step -- or selection would price him by last battle's gear.
                 SimulationEquipmentPower.ForgetHeroKits();
+                SimulationArmTargeting.ForgetHeroArms();
 
                 SimulationBattleSnapshot.Recapture(mapEvent);
+            }
+            else
+            {
+                // After round 1 the only muster change we care about is a party JOINING -- reinforcements attaching to
+                // a running event. Cheap party-count check per side; the roster walk only runs on the side that grew.
+                bool attackerGrew;
+                bool defenderGrew;
+                RefreshReinforcements(mapEvent.AttackerSide, state.AttackerCounts, ref state.AttackerPartyCount,
+                    out attackerGrew);
+                if (attackerGrew)
+                {
+                    state.AttackerRangedShare = RangedShare(state.AttackerCounts);
+                }
+                RefreshReinforcements(mapEvent.DefenderSide, state.DefenderCounts, ref state.DefenderPartyCount,
+                    out defenderGrew);
+                if (defenderGrew)
+                {
+                    state.DefenderRangedShare = RangedShare(state.DefenderCounts);
+                    state.DefenderFootShare = FootShare(state.DefenderCounts);
+                }
+                if (attackerGrew)
+                {
+                    state.AttackerFootShare = FootShare(state.AttackerCounts);
+                }
+            }
+
+            // The crowd, re-read every round on both sides. Unlike the muster this is CHEAP -- a live troop count off
+            // the side times a share already computed -- and unlike the muster it has to move, because the whole point
+            // is that the charge dies away with the men who are there to be charged.
+            state.AttackerFoot = LiveFoot(mapEvent.AttackerSide, state.AttackerFootShare);
+            state.DefenderFoot = LiveFoot(mapEvent.DefenderSide, state.DefenderFootShare);
+        }
+
+        /// <summary>The number of parties standing on a side -- cheap to count without walking any roster.</summary>
+        private static int CountParties(MapEventSide side)
+        {
+            if (side == null)
+            {
+                return 0;
+            }
+            int n = 0;
+            foreach (MapEventParty _ in side.Parties)
+            {
+                n++;
+            }
+            return n;
+        }
+
+        /// <summary>
+        /// If a side has GAINED parties since the last muster, fold the newcomers into its counts. Only troop TYPES
+        /// not already tracked are added (with their live strength); an existing stack's count stays frozen at what
+        /// it mustered with -- its <see cref="TroopState"/> pool is already built from that figure and cannot be
+        /// re-sized mid-fight anyway, so re-mustering it would only bleed casualties into a number nothing reads.
+        /// This closes the gap where a stack joining after round 1 was handed the one-man fallback by <see cref="For"/>.
+        /// </summary>
+        private static void RefreshReinforcements(MapEventSide side, Dictionary<CharacterObject, int> counts,
+            ref int lastPartyCount, out bool grew)
+        {
+            grew = false;
+            if (side == null || counts == null)
+            {
+                return;
+            }
+            int now = CountParties(side);
+            if (now <= lastPartyCount)
+            {
+                lastPartyCount = now;
+                return;
+            }
+            lastPartyCount = now;
+            grew = true;
+
+            Dictionary<CharacterObject, int> fresh = Muster(side);
+            foreach (KeyValuePair<CharacterObject, int> entry in fresh)
+            {
+                if (!counts.ContainsKey(entry.Key))
+                {
+                    counts[entry.Key] = entry.Value;
+                }
             }
         }
 
@@ -669,20 +849,22 @@ namespace RBMCampaign
 
         internal static bool IsVolleyPhase(BattleState state)
         {
-            // The round counter is advanced when the round's blows are handed out, so it is 1 during the first
-            // round's fighting -- hence <=, not <.
-            return state != null && state.Round <= state.VolleyRounds;
+            // Progress, not the raw round: the volley is a fixed SHARE of the fight, so a small battle stays in it for
+            // proportionally more (thinner) rounds instead of blowing through it in a handful. At full size Progress
+            // equals the round exactly, so this is identical to the old round-count there. Progress is advanced with
+            // the round's allocation, so it already includes this round's fighting -- hence <=, not <.
+            return state != null && state.Progress <= state.VolleyRounds;
         }
 
         /// <summary>The horse are out, the javelins are in the air, and the foot are still walking.</summary>
         internal static bool IsSkirmishPhase(BattleState state)
         {
             return state != null
-                && state.Round > state.VolleyRounds
-                && state.Round <= (state.VolleyRounds + SkirmishRounds);
+                && state.Progress > state.VolleyRounds
+                && state.Progress <= (state.VolleyRounds + SkirmishRounds);
         }
 
-        /// <summary>The round the foot finally reach each other, and the battle becomes what auto-resolve thinks it is.</summary>
+        /// <summary>The point in the fight the foot finally reach each other -- in Progress units, like the phases.</summary>
         internal static int ContactRound(BattleState state)
         {
             return (state != null) ? (state.VolleyRounds + SkirmishRounds + 1) : 1;
@@ -740,12 +922,105 @@ namespace RBMCampaign
             foreach (KeyValuePair<CharacterObject, int> entry in roll)
             {
                 total += entry.Value;
-                if (entry.Key.IsRanged)
+                // The model's ONE ranged test -- a slinger counts, though CharacterObject.IsRanged classes him as
+                // infantry. Slingers shoot in the volley (SimulationBattleState reclassifies them ranged), so leaving
+                // them out here understates the share and over-boosts VolleyFocus (share^-0.4). See IsRangedTroop.
+                if (SimulationEquipmentPower.IsRangedTroop(entry.Key))
                 {
                     ranged += entry.Value;
                 }
             }
             return (total > 0) ? (ranged / (float)total) : 1f;
+        }
+
+        /// <summary>
+        /// What share of this muster stands on the ground -- infantry and archers together. A charge only ever lands
+        /// on a man on foot (see the chargeEligible gate in SimulationEquipmentPower), and an archer on foot is a body
+        /// a horse can ride down as surely as a spearman is -- riding down unsupported bowmen is the oldest use a
+        /// horse has. So the question here is not which arm a man belongs to but whether he has an animal under him.
+        /// </summary>
+        internal static float FootShare(Dictionary<CharacterObject, int> roll)
+        {
+            if (roll == null || roll.Count == 0)
+            {
+                return 1f;
+            }
+            int total = 0;
+            foreach (KeyValuePair<CharacterObject, int> entry in roll)
+            {
+                total += entry.Value;
+            }
+            return (total > 0) ? (FootCount(roll) / (float)total) : 1f;
+        }
+
+        /// <summary>How many men in this roll stand on the ground. See <see cref="FootShare"/> for what counts.</summary>
+        internal static int FootCount(Dictionary<CharacterObject, int> roll)
+        {
+            if (roll == null)
+            {
+                return 0;
+            }
+            int foot = 0;
+            foreach (KeyValuePair<CharacterObject, int> entry in roll)
+            {
+                int arm = SimulationEquipmentPower.ArmOf(entry.Key);
+                if (arm == SimulationEquipmentPower.InfantryType || arm == SimulationEquipmentPower.ArcherType)
+                {
+                    foot += entry.Value;
+                }
+            }
+            return foot;
+        }
+
+        /// <summary>
+        /// What a horseman's chance of charging INTO that side was at the opening, before a man of it had fallen.
+        /// For the log alone: by the time a battle is written up its state has been forgotten, so this is recomputed
+        /// from the snapshot's opening roll. The battle itself reads <see cref="ChargeChanceAgainst"/>, which thins
+        /// as the crowd does -- this is only where that curve started.
+        /// </summary>
+        internal static float ChargeChanceOpening(MapEvent mapEvent, Dictionary<CharacterObject, int> struckRoll)
+        {
+            float foot = FootCount(struckRoll);
+            return GetChargeChance(mapEvent) * MBMath.ClampFloat(foot / ChargeCrowdSaturation, 0f, 1f);
+        }
+
+        /// <summary>How many men that side still has on foot. Live strength x the muster's foot share -- see the note
+        /// on <see cref="BattleState.AttackerFoot"/> for why it is read this way and what it costs.</summary>
+        private static float LiveFoot(MapEventSide side, float footShare)
+        {
+            return (side != null) ? (side.NumRemainingSimulationTroops * footShare) : 0f;
+        }
+
+        /// <summary>
+        /// The crowd at which a charge is as free as the ground allows. Below it the horse charges less, in proportion;
+        /// at or above it, the terrain figure stands unmodified and nothing here changes today's behaviour.
+        ///
+        /// The number is read off the paired logs, not chosen: a real 22 v 20 desert battle gave TWO charges in some
+        /// fifty mounted melee blows -- four percent -- against roughly twenty men on foot. Four percent is 20/200 of
+        /// the open field's own 45%, so two hundred is where the line through that point reaches full. It says
+        /// something the model had no way to say before: that a twenty-man bandit scrap is not a battle with a line in
+        /// it. Nobody forms up, nobody has anywhere to ride from, and there is no press of bodies to break -- it is a
+        /// brawl, and men in a brawl do not couch lances. A field battle with two hundred foot in it has a line, and
+        /// there the horse charges as it always did.
+        /// </summary>
+        private const float ChargeCrowdSaturation = 200f;
+
+        /// <summary>
+        /// How often a horseman's blow at THAT side carries the charge -- the terrain's own figure (see
+        /// <see cref="GetChargeChance"/>), thinned by how few men that side has left standing on the ground.
+        ///
+        /// Which side is passed matters and is easy to get backwards: it is the side BEING CHARGED, whose foot are the
+        /// bodies in question -- not the side the horse rides for. The anti-cavalry brace reads it from the other
+        /// end (the footman is the striker there, the closing horse the struck), so it passes the striker's side.
+        /// </summary>
+        internal static float ChargeChanceAgainst(BattleState state, bool struckIsAttacker)
+        {
+            if (state == null)
+            {
+                return 0f;
+            }
+            float foot = struckIsAttacker ? state.AttackerFoot : state.DefenderFoot;
+            return state.ChargeChance * MBMath.ClampFloat(foot / ChargeCrowdSaturation, 0f, 1f);
         }
 
         /// <summary>
@@ -767,7 +1042,11 @@ namespace RBMCampaign
                 return true;
             }
 
-            return battle.Round <= AmmoRounds;
+            // Against Progress, not the raw round, so the quiver holds a constant amount of FIGHTING however the
+            // battle is paced: a small skirmish does not burn it through in thin rounds, and archers in a big battle's
+            // slow, thinned-out endgame do not run dry while a full-size fight would still be loosing. At full size
+            // Progress equals the round, so this is the old clock exactly.
+            return battle.Progress <= AmmoRounds;
         }
 
         /// <summary>
@@ -789,11 +1068,18 @@ namespace RBMCampaign
                 return true;
             }
 
-            // He hurls one per round of the skirmish, so the bundle on his back is how many rounds of it he is
-            // dangerous for. Both sides begin the skirmish together, so no side needs a head start or a handicap --
-            // the old first-round shift for attackers is gone with the reason for it, since nobody throws anything
-            // during the volley any more.
-            int roundsIntoSkirmish = battle.Round - battle.VolleyRounds;
+            // He hurls one per RAW round of the skirmish -- a javelin is a physical thing, two javelins are two
+            // throws, whatever the fight's pace -- so this counts raw rounds from where the skirmish opened, NOT
+            // progress. Counted from SkirmishStartRound rather than VolleyRounds, because under the size-normalised
+            // pace the skirmish no longer begins on raw round VolleyRounds: in a small battle the volley's progress
+            // takes many thin rounds to spend, and the bundle would otherwise be thrown away during the volley. Both
+            // sides begin the skirmish together, so no side needs a head start or a handicap. If the skirmish has not
+            // opened yet (still in the volley), he throws nothing.
+            if (battle.SkirmishStartRound < 0)
+            {
+                return false;
+            }
+            int roundsIntoSkirmish = battle.Round - battle.SkirmishStartRound + 1;
             return roundsIntoSkirmish >= 1 && roundsIntoSkirmish <= (int)MathF.Ceiling(thrownPerMan);
         }
 
@@ -820,13 +1106,16 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// What is left of this stack's horses. A footman hacking upward at a rider is mostly hacking at the horse,
-        /// and horses die. When one does, its rider is a man on foot in cavalry harness: he loses the barding that
-        /// was answering those blows, and the blows start finding his head instead of his legs.
+        /// What is left of this stack's horses. Every horse hit wears this pool, and when it empties the mount falls:
+        /// its rider is then a man on foot in cavalry harness, stripped of the barding, the charge and the height the
+        /// horse gave him. Each animal's share of the pool is ITS OWN health -- a heavy charger takes far more than a
+        /// mule -- so <paramref name="horseHealth"/> comes from the struck troop's kit (TroopKit.HorseHealth); the
+        /// flat HorseCapacity stands in only when that could not be read.
         /// </summary>
-        internal static float HorsesAlive(TroopState state)
+        internal static float HorsesAlive(TroopState state, float horseHealth)
         {
-            return MBMath.ClampFloat(1f - (state.HorseDamage / (HorseCapacity * state.Count)), 0f, 1f);
+            float perAnimal = (horseHealth > 0f) ? horseHealth : HorseCapacity;
+            return MBMath.ClampFloat(1f - (state.HorseDamage / (perAnimal * state.Count)), 0f, 1f);
         }
 
         internal static void DamageHorse(TroopState state, float amount)

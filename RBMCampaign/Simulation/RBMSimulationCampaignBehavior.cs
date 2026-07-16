@@ -33,6 +33,19 @@ namespace RBMCampaign
 
         private void OnSessionLaunched(CampaignGameStarter starter)
         {
+            // A session launches on a NEW game and on every LOADED save alike. The simulation's per-battle and
+            // per-troop caches are static, keyed by MapEvent/CharacterObject identity, and are reclaimed only by the
+            // MapEventEnded of the battle that filled them. A save loaded while an event was live tears that campaign
+            // down without ever ending its events, so those entries -- and any hero instances they hold -- would sit
+            // orphaned for the life of the process, and the loaded battle would resume against a stale round clock.
+            // Clear them all here so each session starts from a clean slate.
+            SimulationBattleState.ResetForNewSession();
+            SimulationTroopHitPoints.ResetForNewSession();
+            SimulationBattleSnapshot.ResetForNewSession();
+            SimulationRout.ResetForNewSession();
+            SimulationEquipmentPower.ResetForNewSession();
+            SimulationArmTargeting.ResetForNewSession();
+
             SimulationLog.StartCampaignLog();
         }
 
@@ -67,6 +80,7 @@ namespace RBMCampaign
             // Now the battle is done: let go of its arrows, its splintered shields and its dead horses, or the
             // campaign will carry the memory of every fight it ever fought.
             SimulationBattleState.Forget(mapEvent);
+            SimulationRout.Forget(mapEvent);
 
             SimulationBattleSnapshot.BattleSnapshot snapshot = SimulationBattleSnapshot.Take(mapEvent);
             if (snapshot == null || !SimulationLog.IsEnabled)
@@ -92,6 +106,18 @@ namespace RBMCampaign
             AppendSide(sb, "defender", snapshot.DefenderName, snapshot.DefenderCount, snapshot.DefenderParties);
             sb.Append("  advantage: attacker ").Append(SimulationLog.Fmt(snapshot.AttackerAdvantage))
               .Append(", defender ").Append(SimulationLog.Fmt(snapshot.DefenderAdvantage)).Append("\n");
+
+            // How free the horse was to charge, and why. A charge needs a crowd on the ground to break, so the ground's
+            // own figure is thinned by how many men the side being charged has on foot -- these are the opening
+            // numbers, and both fall away as the foot are killed. A small fight prints a small number, and should.
+            sb.Append("  charge: into attacker's foot ")
+              .Append(SimulationLog.Fmt(SimulationBattleState.ChargeChanceOpening(mapEvent, snapshot.AttackerTroops)))
+              .Append(" (").Append(SimulationBattleState.FootCount(snapshot.AttackerTroops))
+              .Append(" of ").Append(snapshot.AttackerCount).Append(" on foot)")
+              .Append("  ·  into defender's foot ")
+              .Append(SimulationLog.Fmt(SimulationBattleState.ChargeChanceOpening(mapEvent, snapshot.DefenderTroops)))
+              .Append(" (").Append(SimulationBattleState.FootCount(snapshot.DefenderTroops))
+              .Append(" of ").Append(snapshot.DefenderCount).Append(" on foot)").Append("\n");
             sb.Append("\n");
 
             // How it ended. The game's own verdict, on the only battle there is.

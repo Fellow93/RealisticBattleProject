@@ -26,10 +26,12 @@ namespace RBMCampaign
     internal static class SimulationMorale
     {
         // Returning false skips the original body entirely, so the morale AddFactor never touches the blow. The
-        // method is void, so there is nothing to substitute -- the damage simply passes through unmodified.
+        // method is void, so there is nothing to substitute -- the damage simply passes through unmodified. But only
+        // while the equipment model is actually pricing blows: with it off (see SimulationEquipmentPower.
+        // SimulationEnabled) the battle is meant to be vanilla's own, morale and all, so let the original run.
         private static bool Prefix()
         {
-            return false;
+            return !SimulationEquipmentPower.SimulationEnabled;
         }
     }
 }
