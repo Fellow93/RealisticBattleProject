@@ -190,20 +190,18 @@ namespace RBMAI
 
         // Stabilizes the in-battle formation banner marker. Vanilla anchors each marker to
         // Formation.CachedMedianPosition -- the world position of whichever single soldier is
-        // currently closest to the formation's centroid (GetMedianAgent). As units shuffle,
-        // that "median" soldier flips frame to frame, so the banner snaps erratically from man
-        // to man. We re-anchor to the formation's average position (a smooth centroid that
-        // barely moves when one soldier shifts) and ease it over time in world space, then
-        // reproject to screen. Distance/DistanceText and the count are left to native code.
+        // currently closest to the formation's centroid (GetMedianAgent). As units shuffle that
+        // "median" soldier flips, so the banner snaps erratically from man to man; the cached
+        // position also only refreshes on a ~75-125ms timer, which makes it step. We re-anchor
+        // to SmoothedAverageUnitPosition, which the engine already lerps toward the formation's
+        // true centroid every tick, so it neither jumps between soldiers nor steps. The median
+        // is still used as the navmesh carrier for the ground height, matching the idiom native
+        // uses in FormationQuerySystem. Distance/DistanceText and the count are left to native.
         [HarmonyPatch(typeof(MissionGauntletFormationMarker))]
         [HarmonyPatch("UpdateMarkerPositions")]
         private class OverrideMarkerPositions
         {
-            // smoothed world-space anchor (XY) per formation, kept between ticks
-            private static readonly Dictionary<Formation, Vec2> smoothedWorld = new Dictionary<Formation, Vec2>();
             private static readonly Vec3 heightOffset = new Vec3(0f, 0f, 3f, -1f);
-            private const float lerp = 0.25f;          // per-tick easing toward the average
-            private const float snapDistSq = 15f * 15f; // teleport threshold -> snap instead of ease
 
             private static void Postfix(MissionGauntletFormationMarker __instance)
             {
@@ -214,7 +212,6 @@ namespace RBMAI
                     return;
                 }
 
-                HashSet<Formation> live = new HashSet<Formation>();
                 foreach (MissionFormationMarkerTargetVM target in ds.Targets)
                 {
                     Formation f = target.Formation;
@@ -222,27 +219,19 @@ namespace RBMAI
                     {
                         continue;
                     }
-                    WorldPosition wp = f.CachedMedianPosition; // valid + carries a navmesh face
-                    Vec2 avg = f.CachedAveragePosition;
-                    if (!wp.IsValid || !avg.IsValid)
+                    WorldPosition wp = f.CachedMedianPosition; // carries the navmesh face for the ground Z
+                    if (!wp.IsValid)
                     {
                         continue;
                     }
-                    live.Add(f);
-
-                    // ease the world anchor toward the current average; snap on first sight / teleport
-                    Vec2 shown;
-                    if (smoothedWorld.TryGetValue(f, out Vec2 prev) && prev.DistanceSquared(avg) < snapDistSq)
+                    // invalid until the formation's first tick has run
+                    Vec2 anchor = f.SmoothedAverageUnitPosition.IsValid ? f.SmoothedAverageUnitPosition : f.CachedAveragePosition;
+                    if (!anchor.IsValid)
                     {
-                        shown = Vec2.Lerp(prev, avg, lerp);
+                        continue;
                     }
-                    else
-                    {
-                        shown = avg;
-                    }
-                    smoothedWorld[f] = shown;
 
-                    wp.SetVec2(shown);
+                    wp.SetVec2(anchor);
                     float x = 0f, y = 0f, w = 0f;
                     MBWindowManager.WorldToScreen(camera, wp.GetGroundVec3() + heightOffset, ref x, ref y, ref w);
                     if (!TaleWorlds.Library.MathF.IsValidValue(w) || !TaleWorlds.Library.MathF.IsValidValue(x) || !TaleWorlds.Library.MathF.IsValidValue(y))
@@ -252,15 +241,6 @@ namespace RBMAI
 
                     target.WSign = (w < 0f) ? -1 : 1;
                     target.ScreenPosition = new Vec2(x, y);
-                }
-
-                // drop entries for formations that no longer have a marker so we don't retain stale refs
-                if (smoothedWorld.Count > live.Count)
-                {
-                    foreach (Formation stale in smoothedWorld.Keys.Where(k => !live.Contains(k)).ToList())
-                    {
-                        smoothedWorld.Remove(stale);
-                    }
                 }
             }
         }
