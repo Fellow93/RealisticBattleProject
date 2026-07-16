@@ -118,6 +118,14 @@ namespace RBMCampaign
               .Append(SimulationLog.Fmt(SimulationBattleState.ChargeChanceOpening(mapEvent, snapshot.DefenderTroops)))
               .Append(" (").Append(SimulationBattleState.FootCount(snapshot.DefenderTroops))
               .Append(" of ").Append(snapshot.DefenderCount).Append(" on foot)").Append("\n");
+
+            // And how long the bows had the field alone. Scaled by the size of the fight for the same reason the
+            // charge is: forty men do not deploy and advance, they collide. A siege and a sea fight are exempt.
+            sb.Append("  volley: ")
+              .Append(SimulationLog.Fmt(SimulationBattleState.VolleyRoundsOpening(mapEvent,
+                  snapshot.AttackerCount + snapshot.DefenderCount)))
+              .Append(" rounds  (").Append(snapshot.AttackerCount + snapshot.DefenderCount)
+              .Append(" men on the field)").Append("\n");
             sb.Append("\n");
 
             // How it ended. The game's own verdict, on the only battle there is.

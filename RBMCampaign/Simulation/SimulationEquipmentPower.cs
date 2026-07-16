@@ -1164,8 +1164,11 @@ namespace RBMCampaign
             // the whole field to shoot across; the attacker is still coming, too far out to answer, and eats it.
             // That is what it means to advance on a prepared position, and it is the reason storming one is
             // expensive.
+            // The window is the battle's own, not a constant: it shrinks with the volley in a small fight (see
+            // SimulationBattleState.GetDefenderOnlyRounds). A flat two rounds here outlived a 1.26-round volley and
+            // silenced the only archers on the field for the whole of it.
             bool mayLoose = !(volley && strikerIsAttacker && state != null
-                && state.Progress <= SimulationBattleState.DefenderOnlyRounds);
+                && state.Progress <= state.DefenderOnlyRounds);
 
             // Whether he still HAS arrows is a question about the clock, not about how many blows he happens to
             // have thrown: a quiver empties per minute, not per swing. Nothing is spent here -- the round counter

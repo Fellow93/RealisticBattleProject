@@ -305,7 +305,15 @@ namespace RBMCampaign
             /// HasJavelins counts RAW rounds from here, not progress. -1 until the skirmish opens.</summary>
             public int SkirmishStartRound = -1;
 
-            public int VolleyRounds;
+            /// <summary>How much of the fight, in <see cref="Progress"/> units, is spent with the bows alone at work
+            /// before the javelins start. Not an integer: it is scaled by the battle's size (see GetVolleyRounds), and
+            /// a small fight's volley is a fraction of a round.</summary>
+            public float VolleyRounds;
+
+            /// <summary>How much of the volley belongs to the defender's bows alone, in <see cref="Progress"/> units.
+            /// Scaled by the battle's size in step with <see cref="VolleyRounds"/> -- see GetDefenderOnlyRounds for
+            /// why the two cannot be allowed to drift apart.</summary>
+            public float DefenderOnlyRounds;
 
             /// <summary>
             /// Men on a wall do not shoot from a quiver -- they shoot from the town's arrow stores, stacked behind
@@ -433,6 +441,7 @@ namespace RBMCampaign
             {
                 state = new BattleState();
                 state.VolleyRounds = GetVolleyRounds(mapEvent);
+                state.DefenderOnlyRounds = GetDefenderOnlyRounds(mapEvent);
                 state.DefendersShootFromStores = mapEvent.IsSiegeAssault;
                 state.KitingRoom = GetKitingRoom(mapEvent);
                 state.ChargeChance = GetChargeChance(mapEvent);
@@ -559,6 +568,14 @@ namespace RBMCampaign
                 state.AttackerFootShare = FootShare(state.AttackerCounts);
                 state.DefenderFootShare = FootShare(state.DefenderCounts);
 
+                // And the volley, re-measured now that the battle can be seen whole. It was set once already when the
+                // state was made, but that was at MapEventStarted -- before a lord's allies had attached themselves --
+                // so it was measured against a fraction of the men who turned up, and a full battle would have opened
+                // with a small skirmish's short volley. Same reason the muster is taken here and not there. The
+                // defender's opening window rides the same size and is re-measured with it, never apart from it.
+                state.VolleyRounds = GetVolleyRounds(mapEvent);
+                state.DefenderOnlyRounds = GetDefenderOnlyRounds(mapEvent);
+
                 // A lord's armour and training are fixed for the length of a battle but not between battles, so his
                 // kit is re-measured here, once, rather than on every blow he throws. His ARM classification is read
                 // off that same kit, so it is dropped in step -- or selection would price him by last battle's gear.
@@ -649,16 +666,82 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// How long the bowmen have before the lines meet -- which is a question about the ground. Across an open
-        /// plain a man walks a long way under arrows; in a wood he is on you before the second shaft is nocked.
-        /// Storming a wall is the longest walk of all, and everyone on it is shooting at you the whole way.
+        /// The battle size at which the approach is a full one. Below it the volley shortens, in proportion; at or
+        /// above it nothing changes and the old figures stand. The same two hundred the charge saturates at
+        /// (ChargeCrowdSaturation), and deliberately so -- both are the model saying the same thing about the same
+        /// number: that below this, a fight is not a battle with a line in it.
         /// </summary>
-        private static int GetVolleyRounds(MapEvent mapEvent)
+        private const float VolleyBattleSaturation = 200f;
+
+        /// <summary>Whatever the fight, the bows get something. A skirmish so small it had no approach at all would
+        /// leave archers with no phase of their own, and an archer who never looses is not a model of anything.</summary>
+        private const float MinVolleyRounds = 1f;
+
+        /// <summary>
+        /// How long the bowmen have before the lines meet -- which is a question about the ground, and about whether
+        /// there is a line at all.
+        ///
+        /// THE GROUND says how far there is to walk. Across an open plain a man walks a long way under arrows; in a
+        /// wood he is on you before the second shaft is nocked. Storming a wall is the longest walk of all, and
+        /// everyone on it is shooting at you the whole way.
+        ///
+        /// THE SIZE says whether anybody walks it as a line. Two warbands of twenty do not deploy at two hundred paces
+        /// and advance under arrows; they blunder into each other and start swinging, and the bowmen get off what they
+        /// get off. The paired logs say it plainly -- a real 22 v 20 landed some five shots before the lines met,
+        /// where the model was spending eighty-odd blows on four full rounds of volley. So the ground's figures are
+        /// the ceiling, reached at VolleyBattleSaturation men, and a smaller fight gets a proportional share.
+        ///
+        /// A SIEGE AND A SEA FIGHT ARE EXEMPT, and that is not an oversight. What a small field battle lacks is a line
+        /// and a stretch of ground both sides agreed to cross. A siege has both whatever the numbers: there is a wall,
+        /// there is a killing ground in front of it, and thirty men must cross it under the same arrows two hundred
+        /// would -- crossing it is what a siege IS. Ships close at the speed of ships. Neither length is a fact about
+        /// how many men are present, so neither is scaled.
+        /// </summary>
+        private static float GetVolleyRounds(MapEvent mapEvent)
         {
-            return GetVolleyRounds(mapEvent.SimulationContext, mapEvent.IsSiegeAssault);
+            return GetVolleyRounds(mapEvent.SimulationContext, mapEvent.IsSiegeAssault, BattleSize(mapEvent));
         }
 
-        private static int GetVolleyRounds(MapEvent.PowerCalculationContext context, bool isSiegeAssault)
+        /// <summary>Every man still standing on both sides. Read at the muster, when none has fallen yet.</summary>
+        private static int BattleSize(MapEvent mapEvent)
+        {
+            int attackers = (mapEvent.AttackerSide != null) ? mapEvent.AttackerSide.NumRemainingSimulationTroops : 0;
+            int defenders = (mapEvent.DefenderSide != null) ? mapEvent.DefenderSide.NumRemainingSimulationTroops : 0;
+            return attackers + defenders;
+        }
+
+        private static float GetVolleyRounds(MapEvent.PowerCalculationContext context, bool isSiegeAssault, int men)
+        {
+            float full = FullVolleyRounds(context, isSiegeAssault);
+            if (IsFixedApproach(context, isSiegeAssault))
+            {
+                return full;
+            }
+            return MathF.Max(MinVolleyRounds, full * MBMath.ClampFloat(men / VolleyBattleSaturation, 0f, 1f));
+        }
+
+        /// <summary>Battles whose approach is set by the ground and not by the crowd -- a wall to storm, a hull to come
+        /// alongside. See the note on GetVolleyRounds.</summary>
+        private static bool IsFixedApproach(MapEvent.PowerCalculationContext context, bool isSiegeAssault)
+        {
+            if (isSiegeAssault)
+            {
+                return true;
+            }
+            switch (context)
+            {
+                case MapEvent.PowerCalculationContext.Siege:
+                case MapEvent.PowerCalculationContext.NavalRaid:
+                case MapEvent.PowerCalculationContext.SeaBattle:
+                case MapEvent.PowerCalculationContext.OpenSeaBattle:
+                case MapEvent.PowerCalculationContext.RiverCrossingBattle:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static float FullVolleyRounds(MapEvent.PowerCalculationContext context, bool isSiegeAssault)
         {
             // A siege is the longest approach there is, whether you are storming the wall or grinding at it. Every
             // man on the parapet is shooting at you the whole way, and there is nowhere to go but forward.
@@ -818,11 +901,36 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// How long the field belongs to the defender's bows alone. He is standing on his ground with his enemy in
-        /// the open and the whole distance to shoot across; the attacker is still coming, too far out to answer,
-        /// and eats it. That is what it means to advance on a prepared position.
+        /// How long the field belongs to the defender's bows alone, in a battle big enough to have a proper approach.
+        /// He is standing on his ground with his enemy in the open and the whole distance to shoot across; the
+        /// attacker is still coming, too far out to answer, and eats it. That is what it means to advance on a
+        /// prepared position.
+        ///
+        /// This is the FULL-SIZE figure. The window it opens is a share of the approach, not an absolute -- it has to
+        /// shorten with the volley or it swallows it whole. See <see cref="GetDefenderOnlyRounds"/>.
         /// </summary>
-        internal const int DefenderOnlyRounds = 2;
+        private const float DefenderOnlyRoundsFull = 2f;
+
+        /// <summary>
+        /// How long the defender's bows have the field to themselves in THIS battle -- the full-size window, cut down
+        /// by the size of the fight exactly as the volley is (see <see cref="GetVolleyRounds"/>), and exempt for the
+        /// same fixed-approach battles.
+        ///
+        /// The two MUST be scaled by the same measure. They were not, and it was a real bug: the volley shrank to 1.26
+        /// rounds in a 42-man fight while this window stayed a flat 2, so the window was longer than the entire volley
+        /// and the attacker's bowmen -- who were the only bowmen on the field -- were barred from loosing for the
+        /// whole of it. The defenders had no bows to answer with, so the volley passed in silence and the phase
+        /// vanished from the log. A share of nothing has to be nothing.
+        /// </summary>
+        private static float GetDefenderOnlyRounds(MapEvent mapEvent)
+        {
+            if (IsFixedApproach(mapEvent.SimulationContext, mapEvent.IsSiegeAssault))
+            {
+                return DefenderOnlyRoundsFull;
+            }
+            return DefenderOnlyRoundsFull
+                * MBMath.ClampFloat(BattleSize(mapEvent) / VolleyBattleSaturation, 0f, 1f);
+        }
 
         // A BATTLE HAS THREE ACTS, and only the last of them is what auto-resolve ever modelled.
         //
@@ -865,9 +973,9 @@ namespace RBMCampaign
         }
 
         /// <summary>The point in the fight the foot finally reach each other -- in Progress units, like the phases.</summary>
-        internal static int ContactRound(BattleState state)
+        internal static float ContactRound(BattleState state)
         {
-            return (state != null) ? (state.VolleyRounds + SkirmishRounds + 1) : 1;
+            return (state != null) ? (state.VolleyRounds + SkirmishRounds + 1f) : 1f;
         }
 
         /// <summary>
@@ -982,6 +1090,20 @@ namespace RBMCampaign
         {
             float foot = FootCount(struckRoll);
             return GetChargeChance(mapEvent) * MBMath.ClampFloat(foot / ChargeCrowdSaturation, 0f, 1f);
+        }
+
+        /// <summary>
+        /// How long this battle's volley ran, for the log. Recomputed at write-up the same way
+        /// <see cref="ChargeChanceOpening"/> is, because the state is gone by then.
+        ///
+        /// <paramref name="men"/> must be the OPENING count, off the snapshot -- taking it from the event here would
+        /// read the survivors, and report a short volley for every battle that ended in a slaughter.
+        /// </summary>
+        internal static float VolleyRoundsOpening(MapEvent mapEvent, int men)
+        {
+            return (mapEvent != null)
+                ? GetVolleyRounds(mapEvent.SimulationContext, mapEvent.IsSiegeAssault, men)
+                : 0f;
         }
 
         /// <summary>How many men that side still has on foot. Live strength x the muster's foot share -- see the note
