@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
@@ -37,6 +38,18 @@ namespace RBMCampaign
             /// two look identical in the log until the wounded are shown, so they are shown.
             /// </summary>
             public int Wounded;
+
+            /// <summary>
+            /// What this party's COMMANDER is worth to the men in it: every hit-point perk of his that actually fired
+            /// for at least one of them, by name and number, and the pool it produced.
+            ///
+            /// Captured HERE, at the muster, and not written at the end, for two reasons. His roster is whole now --
+            /// by the last round a wiped-out party has no troops left to ask the question of, and a party whose
+            /// cavalry all died would report no veterinary. And it is his PARTY's perks, which is a thing only this
+            /// loop knows: a side is several lords with several parties, and the side's leader is not the commander
+            /// of the men in someone else's. Null when nothing fired, which is most parties.
+            /// </summary>
+            public string CommanderPerks;
         }
 
         /// <summary>The battle as it stood at the top of the first round: everyone who came, and nobody yet dead.</summary>
@@ -142,8 +155,12 @@ namespace RBMCampaign
             snapshot.Context = mapEvent.SimulationContext;
             snapshot.IsPlayerBattle = mapEvent.IsPlayerMapEvent;
 
-            snapshot.AttackerCount = Muster(mapEvent.AttackerSide, snapshot.AttackerTroops, snapshot.AttackerParties);
-            snapshot.DefenderCount = Muster(mapEvent.DefenderSide, snapshot.DefenderTroops, snapshot.DefenderParties);
+            // Whether this is a battle with no horses in it -- which decides which of a commander's perks his men
+            // collect, so the log must ask it exactly as the battle did or it will report a pool nobody had.
+            bool dismounted = SimulationBattleState.IsDismountedBattle(mapEvent);
+
+            snapshot.AttackerCount = Muster(mapEvent.AttackerSide, snapshot.AttackerTroops, snapshot.AttackerParties, dismounted);
+            snapshot.DefenderCount = Muster(mapEvent.DefenderSide, snapshot.DefenderTroops, snapshot.DefenderParties, dismounted);
 
             snapshot.AttackerName = Describe(mapEvent.AttackerSide);
             snapshot.DefenderName = Describe(mapEvent.DefenderSide);
@@ -169,7 +186,8 @@ namespace RBMCampaign
         /// very often several parties -- a lord, his allies, a militia, a caravan swept up in someone else's war --
         /// and two lords who each brought archers have, between them, one body of archers.
         /// </summary>
-        private static int Muster(MapEventSide side, Dictionary<CharacterObject, int> troops, List<PartyLine> parties)
+        private static int Muster(MapEventSide side, Dictionary<CharacterObject, int> troops, List<PartyLine> parties,
+            bool dismounted)
         {
             int total = 0;
             if (side == null)
@@ -187,6 +205,7 @@ namespace RBMCampaign
 
                 int brought = 0;
                 int wounded = 0;
+                List<CharacterObject> partyTroops = new List<CharacterObject>();
 
                 for (int i = 0; i < party.MemberRoster.Count; i++)
                 {
@@ -202,6 +221,7 @@ namespace RBMCampaign
                     {
                         continue;
                     }
+                    partyTroops.Add(element.Character);
 
                     int running;
                     troops.TryGetValue(element.Character, out running);
@@ -216,10 +236,127 @@ namespace RBMCampaign
                     line.Name = (party.Name != null) ? party.Name.ToString() : party.Id;
                     line.Count = brought;
                     line.Wounded = wounded;
+                    line.CommanderPerks = DescribeCommanderPerks(party, partyTroops, dismounted);
                     parties.Add(line);
                 }
             }
             return total;
+        }
+
+        /// <summary>
+        /// Every hit-point perk this party's commander actually pays out, by name and number, with the pools they
+        /// produce -- or null if his training does nothing for these men.
+        ///
+        /// ASKED OF HIS REAL TROOPS, not of a representative one. The perks are conditional (some reach only foot,
+        /// some only infantry, some only the ranged, some only the horses), so the only honest way to say which of
+        /// them fire is to put the question to every troop type he actually brought and collect the answers. That
+        /// also makes the range meaningful: "100 -> 110-125" says his worst-served man gained ten and his best
+        /// twenty-five, which is the shape of the thing and not an average that hides it.
+        ///
+        /// The perks and numbers are read out of ExplainedNumber's own record of what the REAL method did (see
+        /// SimulationTroopHitPoints.ExplainCommandedHealth), never from a list kept here. Nothing in this file knows
+        /// which perks exist, and nothing in it can drift from the ones that fired.
+        /// </summary>
+        private static string DescribeCommanderPerks(PartyBase party, List<CharacterObject> troops, bool dismounted)
+        {
+            if (party == null || troops.Count == 0 || !SimulationPerks.Enabled)
+            {
+                return null;
+            }
+
+            List<string> fired = new List<string>();
+            float baseline = -1f;
+            float lowest = float.MaxValue;
+            float highest = 0f;
+            string mount = null;
+
+            foreach (CharacterObject troop in troops)
+            {
+                if (troop == null || troop.IsHero)
+                {
+                    // A hero's pool is his own and takes no party bonus, in native and here alike -- he would only
+                    // widen the range with a number no perk on this line produced.
+                    continue;
+                }
+
+                ExplainedNumber pool = SimulationTroopHitPoints.ExplainCommandedHealth(troop, party, dismounted);
+                CollectLines(pool, troop.MaxHitPoints(), fired);
+
+                if (baseline < 0f)
+                {
+                    baseline = troop.MaxHitPoints();
+                }
+                if (pool.ResultNumber < lowest) { lowest = pool.ResultNumber; }
+                if (pool.ResultNumber > highest) { highest = pool.ResultNumber; }
+
+                // And his horses, once -- the mount perks are the party's, so the first mounted troop answers for
+                // every one of them. A battle with no horses in it reports none, and rightly: there is nothing on
+                // the wall for a veterinary to keep alive.
+                if (mount == null && SimulationBattleState.IsMountedIn(troop, dismounted))
+                {
+                    float baseMount = SimulationEquipmentPower.MountHealthOf(troop);
+                    if (baseMount > 0f)
+                    {
+                        ExplainedNumber mountPool = SimulationTroopHitPoints.ExplainCommandedMountHealth(troop, party, baseMount);
+                        List<string> mountFired = new List<string>();
+                        CollectLines(mountPool, baseMount, mountFired);
+                        if (mountFired.Count > 0)
+                        {
+                            mount = "mounts " + MathF.Round(baseMount) + " -> " + MathF.Round(mountPool.ResultNumber)
+                                + " (" + string.Join(", ", mountFired.ToArray()) + ")";
+                        }
+                    }
+                }
+            }
+
+            if (fired.Count == 0 && mount == null)
+            {
+                return null;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            if (fired.Count > 0)
+            {
+                string range = (MathF.Round(lowest) == MathF.Round(highest))
+                    ? MathF.Round(highest).ToString()
+                    : MathF.Round(lowest) + "-" + MathF.Round(highest);
+                sb.Append("hit points ").Append(MathF.Round(baseline)).Append(" -> ").Append(range)
+                  .Append(" (").Append(string.Join(", ", fired.ToArray())).Append(")");
+            }
+            if (mount != null)
+            {
+                if (sb.Length > 0)
+                {
+                    sb.Append("  ·  ");
+                }
+                sb.Append(mount);
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Fold one explained pool's perk lines into the running list, without repeating a perk that has already
+        /// fired for another troop type in the same party.
+        ///
+        /// MIND THE FIRST LINE. ExplainedNumber.GetLines() does not hand back the perks -- it hands back the whole
+        /// explanation, and the explanation OPENS with the base: its constructor records a Base line whenever it is
+        /// built with descriptions on and a non-zero starting number, and GetLines emits that entry before any of
+        /// the rest. Taken at face value this prints "Base +100" as though a hundred hit points were a perk the lord
+        /// brought. So the leading line is dropped -- and only when there is a base to drop, since a zero base
+        /// records none and the first line would then be a real one.
+        /// </summary>
+        private static void CollectLines(ExplainedNumber explained, float baseNumber, List<string> fired)
+        {
+            List<(string name, float number)> lines = explained.GetLines();
+            int first = (baseNumber != 0f && lines.Count > 0) ? 1 : 0;
+            for (int i = first; i < lines.Count; i++)
+            {
+                string text = lines[i].name + " +" + MathF.Round(lines[i].number);
+                if (!fired.Contains(text))
+                {
+                    fired.Add(text);
+                }
+            }
         }
 
         private static string Describe(MapEventSide side)

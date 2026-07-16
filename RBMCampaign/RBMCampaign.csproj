@@ -307,6 +307,8 @@
     <Compile Include="UI\SpoilsBarPrefabPatch.cs" />
     <Compile Include="UI\SpoilsPartyTooltip.cs" />
     <Compile Include="Simulation\SimulationArmTargeting.cs" />
+    <Compile Include="Simulation\SimulationCommandStructure.cs" />
+    <Compile Include="Simulation\SimulationPerks.cs" />
     <Compile Include="Simulation\SimulationEquipmentPower.cs" />
     <Compile Include="Simulation\SimulationMorale.cs" />
     <Compile Include="Simulation\SimulationPlayerParticipation.cs" />

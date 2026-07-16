@@ -135,8 +135,6 @@ namespace RBMCampaign
 
         public float FinalDamage;
 
-        public int StruckHitPoints;
-
         /// <summary>
         /// What the man has LEFT after this blow -- every man, not just the lords. Read from the game's own books
         /// (a hero's from the Hero, a trooper's from the pool in SimulationTroopHitPoints), never reconstructed.
@@ -407,6 +405,33 @@ namespace RBMCampaign
 
             public float DefenderFoot;
 
+            /// <summary>
+            /// Each side's chain of command -- who leads the whole thing, and who leads each body of men. Built at
+            /// round one off the same roster walk the muster takes (see AdvanceRound), and null until then, which is
+            /// harmless: no blow lands before round one, and everything downstream reads a null command as "nobody
+            /// is captaining anybody", which is exactly what an uncommanded side is. See SimulationCommandStructure.
+            /// </summary>
+            public SimulationCommandStructure.SideCommand AttackerCommand;
+
+            public SimulationCommandStructure.SideCommand DefenderCommand;
+
+            /// <summary>
+            /// The captain over this troop, on this side, and his perk signature. The signature is what the kit
+            /// cache is keyed on: two captains with the same perks make the same soldiers, so they share an entry.
+            /// A troop with no captain -- and a captain asked about himself -- signs as 0, which is the uncaptained
+            /// kit and byte-identical to what this model computed before captains existed.
+            /// </summary>
+            public CharacterObject CaptainFor(CharacterObject troop, bool attacker, out int signature)
+            {
+                signature = 0;
+                SimulationCommandStructure.SideCommand command = attacker ? AttackerCommand : DefenderCommand;
+                if (command == null)
+                {
+                    return null;
+                }
+                return command.CaptainFor(troop, out signature);
+            }
+
             public TroopState For(CharacterObject troop, bool attacker)
             {
                 Dictionary<CharacterObject, TroopState> side = attacker ? Attackers : Defenders;
@@ -508,6 +533,26 @@ namespace RBMCampaign
             return state.Trace;
         }
 
+        /// <summary>
+        /// The chain of command each side fought under, handed over before the battle is forgotten -- the same
+        /// hand-off <see cref="TakeTrace"/> makes, and for the same reason: the write-up happens at MapEventEnded,
+        /// by which time Forget has dropped all of this. Null for a battle nobody simulated (the player fought it
+        /// himself), which is exactly when there were no captains to report.
+        /// </summary>
+        internal static void TakeCommands(MapEvent mapEvent, out SimulationCommandStructure.SideCommand attacker,
+            out SimulationCommandStructure.SideCommand defender)
+        {
+            attacker = null;
+            defender = null;
+            BattleState state;
+            if (mapEvent == null || !_battles.TryGetValue(mapEvent, out state))
+            {
+                return;
+            }
+            attacker = state.AttackerCommand;
+            defender = state.DefenderCommand;
+        }
+
         /// <summary>A battle is over; let it go, or the campaign will carry every fight it ever fought.</summary>
         internal static void Forget(MapEvent mapEvent)
         {
@@ -582,6 +627,14 @@ namespace RBMCampaign
                 SimulationEquipmentPower.ForgetHeroKits();
                 SimulationArmTargeting.ForgetHeroArms();
 
+                // And who commands whom, off the muster that was just taken rather than a second walk of the same
+                // rosters. It has to be here and not at MapEventStarted for exactly the reason the muster is here:
+                // before round one a lord's allies have not attached themselves to the event, so a side read then is
+                // a fraction of the side that turns up -- and a chain of command built over a fraction of an army
+                // would hand the biggest body to the wrong man.
+                state.AttackerCommand = SimulationCommandStructure.Build(mapEvent.AttackerSide, mapEvent, state.AttackerCounts);
+                state.DefenderCommand = SimulationCommandStructure.Build(mapEvent.DefenderSide, mapEvent, state.DefenderCounts);
+
                 SimulationBattleSnapshot.Recapture(mapEvent);
             }
             else
@@ -614,6 +667,17 @@ namespace RBMCampaign
             // is that the charge dies away with the men who are there to be charged.
             state.AttackerFoot = LiveFoot(mapEvent.AttackerSide, state.AttackerFootShare);
             state.DefenderFoot = LiveFoot(mapEvent.DefenderSide, state.DefenderFootShare);
+
+            // And a lord who has gone down stops leading. Four checks a side and no roster walk -- cheap enough to
+            // run every round, which is the whole reason it is a validation and not a rebuild.
+            if (state.AttackerCommand != null)
+            {
+                state.AttackerCommand.RetireTheFallen();
+            }
+            if (state.DefenderCommand != null)
+            {
+                state.DefenderCommand.RetireTheFallen();
+            }
         }
 
         /// <summary>The number of parties standing on a side -- cheap to count without walking any roster.</summary>
@@ -832,9 +896,17 @@ namespace RBMCampaign
         private const float ForestChargeChance = 0.4f;  // trees and water -- the horse charges a little less often
         private const float VillageChargeChance = 0.15f; // riding between houses, room for the odd charge
         // Every charge chance above is scaled this much across the board -- but NOT the naval and siege zeroes, which
-        // stay nothing (a wall and a deck have no charge to scale). Was 1.2 (a 20% lift); pulled to 0.9 -- with the
-        // charge landing unblocked and hitting harder now, the horse was charging too often and running whole battles.
-        private const float ChargeChanceBoost = 0.9f;
+        // stay nothing (a wall and a deck have no charge to scale). So the open field reads 0.55, a wood 0.44 and a
+        // village street 0.165, before the crowd thins them (ChargeChanceAgainst).
+        //
+        // It has been up and down: 1.2 first, then pulled to 0.9 when the charge became unblockable and started
+        // hitting for its mount's own weight -- the horse was charging too often and running whole battles -- and now
+        // back to 1.1. Note it moves TWO things, not one, and they pull against each other: it is also the chance a
+        // horse is CLOSING onto a set spear (the same reading, from the other end -- see the brace in
+        // SimulationEquipmentPower). Raising it gives the horse more charges AND gives the spearmen waiting for it
+        // more of the rebound that wrecks them. It is not a pure buff to cavalry, and the paired log is the only
+        // thing that will say which way it nets out.
+        private const float ChargeChanceBoost = 1.1f;
 
         private static float GetChargeChance(MapEvent mapEvent)
         {
@@ -881,6 +953,38 @@ namespace RBMCampaign
         /// apart from GetKitingRoom for exactly that reason -- a wall, a deck and a village street all read zero room,
         /// but the village keeps its horses and the other two have none, and those are not the same zero.
         /// </summary>
+        /// <summary>
+        /// WHETHER THIS MAN FIGHTS THIS BATTLE ON A HORSE. The one answer to that question, and the only one anything
+        /// should ask.
+        ///
+        /// It reads <c>troop.IsMounted</c> -- the formation class off his XML -- and not <c>HasMount()</c>, which
+        /// inspects the horse slot of his FIRST equipment set. The two disagree (a Cavalry-classed troop whose
+        /// opening set has no horse; an Infantry-classed one who carries a mount), and the model has committed to the
+        /// formation class everywhere else: it is what the kit records, what the arm classification reads, and what
+        /// the whole cavalry/foot split of this simulation is built on. Native's own models ask an Agent for
+        /// HasMount, but an Agent has genuinely been spawned onto a horse or not; a CharacterObject has not, and
+        /// picking the equipment slot to imitate the wording gets native's expression while missing its meaning.
+        ///
+        /// And then the battle overrules him. A siege has no horses in it at all -- the wall is stormed and held on
+        /// foot, and the game leaves every mount in the camp -- so a cavalryman there is a lance and a suit of
+        /// barding with no animal under it (see <see cref="IsDismounted"/>). Native gets this for free, because in a
+        /// siege mission the agent really has no mount and every model asking HasMount is told so. Here it has to be
+        /// asked deliberately, and anything that forgets to will hand a horse archer his HorseMaster on a ladder and
+        /// deny a dismounted lancer the foot perks he is plainly earning.
+        /// </summary>
+        internal static bool IsMountedIn(CharacterObject troop, bool dismountedBattle)
+        {
+            return troop != null && troop.IsMounted && !dismountedBattle;
+        }
+
+        /// <summary>Whether this battle is one nobody fights mounted, off the battle's own cached state. For the
+        /// callers that hold a MapEvent rather than a BattleState. See <see cref="IsDismounted"/>.</summary>
+        internal static bool IsDismountedBattle(MapEvent mapEvent)
+        {
+            BattleState state = Get(mapEvent);
+            return state != null && state.Dismounted;
+        }
+
         private static bool IsDismounted(MapEvent mapEvent)
         {
             if (mapEvent.IsSiegeAssault)
@@ -954,6 +1058,28 @@ namespace RBMCampaign
         /// paid for and carried.
         /// </summary>
         private const int SkirmishRounds = 3;
+
+        /// <summary>
+        /// How far through the volley this blow falls: 0 at the opening, 1 at the moment the javelins start.
+        ///
+        /// The volley is not one distance -- it is a distance CLOSING. It opens with the lines as far apart as they
+        /// will ever be, and ends with them near enough to throw a spear across. A shaft loosed at the start of it is
+        /// the longest shot anyone takes all battle; the same archer at the end of it is looking at a man he can see
+        /// plainly. Anything that treats the whole volley as one range is averaging those two, and the log cannot
+        /// tell them apart.
+        ///
+        /// In Progress units, so it holds its meaning whatever the battle's size or pace (a small fight's volley is a
+        /// fraction of a round -- see GetVolleyRounds); 1 outside the volley, and for a battle with no volley at all,
+        /// so a caller that asks anyway gets the closest, flattest shot rather than the longest.
+        /// </summary>
+        internal static float VolleyProgress(BattleState state)
+        {
+            if (state == null || state.VolleyRounds <= 0f)
+            {
+                return 1f;
+            }
+            return MBMath.ClampFloat(state.Progress / state.VolleyRounds, 0f, 1f);
+        }
 
         internal static bool IsVolleyPhase(BattleState state)
         {

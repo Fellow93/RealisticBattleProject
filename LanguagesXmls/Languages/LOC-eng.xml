@@ -144,6 +144,7 @@
 		<string id="RBM_CON_094" text="Detailed Auto Resolve Logging" />
 		<string id="RBM_CON_095" text="Field Battle Logging" />
 		<string id="RBM_CON_096" text="Auto Resolve Routing" />
+		<string id="RBM_CON_097" text="Auto Resolve Perks" />
 	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
 	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
 	<string id="RBM_SPOILS_005" text="Salvaged into spoils: {AMOUNT}" />

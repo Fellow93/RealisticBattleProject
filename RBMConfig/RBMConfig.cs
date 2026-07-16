@@ -248,6 +248,29 @@ namespace RBMConfig
         // fight-to-the-last-man auto-resolve, which is what the game does without RBM.
         public static bool simulationRoutEnabled = false;
 
+        // Perks in auto-resolve. Bannerlord runs two perk tracks: a COMMANDER's (the party or army leader),
+        // which applies to everyone he brought, and a CAPTAIN's, which applies only to the one formation that hero
+        // personally leads. Auto-resolve gets the first properly and the second barely at all -- its only channel for
+        // captain perks is Hero.PowerModifier, which COUNTS the side commander's captain perks and turns the count
+        // into a flat percentage for the whole side, throwing away what each perk actually does, ignoring the great
+        // majority of them (it tests only perks whose PRIMARY role is Captain, and most declare Captain as their
+        // secondary), and crediting nothing at all to the companions who would be leading formations in a real
+        // battle. When on, the sim synthesises the formations auto-resolve lacks (bucketing each side's men by
+        // formation class), appoints a captain over each by porting the game's own assignment rule -- so an
+        // auto-resolved battle is led by the same men who would lead it if it were fought by hand -- honours the
+        // player's own Order of Battle for his side, and asks each captain for his real perks through the game's own
+        // PerkHelper. The PowerModifier count is then lifted back out of the blow, since it is the same thing counted
+        // twice.
+        //
+        // It also restores the COMMANDER's hit-point perks to his men -- ThickHides, HardyFrontline, WellBuilt,
+        // HardKnock, UnwaveringDefense, PickedShots and a doctor-lord's MinisterOfHealth, up to +28 and more for a
+        // well-led line. Those are PartyLeader perks, not captain ones, and every one of them fires in a battle you
+        // fight by hand and none in a battle you press the button on. Commander DAMAGE perks need nothing from this
+        // toggle either way: vanilla applies them itself and RBM's correction preserves them.
+        //
+        // False (0) restores vanilla's captain-perk count and drops the commander's hit-point perks again.
+        public static bool simulationPerkSystem = true;
+
         // Writes every auto-resolved battle to its own log under logs/simulation, as it was actually fought: who
         // stood on each side, what they carried, how it ended. Costs nothing while off -- no battle is snapshotted
         // and no blow is recorded.
@@ -427,6 +450,7 @@ namespace RBMConfig
             simulationRangedMissEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationRangedMissEnabled", "1").Equals("1");
             simulationRangedMissChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationRangedMissChance", "0.35"), CultureInfo.InvariantCulture);
             simulationRoutEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationRoutEnabled", "0").Equals("1");
+            simulationPerkSystem = ReadOrCreate("/Config/RBMCampaign", "SimulationPerkSystem", "1").Equals("1");
             simulationLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationLoggingEnabled", "1").Equals("1");
             simulationLogHits = ReadOrCreate("/Config/RBMCampaign", "SimulationLogHits", "1").Equals("1");
 
@@ -558,6 +582,7 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRangedMissEnabled"), simulationRangedMissEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRangedMissChance"), simulationRangedMissChance.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRoutEnabled"), simulationRoutEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationPerkSystem"), simulationPerkSystem);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLoggingEnabled"), simulationLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLogHits"), simulationLogHits);
             //RBMAI

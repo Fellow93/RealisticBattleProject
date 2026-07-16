@@ -500,9 +500,13 @@ And every part of the equipment model bites harder, which is the real prize: arm
 
 **The mean is *not* untouched, and that is on purpose.** A trooper's pool is widened by `LethalityHitPointScale` (1.25) beyond his native hundred, so the expected blows to kill him — `maxHP / damage` — rise by the same factor and each blow is proportionally **less** lethal. A single simulated blow was landing far harder than a real one, because the sim compresses a whole battle into a fraction of its blows and each therefore carries more; widening the pool walks that back toward what a man on the field actually endures. It is the honest knob for it: it sits downstream of the whole armour-and-kit model and distorts none of it — it only says how much a man can take before the last blow tells. It must stay ≥ 1, because the pool trick above relies on the pool never dropping below the hundred vanilla rolls against.
 
-**A hero is exempt from all of it.** He keeps his own pool, unscaled: the lethality figure is a trooper knob, and a hero already had a real pool of his own to accumulate against. The scale is also *not* applied to his `MaxHitPoints()` for a second reason worth recording — that method also feeds the absolute per-blow cap (§2) and the log's `hp X/Y` column, so scaling him there would cap his blows against an inflated pool and print his health ~25% high, and a lord would die faster than the cap dial claimed.
+**A hero is exempt from all of it.** He keeps his own pool, unscaled: the lethality figure is a trooper knob, and a hero already had a real pool of his own to accumulate against. The scale is also *not* applied to his `MaxHitPoints()` for a second reason worth recording — that method also feeds the absolute per-blow cap (§2), so scaling him there would cap his blows against a pool he does not have, and a lord would die faster than the cap dial claimed.
 
-**Officers' perks are kept out.** A trooper's pool is his own: his party's and his captain's perks are deliberately not folded into it. A man's hit points are a fact about the man.
+**The trace prints what a man has left, and not what he started with.** It used to print both (`hp 52/100`), which was worth it while every trooper's pool was a flat hundred. It is not any more: the pool is the native hundred widened by the lethality scale and lifted again by his commander's hit-point perks, so the denominator now moves per troop, per party and per lord — and a column that changes its own meaning down the page is worse than no column. The pools are reported once, in full, in the perks block at the head of each battle (§6c).
+
+**The commander's perks are folded in; the captain's are not there to fold.** A trooper's pool is his own hundred plus whatever his *party leader* has learned about keeping men alive — `ThickHides`, `HardyFrontline`, `WellBuilt`, `HardKnock`, `UnwaveringDefense`, `PickedShots`, and a doctor-lord's `MinisterOfHealth`, worth up to +28 and more for a well-led line. This is `SandboxAgentStatCalculateModel.GetEffectiveMaxHealth` transcribed, so a battle you press the button on agrees with a battle you fight by hand.
+
+This block was once removed on the principle that a soldier's staying power should be his own frame, "not a bonus his captain carries." Both halves of that turned out to be wrong. **None of these is a captain perk** — every one is `PartyRole.PartyLeader`, and their own descriptions say *"to troops in your party"* where a captain perk always says *"in your formation"*; there is no hit-point perk anywhere in Bannerlord with a Captain slot. And the analogy to lifting tier and terrain does not hold: those were *proxies* the equipment model could measure directly and better, where a perk is a real effect with a real number that nothing else in the model says. Gated on `simulationPerkSystem`, with the captain system (§6c).
 
 ---
 
@@ -668,11 +672,11 @@ Then three things, and they answer three different questions.
     striker              -> struck                what        weapon        armor  blk%   vanilla  x corr  =  dealt   hp   result
 
     ── round 1  ·  VOLLEY -- the bowmen have the field, the foot are walking into it  ·  22 v 20
-    A Aserai Archer      -> Imperial Recruit      shoot       Arrow         26.71 33.58     31.4    1.53     48.0   hp 52/100
-    A Harami             -> Aserai Recruit        throw       Javelin       22.35 34.46     40.1    2.87    115.1   hp  0/100   DOWN
+    A Aserai Archer      -> Imperial Recruit      shoot       Arrow         26.71 33.58     31.4    1.53     48.0   hp 52
+    A Harami             -> Aserai Recruit        throw       Javelin       22.35 34.46     40.1    2.87    115.1   hp  0   DOWN
 
     ── round 5  ·  THE LINES HAVE MET  ·  19 v 14
-    D Aserai Recruit     -> Nomad Bandit          braced      OneHandedPol  35.35     0     22.4    5.16    115.6   hp  0/100   DOWN
+    D Aserai Recruit     -> Nomad Bandit          braced      OneHandedPol  35.35     0     22.4    5.16    115.6   hp  0   DOWN
 ```
 
 This is the only place the model's *story* can be read. The matchup table says what a blow would do in the abstract; it cannot tell you that the archers ran dry in round fifteen and spent the rest of the fight being cut down with knives in their hands, or that the lancers' charge was spent by round four and they were never dangerous again. `what` is what the man was actually doing — `shoot`, `throw`, `melee`, `CHARGE`, `braced`, or `closing` (in the volley with nothing to answer arrows with).
@@ -691,11 +695,11 @@ So `BattleHitLoggingEnabled` (in `/Config/RBMCombat/Global`, off by default) wri
     striker            -> struck                what     weapon           part    armor      raw   absorb    dealt   hp
 
     ── 0:22  ·  THE APPROACH -- no line has reached the other yet  ·  241 v 198
-    A Battanian Fian     -> Imperial Legionary   shoot    Arrow            head    38.4     92.1     51.7     40.4   hp 60/100
-    D Imperial Legionary -> Battanian Skirmisher throw    Javelin          body    24.1    121.6     37.2     84.4   hp 16/100   DOWN
+    A Battanian Fian     -> Imperial Legionary   shoot    Arrow            head    38.4     92.1     51.7     40.4   hp 60
+    D Imperial Legionary -> Battanian Skirmisher throw    Javelin          body    24.1    121.6     37.2     84.4   hp 16   DOWN
 
     ── 1:15  ·  THE LINES HAVE MET (at 1:04)  ·  198 v 171
-    A Battanian Wildling -> Imperial Legionary   melee    TwoHandedAxe     body    41.0     88.3     44.9     43.4   hp 12/100
+    A Battanian Wildling -> Imperial Legionary   melee    TwoHandedAxe     body    41.0     88.3     44.9     43.4   hp 12
 ```
 
 Two differences, both forced by the thing being logged rather than chosen. A real battle has **seconds, not rounds**, so the headers count time. And it does not need a volley *model* — it simply notices the first melee blow anyone lands and says so, which is the real event the simulation's volley is an abstraction of. Everything logged before that line was landed across open ground by men who had not reached each other yet, and the tallies at the foot of the file say how much of the battle that was.

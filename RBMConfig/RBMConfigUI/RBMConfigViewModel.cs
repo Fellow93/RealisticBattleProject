@@ -78,6 +78,11 @@ namespace RBMConfig
         public TextViewModel SimulationRoutEnabledText { get; }
         public SelectorVM<SelectorItemVM> SimulationRoutEnabled { get; }
 
+        // Real captain perks in auto-resolve (in place of vanilla's flat count of the side commander's), plus the
+        // commander's hit-point perks restored to his men. On/off only.
+        public TextViewModel SimulationPerkSystemText { get; }
+        public SelectorVM<SelectorItemVM> SimulationPerkSystem { get; }
+
         public TextViewModel SimulationLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> SimulationLoggingEnabled { get; }
 
@@ -821,6 +826,15 @@ namespace RBMConfig
             get
             {
                 return new TextObject("{=RBM_CON_096}Auto Resolve Routing").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string SimulationPerkt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_097}Auto Resolve Perks").ToString();
             }
         }
 
@@ -1722,6 +1736,11 @@ namespace RBMConfig
             SimulationRoutEnabledText = new TextViewModel(new TextObject("{=RBM_CON_096}Auto Resolve Routing"));
             SimulationRoutEnabled = new SelectorVM<SelectorItemVM>(simulationRoutOptions, 0, null);
 
+            // Auto resolve perks: on by default, so its option carries the "(Default)" tag.
+            List<string> simulationPerkOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            SimulationPerkSystemText = new TextViewModel(new TextObject("{=RBM_CON_097}Auto Resolve Perks"));
+            SimulationPerkSystem = new SelectorVM<SelectorItemVM>(simulationPerkOptions, 0, null);
+
             // Detailed auto resolve logging: on by default, so its option carries the "(Default)" tag.
             List<string> simulationLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             SimulationLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_094}Detailed Auto Resolve Logging"));
@@ -1802,6 +1821,7 @@ namespace RBMConfig
             SpoilsVerboseLoggingEnabled.SelectedIndex = RBMConfig.spoilsVerboseLoggingEnabled ? 1 : 0;
             SimulationEquipmentEnabled.SelectedIndex = RBMConfig.simulationEquipmentEnabled ? 1 : 0;
             SimulationRoutEnabled.SelectedIndex = RBMConfig.simulationRoutEnabled ? 1 : 0;
+            SimulationPerkSystem.SelectedIndex = RBMConfig.simulationPerkSystem ? 1 : 0;
             SimulationLoggingEnabled.SelectedIndex = RBMConfig.simulationLoggingEnabled ? 1 : 0;
             BattleHitLoggingEnabled.SelectedIndex = RBMConfig.battleHitLoggingEnabled ? 1 : 0;
             _troopLeaderSpoilsCutFraction = MathF.Clamp(RBMConfig.troopLeaderSpoilsCutFraction, 0f, 1f);
@@ -2008,6 +2028,7 @@ namespace RBMConfig
             RBMConfig.spoilsVerboseLoggingEnabled = SpoilsVerboseLoggingEnabled.SelectedIndex == 1;
             RBMConfig.simulationEquipmentEnabled = SimulationEquipmentEnabled.SelectedIndex == 1;
             RBMConfig.simulationRoutEnabled = SimulationRoutEnabled.SelectedIndex == 1;
+            RBMConfig.simulationPerkSystem = SimulationPerkSystem.SelectedIndex == 1;
             RBMConfig.simulationLoggingEnabled = SimulationLoggingEnabled.SelectedIndex == 1;
             RBMConfig.battleHitLoggingEnabled = BattleHitLoggingEnabled.SelectedIndex == 1;
             RBMConfig.troopLeaderSpoilsCutFraction = _troopLeaderSpoilsCutFraction;
@@ -2082,6 +2103,7 @@ namespace RBMConfig
             SpoilsVerboseLoggingEnabled.SelectedIndex = 1;
             SimulationEquipmentEnabled.SelectedIndex = 1;
             SimulationRoutEnabled.SelectedIndex = 0;
+            SimulationPerkSystem.SelectedIndex = 1;
             SimulationLoggingEnabled.SelectedIndex = 1;
             BattleHitLoggingEnabled.SelectedIndex = 0;
         }

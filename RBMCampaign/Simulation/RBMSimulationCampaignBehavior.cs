@@ -45,6 +45,7 @@ namespace RBMCampaign
             SimulationRout.ResetForNewSession();
             SimulationEquipmentPower.ResetForNewSession();
             SimulationArmTargeting.ResetForNewSession();
+            SimulationPerks.ResetForNewSession();
 
             SimulationLog.StartCampaignLog();
         }
@@ -77,6 +78,13 @@ namespace RBMCampaign
             // ordering here is load-bearing, since Forget drops the trace with everything else.
             List<HitRecord> trace = SimulationBattleState.TakeTrace(mapEvent);
 
+            // And who led it. Taken before Forget for the same reason the trace is, and reported off the men who
+            // were APPOINTED rather than the men still standing -- a captain killed in round twenty led the battle
+            // whatever the last round says about him.
+            SimulationCommandStructure.SideCommand attackerCommand;
+            SimulationCommandStructure.SideCommand defenderCommand;
+            SimulationBattleState.TakeCommands(mapEvent, out attackerCommand, out defenderCommand);
+
             // Now the battle is done: let go of its arrows, its splintered shields and its dead horses, or the
             // campaign will carry the memory of every fight it ever fought.
             SimulationBattleState.Forget(mapEvent);
@@ -88,11 +96,12 @@ namespace RBMCampaign
                 return;
             }
 
-            SimulationLog.Write(Format(mapEvent, snapshot, trace));
+            SimulationLog.Write(Format(mapEvent, snapshot, trace, attackerCommand, defenderCommand));
         }
 
         private static string Format(MapEvent mapEvent, SimulationBattleSnapshot.BattleSnapshot snapshot,
-            List<HitRecord> trace)
+            List<HitRecord> trace, SimulationCommandStructure.SideCommand attackerCommand,
+            SimulationCommandStructure.SideCommand defenderCommand)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -126,6 +135,9 @@ namespace RBMCampaign
                   snapshot.AttackerCount + snapshot.DefenderCount)))
               .Append(" rounds  (").Append(snapshot.AttackerCount + snapshot.DefenderCount)
               .Append(" men on the field)").Append("\n");
+
+            AppendPerks(sb, "attacker", attackerCommand, snapshot.AttackerParties);
+            AppendPerks(sb, "defender", defenderCommand, snapshot.DefenderParties);
             sb.Append("\n");
 
             // How it ended. The game's own verdict, on the only battle there is.
@@ -137,6 +149,98 @@ namespace RBMCampaign
             AppendTrace(sb, trace);
 
             return sb.ToString().Replace("\n", System.Environment.NewLine);
+        }
+
+        /// <summary>
+        /// EVERY PERK THIS SIDE ACTUALLY GOT, and what each of them was worth.
+        ///
+        /// This is the only place the perk system can be checked at all. What it does is spread across thousands of
+        /// blows and buried inside a skill folded into a cached kit and a pool folded into a wound roll; there is no
+        /// other way to look at a battle and see that the archers had a captain with Dead Aim, that the infantry had
+        /// nobody, or that a lord's Unwavering Defense was quietly keeping his line on its feet.
+        ///
+        /// Three things, and they are three different perk mechanisms that happen to end up on the same page:
+        ///
+        ///   COMMANDERS. Each party's own leader, and the hit-point perks of his that fired for the men HE brought.
+        ///   Per party, not per side, because that is how PartyLeader perks work -- a side is several lords and none
+        ///   of them commands another's troops. Measured at the muster off his real roster (see
+        ///   SimulationBattleSnapshot.DescribeCommanderPerks), and read out of the same ExplainedNumber the battle
+        ///   used, so this cannot claim a perk the fight did not apply.
+        ///
+        ///   CAPTAINS. Who led each body of men, and which of their perks reached it. Per side, because a formation
+        ///   spans every party on it.
+        ///
+        ///   WHAT CAME OUT. The commander's PowerModifier -- vanilla's flat tally of his captain perks -- which this
+        ///   model lifts back out of every blow precisely because the captains above are now priced for real. It is
+        ///   printed against them deliberately: this number is what the side LOST, the captains' line is what it got
+        ///   back, and whether the trade is sane is the whole calibration question.
+        ///
+        /// Prints nothing at all when the perk system is off.
+        /// </summary>
+        private static void AppendPerks(StringBuilder sb, string label, SimulationCommandStructure.SideCommand command,
+            List<SimulationBattleSnapshot.PartyLine> parties)
+        {
+            if (command == null || !SimulationPerks.Enabled)
+            {
+                return;
+            }
+
+            List<string> body = new List<string>();
+
+            // The commanders, party by party.
+            if (parties != null)
+            {
+                foreach (SimulationBattleSnapshot.PartyLine party in parties)
+                {
+                    if (!string.IsNullOrEmpty(party.CommanderPerks))
+                    {
+                        body.Add("      " + Clip(party.Name, 34).PadRight(34) + party.CommanderPerks);
+                    }
+                }
+            }
+
+            // The captains.
+            StringBuilder captains = new StringBuilder();
+            string[] names = new string[] { "foot", "bows", "horse", "horse archers" };
+            for (int bucket = 0; bucket < SimulationCommandStructure.BucketCount; bucket++)
+            {
+                CharacterObject captain = command.Appointed[bucket];
+                if (captain == null)
+                {
+                    continue;
+                }
+                if (captains.Length > 0)
+                {
+                    captains.Append("  ·  ");
+                }
+                captains.Append(names[bucket]).Append(": ").Append(captain.Name);
+
+                List<string> perks = SimulationPerks.PerkNamesOf(captain);
+                captains.Append((perks.Count > 0) ? (" (" + string.Join(", ", perks.ToArray()) + ")") : " (no captain perks)");
+            }
+            if (captains.Length > 0)
+            {
+                body.Add("      " + "captains".PadRight(34) + captains);
+            }
+
+            // And what vanilla's proxy was worth before it was taken away.
+            if (command.LeaderPowerLifted > 0f)
+            {
+                body.Add("      " + "power modifier lifted".PadRight(34)
+                    + SimulationLog.Fmt(command.LeaderPowerLifted)
+                    + ((command.Commander != null) ? ("  (" + command.Commander.Name + "'s captain-perk tally)") : ""));
+            }
+
+            if (body.Count == 0)
+            {
+                return;
+            }
+
+            sb.Append("  ").Append(label).Append(" perks").Append("\n");
+            foreach (string line in body)
+            {
+                sb.Append(line).Append("\n");
+            }
         }
 
         /// <summary>
@@ -161,7 +265,9 @@ namespace RBMCampaign
             sb.Append("\n");
             sb.Append("  the battle, blow by blow -- as the game actually fought it (")
               .Append(trace.Count).Append(" blows):").Append("\n");
-            sb.Append("      striker            -> struck                what     defense       weapon            armor   def%   vanilla  x corr  =  dealt   odds").Append("\n");
+            // "odds" was a leftover from when the last column was a chance-of-death; it has printed the man's
+            // remaining hit points for a long time, and the header has been lying about it for just as long.
+            sb.Append("      striker            -> struck                what     defense       weapon            armor   def%   vanilla  x corr  =  dealt       hp   result").Append("\n");
 
             int round = -1;
             foreach (HitRecord hit in trace)
@@ -224,9 +330,16 @@ namespace RBMCampaign
                   .Append(Num(hit.FinalDamage, 9))
                   // What is left of the man. EVERY man has a pool now, lord and levy alike, so this is not a
                   // chance-of-death but an actual figure: he is worn down, and when it reaches nothing he falls.
-                  .Append((hit.HitPointsLeft >= 0f)
-                      ? ("  hp " + SimulationLog.Fmt(hit.HitPointsLeft).PadLeft(5) + "/" + hit.StruckHitPoints)
-                      : "")
+                  //
+                  // What he STARTED with is not printed beside it. It was, and it earned its place at the time --
+                  // back when a trooper's pool was a flat hundred, "52/100" told you the whole story at a glance.
+                  // It does not any more: the pool is the native hundred widened by the lethality scale and then
+                  // lifted again by whatever hit-point perks his commander brought, so the denominator moved per
+                  // troop, per party and per lord, and a column that changes its own meaning down the page is worse
+                  // than no column. The number that matters is the one that reaches zero. The pools themselves are
+                  // reported once, properly, in the perks block at the head of the battle.
+                  .Append("  hp ")
+                  .Append(((hit.HitPointsLeft >= 0f) ? SimulationLog.Fmt(hit.HitPointsLeft) : "-").PadLeft(5))
                   .Append(hit.Downed ? "   DOWN" : "")
                   .Append("\n");
             }
