@@ -53,13 +53,13 @@ namespace RBMAI.AiModule.RbmBehaviors
 
                     if (significantEnemy != null)
                     {
-                        Vec2 signDirection = significantEnemy.CachedMedianPosition.AsVec2 - __instance.Formation.CachedMedianPosition.AsVec2;
+                        Vec2 signDirection = RBMAI.Utilities.GetFormationCenter(significantEnemy) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                         signDist = signDirection.Normalize();
                     }
 
                     if (enemyCav != null)
                     {
-                        Vec2 cavDirection = enemyCav.CachedMedianPosition.AsVec2 - __instance.Formation.CachedMedianPosition.AsVec2;
+                        Vec2 cavDirection = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                         cavDist = cavDirection.Normalize();
                     }
                     bool isOnlyCavRemaining = RBMAI.Utilities.CheckIfOnlyCavRemaining(__instance.Formation);
@@ -67,8 +67,8 @@ namespace RBMAI.AiModule.RbmBehaviors
                     {
                         if (isOnlyCavRemaining)
                         {
-                            Vec2 vec = enemyCav.CachedMedianPosition.AsVec2 - __instance.Formation.CachedMedianPosition.AsVec2;
-                            WorldPosition positionNew = __instance.Formation.CachedMedianPosition;
+                            Vec2 vec = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
+                            WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
 
                             WorldPosition storedPosition = WorldPosition.Invalid;
                             cavHoldPositions.TryGetValue(__instance.Formation, out storedPosition);
@@ -80,7 +80,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                             }
                             else
                             {
-                                float storedPositonDistance = (storedPosition.AsVec2 - __instance.Formation.CachedMedianPosition.AsVec2).Normalize();
+                                float storedPositonDistance = (storedPosition.AsVec2 - RBMAI.Utilities.GetFormationCenter(__instance.Formation)).Normalize();
                                 if (storedPositonDistance > (__instance.Formation.Depth / 2f) + 10f)
                                 {
                                     cavHoldPositions[__instance.Formation] = positionNew;
@@ -102,8 +102,8 @@ namespace RBMAI.AiModule.RbmBehaviors
                         {
                             if (!(__instance.Formation.AI?.Side == FormationAI.BehaviorSide.Left || __instance.Formation.AI?.Side == FormationAI.BehaviorSide.Right) && enemyCav.TargetFormation == __instance.Formation)
                             {
-                                Vec2 vec = enemyCav.CachedMedianPosition.AsVec2 - __instance.Formation.CachedMedianPosition.AsVec2;
-                                WorldPosition positionNew = __instance.Formation.CachedMedianPosition;
+                                Vec2 vec = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
+                                WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
 
                                 WorldPosition storedPosition = WorldPosition.Invalid;
                                 cavHoldPositions.TryGetValue(__instance.Formation, out storedPosition);
@@ -115,7 +115,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                                 }
                                 else
                                 {
-                                    float storedPositonDistance = (storedPosition.AsVec2 - __instance.Formation.CachedMedianPosition.AsVec2).Normalize();
+                                    float storedPositonDistance = (storedPosition.AsVec2 - RBMAI.Utilities.GetFormationCenter(__instance.Formation)).Normalize();
                                     if (storedPositonDistance > (__instance.Formation.Depth / 2f) + 10f)
                                     {
                                         cavHoldPositions[__instance.Formation] = positionNew;
@@ -138,7 +138,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                     }
                     else if (significantEnemy != null && !significantEnemy.QuerySystem.IsRangedFormation && signDist < 50f && RBMAI.Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.38f))
                     {
-                        WorldPosition positionNew = __instance.Formation.CachedMedianPosition;
+                        WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
                         positionNew.SetVec2(positionNew.AsVec2 - __instance.Formation.Direction * 7f);
 
                         WorldPosition storedPosition = WorldPosition.Invalid;

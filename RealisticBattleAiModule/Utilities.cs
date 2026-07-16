@@ -21,6 +21,87 @@ namespace RBMAI
         public static float swingSpeedTransfer = 4.5454545f;
         public static float thrustSpeedTransfer = 11.7647057f;
 
+        // Where a formation "is", for AI reasoning.
+        //
+        // Formation.CachedMedianPosition is the position of ONE soldier -- GetMedianAgent returns whichever unit
+        // currently sits closest to the centroid -- so it hops from man to man as the ranks shuffle, and it only
+        // refreshes on a ~75-125ms timer, so it steps as well as hops. Comparing distances against it makes
+        // near-equidistant choices flip and thresholds flap. SmoothedAverageUnitPosition is the engine's own
+        // answer: Formation.Tick lerps it toward the true centroid every tick (dt-correct), so it neither hops
+        // nor steps. Native itself treats the average as the formation's centre and keeps the median only as a
+        // navmesh carrier (see the Vec3(CachedAveragePosition, CachedMedianPosition.GetNavMeshZ()) idiom
+        // throughout FormationQuerySystem).
+        //
+        // Use these for distance/threshold reasoning. Note the centre is notional: unlike the median it is not
+        // guaranteed to be a spot a soldier can stand on, so for a movement DESTINATION use
+        // GetFormationCenterWorldPosition, which keeps the median's navmesh face.
+        //
+        // DELIBERATELY NOT SmoothedAverageUnitPosition, even though that is the smoothest centre and is what the
+        // HUD marker uses. Order positions derived from this feed MovementOrder.CreateNewOrderWorldPositionMT,
+        // which caches on EXACT Vec2 equality:
+        //     if (_getPositionFirstSectionCache.AsVec2 != orderPosition.AsVec2) { ...navmesh queries... }
+        // CachedAveragePosition and CachedMedianPosition are cached fields, refreshed only when the formation's
+        // ~75-125ms position timer fires, so the same Vec2 recurs for several frames and native takes the cheap
+        // cached path. SmoothedAverageUnitPosition is re-lerped EVERY tick and so is never exactly equal twice:
+        // it misses that cache every frame for every formation, firing navmesh queries (and possibly the
+        // GetAlternatePositionForNavmeshless... search) inside the parallel movement job. That froze the game and
+        // crashed it -- a native worker-thread use-after-free -- once another mod (RTSCamera.CommandSystem) was
+        // concurrently mutating formation geometry.
+        //
+        // CachedAveragePosition gives us what we actually wanted -- a centre that does not hop from soldier to
+        // soldier like the median -- while keeping native's cache-hit rate exactly as it was.
+        public static Vec2 GetFormationCenter(Formation formation)
+        {
+            if (formation == null)
+            {
+                return Vec2.Invalid;
+            }
+            if (formation.CachedAveragePosition.IsValid)
+            {
+                return formation.CachedAveragePosition;
+            }
+            return formation.CachedMedianPosition.AsVec2;
+        }
+
+        // The formation centre as a WorldPosition, for movement orders. Rides the centre XY on the median
+        // agent's navmesh face -- the same trick FormationQuerySystem does at its "formation centre" idiom --
+        // so the Z re-resolves off the navmesh when the position is actually consumed.
+        //
+        // MUST stay free of native calls. This runs on worker threads: MovementOrder.GetPositionAux is invoked
+        // from CreateNewOrderWorldPositionMT (the parallel per-formation movement job), as is
+        // Formation.GetOrderPositionOfUnit. Copying the median and SetVec2-ing it is pure struct work -- SetVec2
+        // on an already-valid position only marks Z invalid -- but anything that forces Z validation
+        // (GetNavMesh/GetGroundVec3/GetNavMeshZ) fires a native navmesh query. Off the main thread that is both
+        // a hard crash and, run per formation per tick, a stall. Native ships SetVec2MT/ValidateZMT precisely
+        // because the plain calls are not concurrency-safe; a navmesh guard here froze and crashed the game.
+        //
+        // So there is deliberately no off-navmesh guard: callers that need one already apply it themselves on
+        // the main thread (see the IsPositionInsideBoundaries / GetNavMesh checks in Behaviours.cs), which is
+        // also what unpatched RBM and native both do.
+        public static WorldPosition GetFormationCenterWorldPosition(Formation formation)
+        {
+            WorldPosition median = formation.CachedMedianPosition;
+            Vec2 center = GetFormationCenter(formation);
+            if (!median.IsValid || !center.IsValid)
+            {
+                return median;
+            }
+            median.SetVec2(center);
+            return median;
+        }
+
+        // Centre-to-centre distance between two formations.
+        public static float GetFormationDistance(Formation formation, Formation otherFormation)
+        {
+            return GetFormationCenter(formation).Distance(GetFormationCenter(otherFormation));
+        }
+
+        // Distance from a point to a formation's centre.
+        public static float GetDistanceToFormation(Vec2 position, Formation formation)
+        {
+            return position.Distance(GetFormationCenter(formation));
+        }
+
         // A "banner" can reach the game as either WeaponClass.Banner (vanilla / decorative banners) or as a regular
         // melee weapon class such as TwoHandedPolearm (Raise Your Banner's "spear banner" variants). Checking
         // WeaponClass alone misses the polearm variants, so every banner item is also matched by item_usage="banner".
@@ -150,7 +231,7 @@ namespace RBMAI
                     Formation enemyForamtion = RBMAI.Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
                     {
-                        float distance = mainInfantry.CachedMedianPosition.AsVec2.Distance(enemyForamtion.CachedMedianPosition.AsVec2) + mainInfantry.Depth / 2f + enemyForamtion.Depth / 2f;
+                        float distance = GetFormationDistance(mainInfantry, enemyForamtion) + mainInfantry.Depth / 2f + enemyForamtion.Depth / 2f;
                         return (distance <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
                     }
                 }
@@ -628,7 +709,7 @@ namespace RBMAI
                     }
                     if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
                     {
-                        float newDist = position.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
+                        float newDist = GetDistanceToFormation(position.AsVec2, enemyFormation);
                         if (newDist < dist)
                         {
                             significantEnemy = enemyFormation;
@@ -646,7 +727,7 @@ namespace RBMAI
                     }
                     if (formation != null && includeRanged && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
                     {
-                        float newDist = position.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
+                        float newDist = GetDistanceToFormation(position.AsVec2, enemyFormation);
                         if (newDist < dist)
                         {
                             significantEnemy = enemyFormation;
@@ -698,7 +779,7 @@ namespace RBMAI
                         dist = 10000f;
                         foreach (Formation significantFormation in significantFormations)
                         {
-                            float newDist = position.AsVec2.Distance(significantFormation.CachedMedianPosition.AsVec2);
+                            float newDist = GetDistanceToFormation(position.AsVec2, significantFormation);
                             if (newDist < dist)
                             {
                                 significantEnemy = significantFormation;
@@ -711,7 +792,7 @@ namespace RBMAI
                         dist = 10000f;
                         foreach (Formation significantFormation in allEnemyFormations)
                         {
-                            float newDist = position.AsVec2.Distance(significantFormation.CachedMedianPosition.AsVec2);
+                            float newDist = GetDistanceToFormation(position.AsVec2, significantFormation);
                             if (newDist < dist)
                             {
                                 significantEnemy = significantFormation;
@@ -727,7 +808,7 @@ namespace RBMAI
                     foreach (Formation enemyFormation in allEnemyFormations)
                     {
                         float newUnitCountRatio = (float)(enemyFormation.CountOfUnits) / (float)formation.CountOfUnits;
-                        float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
+                        float newDist = GetFormationDistance(formation, enemyFormation);
                         if (newDist < dist * newUnitCountRatio * 1.5f)
                         {
                             significantEnemy = enemyFormation;
@@ -852,7 +933,7 @@ namespace RBMAI
                                 isMain = significantFormation.AI.IsMainFormation;
                             }
                             float unitCount = (float)formation.CountOfUnits;
-                            float distance = formation.CachedMedianPosition.AsVec2.Distance(significantFormation.CachedMedianPosition.AsVec2);
+                            float distance = GetFormationDistance(formation, significantFormation);
                             float newFormationWeight = (distance / unitCount) / (isMain ? 1.5f : 1f);
 
                             if (newFormationWeight < formationWeight)
@@ -869,7 +950,7 @@ namespace RBMAI
                         foreach (Formation enemyFormation in allEnemyFormations)
                         {
                             float newUnitCountRatio = (float)(enemyFormation.CountOfUnits) / (float)formation.CountOfUnits;
-                            float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
+                            float newDist = GetFormationDistance(formation, enemyFormation);
                             if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
                             {
                                 if (newDist < dist * newUnitCountRatio * 1.5f)
@@ -912,7 +993,7 @@ namespace RBMAI
                         foreach (Formation enemyFormation in allEnemyFormations)
                         {
                             float newUnitCountRatio = (float)(enemyFormation.CountOfUnits) / (float)formation.CountOfUnits;
-                            float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
+                            float newDist = GetFormationDistance(formation, enemyFormation);
                             if (newDist < dist * newUnitCountRatio * 1.5f)
                             {
                                 significantEnemy = enemyFormation;
@@ -1015,7 +1096,7 @@ namespace RBMAI
                             {
                                 if (formation != null && includeInfantry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsInfantryFormation)
                                 {
-                                    float newDist = formation.CachedMedianPosition.AsVec2.Distance(allyFormation.CachedMedianPosition.AsVec2);
+                                    float newDist = GetFormationDistance(formation, allyFormation);
                                     if (newDist < dist)
                                     {
                                         significantAlly = allyFormation;
@@ -1024,7 +1105,7 @@ namespace RBMAI
                                 }
                                 if (formation != null && includeRanged && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsRangedFormation)
                                 {
-                                    float newDist = formation.CachedMedianPosition.AsVec2.Distance(allyFormation.CachedMedianPosition.AsVec2);
+                                    float newDist = GetFormationDistance(formation, allyFormation);
                                     if (newDist < dist)
                                     {
                                         significantAlly = allyFormation;
@@ -1033,7 +1114,7 @@ namespace RBMAI
                                 }
                                 if (formation != null && includeCavalry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsCavalryFormation && !allyFormation.QuerySystem.IsRangedCavalryFormation)
                                 {
-                                    float newDist = formation.CachedMedianPosition.AsVec2.Distance(allyFormation.CachedMedianPosition.AsVec2);
+                                    float newDist = GetFormationDistance(formation, allyFormation);
                                     if (newDist < dist)
                                     {
                                         significantAlly = allyFormation;

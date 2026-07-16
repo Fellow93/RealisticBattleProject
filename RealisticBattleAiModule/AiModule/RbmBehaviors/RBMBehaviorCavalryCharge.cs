@@ -88,7 +88,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             {
                 case ChargeState.Undetermined:
                     {
-                        if ((!base.Formation.QuerySystem.IsCavalryFormation && !base.Formation.QuerySystem.IsRangedCavalryFormation) || base.Formation.CachedAveragePosition.Distance(base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.AsVec2) / base.Formation.QuerySystem.MovementSpeedMaximum <= 5f)
+                        if ((!base.Formation.QuerySystem.IsCavalryFormation && !base.Formation.QuerySystem.IsRangedCavalryFormation) || RBMAI.Utilities.GetFormationDistance(base.Formation, base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation) / base.Formation.QuerySystem.MovementSpeedMaximum <= 5f)
                         {
                             result = ChargeState.Charging;
                         }
@@ -116,10 +116,10 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                                 _lastTarget = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
                             }
                             newTarget = true;
-                            _initialChargeDirection = _lastTarget.Formation.CachedMedianPosition.AsVec2 - base.Formation.CachedAveragePosition;
+                            _initialChargeDirection = RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation);
                             //result = ChargeState.Undetermined;
                         }
-                        else if (_initialChargeDirection.DotProduct(_lastTarget.Formation.CachedMedianPosition.AsVec2 - base.Formation.CachedAveragePosition) <= 0f)
+                        else if (_initialChargeDirection.DotProduct(RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)) <= 0f)
                         {
                             if (_chargeTimer == null)
                             {
@@ -129,9 +129,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                         }
                         if (base.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 5f)
                         {
-                            Vec2 chargeDir = (_lastTarget.Formation.CachedMedianPosition.AsVec2 - base.Formation.CachedAveragePosition).Normalized();
-                            WorldPosition newReformDest = _lastTarget.Formation.CachedMedianPosition;
-                            newReformDest.SetVec2(_lastTarget.Formation.CachedMedianPosition.AsVec2 + chargeDir * (_desiredChargeStopDistance + _lastTarget.Formation.Depth));
+                            Vec2 chargeDir = (RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)).Normalized();
+                            WorldPosition newReformDest = RBMAI.Utilities.GetFormationCenterWorldPosition(_lastTarget.Formation);
+                            newReformDest.SetVec2(RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) + chargeDir * (_desiredChargeStopDistance + _lastTarget.Formation.Depth));
                             _lastReformDestination = newReformDest;
                             result = ChargeState.ChargingPast;
                             _chargeTimer = null;
@@ -145,18 +145,18 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                     }
                 case ChargeState.ChargingPast:
                     {
-                        float distToTarget = base.Formation.CachedAveragePosition.Distance(_lastTarget.Formation.CachedMedianPosition.AsVec2);
+                        float distToTarget = RBMAI.Utilities.GetFormationDistance(base.Formation, _lastTarget.Formation);
                         if (distToTarget >= (_desiredChargeStopDistance + _lastTarget.Formation.Depth))
                         {
-                            _lastReformDestination = base.Formation.CachedMedianPosition;
+                            _lastReformDestination = RBMAI.Utilities.GetFormationCenterWorldPosition(base.Formation);
                             result = ChargeState.Reforming;
                         }
                         else if (_chargingPastTimer.Check(Mission.Current.CurrentTime))
                         {
                             // Timer fired but didn't reach destination — recalculate reform point from current positions
-                            Vec2 awayDir = (base.Formation.CachedAveragePosition - _lastTarget.Formation.CachedMedianPosition.AsVec2).Normalized();
-                            WorldPosition newReformDest = _lastTarget.Formation.CachedMedianPosition;
-                            newReformDest.SetVec2(_lastTarget.Formation.CachedMedianPosition.AsVec2 + awayDir * (_desiredChargeStopDistance + _lastTarget.Formation.Depth));
+                            Vec2 awayDir = (RBMAI.Utilities.GetFormationCenter(base.Formation) - RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation)).Normalized();
+                            WorldPosition newReformDest = RBMAI.Utilities.GetFormationCenterWorldPosition(_lastTarget.Formation);
+                            newReformDest.SetVec2(RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) + awayDir * (_desiredChargeStopDistance + _lastTarget.Formation.Depth));
                             _lastReformDestination = newReformDest;
                             result = ChargeState.Reforming;
                         }
@@ -164,7 +164,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                     }
                 case ChargeState.Reforming:
                     {
-                        float distToEnemy = base.Formation.CachedAveragePosition.Distance(_lastTarget.Formation.CachedMedianPosition.AsVec2);
+                        float distToEnemy = RBMAI.Utilities.GetFormationDistance(base.Formation, _lastTarget.Formation);
                         bool safeDistanceFromEnemy = distToEnemy >= 30f;
                         if (_reformTimer.Check(Mission.Current.CurrentTime) || (base.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 12f && safeDistanceFromEnemy) || base.Formation.QuerySystem.UnderRangedAttackRatio > 0.2f)
                         {
@@ -189,7 +189,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             _lastTarget = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
         }
         newTarget = true;
-        _initialChargeDirection = _lastTarget.Formation.CachedMedianPosition.AsVec2 - base.Formation.CachedAveragePosition;
+        _initialChargeDirection = RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation);
     }
 
     protected override void CalculateCurrentOrder()
@@ -227,8 +227,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                         {
                             base.Formation.SetFormOrder(FormOrder.FormOrderCustom(_lastTarget.Formation.Width));
                         }
-                        Vec2 vec4 = (_lastTarget.Formation.CachedMedianPosition.AsVec2 - base.Formation.CachedAveragePosition).Normalized();
-                        WorldPosition medianPosition3 = _lastTarget.Formation.CachedMedianPosition;
+                        Vec2 vec4 = (RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)).Normalized();
+                        WorldPosition medianPosition3 = RBMAI.Utilities.GetFormationCenterWorldPosition(_lastTarget.Formation);
                         Vec2 vec5 = medianPosition3.AsVec2 + vec4 * (_desiredChargeStopDistance + _lastTarget.Formation.Depth);
                         medianPosition3.SetVec2(vec5);
                         _lastReformDestination = medianPosition3;
@@ -288,7 +288,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         {
             return 0f;
         }
-        float num = querySystem.Formation.CachedAveragePosition.Distance(querySystem.ClosestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.AsVec2) / querySystem.MovementSpeedMaximum;
+        float num = RBMAI.Utilities.GetFormationDistance(querySystem.Formation, querySystem.ClosestSignificantlyLargeEnemyFormation.Formation) / querySystem.MovementSpeedMaximum;
         float num3;
         if (!querySystem.IsCavalryFormation && !querySystem.IsRangedCavalryFormation)
         {
@@ -305,13 +305,14 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             float num5 = MBMath.ClampFloat(num, 4f, 10f);
             num3 = MBMath.Lerp(0.8f, 1.2f, 1f - (num5 - 4f) / 6f);
         }
-        WorldPosition medianPosition = querySystem.Formation.CachedMedianPosition;
-        medianPosition.SetVec2(querySystem.Formation.CachedAveragePosition);
+        WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(querySystem.Formation);
+        // Sample the enemy's height off the raw median: it already carries a valid Z, so it costs no navmesh
+        // query, and for a slope estimate one soldier's ground height is as good as the centre's.
         float num6 = medianPosition.GetNavMeshZ() - querySystem.ClosestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.GetNavMeshZ();
         float num7 = 1f;
         if (num <= 4f)
         {
-            float value = num6 / (querySystem.Formation.CachedAveragePosition - querySystem.ClosestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.AsVec2).Length;
+            float value = num6 / (RBMAI.Utilities.GetFormationCenter(querySystem.Formation) - RBMAI.Utilities.GetFormationCenter(querySystem.ClosestSignificantlyLargeEnemyFormation.Formation)).Length;
             num7 = MBMath.Lerp(0.9f, 1.1f, (MBMath.ClampFloat(value, -0.58f, 0.58f) + 0.58f) / 1.16f);
         }
         float num8 = 1f;

@@ -45,14 +45,13 @@ namespace RBMAI
         {
             if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                WorldPosition medianPositionNew = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
-                medianPositionNew.SetVec2(__instance.Formation.QuerySystem.Formation.CachedAveragePosition);
+                WorldPosition medianPositionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
 
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                 if (significantEnemy != null)
                 {
-                    Vec2 enemyDirection = significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                    Vec2 enemyDirection = RBMAI.Utilities.GetFormationCenter(significantEnemy) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                     float distance = enemyDirection.Normalize();
                     if (distance < (200f))
                     {
@@ -97,14 +96,13 @@ namespace RBMAI
         {
             if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                WorldPosition medianPositionNew = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
-                medianPositionNew.SetVec2(__instance.Formation.QuerySystem.Formation.CachedAveragePosition);
+                WorldPosition medianPositionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
 
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
                 if (significantEnemy != null)
                 {
-                    Vec2 enemyDirection = significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                    Vec2 enemyDirection = RBMAI.Utilities.GetFormationCenter(significantEnemy) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                     float distance = enemyDirection.Normalize();
 
                     if (distance < (200f))
@@ -166,7 +164,7 @@ namespace RBMAI
             if (____mainFormation != null && __instance.Formation != null && ____mainFormation.CountOfUnits > 0 && ____mainFormation.QuerySystem.IsInfantryFormation)
             {
                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(____mainFormation.Direction);
-                WorldPosition medianPosition = ____mainFormation.QuerySystem.Formation.CachedMedianPosition;
+                WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(____mainFormation);
                 Vec2 calcPosition;
                 if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
                 {
@@ -237,7 +235,7 @@ namespace RBMAI
                         waitCountApproachingStorage[__instance.Formation] = 0;
                     }
 
-                    Vec2 vec = significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                    Vec2 vec = RBMAI.Utilities.GetFormationCenter(significantEnemy) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                     float distance = vec.Normalize();
 
                     switch (____behaviorState)
@@ -248,7 +246,7 @@ namespace RBMAI
                                 {
                                     if (distance > 100f)
                                     {
-                                        WorldPosition medianPosition = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
+                                        WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
                                         medianPosition.SetVec2(medianPosition.AsVec2 + vec * 5f);
                                         ____shootPosition = medianPosition.AsVec2 + vec * 5f;
                                         ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
@@ -275,7 +273,7 @@ namespace RBMAI
                             {
                                 if (distance > 160f)
                                 {
-                                    WorldPosition medianPosition = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
+                                    WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
                                     medianPosition.SetVec2(medianPosition.AsVec2 + vec * 10f);
                                     ____shootPosition = medianPosition.AsVec2 + vec * 10f;
                                     ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
@@ -287,7 +285,7 @@ namespace RBMAI
                                     {
                                         if (distance < 150f)
                                         {
-                                            WorldPosition medianPosition = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
+                                            WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
                                             medianPosition.SetVec2(medianPosition.AsVec2 + vec * 5f);
                                             ____shootPosition = medianPosition.AsVec2 + vec * 5f;
                                             ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
@@ -314,7 +312,7 @@ namespace RBMAI
                                 {
                                     if (distance < 150f)
                                     {
-                                        WorldPosition medianPosition = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
+                                        WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
                                         medianPosition.SetVec2(medianPosition.AsVec2 - vec * 10f);
                                         ____shootPosition = medianPosition.AsVec2 + vec * 5f;
                                         ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
@@ -483,7 +481,7 @@ namespace RBMAI
             ____isEnemyReachable = targetFormationQS != null && (!(__instance.Formation.Team.TeamAI is TeamAISiegeComponent) || !TeamAISiegeComponent.IsFormationInsideCastle(targetFormationQS.Formation, includeOnlyPositionedUnits: false));
             if (!____isEnemyReachable)
             {
-                position.SetVec2(__instance.Formation.QuerySystem.Formation.CachedAveragePosition);
+                position.SetVec2(RBMAI.Utilities.GetFormationCenter(__instance.Formation));
             }
             else
             {
@@ -527,12 +525,12 @@ namespace RBMAI
 
                         if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
                         {
-                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.Formation.CachedMedianPosition.AsVec2, distance, (enemyFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose) ? enemyFormation.Width * 0.25f : enemyFormation.Width * 0.5f, enemyFormation.Direction);
+                            Ellipse ellipse = new Ellipse(RBMAI.Utilities.GetFormationCenter(enemyFormation), distance, (enemyFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose) ? enemyFormation.Width * 0.25f : enemyFormation.Width * 0.5f, enemyFormation.Direction);
                             position.SetVec2(ellipse.GetTargetPos(__instance.Formation.SmoothedAverageUnitPosition, 25f, rotationDirection.rotationDirection));
                         }
                         else
                         {
-                            Ellipse ellipse = new Ellipse(enemyFormation.QuerySystem.Formation.CachedMedianPosition.AsVec2, distance, enemyFormation.Width * 0.5f, enemyFormation.Direction);
+                            Ellipse ellipse = new Ellipse(RBMAI.Utilities.GetFormationCenter(enemyFormation), distance, enemyFormation.Width * 0.5f, enemyFormation.Direction);
                             position.SetVec2(ellipse.GetTargetPos(__instance.Formation.SmoothedAverageUnitPosition, 25f, rotationDirection.rotationDirection));
                         }
                         if (rotationDirection.waitbeforeChangeCooldownCurrent > 0)
@@ -570,7 +568,7 @@ namespace RBMAI
                     }
                     else
                     {
-                        position.SetVec2(__instance.Formation.QuerySystem.Formation.CachedAveragePosition);
+                        position.SetVec2(RBMAI.Utilities.GetFormationCenter(__instance.Formation));
                     }
                 }
             }
@@ -691,7 +689,7 @@ namespace RBMAI
             else if (____protectFlankState == BehaviorState.HoldingFlank || ____protectFlankState == BehaviorState.Returning)
             {
                 Vec2 direction = ____mainFormation.Direction;
-                Vec2 v = (__instance.Formation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - ____mainFormation.QuerySystem.Formation.CachedMedianPosition.AsVec2).Normalized();
+                Vec2 v = (__instance.Formation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - RBMAI.Utilities.GetFormationCenter(____mainFormation)).Normalized();
                 Vec2 vec;
                 if (____behaviorSide == FormationAI.BehaviorSide.Right || ___FlankSide == FormationAI.BehaviorSide.Right)
                 {
@@ -811,7 +809,7 @@ namespace RBMAI
                                 if (closestFormation != null && closestFormation.Formation != null && (closestFormation.Formation.QuerySystem.IsCavalryFormation || closestFormation.Formation.QuerySystem.IsRangedCavalryFormation))
                                 {
                                     float changeToChargeDistance = 110f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
-                                    if (closestFormation.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2.DistanceSquared(position) < changeToChargeDistance * changeToChargeDistance || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
+                                    if (RBMAI.Utilities.GetFormationCenter(closestFormation.Formation).DistanceSquared(position) < changeToChargeDistance * changeToChargeDistance || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
                                     {
                                         ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(closestFormation.Formation);
                                         ____currentOrder = ____chargeToTargetOrder;
@@ -1023,7 +1021,7 @@ namespace RBMAI
 
             __instance.Formation.SetMovementOrder(____currentOrder);
             __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
-            if (__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && __instance.Formation.QuerySystem.Formation.CachedAveragePosition.DistanceSquared(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.AsVec2) > 1600f && __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.2f - ((__instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrder.ArrangementOrderEnum.Loose) ? 0.1f : 0f))
+            if (__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && RBMAI.Utilities.GetFormationCenter(__instance.Formation).DistanceSquared(RBMAI.Utilities.GetFormationCenter(__instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation)) > 1600f && __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.2f - ((__instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrder.ArrangementOrderEnum.Loose) ? 0.1f : 0f))
             {
                 __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderSkein);
             }
@@ -1263,11 +1261,11 @@ namespace RBMAI
                 }
                 else
                 {
-                    directionAux = (closestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.AsVec2 - querySystem.Formation.CachedAveragePosition).Normalized();
+                    directionAux = (RBMAI.Utilities.GetFormationCenter(closestSignificantlyLargeEnemyFormation.Formation) - RBMAI.Utilities.GetFormationCenter(querySystem.Formation)).Normalized();
                 }
 
                 WorldPosition medianPosition = f.QuerySystem.Formation.CachedMedianPosition;
-                medianPosition.SetVec2(f.QuerySystem.Formation.CachedAveragePosition - directionAux * 0.35f);
+                medianPosition.SetVec2(RBMAI.Utilities.GetFormationCenter(f.QuerySystem.Formation) - directionAux * 0.35f);
                 __result = medianPosition;
 
                 return;
@@ -1290,17 +1288,23 @@ namespace RBMAI
                     __result = f.CreateNewOrderWorldPosition(worldPositionEnforcedCache);
                     return;
                 }
+                // This runs on a worker thread (CreateNewOrderWorldPositionMT). Give each WorldPosition exactly
+                // one SetVec2 off a freshly-copied median: a second SetVec2 can trigger native Z validation.
+                Vec2 enemyCenter = RBMAI.Utilities.GetFormationCenter(enemyQuerySystem.Formation);
                 WorldPosition oldPosition = enemyQuerySystem.Formation.CachedMedianPosition;
+                oldPosition.SetVec2(enemyCenter);
                 WorldPosition newPosition = enemyQuerySystem.Formation.CachedMedianPosition;
+                Vec2 newPositionVec2 = enemyCenter;
                 if (querySystem.IsRangedFormation || querySystem.IsRangedCavalryFormation)
                 {
                     float effectiveMissileRange = querySystem.MissileRangeAdjusted / 2.25f;
-                    if (!(newPosition.AsVec2.DistanceSquared(querySystem.Formation.CachedAveragePosition) > effectiveMissileRange * effectiveMissileRange))
+                    if (!(enemyCenter.DistanceSquared(RBMAI.Utilities.GetFormationCenter(querySystem.Formation)) > effectiveMissileRange * effectiveMissileRange))
                     {
-                        Vec2 directionAux2 = (enemyQuerySystem.Formation.CachedMedianPosition.AsVec2 - querySystem.Formation.CachedMedianPosition.AsVec2).Normalized();
+                        Vec2 directionAux2 = (enemyCenter - RBMAI.Utilities.GetFormationCenter(querySystem.Formation)).Normalized();
 
-                        newPosition.SetVec2(newPosition.AsVec2 - directionAux2 * effectiveMissileRange);
+                        newPositionVec2 = enemyCenter - directionAux2 * effectiveMissileRange;
                     }
+                    newPosition.SetVec2(newPositionVec2);
 
                     if (oldPosition.AsVec2.Distance(newPosition.AsVec2) > 7f)
                     {
@@ -1321,14 +1325,14 @@ namespace RBMAI
                 }
                 else
                 {
-                    Vec2 vec = (enemyQuerySystem.Formation.CachedAveragePosition - f.QuerySystem.Formation.CachedAveragePosition).Normalized();
-                    float distance = enemyQuerySystem.Formation.CachedAveragePosition.Distance(f.QuerySystem.Formation.CachedAveragePosition);
+                    Vec2 vec = (enemyCenter - RBMAI.Utilities.GetFormationCenter(f.QuerySystem.Formation)).Normalized();
+                    float distance = enemyCenter.Distance(RBMAI.Utilities.GetFormationCenter(f.QuerySystem.Formation));
                     float num = 5f;
                     if (enemyQuerySystem.FormationPower < f.QuerySystem.FormationPower * 0.2f)
                     {
                         num = 0.1f;
                     }
-                    newPosition.SetVec2(newPosition.AsVec2 - vec * num);
+                    newPosition.SetVec2(enemyCenter - vec * num);
 
                     if (distance > 7f)
                     {
@@ -1385,10 +1389,10 @@ namespace RBMAI
                 float signDist = 1f;
                 if (enemyCav != null && significantEnemy != null)
                 {
-                    Vec2 cavDirection = enemyCav.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                    Vec2 cavDirection = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                     cavDist = cavDirection.Normalize();
 
-                    Vec2 signDirection = significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                    Vec2 signDirection = RBMAI.Utilities.GetFormationCenter(significantEnemy) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                     signDist = signDirection.Normalize();
                 }
 
@@ -1540,10 +1544,10 @@ namespace RBMAI
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
                 if (significantEnemy != null)
                 {
-                    WorldPosition medianPosition = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
+                    WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
                     ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
-                    Vec2 direction = (significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedAveragePosition).Normalized();
+                    Vec2 direction = (RBMAI.Utilities.GetFormationCenter(significantEnemy) - RBMAI.Utilities.GetFormationCenter(__instance.Formation)).Normalized();
                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction);
 
                     return false;
@@ -1588,11 +1592,11 @@ namespace RBMAI
                             Formation allyArchers = Utilities.FindSignificantAlly(__instance.Formation, false, true, false, false, false);
                             if (allyArchers != null)
                             {
-                                Vec2 dir = allyArchers.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                                Vec2 dir = RBMAI.Utilities.GetFormationCenter(allyArchers) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                                 float allyArchersDist = dir.Normalize();
                                 if (allyArchersDist - (allyArchers.Width / 2f) - (__instance.Formation.Width / 2f) > 60f)
                                 {
-                                    ____currentOrder = MovementOrder.MovementOrderMove(__instance.Formation.QuerySystem.Formation.CachedMedianPosition);
+                                    ____currentOrder = MovementOrder.MovementOrderMove(RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation));
                                     return false;
                                 }
                             }
@@ -1610,13 +1614,13 @@ namespace RBMAI
 
                     if (significantEnemy != null)
                     {
-                        Vec2 signDirection = significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                        Vec2 signDirection = RBMAI.Utilities.GetFormationCenter(significantEnemy) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                         signDist = signDirection.Normalize();
                     }
 
                     if (enemyCav != null)
                     {
-                        Vec2 cavDirection = enemyCav.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                        Vec2 cavDirection = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                         cavDist = cavDirection.Normalize();
                     }
 
@@ -1624,8 +1628,8 @@ namespace RBMAI
                     {
                         if (enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
                         {
-                            Vec2 vec = enemyCav.QuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
-                            WorldPosition positionNew = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
+                            Vec2 vec = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
+                            WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
 
                             WorldPosition storedPosition = WorldPosition.Invalid;
                             positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
@@ -1650,7 +1654,7 @@ namespace RBMAI
                     }
                     else if (significantEnemy != null && signDist < 60f && RBMAI.Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.33f))
                     {
-                        WorldPosition positionNew = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
+                        WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
 
                         WorldPosition storedPosition = WorldPosition.Invalid;
                         positionsStorage.TryGetValue(__instance.Formation, out storedPosition);
@@ -1673,7 +1677,7 @@ namespace RBMAI
                 {
                     FormationQuerySystem enemyQuerySystem = significantEnemy.QuerySystem;
 
-                    Vec2 directionToEnemy = enemyQuerySystem.Formation.CachedMedianPosition.AsVec2 - __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2;
+                    Vec2 directionToEnemy = RBMAI.Utilities.GetFormationCenter(enemyQuerySystem.Formation) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                     float enemyDistance = directionToEnemy.Normalize();
                     Vec2 enemyDirection = -enemyQuerySystem.Formation.Direction;
 
@@ -1708,8 +1712,8 @@ namespace RBMAI
 
                     float scaleT = MBMath.ClampFloat((currentTime - scaleStartTime) / 10f, 0f, 1f);
                     float advanceOffset = (MBMath.ClampFloat(enemyDistance * 0.3f, 10f, 50f) + __instance.Formation.Depth * 0.5f) * scaleT;
-                    Vec2 advanceVec2 = __instance.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2 + directionToEnemy * advanceOffset;
-                    WorldPosition advancePosition = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
+                    Vec2 advanceVec2 = RBMAI.Utilities.GetFormationCenter(__instance.Formation) + directionToEnemy * advanceOffset;
+                    WorldPosition advancePosition = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
                     advancePosition.SetVec2(advanceVec2);
 
                     if (Mission.Current.IsPositionInsideBoundaries(advanceVec2) && advancePosition.GetNavMesh() != UIntPtr.Zero)
@@ -1718,7 +1722,7 @@ namespace RBMAI
                     }
                     else
                     {
-                        WorldPosition enemyPosition = enemyQuerySystem.Formation.CachedMedianPosition;
+                        WorldPosition enemyPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(enemyQuerySystem.Formation);
                         enemyPosition.SetVec2(enemyPosition.AsVec2 + enemyQuerySystem.Formation.Direction * enemyQuerySystem.Formation.Depth * 0.5f);
                         advanceTimerStorage[__instance.Formation] = currentTime;
                         ____currentOrder = MovementOrder.MovementOrderMove(enemyPosition);
@@ -1763,7 +1767,7 @@ namespace RBMAI
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
                 if (significantEnemy != null)
                 {
-                    float num = __instance.Formation.QuerySystem.Formation.CachedAveragePosition.Distance(significantEnemy.QuerySystem.Formation.CachedMedianPosition.AsVec2);
+                    float num = RBMAI.Utilities.GetFormationDistance(__instance.Formation, significantEnemy);
                     if (num < 150f && __instance.Formation.CountOfUnitsWithoutDetachedOnes >= 30)
                     {
                         __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
@@ -1784,13 +1788,17 @@ namespace RBMAI
         [HarmonyPatch("SwitchUnitLocations")]
         private static bool PrefixSwitchUnitLocations(ref LineFormation __instance, IFormationUnit firstUnit, IFormationUnit secondUnit)
         {
-            // Vanilla SwitchUnitLocations indexes _units2D[FormationFileIndex, FormationRankIndex] for BOTH
-            // units with no bounds check of its own. Only let it run when both units are live, in a formation,
-            // AND carry a non-negative (placed) arrangement index -- an unplaced unit (index -1) would drive a
-            // _units2D[-1, ...] access.
-            return firstUnit != null && ((Agent)firstUnit).Formation != null && ((Agent)firstUnit).IsActive()
+            // Vanilla SwitchUnitLocations indexes _units2D[FormationFileIndex, FormationRankIndex] for BOTH units
+            // with no bounds check of its own, so an unplaced unit (index -1) would drive a _units2D[-1, ...]
+            // access. Guard ONLY that -- a negative index means the unit is not in the grid, so skipping is
+            // correct and loses nothing.
+            //
+            // Do NOT also gate on Formation != null / IsActive(). Those are the states native performs this
+            // maintenance FOR (a dying or just-detached unit), and suppressing it leaves the grid describing
+            // units that are no longer there. See PrefixRemoveUnit below -- that is how this crashed.
+            return firstUnit != null
                 && firstUnit.FormationFileIndex >= 0 && firstUnit.FormationRankIndex >= 0
-                && secondUnit != null && ((Agent)secondUnit).Formation != null && ((Agent)secondUnit).IsActive()
+                && secondUnit != null
                 && secondUnit.FormationFileIndex >= 0 && secondUnit.FormationRankIndex >= 0;
         }
 
@@ -1798,11 +1806,18 @@ namespace RBMAI
         [HarmonyPatch("RemoveUnit", new Type[] { typeof(IFormationUnit), typeof(bool), typeof(bool) })]
         private static bool PrefixRemoveUnit(IFormationUnit unit, bool fillInTheGap, bool isRemovingFromAnUnavailablePosition = false)
         {
-            // Read the arrangement indices only AFTER confirming the unit and its formation are non-null --
-            // the previous order dereferenced unit.FormationFileIndex before the null check. Vanilla RemoveUnit
-            // indexes _units2D by these indices directly (warning, then dereferencing, on an out-of-range slot),
-            // so an unplaced unit (negative index) must not be handed to it.
-            return unit != null && ((Agent)unit).Formation != null
+            // Vanilla RemoveUnit indexes _units2D by these indices directly (it only WARNS on an out-of-range
+            // slot, then dereferences anyway), so an unplaced unit (negative index) must not be handed to it.
+            // A negative index also means the unit is not in the grid, so skipping removal loses nothing.
+            //
+            // CRITICAL: do NOT gate on ((Agent)unit).Formation != null. Skipping this prefix skips
+            // `_units2D[i, j] = null`, so the unit is never unlinked from the arrangement grid -- and an agent's
+            // Formation is already cleared by the time it is being removed, which is precisely when removal must
+            // happen. That combination left dead agents in _units2D; once freed, the native parallel
+            // formation-movement job (TWParallel.For -> AgentTickMT -> HumanAIComponent.ParallelUpdateFormationMovement)
+            // walked the grid onto freed memory -> intermittent 0xC0000005 use-after-free on a worker thread,
+            // pure-native stack, no managed frames. Only guard what native genuinely cannot handle: the indices.
+            return unit != null
                 && unit.FormationFileIndex >= 0 && unit.FormationRankIndex >= 0;
         }
     }
