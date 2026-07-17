@@ -448,5 +448,7 @@
 	<string id="RBM_SPECTATE_004" text="Ignore" />
 	<string id="RBM_SPECTATE_005" text="Attackers: {NAME} ({COUNT} men)" />
 	<string id="RBM_SPECTATE_006" text="Defenders: {NAME} ({COUNT} men)" />
+	<string id="RBM_SPECTATE_007" text="Watch this assault?" />
+	<string id="RBM_SPECTATE_008" text="An army is storming the walls. You may watch the assault from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the siege on the map resolves on its own, and nothing you see here changes it." />
   </strings>
 </base>

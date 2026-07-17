@@ -4,9 +4,102 @@ using SandBox.Missions.MissionLogics;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.ComponentInterfaces;
 
 namespace RBMCampaign
 {
+    /// <summary>
+    /// The one thing every spectator mission carries and nothing else does.
+    ///
+    /// RBMSpectatorMission.IsSpectating reads the live mission for this marker, and that is the whole of the
+    /// spectate gate: present means "this mission is ours", absent means "hands off". It replaced keying on
+    /// RBMSpectatorDeploymentFinisher, which only the field fork carries -- the siege fork keeps a real deployment
+    /// controller instead of the finisher, so the gate needed a marker common to both.
+    /// </summary>
+    internal sealed class RBMSpectatorMarker : MissionLogic
+    {
+    }
+
+    /// <summary>
+    /// RTSCamera's static CommandMode flag, reached by reflection and never by reference.
+    ///
+    /// RBM must load on a machine that has never heard of RTSCamera, so it cannot carry a compile-time dependency on
+    /// RTSCamera.dll -- one missing assembly and every RBM type that touches it fails to load. Reflection costs one
+    /// cached lookup and degrades to doing nothing when the module is absent. Shared by the field fork's finisher
+    /// (which flips it LATE, to avoid the deployment proxy) and the siege fork's bridge (which flips it EARLY, to get
+    /// the proxy) -- opposite intents, one field.
+    /// </summary>
+    internal static class RBMSpectatorCommandMode
+    {
+        private static FieldInfo _field;
+        private static bool _lookedUp;
+
+        private static FieldInfo Field()
+        {
+            if (_lookedUp)
+            {
+                return _field;
+            }
+            _lookedUp = true;
+
+            try
+            {
+                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    Type type = assembly.GetType("RTSCamera.CampaignGame.Behavior.CommandBattleBehavior", false);
+                    if (type != null)
+                    {
+                        _field = type.GetField("CommandMode", BindingFlags.Public | BindingFlags.Static);
+                        break;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                _field = null;
+            }
+            return _field;
+        }
+
+        /// <summary>Reads the flag. Returns false (and value=false) when RTSCamera is absent.</summary>
+        public static bool TryRead(out bool value)
+        {
+            value = false;
+            FieldInfo field = Field();
+            if (field == null)
+            {
+                return false;
+            }
+            try
+            {
+                value = (bool)field.GetValue(null);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>Writes the flag. Returns false (and does nothing) when RTSCamera is absent.</summary>
+        public static bool TryWrite(bool value)
+        {
+            FieldInfo field = Field();
+            if (field == null)
+            {
+                return false;
+            }
+            try
+            {
+                field.SetValue(null, value);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+    }
     /// <summary>
     /// The spawn handler, told which battle it is spawning.
     ///
@@ -87,9 +180,6 @@ namespace RBMCampaign
         private DefaultBattleMissionAgentSpawnLogic _spawn;
         private bool _done;
 
-        private static FieldInfo _commandModeField;
-        private static bool _commandModeLookedUp;
-
         private bool _commandModeChanged;
         private bool _previousCommandMode;
 
@@ -129,7 +219,7 @@ namespace RBMCampaign
         {
             if (_commandModeChanged)
             {
-                WriteCommandMode(_previousCommandMode);
+                RBMSpectatorCommandMode.TryWrite(_previousCommandMode);
                 _commandModeChanged = false;
             }
             // The watched battle ends here. RBMSpectatorMission.IsSpectating would shut on its own anyway -- it reads
@@ -141,71 +231,71 @@ namespace RBMCampaign
 
         private void SetCommandMode(bool value)
         {
-            FieldInfo field = CommandModeField();
-            if (field == null)
+            bool previous;
+            if (RBMSpectatorCommandMode.TryRead(out previous) && RBMSpectatorCommandMode.TryWrite(value))
             {
-                return;
-            }
-            try
-            {
-                _previousCommandMode = (bool)field.GetValue(null);
-                field.SetValue(null, value);
+                _previousCommandMode = previous;
                 _commandModeChanged = true;
             }
-            catch (Exception)
+            else
             {
                 _commandModeChanged = false;
             }
         }
+    }
 
-        private static void WriteCommandMode(bool value)
+    /// <summary>
+    /// The siege spawn handler, told which event it is spawning.
+    ///
+    /// SandBoxSiegeMissionSpawnHandler finds its battle through MapEvent.PlayerMapEvent (null in a spectated siege)
+    /// and then reads its head counts on AfterStart. This is the field fork's RBMSpectatorSpawnHandler pattern, but
+    /// over the SIEGE base: siege spawns differ (no horses, single-phase InitWithSinglePhase(false, false)), so it
+    /// must subclass SandBoxSiegeMissionSpawnHandler, not the battle one. Let the base find the spawn logic, then
+    /// hand it the event it could not find for itself.
+    /// </summary>
+    internal sealed class RBMSpectatorSiegeSpawnHandler : SandBoxSiegeMissionSpawnHandler
+    {
+        private readonly MapEvent _watchedEvent;
+
+        public RBMSpectatorSiegeSpawnHandler(MapEvent watchedEvent)
         {
-            FieldInfo field = CommandModeField();
-            if (field == null)
-            {
-                return;
-            }
-            try
-            {
-                field.SetValue(null, value);
-            }
-            catch (Exception)
-            {
-            }
+            _watchedEvent = watchedEvent;
         }
 
-        /// <summary>
-        /// RTSCamera's CommandMode flag, found by reflection and never by reference.
-        ///
-        /// RBM must load and run on a machine that has never heard of RTSCamera, so it cannot carry a compile-time
-        /// dependency on RTSCamera.dll -- one missing assembly and every RBM type that touches it fails to load.
-        /// Reflection costs one lookup, cached, and degrades to doing nothing at all.
-        /// </summary>
-        private static FieldInfo CommandModeField()
+        public override void OnBehaviorInitialize()
         {
-            if (_commandModeLookedUp)
-            {
-                return _commandModeField;
-            }
-            _commandModeLookedUp = true;
+            base.OnBehaviorInitialize();
+            _mapEvent = _watchedEvent;
+        }
+    }
 
-            try
-            {
-                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    Type type = assembly.GetType("RTSCamera.CampaignGame.Behavior.CommandBattleBehavior", false);
-                    if (type != null)
-                    {
-                        _commandModeField = type.GetField("CommandMode", BindingFlags.Public | BindingFlags.Static);
-                        break;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                _commandModeField = null;
-            }
-            return _commandModeField;
+    /// <summary>
+    /// Puts back what the siege fork borrowed: the two persisted statics that let a playerless siege deploy itself.
+    ///
+    /// The siege mission keeps a real DeploymentMissionController (dropping it would leave the assault engine-less),
+    /// and that controller derefs Mission.InitialPlayerAgent. To satisfy it with no player, OpenSpectatorSiegeMission
+    /// turns on RTSCamera's CommandMode (so a proxy troop is possessed on team-deploy, populating InitialPlayerAgent)
+    /// and BattleInitializationModel.BypassPlayerDeployment (so SetupTeams auto-calls FinishDeployment, there being no
+    /// player to press Begin). Both are process-wide statics; left set they would follow the player into his OWN next
+    /// siege -- bypassing his deployment and jamming his camera into command mode. This behaviour lives the length of
+    /// the mission and restores both on the way out. It also closes the watch, the job the field fork gives its
+    /// finisher -- there is no finisher here.
+    /// </summary>
+    internal sealed class RBMSpectatorSiegeBridge : MissionLogic
+    {
+        private readonly bool _previousCommandMode;
+
+        public RBMSpectatorSiegeBridge(bool previousCommandMode)
+        {
+            _previousCommandMode = previousCommandMode;
+        }
+
+        public override void OnRemoveBehavior()
+        {
+            RBMSpectatorCommandMode.TryWrite(_previousCommandMode);
+            BattleInitializationModel.SetBypassPlayerDeployment(false);
+            RBMSpectatorMission.EndWatching();
+            base.OnRemoveBehavior();
         }
     }
 }

@@ -127,9 +127,18 @@ namespace RBMCampaign
                 new InquiryElement(BattleSideEnum.Defender, SideLabel(mapEvent, BattleSideEnum.Defender), null)
             };
 
+            // Siege-aware framing. The side labels (Attackers / Defenders) fit both, so only the title and body differ.
+            bool isSiege = mapEvent.IsSiegeAssault;
+            TextObject title = isSiege
+                ? new TextObject("{=RBM_SPECTATE_007}Watch this assault?")
+                : new TextObject("{=RBM_SPECTATE_001}Watch this battle?");
+            TextObject body = isSiege
+                ? new TextObject("{=RBM_SPECTATE_008}An army is storming the walls. You may watch the assault from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the siege on the map resolves on its own, and nothing you see here changes it.")
+                : new TextObject("{=RBM_SPECTATE_002}Two armies have met in the field. You may watch the fight from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the battle on the map resolves on its own, and nothing you see here changes it.");
+
             MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
-                new TextObject("{=RBM_SPECTATE_001}Watch this battle?").ToString(),
-                new TextObject("{=RBM_SPECTATE_002}Two armies have met in the field. You may watch the fight from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the battle on the map resolves on its own, and nothing you see here changes it.").ToString(),
+                title.ToString(),
+                body.ToString(),
                 sides,
                 true,
                 1,
@@ -160,7 +169,16 @@ namespace RBMCampaign
                 BattleSideEnum watchSide = (BattleSideEnum)selected[0].Identifier;
                 try
                 {
-                    RBMSpectatorMission.OpenSpectatorBattleMission(mapEvent, watchSide);
+                    // Siege assaults get the siege mission (named town scene, deployed engines); everything else that
+                    // reached here is an open-field battle. IsWatchableKind already vetted the shape and the SiegeEvent.
+                    if (mapEvent.IsSiegeAssault)
+                    {
+                        RBMSpectatorMission.OpenSpectatorSiegeMission(mapEvent, watchSide);
+                    }
+                    else
+                    {
+                        RBMSpectatorMission.OpenSpectatorBattleMission(mapEvent, watchSide);
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -179,10 +197,22 @@ namespace RBMCampaign
         /// </summary>
         private static bool IsWatchableKind(MapEvent mapEvent)
         {
-            // A field battle, and a real one. Raids, sieges, sally-outs and hideout fights all want a different
-            // mission with a different scene and a different set of behaviours; a sea fight wants the naval mission.
-            // This clone is the open-field one.
-            if (!mapEvent.IsFieldBattle || mapEvent.IsNavalMapEvent)
+            // A sea fight wants the naval mission; never this, in either shape.
+            if (mapEvent.IsNavalMapEvent)
+            {
+                return false;
+            }
+
+            // Two shapes we can stage. An open-field battle -- the original. Or a siege ASSAULT: not a raid, not a
+            // sally-out, not a hideout fight, each of which wants a different scene and a different behaviour set. The
+            // siege also needs a live SiegeEvent, because the scene name, the wall damage and the prepared engines all
+            // come off it and a siege map event without one cannot be built. A foreign IsSiegeAssault event is
+            // guaranteed a non-null MapEventSettlement + SiegeEvent, but the guard is cheap insurance.
+            bool watchableShape = mapEvent.IsFieldBattle
+                                  || (mapEvent.IsSiegeAssault
+                                      && mapEvent.MapEventSettlement != null
+                                      && mapEvent.MapEventSettlement.SiegeEvent != null);
+            if (!watchableShape)
             {
                 return false;
             }
