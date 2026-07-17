@@ -457,10 +457,19 @@ namespace RBMCampaign
                     header.Append("alone until the next -- the number does not change between two questions asked in").Append(Environment.NewLine);
                     header.Append("the same minute, and the AI asks thousands of them.").Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
-                    header.Append("power/man = offense x activeFactor x passiveFactor, averaged over the troop's kits.").Append(Environment.NewLine);
+                    header.Append("power/man = offense x activeFactor x passiveFactor / powerScale, averaged over his kits.").Append(Environment.NewLine);
                     header.Append("  offense       what one blow of his achieves (melee and ranged blended by his kind)").Append(Environment.NewLine);
                     header.Append("  activeFactor  how much longer he lives for the blows he turns aside (skill, shield)").Append(Environment.NewLine);
                     header.Append("  passiveFactor how much longer he lives for the armour the rest must get through").Append(Environment.NewLine);
+                    header.Append("  powerScale    the divisor that puts him back on the scale vanilla prices men in,").Append(Environment.NewLine);
+                    header.Append("                0.40 to 2.56 by tier. It buys nothing except that vanilla's own").Append(Environment.NewLine);
+                    header.Append("                hardcoded power thresholds -- the 1000f army floor, the 100f siege").Append(Environment.NewLine);
+                    header.Append("                damper -- mean again what they were written to mean. Ratios do not").Append(Environment.NewLine);
+                    header.Append("                notice it. The three columns above are printed RAW, before it, so").Append(Environment.NewLine);
+                    header.Append("                they do not multiply out to power/man on the page: they multiply").Append(Environment.NewLine);
+                    header.Append("                out to power/man x powerScale. See StrategicTroopPower.PowerScale,").Append(Environment.NewLine);
+                    header.Append("                which is MEASURED off this log and must be re-measured if the").Append(Environment.NewLine);
+                    header.Append("                settings below move.").Append(Environment.NewLine);
                     header.Append("  leader        his own party's commander perks; terrain, vanilla's own modifier").Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
                     header.Append("Settings:").Append(Environment.NewLine);
@@ -473,6 +482,10 @@ namespace RBMCampaign
                     header.Append("  armorMultiplier               = ").Append(Fmt(RC.armorMultiplier)).Append(Environment.NewLine);
                     header.Append("  OneHandedThrustDamageBonus    = ").Append(Fmt(RC.OneHandedThrustDamageBonus)).Append(Environment.NewLine);
                     header.Append("     (read by RBM's melee TIER formula, so it moves ranged/shield/horse numbers)").Append(Environment.NewLine);
+                    header.Append("  powerScale                    = ").Append(Fmt(StrategicTroopPower.PowerScale)).Append(Environment.NewLine);
+                    header.Append("     (measured off a run of THIS log; the three settings above all move the raw").Append(Environment.NewLine);
+                    header.Append("      number it divides, so a change to any of them makes this value a lie until").Append(Environment.NewLine);
+                    header.Append("      it is re-measured -- sum(men x power/man x powerScale) / sum(men x vanillaTier))").Append(Environment.NewLine);
 
                     File.WriteAllText(LogFilePath, header.ToString());
                     _fileOpened = true;

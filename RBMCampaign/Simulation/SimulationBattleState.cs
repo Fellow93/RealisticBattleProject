@@ -36,10 +36,11 @@ namespace RBMCampaign
         ///
         /// Held at 4 -- pushed high to keep the widened lethality pool (a man soaks half again as many blows) from
         /// lengthening the fight and diluting the ranged phases back toward melee. Well above vanilla's thin sample.
-        /// Note this is only the FULL-SIZE multiplier now: EffectiveTickMultiplier ramps it down for a small fight,
-        /// and the phase boundaries are denominated in size-normalised Progress (see BattleState.Progress) rather than
-        /// raw rounds, so shrinking the multiplier no longer whips a small battle through its ranged phases. Raise it
-        /// to compress a full-size fight and grow the ranged phases; lower it to stretch the fight and grow the melee.
+        /// Flat: every battle is allocated at this multiplier, whatever its size. A ramp that thinned it for a small
+        /// fight was once described here and never built -- what a small fight actually needed was a shorter VOLLEY,
+        /// not a thinner round, and that is where it went instead (see GetVolleyRounds, which scales the approach by
+        /// the battle's size against VolleyBattleSaturation). Raise this to compress a fight and grow the ranged
+        /// phases; lower it to stretch the fight and grow the melee.
         /// </summary>
         internal const int TickMultiplier = 4;
 
@@ -57,9 +58,61 @@ namespace RBMCampaign
             __result = new ValueTuple<int, int>(
                 Math.Max(1, MathF.Round(__result.Item1 * mult)),
                 Math.Max(1, MathF.Round(__result.Item2 * mult)));
-            // The size-normalised pace of THIS round: 1 at full size, less when the multiplier is ramped down. It is
-            // how much of the fight this round carries, and it is what the phase boundaries are counted in.
+            // The pace of THIS round -- how much of the fight it carries, and the unit the phase boundaries are
+            // counted in. Nothing varies the multiplier per battle, so this is always exactly 1 and Progress tracks
+            // the raw round. It is written as a ratio, and passed rather than assumed, so that a model which DOES
+            // vary the allocation has one seam to vary it at. See BattleState.Progress.
             SimulationBattleState.AdvanceRound(mapEvent, mult / TickMultiplier);
+        }
+    }
+
+    /// <summary>
+    /// What a round COSTS the campaign clock -- the other half of the round's definition, and the half vanilla
+    /// still owned.
+    ///
+    /// SimulationRoundCounter above decides how much fighting a round contains. This decides how long that fighting
+    /// takes. The two must agree, and for a long time they did not: the counter was rewritten (a round became a
+    /// phase, a thin slice of a battle) while the clock kept charging vanilla's price for it, a flat half hour --
+    /// the price of a round that resolved a large share of the fight. Nothing in the model was wrong; the battle
+    /// simply took more rounds than vanilla's (a blow that misses, is blocked, or kills a horse rather than a man
+    /// costs a round and yields no casualty), and every one of them billed half an hour. Fights of twenty a side
+    /// ran to a day and a half of campaign time.
+    ///
+    /// So the clock is priced here, beside the counter that gives the round its meaning, and the two stay together.
+    /// This touches the CLOCK ONLY: not a blow, not a casualty, not a phase boundary (those are counted in rounds
+    /// and Progress, never in minutes), so the battle that is fought is byte-for-byte the battle that was fought
+    /// before -- it merely takes the hours it should.
+    /// </summary>
+    [HarmonyPatch(typeof(DefaultCombatSimulationModel), "GetSimulationTickInterval")]
+    internal static class SimulationRoundClock
+    {
+        /// <summary>
+        /// Vanilla's price for a field round, and the number the dial is expressed against. Scaling vanilla's own
+        /// answer rather than replacing it is deliberate: a siege assault costs vanilla DOUBLE a field round, and
+        /// that ratio is a fact about sieges rather than about this model, so it rides through untouched and the
+        /// dial does not have to know a siege from a field at all.
+        /// </summary>
+        private const float VanillaFieldRoundMinutes = 30f;
+
+        private static void Postfix(MapEvent mapEvent, ref CampaignTime __result)
+        {
+            // With the equipment model off the whole overhaul stands down (see SimulationEquipmentPower.
+            // SimulationEnabled): vanilla's round is back, so vanilla's price for it is the right one.
+            if (!SimulationEquipmentPower.SimulationEnabled)
+            {
+                return;
+            }
+
+            float minutes = RBMConfig.RBMConfig.simulationRoundMinutes;
+            if (minutes <= 0f)
+            {
+                return;
+            }
+
+            // A round can never be free: at zero the map event would simulate every campaign tick without the clock
+            // ever advancing past it, so the floor is one minute.
+            long scaled = (long)MathF.Round((float)__result.ToMinutes * (minutes / VanillaFieldRoundMinutes));
+            __result = CampaignTime.Minutes(Math.Max(1L, scaled));
         }
     }
 
@@ -281,20 +334,25 @@ namespace RBMCampaign
 
         internal class BattleState
         {
-            /// <summary>Rounds fought, raw. Kept for the log and for physical per-round counts (javelins thrown). The
-            /// PHASE boundaries read <see cref="Progress"/>, not this, so they hold a constant share of the fight
-            /// whatever the battle's size.</summary>
+            /// <summary>Rounds fought, raw. Kept for the log and for physical per-round counts (javelins thrown).
+            /// The PHASE boundaries read <see cref="Progress"/> rather than this -- which today is the same number,
+            /// but says which of the two a boundary means.</summary>
             public int Round;
 
             /// <summary>
-            /// How much FIGHTING has happened, normalised so that one full-size round is worth 1. Each round adds
-            /// EffectiveTickMultiplier / TickMultiplier -- exactly 1 at full battle size (so Progress == Round and
-            /// every phase boundary is byte-identical to the old round-count), and LESS in a small battle or a
-            /// thinned-out endgame, where a round carries proportionally less of the fight. The volley, the skirmish
-            /// and the quiver (VolleyRounds, SkirmishRounds, AmmoRounds) are all denominated in these units, so a
-            /// small skirmish no longer whips through its ranged phases in a handful of thin rounds, and archers in a
-            /// long endgame do not run their quiver dry while a full-size fight would still have arrows. See
-            /// SimulationRoundCounter.EffectiveTickMultiplier.
+            /// How much FIGHTING has happened, in units of one full-size round. The volley, the skirmish and the
+            /// quiver (VolleyRounds, SkirmishRounds, AmmoRounds) are all denominated in these units.
+            ///
+            /// AS THE CODE STANDS, THIS EQUALS <see cref="Round"/> EXACTLY, for every battle at every size: each
+            /// round adds SimulationRoundCounter's pace, which is TickMultiplier / TickMultiplier -- 1, always.
+            /// Nothing thins a round for a small fight. A ramp that would have (an "EffectiveTickMultiplier") was
+            /// described in the comments here and never written; the small-battle problem it was meant to solve is
+            /// handled a size down, by scaling the VOLLEY to the battle instead of the round (see GetVolleyRounds),
+            /// so a small fight's ranged phase is short because its approach is short, not because its rounds are.
+            ///
+            /// It stays a separate float, and stays what the phases read, because it is the one seam at which the
+            /// round could be repriced per battle without touching a boundary. Anything counting PHYSICAL per-round
+            /// events (javelins thrown) must read <see cref="Round"/>, not this -- see HasJavelins.
             /// </summary>
             public float Progress;
 
@@ -576,7 +634,9 @@ namespace RBMCampaign
         /// <summary>
         /// Called once per round, from the tick allocation. That is the only place the simulation tells us a round
         /// has turned -- a blow cannot, since it does not know how many came before it. <paramref name="pace"/> is
-        /// how much of the fight this round carried, normalised to 1 at full battle size (see BattleState.Progress).
+        /// how much of the fight this round carried, in units of one full-size round. Its only caller passes 1, for
+        /// every battle at every size; it is a parameter so that the round has one place to be repriced. See
+        /// BattleState.Progress.
         /// </summary>
         internal static void AdvanceRound(MapEvent mapEvent, float pace)
         {
@@ -588,7 +648,8 @@ namespace RBMCampaign
 
             state.Round++;
             // Never let a round advance the fight by nothing (a zero or negative pace would freeze the phases and hang
-            // the volley forever); one full-size round is 1, a thin small-battle round a fraction of that.
+            // the volley forever), and never by more than the full round it is measured against. The live caller
+            // passes exactly 1, so the clamp is a guard on a future repricing, not on today's arithmetic.
             state.Progress += MBMath.ClampFloat(pace, 0.01f, 1f);
 
             // The skirmish opens the first round the volley's progress is spent. Pinned to the RAW round because a
@@ -1073,8 +1134,9 @@ namespace RBMCampaign
         /// plainly. Anything that treats the whole volley as one range is averaging those two, and the log cannot
         /// tell them apart.
         ///
-        /// In Progress units, so it holds its meaning whatever the battle's size or pace (a small fight's volley is a
-        /// fraction of a round -- see GetVolleyRounds); 1 outside the volley, and for a battle with no volley at all,
+        /// A fraction of the volley's own length rather than a count, so it holds its meaning whatever the battle's
+        /// size (a small fight's volley is a fraction of a round -- see GetVolleyRounds); 1 outside the volley, and
+        /// for a battle with no volley at all,
         /// so a caller that asks anyway gets the closest, flattest shot rather than the longest.
         /// </summary>
         internal static float VolleyProgress(BattleState state)
@@ -1088,10 +1150,10 @@ namespace RBMCampaign
 
         internal static bool IsVolleyPhase(BattleState state)
         {
-            // Progress, not the raw round: the volley is a fixed SHARE of the fight, so a small battle stays in it for
-            // proportionally more (thinner) rounds instead of blowing through it in a handful. At full size Progress
-            // equals the round exactly, so this is identical to the old round-count there. Progress is advanced with
-            // the round's allocation, so it already includes this round's fighting -- hence <=, not <.
+            // Progress rather than the raw round -- the same number today, but the volley is a length of FIGHTING and
+            // this is the side of the comparison that says so. What makes a small battle's volley short is the volley
+            // itself being sized to the fight (see GetVolleyRounds), not the rounds running thin. Progress is advanced
+            // with the round's allocation, so it already includes this round's fighting -- hence <=, not <.
             return state != null && state.Progress <= state.VolleyRounds;
         }
 
@@ -1295,10 +1357,9 @@ namespace RBMCampaign
                 return true;
             }
 
-            // Against Progress, not the raw round, so the quiver holds a constant amount of FIGHTING however the
-            // battle is paced: a small skirmish does not burn it through in thin rounds, and archers in a big battle's
-            // slow, thinned-out endgame do not run dry while a full-size fight would still be loosing. At full size
-            // Progress equals the round, so this is the old clock exactly.
+            // Against Progress rather than the raw round, so the quiver is spent by FIGHTING however the battle comes
+            // to be paced. Today the round is never repriced, so this is the raw round count exactly: thirty rounds
+            // of loosing and then he is a man with a knife, in a skirmish and a set-piece alike.
             return battle.Progress <= AmmoRounds;
         }
 
@@ -1323,9 +1384,10 @@ namespace RBMCampaign
 
             // He hurls one per RAW round of the skirmish -- a javelin is a physical thing, two javelins are two
             // throws, whatever the fight's pace -- so this counts raw rounds from where the skirmish opened, NOT
-            // progress. Counted from SkirmishStartRound rather than VolleyRounds, because under the size-normalised
-            // pace the skirmish no longer begins on raw round VolleyRounds: in a small battle the volley's progress
-            // takes many thin rounds to spend, and the bundle would otherwise be thrown away during the volley. Both
+            // progress. Counted from SkirmishStartRound rather than VolleyRounds because VolleyRounds is not a round
+            // number at all: it is scaled by the battle's size and a small fight's is a FRACTION of a round (see
+            // GetVolleyRounds), so there is no raw round it names. The round the skirmish actually opened on is
+            // recorded when it opens (see AdvanceRound), and that is the only honest thing to count from. Both
             // sides begin the skirmish together, so no side needs a head start or a handicap. If the skirmish has not
             // opened yet (still in the volley), he throws nothing.
             if (battle.SkirmishStartRound < 0)

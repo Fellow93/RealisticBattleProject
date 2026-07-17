@@ -1,5 +1,6 @@
 using HarmonyLib;
 using Helpers;
+using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
@@ -23,8 +24,23 @@ namespace RBMCampaign
     /// swing can kill a champion outright. Only a HERO gets a real pool (AddHeroDamage), and he gets it four lines
     /// higher up in the same method.
     ///
-    /// The game does know who each man is: MapEventSide keeps a UniqueTroopDescriptor for the soldier it has
-    /// selected. So a pool is possible, and this keeps one.
+    /// The game does know who each man is -- for a while. MapEventSide keeps a UniqueTroopDescriptor for the
+    /// soldier it has selected, and within one simulated round that descriptor is a man. But a "round" on the map
+    /// is a SESSION: every simulation interval MapEvent.SimulateBattleSetup rebuilds each side's muster from the
+    /// roster (MapEventParty.Update clears the flattened roster and re-adds every man), and every re-add MINTS A
+    /// FRESH DESCRIPTOR. Vanilla never cared -- its coin-flip is memoryless, so it has nothing to lose in the
+    /// rebuild. A wound ledger keyed on descriptors alone loses EVERYTHING: each round boundary wiped every man
+    /// clean, a man could only die if he was worn through inside a single round, and a battle of thirty ground on
+    /// for seventy rounds while nine fields' worth of damage evaporated at the boundaries. (Measured: 31,157
+    /// damage dealt onto a field carrying 3,500 hit points, 17 casualties.)
+    ///
+    /// So the ledger lives on two levels. WITHIN a session, per descriptor -- the man who was hit carries his
+    /// wound, exactly as before. When the muster is torn down (SimulateBattleSetup, patched below), the session's
+    /// surviving wounds FOLD into a carry per STACK -- (party, character), the only identity that outlives the
+    /// rebuild; men of a stack are interchangeable, which is precisely why this is honest. Next session, the first
+    /// time a man of that stack is struck, he ADOPTS the worst carried wound as his starting state: the man still
+    /// bleeding from the last round is the man who goes down next. Nothing is lost at any boundary, and the log's
+    /// hp column finally walks downward across a whole battle instead of resetting with the clock.
     ///
     /// THE TRICK, and the reason this is forty lines instead of a reimplementation: the roll is not replaced, it is
     /// BENT. RandomInt(maxHitPoints) returns 0..maxHitPoints-1, so rewriting `damage` in a prefix makes the outcome
@@ -74,12 +90,35 @@ namespace RBMCampaign
             AccessTools.FieldRefAccess<MapEventSide, UniqueTroopDescriptor>("_selectedSimulationTroopDescriptor");
 
         /// <summary>
-        /// What each man has taken so far, kept per battle so it can be dropped with the battle. Several fights run
-        /// at once across the map, and a campaign that never forgot its wounded would carry every man it ever
-        /// scratched.
+        /// One struck man's open wound, and enough to know whose stack he belongs to when his descriptor dies with
+        /// the session (see the class note): the fold into the stack carry needs the party and the character, and
+        /// they are only cheaply known at the moment he is struck.
         /// </summary>
-        private static readonly Dictionary<MapEvent, Dictionary<UniqueTroopDescriptor, float>> _wounds =
-            new Dictionary<MapEvent, Dictionary<UniqueTroopDescriptor, float>>();
+        private class WoundRecord
+        {
+            public PartyBase Party;
+            public CharacterObject Troop;
+            public float Taken;
+        }
+
+        /// <summary>
+        /// What each man has taken so far THIS SESSION, kept per battle so it can be dropped with the battle.
+        /// Several fights run at once across the map, and a campaign that never forgot its wounded would carry
+        /// every man it ever scratched. Descriptors are minted fresh each session, so this dictionary is only ever
+        /// read within one -- the fold (see <see cref="FoldSessionWounds"/>) is what survives the boundary.
+        /// </summary>
+        private static readonly Dictionary<MapEvent, Dictionary<UniqueTroopDescriptor, WoundRecord>> _wounds =
+            new Dictionary<MapEvent, Dictionary<UniqueTroopDescriptor, WoundRecord>>();
+
+        /// <summary>
+        /// The wounds that survived a torn-down session, banked per STACK -- (party, character) is the only
+        /// identity the muster rebuild cannot destroy. Each entry is one still-standing man's accumulated wound;
+        /// a fresh descriptor of the stack adopts the worst of them the first time he is struck. Entries only exist
+        /// for men who were hit and left standing, so the list can never outgrow the stack for long, and whatever
+        /// is left when the battle ends is dropped with it.
+        /// </summary>
+        private static readonly Dictionary<MapEvent, Dictionary<ValueTuple<PartyBase, CharacterObject>, List<float>>> _carried =
+            new Dictionary<MapEvent, Dictionary<ValueTuple<PartyBase, CharacterObject>, List<float>>>();
 
         /// <summary>What the man who was just struck has left. Read by the log, which no longer has to guess.</summary>
         internal static float LastHitPointsLeft = -1f;
@@ -337,41 +376,127 @@ namespace RBMCampaign
                 return;
             }
 
-            int maxHitPoints = MaxHitPoints(troop, __instance.GetAllocatedTroopParty(selected),
-                SimulationBattleState.IsDismountedBattle(battle));
+            PartyBase party = __instance.GetAllocatedTroopParty(selected);
+            int maxHitPoints = MaxHitPoints(troop, party, SimulationBattleState.IsDismountedBattle(battle));
             if (maxHitPoints <= 0)
             {
                 return;
             }
 
-            Dictionary<UniqueTroopDescriptor, float> wounds;
-            if (!_wounds.TryGetValue(battle, out wounds))
-            {
-                wounds = new Dictionary<UniqueTroopDescriptor, float>();
-                _wounds[battle] = wounds;
-            }
+            WoundRecord record = GetOrAdoptWound(battle, selected, party, troop);
+            record.Taken += damage;
 
-            UniqueTroopDescriptor id = selected;
-
-            float taken;
-            wounds.TryGetValue(id, out taken);
-            taken += damage;
-
-            if (taken < maxHitPoints)
+            if (record.Taken < maxHitPoints)
             {
                 // Still on his feet, and carrying it. The blow is real and it is remembered; it simply has not
                 // finished him. Zeroing the damage makes vanilla's roll certain to spare him.
-                wounds[id] = taken;
-                LastHitPointsLeft = maxHitPoints - taken;
+                LastHitPointsLeft = maxHitPoints - record.Taken;
                 damage = 0;
                 return;
             }
 
             // Worn through. Vanilla decides from here whether he is dead or only wounded, and the surgeon has his
-            // say -- exactly as before.
-            wounds.Remove(id);
+            // say -- exactly as before. His record leaves the books with him: a dead man's wound must never fold
+            // into the stack carry and wear down the living twice.
+            SessionWounds(battle).Remove(selected);
             LastHitPointsLeft = 0f;
             damage = maxHitPoints;
+        }
+
+        /// <summary>This battle's per-descriptor ledger, made if it does not exist yet.</summary>
+        private static Dictionary<UniqueTroopDescriptor, WoundRecord> SessionWounds(MapEvent battle)
+        {
+            Dictionary<UniqueTroopDescriptor, WoundRecord> wounds;
+            if (!_wounds.TryGetValue(battle, out wounds))
+            {
+                wounds = new Dictionary<UniqueTroopDescriptor, WoundRecord>();
+                _wounds[battle] = wounds;
+            }
+            return wounds;
+        }
+
+        /// <summary>
+        /// The struck man's open wound record -- his existing one if this session already knows him, otherwise a
+        /// fresh one that first ADOPTS the worst wound his stack carried over from the torn-down sessions before
+        /// (see the class note). Worst first is deliberate: the man nearest death is the next to go down, so no
+        /// carried wound is ever stranded behind fresher ones.
+        /// </summary>
+        private static WoundRecord GetOrAdoptWound(MapEvent battle, UniqueTroopDescriptor selected,
+            PartyBase party, CharacterObject troop)
+        {
+            Dictionary<UniqueTroopDescriptor, WoundRecord> wounds = SessionWounds(battle);
+
+            WoundRecord record;
+            if (wounds.TryGetValue(selected, out record))
+            {
+                return record;
+            }
+
+            record = new WoundRecord { Party = party, Troop = troop, Taken = 0f };
+            wounds[selected] = record;
+
+            Dictionary<ValueTuple<PartyBase, CharacterObject>, List<float>> stacks;
+            if (_carried.TryGetValue(battle, out stacks))
+            {
+                List<float> carry;
+                if (stacks.TryGetValue(new ValueTuple<PartyBase, CharacterObject>(party, troop), out carry)
+                    && carry.Count > 0)
+                {
+                    int worst = 0;
+                    for (int i = 1; i < carry.Count; i++)
+                    {
+                        if (carry[i] > carry[worst])
+                        {
+                            worst = i;
+                        }
+                    }
+                    record.Taken = carry[worst];
+                    carry.RemoveAt(worst);
+                }
+            }
+
+            return record;
+        }
+
+        /// <summary>
+        /// The session is being torn down (the muster rebuild that kills every descriptor -- see the class note);
+        /// bank every still-open wound with the stack it belongs to before the key dies. Called from the
+        /// SimulateBattleSetup prefix below, which runs before EVERY session including the first (when there is
+        /// nothing to fold and this is a no-op).
+        /// </summary>
+        internal static void FoldSessionWounds(MapEvent battle)
+        {
+            Dictionary<UniqueTroopDescriptor, WoundRecord> wounds;
+            if (battle == null || !_wounds.TryGetValue(battle, out wounds) || wounds.Count == 0)
+            {
+                return;
+            }
+
+            Dictionary<ValueTuple<PartyBase, CharacterObject>, List<float>> stacks;
+            if (!_carried.TryGetValue(battle, out stacks))
+            {
+                stacks = new Dictionary<ValueTuple<PartyBase, CharacterObject>, List<float>>();
+                _carried[battle] = stacks;
+            }
+
+            foreach (WoundRecord record in wounds.Values)
+            {
+                if (record.Taken <= 0f)
+                {
+                    continue;
+                }
+                ValueTuple<PartyBase, CharacterObject> key =
+                    new ValueTuple<PartyBase, CharacterObject>(record.Party, record.Troop);
+                List<float> carry;
+                if (!stacks.TryGetValue(key, out carry))
+                {
+                    carry = new List<float>();
+                    stacks[key] = carry;
+                }
+                carry.Add(record.Taken);
+            }
+
+            wounds.Clear();
         }
 
         /// <summary>
@@ -427,19 +552,10 @@ namespace RBMCampaign
 
             UniqueTroopDescriptor id = SelectedDescriptor(strikerSide);
 
-            Dictionary<UniqueTroopDescriptor, float> wounds;
-            if (!_wounds.TryGetValue(battle, out wounds))
-            {
-                wounds = new Dictionary<UniqueTroopDescriptor, float>();
-                _wounds[battle] = wounds;
-            }
+            WoundRecord record = GetOrAdoptWound(battle, id, strikerParty, troop);
+            record.Taken += damage;
 
-            float taken;
-            wounds.TryGetValue(id, out taken);
-            taken += damage;
-            wounds[id] = taken;
-
-            float left = max - taken;
+            float left = max - record.Taken;
             return (left > 0f) ? left : 0f;
         }
 
@@ -449,6 +565,7 @@ namespace RBMCampaign
             if (battle != null)
             {
                 _wounds.Remove(battle);
+                _carried.Remove(battle);
             }
         }
 
@@ -457,6 +574,27 @@ namespace RBMCampaign
         internal static void ResetForNewSession()
         {
             _wounds.Clear();
+            _carried.Clear();
+        }
+    }
+
+    /// <summary>
+    /// The hook that makes the wound ledger survive the map's clock. SimulateBattleSetup is the muster rebuild --
+    /// the one act that kills every UniqueTroopDescriptor (see the note on SimulationTroopHitPoints) -- and it runs
+    /// at the top of every simulation session. Folding BEFORE it runs banks the dying session's wounds with their
+    /// stacks while the descriptors still mean something. The player-encounter path (SimulatePlayerEncounterBattle)
+    /// simulates rounds WITHOUT a fresh setup, and correctly gets no fold: its descriptors live on, and the
+    /// per-descriptor ledger keeps working across those rounds untouched.
+    /// </summary>
+    [HarmonyPatch(typeof(MapEvent), "SimulateBattleSetup")]
+    internal static class SimulationWoundCarryover
+    {
+        private static void Prefix(MapEvent __instance)
+        {
+            // No gate on SimulationEnabled here, deliberately: with the model off the ledgers are simply empty and
+            // this is a no-op, and a mid-battle toggle must still fold what the ledgers already hold rather than
+            // strand it.
+            SimulationTroopHitPoints.FoldSessionWounds(__instance);
         }
     }
 }

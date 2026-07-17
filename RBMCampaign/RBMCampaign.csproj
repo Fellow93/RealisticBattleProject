@@ -190,6 +190,10 @@
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Launcher.Steam.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.View">
+      <HintPath>..\..\Native\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.View.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="TaleWorlds.MountAndBlade.ViewModelCollection.dll">
       <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.ViewModelCollection.dll</HintPath>
       <Private>False</Private>
@@ -323,6 +327,10 @@
     <Compile Include="Simulation\SimulationTroopHitPoints.cs" />
     <Compile Include="Simulation\RBMSimulationCampaignBehavior.cs" />
     <Compile Include="Diagnostics\SimulationLog.cs" />
+    <Compile Include="Spectate\RBMSpectatorMission.cs" />
+    <Compile Include="Spectate\RBMSpectatorMissionLogics.cs" />
+    <Compile Include="Spectate\RBMSpectatorViewPatches.cs" />
+    <Compile Include="Spectate\RBMSpectateCampaignBehavior.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

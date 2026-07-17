@@ -124,7 +124,12 @@ public class SiegeArcherPoints : MissionLogic
             return;
         }
 
-        if (firstTime && Mission.Current != null && Mission.Current.IsSiegeBattle && Mission.Current.PlayerTeam.IsDefender && Mission.Current.Mode != MissionMode.Deployment)
+        // PlayerTeam has always been there in a siege the player fights, and this read has always assumed so. It is
+        // no longer safe to assume: a battle can now be opened with nobody in it (see RBMCampaign's spectated
+        // battles), and a mission with no player is a mission that can have no player team. This one cannot be
+        // reached that way -- it is gated on a siege, and only field battles are spectated -- but a null deref
+        // sitting behind two conditions is worth one guard rather than a crash report.
+        if (firstTime && Mission.Current != null && Mission.Current.IsSiegeBattle && Mission.Current.PlayerTeam != null && Mission.Current.PlayerTeam.IsDefender && Mission.Current.Mode != MissionMode.Deployment)
         {
             if (firstTime && !RBMConfig.RBMConfig.developerMode)
             {

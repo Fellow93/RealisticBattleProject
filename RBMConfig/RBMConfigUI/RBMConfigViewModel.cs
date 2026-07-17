@@ -95,6 +95,11 @@ namespace RBMConfig
         public TextViewModel BattleHitLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> BattleHitLoggingEnabled { get; }
 
+        // Watching an AI battle from a free camera: the live counterpart to both logs above, and the only way to see
+        // the field AI fight the same muster auto-resolve is scoring. Needs RTSCamera.
+        public TextViewModel SpectateBattlesEnabledText { get; }
+        public SelectorVM<SelectorItemVM> SpectateBattlesEnabled { get; }
+
         // SupplyTown gate: on/off toggle for gating upgrades on a nearby friendly town.
         public TextViewModel TroopUpgradeRequireSupplyTownText { get; }
         public SelectorVM<SelectorItemVM> TroopUpgradeRequireSupplyTown { get; }
@@ -860,6 +865,57 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_094}Detailed Auto Resolve Logging").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public string SpectateBattlest
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_099}Spectate AI Battles").ToString();
+            }
+        }
+
+        private float _spectateMinTroopsPerSide;
+
+        [DataSourceProperty]
+        public float SpectateMinTroopsPerSide
+        {
+            get
+            {
+                return _spectateMinTroopsPerSide;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value), 10f, 1000f);
+                if (snapped != _spectateMinTroopsPerSide)
+                {
+                    _spectateMinTroopsPerSide = snapped;
+                    OnPropertyChangedWithValue(snapped, "SpectateMinTroopsPerSide");
+                    OnPropertyChanged("SpectateMinTroopsPerSideValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string SpectateMinTroopsPerSideValue
+        {
+            get
+            {
+                return ((int)_spectateMinTroopsPerSide).ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string SpectateMinTroopsPerSidet
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_101}Spectate Minimum Troops Per Side").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel SpectateMinTroopsPerSideHint { get; } = Hint("{=RBM_CON_102}How many men both sides must field before a battle between two AI lords is worth being asked about. Two patrols brushing past each other say nothing about how a line holds. Default 100.");
 
         [DataSourceProperty]
         public string BattleHitLoggingt
@@ -1771,6 +1827,12 @@ namespace RBMConfig
             BattleHitLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_095}Field Battle Logging"));
             BattleHitLoggingEnabled = new SelectorVM<SelectorItemVM>(battleHitLoggingOptions, 0, null);
 
+            // Watching an AI battle: off by default -- it is an instrument, not a way to play -- so Disabled carries
+            // the "(Default)" tag.
+            List<string> spectateBattlesOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
+            SpectateBattlesEnabledText = new TextViewModel(new TextObject("{=RBM_CON_099}Spectate AI Battles"));
+            SpectateBattlesEnabled = new SelectorVM<SelectorItemVM>(spectateBattlesOptions, 0, null);
+
             // SupplyTown gate: Enabled is the default, so its option carries the "(Default)" tag.
             List<string> troopUpgradeRequireSupplyTownOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             TroopUpgradeRequireSupplyTownText = new TextViewModel(new TextObject("{=RBM_CON_070}Upgrade Near Town"));
@@ -1844,6 +1906,8 @@ namespace RBMConfig
             SimulationPerkSystem.SelectedIndex = RBMConfig.simulationPerkSystem ? 1 : 0;
             SimulationLoggingEnabled.SelectedIndex = RBMConfig.simulationLoggingEnabled ? 1 : 0;
             BattleHitLoggingEnabled.SelectedIndex = RBMConfig.battleHitLoggingEnabled ? 1 : 0;
+            SpectateBattlesEnabled.SelectedIndex = RBMConfig.spectateBattlesEnabled ? 1 : 0;
+            _spectateMinTroopsPerSide = MathF.Clamp(RBMConfig.spectateMinTroopsPerSide, 10f, 1000f);
             _troopLeaderSpoilsCutFraction = MathF.Clamp(RBMConfig.troopLeaderSpoilsCutFraction, 0f, 1f);
             _troopSpoilsCapDays = MathF.Clamp(RBMConfig.troopSpoilsCapDays, 0f, 60f);
             _troopLuxuryCooldownDays = MathF.Clamp(RBMConfig.troopLuxuryCooldownDays, 0f, 120f);
@@ -2052,6 +2116,8 @@ namespace RBMConfig
             RBMConfig.simulationPerkSystem = SimulationPerkSystem.SelectedIndex == 1;
             RBMConfig.simulationLoggingEnabled = SimulationLoggingEnabled.SelectedIndex == 1;
             RBMConfig.battleHitLoggingEnabled = BattleHitLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.spectateBattlesEnabled = SpectateBattlesEnabled.SelectedIndex == 1;
+            RBMConfig.spectateMinTroopsPerSide = (int)MathF.Round(_spectateMinTroopsPerSide);
             RBMConfig.troopLeaderSpoilsCutFraction = _troopLeaderSpoilsCutFraction;
             RBMConfig.troopSpoilsCapDays = (int)MathF.Round(_troopSpoilsCapDays);
             RBMConfig.troopLuxuryCooldownDays = (int)MathF.Round(_troopLuxuryCooldownDays);
@@ -2128,6 +2194,8 @@ namespace RBMConfig
             SimulationPerkSystem.SelectedIndex = 1;
             SimulationLoggingEnabled.SelectedIndex = 1;
             BattleHitLoggingEnabled.SelectedIndex = 0;
+            SpectateBattlesEnabled.SelectedIndex = 0;
+            SpectateMinTroopsPerSide = 100f;
         }
 
         private void ExecuteCancel()

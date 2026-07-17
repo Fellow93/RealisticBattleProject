@@ -165,6 +165,7 @@ namespace RBM
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSpoilsCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMTroopUpkeepCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSimulationCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSpectateCampaignBehavior());
             }
             base.OnGameStart(game, gameStarterObject);
         }

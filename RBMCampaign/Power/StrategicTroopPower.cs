@@ -87,10 +87,51 @@ namespace RBMCampaign
     internal static class StrategicTroopPower
     {
         // ---------------------------------------------------------------------------------------------------------
-        // TUNING. None of these are derived; they are the dials this model is calibrated on. They deliberately live
-        // here rather than in the config screen -- the screen carries the on/off switch and nothing else, the same
-        // way the auto-resolve equipment model keeps its weight in the config file (see RBMConfigViewModel).
+        // TUNING. Apart from PowerScale, none of these are derived; they are the dials this model is calibrated on.
+        // They deliberately live here rather than in the config screen -- the screen carries the on/off switch and
+        // nothing else, the same way the auto-resolve equipment model keeps its weight in the config file (see
+        // RBMConfigViewModel).
         // ---------------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// What this model's raw number must be divided by to land back on the scale vanilla prices men in.
+        ///
+        /// THIS IS NOT A DIAL. It is measured, and it exists because a number is not a number: offense x active x
+        /// passive comes out in the low hundreds, and vanilla's (2+tier)(10+tier)*0.02 comes out between 0.40 and
+        /// 2.56. Everything that reasons in RATIOS -- which is nearly all of the AI -- cannot tell the difference.
+        /// But the parts of the game that compare a party's power to a HARDCODED CONSTANT can, and they were all
+        /// written against vanilla's range:
+        ///
+        ///   DefaultArmyManagementCalculationModel.CanLordCreateArmy   if (num5 &lt; 1000f) -- the army-power floor,
+        ///                                                             which unscaled a handful of men clears, so
+        ///                                                             the gate stands permanently open
+        ///   DefaultTargetScoreCalculatingModel :212                   if (num6 &lt; 100f && Besieger) -- the damper
+        ///                                                             on a weak party starting a siege; never fires
+        ///   DefaultTargetScoreCalculatingModel :174                   MathF.Max(100f, num2) -- a floor that never
+        ///                                                             binds
+        ///
+        /// So the choice is to divide once here, or to chase vanilla's constants forever -- including the ones
+        /// nobody has found yet. This divides.
+        ///
+        /// 197 was measured, not picked, off 19,989 party pricings in logs/powerCalculation (1.85M men, 146k stack
+        /// rows): sum(men x thisModel) / sum(men x vanillaTier) = 197.4 in aggregate, and the MEDIAN party lands at
+        /// 198.8 -- the agreement between those two is what says one flat constant is honest here rather than a
+        /// fudge that happens to fit the average. Per-tier the ratio is flat within 187-227 across T1-T6, which is
+        /// the same statement seen from the side.
+        ///
+        /// What this deliberately does NOT do is flatten the model back into vanilla. Dividing every man by one
+        /// number cannot touch what this model is FOR: that two tier-3 men differ (the measured spread at tier 3 is
+        /// 160 to 428, where vanilla says 1.30 and means it). After the divide the median party still lands 9.7%
+        /// off vanilla's tier-only answer, and that residue is the entire point -- it is the model disagreeing
+        /// about THIS party, on the scale where the disagreement can be read.
+        ///
+        /// The one tier that moves is T0, whose ratio is 345 rather than ~200: a peasant comes out at 0.70 against
+        /// vanilla's 0.40. That is this model saying vanilla under-prices the rabble by 1.75x, and it is kept.
+        ///
+        /// Re-measure this if the offense model moves (rbmCombatEnabled, OneHandedThrustDamageBonus, armorMultiplier
+        /// -- see _cacheRbmCombat) or if the tuning above is re-cut. The log prints what it was measured under.
+        /// </summary>
+        internal const float PowerScale = 197f;
 
         /// <summary>Where a blow lands. The armour a man wears is worth what the blows he takes actually meet, so a
         /// greave is worth less than a cuirass for no reason but that fewer blows go there.</summary>
@@ -461,6 +502,12 @@ namespace RBMCampaign
                 {
                     // Nothing measurable about him -- a villager with a stick, or an item this model could not read.
                     // He is not worth nothing, he is worth what vanilla always said he was.
+                    //
+                    // This line only became true when PowerScale did. Before it, vanilla's answer -- 0.4 to 2.56 --
+                    // was dropped into a sum of men priced in the hundreds, so the man this branch exists to rescue
+                    // was rescued into counting for nothing at all, about 197x under his neighbours. Both prices are
+                    // in vanilla's units now, which is the whole reason the divide belongs in Measure and not on the
+                    // party total below: down there it would divide this one a second time.
                     power = model.GetDefaultTroopPower(troop);
                 }
 
@@ -715,7 +762,13 @@ namespace RBMCampaign
             }
 
             detail.Sets = sets;
-            detail.Power = sum / sets;
+            // The one place the divide happens, because it is the one walk both PowerOf and Explain come through --
+            // so the price the AI reads and the price the log explains cannot drift apart. Note the parts below stay
+            // RAW: offense is joules and blows and has a meaning of its own, and dividing it by a number that exists
+            // only to talk to vanilla would make the log unreadable to the person calibrating the model. The
+            // consequence is that Power is no longer offense x active x passive as printed -- it is that, over
+            // PowerScale -- and the log's header says so.
+            detail.Power = (sum / sets) / PowerScale;
             detail.Offense = offense / sets;
             detail.Melee = melee / sets;
             detail.Ranged = ranged / sets;

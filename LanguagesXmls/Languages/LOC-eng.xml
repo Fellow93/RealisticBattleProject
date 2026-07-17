@@ -438,5 +438,15 @@
 	<string id="RBM_OVH_034" text="Gallant Glaive Sister" />
 	<string id="RBM_OVH_035" text="Glaive Sister" />
 	<string id="RBM_OVH_036" text="Imperial Mounted Acritae" />
+	<!-- Spectate Strings -->
+	<string id="RBM_CON_099" text="Spectate AI Battles" />
+	<string id="RBM_CON_101" text="Spectate Minimum Troops Per Side" />
+	<string id="RBM_CON_102" text="How many men both sides must field before a battle between two AI lords is worth being asked about. Two patrols brushing past each other say nothing about how a line holds. Default 100." />
+	<string id="RBM_SPECTATE_001" text="Watch this battle?" />
+	<string id="RBM_SPECTATE_002" text="Two armies have met in the field. You may watch the fight from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the battle on the map resolves on its own, and nothing you see here changes it." />
+	<string id="RBM_SPECTATE_003" text="Watch" />
+	<string id="RBM_SPECTATE_004" text="Ignore" />
+	<string id="RBM_SPECTATE_005" text="Attackers: {NAME} ({COUNT} men)" />
+	<string id="RBM_SPECTATE_006" text="Defenders: {NAME} ({COUNT} men)" />
   </strings>
 </base>

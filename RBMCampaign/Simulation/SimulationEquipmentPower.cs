@@ -1178,7 +1178,7 @@ namespace RBMCampaign
 
         /// <summary>
         /// The master switch for the whole auto-resolve overhaul. The equipment-aware damage model is the heart of
-        /// it, and every auxiliary system was built to work WITH that model -- the size-ramped tick multiplier, the
+        /// it, and every auxiliary system was built to work WITH that model -- the widened tick multiplier, the
         /// morale removal, the per-trooper wound pools, the strength rout, arm-aware targeting. With the model off,
         /// each of those on its own leaves the battle a half-applied hybrid that is neither the vanilla tier-only sim
         /// nor RBM's: arm targeting in particular deliberately routes volley shots onto foot soldiers expecting the

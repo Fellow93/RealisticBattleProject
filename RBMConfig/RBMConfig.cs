@@ -256,6 +256,23 @@ namespace RBMConfig
         // and note that it interacts with the ranged landing spread: see RangedLandingExponent's calibration note.
         public static float simulationRangedMissChance = 0.35f;
 
+        // How much campaign time a simulated round costs -- how long a battle on the map takes to fight, in the hours
+        // the parties stand locked together. This is NOT a balance dial: it changes nothing about who wins, what the
+        // casualties are, or how the phases divide. It changes only the CLOCK.
+        //
+        // Vanilla bills a flat half hour for every round (an hour for a siege assault), and that was the right price
+        // for a vanilla round, which was a big undifferentiated chunk of the brawl and resolved a large share of the
+        // fight. An RBM round is not that round. It is a PHASE -- a volley in which only the bows act, a skirmish in
+        // which only the javelins and the horse do -- and a phase is a thin slice of a battle, worth minutes rather
+        // than half an hour. Vanilla's price was never re-examined when the round changed meaning, so a fight that
+        // takes more rounds (blows that miss, are blocked, or kill a horse instead of a man all cost a round and no
+        // casualty) bills half an hour for each of them, and two warbands of twenty end up locked together for a day.
+        //
+        // So this is the price of a round in minutes, for a field battle. A siege assault keeps vanilla's own ratio
+        // and costs twice this, because a siege round really is the longer business. Raise it to make battles occupy
+        // more of the campaign's day, lower it to get them over with. 0 restores vanilla's flat 30/60 exactly.
+        public static float simulationRoundMinutes = 10f;
+
         // A beaten side breaks and runs instead of being fought to the last man. Vanilla's auto-resolve only routs a
         // side when its STANDING campaign morale falls to nearly zero, which never moves during the simulated fight,
         // so every auto-resolved battle grinds on to annihilation. When on, a side that falls far enough behind on
@@ -299,6 +316,20 @@ namespace RBMConfig
         // made of it. The matchup table says what a blow would do in the abstract; only this can tell you the
         // archers ran dry in round fifteen. A large battle runs to several thousand lines. Needs the log above.
         public static bool simulationLogHits = true;
+
+        // Offers to open a battle between two AI lords as a real-time fight you watch and take no part in: both sides
+        // under their own commanders, no player agent on the field at all, RTSCamera's free camera the only way to
+        // see it. The battle on the map auto-resolves on its own beside it and reaches its own verdict; the fight you
+        // watch is a copy and is written back nowhere.
+        //
+        // This is a measuring instrument, not a feature of the campaign: it is the only way to see whether the field
+        // AI fights a muster the way auto-resolve says it would. Off by default, and does nothing without RTSCamera.
+        public static bool spectateBattlesEnabled = false;
+
+        // How big both sides must be before the offer is made at all. Two patrols brushing past each other say
+        // nothing about how a line holds, and being asked about every looter band on the map would make the thing
+        // unusable. Default 100, counted per side.
+        public static int spectateMinTroopsPerSide = 100;
 
         //RBMAI
         public static bool hitStopEnabled = true;
@@ -468,10 +499,13 @@ namespace RBMConfig
             simulationArmTargeting = ReadOrCreate("/Config/RBMCampaign", "SimulationArmTargeting", "1").Equals("1");
             simulationRangedMissEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationRangedMissEnabled", "1").Equals("1");
             simulationRangedMissChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationRangedMissChance", "0.35"), CultureInfo.InvariantCulture);
+            simulationRoundMinutes = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationRoundMinutes", "10"), CultureInfo.InvariantCulture);
             simulationRoutEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationRoutEnabled", "0").Equals("1");
             simulationPerkSystem = ReadOrCreate("/Config/RBMCampaign", "SimulationPerkSystem", "1").Equals("1");
             simulationLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationLoggingEnabled", "1").Equals("1");
             simulationLogHits = ReadOrCreate("/Config/RBMCampaign", "SimulationLogHits", "1").Equals("1");
+            spectateBattlesEnabled = ReadOrCreate("/Config/RBMCampaign", "SpectateBattlesEnabled", "0").Equals("1");
+            spectateMinTroopsPerSide = int.Parse(ReadOrCreate("/Config/RBMCampaign", "SpectateMinTroopsPerSide", "100"), CultureInfo.InvariantCulture);
 
             // RBMAI
             hitStopEnabled = ReadOrCreate("/Config/RBMAI", "HitStopEnabled", "1").Equals("1");
@@ -602,10 +636,13 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationArmTargeting"), simulationArmTargeting);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRangedMissEnabled"), simulationRangedMissEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRangedMissChance"), simulationRangedMissChance.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRoundMinutes"), simulationRoundMinutes.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRoutEnabled"), simulationRoutEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationPerkSystem"), simulationPerkSystem);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLoggingEnabled"), simulationLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLogHits"), simulationLogHits);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpectateBattlesEnabled"), spectateBattlesEnabled);
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpectateMinTroopsPerSide"), spectateMinTroopsPerSide.ToString(CultureInfo.InvariantCulture));
             //RBMAI
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/HitStopEnabled"), hitStopEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureEnabled"), postureEnabled);
