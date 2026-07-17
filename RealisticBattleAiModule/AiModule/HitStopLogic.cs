@@ -27,7 +27,7 @@ namespace RBMAI
         //private const float PARRY_SLOW     = 0.05f;
         //private const int   PARRY_PRIORITY = 1;
 
-        // Kill: player kills an enemy
+        // Kill: player kills or wounds an enemy
         private const float KILL_DURATION = 0.75f;
 
         private const float KILL_SLOW = 0.25f;
@@ -86,7 +86,7 @@ namespace RBMAI
         //        return;
         //}
 
-        // ── Kill detection: player kills an enemy ────────────────────────────
+        // ── Downed detection: player kills or wounds an enemy ────────────────
 
         public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent,
             AgentState agentState, KillingBlow killingBlow)
@@ -97,7 +97,7 @@ namespace RBMAI
                 return;
             if (affectedAgent.IsPlayerControlled || affectedAgent.IsMount)
                 return;
-            if (agentState == AgentState.Killed)
+            if (agentState == AgentState.Killed || agentState == AgentState.Unconscious)
                 TriggerHitStop(KILL_DURATION, KILL_SLOW, KILL_PRIORITY);
         }
 
