@@ -306,6 +306,10 @@
     <Compile Include="UI\SpoilsBarWidget.cs" />
     <Compile Include="UI\SpoilsBarPrefabPatch.cs" />
     <Compile Include="UI\SpoilsPartyTooltip.cs" />
+    <Compile Include="Power\StrategicPowerLog.cs" />
+    <Compile Include="Power\StrategicPowerTooltip.cs" />
+    <Compile Include="Power\StrategicPowerTooltipVM.cs" />
+    <Compile Include="Power\StrategicTroopPower.cs" />
     <Compile Include="Simulation\SimulationArmTargeting.cs" />
     <Compile Include="Simulation\SimulationCommandStructure.cs" />
     <Compile Include="Simulation\SimulationPerks.cs" />

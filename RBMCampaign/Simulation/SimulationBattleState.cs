@@ -945,17 +945,8 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// A battle nobody fights mounted. A siege is stormed and held on foot -- the game brings no horses to a wall
-        /// at all -- and a ship is no place for one either: a boarding action is fought on foot across the decks. So a
-        /// cavalryman in either is a lance and a suit of horse harness with no animal under it. This is a stronger
-        /// thing than kiting room going to nothing: a horse hemmed into a village street is still a horse, and still
-        /// charges when it finds room and dies before its rider does. A horse that is not there does none of it. Kept
-        /// apart from GetKitingRoom for exactly that reason -- a wall, a deck and a village street all read zero room,
-        /// but the village keeps its horses and the other two have none, and those are not the same zero.
-        /// </summary>
-        /// <summary>
-        /// WHETHER THIS MAN FIGHTS THIS BATTLE ON A HORSE. The one answer to that question, and the only one anything
-        /// should ask.
+        /// WHETHER THIS MAN FIGHTS THIS BATTLE ON A HORSE. The answer for everything that prices a man as he actually
+        /// stands in this battle -- which is nearly everything here, with one deliberate exception noted below.
         ///
         /// It reads <c>troop.IsMounted</c> -- the formation class off his XML -- and not <c>HasMount()</c>, which
         /// inspects the horse slot of his FIRST equipment set. The two disagree (a Cavalry-classed troop whose
@@ -967,10 +958,15 @@ namespace RBMCampaign
         ///
         /// And then the battle overrules him. A siege has no horses in it at all -- the wall is stormed and held on
         /// foot, and the game leaves every mount in the camp -- so a cavalryman there is a lance and a suit of
-        /// barding with no animal under it (see <see cref="IsDismounted"/>). Native gets this for free, because in a
-        /// siege mission the agent really has no mount and every model asking HasMount is told so. Here it has to be
-        /// asked deliberately, and anything that forgets to will hand a horse archer his HorseMaster on a ladder and
-        /// deny a dismounted lancer the foot perks he is plainly earning.
+        /// barding with no animal under it (see <see cref="IsDismounted"/>). Native's HIT-POINT model gets this for
+        /// free, because GetEffectiveMaxHealth asks the AGENT (`agent.HasMount`) and a siege agent really was spawned
+        /// without a horse. Here it has to be asked deliberately, and SimulationTroopHitPoints does.
+        ///
+        /// THE EXCEPTION, and it is native's, not ours: GetEffectiveSkill asks the TEMPLATE
+        /// (`characterObject.HasMount()`), which the siege never touched -- so native's CAPTAIN perks are blind to
+        /// the dismount and hand a horse archer his Horse Master on a ladder. SimulationPerks ports that blindness
+        /// deliberately rather than call here; see SimulationPerks.IsCavalryTemplate for why. The two native methods
+        /// genuinely disagree with each other, and this is not the place to reconcile them.
         /// </summary>
         internal static bool IsMountedIn(CharacterObject troop, bool dismountedBattle)
         {
@@ -985,6 +981,15 @@ namespace RBMCampaign
             return state != null && state.Dismounted;
         }
 
+        /// <summary>
+        /// A battle nobody fights mounted. A siege is stormed and held on foot -- the game brings no horses to a wall
+        /// at all -- and a ship is no place for one either: a boarding action is fought on foot across the decks. So a
+        /// cavalryman in either is a lance and a suit of horse harness with no animal under it. This is a stronger
+        /// thing than kiting room going to nothing: a horse hemmed into a village street is still a horse, and still
+        /// charges when it finds room and dies before its rider does. A horse that is not there does none of it. Kept
+        /// apart from GetKitingRoom for exactly that reason -- a wall, a deck and a village street all read zero room,
+        /// but the village keeps its horses and the other two have none, and those are not the same zero.
+        /// </summary>
         private static bool IsDismounted(MapEvent mapEvent)
         {
             if (mapEvent.IsSiegeAssault)

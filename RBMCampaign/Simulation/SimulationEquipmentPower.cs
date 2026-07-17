@@ -34,7 +34,7 @@ namespace RBMCampaign
     /// DefaultMilitaryPowerModel's context table -- cavalry worth a quarter more in the open, archers worth
     /// half as much defending a wood -- but an arm's edge is meant to come from its horse and its lance now,
     /// both already in the equipment ratio, not from the ground it stands on. So on a field battle the context
-    /// modifier is cancelled on both sides (see <see cref="GetTerrainNeutralizingFactor"/>); a siege keeps its
+    /// modifier is cancelled on both sides (see <see cref="GetVanillaPowerNeutralizingFactor"/>); a siege keeps its
     /// own. Each troop is still judged against its own arm and no finer (see <see cref="GetBucket"/>), so an
     /// archer is never taxed for carrying an archer's armour.
     ///
@@ -57,7 +57,7 @@ namespace RBMCampaign
         //
         // Arm of service stays as the bucket, but for a narrower reason than it once had. It used to lean on
         // vanilla's context table having already priced what an archer is worth against a horseman; the field
-        // half of that table is now lifted out (see GetTerrainNeutralizingFactor), so on open ground nothing
+        // half of that table is now lifted out (see GetVanillaPowerNeutralizingFactor), so on open ground nothing
         // prices arm against arm any more -- by design, an arm's edge is its horse and its lance, both already in
         // the equipment ratio. The bucket earns its place regardless: it normalises the damage units per arm, so
         // a lance is measured against lances and not counted "better kit" than a spear for landing more raw force.
@@ -282,30 +282,23 @@ namespace RBMCampaign
 
             public readonly int CaptainSignature;
 
-            /// <summary>
-            /// Whether this kit was built for a battle with no horses in it -- and it has to be in the key, because a
-            /// captain's teaching depends on whether his man is on one.
-            ///
-            /// The kit is otherwise terrain-blind on purpose: Explain undoes <see cref="TroopKit.IsMounted"/> for a
-            /// siege afterwards, and everything downstream reads the undone answer. A SKILL cannot be undone that
-            /// way. It is baked into the weapon magnitudes and the block chance before Explain ever sees the kit, so
-            /// a siege kit built from a field kit's cache entry would hand a lancer on a ladder his Horse Master and
-            /// withhold the melee training he is actually earning on his feet. Cheap to carry: a battle is one or the
-            /// other, so this at most doubles the entries a campaign holds, and only for troops who fight both.
-            /// </summary>
-            public readonly bool Dismounted;
+            // NO DISMOUNTED BIT, and there was one here until the captain perks stopped asking about the battle.
+            // It was carried because a SKILL cannot be undone downstream the way TroopKit.IsMounted can (Explain
+            // undoes that for a siege; a skill is already baked into the weapon magnitudes and the block chance by
+            // then), so a siege kit drawn from a field kit's entry would have carried the wrong training. Native's
+            // GetEffectiveSkill turns out to ask the man's TEMPLATE and not his agent, so his captain's teaching does
+            // not depend on today's ground after all -- see SimulationPerks.IsCavalryTemplate. Nothing else in the kit
+            // ever varied by it. The kit is terrain-blind again, entirely, and the cache is half the size for it.
 
-            public KitKey(CharacterObject troop, int captainSignature, bool dismounted)
+            public KitKey(CharacterObject troop, int captainSignature)
             {
                 Troop = troop;
                 CaptainSignature = captainSignature;
-                Dismounted = dismounted;
             }
 
             public bool Equals(KitKey other)
             {
-                return Troop == other.Troop && CaptainSignature == other.CaptainSignature
-                    && Dismounted == other.Dismounted;
+                return Troop == other.Troop && CaptainSignature == other.CaptainSignature;
             }
 
             public override bool Equals(object obj)
@@ -316,7 +309,7 @@ namespace RBMCampaign
             public override int GetHashCode()
             {
                 int troopHash = (Troop != null) ? Troop.GetHashCode() : 0;
-                return ((troopHash * 397) ^ CaptainSignature) * 2 + (Dismounted ? 1 : 0);
+                return (troopHash * 397) ^ CaptainSignature;
             }
         }
 
@@ -942,7 +935,9 @@ namespace RBMCampaign
             // Everything is the other way round in a riposte: the man who was struck is throwing this one, and the
             // ATTACKER is the one being hit. So the party handed over as "the struck man's" is the striker's -- his
             // horse is the one the counter is coming at, and his lord's veterinary is the one that matters. Easy to
-            // get backwards, and it would silently price the wrong side's horses.
+            // get backwards, and it would silently price the wrong side's horses. The same party goes to the wound
+            // below for the same reason: it is HIS pool the counter is spent on, and his own lord's hit-point perks
+            // that say how deep it is.
             float reverseCorrection = GetCorrection(struckTroop, strikerTroop, state, !strikerIsAttacker, spend: false,
                 struckParty: strikerParty);
             float riposteDamage = RiposteScale * vanillaDamage * reverseCorrection;
@@ -954,7 +949,7 @@ namespace RBMCampaign
             // The attacker's own side holds the soldier the counter falls on: the game selected him on that side
             // before this blow, and has not moved on yet.
             MapEventSide strikerSide = strikerIsAttacker ? battle.AttackerSide : battle.DefenderSide;
-            float hitPointsLeft = SimulationTroopHitPoints.ApplyRiposte(strikerSide, battle, riposteDamage);
+            float hitPointsLeft = SimulationTroopHitPoints.ApplyRiposte(strikerSide, battle, strikerParty, riposteDamage);
 
             RecordRiposte(state, battle, struckTroop, strikerTroop, strikerIsAttacker, riposteDamage, hitPointsLeft);
         }
@@ -1260,8 +1255,8 @@ namespace RBMCampaign
             // kit is built with, and rides in the kit's cache key. Everything below re-reads it for the horse itself.
             bool dismounted = state != null && state.Dismounted;
 
-            TroopKit striker = GetKit(strikerTroop, strikerCaptain, strikerSignature, dismounted);
-            TroopKit struck = GetKit(struckTroop, struckCaptain, struckSignature, dismounted);
+            TroopKit striker = GetKit(strikerTroop, strikerCaptain, strikerSignature);
+            TroopKit struck = GetKit(struckTroop, struckCaptain, struckSignature);
             if (!striker.IsValid || !struck.IsValid)
             {
                 return false;
@@ -1897,7 +1892,7 @@ namespace RBMCampaign
             // say everything they said before. The context modifier -- the terrain-vs-arm table -- is NOT divided
             // out here, because this method has no battle and so cannot know the terrain; the postfix lifts it out
             // of field blows afterwards, folding the factor into breakdown.Correction (see
-            // GetTerrainNeutralizingFactor). A siege keeps its context; the reference/matchup tables, which have no
+            // GetVanillaPowerNeutralizingFactor). A siege keeps its context; the reference/matchup tables, which have no
             // battle at all, are terrain-blind by nature and leave it untouched.
             float tierTerm = MathF.Pow(VanillaTierPower(strikerTroop) / VanillaTierPower(struckTroop), 0.7f);
             breakdown.TierTerm = tierTerm;
@@ -2781,7 +2776,7 @@ namespace RBMCampaign
         /// </summary>
         private static TroopKit GetKit(CharacterObject troop)
         {
-            return GetKit(troop, null, 0, false);
+            return GetKit(troop, null, 0);
         }
 
         /// <summary>
@@ -2793,13 +2788,8 @@ namespace RBMCampaign
         /// chain of command has not been built. <paramref name="captainSignature"/> is that captain's perk mask,
         /// passed in rather than recomputed because this is called twice per blow and a battle has thousands.
         /// </summary>
-        /// <param name="dismounted">Whether this battle has no horses in it (a siege, a deck) -- which decides which
-        /// of his captain's perks reach him, and so is part of the cache key. See KitKey.Dismounted.</param>
-        private static TroopKit GetKit(CharacterObject troop, CharacterObject captain, int captainSignature,
-            bool dismounted)
+        private static TroopKit GetKit(CharacterObject troop, CharacterObject captain, int captainSignature)
         {
-            // The one answer to "is this man on a horse", asked once here and handed to everything the kit builds.
-            bool mounted = SimulationBattleState.IsMountedIn(troop, dismounted);
             // A troop template's kit and training are fixed, so it is cached for good. A hero's are not -- he buys
             // gear and trains skills as the campaign runs -- but they do not change in the MIDDLE of a battle, and
             // pricing him afresh on every single blow was ruinous: rebuilding a hero's kit runs the thrust-physics
@@ -2808,7 +2798,7 @@ namespace RBMCampaign
             //
             // The captain rides in the key rather than the value, so the same template under two different captains
             // is two entries and neither can be handed the other's training. See KitKey.
-            KitKey key = new KitKey(troop, captainSignature, dismounted);
+            KitKey key = new KitKey(troop, captainSignature);
             TroopKit cached;
             if (_kitCache.TryGetValue(key, out cached))
             {
@@ -2849,7 +2839,7 @@ namespace RBMCampaign
                 SimulationWeaponModel.WeaponProfile setShot = default(SimulationWeaponModel.WeaponProfile);
                 if (IsRangedTroop(troop))
                 {
-                    List<SimulationWeaponModel.WeaponProfile> setShots = CollectShotProfiles(troop, set, rbmCombat, captain, mounted);
+                    List<SimulationWeaponModel.WeaponProfile> setShots = CollectShotProfiles(troop, set, rbmCombat, captain);
                     if (setShots.Count > 0)
                     {
                         float share = 1f / setShots.Count;
@@ -2871,7 +2861,7 @@ namespace RBMCampaign
                 // And what he hurls, whether shooting is his trade or not: half the infantry in Calradia carry a
                 // brace of javelins or throwing axes, and they are for the closing, not for the line.
                 float setThrownPerMan;
-                SimulationWeaponModel.WeaponProfile setThrown = GetThrownProfile(troop, set, rbmCombat, captain, mounted, out setThrownPerMan);
+                SimulationWeaponModel.WeaponProfile setThrown = GetThrownProfile(troop, set, rbmCombat, captain, out setThrownPerMan);
 
                 // The COUNT is averaged over all his sets, because that dilution is real: a man who carries javelins
                 // in two sets of four is half a skirmisher, and half his stack throws nothing.
@@ -2894,7 +2884,7 @@ namespace RBMCampaign
                 // And every weapon on his belt, each as likely as the next to be the one in his hand. Every man
                 // holds one weapon at a time, so the weapons WITHIN a set share that set's share of the stack --
                 // otherwise a soldier issued three blades would out-fight the same soldier issued one.
-                List<SimulationWeaponModel.WeaponProfile> setMelee = CollectMeleeProfiles(troop, set, rbmCombat, captain, mounted);
+                List<SimulationWeaponModel.WeaponProfile> setMelee = CollectMeleeProfiles(troop, set, rbmCombat, captain);
                 if (setMelee.Count > 0)
                 {
                     float share = 1f / setMelee.Count;
@@ -3009,14 +2999,14 @@ namespace RBMCampaign
 
                 // His fighting hand, for the defence roll: the best of his melee trainings. A troop template's skills
                 // are fixed and a hero's do not move mid-battle, so this rides in the cache with the rest of the kit.
-                kit.MeleeSkill = MeleeSkillOf(troop, captain, mounted);
+                kit.MeleeSkill = MeleeSkillOf(troop, captain);
 
                 // And his shooting hand, for the miss roll. Taken off the shot profile's OWN skill object rather than
                 // by asking which launcher he seems to carry: the profile already resolved that (it is the launcher's
                 // RelevantSkill, since no one is trained in arrows), so a crossbowman is read on Crossbow and a bowman
                 // on Bow with nothing inferred. Rides in the cache with the rest -- a template's skills do not move.
                 kit.RangedSkill = (kit.Shot.IsValid && kit.Shot.Skill != null)
-                    ? SimulationPerks.SkillOf(troop, kit.Shot.Skill, captain, mounted)
+                    ? SimulationPerks.SkillOf(troop, kit.Shot.Skill, captain)
                     : 0f;
 
                 // A man is worth pricing if he can hit anything at all -- with a bow, or with what is on his belt.
@@ -3138,8 +3128,9 @@ namespace RBMCampaign
             }
         }
 
-        /// <summary>The real armour points this kit carries, kept apart by the zone each protects.</summary>
-        private static void GetArmorZones(Equipment set, bool rbmCombat,
+        /// <summary>The real armour points this kit carries, kept apart by the zone each protects.
+        /// (internal rather than private only so StrategicTroopPower can read the same zones; nothing else.)</summary>
+        internal static void GetArmorZones(Equipment set, bool rbmCombat,
             out float head, out float neck, out float torso, out float shoulder, out float arm, out float leg)
         {
             // When RBM Combat is live it does not read a piece's rating straight off: a blow lands on a BONE, and
@@ -3594,7 +3585,7 @@ namespace RBMCampaign
         /// Each arrow is priced on its own terms and the average is taken afterwards, in ShotDamage.
         /// </summary>
         private static List<SimulationWeaponModel.WeaponProfile> CollectShotProfiles(CharacterObject troop, Equipment set,
-            bool rbmCombat, CharacterObject captain, bool mounted)
+            bool rbmCombat, CharacterObject captain)
         {
             List<SimulationWeaponModel.WeaponProfile> profiles = new List<SimulationWeaponModel.WeaponProfile>();
 
@@ -3629,7 +3620,7 @@ namespace RBMCampaign
                         continue;
                     }
 
-                    int skill = SimulationPerks.SkillOf(troop, launcher.RelevantSkill, captain, mounted);
+                    int skill = SimulationPerks.SkillOf(troop, launcher.RelevantSkill, captain);
 
                     // The shot follows the combat model, exactly as the blow does. This branch used to run RBM's
                     // bow physics unconditionally, so with RBM Combat OFF every archer in Calradia was priced on
@@ -3664,7 +3655,7 @@ namespace RBMCampaign
         /// terrifying for twenty seconds and then he is a man with a knife.
         /// </summary>
         private static SimulationWeaponModel.WeaponProfile GetThrownProfile(CharacterObject troop, Equipment set,
-            bool rbmCombat, CharacterObject captain, bool mounted, out float perMan)
+            bool rbmCombat, CharacterObject captain, out float perMan)
         {
             SimulationWeaponModel.WeaponProfile best = default(SimulationWeaponModel.WeaponProfile);
             perMan = 0f;
@@ -3682,7 +3673,7 @@ namespace RBMCampaign
                     continue;
                 }
 
-                int skill = SimulationPerks.SkillOf(troop, weapon.RelevantSkill, captain, mounted);
+                int skill = SimulationPerks.SkillOf(troop, weapon.RelevantSkill, captain);
 
                 SimulationWeaponModel.WeaponProfile profile;
                 bool got = rbmCombat
@@ -3738,7 +3729,7 @@ namespace RBMCampaign
         /// damage type straight into the armour equation.
         /// </summary>
         private static List<SimulationWeaponModel.WeaponProfile> CollectMeleeProfiles(CharacterObject troop, Equipment set,
-            bool rbmCombat, CharacterObject captain, bool mounted)
+            bool rbmCombat, CharacterObject captain)
         {
             List<SimulationWeaponModel.WeaponProfile> profiles = new List<SimulationWeaponModel.WeaponProfile>();
 
@@ -3759,7 +3750,7 @@ namespace RBMCampaign
                     continue;
                 }
 
-                int skill = SimulationPerks.SkillOf(troop, weapon.RelevantSkill, captain, mounted);
+                int skill = SimulationPerks.SkillOf(troop, weapon.RelevantSkill, captain);
 
                 SimulationWeaponModel.WeaponProfile profile;
                 bool got = rbmCombat
@@ -3938,15 +3929,15 @@ namespace RBMCampaign
         /// this) -- so a captain whose training reaches his men's blades reaches their guard with it, which is what a
         /// perk that adds a melee skill actually means.
         /// </summary>
-        private static float MeleeSkillOf(CharacterObject troop, CharacterObject captain, bool mounted)
+        private static float MeleeSkillOf(CharacterObject troop, CharacterObject captain)
         {
             if (troop == null)
             {
                 return 0f;
             }
-            int oneHanded = SimulationPerks.SkillOf(troop, DefaultSkills.OneHanded, captain, mounted);
-            int twoHanded = SimulationPerks.SkillOf(troop, DefaultSkills.TwoHanded, captain, mounted);
-            int polearm = SimulationPerks.SkillOf(troop, DefaultSkills.Polearm, captain, mounted);
+            int oneHanded = SimulationPerks.SkillOf(troop, DefaultSkills.OneHanded, captain);
+            int twoHanded = SimulationPerks.SkillOf(troop, DefaultSkills.TwoHanded, captain);
+            int polearm = SimulationPerks.SkillOf(troop, DefaultSkills.Polearm, captain);
             int best = oneHanded;
             if (twoHanded > best) { best = twoHanded; }
             if (polearm > best) { best = polearm; }

@@ -173,6 +173,23 @@ namespace RBMConfig
         // this is the exponent on the equipment ratio; in ABSOLUTE mode (below) it is only the on/off gate.
         public static float simulationEquipmentPowerWeight = 1f;
 
+        // STRATEGIC POWER: what the player and the AI are TOLD a troop is worth, as against what a simulated blow
+        // does to him. Vanilla prices a troop for that purpose by his tier alone -- a heavily armoured elite and a
+        // ragged levy of the same tier read as the same soldier -- and that one number is party strength, the
+        // strength shown in an encounter, and every AI judgement about whether a fight can be won. True prices him
+        // on his actual kit and training instead, and credits his party's commander perks.
+        //
+        // Note this replaces the tier curve outright rather than bending it, so every AI strength threshold in the
+        // game moves at once and renown/influence shift with it. See RBMCampaign/Power/StrategicTroopPower.cs.
+        // Auto-resolve is untouched either way.
+        public static bool strategicPowerEnabled = true;
+
+
+        // Writes every party out as it was priced -- the perks that reached it, then each stack with what one man of
+        // it is worth and what he is made of -- to logs/powerCalculation. None of the model's constants are derived,
+        // so this is how they get tuned. One block per party per in-game day; see StrategicPowerLog for why.
+        public static bool strategicPowerLoggingEnabled = true;
+
         // ABSOLUTE DAMAGE. When true, a simulated blow is worth its own real magnitude rather than a ratio to a
         // typical blow of its arm. The model still keeps every one of vanilla's surviving factors -- side
         // advantage, the leader/captain modifier, all the Tactics/Scouting perks, and vanilla's own random
@@ -441,6 +458,8 @@ namespace RBMConfig
             spoilsVerboseLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsVerboseLoggingEnabled", "1").Equals("1");
             simulationEquipmentEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentEnabled", "1").Equals("1");
             simulationEquipmentPowerWeight = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentPowerWeight", "1"), CultureInfo.InvariantCulture);
+            strategicPowerEnabled = ReadOrCreate("/Config/RBMCampaign", "StrategicPowerEnabled", "1").Equals("1");
+            strategicPowerLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "StrategicPowerLogging", "1").Equals("1");
             simulationAbsoluteDamage = ReadOrCreate("/Config/RBMCampaign", "SimulationAbsoluteDamage", "1").Equals("1");
             simulationAbsoluteScale = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationAbsoluteScale", "1"), CultureInfo.InvariantCulture);
             simulationAbsoluteBlowCap = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationAbsoluteBlowCap", "1.5"), CultureInfo.InvariantCulture);
@@ -573,6 +592,8 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsVerboseLoggingEnabled"), spoilsVerboseLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationEquipmentEnabled"), simulationEquipmentEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationEquipmentPowerWeight"), simulationEquipmentPowerWeight.ToString(CultureInfo.InvariantCulture));
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/StrategicPowerEnabled"), strategicPowerEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/StrategicPowerLogging"), strategicPowerLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationAbsoluteDamage"), simulationAbsoluteDamage);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationAbsoluteScale"), simulationAbsoluteScale.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationAbsoluteBlowCap"), simulationAbsoluteBlowCap.ToString(CultureInfo.InvariantCulture));

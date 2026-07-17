@@ -178,6 +178,9 @@ namespace RBM
             {
                 InformationManager.ShowInquiry(new InquiryData("RBM War Sails submodule is missing!", "RBM War Sails submod is required when using both RBM and the War Sails DLC. Please install and enable the RBM War Sails submod to avoid potential issues, like Nords having no weapons etc.", true, false, "OK", "OK", null, null), false, true);
             }
+            // Where TaleWorlds register theirs, and for the same reason: the tooltip registry has to know what draws
+            // an RBMPowerTooltipData before the first hover can ask for one.
+            RBMCampaign.RBMPowerTooltipVM.Register();
             ApplyHarmonyPatches();
         }
 

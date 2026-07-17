@@ -38,8 +38,17 @@ namespace RBMCampaign
     ///
     /// So this asks the real question instead, of the real captain, through the game's own PerkHelper: what does
     /// THIS man's training do for THESE soldiers. See SimulationCommandStructure for who that man is, and
-    /// GetTerrainNeutralizingFactor for why the PowerModifier count comes back out once this is on -- the proxy IS
-    /// the captain perks and nothing else, so replacing it is exactly right and no double-count ever arises.
+    /// GetVanillaPowerNeutralizingFactor for why the PowerModifier count comes back out once this is on.
+    ///
+    /// AND BE HONEST ABOUT WHAT THAT LIFT COSTS, because it is not the clean swap it was once written up as. The
+    /// proxy counts PrimaryRole == Captain and the table below is Captain-SECONDARY to a man, so the two sets do not
+    /// overlap at all: there was never a double-count to prevent. Exactly two perks in the game declare Captain as
+    /// their PRIMARY role -- Polearm.StandardBearer and Tactics.Gensdarmes -- and those two are the whole of what the
+    /// proxy was ever paying out. Lifting it takes them away and puts nothing in their place, so a commander holding
+    /// either is quietly poorer with this system on than off. It is a small sum (0.01 to 0.06 apiece, inside
+    /// (1 + leader + context)) and the trade is still worth making -- a real captain's real perks for a flat count of
+    /// two -- but it is a trade, not a free replacement, and the day either perk matters this paragraph is where to
+    /// start.
     ///
     /// WHAT IS HERE IS A CURATED LIST, NOT ALL OF THEM. The live mission spreads roughly a hundred and nine
     /// AddPerkBonusFromCaptain call sites across four Sandbox models, hand-written at each place the effect
@@ -142,6 +151,30 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// WHETHER THE CAPTAIN PERKS BELOW SEE A HORSEMAN -- and deliberately NOT the same question as
+        /// SimulationBattleState.IsMountedIn, which is the one everything else in this simulation asks.
+        ///
+        /// The two native methods this module ports disagree with each other, and the disagreement is real rather
+        /// than a reading error. GetEffectiveMaxHealth asks the AGENT (`agent.HasMount`), who has genuinely been
+        /// spawned onto a horse or not, so its perks follow the battle: a lancer on a wall really is on foot there and
+        /// really does collect the foot perks -- which is why SimulationTroopHitPoints passes IsMountedIn and is right
+        /// to. GetEffectiveSkill asks the TEMPLATE (`characterObject.HasMount()`, the horse slot of an equipment set),
+        /// which is blind to the battle and blind to the agent. So native hands a cavalry-classed archer his Horse
+        /// Master on a ladder, and withholds Wrapped Handles from the dismounted lancer beside him.
+        ///
+        /// That is daft, and it is the rule. This file is a port of native's captain track and its whole worth is
+        /// that a lord's perks pay the same whether the battle was fought or skipped; a "fix" here would only make
+        /// auto-resolve disagree with the mission it stands in for, which is the one bug it cannot afford. So: battle-
+        /// blind, like the method it ports. It reads the formation class rather than the equipment slot for the same
+        /// reason IsMountedIn does -- the model has committed to the arm taxonomy everywhere, and a third notion of
+        /// "mounted" would be worse than the small disagreement this leaves (see IsMountedIn, which argues it out).
+        /// </summary>
+        private static bool IsCavalryTemplate(CharacterObject troop)
+        {
+            return troop != null && troop.IsMounted;
+        }
+
+        /// <summary>
         /// A troop's training in one skill, with his captain's teaching folded in -- the number the kit is then
         /// priced on, so the bonus flows through the real damage, miss and defence equations exactly as a genuinely
         /// better-trained man's would, rather than being approximated by a multiplier bolted on afterwards.
@@ -161,15 +194,9 @@ namespace RBMCampaign
         /// command when it is off), and a captain who reaches this method is a captain who counts. Signature X means
         /// exactly one kit, for the life of the session.
         /// </summary>
-        /// <param name="mounted">
-        /// Whether he has an animal under him IN THIS BATTLE, which decides half the table below -- handed in rather
-        /// than worked out here, because there is exactly one right answer to that question and it lives in
-        /// SimulationBattleState.IsMountedIn. It is not simply a property of the man: a siege has no horses in it,
-        /// and a cavalryman storming a wall is a man on foot who should be drawing his captain's melee training and
-        /// not his Horse Master.
-        /// </param>
-        internal static int SkillOf(CharacterObject troop, SkillObject skill, CharacterObject captain, bool mounted)
+        internal static int SkillOf(CharacterObject troop, SkillObject skill, CharacterObject captain)
         {
+            bool mounted = IsCavalryTemplate(troop);
             int baseSkill = (troop != null && skill != null) ? troop.GetSkillValue(skill) : 0;
             if (troop == null || skill == null || captain == null || captain == troop)
             {
@@ -207,11 +234,12 @@ namespace RBMCampaign
                 PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Crossbow.DonkeysSwiftness, captain, ref bonuses);
             }
 
-            // AND THE MELEE PERKS REACH A MAN ON FOOT ONLY. This is not a simplification -- it is where native puts
+            // AND THE MELEE PERKS REACH A FOOT TROOP ONLY. This is not a simplification -- it is where native puts
             // them: GetEffectiveSkill's whole melee-captain block sits in the `else` of `if (HasMount())`, so a
             // captain's Wrapped Handles does nothing whatever for his cavalry. Odd, but it is the game's rule and
-            // this is a port of the game's rule. Note that a lancer STORMING A WALL collects them, and rightly: he
-            // has no horse there, and in the mission this ports from he would have none either.
+            // this is a port of the game's rule. Note that a lancer STORMING A WALL is still a horseman to this test
+            // and still collects none of them -- which reads wrong, and is native (the test is his TEMPLATE, which
+            // kept its horse even though the wall left it in the camp). See IsCavalryTemplate.
             if (!mounted)
             {
                 if (skill == DefaultSkills.OneHanded)

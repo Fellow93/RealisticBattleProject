@@ -162,7 +162,11 @@ namespace RBMCampaign
         ///
         /// Gated on the perk system, so the toggle that governs whether RBM prices perks at all governs this too.
         /// </summary>
-        private static float CommandedHealth(CharacterObject troop, PartyBase party, bool dismounted)
+        /// <summary>
+        /// (internal rather than private only so StrategicTroopPower can price a man's staying power by the same
+        /// commander perks this does, rather than keeping a second list of them beside this one.)
+        /// </summary>
+        internal static float CommandedHealth(CharacterObject troop, PartyBase party, bool dismounted)
         {
             return BuildCommandedHealth(troop, party, dismounted, false).ResultNumber;
         }
@@ -388,7 +392,18 @@ namespace RBMCampaign
         /// Returns what the striker has LEFT after the counter (clamped at zero), or -1 when there is no trooper to
         /// wound -- a hero, who keeps his own hero pool, or no live selection.
         /// </summary>
-        internal static float ApplyRiposte(MapEventSide strikerSide, MapEvent battle, float damage)
+        /// <param name="strikerParty">
+        /// The party of the man the counter FALLS ON -- which in a riposte is the STRIKER's, because the roles are
+        /// reversed here: the man who was struck is throwing this one. His pool must be the same pool
+        /// <see cref="Prefix"/> will read for him on his next blow, and that pool carries his own commander's
+        /// hit-point perks, so it has to be his own party and not the defender's. Passing null was a real bug and a
+        /// quiet one: it priced a well-led trooper at his bare hundred here and at his commanded pool there, so the
+        /// log could report a man at zero who then walked away. It never mis-priced a KILL -- the counter only
+        /// deepens the wound, and Prefix recomputes the pool properly -- but a log that lies is the one thing this
+        /// file cannot afford.
+        /// </param>
+        internal static float ApplyRiposte(MapEventSide strikerSide, MapEvent battle, PartyBase strikerParty,
+            float damage)
         {
             if (strikerSide == null || battle == null || damage <= 0f)
             {
@@ -401,7 +416,7 @@ namespace RBMCampaign
                 return -1f;
             }
 
-            int max = MaxHitPoints(troop, null, SimulationBattleState.IsDismountedBattle(battle));
+            int max = MaxHitPoints(troop, strikerParty, SimulationBattleState.IsDismountedBattle(battle));
 
             // A hero carries his own pool (AddHeroDamage), not this dictionary. The counter is shown in the log but
             // left un-applied rather than reimplement the hero-wounding path from inside a blow.

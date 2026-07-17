@@ -48,6 +48,16 @@ namespace RBMCampaign
             SimulationPerks.ResetForNewSession();
 
             SimulationLog.StartCampaignLog();
+
+            // The strategic power model wants the same clean slate, for a stronger reason than the above: nothing
+            // reclaims its caches at all. They are keyed by CharacterObject and MobileParty and no event empties them,
+            // so a lord's measured power -- and the troop, party and hero instances it is filed under -- would outlive
+            // the campaign it was taken from and sit there for the life of the process. Worse than the leak: a hero's
+            // measurement is only re-taken when it is a day old, and the day it is stamped with comes from whichever
+            // campaign was running when it was taken. Load a save at an earlier date and that stamp is in the future,
+            // so the entry never looks stale -- and the lord is priced, indefinitely, off the harness he was wearing
+            // in a campaign the player has left.
+            StrategicTroopPower.ResetForNewSession();
         }
 
         /// <summary>
