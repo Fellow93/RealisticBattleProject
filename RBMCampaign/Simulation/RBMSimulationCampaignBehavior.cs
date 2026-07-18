@@ -126,6 +126,13 @@ namespace RBMCampaign
             sb.Append("  advantage: attacker ").Append(SimulationLog.Fmt(snapshot.AttackerAdvantage))
               .Append(", defender ").Append(SimulationLog.Fmt(snapshot.DefenderAdvantage)).Append("\n");
 
+            // What the map priced each side at going in -- the number the AI weighed when it decided to fight, and
+            // the sum of the two, so a battle's whole weight can be read at a glance against how it turned out.
+            sb.Append("  power: attacker ").Append(SimulationLog.Fmt(snapshot.AttackerPower))
+              .Append(", defender ").Append(SimulationLog.Fmt(snapshot.DefenderPower))
+              .Append("  (sum ").Append(SimulationLog.Fmt(snapshot.AttackerPower + snapshot.DefenderPower))
+              .Append(")").Append("\n");
+
             // How free the horse was to charge, and why. A charge needs a crowd on the ground to break, so the ground's
             // own figure is thinned by how many men the side being charged has on foot -- these are the opening
             // numbers, and both fall away as the foot are killed. A small fight prints a small number, and should.

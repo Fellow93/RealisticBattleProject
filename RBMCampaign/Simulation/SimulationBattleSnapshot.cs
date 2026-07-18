@@ -69,6 +69,15 @@ namespace RBMCampaign
 
             public float DefenderAdvantage = 1f;
 
+            /// <summary>
+            /// What the map believes each side is worth: every party on it priced and summed (see
+            /// <see cref="StrategicTroopPower.SidePower"/>). Taken here, before a blow lands, because that is the
+            /// number the AI read when it chose to fight and the only one worth comparing the outcome against.
+            /// </summary>
+            public float AttackerPower;
+
+            public float DefenderPower;
+
             public MapEvent.PowerCalculationContext Context;
 
             public bool IsSiegeAssault;
@@ -164,6 +173,9 @@ namespace RBMCampaign
 
             snapshot.AttackerName = Describe(mapEvent.AttackerSide);
             snapshot.DefenderName = Describe(mapEvent.DefenderSide);
+
+            snapshot.AttackerPower = StrategicTroopPower.SidePower(mapEvent.AttackerSide);
+            snapshot.DefenderPower = StrategicTroopPower.SidePower(mapEvent.DefenderSide);
 
             try
             {

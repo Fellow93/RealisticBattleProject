@@ -451,6 +451,38 @@ namespace RBMCampaign
             return into.Count > 0;
         }
 
+        /// <summary>
+        /// The whole strength of one side of a battle: every party standing on it, priced as the map itself prices
+        /// it, and summed. This is the number the encounter bar shows and the AI weighs -- RBM's own when the model
+        /// is on (CalculateCurrentStrength routes through the patched GetPowerOfParty above) and vanilla's when it is
+        /// off, so it needs no separate path for either. Zero for a missing or empty side; never throws, since it is
+        /// only ever asked for a log line or a prompt.
+        /// </summary>
+        internal static float SidePower(MapEventSide side)
+        {
+            if (side == null)
+            {
+                return 0f;
+            }
+            float total = 0f;
+            foreach (MapEventParty mapEventParty in side.Parties)
+            {
+                PartyBase party = (mapEventParty != null) ? mapEventParty.Party : null;
+                if (party == null)
+                {
+                    continue;
+                }
+                try
+                {
+                    total += party.CalculateCurrentStrength();
+                }
+                catch (Exception)
+                {
+                }
+            }
+            return total;
+        }
+
         [HarmonyPatch(typeof(DefaultMilitaryPowerModel), "GetPowerOfParty")]
         internal static class GetPowerOfPartyPatch
         {

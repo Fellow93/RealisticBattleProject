@@ -271,12 +271,18 @@ namespace RBMCampaign
             string name = (leader != null && leader.Name != null) ? leader.Name.ToString() : side.ToString();
             int men = mapEvent.GetNumberOfInvolvedMen(side);
 
+            // The strength the map prices this side at -- the same number the AI weighs and the encounter bar shows --
+            // so the choice of whose lines to watch, or whether to watch at all, can be made on more than a headcount.
+            MapEventSide eventSide = (side == BattleSideEnum.Attacker) ? mapEvent.AttackerSide : mapEvent.DefenderSide;
+            int power = (int)StrategicTroopPower.SidePower(eventSide);
+
             TextObject label = new TextObject(
                 (side == BattleSideEnum.Attacker)
-                    ? "{=RBM_SPECTATE_005}Attackers: {NAME} ({COUNT} men)"
-                    : "{=RBM_SPECTATE_006}Defenders: {NAME} ({COUNT} men)");
+                    ? "{=RBM_SPECTATE_005}Attackers: {NAME} ({COUNT} men · power {POWER})"
+                    : "{=RBM_SPECTATE_006}Defenders: {NAME} ({COUNT} men · power {POWER})");
             label.SetTextVariable("NAME", name);
             label.SetTextVariable("COUNT", men);
+            label.SetTextVariable("POWER", power);
             return label.ToString();
         }
 

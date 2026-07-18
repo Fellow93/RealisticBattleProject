@@ -446,8 +446,8 @@
 	<string id="RBM_SPECTATE_002" text="Two armies have met in the field. You may watch the fight from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the battle on the map resolves on its own, and nothing you see here changes it." />
 	<string id="RBM_SPECTATE_003" text="Watch" />
 	<string id="RBM_SPECTATE_004" text="Ignore" />
-	<string id="RBM_SPECTATE_005" text="Attackers: {NAME} ({COUNT} men)" />
-	<string id="RBM_SPECTATE_006" text="Defenders: {NAME} ({COUNT} men)" />
+	<string id="RBM_SPECTATE_005" text="Attackers: {NAME} ({COUNT} men · power {POWER})" />
+	<string id="RBM_SPECTATE_006" text="Defenders: {NAME} ({COUNT} men · power {POWER})" />
 	<string id="RBM_SPECTATE_007" text="Watch this assault?" />
 	<string id="RBM_SPECTATE_008" text="An army is storming the walls. You may watch the assault from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the siege on the map resolves on its own, and nothing you see here changes it." />
   </strings>
