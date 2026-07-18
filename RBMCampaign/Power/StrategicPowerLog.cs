@@ -250,7 +250,7 @@ namespace RBMCampaign
 
             // ---- the men -------------------------------------------------------------------------------------
             sb.Append("--------------------------------------------------------------------------------").Append(Environment.NewLine);
-            sb.Append("STACKS   (power/man is ONE soldier: offense x active x passive)").Append(Environment.NewLine);
+            sb.Append("STACKS   (power/man is ONE soldier: offense x active x passive, + mount)").Append(Environment.NewLine);
             sb.Append("         T is his tier and arm is what he FIGHTS as (rng = the game fields him as a shooter,")
               .Append(Environment.NewLine);
             sb.Append("         not merely that he owns a bow). Both are here because the calibration target is")
@@ -265,12 +265,22 @@ namespace RBMCampaign
               .Append(Environment.NewLine);
             sb.Append("         bows, crossbows and slings; see StrategicTroopPower.LauncherEnergyOf.")
               .Append(Environment.NewLine);
+            sb.Append("         mount is a SHARE of his own power that his horse adds -- the same mount is the same")
+              .Append(Environment.NewLine);
+            sb.Append("         percentage whoever rides it, so lighter cavalry gain less than armoured. The share is set")
+              .Append(Environment.NewLine);
+            sb.Append("         by the mount's survivability (health + barding, the only place barding is priced -- the")
+              .Append(Environment.NewLine);
+            sb.Append("         horse's armour, not the rider's, so it is absent from 'armour'). Charge is the rider's")
+              .Append(Environment.NewLine);
+            sb.Append("         harder blow and stays in 'offense'. Shown already in power/man units. See MountFractionOf.")
+              .Append(Environment.NewLine);
             sb.Append("  ").Append(Pad("troop", 28)).Append(Pad("T", 3)).Append(Pad("arm", 5))
               .Append(Pad("men", 9)).Append(Pad("power/man", 11))
               .Append(Pad("offense", 10)).Append(Pad("melee", 9)).Append(Pad("ranged", 9))
               .Append(Pad("energyJ", 9)).Append(Pad("mSkill", 8)).Append(Pad("rSkill", 8)).Append(Pad("charge", 8))
               .Append(Pad("active", 8)).Append(Pad("passive", 9)).Append(Pad("armour", 8))
-              .Append(Pad("shield", 8)).Append(Pad("leader", 8)).Append(Pad("terrain", 9))
+              .Append(Pad("shield", 8)).Append(Pad("mount", 8)).Append(Pad("leader", 8)).Append(Pad("terrain", 9))
               .Append("subtotal").Append(Environment.NewLine);
 
             MilitaryPowerModel model = Campaign.Current.Models.MilitaryPowerModel;
@@ -299,12 +309,18 @@ namespace RBMCampaign
                 }
 
                 float leaderMod = (party.LeaderHero != null) ? party.LeaderHero.PowerModifier : 0f;
+                // Terrain is shown always, but applied ONLY in a siege (see TryGetPowerOfParty): on a field battle it
+                // is what vanilla's arm-vs-terrain heuristic WOULD have done to him, kept in the column so the
+                // distortion this model drops stays visible, but left out of the subtotal; in a siege the wall is a
+                // real fact and it does go in.
+                bool siege = context == MapEvent.PowerCalculationContext.Siege;
                 float contextMod = estimated ? 0f : model.GetContextModifier(troop, side, context);
+                float appliedContext = siege ? contextMod : 0f;
                 // The commander's hit-point factor, exactly as the pricing applied it (see TryGetPowerOfParty).
                 // Left out, the rows stop summing to TOTAL the moment a commander perk fires -- which is precisely
                 // when someone is reading this file to see what the perk did.
                 float hpFactor = StrategicTroopPower.HealthFactorOf(troop, party);
-                float subtotal = healthy * power * hpFactor * (1f + leaderMod + contextMod);
+                float subtotal = healthy * power * hpFactor * (1f + leaderMod + appliedContext);
 
                 sb.Append("  ").Append(Pad(troop.Name.ToString(), 28))
                   .Append(Pad(troop.IsHero ? "H" : troop.Tier.ToString(), 3))
@@ -328,6 +344,7 @@ namespace RBMCampaign
                   .Append(Pad(Fmt(detail.PassiveFactor), 9))
                   .Append(Pad(Fmt(detail.WeightedArmor), 8))
                   .Append(Pad(detail.HasShield ? Fmt(detail.ShieldTier) : "-", 8))
+                  .Append(Pad((detail.MountBonus > 0f) ? Fmt(detail.MountBonus) : "-", 8))
                   .Append(Pad("+" + Fmt(leaderMod), 8))
                   .Append(Pad((contextMod >= 0f ? "+" : "") + Fmt(contextMod), 9))
                   .Append(Fmt(subtotal));
@@ -457,10 +474,15 @@ namespace RBMCampaign
                     header.Append("alone until the next -- the number does not change between two questions asked in").Append(Environment.NewLine);
                     header.Append("the same minute, and the AI asks thousands of them.").Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
-                    header.Append("power/man = offense x activeFactor x passiveFactor / powerScale, averaged over his kits.").Append(Environment.NewLine);
+                    header.Append("power/man = (offense x activeFactor x passiveFactor + mount) / powerScale, averaged over his kits.").Append(Environment.NewLine);
                     header.Append("  offense       what one blow of his achieves (melee and ranged blended by his kind)").Append(Environment.NewLine);
                     header.Append("  activeFactor  how much longer he lives for the blows he turns aside (skill, shield)").Append(Environment.NewLine);
                     header.Append("  passiveFactor how much longer he lives for the armour the rest must get through").Append(Environment.NewLine);
+                    header.Append("  mount         a SHARE of his own power that his horse adds, not a flat sum -- so the same").Append(Environment.NewLine);
+                    header.Append("                mount is the same percentage whoever rides it, and lighter cavalry gain less").Append(Environment.NewLine);
+                    header.Append("                than armoured. The share is set by the mount's survivability (its health and").Append(Environment.NewLine);
+                    header.Append("                barding, the only place barding is priced), off a barded warhorse as yardstick.").Append(Environment.NewLine);
+                    header.Append("                0 for a man on foot. Shown in the column already in power/man units.").Append(Environment.NewLine);
                     header.Append("  powerScale    the divisor that puts him back on the scale vanilla prices men in,").Append(Environment.NewLine);
                     header.Append("                0.40 to 2.56 by tier. It buys nothing except that vanilla's own").Append(Environment.NewLine);
                     header.Append("                hardcoded power thresholds -- the 1000f army floor, the 100f siege").Append(Environment.NewLine);
@@ -470,7 +492,12 @@ namespace RBMCampaign
                     header.Append("                out to power/man x powerScale. See StrategicTroopPower.PowerScale,").Append(Environment.NewLine);
                     header.Append("                which is MEASURED off this log and must be re-measured if the").Append(Environment.NewLine);
                     header.Append("                settings below move.").Append(Environment.NewLine);
-                    header.Append("  leader        his own party's commander perks; terrain, vanilla's own modifier").Append(Environment.NewLine);
+                    header.Append("  leader        his own party's commander perks (applied)").Append(Environment.NewLine);
+                    header.Append("  terrain       vanilla's arm-vs-terrain modifier -- shown always, APPLIED ONLY IN A SIEGE.").Append(Environment.NewLine);
+                    header.Append("                On a field battle this model prices the man, not the ground he stands on, so").Append(Environment.NewLine);
+                    header.Append("                the column is kept only to keep the distortion it used to add visible (an").Append(Environment.NewLine);
+                    header.Append("                archer at half power in a wood, level with a looter vanilla files as infantry)").Append(Environment.NewLine);
+                    header.Append("                and is NOT in subtotal. In a siege the wall is a real fact and it IS applied.").Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
                     header.Append("Settings:").Append(Environment.NewLine);
                     header.Append("  rbmCombatEnabled              = ").Append(RC.rbmCombatEnabled).Append(Environment.NewLine);

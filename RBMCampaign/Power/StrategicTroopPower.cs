@@ -131,7 +131,7 @@ namespace RBMCampaign
         /// Re-measure this if the offense model moves (rbmCombatEnabled, OneHandedThrustDamageBonus, armorMultiplier
         /// -- see _cacheRbmCombat) or if the tuning above is re-cut. The log prints what it was measured under.
         /// </summary>
-        internal const float PowerScale = 197f;
+        internal const float PowerScale = 272f;
 
         /// <summary>Where a blow lands. The armour a man wears is worth what the blows he takes actually meet, so a
         /// greave is worth less than a cuirass for no reason but that fewer blows go there.</summary>
@@ -148,9 +148,11 @@ namespace RBMCampaign
         private const float ZoneLeg = 0.11f;
 
         /// <summary>
-        /// How many armour points buy one man's worth of extra life. RBM's own armour equation is
-        /// <c>100/(100 + armor*armorMultiplier)</c>, so this tracks 100/armorMultiplier -- pick it that way and the
-        /// passive term says the same thing about armour that a real blow does.
+        /// How many armour points buy one man's worth of extra life, at armorMultiplier == 1 (vanilla). RBM's own
+        /// armour equation is <c>100/(100 + armor*armorMultiplier)</c>, so the divisor the passive term actually uses
+        /// is <c>ArmorConstant/armorMultiplier</c> whenever RBM Combat is on -- that is what makes the passive term
+        /// say the same thing about armour that a real RBM blow does (see PowerOfSet). At the default multiplier of 2
+        /// that halves the divisor, doubling armour's weight. This base value is only the armorMultiplier == 1 case.
         /// </summary>
         private const float ArmorConstant = 100f;
 
@@ -162,8 +164,38 @@ namespace RBMCampaign
         /// </summary>
         private const float ShieldPassiveWeight = 4f;
 
-        /// <summary>Barding is armour on the thing between the blow and the man. Worth less than his own, not nothing.</summary>
-        private const float BardingWeight = 0.35f;
+        // MOUNT. A horse is worth a SHARE of what the man on it is worth, and how big that share is depends on how
+        // survivable the mount is -- a barded charger carries him through the whole battle, a courier's pony drops
+        // under the first spear. Priced as a fraction OF his own power (offense x active x passive), not a flat sum,
+        // for one reason: a flat sum is a bigger fraction of a cheap troop than a dear one, so it made light cavalry
+        // gain a larger PERCENTAGE from their horse than knights did -- backwards. As a share it tracks the mount and
+        // not the base: same horse, same percentage, whoever is on it. Charge stays in offense (the lance is his).
+        //
+        // The two constants below are the whole of it, and neither is a free dial -- they are an ANCHOR and read as a
+        // sentence: "a reference barded warhorse is worth MountBonusAtReference of its rider's power." Everything
+        // lighter or heavier scales straight off it by how its survival compares. So the "magic number" is just:
+        //   fraction added = (this mount's survival / a barded warhorse's survival) x (a warhorse's worth, 0.43).
+
+        /// <summary>
+        /// The survival of the mount we calibrate against -- a fully barded warhorse, the kind a knight rides: about a
+        /// horse's own health (Monster ~200) plus heavy barding counted at BardingToHealth. Measured off the log at
+        /// ~440. It is only a yardstick: a mount at exactly this survival is worth MountBonusAtReference; nothing is
+        /// clamped to it.
+        /// </summary>
+        private const float ReferenceMountSurvival = 440f;
+
+        /// <summary>
+        /// What that reference barded warhorse adds, as a fraction of its rider's own power. 0.43 puts it at ~30% of
+        /// his MOUNTED total (0.43 / 1.43), which is the "a good warhorse is worth about a third of him" target. A
+        /// lighter mount (less barding, less horse) lands proportionally below it, a cataphract's above -- so lighter
+        /// cavalry gain a smaller share than armoured cavalry, by construction.
+        /// </summary>
+        private const float MountBonusAtReference = 0.43f;
+
+        /// <summary>Barding's exchange rate into the mount's survival, in effective hit points per armour point. This is
+        /// the ONLY place barding is priced: it is the horse's armour, not the rider's, and a blow that finds the man
+        /// meets his own steel instead (the auto-resolve model prices it the same way).</summary>
+        private const float BardingToHealth = 2f;
 
         /// <summary>A man swings whichever weapon is in his hand, but he leads with his best. 1 would be "best only".</summary>
         private const float BestWeaponWeight = 0.7f;
@@ -449,10 +481,13 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Vanilla's own loop, with the tier base taken out of it. Everything else is kept deliberately: the healthy
-        /// count (a wounded man fights in no one's line), the terrain modifier and its Estimated exemption, and the
-        /// morale map. Those are not this feature's business and a party that disagreed with vanilla about how many
-        /// men it has would be a bug wearing a balance change's clothes.
+        /// Vanilla's own loop, with the tier base AND the FIELD terrain modifier taken out of it. The rest is kept
+        /// deliberately: the healthy count (a wounded man fights in no one's line) and the morale map -- those are not
+        /// this feature's business, and a party that disagreed with vanilla about how many men it has would be a bug
+        /// wearing a balance change's clothes. Field terrain is dropped on purpose: vanilla's GetContextModifier is a
+        /// per-arm guess (archers weak in a wood, infantry strong there) that this model, which prices the man
+        /// himself, must not layer on top. A SIEGE'S context is the exception and IS kept -- the wall is a real fact
+        /// about the fight, not a guess about the ground -- see the note at the perMan line below.
         /// </summary>
         private static bool TryGetPowerOfParty(PartyBase party, BattleSideEnum side,
             MapEvent.PowerCalculationContext context, out float result)
@@ -514,7 +549,16 @@ namespace RBMCampaign
                 // What his commander is worth to him: his staying power, and not a percentage. See HealthFactorOf.
                 power *= HealthFactorOf(troop, party);
 
-                float contextMod = estimated ? 0f : model.GetContextModifier(troop, side, context);
+                // FIELD TERRAIN IS NOT APPLIED; A SIEGE'S CONTEXT IS. Vanilla's GetContextModifier is a per-arm
+                // heuristic -- archers weak in a wood, cavalry weak in a wood, infantry strong there -- layered on top
+                // of the tier it priced everyone by. On open ground that double-counts what this model already prices
+                // in the man himself: it once halved a Battanian Highborn Youth -- a noble ARCHER -- in a forest and
+                // landed him level with a Looter, whom vanilla files as INFANTRY and rewards on the same ground,
+                // though the youth is worth better than twice him. So field terrain is dropped. A SIEGE is a different
+                // fact: attacking or defending a wall genuinely changes what a man is worth to the party the AI is
+                // weighing, and that belongs in the strength it reads -- so the context is KEPT for a siege alone.
+                bool siege = context == MapEvent.PowerCalculationContext.Siege;
+                float contextMod = siege ? model.GetContextModifier(troop, side, context) : 0f;
 
                 // Vanilla's own leader term, left exactly as vanilla computes it. It is worth nearly nothing -- it
                 // counts only PrimaryRole == Captain perks, of which the game has two -- but fixing that is not this
@@ -659,6 +703,9 @@ namespace RBMCampaign
 
             public float ChargeDamage;
 
+            /// <summary>The mount's contribution to power/man (a share of the rider's own) -- 0 on foot. See MountFractionOf.</summary>
+            public float MountBonus;
+
             /// <summary>Whether the game fields him as an archer -- not whether a bow is in his baggage.</summary>
             public bool IsShooter;
 
@@ -709,6 +756,8 @@ namespace RBMCampaign
             public string LauncherName;
 
             public float LauncherSpeed;
+
+            public float MountBonus;
         }
 
         internal static PowerBreakdown Explain(CharacterObject troop)
@@ -726,7 +775,7 @@ namespace RBMCampaign
             float sum = 0f;
             int sets = 0;
             float offense = 0f, melee = 0f, ranged = 0f, active = 0f, passive = 0f, armor = 0f, shieldTier = 0f;
-            float launcherTier = 0f, charge = 0f;
+            float launcherTier = 0f, charge = 0f, mountBonus = 0f;
 
             foreach (Equipment set in EnumerateBattleEquipments(troop))
             {
@@ -738,6 +787,7 @@ namespace RBMCampaign
                 }
                 sum += power;
                 sets++;
+                mountBonus += parts.MountBonus;
                 offense += parts.Offense;
                 melee += parts.Melee;
                 ranged += parts.Ranged;
@@ -766,9 +816,12 @@ namespace RBMCampaign
             // so the price the AI reads and the price the log explains cannot drift apart. Note the parts below stay
             // RAW: offense is joules and blows and has a meaning of its own, and dividing it by a number that exists
             // only to talk to vanilla would make the log unreadable to the person calibrating the model. The
-            // consequence is that Power is no longer offense x active x passive as printed -- it is that, over
-            // PowerScale -- and the log's header says so.
+            // consequence is that Power is no longer offense x active x passive as printed -- it is that PLUS the mount,
+            // all of it over PowerScale -- and the log's header says so. The mount is already inside sum (PowerOfSet
+            // adds it raw), so the single divide below carries it too; MountBonus is divided out only for the log, to
+            // show the mount in the same power/man units as the column it feeds.
             detail.Power = (sum / sets) / PowerScale;
+            detail.MountBonus = (mountBonus / sets) / PowerScale;
             detail.Offense = offense / sets;
             detail.Melee = melee / sets;
             detail.Ranged = ranged / sets;
@@ -843,9 +896,16 @@ namespace RBMCampaign
                 out arm, out leg);
             float weighted = (head * ZoneHead) + (neck * ZoneNeck) + (torso * ZoneTorso)
                            + (shoulder * ZoneShoulder) + (arm * ZoneArm) + (leg * ZoneLeg);
-            weighted += BardingWeight * BardingOf(set);
+            // Barding is NOT here -- it is the horse's armour, and it is priced in the mount term (MountFractionOf).
             weighted += ShieldPassiveWeight * shieldTier;
-            float passiveFactor = 1f + (weighted / ArmorConstant);
+            // ArmorConstant is the vanilla (armorMultiplier == 1) value. Under RBM Combat the real blow divides
+            // armour by 100/(100 + armor*armorMultiplier), so the passive term only says what a real blow says when
+            // the divisor tracks 100/armorMultiplier. At the default multiplier of 2 this doubles armour's weight --
+            // exactly the "price of protection" RBM's own armour equation charges. See ArmorConstant's own summary.
+            float armorConstant = rbmCombat
+                ? (ArmorConstant / RBMConfig.RBMConfig.armorMultiplier)
+                : ArmorConstant;
+            float passiveFactor = 1f + (weighted / armorConstant);
 
             parts.Offense = offense;
             parts.Melee = melee;
@@ -860,10 +920,34 @@ namespace RBMCampaign
             parts.IsShooter = shooter;
             parts.LauncherName = launcherName;
             parts.LauncherSpeed = launcherSpeed;
+            // The two factors are stages of one blow -- first it must fail to be turned aside, then it must get through
+            // the armour -- so what each buys him in life multiplies rather than adds. That product IS the man. The
+            // mount then adds a SHARE of it (MountFractionOf), on the same raw scale, so it rides the /PowerScale
+            // divide back in Measure like everything else.
+            float product = offense * activeFactor * passiveFactor;
+            float mount = product * MountFractionOf(set);
+            parts.MountBonus = mount;
+            return product + mount;
+        }
 
-            // The two are stages of one blow -- first it must fail to be turned aside, then it must get through the
-            // armour -- so what each buys him in life multiplies rather than adds.
-            return offense * activeFactor * passiveFactor;
+        /// <summary>
+        /// The share of his OWN power a man's mount adds -- 0 for a man on foot. A horse is worth a fraction of the
+        /// rider it carries, and how large that fraction is depends on how survivable the animal is: its own health
+        /// (Monster hit points plus the item's bonus, the same figure the auto-resolve model wears down) and its
+        /// barding, which is the only place barding is priced. Scaled off a barded warhorse as the yardstick (see
+        /// ReferenceMountSurvival / MountBonusAtReference), so a lighter mount lands below it and a heavier above --
+        /// nothing is clamped. Charge is deliberately absent -- it is the rider's harder blow, priced in offense.
+        /// </summary>
+        private static float MountFractionOf(Equipment set)
+        {
+            ItemObject horse = set[EquipmentIndex.Horse].Item;
+            if (horse == null || horse.HorseComponent == null)
+            {
+                return 0f;
+            }
+            float horseHealth = horse.HorseComponent.HitPoints + horse.HorseComponent.HitPointBonus;
+            float survival = horseHealth + (BardingToHealth * BardingOf(set));
+            return (survival / ReferenceMountSurvival) * MountBonusAtReference;
         }
 
         // =========================================================================================================

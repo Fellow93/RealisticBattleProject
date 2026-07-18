@@ -273,6 +273,23 @@ namespace RBMConfig
         // more of the campaign's day, lower it to get them over with. 0 restores vanilla's flat 30/60 exactly.
         public static float simulationRoundMinutes = 10f;
 
+        // A SIEGE gives the man on the wall the edge the wall is. Auto-resolve no longer folds vanilla's siege context
+        // into the blow (see SimulationEquipmentPower.GetVanillaPowerNeutralizingFactor), so the defender's advantage
+        // is priced here instead, and as better DICE rather than a flat power bonus: he turns aside more blows, and in
+        // an exchange of shot the besieger firing UP at the battlement misses more while the defender firing DOWN
+        // misses less. Off outside a siege, and off entirely when this is false.
+        public static bool simulationSiegeDefenderEnabled = true;
+
+        // How much better the besieged man's defence rolls are: his shield block, weapon block and parry chance are
+        // multiplied by this while a besieger is striking him (capped so the wall is an edge, not invulnerability).
+        // 1.0 is no edge; 1.3 is a third more often turned aside.
+        public static float simulationSiegeDefenderDefenseBonus = 1.3f;
+
+        // The height advantage in an exchange of arrows, as a skew on the miss chance, symmetric about 1: the besieger
+        // shooting up misses this much more (x skew), the defender shooting down this much less (x (2 - skew)). 1.0 is
+        // no skew; 1.4 is the besieger missing 40% more often and the defender 40% less.
+        public static float simulationSiegeRangedMissSkew = 1.4f;
+
         // A beaten side breaks and runs instead of being fought to the last man. Vanilla's auto-resolve only routs a
         // side when its STANDING campaign morale falls to nearly zero, which never moves during the simulated fight,
         // so every auto-resolved battle grinds on to annihilation. When on, a side that falls far enough behind on
@@ -500,6 +517,9 @@ namespace RBMConfig
             simulationRangedMissEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationRangedMissEnabled", "1").Equals("1");
             simulationRangedMissChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationRangedMissChance", "0.35"), CultureInfo.InvariantCulture);
             simulationRoundMinutes = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationRoundMinutes", "10"), CultureInfo.InvariantCulture);
+            simulationSiegeDefenderEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationSiegeDefenderEnabled", "1").Equals("1");
+            simulationSiegeDefenderDefenseBonus = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationSiegeDefenderDefenseBonus", "1.3"), CultureInfo.InvariantCulture);
+            simulationSiegeRangedMissSkew = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationSiegeRangedMissSkew", "1.4"), CultureInfo.InvariantCulture);
             simulationRoutEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationRoutEnabled", "0").Equals("1");
             simulationPerkSystem = ReadOrCreate("/Config/RBMCampaign", "SimulationPerkSystem", "1").Equals("1");
             simulationLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationLoggingEnabled", "1").Equals("1");
@@ -637,6 +657,9 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRangedMissEnabled"), simulationRangedMissEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRangedMissChance"), simulationRangedMissChance.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRoundMinutes"), simulationRoundMinutes.ToString(CultureInfo.InvariantCulture));
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationSiegeDefenderEnabled"), simulationSiegeDefenderEnabled);
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationSiegeDefenderDefenseBonus"), simulationSiegeDefenderDefenseBonus.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationSiegeRangedMissSkew"), simulationSiegeRangedMissSkew.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationRoutEnabled"), simulationRoutEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationPerkSystem"), simulationPerkSystem);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationLoggingEnabled"), simulationLoggingEnabled);

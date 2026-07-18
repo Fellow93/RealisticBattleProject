@@ -30,13 +30,13 @@ namespace RBMCampaign
     /// and real training in its place. A tier was only ever shorthand for those two things; having measured
     /// them, we do not also need the shorthand, and keeping it would charge for them twice.
     ///
-    /// It also lifts terrain back out of a FIELD blow. Vanilla priced how the four arms compare through
+    /// It also lifts terrain back out of the blow. Vanilla priced how the four arms compare through
     /// DefaultMilitaryPowerModel's context table -- cavalry worth a quarter more in the open, archers worth
     /// half as much defending a wood -- but an arm's edge is meant to come from its horse and its lance now,
-    /// both already in the equipment ratio, not from the ground it stands on. So on a field battle the context
-    /// modifier is cancelled on both sides (see <see cref="GetVanillaPowerNeutralizingFactor"/>); a siege keeps its
-    /// own. Each troop is still judged against its own arm and no finer (see <see cref="GetBucket"/>), so an
-    /// archer is never taxed for carrying an archer's armour.
+    /// both already in the equipment ratio, not from the ground it stands on. So the context modifier is cancelled on
+    /// both sides in EVERY blow (see <see cref="GetVanillaPowerNeutralizingFactor"/>), siege included -- a siege's own
+    /// facts are priced by this model's siege handling, not by vanilla's table. Each troop is still judged against its
+    /// own arm and no finer (see <see cref="GetBucket"/>), so an archer is never taxed for carrying an archer's armour.
     ///
     /// Every baseline is measured off the game's own roster rather than assumed -- see
     /// <see cref="EnsureBaselines"/>, which is where the honesty of this model lives.
@@ -56,12 +56,11 @@ namespace RBMCampaign
         // dropped from vanilla's damage too (see GetCorrection) -- otherwise it would be counted twice.
         //
         // Arm of service stays as the bucket, but for a narrower reason than it once had. It used to lean on
-        // vanilla's context table having already priced what an archer is worth against a horseman; the field
-        // half of that table is now lifted out (see GetVanillaPowerNeutralizingFactor), so on open ground nothing
-        // prices arm against arm any more -- by design, an arm's edge is its horse and its lance, both already in
-        // the equipment ratio. The bucket earns its place regardless: it normalises the damage units per arm, so
-        // a lance is measured against lances and not counted "better kit" than a spear for landing more raw force.
-        // (A siege still keeps vanilla's context, arm-vs-arm included.)
+        // vanilla's context table having already priced what an archer is worth against a horseman; that table is now
+        // lifted out entirely (see GetVanillaPowerNeutralizingFactor), siege included, so nothing prices arm against
+        // arm any more -- by design, an arm's edge is its horse and its lance, both already in the equipment ratio.
+        // The bucket earns its place regardless: it normalises the damage units per arm, so a lance is measured
+        // against lances and not counted "better kit" than a spear for landing more raw force.
         //
         // A HERO IS NOT AN ARM OF SERVICE, and giving him a bucket of his own was a mistake of exactly the kind
         // this model has made before. The correction is a RATIO against the bucket's baseline, so a bucket cancels
@@ -360,6 +359,10 @@ namespace RBMCampaign
 
         /// <summary>No defence makes a man untouchable: the chance to defend a melee blow is capped here.</summary>
         private const float DefenseChanceCap = 0.75f;
+
+        /// <summary>The wall lifts the cap but does not remove it: a besieged man may defend up to here, not beyond,
+        /// so a garrison is hard to storm but never invulnerable. Used for both his melee defence and his shield.</summary>
+        private const float SiegeDefenseChanceCap = 0.9f;
 
         /// <summary>At equal skill, this share of successful defences are parries (counters) rather than plain blocks.</summary>
         private const float ParryShareBase = 0.20f;
@@ -857,9 +860,9 @@ namespace RBMCampaign
             // The ground no longer favours an arm of service, and the leader no longer carries his captains on his
             // back. Vanilla's blow rides on (1 + leader + context) over the same for the man being struck, and the
             // equipment correction above divides out only the tier base, so both terms would otherwise ride
-            // untouched into the result. The context -- the (arm x terrain x side) table -- is lifted on a field
-            // battle, since an arm's edge is meant to come from its horse and its lance now, both already priced in
-            // the equipment ratio; a siege keeps its own. The leader term is lifted whenever this model prices
+            // untouched into the result. The context -- the (arm x terrain x side) table -- is lifted in every blow,
+            // siege included, since an arm's edge is meant to come from its horse and its lance now, both already
+            // priced in the equipment ratio. The leader term is lifted whenever this model prices
             // captain perks itself, because that term IS a tally of captain perks and would otherwise be the same
             // thing counted twice. Folded INTO the correction, not applied after it, so the log's Vanilla x
             // Correction = Final identity holds and RecordHit writes the whole of what the model did. See
@@ -1264,6 +1267,14 @@ namespace RBMCampaign
 
             bool rbmCombat = RBMConfig.RBMConfig.rbmCombatEnabled;
 
+            // A SIEGE, and thereby the wall's edge for the man on it. True for any blow inside a siege (both sides'
+            // parties carry the Siege context); WHICH man it favours is decided at each roll by strikerIsAttacker --
+            // the defender's defence is lifted while a besieger strikes him, and the besieger's shot skews wide while
+            // the defender's finds home. Never in the reference tables (they hand a null party: a matchup has no wall).
+            bool siege = RBMConfig.RBMConfig.simulationSiegeDefenderEnabled
+                && struckParty != null && struckParty.MapEvent != null
+                && struckParty.MapEvent.SimulationContext == MapEvent.PowerCalculationContext.Siege;
+
             // Where in the battle this blow falls, and what the two men have left to spend.
             SimulationBattleState.TroopState strikerState = (state != null) ? state.For(strikerTroop, strikerIsAttacker) : null;
             SimulationBattleState.TroopState struckState = (state != null) ? state.For(struckTroop, !strikerIsAttacker) : null;
@@ -1412,6 +1423,17 @@ namespace RBMCampaign
             {
                 missChance = ShotMissChance(striker, strikerMounted, struckStillMounted, volley,
                     SimulationBattleState.VolleyProgress(state));
+
+                // THE WALL SKEWS THE SHOT. A besieger looses UP at a man on the battlement and misses more; the
+                // defender looses DOWN into the press and misses less. One knob, symmetric about 1 (attacker x skew,
+                // defender x (2 - skew)), carried on missChance so both the live roll below and the reference
+                // expectation further down inherit it. Capped like any miss chance.
+                if (siege)
+                {
+                    float skew = RBMConfig.RBMConfig.simulationSiegeRangedMissSkew;
+                    missChance *= strikerIsAttacker ? skew : MathF.Max(0f, 2f - skew);
+                    missChance = MBMath.ClampFloat(missChance, 0f, RangedMaxMissChance);
+                }
 
                 // A live shot rolls it and is done. The reference tables cannot -- they are asking what a matchup
                 // does, not what one arrow did -- so they take the expectation instead, just below the blow, the
@@ -1710,6 +1732,14 @@ namespace RBMCampaign
                     {
                         blockChance *= MountedDefenseFactor;
                     }
+                    // The wall. A besieged man gets his board across more often; applied before the branch so the
+                    // live roll and the reference expectation both carry it, and capped so the wall is an edge, not
+                    // invulnerability. strikerIsAttacker means the struck man is the one on the wall.
+                    if (siege && strikerIsAttacker)
+                    {
+                        blockChance = MBMath.ClampFloat(blockChance * RBMConfig.RBMConfig.simulationSiegeDefenderDefenseBonus,
+                            0f, SiegeDefenseChanceCap);
+                    }
                     breakdown.ShieldBlock = blockChance;
                     if (spend)
                     {
@@ -1762,6 +1792,15 @@ namespace RBMCampaign
                     if (breakdown.ChargeBonus > 1f)
                     {
                         defenseChance = 0f;
+                    }
+
+                    // The wall. A besieged man turns aside more blows; applied after the charge cut (so a charge still
+                    // lands, though a siege rarely has one) and capped so the wall is an edge, not invulnerability.
+                    // Lifts the parry chance with it, since parry is drawn from this same successful-defence roll.
+                    if (siege && strikerIsAttacker)
+                    {
+                        defenseChance = MBMath.ClampFloat(defenseChance * RBMConfig.RBMConfig.simulationSiegeDefenderDefenseBonus,
+                            0f, SiegeDefenseChanceCap);
                     }
 
                     breakdown.ShieldBlock = defenseChance;
@@ -1891,9 +1930,9 @@ namespace RBMCampaign
             // contextModifier) on each side. The leader modifier and the captain's perks are left whole and still
             // say everything they said before. The context modifier -- the terrain-vs-arm table -- is NOT divided
             // out here, because this method has no battle and so cannot know the terrain; the postfix lifts it out
-            // of field blows afterwards, folding the factor into breakdown.Correction (see
-            // GetVanillaPowerNeutralizingFactor). A siege keeps its context; the reference/matchup tables, which have no
-            // battle at all, are terrain-blind by nature and leave it untouched.
+            // of every blow afterwards, siege included, folding the factor into breakdown.Correction (see
+            // GetVanillaPowerNeutralizingFactor). The reference/matchup tables, which have no battle at all, are
+            // terrain-blind by nature and leave it untouched.
             float tierTerm = MathF.Pow(VanillaTierPower(strikerTroop) / VanillaTierPower(struckTroop), 0.7f);
             breakdown.TierTerm = tierTerm;
             if (tierTerm <= 0f)
@@ -2222,18 +2261,19 @@ namespace RBMCampaign
         ///
         /// THE CONTEXT is the <c>(arm x terrain x side)</c> table -- cavalry worth a quarter more attacking on open
         /// ground, docked defending a wood. An arm's edge is meant to come from its horse and its lance now, both
-        /// already priced in the equipment ratio, not from the field it happens to stand on. So on a field battle it
-        /// is lifted; a SIEGE keeps its own (the wall is its own fact, not "terrain" in the sense meant here), and
-        /// the Estimated context never carried one to begin with (vanilla skips GetContextModifier for it).
+        /// already priced in the equipment ratio, not from the field it happens to stand on. So it is lifted from
+        /// every blow, siege included -- a siege's own facts (no horses, the wall, the field-vs-wall kit) are priced
+        /// by this model's siege handling, not by vanilla's table layered on top. (The Estimated context never carried
+        /// one to begin with -- vanilla skips GetContextModifier for it. The map power model DOES keep the siege
+        /// context for the AI's strength read; that is a different number, see StrategicTroopPower.)
         ///
         /// THE LEADER TERM is <c>Hero.PowerModifier</c>, and it is worth being exact about what that actually is,
         /// because it is not what its name suggests. <c>DefaultMilitaryPowerModel.GetPowerModifierOfHero</c> walks
         /// every perk in the game, counts the ones whose PRIMARY role is Captain and that this hero owns, and turns
         /// the COUNT into a percentage by skill tier. It is not a leadership bonus, not a tactics bonus, not
         /// anything else: it is a tally of captain perks and nothing more. So once SimulationPerks asks the real
-        /// captains for their real perks, this term is the same thing counted twice, and out it comes -- which is
-        /// why it is lifted in a SIEGE as well, where the context stays. With the perk system off it is kept
-        /// exactly as before, and nothing here changes.
+        /// captains for their real perks, this term is the same thing counted twice, and out it comes. With the perk
+        /// system off it is kept exactly as before, and nothing here changes.
         ///
         /// Not by patching GetPowerModifierOfHero, note: that also feeds GetPowerOfParty, which is how the campaign
         /// AI decides whether a fight is worth having. This is a fixup to a BLOW, and it stays inside the blow.
@@ -2269,11 +2309,14 @@ namespace RBMCampaign
             float chargedLeaderStriker = LeaderModifierOf(strikerParty);
             float chargedLeaderStruck = LeaderModifierOf(struckParty);
 
-            // AND WHAT THE BLOW SHOULD KEEP. A siege keeps its context; a field battle does not. The leader's
-            // captain-perk tally goes whenever we are pricing the captains ourselves.
-            bool keepContext = estimated || strikerContext == MapEvent.PowerCalculationContext.Siege;
-            float keptContextStriker = keepContext ? chargedContextStriker : 0f;
-            float keptContextStruck = keepContext ? chargedContextStruck : 0f;
+            // AND WHAT THE BLOW SHOULD KEEP. The context -- vanilla's (arm x terrain x side) table -- is lifted out
+            // of EVERY blow now, siege included: an arm's edge comes from its horse and its lance, both already in the
+            // equipment ratio, and a siege's own facts (no horses, the wall, the field-vs-wall kit) are priced by this
+            // model's own siege handling, not by vanilla's guess layered on top. So the blow keeps no context at all;
+            // the map power model keeps the siege context for the AI's strength read, but that is a different number
+            // (see StrategicTroopPower). The leader's captain-perk tally goes whenever we price the captains ourselves.
+            float keptContextStriker = 0f;
+            float keptContextStruck = 0f;
             float keptLeaderStriker = SimulationPerks.Enabled ? 0f : chargedLeaderStriker;
             float keptLeaderStruck = SimulationPerks.Enabled ? 0f : chargedLeaderStruck;
 
