@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,177 +12,8 @@ using static TaleWorlds.MountAndBlade.MovementOrder;
 
 namespace RBMAI
 {
-    public class AgentPanicFix : MissionLogic
+    public static partial class Frontline
     {
-        public override void OnAgentPanicked(Agent affectedAgent)
-        {
-            affectedAgent.ClearTargetFrame();
-        }
-
-        public override void OnAgentControllerSetToPlayer(Agent agent)
-        {
-            agent.ClearTargetFrame();
-        }
-    }
-
-    public static class Frontline
-    {
-        public static ConcurrentDictionary<Agent, AIDecision> aiDecisionCooldownDict = new ConcurrentDictionary<Agent, AIDecision>();
-
-        public class AIMindset
-        {
-            public Timer AIDecisionTimer = null;
-            public AIDecision currentDecision = AIDecision.Attack;
-
-            public Boolean shouldClearTargetFrame = false;
-
-            public enum AIDecision
-            {
-                Attack,
-                BackStep,
-                FindAlly,
-                FlankAllyLeft,
-                FlankAllyRight,
-                Rest
-            }
-
-            public float fallback = 0;
-            public float attack = 50;
-            public float findAlly = 0;
-            public float flankAllyLeft = 0;
-            public float flankAllyRight = 0;
-
-            public float fallBackBase = 0;
-            public float attackBase = 8;
-            public float findAllyBase = 0;
-            public float flankAllyLeftBase = 0;
-            public float flankAllyRightBase = 0;
-
-            public void SetValue(AIDecision decision, float value)
-            {
-                float changedValue = 0;
-                float changedValueBase = 0;
-                float changedValueFromBase = 0;
-                switch (decision)
-                {
-                    case AIDecision.Attack:
-                        {
-                            changedValue = attack + value;
-                            changedValueBase = attackBase;
-                            changedValueFromBase = changedValue - changedValueBase;
-                            break;
-                        }
-                    case AIDecision.BackStep:
-                        {
-                            changedValue = fallback + value;
-                            changedValueBase = fallBackBase;
-                            changedValueFromBase = changedValue - changedValueBase;
-                            break;
-                        }
-                    case AIDecision.FindAlly:
-                        {
-                            changedValue = findAlly + value;
-                            changedValueBase = findAllyBase;
-                            changedValueFromBase = changedValue - changedValueBase;
-                            break;
-                        }
-                    case AIDecision.FlankAllyLeft:
-                        {
-                            changedValue = flankAllyLeft + value;
-                            changedValueBase = flankAllyLeftBase;
-                            changedValueFromBase = changedValue - changedValueBase;
-                            break;
-                        }
-                    case AIDecision.FlankAllyRight:
-                        {
-                            changedValue = flankAllyRight + value;
-                            changedValueBase = flankAllyRightBase;
-                            changedValueFromBase = changedValue - changedValueBase;
-                            break;
-                        }
-                }
-                if (changedValueFromBase > 0)
-                {
-                    float valueToReduce = (float)Math.Floor(Math.Sqrt(Math.Abs(changedValueFromBase)));
-                    changedValue -= valueToReduce;
-                }
-                else
-                {
-                    float valueToAdd = (float)Math.Floor(Math.Sqrt(Math.Abs(changedValueFromBase)));
-                    changedValue += valueToAdd;
-                }
-                changedValue = Math.Min(100, changedValue);
-                changedValue = Math.Max(0, changedValue);
-
-                switch (decision)
-                {
-                    case AIDecision.Attack:
-                        {
-                            attack = changedValue;
-                            break;
-                        }
-                    case AIDecision.BackStep:
-                        {
-                            fallback = changedValue;
-                            break;
-                        }
-                    case AIDecision.FindAlly:
-                        {
-                            findAlly = changedValue;
-                            break;
-                        }
-                    case AIDecision.FlankAllyLeft:
-                        {
-                            flankAllyLeft = changedValue;
-                            break;
-                        }
-                    case AIDecision.FlankAllyRight:
-                        {
-                            flankAllyRight = changedValue;
-                            break;
-                        }
-                }
-            }
-
-            // Runs per agent per tick, so it avoids allocating. The strict > comparisons keep the
-            // tie-break order Attack > BackStep > FindAlly > FlankAllyLeft > FlankAllyRight, which is
-            // what the previous Dictionary + Aggregate produced by walking insertion order.
-            public void getDecision(out AIDecision decisionType)
-            {
-                decisionType = AIDecision.Attack;
-                float bestValue = attack;
-                if (fallback > bestValue)
-                {
-                    decisionType = AIDecision.BackStep;
-                    bestValue = fallback;
-                }
-                if (findAlly > bestValue)
-                {
-                    decisionType = AIDecision.FindAlly;
-                    bestValue = findAlly;
-                }
-                if (flankAllyLeft > bestValue)
-                {
-                    decisionType = AIDecision.FlankAllyLeft;
-                    bestValue = flankAllyLeft;
-                }
-                if (flankAllyRight > bestValue)
-                {
-                    decisionType = AIDecision.FlankAllyRight;
-                }
-            }
-        }
-
-        public class AIDecision
-        {
-            public AIMindset AIMindset = new AIMindset();
-        }
-
-        public static int LimitCount(int count, int max)
-        {
-            return MathF.Min(max, count);
-        }
-
         [HarmonyPatch(typeof(Formation))]
         private class OverrideFormation
         {
@@ -351,7 +182,7 @@ namespace RBMAI
                     }
                 }
 
-                AIDecision aiDecision;
+                AIDecisionState aiDecision;
                 bool hasDecisionState = aiDecisionCooldownDict.TryGetValue(unit, out aiDecision);
 
                 if (hasDecisionState && aiDecision.AIMindset.shouldClearTargetFrame)
@@ -370,7 +201,7 @@ namespace RBMAI
 
                 if (!hasDecisionState)
                 {
-                    aiDecision = new AIDecision();
+                    aiDecision = new AIDecisionState();
                     aiDecisionCooldownDict[unit] = aiDecision;
                 }
 
@@ -722,134 +553,6 @@ namespace RBMAI
                 }
                 return false;
             }
-        }
-    }
-
-    [HarmonyPatch(typeof(HumanAIComponent))]
-    internal class OverrideParallelFormationMovement
-    {
-        private static readonly PropertyInfo ShouldCatchUpWithFormationProperty =
-            typeof(HumanAIComponent).GetProperty("ShouldCatchUpWithFormation");
-
-        [HarmonyPostfix]
-        [HarmonyPatch("ParallelUpdateFormationMovement")]
-        private static void PostfixParallelUpdateFormationMovement(ref HumanAIComponent __instance, ref Agent ___Agent)
-        {
-            // This runs on a native worker thread during the parallel formation-movement job and WRITES agent
-            // formation state (SetValue / SetFormationIntegrityData / SetFormationFrameDisabled). MissionLibrary mods
-            // (RTSCamera/CommandSystem/BattleMiniMap) also hook HumanAIComponent's parallel movement path; two mods
-            // mutating formation state on the same worker job races the native update -> use-after-free AVE. When one
-            // is present, stay off this path entirely and let native own it.
-            if (RBMAI.Tactics.IsFormationReshufflingUnsafe)
-            {
-                return;
-            }
-            if (___Agent.IsActive() == false || ___Agent.Formation == null)
-            {
-                return;
-            }
-            MovementOrderEnum orderType = ___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum;
-            if (___Agent.Controller == AgentControllerType.AI && orderType == MovementOrderEnum.Move && ___Agent.Formation.ArrangementOrder != ArrangementOrder.ArrangementOrderColumn)
-            {
-                Vec2 currentGlobalPositionOfUnit = ___Agent.Formation.GetCurrentGlobalPositionOfUnit(___Agent, false);
-                FormationIntegrityDataGroup formationIntegrityData = ___Agent.Formation.CachedFormationIntegrityData;
-
-                // ShouldCatchUpWithFormation gates GetDesiredSpeedInFormation's cap, which floors at 0.2 of an
-                // agent's own top speed. Native clears it in two cases so stragglers can close: the formation has
-                // scattered, or this agent is far enough from its slot to need a sprint. Asserting it regardless
-                // re-caps exactly those agents every tick -- worst on flanking formations, which travel furthest
-                // and spend the longest wheeling, so they sit in both states most of the traverse.
-                float catchUpThreshold = formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents * 3f;
-                bool formationScattered = formationIntegrityData.DeviationOfPositionsExcludeFarAgents > catchUpThreshold;
-                bool unitFarFromSlot = ___Agent.Position.AsVec2.Distance(currentGlobalPositionOfUnit) >= catchUpThreshold * 2f;
-
-                if (!formationScattered && !unitFarFromSlot)
-                {
-                    ShouldCatchUpWithFormationProperty.SetValue(__instance, true, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
-
-                    ___Agent.SetFormationIntegrityData(currentGlobalPositionOfUnit, ___Agent.Formation.CurrentDirection, formationIntegrityData.AverageVelocityExcludeFarAgents, formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents, formationIntegrityData.DeviationOfPositionsExcludeFarAgents, true);
-                }
-            }
-            if (orderType == MovementOrderEnum.Charge || orderType == MovementOrderEnum.ChargeToTarget)
-            {
-                ___Agent.SetFormationFrameDisabled();
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(HumanAIComponent))]
-    internal class OverrideFormationMovementComponent
-    {
-        internal enum MovementOrderEnum
-        {
-            Invalid,
-            Attach,
-            AttackEntity,
-            Charge,
-            ChargeToTarget,
-            Follow,
-            FollowEntity,
-            Guard,
-            Move,
-            Retreat,
-            Stop,
-            Advance,
-            FallBack
-        }
-
-        internal enum MovementStateEnum
-        {
-            Charge,
-            Hold,
-            Retreat,
-            StandGround
-        }
-
-        private static readonly MethodInfo IsUnitDetachedForDebug =
-            typeof(Formation).GetMethod("IsUnitDetachedForDebug", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        [HarmonyPrefix]
-        [HarmonyPatch("GetFormationFrame")]
-        private static bool PrefixGetFormationFrame(ref bool __result, ref Agent ___Agent, ref HumanAIComponent __instance, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool limitIsMultiplier)
-        {
-            // Also on the parallel formation-movement worker path -- see PostfixParallelUpdateFormationMovement.
-            // Defer to native (return true = run original) when a MissionLibrary mod is present.
-            if (RBMAI.Tactics.IsFormationReshufflingUnsafe)
-            {
-                return true;
-            }
-            if (___Agent != null)
-            {
-                var formation = ___Agent.Formation;
-                if (!___Agent.IsMount && formation != null && (formation.QuerySystem.IsCavalryFormation || formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && !(bool)IsUnitDetachedForDebug.Invoke(formation, new object[] { ___Agent }))
-                {
-                    if (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
-                    {
-                        if (___Agent != null && formation != null)
-                        {
-                            formationPosition = formation.GetOrderPositionOfUnit(___Agent);
-                            if (___Agent.GetTargetAgent() != null)
-                            {
-                                formationDirection = ___Agent.GetTargetAgent().Position.AsVec2 - ___Agent.Position.AsVec2;
-                            }
-                            else
-                            {
-                                formationDirection = formation.GetDirectionOfUnit(___Agent);
-                            }
-                            limitIsMultiplier = true;
-                            speedLimit = __instance != null && HumanAIComponent.FormationSpeedAdjustmentEnabled ? __instance.GetDesiredSpeedInFormation(false) : -1f;
-                            __result = true;
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return true;
         }
     }
 }

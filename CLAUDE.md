@@ -34,14 +34,15 @@ No test suite exists — testing is manual via in-game verification.
 
 **RBM** — Main coordinator. Entry point: `RBM.SubModule` (extends `MBSubModuleBase`). Manages Harmony instance lifecycle, conditionally patches/unpatches each subsystem based on config toggles. References RBMAI and RBMCampaign.
 
-**RBMAI** — AI and stamina/posture system. Patcher entry: `RBMAiPatcher`. Contains:
-- `PostureLogic.cs` — Core stamina system (largest logic file ~111KB). Calculates posture based on weapon weight, length, relative speed.
-- `AgentAi.cs` — Agent AI property overrides
-- `Frontline.cs` — Formation front-line management
-- `Tactics.cs` — Tactical behavior and damage tracking
-- `RbmBehaviors/` and `RbmTactics/` — Custom behavior/tactic subclasses
-- `SiegeArcherPoints/` — Siege positioning logic
-- References RBMConfig.
+**RBMAI** — AI and stamina/posture system. Patcher entry: `RBMAiPatcher` (uses `Harmony.PatchAll()`, so file location is cosmetic — patches are discovered by attribute, not registered by hand). References RBMConfig. As of 2026-07-18 the module was reorganized from a handful of multi-thousand-line monoliths into subsystem folders under `AiModule/`. Large classes were split across files using `partial class` (and, for `Utilities`, partial static files at project root) so no call sites changed. Namespace stays flat `RBMAI`; the old-style csproj lists every file with an explicit `<Compile Include>` — **update it when adding/moving files**. Layout:
+- `AiModule/Stance/` — the posture/stamina system. `StanceLogic` (MissionBehavior) split into `StanceLogic.Core.cs` / `.Visuals.cs` / `StanceLifecyclePatches.cs` / `StanceMiscPatches.cs`; its huge `CreateMeleeBlowPatch` split via nested `partial class` into `MeleeBlowPatch.cs` (orchestration + attributes) / `.Math.cs` (calculators) / `.Ranged.cs`. State types in `Stance.cs` + `PostureDamageTable.cs`. View-models under `Stance/UI/`.
+- `AiModule/Behaviors/` — formation behavior patches (`SkirmishBehaviors`, `DefenseBehaviors`, `FlankBehaviors`, `AdvanceBehavior`, `AgentSpeedAndParams`, `MiscBehaviorPatches`); custom `RBMBehavior*` subclasses under `Behaviors/Custom/`.
+- `AiModule/Tactics/` — `partial class Tactics` split into `TacticsState`, `DamageTracking`, `Lifecycle`, `TacticOverrides`, `FormationCounts`; custom `RBMTactic*` subclasses under `Tactics/Custom/`. ⚠️ `Tactics.EarlyStartPatch` / `Tactics.CampaignMissionComponentPatch` are referenced by fully-qualified name in `RBMAIPatcher.FirstPatch`, so they must stay nested in `partial class Tactics`.
+- `AiModule/Agents/` — `partial class AgentAi` patches (`AgentStats`, `CombatFixes`, `Weather`, `TickPatches`).
+- `AiModule/Frontline/` — the Frontline system (everything from the old `Frontline.cs`): `FrontlineDecision.cs` (the `partial class Frontline` decision AI), `FrontlinePositioning.cs` (`Frontline.OverrideFormation`), `FormationMovement.cs` (HumanAIComponent movement gates), `AgentPanicFix.cs`. ⚠️ Load-bearing worker-thread crash-safety code — move verbatim, never restructure the gates.
+- `AiModule/Formations/` — general formation-grid safety patches: `FormationGridGuards.cs` (`OverrideLineFormation`, from the old `Behaviours.cs`). ⚠️ Also load-bearing worker-thread crash-safety — move verbatim.
+- `AiModule/Orders/` — movement-order patches. `AiModule/UI/` — formation-marker patches. `AiModule/Siege/` (+ `SiegeArcherPoints/`), `AiModule/Spawning/`, `AiModule/Misc/`.
+- `Utilities/` (project root) — `public static partial class Utilities` split into `Utilities.Formations.cs` / `.Targeting.cs` / `.Geometry.cs` / `.Combat.cs`.
 
 **RBMCombat** — Combat mechanics overhaul. Patcher entry: `RBMCombatPatcher`. Contains:
 - `DamageRework.cs` — Complete damage calculation rewrite (~84KB)

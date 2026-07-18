@@ -18,15 +18,20 @@ public class SiegeArcherPoints : MissionLogic
     public bool editingWarningDisplayed = false;
     public bool isFirstTimeLoading = true;
 
+    private static string GetSiegeArcherPointsPath()
+    {
+        return BasePath.Name + "Modules/RBM/ModuleData/scene_positions/";
+    }
+
     public override void OnMissionTick(float dt)
     {
         //((MissionView)this).OnMissionScreenTick(dt);
         if (isFirstTimeLoading && Mission.Current != null && Mission.Current.IsSiegeBattle)
         {
             XmlDocument xmlDocument = new XmlDocument();
-            if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
+            if (File.Exists(GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
             {
-                xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
+                xmlDocument.Load(GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
                 xmlExists = true;
             }
 
@@ -141,9 +146,9 @@ public class SiegeArcherPoints : MissionLogic
             Mission.Current.Scene.GetEntities(ref gameEntities);
 
             XmlDocument xmlDocument = new XmlDocument();
-            if (File.Exists(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
+            if (File.Exists(GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml"))
             {
-                xmlDocument.Load(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
+                xmlDocument.Load(GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
                 xmlExists = true;
             }
             else
@@ -178,7 +183,7 @@ public class SiegeArcherPoints : MissionLogic
                     pointNode.AppendChild(newPointNode);
                 }
             }
-            xmlDocument.Save(RBMAI.Utilities.GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
+            xmlDocument.Save(GetSiegeArcherPointsPath() + Mission.Current.Scene.GetName() + "_" + Mission.Current.Scene.GetUpgradeLevelMask() + ".xml");
             firstTime = false;
         }
 
