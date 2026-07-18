@@ -160,7 +160,17 @@ namespace RBMCampaign
             // How it ended. The game's own verdict, on the only battle there is.
             sb.Append("  RESULT  winner ").Append(WinnerOf(mapEvent))
               .Append("  ·  casualties  attacker ").Append(mapEvent.AttackerSide.TroopCasualties)
-              .Append(", defender ").Append(mapEvent.DefenderSide.TroopCasualties).Append("\n");
+              .Append(", defender ").Append(mapEvent.DefenderSide.TroopCasualties);
+            // A battle that struck blows but never turned a round. The round clock is the spine of the phase model --
+            // volley, skirmish, the lines meeting all hang off it -- so a fight frozen at round zero never leaves its
+            // opening phase, which is exactly the shape the War Sails decorator bug took (see
+            // NavalSimulationRoundCounter, which now drives the clock for the naval model). Flagged here, on the one
+            // line every battle prints, so a regression back into that state is a single grep away.
+            if (StalledAtRoundZero(trace))
+            {
+                sb.Append("   *** STALLED AT ROUND 0 -- round clock never advanced, phases frozen ***");
+            }
+            sb.Append("\n");
 
             AppendWorking(sb, snapshot);
             AppendTrace(sb, trace);
@@ -272,6 +282,28 @@ namespace RBMCampaign
         /// rest of the fight being cut down with knives in their hands, or that the lancers' charge was spent by
         /// round four and they were never dangerous again. That story only exists in the blows.
         /// </summary>
+        /// <summary>
+        /// A battle landed blows but never advanced past round zero -- the failure the naval decorator fix is meant
+        /// to close. Only ever true when there were blows to stall (an empty or unlogged trace is not a stall), so a
+        /// legitimate no-blow instant does not trip it. The moment any blow is stamped with a round the game turned,
+        /// this is false, so a healthy fight -- naval or land -- never carries the flag.
+        /// </summary>
+        private static bool StalledAtRoundZero(List<HitRecord> trace)
+        {
+            if (trace == null || trace.Count == 0)
+            {
+                return false;
+            }
+            foreach (HitRecord hit in trace)
+            {
+                if (hit.Round > 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         private static void AppendTrace(StringBuilder sb, List<HitRecord> trace)
         {
             if (trace == null || trace.Count == 0)

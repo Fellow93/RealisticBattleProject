@@ -117,6 +117,141 @@ namespace RBMCampaign
     }
 
     /// <summary>
+    /// The two patches above hang the whole round clock off <see cref="DefaultCombatSimulationModel"/>. That is the
+    /// right seam for every land battle -- but not for a battle on the water. The War Sails DLC does not extend the
+    /// default model; it REPLACES it, wrapping the original in a decorator (NavalDLC's own
+    /// <c>NavalDLCCombatSimulationModel : CombatSimulationModel</c>, held as its BaseModel). That decorator resolves
+    /// the tick allocation itself for anything on the water -- a sea battle, or a raid whose attacker is still
+    /// aboard ship -- and RETURNS before ever calling the base method. So the postfix above never fires for those
+    /// fights, and <see cref="SimulationBattleState.AdvanceRound"/> is never called: the round clock is frozen at
+    /// zero for the length of the battle. Its SimulateHit override, by contrast, DOES delegate to the base model,
+    /// so RBM's blow recorder runs on every naval blow -- and writes every one of them into round zero.
+    ///
+    /// The result was a naval fight logged as one endless opening VOLLEY: the phase never advances off the ground it
+    /// starts on (see IsVolleyPhase, which reads Progress), the lines never meet, and the melee is zeroed the whole
+    /// time as "still closing" -- so a coastal raid resolved as a one-sided archery duel that wiped the landing
+    /// party for nothing. This patch gives the clock its second driver: the same tick multiply and the same round
+    /// advance, on the decorator's own method, for exactly the branches the decorator handles itself.
+    ///
+    /// Reflected onto the DLC type by name so RBM keeps no build- or load-time dependency on an optional module:
+    /// with War Sails absent the type does not resolve, <see cref="Prepare"/> returns false, and the patch is never
+    /// applied. It is harmless when the DLC is present but the default model is in use, since Harmony only patches
+    /// the method that actually exists.
+    /// </summary>
+    [HarmonyPatch]
+    internal static class NavalSimulationRoundCounter
+    {
+        internal const string NavalModelTypeName = "NavalDLC.GameComponents.NavalDLCCombatSimulationModel";
+
+        private static bool Prepare()
+        {
+            return TargetMethod() != null;
+        }
+
+        private static System.Reflection.MethodBase TargetMethod()
+        {
+            return AccessTools.Method(NavalModelTypeName + ":GetSimulationTicksForBattleRound");
+        }
+
+        private static void Postfix(MapEvent mapEvent, ref ValueTuple<int, int> __result)
+        {
+            if (!SimulationEquipmentPower.SimulationEnabled)
+            {
+                return;
+            }
+
+            // Only advance when the DECORATOR resolved these ticks itself. For every other fight it delegated to the
+            // base DefaultCombatSimulationModel, whose own postfix (SimulationRoundCounter, above) has already
+            // multiplied the allocation and turned the round -- advancing again here would count that round twice
+            // and race the phases through at double speed.
+            if (!NavalModelSelfHandled(mapEvent))
+            {
+                return;
+            }
+
+            // The same widening the land path applies -- see SimulationRoundCounter.TickMultiplier for why a round
+            // is sampled this much thicker than vanilla -- so a naval round carries the same weight as a land one and
+            // the phases, counted in rounds, keep their intended share of the fight.
+            float mult = SimulationRoundCounter.TickMultiplier;
+            __result = new ValueTuple<int, int>(
+                Math.Max(1, MathF.Round(__result.Item1 * mult)),
+                Math.Max(1, MathF.Round(__result.Item2 * mult)));
+            SimulationBattleState.AdvanceRound(mapEvent, 1f);
+        }
+
+        /// <summary>
+        /// True when NavalDLC's model computes the tick allocation itself rather than handing it to the base model --
+        /// and so the only case in which the base postfix did NOT run and this one must stand in. It mirrors the
+        /// decorator's own branch structure exactly: a fight on the water (<see cref="MapEvent.IsNavalMapEvent"/>,
+        /// which is simply "not on land"), or a raid whose attacker is still aboard ship -- a coastal settlement
+        /// struck from the sea, whose map position is on land so it is NOT a naval map event, but whose landing
+        /// party is resolved by the naval model all the same. Everything else falls through to the base model there,
+        /// and must fall through here.
+        /// </summary>
+        private static bool NavalModelSelfHandled(MapEvent mapEvent)
+        {
+            if (mapEvent == null)
+            {
+                return false;
+            }
+            if (mapEvent.IsNavalMapEvent)
+            {
+                return true;
+            }
+            if (mapEvent.IsRaid)
+            {
+                MobileParty attacker = (mapEvent.AttackerSide != null && mapEvent.AttackerSide.LeaderParty != null)
+                    ? mapEvent.AttackerSide.LeaderParty.MobileParty : null;
+                return attacker != null && attacker.IsCurrentlyAtSea;
+            }
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// The clock's price, for the naval model, for the same reason its count needs one (see
+    /// <see cref="NavalSimulationRoundCounter"/>). NavalDLC's decorator hands a sea battle a flat hour a round and
+    /// returns before the base method, so <see cref="SimulationRoundClock"/> above never reprices it -- and a naval
+    /// fight, which now turns as many rounds as any other, would bill every one of them at vanilla's full price and
+    /// run to days of campaign time. Only the fights the decorator prices itself are repriced here (IsNavalMapEvent
+    /// -- the same and only branch its GetSimulationTickInterval self-handles); a sea-launched raid on a land
+    /// settlement is priced by the base method and so is already caught above. Reflected on by name, absent-DLC-safe,
+    /// exactly as the counter is.
+    /// </summary>
+    [HarmonyPatch]
+    internal static class NavalSimulationRoundClock
+    {
+        private const float VanillaNavalRoundMinutes = 60f;
+
+        private static bool Prepare()
+        {
+            return TargetMethod() != null;
+        }
+
+        private static System.Reflection.MethodBase TargetMethod()
+        {
+            return AccessTools.Method(NavalSimulationRoundCounter.NavalModelTypeName + ":GetSimulationTickInterval");
+        }
+
+        private static void Postfix(MapEvent mapEvent, ref CampaignTime __result)
+        {
+            if (!SimulationEquipmentPower.SimulationEnabled || mapEvent == null || !mapEvent.IsNavalMapEvent)
+            {
+                return;
+            }
+
+            float minutes = RBMConfig.RBMConfig.simulationRoundMinutes;
+            if (minutes <= 0f)
+            {
+                return;
+            }
+
+            long scaled = (long)MathF.Round((float)__result.ToMinutes * (minutes / VanillaNavalRoundMinutes));
+            __result = CampaignTime.Minutes(Math.Max(1L, scaled));
+        }
+    }
+
+    /// <summary>
     /// What a battle has spent. Arrows are loosed and not got back, shields are hacked to kindling, horses are
     /// killed under their riders, and a charge is a thing that happens once. None of that can be said by a model
     /// that sees only one blow at a time and forgets it -- so the battle remembers here.
