@@ -280,7 +280,7 @@ namespace RBMCampaign
               .Append(Pad("offense", 10)).Append(Pad("melee", 9)).Append(Pad("ranged", 9))
               .Append(Pad("energyJ", 9)).Append(Pad("mSkill", 8)).Append(Pad("rSkill", 8)).Append(Pad("charge", 8))
               .Append(Pad("active", 8)).Append(Pad("passive", 9)).Append(Pad("armour", 8))
-              .Append(Pad("shield", 8)).Append(Pad("mount", 8)).Append(Pad("leader", 8)).Append(Pad("terrain", 9))
+              .Append(Pad("shield", 8)).Append(Pad("mount", 8)).Append(Pad("leader", 8))
               .Append("subtotal").Append(Environment.NewLine);
 
             MilitaryPowerModel model = Campaign.Current.Models.MilitaryPowerModel;
@@ -309,13 +309,10 @@ namespace RBMCampaign
                 }
 
                 float leaderMod = (party.LeaderHero != null) ? party.LeaderHero.PowerModifier : 0f;
-                // Terrain is shown always, but applied ONLY in a siege (see TryGetPowerOfParty): on a field battle it
-                // is what vanilla's arm-vs-terrain heuristic WOULD have done to him, kept in the column so the
-                // distortion this model drops stays visible, but left out of the subtotal; in a siege the wall is a
-                // real fact and it does go in.
+                // Terrain is applied ONLY in a siege (see TryGetPowerOfParty): on a field battle it is dropped, so it
+                // is left out of the subtotal entirely; in a siege the wall is a real fact and it does go in.
                 bool siege = context == MapEvent.PowerCalculationContext.Siege;
-                float contextMod = estimated ? 0f : model.GetContextModifier(troop, side, context);
-                float appliedContext = siege ? contextMod : 0f;
+                float appliedContext = siege && !estimated ? model.GetContextModifier(troop, side, context) : 0f;
                 // The commander's hit-point factor, exactly as the pricing applied it (see TryGetPowerOfParty).
                 // Left out, the rows stop summing to TOTAL the moment a commander perk fires -- which is precisely
                 // when someone is reading this file to see what the perk did.
@@ -346,7 +343,6 @@ namespace RBMCampaign
                   .Append(Pad(detail.HasShield ? Fmt(detail.ShieldTier) : "-", 8))
                   .Append(Pad((detail.MountBonus > 0f) ? Fmt(detail.MountBonus) : "-", 8))
                   .Append(Pad("+" + Fmt(leaderMod), 8))
-                  .Append(Pad((contextMod >= 0f ? "+" : "") + Fmt(contextMod), 9))
                   .Append(Fmt(subtotal));
                 if (fellBack)
                 {
@@ -493,11 +489,9 @@ namespace RBMCampaign
                     header.Append("                which is MEASURED off this log and must be re-measured if the").Append(Environment.NewLine);
                     header.Append("                settings below move.").Append(Environment.NewLine);
                     header.Append("  leader        his own party's commander perks (applied)").Append(Environment.NewLine);
-                    header.Append("  terrain       vanilla's arm-vs-terrain modifier -- shown always, APPLIED ONLY IN A SIEGE.").Append(Environment.NewLine);
-                    header.Append("                On a field battle this model prices the man, not the ground he stands on, so").Append(Environment.NewLine);
-                    header.Append("                the column is kept only to keep the distortion it used to add visible (an").Append(Environment.NewLine);
-                    header.Append("                archer at half power in a wood, level with a looter vanilla files as infantry)").Append(Environment.NewLine);
-                    header.Append("                and is NOT in subtotal. In a siege the wall is a real fact and it IS applied.").Append(Environment.NewLine);
+                    header.Append("  subtotal      NB: vanilla's arm-vs-terrain modifier is APPLIED ONLY IN A SIEGE. On a field").Append(Environment.NewLine);
+                    header.Append("                battle this model prices the man, not the ground he stands on, so terrain is").Append(Environment.NewLine);
+                    header.Append("                dropped from subtotal. In a siege the wall is a real fact and it IS applied.").Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
                     header.Append("Settings:").Append(Environment.NewLine);
                     header.Append("  rbmCombatEnabled              = ").Append(RC.rbmCombatEnabled).Append(Environment.NewLine);
