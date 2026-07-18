@@ -1711,7 +1711,14 @@ namespace RBMAI
                     }
 
                     float scaleT = MBMath.ClampFloat((currentTime - scaleStartTime) / 10f, 0f, 1f);
-                    float advanceOffset = (MBMath.ClampFloat(enemyDistance * 0.3f, 10f, 50f) + __instance.Formation.Depth * 0.5f) * scaleT;
+                    // Keep the ordered position ahead of our own centre at ALL times. The ramp eases only the
+                    // extra reach (0.5x -> 1x over 10s); it must never scale the whole offset down to ~0.
+                    // Advance re-activates after every Regroup interlude (Regroup out-weighs Advance while the
+                    // line is spread), which resets scaleT to 0. If the offset went to 0 the order became
+                    // "move onto our own centroid", collapsing the leading ranks backwards -- the line then
+                    // accordions back and forth instead of advancing. Flooring the offset keeps it pressing forward.
+                    float baseOffset = MBMath.ClampFloat(enemyDistance * 0.3f, 10f, 50f) + __instance.Formation.Depth * 0.5f;
+                    float advanceOffset = baseOffset * MBMath.Lerp(0.5f, 1f, scaleT);
                     Vec2 advanceVec2 = RBMAI.Utilities.GetFormationCenter(__instance.Formation) + directionToEnemy * advanceOffset;
                     WorldPosition advancePosition = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
                     advancePosition.SetVec2(advanceVec2);
