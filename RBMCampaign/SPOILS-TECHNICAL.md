@@ -258,9 +258,8 @@ The inputs (all gate on `rate > 0`):
 | Market purchase | `MarketTradeProsperity` postfix on `SellItemsAction.Apply` | `number × GetItemPrice` | + (settlement bought from) |
 | Villager produce sale | `VillagerTradeHearth` postfix on `SellGoodsForTradeAction.ApplyByVillagerTrade` | Δ`PartyTradeGold` | + (home village) |
 | Militia wages | `MilitiaUpkeep` on `DailyTickSettlementEvent` | wage × `settlement.Militia` | − |
-| Production | `ProductionUpkeep` on `OnItemProducedEvent` | `item.Value × count` | − |
 
-Money spent in a settlement stays there; goods made there cost it; goods sold return it — netting
+Money spent in a settlement stays there; goods sold return to it — netting
 where goods actually move. Full per-hook detail in `ARCHITECTURE.md → Settlement prosperity flows`.
 
 ---
