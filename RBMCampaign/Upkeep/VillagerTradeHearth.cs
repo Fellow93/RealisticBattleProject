@@ -8,11 +8,9 @@ namespace RBMCampaign
 {
     /// <summary>
     /// When a village's own people cart its produce to a town and sell it, the coin comes home. The sale
-    /// feeds the Hearth of the village the goods were grown in -- not the town they were sold at -- so the
-    /// wealth a village bleeds producing goods (see <see cref="ProductionUpkeep"/>) returns to it once
-    /// those goods find a buyer, at the same settlementProsperityPerGoldSpent rate. Villagers sell through
-    /// SellGoodsForTradeAction, a path apart from the market trade <see cref="MarketTradeProsperity"/>
-    /// covers, so it takes its own credit.
+    /// feeds the Hearth of the village the goods were grown in -- not the town they were sold at -- at the
+    /// same settlementProsperityPerGoldSpent rate. Villagers sell through SellGoodsForTradeAction, a path
+    /// apart from the market trade <see cref="MarketTradeProsperity"/> covers, so it takes its own credit.
     /// </summary>
     [HarmonyPatch(typeof(SellGoodsForTradeAction), "ApplyByVillagerTrade")]
     internal static class VillagerTradeHearth

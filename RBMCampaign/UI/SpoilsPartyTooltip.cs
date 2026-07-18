@@ -18,8 +18,10 @@ namespace RBMCampaign
     public static class SpoilsPartyTooltip
     {
         // A leading coin glyph, sized to sit on the text baseline, so a spoils value reads like the gold
-        // figures the rest of the UI shows. The {=!} marks it as an untranslated literal.
-        private const string CoinIcon = "{=!}<img src=\"General\\Icons\\Coin@2x\" extend=\"6\"> ";
+        // figures the rest of the UI shows. This is passed as a raw ValueLabel string, not through a
+        // TextObject, so it carries no {=key} marker -- the tooltip renderer would print such a marker
+        // literally rather than strip it.
+        private const string CoinIcon = "<img src=\"General\\Icons\\Coin@2x\" extend=\"6\"> ";
 
         public static void Postfix(PropertyBasedTooltipVM propertyBasedTooltipVM, object[] args)
         {

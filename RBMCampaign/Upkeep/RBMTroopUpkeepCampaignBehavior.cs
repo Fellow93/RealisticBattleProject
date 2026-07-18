@@ -11,7 +11,6 @@ namespace RBMCampaign
             CampaignEvents.HourlyTickPartyEvent.AddNonSerializedListener(this, TroopUpkeep.OnHourlyTickParty);
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, TroopUpkeep.OnMobilePartyDestroyed);
             CampaignEvents.DailyTickSettlementEvent.AddNonSerializedListener(this, MilitiaUpkeep.OnDailyTickSettlement);
-            CampaignEvents.OnItemProducedEvent.AddNonSerializedListener(this, ProductionUpkeep.OnItemProduced);
         }
 
         public override void SyncData(IDataStore dataStore)

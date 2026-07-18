@@ -134,7 +134,7 @@ namespace RBMCampaign
             // The wealth the men pocket comes off the town's back. What leaves as plunder is the pot in
             // coin and plate, so the prosperity it costs the town is that gold-worth run back through the
             // same settlementProsperityPerGoldSpent rate trade and carousing pour in -- the sack side of
-            // the drain MilitiaUpkeep and ProductionUpkeep already do. Floored at zero, and off entirely
+            // the drain MilitiaUpkeep already does. Floored at zero, and off entirely
             // when the rate is (a rate of 0 turns the whole prosperity layer off).
             float prosperityBefore = town.Prosperity;
             float drain = pot * RBMConfig.RBMConfig.settlementProsperityPerGoldSpent;
