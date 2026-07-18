@@ -1756,7 +1756,9 @@ namespace RBMAI
                 {
                     case OrderType.ArrangementLine:
                         {
-                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(__instance.Formation.CountOfUnitsWithoutDetachedOnes / 4.5f), true);
+                            // Divisor is effectively the rank count (width in metres = units / ranks). Lower = wider
+                            // line, fewer ranks. Widen the advancing line a touch (4.5 -> 4.0 ranks).
+                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(__instance.Formation.CountOfUnitsWithoutDetachedOnes / 4.0f), true);
                             break;
                         }
                     case OrderType.ArrangementLoose:
