@@ -134,14 +134,10 @@ food/drink/luxury spending above already feeds it.
   daily wage × rate. Wage read off the real `MilitiaPartyComponent.MobileParty` roster
   when one exists (elites included, via `TroopWage`), else the culture's rank-and-file militia
   average × `settlement.Militia`. Log `MILITIA` (the daily tick is throttle enough).
-- **Production drain** (`Upkeep/ProductionUpkeep.cs`) — `OnItemProducedEvent`. Every produced item
-  (workshop wares + village goods/food; *not* initial game stocking) drains `item.Value × count ×
-  rate`. Fires often — each food unit raises it — so `MAKE` is throttled once/settlement/day.
 - **Villager produce credit** (`Upkeep/VillagerTradeHearth.cs`) — postfix on
   `SellGoodsForTradeAction.ApplyByVillagerTrade` (villagers sell through this, **not**
   `SellItemsAction`). Credits the **home village's** Hearth by the sale proceeds × rate, measured as
-  the rise in `villagerParty.PartyTradeGold` across the call. Log `HAUL`. Closes the loop the
-  production drain opens on the village side.
+  the rise in `villagerParty.PartyTradeGold` across the call. Log `HAUL`.
 
 Wiring: the two postfixes via `PatchAll`; the two events in
 `RBMTroopUpkeepCampaignBehavior.RegisterEvents`. The rate is reused deliberately — one knob, both
