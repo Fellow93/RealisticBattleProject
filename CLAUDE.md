@@ -44,13 +44,18 @@ No test suite exists — testing is manual via in-game verification.
 - `AiModule/Orders/` — movement-order patches. `AiModule/UI/` — formation-marker patches. `AiModule/Siege/` (+ `SiegeArcherPoints/`), `AiModule/Spawning/`, `AiModule/Misc/`.
 - `Utilities/` (project root) — `public static partial class Utilities` split into `Utilities.Formations.cs` / `.Targeting.cs` / `.Geometry.cs` / `.Combat.cs`.
 
-**RBMCombat** — Combat mechanics overhaul. Patcher entry: `RBMCombatPatcher`. Contains:
-- `DamageRework.cs` — Complete damage calculation rewrite (~84KB)
-- `ArmorRework.cs` — Armor penetration and absorption
-- `MagnitudeChanges.cs` — Weapon property modifications (~98KB)
-- `RangedRework.cs` — Ranged combat mechanics (~62KB)
-- `HorseChanges.cs` — Mount mechanics
-- References RBMConfig.
+**RBMCombat** — Combat mechanics overhaul. Patcher entry: `RBMCombatPatcher.DoPatching` (`PatchAll`). References RBMConfig. As of 2026-07-19 the module was reorganized from a handful of multi-thousand-line monoliths (DamageRework/ArmorRework/MagnitudeChanges/RangedRework/CampaignChanges + a 1577-line Utilities) into subsystem folders under `CombatModule/`. Each monolith was split with `partial class` (and `partial static class` for `Utilities`) so no call sites changed; namespace stays flat `RBMCombat`; `PatchAll` finds patches by attribute so file location is cosmetic. The old-style csproj lists every file with an explicit `<Compile Include>` — **update it when adding/moving files**. Layout under `CombatModule/`:
+- `Damage/` — `partial class DamageRework` split into `.Core.cs` (the `ComputeBlowDamage` rewrite + nested shield helper/patch), `.Blows.cs`, `.HitReaction.cs`, `.Entities.cs`. ⚠️ two DISTINCT `GetAttackCollisionResultsPatch` classes coexist (a nested-private one in `.Entities.cs` and a separate top-level one in the same file) — the name only disambiguates by nesting, keep them in separate scopes.
+- `Armor/` — `partial class ArmorRework` split into `.Human.cs` / `.Horse.cs` / `.Dispatch.cs` (the public `GetBaseArmorEffectivenessForBodyPartRBM` / `GetArmorMaterialForBodyPartRBM` dispatchers DamageRework calls); `ItemModifierPatches.cs` holds the two top-level `ModifyArmor`/`ModifyModifyDamage` patches.
+- `Magnitude/` — `partial class MagnitudeChanges` (static): `.Core.cs` (shared fields), `.Melee.cs`, `.Thrust.cs`, `.Missile.cs`, and `Tooltips/` (`.WeaponTooltip.cs` / `.ArmorTooltip.cs` / `.StatCalcs.cs`).
+- `Ranged/` — `partial class RangedRework`: `.State.cs` (shared dictionaries + reflection cache), `.EquipWield.cs`, `.MissileSpeed.cs`, `.Reload.cs`, `.Siege.cs`, `.Collision.cs`; plus `RangedWeaponStats.cs` (was `RangedAmmoCombo.cs`) and `RealisticWeaponCollision.cs`. NOTE: `OverrideSetAiRelatedProperties` (reload) was promoted out of the siege patch into `.Reload.cs`.
+- `Horse/` — `partial class HorseChanges`: `.MountStats.cs` / `.MountedCombat.cs`.
+- `Campaign/` — `partial class CampaignChanges`: `.Survival.cs` / `.Xp.cs` / `.TrainingField.cs` / `.TroopPower.cs` / `.Spawn.cs`. `OverrideDefaultMilitaryPowerModel` (in `.TroopPower.cs`) keeps only its two XP-power helpers; the morale/spawn/equipment patches were promoted into `.Spawn.cs`.
+- `Items/` — `partial class ItemValuesTiers`: `.Pricing.cs` / `.Tiers.cs`.
+- `Diagnostics/` — `BattleHitLog.cs` (sink) + `BattleHitLogic.cs` (producer `MissionLogic`).
+- `UI/PlayerArmorStatus/` — `PlayerArmorStatus.cs` (the `MissionLogic`, renamed from `PlayerArmorStatusLogic.cs`) + `PlayerArmorStatusVM.cs`.
+- `RBMCombatPatcher.cs` — bootstrap, at `CombatModule/` root.
+- `Utilities/` (project root) — `public static partial class Utilities` split into `.Collision.cs` / `.Physics.cs` / `.Skill.cs` / `.Ranged.cs` / `.ArmorDurability.cs` / `.Damage.cs` / `.VisualStats.cs` / `.WeaponProps.cs` / `.Config.cs` (root `Utilities.cs` holds the shared tuning fields).
 
 **RBMConfig** — Configuration system with no project dependencies. Static fields in `RBMConfig.RBMConfig` loaded from user XML config. Includes Gauntlet-based in-game settings UI (`RBMConfigScreen`/`RBMConfigViewModel`).
 
