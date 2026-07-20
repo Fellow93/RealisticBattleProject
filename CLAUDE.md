@@ -107,9 +107,23 @@ Settings are static fields on `RBMConfig.RBMConfig`, persisted to user XML at `U
 
 ## Decompiled game sources
 
-`decompiled/<AssemblyName>/` holds the decompiled Bannerlord assemblies — read and
-grep these instead of guessing at native method bodies. The folder is **gitignored**;
-regenerate it with `tools\Decompile-Bannerlord.ps1` (see `tools/README.md`).
+**The full TaleWorlds source is already on disk at `decompiled/<AssemblyName>/`.
+Read and grep it directly. Do NOT run `ilspycmd` to decompile a type on demand —
+that work is already done, and re-decompiling per-question is pure waste.**
+
+36 assemblies, ~5,400 `.cs` files, one file per type, foldered by namespace —
+e.g. `decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyWageModel.cs`.
+Covers TaleWorlds.\* (CampaignSystem, Core, Engine, MountAndBlade, GauntletUI\*, …),
+SandBox\*, StoryMode\*, and NavalDLC\*.
+
+Never guess at a TaleWorlds method body or signature — open the file. Grep for a
+type name across `decompiled/` to find it; use the Explore agent for broad sweeps
+so the main context stays clean.
+
+The folder is **gitignored** (derived, 42MB, TaleWorlds-owned code), so it exists
+on this machine but not for a fresh clone. If it is missing or a lookup turns up an
+assembly that isn't there, regenerate with `tools\Decompile-Bannerlord.ps1`
+(`-Scope Full` widens beyond the single-player set). See `tools/README.md`.
 
 `tools/bannerlord-assemblies.lock.json` **is** committed and records the SHA256 of
 every source DLL. After a game update, `.\tools\Decompile-Bannerlord.ps1 -Check`
