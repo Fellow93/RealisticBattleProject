@@ -6,7 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Realistic Battle Mod (RBM) for Mount & Blade II: Bannerlord. A comprehensive combat overhaul mod that rewrites damage calculations, armor mechanics, AI behavior, and adds a stamina/posture system. Built on Harmony 2.4.2 for non-invasive runtime patching of game methods.
 
-Current version: v4.3.4 (SubModule.xml). Targets Bannerlord v1.3.13+.
+Current version: v4.3.4 (SubModule.xml). Targets Bannerlord v1.4.6+ (per the
+`DependedModules` entries in SubModule.xml); currently developed against v1.4.7.
 
 ## Build
 
@@ -103,6 +104,17 @@ Settings are static fields on `RBMConfig.RBMConfig`, persisted to user XML at `U
 - Module compatibility checks happen in `OnBeforeInitialModuleScreenSetAsRoot()`
 - MissionBehaviors (PostureLogic, PostureVisualLogic, PlayerArmorStatus, SiegeArcherPoints) are added conditionally in `OnMissionBehaviorInitialize()`
 - Localization strings use `{=TAG}Text` format via `TextObject`
+
+## Decompiled game sources
+
+`decompiled/<AssemblyName>/` holds the decompiled Bannerlord assemblies — read and
+grep these instead of guessing at native method bodies. The folder is **gitignored**;
+regenerate it with `tools\Decompile-Bannerlord.ps1` (see `tools/README.md`).
+
+`tools/bannerlord-assemblies.lock.json` **is** committed and records the SHA256 of
+every source DLL. After a game update, `.\tools\Decompile-Bannerlord.ps1 -Check`
+lists which assemblies changed; the resulting `git diff` on the lock file is the
+list of places RBM's Harmony patches may have broken.
 
 ## Bannerlord documentation online
 - https://moddocs.bannerlord.com/

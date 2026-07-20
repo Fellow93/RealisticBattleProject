@@ -360,3 +360,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Decompiled Bannerlord game assemblies (derived, large, TaleWorlds-owned code).
+# Regenerate with tools\Decompile-Bannerlord.ps1; the SHA256 lock file IS committed.
+/decompiled/
