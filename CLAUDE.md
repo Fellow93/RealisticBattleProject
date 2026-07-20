@@ -125,10 +125,13 @@ on this machine but not for a fresh clone. If it is missing or a lookup turns up
 assembly that isn't there, regenerate with `tools\Decompile-Bannerlord.ps1`
 (`-Scope Full` widens beyond the single-player set). See `tools/README.md`.
 
-`tools/bannerlord-assemblies.lock.json` **is** committed and records the SHA256 of
-every source DLL. After a game update, `.\tools\Decompile-Bannerlord.ps1 -Check`
-lists which assemblies changed; the resulting `git diff` on the lock file is the
-list of places RBM's Harmony patches may have broken.
+Two manifests **are** committed, and together they localise a game update:
+
+- `tools/bannerlord-assemblies.lock.json` — SHA256 per source DLL. After an
+  update, `.\tools\Decompile-Bannerlord.ps1 -Check` lists which assemblies moved.
+- `tools/bannerlord-types.lock.txt` — SHA256 per decompiled type. After
+  re-running the script, `git diff` on this file names the individual types that
+  changed, i.e. exactly where RBM's Harmony patches may have broken.
 
 ## Bannerlord documentation online
 - https://moddocs.bannerlord.com/

@@ -2,7 +2,7 @@
     "$comment":  "SHA256 of each Bannerlord assembly last decompiled into ./decompiled/. Committed on purpose: after a game update, re-run tools/Decompile-Bannerlord.ps1 and diff this file to see which assemblies TaleWorlds changed. The decompiled sources themselves are gitignored.",
     "gameVersion":  "v1.4.7",
     "scope":  "Core",
-    "generatedBy":  "ilspycmd ilspycmd: 9.1.0.7988",
+    "generatedBy":  "ilspycmd: 9.1.0.7988",
     "assemblies":  [
                        {
                            "name":  "NavalDLC",

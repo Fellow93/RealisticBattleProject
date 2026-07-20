@@ -41,6 +41,7 @@ $gameRoot  = Split-Path -Parent (Split-Path -Parent $repoRoot)   # ...\Mount & B
 $gameBin   = Join-Path $gameRoot 'bin\Win64_Shipping_Client'
 $outRoot   = Join-Path $repoRoot 'decompiled'
 $lockPath  = Join-Path $PSScriptRoot 'bannerlord-assemblies.lock.json'
+$typesPath = Join-Path $PSScriptRoot 'bannerlord-types.lock.txt'
 
 $ilspy = Join-Path $env:USERPROFILE '.dotnet\tools\ilspycmd.exe'
 if (-not (Test-Path $ilspy)) {
@@ -227,6 +228,14 @@ if ($Check) {
 $refArgs = @()
 foreach ($dir in $searchDirs) { $refArgs += @('-r', $dir) }
 
+# Snapshot the previous per-type hashes BEFORE decompiling overwrites the tree.
+$oldTypes = @{}
+if (Test-Path $typesPath) {
+    foreach ($line in (Get-Content $typesPath)) {
+        if ($line -match '^([0-9A-F]{64})  (.+)$') { $oldTypes[$Matches[2]] = $Matches[1] }
+    }
+}
+
 $failed = @()
 $i = 0
 foreach ($item in $todo) {
@@ -272,10 +281,64 @@ $lockObj = [pscustomobject]@{
 
 $lockObj | ConvertTo-Json -Depth 5 | Out-File -FilePath $lockPath -Encoding utf8
 
+# --- Per-type hashes ----------------------------------------------------------
+# One line per decompiled .cs file (ilspycmd emits one file per type), so a git
+# diff of this manifest names the individual types a game update touched --
+# the assembly-level lock only tells you which DLL moved.
+#
+# Deliberately line-oriented rather than JSON: git diffs it cleanly one type per
+# line. Only .cs is hashed; the generated .csproj carries a fresh GUID per run
+# and would churn on every invocation.
+$newTypes = @{}
+foreach ($item in ($plan | Sort-Object name)) {
+    if ($failed -contains $item.name) { continue }        # partial output, don't record
+    if (-not (Test-Path $item.outDir)) { continue }
+    foreach ($f in (Get-ChildItem -Path $item.outDir -Filter *.cs -File -Recurse)) {
+        $rel = $f.FullName.Substring($outRoot.Length).TrimStart('\').Replace('\', '/')
+        $newTypes[$rel] = (Get-FileHash -Path $f.FullName -Algorithm SHA256).Hash
+    }
+}
+
+# Ordinal sort, not Sort-Object: PowerShell's default is culture-aware, so the
+# ordering would shift under a different locale and churn the whole file.
+$sortedKeys = [string[]]@($newTypes.Keys)
+[Array]::Sort($sortedKeys, [StringComparer]::Ordinal)
+$lines = New-Object System.Collections.Generic.List[string]
+$lines.Add('# SHA256 of every decompiled type in ./decompiled/ (one file per type).')
+$lines.Add('# Committed so a game update can be diffed down to individual types.')
+$lines.Add("# game=$gameVersion scope=$Scope types=$($sortedKeys.Count)")
+foreach ($k in $sortedKeys) { $lines.Add("$($newTypes[$k])  $k") }
+[System.IO.File]::WriteAllLines($typesPath, $lines)
+
+# Report what moved at type level (only meaningful when a prior manifest existed).
+if ($oldTypes.Count -gt 0) {
+    $addedTypes   = @($sortedKeys | Where-Object { -not $oldTypes.ContainsKey($_) })
+    $changedTypes = @($sortedKeys | Where-Object { $oldTypes.ContainsKey($_) -and $oldTypes[$_] -ne $newTypes[$_] })
+    $removedTypes = @($oldTypes.Keys | Where-Object { -not $newTypes.ContainsKey($_) } | Sort-Object)
+
+    $totalTypeDelta = $addedTypes.Count + $changedTypes.Count + $removedTypes.Count
+    if ($totalTypeDelta -gt 0) {
+        Write-Host ""
+        Write-Host "Type-level changes: $($changedTypes.Count) changed, $($addedTypes.Count) added, $($removedTypes.Count) removed" -ForegroundColor Cyan
+
+        $shown = 0
+        foreach ($pair in @(@('changed', $changedTypes), @('added', $addedTypes), @('removed', $removedTypes))) {
+            foreach ($t in $pair[1]) {
+                if ($shown -ge 40) { continue }
+                Write-Host ("  [{0,-7}] {1}" -f $pair[0], $t) -ForegroundColor DarkGray
+                $shown++
+            }
+        }
+        if ($totalTypeDelta -gt 40) {
+            Write-Host "  ... and $($totalTypeDelta - 40) more - see: git diff tools\bannerlord-types.lock.txt" -ForegroundColor DarkGray
+        }
+    }
+}
+
 Write-Host ""
 if ($failed.Count -gt 0) {
     Write-Host "Done with $($failed.Count) failure(s): $($failed -join ', ')" -ForegroundColor Red
     exit 1
 }
-Write-Host "Done. Lock file updated: tools\bannerlord-assemblies.lock.json" -ForegroundColor Green
+Write-Host "Done. Locks updated: tools\bannerlord-assemblies.lock.json, tools\bannerlord-types.lock.txt" -ForegroundColor Green
 exit 0

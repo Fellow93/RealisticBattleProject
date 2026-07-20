@@ -18,8 +18,9 @@ Requires `ilspycmd` (`dotnet tool install -g ilspycmd`).
 
 | Path | Git |
 |---|---|
-| `decompiled/` | **ignored** — derived output, hundreds of MB, TaleWorlds' copyrighted code |
+| `decompiled/` | **ignored** — derived output, 42MB, TaleWorlds' copyrighted code |
 | `tools/bannerlord-assemblies.lock.json` | **committed** — SHA256 of every source DLL |
+| `tools/bannerlord-types.lock.txt` | **committed** — SHA256 of every decompiled type (~5,400 lines) |
 
 ### Detecting a game update
 
@@ -40,6 +41,37 @@ git diff tools/bannerlord-assemblies.lock.json
 The diff is a precise list of which assemblies TaleWorlds actually touched —
 i.e. exactly where RBM's Harmony patches are at risk of breaking. Assemblies
 whose hash is unchanged cannot have changed behaviour, so they need no review.
+
+### Narrowing it down to individual types
+
+`bannerlord-types.lock.txt` hashes every decompiled `.cs` file (ilspycmd emits
+one file per type), so it turns "TaleWorlds.CampaignSystem changed" into the
+actual list of types that moved:
+
+```
+git diff tools/bannerlord-types.lock.txt
+```
+
+The decompile run also prints this directly (first 40, then a pointer to the
+diff):
+
+```
+Type-level changes: 2 changed, 1 added, 1 removed
+  [changed] TaleWorlds.CampaignSystem/.../DefaultPartyWageModel.cs
+```
+
+Caveats worth knowing:
+
+- It names *which* types changed, not *how*. `decompiled/` is gitignored, so
+  there is no committed before/after source to diff. To see the actual edit,
+  stash the old `decompiled/<Assembly>/` folder before re-running.
+- Only `.cs` is hashed. The generated `.csproj` gets a fresh GUID per run and
+  would churn every invocation.
+- Lines are sorted **ordinally** (not PowerShell's culture-aware default) so the
+  ordering is stable across machines and locales, and the file works with
+  `sort`/`comm`/`grep`.
+- `-Check` is assembly-level only — type hashes can't be known without actually
+  decompiling.
 
 ### Scopes
 
