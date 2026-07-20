@@ -139,7 +139,6 @@ namespace RBMCampaign
             int fedHours = MathF.Max(1, foodDays * 24 * bought / wanted);
             _fedUntilHours[SpoilsPool.Key(party, element.Character)] = NowHours + fedHours;
             SpoilsPool.AddSpoils(party, element.Character, -spent);
-            CreditSettlement(settlement, spent);
 
             if (SpoilsLog.Verbose)
             {

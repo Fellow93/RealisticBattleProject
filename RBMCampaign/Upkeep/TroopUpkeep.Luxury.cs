@@ -103,7 +103,6 @@ namespace RBMCampaign
             int cost = MathF.Max(1, market.GetElementUnitCost(index));
             market.AddToCounts(chosen, -1);
             SpoilsPool.AddSpoils(party, element.Character, -cost);
-            CreditSettlement(settlement, cost);
             SetLuxuryCooldown(party, element.Character);
 
             if (SpoilsLog.Verbose)

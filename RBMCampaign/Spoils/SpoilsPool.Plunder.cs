@@ -131,23 +131,12 @@ namespace RBMCampaign
                 return;
             }
 
-            // The wealth the men pocket comes off the town's back. What leaves as plunder is the pot in
-            // coin and plate, so the prosperity it costs the town is that gold-worth run back through the
-            // same settlementProsperityPerGoldSpent rate trade and carousing pour in -- the sack side of
-            // the drain MilitiaUpkeep already does. Floored at zero, and off entirely
-            // when the rate is (a rate of 0 turns the whole prosperity layer off).
-            float prosperityBefore = town.Prosperity;
-            float drain = pot * RBMConfig.RBMConfig.settlementProsperityPerGoldSpent;
-            if (drain > 0f)
-            {
-                town.Prosperity = MathF.Max(0f, town.Prosperity - drain);
-            }
-
+            // The wealth the men pocket is sized off the town's prosperity, but the sack no longer costs the
+            // town any prosperity: the pot is granted as spoils and the town's economy is left untouched.
             if (SpoilsLog.IsEnabled)
             {
                 SpoilsLog.Log("RAID", captor, "town " + (settlement.Name != null ? settlement.Name.ToString() : settlement.StringId)
-                    + " sacked: prosperity " + (int)prosperityBefore + " -> pot " + (int)pot
-                    + " (drained -" + drain.ToString("0.00") + " prosperity)"
+                    + " sacked: prosperity " + (int)town.Prosperity + " -> pot " + (int)pot
                     + " to " + SpoilsLog.Describe(captor)
                     + (oldOwner != null ? " from " + (oldOwner.Name != null ? oldOwner.Name.ToString() : oldOwner.StringId) : ""));
             }

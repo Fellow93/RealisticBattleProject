@@ -87,20 +87,16 @@ notionally went (kit maintenance). Applies to every party in the world.
 - Buys the best fare it can afford first; per-item ceiling scales with wage
   (`troopFoodWageFraction`). Recruits buy grain, veterans buy meat/cheese. Falls back to
   anything rather than starve; limited by market stock and purse.
-- Spend is credited to the settlement (Prosperity for towns, Hearth for villages) via
-  `settlementProsperityPerGoldSpent`.
 - Patches `DefaultMobilePartyFoodConsumptionModel.CalculateDailyBaseFoodConsumptionf`: men
   carrying their own rations **stop eating party food stores**. Heroes always eat from stores.
 
 ### 3. Carousing (`TroopUpkeep.SpendOnFun`)
 
 Each hour idling in a settlement, each stack spends `troopSettlementFunWageFraction` of its
-daily wage on drink/dice (>1 day's wage at default). Also credits settlement prosperity. Purse
-never goes negative.
+daily wage on drink/dice (>1 day's wage at default). Purse never goes negative.
 
 **Garrisons and militia are excluded** from food/carousing (they never leave; would be an
-infinite prosperity faucet). Only visiting field parties spend in settlements. (Militia are not
-free, though — they drain their settlement daily; see *Settlement prosperity flows* below.)
+infinite spending faucet). Only visiting field parties spend in settlements.
 
 ### 4. The spoils cap (`SpoilsPool.GetSpoilsCap`, `Spoils/SpoilsPool.Cap.cs`)
 
@@ -117,32 +113,6 @@ it), but once it does, upkeep starts drawing the surplus down — carousing bite
 over-cap stacks splurge on luxuries. Nothing over the cap is handed back to your gold: spoils are a
 **closed loop**, spent only on upgrades, food and drink. `GetPartyPayee` (owner if alive, else
 `LeaderHero`) also lives here — the party-leader spoils cut pays through it.
-
-## Settlement prosperity flows
-
-Separate from the troop purse: four hooks move a settlement's **Prosperity** (towns/castles) or
-**Hearth** (villages) at the shared `settlementProsperityPerGoldSpent` rate (1 gold of worth →
-`rate` points). All gate on `rate > 0`, so `0` disables the whole layer; drains clamp so neither
-stat goes negative. `TroopUpkeep.CreditSettlement` (now `internal`) is the shared add helper; the
-food/drink/luxury spending above already feeds it.
-
-- **Market trade credit** (`Upkeep/MarketTradeProsperity.cs`) — postfix on `SellItemsAction.Apply`.
-  When any party *buys from* a settlement (the settlement is the `receiverParty`, giving up goods
-  for coin) it gains `number × GetItemPrice(pre-trade) × rate`. Covers player, caravans, lords;
-  selling *to* a settlement is left alone. Log `TRADE`, throttled once/buyer/settlement/day.
-- **Militia upkeep** (`Upkeep/MilitiaUpkeep.cs`) — `DailyTickSettlementEvent`. Drains the militia's
-  daily wage × rate. Wage read off the real `MilitiaPartyComponent.MobileParty` roster
-  when one exists (elites included, via `TroopWage`), else the culture's rank-and-file militia
-  average × `settlement.Militia`. Log `MILITIA` (the daily tick is throttle enough).
-- **Villager produce credit** (`Upkeep/VillagerTradeHearth.cs`) — postfix on
-  `SellGoodsForTradeAction.ApplyByVillagerTrade` (villagers sell through this, **not**
-  `SellItemsAction`). Credits the **home village's** Hearth by the sale proceeds × rate, measured as
-  the rise in `villagerParty.PartyTradeGold` across the call. Log `HAUL`.
-
-Wiring: the two postfixes via `PatchAll`; the two events in
-`RBMTroopUpkeepCampaignBehavior.RegisterEvents`. The rate is reused deliberately — one knob, both
-directions (production and militia spend a settlement down, trade and produce-sales build it back up,
-netting where goods actually move).
 
 ## Who it applies to
 
@@ -192,7 +162,6 @@ All under `/Config/RBMCampaign` in the config XML, wired into the in-game settin
 | `TroopSettlementFoodDays` | 20 | Days of food a stack buys per trip. |
 | `TroopFoodWageFraction` | 0.5 | Food price ceiling a man will pay, relative to his wage. |
 | `TroopSettlementFunWageFraction` | 1.5 | Carousing spend per day idled, as a multiple of daily wage. |
-| `SettlementProsperityPerGoldSpent` | 0.02 | Prosperity/Hearth moved per gold of worth, both ways — trade & carousing add, militia wages & production drain, villager produce returns to its home village. Shared by every *Settlement prosperity flow*; **0 disables that whole layer**. |
 | `RBMCampaignEnabled` | 1 | Master on/off for the whole module. |
 | `SpoilsLoggingEnabled` | 1 | Toggles the diagnostic log file. |
 

@@ -22,7 +22,6 @@ Master switch: `IsEnabled => troopUpgradeCostMultiplier > 0f` (`Spoils/SpoilsPoo
 | `troopSettlementFoodDays` | `20` | days of rations bought at market (`0` disables food) |
 | `troopFoodWageFraction` | `0.5f` | food price ceiling, as a share of daily wage |
 | `troopSettlementFunWageFraction` | `1.5f` | carousing, as a multiple of daily wage |
-| `settlementProsperityPerGoldSpent` | `0.02f` | prosperity/hearth moved per gold of worth, both ways — trade/carousing add, militia & production drain, villager produce returns home (`0` = layer off) |
 | `troopSpoilsCapDays` | `20` | days of keep (wage + field maintenance) a stack holds before upkeep spends the surplus; the flush threshold |
 | `troopLuxuryCooldownDays` | `20` | cooldown between over-cap luxury splurges |
 | `troopLuxurySpendChance` | `0.02f` | per-check chance an over-cap stack buys a luxury |
@@ -218,7 +217,7 @@ wanted = ceil(element.Number * troopSettlementFoodDays / MenPerFoodPerDay)
 priceCeiling = Round(perManDailyWage * troopFoodWageFraction * MenPerFoodPerDay)   // "half a day's wage per man"
 ```
 
-Buying is dearest-first, in two passes: first only items at or under the ceiling (a recruit stops at grain), then anything at all rather than starve. Purchases draw real stock at real settlement prices from the purse, and credit the settlement. Partial supply feeds proportionally: `fedHours = Max(1, foodDays * 24 * bought / wanted)`.
+Buying is dearest-first, in two passes: first only items at or under the ceiling (a recruit stops at grain), then anything at all rather than starve. Purchases draw real stock at real settlement prices from the purse. Partial supply feeds proportionally: `fedHours = Max(1, foodDays * 24 * bought / wanted)`.
 
 Interaction with party food stores: a Harmony postfix on `CalculateDailyBaseFoodConsumptionf` shrinks the party's own consumption for provisioned men — `AddFactor(unfedFraction - 1)` on the (negative) base — so self-fed troops don't also eat from your stores. Heroes always count as unfed.
 
@@ -237,30 +236,7 @@ if surplus > 0:
 spend = Min(purse, spend)                                                    // never into debt
 ```
 
-The surplus bite scales by how many times over its cap the purse stands, so a bloated garrison drinks faster. At the `1.5` default the base rate alone exceeds a day's wage per day idled. Spending credits the settlement (see below).
-
-### Prosperity / hearth flows
-
-One rate, `settlementProsperityPerGoldSpent`, moves a settlement's Prosperity (town/castle) or
-Hearth (village) in **both** directions. `TroopUpkeep.CreditSettlement` (`internal`) is the add:
-
-```
-gain = goldWorth * settlementProsperityPerGoldSpent        // default 0.02 per gold
-Town    → Prosperity += gain            (drains subtract, clamped at 0)
-Village → Hearth     += gain
-```
-
-The inputs (all gate on `rate > 0`):
-
-| Source | Hook | `goldWorth` | Dir |
-|---|---|---|---|
-| Food / drink / luxury | `TroopUpkeep`, visiting stacks | spend | + |
-| Market purchase | `MarketTradeProsperity` postfix on `SellItemsAction.Apply` | `number × GetItemPrice` | + (settlement bought from) |
-| Villager produce sale | `VillagerTradeHearth` postfix on `SellGoodsForTradeAction.ApplyByVillagerTrade` | Δ`PartyTradeGold` | + (home village) |
-| Militia wages | `MilitiaUpkeep` on `DailyTickSettlementEvent` | wage × `settlement.Militia` | − |
-
-Money spent in a settlement stays there; goods sold return to it — netting
-where goods actually move. Full per-hook detail in `ARCHITECTURE.md → Settlement prosperity flows`.
+The surplus bite scales by how many times over its cap the purse stands, so a bloated garrison drinks faster. At the `1.5` default the base rate alone exceeds a day's wage per day idled.
 
 ---
 
@@ -291,7 +267,7 @@ Only stacks already over their spoils cap indulge. Per check:
 ```
 if MBRandom.RandomFloat >= troopLuxurySpendChance: skip     // default 0.02
 buy one random affordable luxury (ItemCategory.LuxuryDemand > BaseDemand, trade good or equipment, not food)
-cost = Max(1, GetElementUnitCost); drawn from purse, credits the settlement
+cost = Max(1, GetElementUnitCost); drawn from purse
 cooldown until NowHours + troopLuxuryCooldownDays * 24       // default 20 days
 ```
 

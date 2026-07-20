@@ -73,10 +73,6 @@ namespace RBMCampaign
                 healedTotal += heal;
             }
 
-            if (spentTotal > 0)
-            {
-                CreditSettlement(settlement, spentTotal);
-            }
             if (healedTotal > 0 && SpoilsLog.IsEnabled)
             {
                 // Hourly, so once a day per party per settlement is enough to see the rate without flooding.

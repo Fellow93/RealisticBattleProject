@@ -134,15 +134,13 @@ namespace RBMCampaign
             {
                 return;
             }
-            // What one upgraded man's new kit is worth over his old, which is both what we look to spend
-            // it on in stock and what the town is paid for supplying it. Zero for a cheaper-kit upgrade:
-            // nothing is bought and nothing changes hands.
+            // What one upgraded man's new kit is worth over his old, which is what we look to spend
+            // it on in the town's stock. Zero for a cheaper-kit upgrade: nothing is bought.
             int perManValue = SpoilsPool.GetSpoilsCostForUpgrade(buyer, character, upgradeTarget);
             if (perManValue <= 0)
             {
                 return;
             }
-            TroopUpkeep.CreditSettlement(town.Settlement, perManValue * count);
 
             ItemRoster market = town.Settlement.ItemRoster;
             int bought = 0;

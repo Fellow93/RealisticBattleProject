@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
   <tags>
     <tag language="English" />
@@ -88,7 +88,6 @@
 	<string id="RBM_CON_033" text="Realistic Battle Mod" />
 	<string id="RBM_CON_035" text="Battle Spoils Loot" />
 	<string id="RBM_CON_037" text="Kit Pieces per Man" />
-	<string id="RBM_CON_038" text="Prosperity per Gold" />
 	<string id="RBM_CON_039" text="Spoils Logging" />
 	<string id="RBM_CON_040" text="Overlook Chance / Tier" />
 	<string id="RBM_CON_041" text="Food Days Bought" />
@@ -108,7 +107,6 @@
 	<string id="RBM_CON_055" text="Days of food a man buys when he passes through a settlement. 0 stops him buying any. Default 20." />
 	<string id="RBM_CON_056" text="Share of a day's wage a man spends to feed himself for a day. Default 0.50." />
 	<string id="RBM_CON_057" text="A day's wage a man drinks away for each day he sits idle in a settlement. Default 1.50." />
-	<string id="RBM_CON_058" text="How much Prosperity, or a village's Hearth, a gold moves at a settlement, both ways: trade and carousing there add it, its militia's wages and every good it produces drain it. Default 0.02." />
 	<string id="RBM_CON_059" text="Share of a raid's plunder its soldiers keep for themselves as spoils. Default 0.25." />
 	<string id="RBM_CON_061" text="Days of keep a stack holds in its purse before upkeep spends the surplus: this many days of its wage and its field maintenance together. Default 20." />
 	<string id="RBM_CON_063" text="Days a stack waits after buying a luxury before it splurges again. Default 20." />
@@ -124,16 +122,12 @@
 	<string id="RBM_CON_074" text="Gold a wounded man's stack pays to mend him faster while resting in a settlement, scaled by his tier. Zero stops paid healing. Default 10." />
 	<string id="RBM_CON_075" text="Heal Rate per Hour" />
 	<string id="RBM_CON_076" text="Most of a stack's wounded that paid healing mends in one hour, so a deep purse buys a faster recovery, not an instant one. Default 0.05." />
-	<string id="RBM_CON_077" text="Militia Wage Modifier" />
-	<string id="RBM_CON_078" text="Share of their gear-based wage a settlement's militia cost the place that keeps them, drawn from Prosperity or Hearth. Zero makes militia free to garrison. Default 0.20." />
 		<string id="RBM_CON_079" text="Leader's Cut" />
 		<string id="RBM_CON_080" text="Base share of the spoils a party's men gather -- off a battlefield, a raid or a sack -- that their leader skims into his own purse as gold before the rest settles into the stacks. Multiplied by the leader's clan tier plus one, so a tier-0 or clanless leader takes this share once and a tier-6 house seven times it. Zero leaves the men all they take. Default 0.05." />
 		<string id="RBM_CON_081" text="Daily Maintenance" />
 		<string id="RBM_CON_082" text="Daily upkeep per soldier as a share of his whole kit's worth -- gear, horse and harness. Paid first from the men's own spoils; any shortfall falls to the party leader's gold. Zero stops maintenance. Default 0.005." />
 		<string id="RBM_CON_083" text="Recruit Maintenance Days" />
 		<string id="RBM_CON_084" text="Days of maintenance a recruit mustered from a village or town brings in his stack's purse, priced off the same daily upkeep. 0 seeds nothing. Default 5." />
-		<string id="RBM_CON_085" text="Maintenance to Prosperity" />
-		<string id="RBM_CON_086" text="Share of a party's daily troop maintenance that settles into the Prosperity of the nearest city or castle, never a village. Scaled by Prosperity per Gold. Default 0.50." />
 		<string id="RBM_CON_087" text="Buy Mounts For Upgrades" />
 		<string id="RBM_CON_088" text="Upgrading into a mounted troop no longer needs a horse in the baggage train and consumes none; the horse and harness are paid for in gold/spoils instead. Off restores the vanilla horse-item requirement. Default on." />
 		<string id="RBM_CON_089" text="Mercenary Maintenance Share" />
@@ -446,8 +440,8 @@
 	<string id="RBM_SPECTATE_002" text="Two armies have met in the field. You may watch the fight from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the battle on the map resolves on its own, and nothing you see here changes it." />
 	<string id="RBM_SPECTATE_003" text="Watch" />
 	<string id="RBM_SPECTATE_004" text="Ignore" />
-	<string id="RBM_SPECTATE_005" text="Attackers: {NAME} ({COUNT} men · power {POWER})" />
-	<string id="RBM_SPECTATE_006" text="Defenders: {NAME} ({COUNT} men · power {POWER})" />
+	<string id="RBM_SPECTATE_005" text="Attackers: {NAME} ({COUNT} men Â· power {POWER})" />
+	<string id="RBM_SPECTATE_006" text="Defenders: {NAME} ({COUNT} men Â· power {POWER})" />
 	<string id="RBM_SPECTATE_007" text="Watch this assault?" />
 	<string id="RBM_SPECTATE_008" text="An army is storming the walls. You may watch the assault from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the siege on the map resolves on its own, and nothing you see here changes it." />
   </strings>

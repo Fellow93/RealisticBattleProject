@@ -50,20 +50,6 @@ How that loot gets divided is the interesting part. **Veterans pick first**, but
 
 Otherwise spoils are a **closed loop**: what a stack loots and earns is spent on its own upgrades, upkeep, food and drink, not handed back as gold. A stack keeps saving toward its next upgrade and a war chest that grows with the men's tier; once it holds more than that, the surplus goes to drink and the odd luxury rather than sitting idle.
 
-## The settlement economy
-
-Coin doesn't vanish when it changes hands in a town or village — it settles into the place. One rate runs the whole exchange, both directions: what a settlement takes in raises its Prosperity (a town or castle) or its Hearth (a village); what it lays out drains the same. Set that rate to zero and this entire layer switches off.
-
-**Trade feeds the place.** Whatever your soldiers spend there on food and drink stays where they spent it, and so does ordinary trade — every purchase made at a market, yours or any other party's, a caravan's or a lord's, feeds the settlement it was bought from. A busy market grows the town that hosts it.
-
-**Militia earn their keep.** The other way round, a settlement pays for the militia that defend it. Each day a fraction of their wages — scaled to each man's tier, like every other troop, but discounted because they're part-time defenders — is drawn straight out of the place they hold: a town or castle's Prosperity, a village's Hearth. A settlement that raises more militia than its economy can carry bleeds for it, and because militia swells with prosperity in the first place, the drain reins itself in.
-
-**Upkeep enriches the nearest fort.** The coin your army spends maintaining its kit in the field has to be spent somewhere, so a share of every party's daily maintenance settles as Prosperity into the nearest fortified town or castle — never a village. An army campaigning near a friendly stronghold quietly feeds it.
-
-**Making things costs something.** So does production. Every good a settlement turns out — a workshop's wares in a town, a village's crops and raw goods — is worked out of its own back: the item's worth is drawn off the town's Prosperity or the village's Hearth. A place only comes out ahead where its goods actually sell: production spends it down, trade builds it back up, and idle stock that no one carries off is just wealth spent and waiting on a buyer.
-
-**Produce sold brings the coin home.** When a village's own people cart its produce to town and sell it, the takings feed the Hearth of the village it came from — not the town it was sold at. That closes the village's loop: it bleeds Hearth growing its goods and wins it back once they find a buyer, so a village on a busy trade road thrives and one whose produce rots on the road withers.
-
 ## Detailed auto resolve
 
 When a battle resolves on the map rather than on the field — you send your troops in, or two AI parties meet somewhere you aren't — vanilla decides it almost entirely on one number: the troop's **tier**. Its whole strength is `(2 + tier) × (10 + tier) × 0.02`, and nothing else about the man enters into it. It does not know what he is wearing. It does not know what he is holding. A tier-1 recruit in mail behind a shield, levelling a spear, hits a tier-0 looter exactly **1.41×** as hard as the looter swinging a stick in rags hits back — and that thin margin is the entire difference between them.
@@ -170,9 +156,6 @@ Everything sits in the in-game RBM config under the campaign section, or in the 
 | `TroopLuxurySpendChance` | 0.02 | Chance per hour idled in a settlement that an over-cap stack buys a luxury off the market. 0 turns luxuries off. |
 | `TroopSpoilsHealGoldPerTier` | 10 | Gold a wounded man's stack pays local surgeons, per tier, to mend faster while resting in a settlement. 0 turns paid healing off. |
 | `TroopSpoilsHealFractionPerHour` | 0.05 | The most of a stack's wounded that paid healing can mend in a single hour. |
-| `SettlementProsperityPerGoldSpent` | 0.02 | Prosperity (or Hearth) a gold moves at a settlement, both ways — trade and carousing there add it, its militia's daily wages and every good it produces drain it. 0 turns all of it off. |
-| `MilitiaWageModifier` | 0.2 | Share of their tier-scaled gear wage a settlement's militia actually cost the place, since they're part-time. 0 makes militia free to garrison. |
-| `MaintenanceProsperityFraction` | 0.5 | Share of a party's daily maintenance spend that settles as Prosperity into the nearest fortress town or castle. 0 stops it. |
 | `TroopSpoilsCapDays` | 20 | Days of keep a stack holds in its purse — this many days of its daily wage and its daily field maintenance together — before it counts itself flush and spends the surplus on drink and luxuries. |
 | `SpoilsLoggingEnabled` | 1 | Writes what the system is doing to the log, for debugging. |
 | `SpoilsVerboseLoggingEnabled` | 1 | Whether that log carries per-stack detail or only party-level summaries. No effect unless logging is on. |

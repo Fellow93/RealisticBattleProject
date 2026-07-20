@@ -79,20 +79,6 @@ namespace RBMConfig
         // a long stay in town costs a stack the kit it was saving for.
         public static float troopSettlementFunWageFraction = 1.5f;
 
-        // Prosperity, or hearth in a village, a settlement gains per gold its visitors spend there.
-        public static float settlementProsperityPerGoldSpent = 0.02f;
-
-        // Share of a party's daily troop maintenance that settles into the Prosperity of the nearest
-        // fortification -- a city or castle, never a village. The coin spent mending and replacing kit is
-        // spent somewhere, and it enriches the nearest fortress town. Scaled by the same
-        // settlementProsperityPerGoldSpent rate as all other settlement spending. Zero stops the flow.
-        public static float maintenanceProsperityFraction = 0.5f;
-
-        // Share of their gear-based wage a settlement's militia actually cost the place that keeps them.
-        // Militia are part-time defenders, so they draw only a fraction of a standing soldier's pay
-        // when their upkeep is drawn from Prosperity or Hearth. Zero makes militia free to garrison.
-        public static float militiaWageModifier = 0.2f;
-
         // Share of a sacked village's plundered wealth its soldiers pocket as spoils, on top of the
         // goods the party carts off. Scaled against how much of the village the raid actually stripped.
         // Zero leaves raiding paying the party but not its men.

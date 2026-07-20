@@ -258,14 +258,6 @@ namespace RBMCampaign
             // the finance number rather than a separate transfer.
             result.Shortfall = result.Total - result.Covered;
 
-            // The coin spent mending and replacing worn kit is spent somewhere: a share of the day's
-            // maintenance settles into the Prosperity of the nearest fortress town -- a city or castle,
-            // never a village -- scaled by the same per-gold rate as all other settlement spending.
-            if (apply && result.Total > 0)
-            {
-                CreditMaintenanceProsperity(party, result.Total);
-            }
-
             if (apply && SpoilsLog.IsEnabled && party == PartyBase.MainParty && result.Total > 0)
             {
                 SpoilsLog.Log("UPKEEP", party, SpoilsLog.Describe(party) + " owed " + result.Total
@@ -302,76 +294,5 @@ namespace RBMCampaign
             return 0f;
         }
 
-        /// <summary>
-        /// Pours a configurable share of a party's day's maintenance into the Prosperity of the nearest
-        /// fortification -- the city or castle where its coin is spent mending and replacing kit -- never a
-        /// village. Routed through <see cref="TroopUpkeep.CreditSettlement"/> so the same
-        /// settlementProsperityPerGoldSpent rate that governs every other kind of settlement spending scales
-        /// it too. A party sitting inside a fortress feeds that fortress directly; one out in the field
-        /// feeds whichever city or castle lies nearest.
-        /// </summary>
-        private static void CreditMaintenanceProsperity(PartyBase party, int maintenanceTotal)
-        {
-            float fraction = RBMConfig.RBMConfig.maintenanceProsperityFraction;
-            if (fraction <= 0f || maintenanceTotal <= 0)
-            {
-                return;
-            }
-            MobileParty mobileParty = party?.MobileParty;
-            if (mobileParty == null)
-            {
-                return;
-            }
-            int toProsperity = MathF.Round(fraction * maintenanceTotal);
-            if (toProsperity <= 0)
-            {
-                return;
-            }
-            // A garrison or a party stopped in a fortress enriches the place it sits in; a marching party
-            // enriches the nearest city or castle. FindNearestFortificationToMobileParty ranges over towns
-            // and castles alike but never villages, exactly the "castle or city, not village" we want.
-            // Only a friendly or neutral fortress is enriched: coin spent mending kit lands where the party
-            // can trade, not in an enemy's coffers -- a besieging party sitting on a hostile fortress feeds
-            // it nothing, and the search passes over enemy holds to reach the nearest one it is at peace with.
-            Settlement settlement = mobileParty.CurrentSettlement;
-            if (settlement == null || !(settlement.IsTown || settlement.IsCastle) || !IsFriendlyOrNeutral(mobileParty, settlement))
-            {
-                settlement = SettlementHelper.FindNearestFortificationToMobileParty(mobileParty,
-                    MobileParty.NavigationType.Default, s => IsFriendlyOrNeutral(mobileParty, s));
-            }
-            if (settlement == null)
-            {
-                return;
-            }
-            TroopUpkeep.CreditSettlement(settlement, toProsperity);
-
-            if (SpoilsLog.IsEnabled && party == PartyBase.MainParty)
-            {
-                float gain = toProsperity * RBMConfig.RBMConfig.settlementProsperityPerGoldSpent;
-                SpoilsLog.Log("UPKEEP", party, SpoilsLog.Describe(party) + " maintenance "
-                    + maintenanceTotal + " -> " + toProsperity + " gold to " + settlement.Name
-                    + " (+" + gain.ToString("0.00") + " prosperity)");
-            }
-        }
-
-        /// <summary>
-        /// True when the party is at peace with the fortress's owner -- its own holds and any it is not at
-        /// war with. An enemy fortress is passed over so a party's upkeep never enriches a faction it is
-        /// fighting. A null faction on either side reads as not-friendly, so nothing is credited on doubt.
-        /// </summary>
-        private static bool IsFriendlyOrNeutral(MobileParty mobileParty, Settlement settlement)
-        {
-            if (settlement == null)
-            {
-                return false;
-            }
-            IFaction partyFaction = mobileParty?.MapFaction;
-            IFaction settlementFaction = settlement.MapFaction;
-            if (partyFaction == null || settlementFaction == null)
-            {
-                return false;
-            }
-            return partyFaction == settlementFaction || !partyFaction.IsAtWarWith(settlementFaction);
-        }
     }
 }

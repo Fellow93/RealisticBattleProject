@@ -296,9 +296,6 @@
     <Compile Include="Upkeep\TroopUpkeep.Food.cs" />
     <Compile Include="Upkeep\TroopUpkeep.Healing.cs" />
     <Compile Include="Upkeep\TroopUpkeep.Luxury.cs" />
-    <Compile Include="Upkeep\MarketTradeProsperity.cs" />
-    <Compile Include="Upkeep\MilitiaUpkeep.cs" />
-    <Compile Include="Upkeep\VillagerTradeHearth.cs" />
     <Compile Include="Upkeep\RBMTroopUpkeepCampaignBehavior.cs" />
     <Compile Include="Upgrades\RBMCampaignPatches.cs" />
     <Compile Include="Wages\TierBasedWageModel.cs" />
@@ -330,6 +327,7 @@
     <Compile Include="Spectate\RBMSpectatorMissionLogics.cs" />
     <Compile Include="Spectate\RBMSpectatorViewPatches.cs" />
     <Compile Include="Spectate\RBMSpectateCampaignBehavior.cs" />
+    <Compile Include="Production\RBMVillageProduction.cs" />
     <Compile Include="Settlements\SettlementWealth.cs" />
     <Compile Include="Settlements\RBMSettlementWealthCampaignBehavior.cs" />
     <Compile Include="Settlements\SettlementWealthTooltip.cs" />

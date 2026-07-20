@@ -170,8 +170,6 @@ namespace RBMCampaign
                     Field("recruitMaintenanceDays", RC.recruitMaintenanceDays),
                     Field("troopFoodWageFraction", RC.troopFoodWageFraction),
                     Field("troopSettlementFunWageFraction", RC.troopSettlementFunWageFraction),
-                    Field("settlementProsperityPerGoldSpent", RC.settlementProsperityPerGoldSpent),
-                    Field("maintenanceProsperityFraction", RC.maintenanceProsperityFraction),
                     Field("troopRaidSpoilsMultiplier", RC.troopRaidSpoilsMultiplier),
                     Field("troopSpoilsCapDays", RC.troopSpoilsCapDays),
                     Field("troopLuxuryCooldownDays", RC.troopLuxuryCooldownDays),

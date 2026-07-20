@@ -402,9 +402,6 @@ namespace RBMConfig
             _recruitMaintenanceDays = MathF.Clamp(RBMConfig.recruitMaintenanceDays, 0f, 30f);
             _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 10f);
             _troopSettlementFunWageFraction = MathF.Clamp(RBMConfig.troopSettlementFunWageFraction, 0f, 10f);
-            _settlementProsperityPerGoldSpent = MathF.Clamp(RBMConfig.settlementProsperityPerGoldSpent, 0f, 1f);
-            _maintenanceProsperityFraction = MathF.Clamp(RBMConfig.maintenanceProsperityFraction, 0f, 1f);
-            _militiaWageModifier = MathF.Clamp(RBMConfig.militiaWageModifier, 0f, 1f);
             _troopRaidSpoilsMultiplier = MathF.Clamp(RBMConfig.troopRaidSpoilsMultiplier, 0f, 10f);
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
             SpoilsVerboseLoggingEnabled.SelectedIndex = RBMConfig.spoilsVerboseLoggingEnabled ? 1 : 0;
@@ -612,9 +609,6 @@ namespace RBMConfig
             RBMConfig.recruitMaintenanceDays = (int)MathF.Round(_recruitMaintenanceDays);
             RBMConfig.troopFoodWageFraction = _troopFoodWageFraction;
             RBMConfig.troopSettlementFunWageFraction = _troopSettlementFunWageFraction;
-            RBMConfig.settlementProsperityPerGoldSpent = _settlementProsperityPerGoldSpent;
-            RBMConfig.maintenanceProsperityFraction = _maintenanceProsperityFraction;
-            RBMConfig.militiaWageModifier = _militiaWageModifier;
             RBMConfig.troopRaidSpoilsMultiplier = _troopRaidSpoilsMultiplier;
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
             RBMConfig.spoilsVerboseLoggingEnabled = SpoilsVerboseLoggingEnabled.SelectedIndex == 1;
@@ -683,8 +677,6 @@ namespace RBMConfig
             RecruitMaintenanceDays = 5f;
             TroopFoodWageFraction = 0.5f;
             TroopSettlementFunWageFraction = 1.5f;
-            SettlementProsperityPerGoldSpent = 0.02f;
-            MilitiaWageModifier = 0.2f;
             TroopRaidSpoilsMultiplier = 0.25f;
             TroopLeaderSpoilsCutFraction = 0.05f;
             TroopSpoilsCapDays = 20f;

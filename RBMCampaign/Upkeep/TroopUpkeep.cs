@@ -211,10 +211,6 @@ namespace RBMCampaign
                 spentTotal += spend;
             }
 
-            if (spentTotal > 0)
-            {
-                CreditSettlement(settlement, spentTotal);
-            }
             if (spentTotal > 0 && SpoilsLog.IsEnabled)
             {
                 // Hourly, so once a day per party per settlement is enough to see the rate without
@@ -222,24 +218,6 @@ namespace RBMCampaign
                 SpoilsLog.LogOnce("fun-" + party.Id + "-" + settlement.StringId + "-" + (NowHours / 24), "FUN", party,
                     SpoilsLog.Describe(party) + " carousing in " + settlement.Name
                     + ": " + spentTotal + " spoils this hour");
-            }
-        }
-
-        /// <summary>Coin spent in a settlement stays there. A point of spoils is a gold piece.</summary>
-        internal static void CreditSettlement(Settlement settlement, int spoilsSpent)
-        {
-            float gain = spoilsSpent * RBMConfig.RBMConfig.settlementProsperityPerGoldSpent;
-            if (gain <= 0f)
-            {
-                return;
-            }
-            if (settlement.Town != null)
-            {
-                settlement.Town.Prosperity += gain;
-            }
-            else if (settlement.Village != null)
-            {
-                settlement.Village.Hearth += gain;
             }
         }
 
