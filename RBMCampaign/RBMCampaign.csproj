@@ -329,9 +329,6 @@
     <Compile Include="Spectate\RBMSpectateCampaignBehavior.cs" />
     <Compile Include="Production\RBMVillageProduction.cs" />
     <Compile Include="Production\VillagerDispatch.cs" />
-    <Compile Include="Settlements\SettlementWealth.cs" />
-    <Compile Include="Settlements\RBMSettlementWealthCampaignBehavior.cs" />
-    <Compile Include="Settlements\SettlementWealthTooltip.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
