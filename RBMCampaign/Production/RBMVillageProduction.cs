@@ -238,7 +238,15 @@ namespace RBMCampaign
         {
             private static bool Prefix(Village village, bool initialProductionForTowns)
             {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || village == null)
+                // Hand the tick back to vanilla when the module is off. Returning false here instead
+                // would skip the original method as well, so toggling the module off mid-session would
+                // stop village production outright rather than restore the game's own.
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled)
+                {
+                    return true;
+                }
+
+                if (village == null)
                 {
                     return false;
                 }

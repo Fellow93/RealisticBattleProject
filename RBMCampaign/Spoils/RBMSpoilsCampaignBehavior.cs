@@ -5,6 +5,12 @@ namespace RBMCampaign
 {
     public class RBMSpoilsCampaignBehavior : CampaignBehaviorBase
     {
+        /// <summary>Clears the last campaign's purses before this one's save is read.</summary>
+        public RBMSpoilsCampaignBehavior()
+        {
+            SpoilsPool.Reset();
+        }
+
         public override void RegisterEvents()
         {
             // Fires for both a new game and a loaded save, so each play session rolls the spoils log

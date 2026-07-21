@@ -55,6 +55,30 @@ namespace RBMCampaign
             return party == null || (party.MobileParty != null && party.MobileParty.IsVillager);
         }
 
+        /// <summary>
+        /// Drops the previous campaign's purses and the caches derived from its characters.
+        ///
+        /// Called from <see cref="RBMSpoilsCampaignBehavior"/>'s CONSTRUCTOR, which is the only hook
+        /// early enough. On load the engine runs LoadBehaviorData -- and so SyncData -- BEFORE
+        /// RegisterEvents, so resetting from RegisterEvents or OnSessionLaunched would wipe a genuine
+        /// save. The constructor runs from OnGameStart, ahead of the load, so a real save still
+        /// repopulates and only a new or keyless campaign starts empty.
+        ///
+        /// The null guards in SyncData below cannot stand in for this: a key absent from the save
+        /// leaves the dictionary untouched rather than nulling it, so leaked state survives them.
+        /// </summary>
+        public static void Reset()
+        {
+            _spoils.Clear();
+            // Same partial class, so the per-character caches its other files own are reachable here.
+            // All are keyed on campaign objects rebuilt for each game; entries from a finished one are
+            // dead weight holding a whole campaign's characters alive.
+            _equipmentValueCache.Clear();
+            _mountedEquipmentValueCache.Clear();
+            _battleEquipmentCache.Clear();
+            _nobleLineByCulture.Clear();
+        }
+
         public static void SyncData(IDataStore dataStore)
         {
             // The key is bumped whenever the meaning of a point of spoils changes, so stale pools are

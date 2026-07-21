@@ -12,6 +12,17 @@ namespace RBMCampaign
     /// </summary>
     public class RBMEconomyCampaignBehavior : CampaignBehaviorBase
     {
+        /// <summary>
+        /// Drops the previous campaign's troop-trade tallies. The constructor is the only safe place:
+        /// it runs on OnGameStart, for a new game and a loaded save alike, and BEFORE the save is
+        /// read -- so a real save still repopulates through SyncData below, while a new campaign
+        /// starts clean instead of inheriting the last one's figures under the same settlement ids.
+        /// </summary>
+        public RBMEconomyCampaignBehavior()
+        {
+            TroopMarketFeedback.Reset();
+        }
+
         public override void RegisterEvents()
         {
             // The same hook FoodConsumptionBehavior uses to seed starting food stocks: late enough
@@ -38,6 +49,10 @@ namespace RBMCampaign
         /// </summary>
         private void OnDailyTickSettlement(Settlement settlement)
         {
+            // Ahead of the logging gate: the trade tally has to age whether or not anyone is reading
+            // the log, or a town would keep a passing army's custom on its books forever.
+            TroopMarketFeedback.DecayDaily(settlement);
+
             if (!EconomyLog.IsEnabled || settlement == null)
             {
                 return;
@@ -77,7 +92,10 @@ namespace RBMCampaign
                 + "  ·  loyalty " + EconomyLog.Fmt(town.Loyalty)
                 + ", militia " + EconomyLog.Fmt(town.Militia)
                 + ", security " + EconomyLog.Fmt(town.Security)
-                + "  ·  gold " + town.Gold);
+                + "  ·  gold " + town.Gold
+                + (town.IsTown && TroopMarketFeedback.RecentSpend(town) > 0
+                    ? (" (troop trade " + TroopMarketFeedback.RecentSpend(town) + ")")
+                    : ""));
 
             // Castles are on vanilla prosperity, so there is no equilibrium to report for them.
             if (town.IsTown)
@@ -141,15 +159,19 @@ namespace RBMCampaign
 
         public override void SyncData(IDataStore dataStore)
         {
+            TroopMarketFeedback.SyncData(dataStore);
         }
 
         /// <summary>
-        /// Starts every town and castle ON its countryside equilibrium (see
+        /// Starts every town ON its countryside equilibrium (see
         /// <see cref="RBMProsperityEquilibrium"/>) rather than on vanilla's hand-authored figure.
         /// Vanilla's starting prosperity bears no fixed relation to the land around a fief, so
         /// without this the campaign would open with every settlement on the map mid-correction --
         /// large towns sliding for years and small ones climbing -- which reads as the mod being
         /// broken rather than as an economy finding its level.
+        ///
+        /// Towns only, matching the equilibrium term itself: castles are outside the countryside
+        /// model and keep whatever prosperity the world was authored with.
         ///
         /// New games only. A loaded save keeps the prosperity it was saved with; this fires on the
         /// new-game path alone, so it cannot rewrite an existing campaign's settlements. Those will

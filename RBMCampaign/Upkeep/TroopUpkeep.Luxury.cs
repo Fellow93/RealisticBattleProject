@@ -83,7 +83,7 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                if (MathF.Max(1, market.GetElementUnitCost(i)) > purse)
+                if (TroopMarketFeedback.UnitPrice(settlement, item, market, i) > purse)
                 {
                     continue;
                 }
@@ -100,9 +100,10 @@ namespace RBMCampaign
 
             int index = affordable[MBRandom.RandomInt(affordable.Count)];
             ItemObject chosen = market.GetItemAtIndex(index);
-            int cost = MathF.Max(1, market.GetElementUnitCost(index));
+            int cost = TroopMarketFeedback.UnitPrice(settlement, chosen, market, index);
             market.AddToCounts(chosen, -1);
             SpoilsPool.AddSpoils(party, element.Character, -cost);
+            TroopMarketFeedback.RegisterPurchase(settlement, chosen.ItemCategory, cost);
             SetLuxuryCooldown(party, element.Character);
 
             if (SpoilsLog.Verbose)

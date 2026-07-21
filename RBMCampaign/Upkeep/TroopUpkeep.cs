@@ -36,6 +36,17 @@ namespace RBMCampaign
         // will not splurge again, so the indulgence stays an occasional treat rather than a daily habit.
         private static Dictionary<string, int> _luxuryCooldownUntilHours = new Dictionary<string, int>();
 
+        /// <summary>
+        /// Drops the previous campaign's rations and cooldowns. Called from
+        /// <see cref="RBMTroopUpkeepCampaignBehavior"/>'s CONSTRUCTOR for the same reason
+        /// <see cref="SpoilsPool.Reset"/> is: it is the only hook that runs before the save is read.
+        /// </summary>
+        public static void Reset()
+        {
+            _fedUntilHours.Clear();
+            _luxuryCooldownUntilHours.Clear();
+        }
+
         public static void SyncData(IDataStore dataStore)
         {
             dataStore.SyncData("RBM_troopFedUntilHours", ref _fedUntilHours);
@@ -58,6 +69,25 @@ namespace RBMCampaign
 
         /// <summary>The most of a stack's over-cap surplus that carousing can spend in a single hour.</summary>
         private const float MaxSurplusFunFractionPerHour = 0.25f;
+
+        /// <summary>
+        /// The ceiling on what one man can spend on fun in a day, per tier of his own: a recruit
+        /// cannot drink like a veteran however deep his purse. Multiplied by tier + 1, so the lowest
+        /// tier still has a floor rather than a ceiling of nothing.
+        /// </summary>
+        /// <remarks>
+        /// The fraction-of-surplus limit above is a rate, not a bound: a purse far enough over its cap
+        /// still shed a fortune per hour, because a quarter of a large enough number is a large
+        /// number. One stack was measured drinking 110,289 in a single hour, which is not a soldier
+        /// spending his pay but an accounting sink wearing the costume of one -- and once carousing
+        /// began paying the town it stopped being an internal matter.
+        ///
+        /// Sized to sit about three times the wage-driven rate a man of that tier drinks at, so a
+        /// stack over its cap still spends visibly harder than one saving up, and no stack spends like
+        /// a treasury emptying. A man of tier t earns roughly 50t a day and carouses about 75t of it,
+        /// against a ceiling of 200(t+1).
+        /// </remarks>
+        private const int MaxFunPerManPerDayPerTier = 200;
 
         /// <summary>Men per food item per day: the rate the game's own consumption model eats at.</summary>
         private static int MenPerFoodPerDay
@@ -150,6 +180,9 @@ namespace RBMCampaign
         /// over the cap it sits, the harder it spends, the surplus bite scaling by how many times over
         /// its ceiling the purse stands. A stack with an empty purse spends nothing: the pool is never
         /// driven negative, so carousing cannot put a soldier in debt.
+        ///
+        /// Over everything sits a hard per-man ceiling by tier (<see cref="MaxFunPerManPerDayPerTier"/>):
+        /// the surplus drain is a rate, and a rate on a large enough purse is still a fortune per hour.
         /// </summary>
         private static void SpendOnFun(MobileParty mobileParty, Settlement settlement)
         {
@@ -202,6 +235,11 @@ namespace RBMCampaign
                         spend += surplusBite;
                     }
                 }
+                // The hard ceiling, applied to wage and surplus together: whatever a man's purse holds
+                // and however far over his cap it sits, there is only so much drinking he can do in an
+                // hour. This is what bounds the surplus drain, which the fraction above does not.
+                int tierCeiling = MathF.Max(1, MaxFunPerManPerDayPerTier * (element.Character.Tier + 1) * element.Number / 24);
+                spend = MathF.Min(spend, tierCeiling);
                 spend = MathF.Min(purse, spend);
                 if (spend <= 0)
                 {
@@ -210,6 +248,10 @@ namespace RBMCampaign
                 SpoilsPool.AddSpoils(party, element.Character, -spend);
                 spentTotal += spend;
             }
+
+            // Once for the party rather than per stack: it is the same taverns taking the coin, and
+            // there is no good changing hands whose category the demand could belong to.
+            TroopMarketFeedback.RegisterServiceSpend(settlement, spentTotal);
 
             if (spentTotal > 0 && SpoilsLog.IsEnabled)
             {

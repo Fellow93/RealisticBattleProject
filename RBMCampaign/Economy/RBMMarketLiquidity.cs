@@ -41,6 +41,13 @@ namespace RBMCampaign
         /// proportional controller that closes a quarter of the gap to a target of
         /// <c>10000 + 12 * Prosperity</c> each day, and it is symmetric -- a town above target has
         /// gold destroyed. Only the target's prosperity term is rescaled.
+        ///
+        /// Recent trade with soldiers is added to the target as a second term. It has to enter HERE
+        /// rather than only as gold in the purse, because the controller is what makes plain income
+        /// meaningless: coin handed to a town already at its target is destroyed within a few days,
+        /// so crediting a soldier's spending without moving the target would net to nothing. Raising
+        /// the target is what lets a garrison town actually hold the wealth its garrison brings --
+        /// and the term decays, so the town gives it back once the army leaves.
         /// </summary>
         [HarmonyPatch(typeof(DefaultSettlementEconomyModel), "GetTownGoldChange")]
         private static class TownGoldChangePatch
@@ -52,7 +59,8 @@ namespace RBMCampaign
                     return true;
                 }
 
-                float gap = 10000f + RBMProsperityEquilibrium.TreasuryProsperity(town) * 12f - town.Gold;
+                float countryside = RBMProsperityEquilibrium.TreasuryProsperity(town) * 12f;
+                float gap = 10000f + countryside + TroopMarketFeedback.TreasuryBonus(town, countryside) - town.Gold;
                 __result = MathF.Round(0.25f * gap);
                 return false;
             }

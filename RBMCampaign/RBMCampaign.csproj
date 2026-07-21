@@ -293,6 +293,7 @@
     <Compile Include="Spoils\SpoilsPool.Transfers.cs" />
     <Compile Include="Spoils\SpoilsTransferOnPartyScreen.cs" />
     <Compile Include="Spoils\RBMSpoilsCampaignBehavior.cs" />
+    <Compile Include="Upkeep\TroopMarketFeedback.cs" />
     <Compile Include="Upkeep\TroopUpkeep.cs" />
     <Compile Include="Upkeep\TroopUpkeep.Food.cs" />
     <Compile Include="Upkeep\TroopUpkeep.Healing.cs" />

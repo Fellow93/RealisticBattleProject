@@ -54,7 +54,7 @@ namespace RBMCampaign
                 }
                 // Snapshotted once and drawn down as the stacks buy, since taking the last of an item
                 // removes it from the roster and reindexes everything behind it.
-                stalls = stalls ?? SnapshotFoodStalls(market);
+                stalls = stalls ?? SnapshotFoodStalls(settlement, market);
                 int spent = FeedStack(party, settlement, market, stalls, element, wanted, foodDays);
                 if (spent > 0)
                 {
@@ -79,7 +79,13 @@ namespace RBMCampaign
             public int Available;
         }
 
-        private static List<FoodStall> SnapshotFoodStalls(ItemRoster market)
+        /// <remarks>
+        /// The price is taken once, when the stalls are laid out, and holds for the whole party's
+        /// pass. A party stripping the shelves does drive the price up, but it pays yesterday's price
+        /// for today's shortage: re-pricing per stack would be more faithful and is not worth a market
+        /// lookup per man. The town's next customer sees the new price.
+        /// </remarks>
+        private static List<FoodStall> SnapshotFoodStalls(Settlement settlement, ItemRoster market)
         {
             List<FoodStall> stalls = new List<FoodStall>();
             for (int i = 0; i < market.Count; i++)
@@ -92,7 +98,7 @@ namespace RBMCampaign
                 stalls.Add(new FoodStall
                 {
                     Item = item,
-                    UnitSpoils = MathF.Max(1, market.GetElementUnitCost(i)),
+                    UnitSpoils = TroopMarketFeedback.UnitPrice(settlement, item, market, i),
                     Available = market.GetElementNumber(i)
                 });
             }
@@ -126,8 +132,8 @@ namespace RBMCampaign
             // The best fare he will pay for, then anything at all rather than go hungry. Both passes
             // walk from dearest to cheapest, so within what he can afford he always eats the best of it.
             int ceiling = GetFoodPriceCeiling(element.Character);
-            BuyFromStalls(market, stalls, ceiling, budget, wanted, ref spent, ref bought);
-            BuyFromStalls(market, stalls, int.MaxValue, budget, wanted, ref spent, ref bought);
+            BuyFromStalls(settlement, market, stalls, ceiling, budget, wanted, ref spent, ref bought);
+            BuyFromStalls(settlement, market, stalls, int.MaxValue, budget, wanted, ref spent, ref bought);
 
             if (bought <= 0)
             {
@@ -155,9 +161,11 @@ namespace RBMCampaign
         /// <summary>
         /// Takes what the stack can pay for off the stalls, dearest first, skipping anything above
         /// <paramref name="ceiling"/>. The stalls are drawn down in place so the next stack to buy
-        /// sees what this one left, and the market roster is emptied to match.
+        /// sees what this one left, and the market roster is emptied to match. What the stack pays
+        /// reaches the settlement through <see cref="TroopMarketFeedback"/> rather than vanishing
+        /// with the food.
         /// </summary>
-        private static void BuyFromStalls(ItemRoster market, List<FoodStall> stalls, int ceiling, int budget, int wanted, ref int spent, ref int bought)
+        private static void BuyFromStalls(Settlement settlement, ItemRoster market, List<FoodStall> stalls, int ceiling, int budget, int wanted, ref int spent, ref int bought)
         {
             for (int i = 0; i < stalls.Count && bought < wanted; i++)
             {
@@ -176,6 +184,7 @@ namespace RBMCampaign
                 stalls[i] = stall;
                 bought += take;
                 spent += take * stall.UnitSpoils;
+                TroopMarketFeedback.RegisterPurchase(settlement, stall.Item.ItemCategory, take * stall.UnitSpoils);
             }
         }
     }

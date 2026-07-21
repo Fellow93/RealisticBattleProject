@@ -636,7 +636,9 @@ namespace RBMCampaign
 
         /// <summary>
         /// Feeds a completed purchase back into its category's demand, so buying pressure raises the
-        /// price. Shared by the civilian channel and the population's rations.
+        /// price. Shared by the civilian channel, the population's rations, and soldiers buying off
+        /// the same stalls (<see cref="TroopMarketFeedback"/>) -- the units conversion below is the
+        /// reason this is shared rather than reimplemented per channel.
         ///
         /// The division by <see cref="RBMProsperityEquilibrium.VanillaProsperityScale"/> is a UNITS
         /// conversion, not a tuning knob. <paramref name="purchaseValue"/> is gold, and in vanilla
@@ -651,7 +653,7 @@ namespace RBMCampaign
         /// the better fed a town became, the more it paid -- and it silently nullified the whole
         /// point of putting the baseline back on the household scale.
         /// </summary>
-        private static void RegisterPurchaseDemand(TownMarketData marketData, ItemCategory category, int purchaseValue)
+        internal static void RegisterPurchaseDemand(TownMarketData marketData, ItemCategory category, int purchaseValue)
         {
             if (purchaseValue <= 0)
             {
