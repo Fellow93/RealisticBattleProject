@@ -135,8 +135,11 @@ namespace RBMConfig
             troopSpoilsHealGoldPerTier = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsHealGoldPerTier", "10"), CultureInfo.InvariantCulture);
             troopSpoilsHealFractionPerHour = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsHealFractionPerHour", "0.05"), CultureInfo.InvariantCulture);
             troopFallenSpoilsCaptureFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopFallenSpoilsCaptureFraction", "0.75"), CultureInfo.InvariantCulture);
+            realisticTradeGoodPrices = ReadOrCreate("/Config/RBMCampaign", "RealisticTradeGoodPrices", "1").Equals("1");
+            showInventoryItemWeight = ReadOrCreate("/Config/RBMCampaign", "ShowInventoryItemWeight", "1").Equals("1");
             spoilsLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsLoggingEnabled", "1").Equals("1");
             spoilsVerboseLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsVerboseLoggingEnabled", "1").Equals("1");
+            economyLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "EconomyLoggingEnabled", "1").Equals("1");
             simulationEquipmentEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentEnabled", "1").Equals("1");
             simulationEquipmentPowerWeight = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentPowerWeight", "1"), CultureInfo.InvariantCulture);
             strategicPowerEnabled = ReadOrCreate("/Config/RBMCampaign", "StrategicPowerEnabled", "1").Equals("1");
@@ -272,8 +275,11 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsHealGoldPerTier"), troopSpoilsHealGoldPerTier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsHealFractionPerHour"), troopSpoilsHealFractionPerHour.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopFallenSpoilsCaptureFraction"), troopFallenSpoilsCaptureFraction.ToString(CultureInfo.InvariantCulture));
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/RealisticTradeGoodPrices"), realisticTradeGoodPrices);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/ShowInventoryItemWeight"), showInventoryItemWeight);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsLoggingEnabled"), spoilsLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsVerboseLoggingEnabled"), spoilsVerboseLoggingEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/EconomyLoggingEnabled"), economyLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationEquipmentEnabled"), simulationEquipmentEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationEquipmentPowerWeight"), simulationEquipmentPowerWeight.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/StrategicPowerEnabled"), strategicPowerEnabled);

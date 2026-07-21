@@ -276,6 +276,7 @@
   <ItemGroup>
     <Compile Include="RBMCampaignPatcher.cs" />
     <Compile Include="Diagnostics\SpoilsLog.cs" />
+    <Compile Include="Diagnostics\EconomyLog.cs" />
     <Compile Include="Diagnostics\LogRetention.cs" />
     <Compile Include="Spoils\SpoilsPool.cs" />
     <Compile Include="Spoils\SpoilsPool.Equipment.cs" />
@@ -306,6 +307,8 @@
     <Compile Include="UI\SpoilsBarWidget.cs" />
     <Compile Include="UI\SpoilsBarPrefabPatch.cs" />
     <Compile Include="UI\SpoilsPartyTooltip.cs" />
+    <Compile Include="UI\ItemWeightWidget.cs" />
+    <Compile Include="UI\ItemWeightPrefabPatch.cs" />
     <Compile Include="Power\StrategicPowerLog.cs" />
     <Compile Include="Power\StrategicPowerTooltip.cs" />
     <Compile Include="Power\StrategicPowerTooltipVM.cs" />
@@ -328,7 +331,16 @@
     <Compile Include="Spectate\RBMSpectatorViewPatches.cs" />
     <Compile Include="Spectate\RBMSpectateCampaignBehavior.cs" />
     <Compile Include="Production\RBMVillageProduction.cs" />
+    <Compile Include="Production\RBMTownFoodSupply.cs" />
+    <Compile Include="Production\VillagerConvoys.cs" />
     <Compile Include="Production\VillagerDispatch.cs" />
+    <Compile Include="Production\VillagerDelivery.cs" />
+    <Compile Include="Production\VillagerEscort.cs" />
+    <Compile Include="Economy\RBMEconomyCampaignBehavior.cs" />
+    <Compile Include="Economy\RBMFaminePenalty.cs" />
+    <Compile Include="Economy\RBMMarketLiquidity.cs" />
+    <Compile Include="Economy\RBMProsperityEquilibrium.cs" />
+    <Compile Include="Economy\TradeGoodValues.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

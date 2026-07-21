@@ -1,0 +1,174 @@
+using System.Collections.Generic;
+using System.Text;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Library;
+
+namespace RBMCampaign
+{
+    /// <summary>
+    /// Campaign-layer economy setup that has to run once, at world generation, rather than as a
+    /// Harmony patch on a per-tick model.
+    /// </summary>
+    public class RBMEconomyCampaignBehavior : CampaignBehaviorBase
+    {
+        public override void RegisterEvents()
+        {
+            // The same hook FoodConsumptionBehavior uses to seed starting food stocks: late enough
+            // that every settlement, its bound villages and their hearths are built and linked.
+            CampaignEvents.OnNewGameCreatedPartialFollowUpEndEvent.AddNonSerializedListener(this, OnNewGameCreatedFollowUpEnd);
+            CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
+            CampaignEvents.DailyTickSettlementEvent.AddNonSerializedListener(this, OnDailyTickSettlement);
+        }
+
+        /// <summary>
+        /// A session launching -- new game or loaded save alike -- rolls the economy log over to a fresh
+        /// file, so each play session stands in its own log rather than appending to the last one's.
+        /// </summary>
+        private void OnSessionLaunched(CampaignGameStarter starter)
+        {
+            EconomyLog.StartCampaignLog();
+        }
+
+        /// <summary>
+        /// The end-of-day state of every settlement, which is what the rest of the log's lines add up
+        /// to: a fief against the countryside equilibrium it is drifting toward, a village against the
+        /// hearths that drive its output. Nothing here changes state -- it only writes down what the
+        /// day left behind -- and it costs nothing at all with the log off.
+        /// </summary>
+        private void OnDailyTickSettlement(Settlement settlement)
+        {
+            if (!EconomyLog.IsEnabled || settlement == null)
+            {
+                return;
+            }
+
+            string name = settlement.Name != null ? settlement.Name.ToString() : settlement.StringId;
+
+            if (settlement.IsVillage)
+            {
+                Village village = settlement.Village;
+                EconomyLog.Log("DAILY", name,
+                    "village  hearth " + EconomyLog.Fmt(village.Hearth)
+                    + "  ·  store " + RBMVillageProduction.StoredUnits(village)
+                    + "/" + village.GetWarehouseCapacity()
+                    + "  ·  state " + village.VillageState
+                    + "  ·  bound to " + (village.TradeBound != null ? village.TradeBound.Name.ToString() : "-")
+                    + "  ·  owner " + (settlement.OwnerClan != null ? settlement.OwnerClan.Name.ToString() : "-"));
+                return;
+            }
+
+            if (!settlement.IsFortification)
+            {
+                return;
+            }
+
+            Town town = settlement.Town;
+            float target = RBMProsperityEquilibrium.TargetProsperity(settlement);
+            EconomyLog.Log("DAILY", name,
+                (town.IsTown ? "town   " : "castle ")
+                + " prosperity " + EconomyLog.Fmt(town.Prosperity)
+                + (town.IsTown
+                    ? (" of countryside " + EconomyLog.Fmt(target) + " (gap " + EconomyLog.Fmt(target - town.Prosperity) + ")")
+                    : " (vanilla)")
+                + "  ·  food " + EconomyLog.Fmt(town.FoodStocks)
+                + " change " + EconomyLog.Fmt(town.FoodChange)
+                + (settlement.IsStarving ? "  STARVING" : "")
+                + "  ·  loyalty " + EconomyLog.Fmt(town.Loyalty)
+                + ", militia " + EconomyLog.Fmt(town.Militia)
+                + ", security " + EconomyLog.Fmt(town.Security)
+                + "  ·  gold " + town.Gold);
+
+            // Castles are on vanilla prosperity, so there is no equilibrium to report for them.
+            if (town.IsTown)
+            {
+                LogProsperityEquilibrium(name, town, target);
+            }
+        }
+
+        /// <summary>
+        /// The prosperity equilibrium, term by term. The DAILY line above says where a fief SITS
+        /// relative to its countryside; this says what is actually moving it there, and how fast.
+        ///
+        /// Worth its own line because prosperity is now pulled by forces that fight each other: the
+        /// countryside term drags toward the hearth target (having first cancelled vanilla's housing
+        /// ladder, which is why both appear), the famine penalty drags down while a town cannot feed
+        /// itself, and loyalty, buildings and policies push either way. A fief stuck short of its
+        /// target looks identical in the DAILY line whether the pull is being outvoted or is simply
+        /// slow, and those want different fixes.
+        ///
+        /// The projection is deliberately naive -- gap over today's rate, no compounding -- because
+        /// its job is to flag "this will never converge", not to predict a date. A negative or absurd
+        /// figure is the signal.
+        /// </summary>
+        private void LogProsperityEquilibrium(string name, Town town, float target)
+        {
+            float change = town.ProsperityChange;
+            float gap = target - town.Prosperity;
+
+            StringBuilder terms = new StringBuilder();
+            foreach (var line in town.ProsperityChangeExplanation.GetLines())
+            {
+                if (terms.Length > 0)
+                {
+                    terms.Append(", ");
+                }
+                terms.Append(line.name).Append(" ").Append(line.number >= 0f ? "+" : "").Append(EconomyLog.Fmt(line.number));
+            }
+
+            // Converging only if today's change actually points at the gap rather than away from it.
+            string closing;
+            if (MathF.Abs(gap) < 0.5f)
+            {
+                closing = "at rest";
+            }
+            else if (change * gap <= 0f)
+            {
+                closing = "DIVERGING";
+            }
+            else
+            {
+                closing = "~" + EconomyLog.Fmt(MathF.Abs(gap / change)) + "d to close";
+            }
+
+            EconomyLog.Log("PROSPER", name,
+                (town.IsTown ? "town   " : "castle ")
+                + " " + EconomyLog.Fmt(town.Prosperity) + " → " + EconomyLog.Fmt(target)
+                + "  (gap " + EconomyLog.Fmt(gap) + ", " + closing + ")"
+                + "  ·  change " + (change >= 0f ? "+" : "") + EconomyLog.Fmt(change) + "/day"
+                + (terms.Length > 0 ? ("  ·  " + terms) : ""));
+        }
+
+        public override void SyncData(IDataStore dataStore)
+        {
+        }
+
+        /// <summary>
+        /// Starts every town and castle ON its countryside equilibrium (see
+        /// <see cref="RBMProsperityEquilibrium"/>) rather than on vanilla's hand-authored figure.
+        /// Vanilla's starting prosperity bears no fixed relation to the land around a fief, so
+        /// without this the campaign would open with every settlement on the map mid-correction --
+        /// large towns sliding for years and small ones climbing -- which reads as the mod being
+        /// broken rather than as an economy finding its level.
+        ///
+        /// New games only. A loaded save keeps the prosperity it was saved with; this fires on the
+        /// new-game path alone, so it cannot rewrite an existing campaign's settlements. Those will
+        /// converge on their own through the equilibrium term instead.
+        /// </summary>
+        private void OnNewGameCreatedFollowUpEnd(CampaignGameStarter starter)
+        {
+            // Rebuild the countryside sums first. This hook runs after trade bounds are assigned, but
+            // the cache may already hold a copy taken mid-worldgen, before castle villages had one.
+            RBMProsperityEquilibrium.InvalidateHearthCache();
+
+            // Towns only -- castles keep whatever prosperity the world was authored with.
+            foreach (Settlement settlement in Settlement.All)
+            {
+                if (settlement.IsTown)
+                {
+                    settlement.Town.Prosperity = RBMProsperityEquilibrium.TargetProsperity(settlement);
+                }
+            }
+        }
+    }
+}

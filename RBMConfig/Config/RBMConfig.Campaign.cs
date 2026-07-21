@@ -122,6 +122,18 @@ namespace RBMConfig
         // leaves the dead's purse on the field.
         public static float troopFallenSpoilsCaptureFraction = 0.75f;
 
+        // Replaces the vanilla worth and weight of the trade goods with historically derived figures --
+        // a period price in denars times ten, and the real mass in kilograms of one lot. Value and weight
+        // move together, so a cart of velvet is no longer worth what a cart of hardwood is. Off restores
+        // the game's own numbers. Only the trade goods are touched; no other item changes.
+        public static bool realisticTradeGoodPrices = true;
+
+        // Adds a weight column to the inventory and trade item rows, showing the unit weight of one of
+        // the item. With the goods repriced above, weight spans four orders of magnitude and decides
+        // what a party can profitably carry, so it stops being a footnote. The column is carved out of
+        // the item name field. Takes effect on the next game start: Gauntlet caches a parsed prefab.
+        public static bool showInventoryItemWeight = true;
+
         // Writes every spoils pool change, loot award and upgrade to rbm_spoils.log next to this config.
         public static bool spoilsLoggingEnabled = true;
 
@@ -129,5 +141,10 @@ namespace RBMConfig
         // reads as now: a line per stack. Off, individual-soldier lines are dropped and only what each
         // party did is kept. No effect unless logging above is on.
         public static bool spoilsVerboseLoggingEnabled = true;
+
+        // Writes the village-to-town goods and food chain -- village production, villager dispatches,
+        // town rations, and the daily state of every settlement -- to its own logs/economy folder.
+        // Separate from the spoils log because it is about the countryside, not the troops' purses.
+        public static bool economyLoggingEnabled = true;
     }
 }

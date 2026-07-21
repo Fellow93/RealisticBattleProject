@@ -432,6 +432,14 @@
 	<string id="RBM_OVH_034" text="Gallant Glaive Sister" />
 	<string id="RBM_OVH_035" text="Glaive Sister" />
 	<string id="RBM_OVH_036" text="Imperial Mounted Acritae" />
+	<!-- Trade Good Repricing Strings -->
+	<string id="RBM_CON_103" text="Historical Trade Goods" />
+	<string id="RBM_CON_104" text="Reprices the trade goods off historical figures -- a period price in denars and the real weight of one lot -- so worth and bulk move together and a cart of velvet is no longer a cart of hardwood. Off restores the game's own numbers. Default on." />
+	<!-- Inventory Weight Column Strings -->
+	<string id="RBM_CON_105" text="Inventory Weight Column" />
+	<string id="RBM_CON_106" text="Wt." />
+	<string id="RBM_CON_107" text="Economy Logging" />
+	<string id="RBM_CON_108" text="Writes the village-to-town goods and food chain to logs/economy next to the config: each village's daily production, every villager party sent out with its size, composition and cargo, each town's rations, and the end-of-day state of every settlement. Verbose, and only useful for tuning the economy." />
 	<!-- Spectate Strings -->
 	<string id="RBM_CON_099" text="Spectate AI Battles" />
 	<string id="RBM_CON_101" text="Spectate Minimum Troops Per Side" />

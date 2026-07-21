@@ -92,6 +92,9 @@ namespace RBM
             if (RBMConfig.RBMConfig.rbmCampaignEnabled)
             {
                 SpoilsBarPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // Same story for the inventory screen: its prefabs are parsed and cached long before
+                // OnGameStart, so the weight column has to be injected at module load or not at all.
+                ItemWeightPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
             }
 
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate
@@ -166,6 +169,7 @@ namespace RBM
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMTroopUpkeepCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSimulationCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSpectateCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMEconomyCampaignBehavior());
             }
             base.OnGameStart(game, gameStarterObject);
         }

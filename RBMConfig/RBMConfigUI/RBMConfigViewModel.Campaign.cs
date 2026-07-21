@@ -12,8 +12,20 @@ namespace RBMConfig
         public TextViewModel SpoilsLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> SpoilsLoggingEnabled { get; }
 
+        // Historical trade good worth and weight: on/off toggle for the repriced goods table.
+        public TextViewModel RealisticTradeGoodPricesText { get; }
+        public SelectorVM<SelectorItemVM> RealisticTradeGoodPrices { get; }
+
+        // Weight column in the inventory / trade item rows: on/off.
+        public TextViewModel ShowInventoryItemWeightText { get; }
+        public SelectorVM<SelectorItemVM> ShowInventoryItemWeight { get; }
+
         public TextViewModel SpoilsVerboseLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> SpoilsVerboseLoggingEnabled { get; }
+
+        // Economy logging (village production, villager dispatches, town food): on/off.
+        public TextViewModel EconomyLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> EconomyLoggingEnabled { get; }
 
         // SupplyTown gate: on/off toggle for gating upgrades on a nearby friendly town.
         public TextViewModel TroopUpgradeRequireSupplyTownText { get; }
@@ -611,6 +623,18 @@ namespace RBMConfig
             }
         }
 
+        [DataSourceProperty]
+        public string EconomyLoggingt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_107}Economy Logging").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel EconomyLoggingEnabledHint { get; } = Hint("{=RBM_CON_108}Writes the village-to-town goods and food chain to logs/economy next to the config: each village's daily production, every villager party sent out with its size, composition and cargo, each town's rations, and the end-of-day state of every settlement. Verbose, and only useful for tuning the economy.");
+
         // SupplyTown gate: radius slider (whole map units) + the toggle's row label.
         private float _troopUpgradeSupplyRadius;
 
@@ -969,6 +993,27 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel TroopSpoilsHealFractionPerHourHint { get; } = Hint("{=RBM_CON_076}Most of a stack's wounded that paid healing mends in one hour, so a deep purse buys a faster recovery, not an instant one. Default 0.05.");
+
+        [DataSourceProperty]
+        public string RealisticTradeGoodPricest
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_103}Historical Trade Goods").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel RealisticTradeGoodPricesHint { get; } = Hint("{=RBM_CON_104}Reprices the trade goods off historical figures -- a period price in denars and the real weight of one lot -- so worth and bulk move together and a cart of velvet is no longer a cart of hardwood. Off restores the game's own numbers. Default on.");
+
+        [DataSourceProperty]
+        public string ShowInventoryItemWeightt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_105}Inventory Weight Column").ToString();
+            }
+        }
 
         [DataSourceProperty]
         public string SpoilsVerboseLoggingt

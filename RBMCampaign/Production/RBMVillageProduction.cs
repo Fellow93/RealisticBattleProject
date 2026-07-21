@@ -3,11 +3,13 @@ using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.GameComponents;
+using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.ViewModelCollection;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.ObjectSystem;
 
 namespace RBMCampaign
@@ -179,6 +181,21 @@ namespace RBMCampaign
             return result;
         }
 
+        /// <summary>
+        /// Units of goods sitting in a village's store, counted the way the dispatch and production-halt
+        /// gates count them -- the sum of roster amounts, not weight or distinct item types.
+        /// </summary>
+        public static int StoredUnits(Village village)
+        {
+            ItemRoster roster = village.Owner.ItemRoster;
+            int units = 0;
+            for (int i = 0; i < roster.Count; i++)
+            {
+                units += roster[i].Amount;
+            }
+            return units;
+        }
+
         private static void Accumulate(Dictionary<string, float> byId, string id, float rate)
         {
             float current;
@@ -186,8 +203,9 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Sum of all per-Hearth rates for a village type -- the daily unit throughput at one Hearth,
-        /// used to size the warehouse.
+        /// Sum of all per-Hearth rates for a village type -- the daily unit throughput at one point
+        /// of Hearth across the village's whole good set. Multiply by <see cref="Village.Hearth"/>
+        /// for the village's actual daily output.
         /// </summary>
         public static float GetTotalRate(VillageType villageType)
         {
@@ -197,6 +215,18 @@ namespace RBMCampaign
                 sum += kv.Value;
             }
             return sum;
+        }
+
+        // Days of production the warehouse holds. Vanilla's warehouse sizing.
+        private const float CapacityDays = 5f;
+
+        /// <summary>
+        /// Warehouse size for a given per-Hearth daily rate: five days of that output. Vanilla's own
+        /// formula, term for term -- only the rate fed into it changes.
+        /// </summary>
+        public static int GetGoodCapacity(float ratePerHearth, float hearth)
+        {
+            return MathF.Ceiling(MathF.Max(1f, ratePerHearth * hearth) * CapacityDays);
         }
 
         /// <summary>
@@ -214,12 +244,32 @@ namespace RBMCampaign
                 }
 
                 // Raided/looted villages produce nothing; vanilla achieves this via the model
-                // returning 0. Without a bound town vanilla output is also 0 (its whole calc sits
-                // inside a TradeBound != null guard), so mirror both gates.
-                if (village.VillageState != Village.VillageStates.Normal || village.TradeBound == null)
+                // returning 0.
+                //
+                // Deliberately NOT gated on TradeBound. Vanilla's null check sits inside the
+                // initialProductionForTowns branch alone -- it guards the settlement the seeded goods
+                // are written INTO, not production itself, and the normal branch fills the village's
+                // own store with no such test. Hoisting it to the top made a village stop producing
+                // whenever it had no reachable non-hostile town, which for a castle village in
+                // wartime is the whole war; with vanilla's TickFoodProduction disabled, that left the
+                // castle's food chain with nothing upstream of it at all.
+                if (village.VillageState != Village.VillageStates.Normal)
                 {
                     return false;
                 }
+
+                // Seeding has nowhere to write without a bound town, and unlike the normal branch it
+                // has no local store to fall back on. Vanilla's own guard, at vanilla's position.
+                if (initialProductionForTowns && village.TradeBound == null)
+                {
+                    return false;
+                }
+
+                // The day's output, good by good, for the economy log. Built only when that log is on;
+                // production runs for every village on the map every day and this must cost nothing off.
+                bool logging = EconomyLog.IsEnabled;
+                System.Text.StringBuilder produced = logging ? new System.Text.StringBuilder() : null;
+                int totalUnits = 0;
 
                 foreach (var kv in GetRates(village.VillageType))
                 {
@@ -238,9 +288,44 @@ namespace RBMCampaign
                     {
                         village.TradeBound.ItemRoster.AddToCounts(kv.Key, num);
                     }
+
+                    if (logging)
+                    {
+                        totalUnits += num;
+                        if (produced.Length > 0)
+                        {
+                            produced.Append(", ");
+                        }
+                        produced.Append(kv.Key.StringId).Append(" ").Append(num);
+                    }
+                }
+
+                if (logging)
+                {
+                    LogProduction(village, initialProductionForTowns, totalUnits, produced.ToString());
                 }
 
                 return false;
+            }
+
+            /// <summary>
+            /// One line per village per day: where the goods went, what the village is, how large its
+            /// population and warehouse are, and then the goods themselves.
+            /// </summary>
+            private static void LogProduction(Village village, bool initialProductionForTowns, int totalUnits, string goods)
+            {
+                string name = village.Settlement != null ? village.Settlement.Name.ToString() : village.StringId;
+                string destination = initialProductionForTowns
+                    ? ("seeded into " + (village.TradeBound != null ? village.TradeBound.Name.ToString() : "bound town"))
+                    : "into village store";
+
+                EconomyLog.Log("PRODUCE", name,
+                    "type " + (village.VillageType != null ? village.VillageType.StringId : "-")
+                    + "  hearth " + EconomyLog.Fmt(village.Hearth)
+                    + "  stored " + StoredUnits(village)
+                    + "/" + village.GetWarehouseCapacity()
+                    + "  ·  " + totalUnits + " units " + destination
+                    + (string.IsNullOrEmpty(goods) ? "" : ("  ·  " + goods)));
             }
         }
 
@@ -261,7 +346,14 @@ namespace RBMCampaign
         /// Rescales warehouse capacity from the new rate table. Vanilla derives it from the model
         /// over VillageType.Productions; since our real output is larger and drawn from a different
         /// good set, capacity has to be recomputed or the production-halt gate throttles everything.
-        /// Keeps vanilla's "five days of throughput" sizing.
+        ///
+        /// Sized off the TOTAL rate across the good set, not a per-good average, because every reader
+        /// of this number compares it against the sum of the whole item roster: the production-halt
+        /// gate in <c>TickProductions</c> (<c>rosterSum &lt; capacity * 1.5</c>), the villager dispatch
+        /// gate, and War Sails' fishing-party gate. An average-sized capacity would be roughly one
+        /// day of a village's actual output across 8-10 goods, so production would halt before the
+        /// first day was out and stay halted for the whole of the convoy's multi-day round trip --
+        /// exactly the throttle this patch exists to prevent.
         /// </summary>
         [HarmonyPatch(typeof(Village), "GetWarehouseCapacity")]
         private static class WarehouseCapacityPatch
@@ -273,8 +365,7 @@ namespace RBMCampaign
                     return true;
                 }
 
-                float total = GetTotalRate(__instance.VillageType) * __instance.Hearth;
-                __result = MathF.Ceiling(MathF.Max(1f, total) * 5f);
+                __result = GetGoodCapacity(GetTotalRate(__instance.VillageType), __instance.Hearth);
                 return false;
             }
         }
@@ -305,6 +396,42 @@ namespace RBMCampaign
                 }
 
                 __result = new ExplainedNumber(amount, false, null);
+                return false;
+            }
+        }
+
+        // Per-Hearth total production rates that bracket the villager-party sizing curve. A village
+        // producing only the subsistence base set sits at ~0.168/Hearth/day (QuietRate); anything at
+        // or above BusyRate is treated as maximally busy. Most specialities (mines, lumberjacks)
+        // sit far above BusyRate and simply peg to the largest party.
+        private const float QuietRate = 0.17f;
+        private const float BusyRate = 0.5f;
+
+        /// <summary>
+        /// Sizes villager parties off the RBM production set instead of vanilla's
+        /// <c>VillageType.Productions</c> list. Vanilla sums the daily amount of only the goods on
+        /// that list -- which under RBM is a stale subset, since every village also makes the base
+        /// set and specialities were re-tabled -- then interpolates a Hearth divisor from 40 (quiet)
+        /// down to 20 (busy) and returns <c>Minimum + Hearth / divisor</c>.
+        ///
+        /// This keeps vanilla's shape and its 12 + Hearth/[20..40] band, but drives the interpolation
+        /// from the village's TOTAL per-Hearth throughput across its whole good set. Rate is used
+        /// per-Hearth rather than as an absolute daily figure because Hearth already scales the size
+        /// term; using the absolute would count population twice.
+        /// </summary>
+        [HarmonyPatch(typeof(DefaultPartySizeLimitModel), "GetIdealVillagerPartySize")]
+        private static class VillagerPartySizePatch
+        {
+            private static bool Prefix(DefaultPartySizeLimitModel __instance, Village village, ref int __result)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || village == null)
+                {
+                    return true;
+                }
+
+                float busyness = MathF.Clamp((GetTotalRate(village.VillageType) - QuietRate) / (BusyRate - QuietRate), 0f, 1f);
+                float divisor = MathF.Lerp(40f, 20f, busyness);
+                __result = __instance.MinimumNumberOfVillagersAtVillagerParty + (int)(village.Hearth / divisor);
                 return false;
             }
         }
@@ -356,6 +483,8 @@ namespace RBMCampaign
                 List<KeyValuePair<ItemObject, float>> ordered = new List<KeyValuePair<ItemObject, float>>(GetRates(village.VillageType));
                 ordered.Sort((a, b) => b.Value.CompareTo(a.Value));
 
+                // Per-good daily output, then the one warehouse figure the game actually tracks --
+                // a single store shared by every good, not a per-good allowance.
                 float hearth = village.Hearth;
                 foreach (var kv in ordered)
                 {
@@ -363,9 +492,15 @@ namespace RBMCampaign
                     list.Add(new TooltipProperty(kv.Key.Name.ToString(), perDay.ToString("0.##") + " /day", 0));
                 }
 
+                list.Add(new TooltipProperty("", string.Empty, 0, false, TooltipProperty.TooltipPropertyFlags.RundownSeperator));
+                list.Add(new TooltipProperty(WarehouseText.ToString(),
+                    StoredUnits(village) + " / " + village.GetWarehouseCapacity(), 0));
+
                 __result = list;
                 return false;
             }
         }
+
+        private static readonly TextObject WarehouseText = new TextObject("{=RBM_VILLAGE_WAREHOUSE}Warehouse");
     }
 }

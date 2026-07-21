@@ -58,6 +58,12 @@ namespace RBMCampaign
             // so the entry never looks stale -- and the lord is priced, indefinitely, off the harness he was wearing
             // in a campaign the player has left.
             StrategicTroopPower.ResetForNewSession();
+
+            // Same reasoning, smaller stakes: the town food caches are keyed by Town and would
+            // otherwise hold a departed campaign's settlements for the life of the process.
+            RBMTownFoodSupply.ResetForNewSession();
+            RBMProsperityEquilibrium.ResetForNewSession();
+            RBMItemWeightTextWidget.ResetForNewSession();
         }
 
         /// <summary>

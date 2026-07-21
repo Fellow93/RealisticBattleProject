@@ -9,13 +9,25 @@ namespace RBMConfig
 {
     internal partial class RBMConfigViewModel : ViewModel
     {
+        // Each module's master toggle, and the caption above it. The row's left-hand label is the
+        // shared "Module Status", so the caption is what says WHICH module is being switched --
+        // without it all four tabs showed an unlabelled dropdown. Same texts as the RBMCombatt /
+        // RBMAIt / RBMTournament / RBMCampaignt section titles, so a name is written in one place.
         public SelectorVM<SelectorItemVM> RBMCombatEnabled { get; }
+
+        public TextViewModel RBMCombatEnabledText { get; }
 
         public SelectorVM<SelectorItemVM> RBMAIEnabled { get; }
 
+        public TextViewModel RBMAIEnabledText { get; }
+
         public SelectorVM<SelectorItemVM> RBMTournamentEnabled { get; }
 
+        public TextViewModel RBMTournamentEnabledText { get; }
+
         public SelectorVM<SelectorItemVM> RBMCampaignEnabled { get; }
+
+        public TextViewModel RBMCampaignEnabledText { get; }
 
         [DataSourceProperty]
         public string CancelText
@@ -285,24 +297,44 @@ namespace RBMConfig
             }
 
             List<string> rbmCombatEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            RBMCombatEnabledText = new TextViewModel(new TextObject("{=RBM_CON_016}RBM Combat"));
             RBMCombatEnabled = new SelectorVM<SelectorItemVM>(rbmCombatEnabledOptions, 0, null);
 
             List<string> rbmAiEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            RBMAIEnabledText = new TextViewModel(new TextObject("{=RBM_CON_018}RBM AI"));
             RBMAIEnabled = new SelectorVM<SelectorItemVM>(rbmAiEnabledOptions, 0, null);
 
             List<string> rbmTournamentEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            RBMTournamentEnabledText = new TextViewModel(new TextObject("{=RBM_CON_019}RBM Tournament"));
             RBMTournamentEnabled = new SelectorVM<SelectorItemVM>(rbmTournamentEnabledOptions, 0, null);
 
+            // No LOC key, matching the RBMCampaignt section title this name is shared with.
             List<string> rbmCampaignEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            RBMCampaignEnabledText = new TextViewModel(new TextObject("RBM Campaign"));
             RBMCampaignEnabled = new SelectorVM<SelectorItemVM>(rbmCampaignEnabledOptions, 0, null);
 
             List<string> spoilsLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             SpoilsLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_039}Spoils Logging"));
             SpoilsLoggingEnabled = new SelectorVM<SelectorItemVM>(spoilsLoggingOptions, 0, null);
 
+            // Historical trade good repricing: on by default, so Enabled carries the "(Default)" tag.
+            List<string> realisticTradeGoodPricesOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            RealisticTradeGoodPricesText = new TextViewModel(new TextObject("{=RBM_CON_103}Historical Trade Goods"));
+            RealisticTradeGoodPrices = new SelectorVM<SelectorItemVM>(realisticTradeGoodPricesOptions, 0, null);
+
+            // Inventory weight column: on by default, so Enabled carries the "(Default)" tag.
+            List<string> showInventoryItemWeightOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            ShowInventoryItemWeightText = new TextViewModel(new TextObject("{=RBM_CON_105}Inventory Weight Column"));
+            ShowInventoryItemWeight = new SelectorVM<SelectorItemVM>(showInventoryItemWeightOptions, 0, null);
+
             List<string> spoilsVerboseLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             SpoilsVerboseLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_049}Verbose Logging"));
             SpoilsVerboseLoggingEnabled = new SelectorVM<SelectorItemVM>(spoilsVerboseLoggingOptions, 0, null);
+
+            // Economy logging: on by default, so Enabled carries the "(Default)" tag.
+            List<string> economyLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            EconomyLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_107}Economy Logging"));
+            EconomyLoggingEnabled = new SelectorVM<SelectorItemVM>(economyLoggingOptions, 0, null);
 
             // Equipment simulation: Enabled is the default, so its option carries the "(Default)" tag.
             List<string> simulationEquipmentOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
@@ -403,8 +435,11 @@ namespace RBMConfig
             _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 10f);
             _troopSettlementFunWageFraction = MathF.Clamp(RBMConfig.troopSettlementFunWageFraction, 0f, 10f);
             _troopRaidSpoilsMultiplier = MathF.Clamp(RBMConfig.troopRaidSpoilsMultiplier, 0f, 10f);
+            RealisticTradeGoodPrices.SelectedIndex = RBMConfig.realisticTradeGoodPrices ? 1 : 0;
+            ShowInventoryItemWeight.SelectedIndex = RBMConfig.showInventoryItemWeight ? 1 : 0;
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
             SpoilsVerboseLoggingEnabled.SelectedIndex = RBMConfig.spoilsVerboseLoggingEnabled ? 1 : 0;
+            EconomyLoggingEnabled.SelectedIndex = RBMConfig.economyLoggingEnabled ? 1 : 0;
             SimulationEquipmentEnabled.SelectedIndex = RBMConfig.simulationEquipmentEnabled ? 1 : 0;
             SimulationRoutEnabled.SelectedIndex = RBMConfig.simulationRoutEnabled ? 1 : 0;
             StrategicPowerEnabled.SelectedIndex = RBMConfig.strategicPowerEnabled ? 1 : 0;
@@ -610,8 +645,11 @@ namespace RBMConfig
             RBMConfig.troopFoodWageFraction = _troopFoodWageFraction;
             RBMConfig.troopSettlementFunWageFraction = _troopSettlementFunWageFraction;
             RBMConfig.troopRaidSpoilsMultiplier = _troopRaidSpoilsMultiplier;
+            RBMConfig.realisticTradeGoodPrices = RealisticTradeGoodPrices.SelectedIndex == 1;
+            RBMConfig.showInventoryItemWeight = ShowInventoryItemWeight.SelectedIndex == 1;
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
             RBMConfig.spoilsVerboseLoggingEnabled = SpoilsVerboseLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.economyLoggingEnabled = EconomyLoggingEnabled.SelectedIndex == 1;
             RBMConfig.simulationEquipmentEnabled = SimulationEquipmentEnabled.SelectedIndex == 1;
             RBMConfig.simulationRoutEnabled = SimulationRoutEnabled.SelectedIndex == 1;
             RBMConfig.strategicPowerEnabled = StrategicPowerEnabled.SelectedIndex == 1;
@@ -685,8 +723,11 @@ namespace RBMConfig
             TroopFallenSpoilsCaptureFraction = 0.75f;
             TroopSpoilsHealGoldPerTier = 10f;
             TroopSpoilsHealFractionPerHour = 0.05f;
+            RealisticTradeGoodPrices.SelectedIndex = 1;
+            ShowInventoryItemWeight.SelectedIndex = 1;
             SpoilsLoggingEnabled.SelectedIndex = 1;
             SpoilsVerboseLoggingEnabled.SelectedIndex = 1;
+            EconomyLoggingEnabled.SelectedIndex = 1;
             SimulationEquipmentEnabled.SelectedIndex = 1;
             SimulationRoutEnabled.SelectedIndex = 0;
             StrategicPowerEnabled.SelectedIndex = 1;
