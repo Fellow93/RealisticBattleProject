@@ -31,7 +31,7 @@ namespace RBMCampaign
             new Dictionary<string, (int, float)>
             {
                 // --- Goods declared in SandBoxCore/ModuleData/items/horses_and_others.xml ---
-                { "wool",        (800,    10f) },
+                { "wool",        (160,    2f) },
                 { "silver",      (85,     0.85f) },
                 { "jewelry",     (420,    0.025f) },
                 { "salt",        (300,    10f) },
@@ -60,7 +60,7 @@ namespace RBMCampaign
                 { "meat",        (200,    30f) },
                 { "hides",       (88,     0.8f) },
                 { "planks",      (10,     20f) },
-                { "felt",        (3200,   10f) },
+                { "felt",        (640,    1f) },
                 { "iron",        (1,      4f) },    // iron ore
                 { "hardwood",    (11,     200f) },
                 { "charcoal",    (3,      4f) },

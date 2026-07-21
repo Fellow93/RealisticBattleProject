@@ -41,7 +41,8 @@ namespace RBMCampaign
             ("cheese", 0.038f),
             ("butter", 0.03f),
             ("grain", 0.05f),
-            ("wool", 0.004f),
+            ("wool", 0.02f),
+            ("sheep", 0.006f),
         };
 
         // Horse ranches produce culture-appropriate breeds, one item per tier at the rates below:
