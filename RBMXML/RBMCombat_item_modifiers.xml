@@ -10,7 +10,7 @@
 		loot_drop_score="2"
 		production_drop_score="5"
 		damage="20"
-		price_factor="5"
+		price_factor="20"
 		quality="legendary" />
 		
   <ItemModifier modifier_group="ItemModifierGroup.sword"
@@ -20,7 +20,7 @@
                 production_drop_score="10"
                 damage="10"
 				quality="masterwork"
-                price_factor="2.5" />
+                price_factor="10" />
 				
   <ItemModifier modifier_group="ItemModifierGroup.sword"
                 id="balanced_sword"
@@ -29,7 +29,7 @@
                 production_drop_score="15"
                 damage="5"
 				quality="fine"
-                price_factor="1.5" />
+                price_factor="3" />
 				
   <ItemModifier modifier_group="ItemModifierGroup.sword"
                 id="dull_sword"
@@ -376,7 +376,7 @@
 		production_drop_score="5"
 		damage="15"
 		speed="0"
-		price_factor="5"
+		price_factor="20"
 		quality="legendary" />
 		
   <ItemModifier modifier_group="ItemModifierGroup.mace"
@@ -386,7 +386,7 @@
                 production_drop_score="10"
                 damage="10"
 				quality="masterwork"
-                price_factor="2.5" />
+                price_factor="10" />
 				
   <ItemModifier modifier_group="ItemModifierGroup.mace"
                 id="balanced_mace"
@@ -395,7 +395,7 @@
                 production_drop_score="15"
                 damage="5"
 				quality="fine"
-                price_factor="1.5" />
+                price_factor="3" />
 				
   <ItemModifier modifier_group="ItemModifierGroup.mace"
                 id="unbalanced_mace"

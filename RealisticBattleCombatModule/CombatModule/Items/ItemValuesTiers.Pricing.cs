@@ -27,22 +27,22 @@ namespace RBMCombat
                     {
                         case ArmorComponent.ArmorMaterialTypes.Cloth:
                             {
-                                materialPriceModifier = 5f;
+                                materialPriceModifier = 1f;
                                 break;
                             }
                         case ArmorComponent.ArmorMaterialTypes.Leather:
                             {
-                                materialPriceModifier = 15f;
+                                materialPriceModifier = 1.5f;
                                 break;
                             }
                         case ArmorComponent.ArmorMaterialTypes.Chainmail:
                             {
-                                materialPriceModifier = 80f;
+                                materialPriceModifier = 3f;
                                 break;
                             }
                         case ArmorComponent.ArmorMaterialTypes.Plate:
                             {
-                                materialPriceModifier = 120f;
+                                materialPriceModifier = 3.1f;
                                 break;
                             }
                         default:
@@ -54,36 +54,36 @@ namespace RBMCombat
 
                     if (item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
                     {
-                        price = 75f + (item.ArmorComponent.LegArmor * materialPriceModifier);
+                        price = 4f * (item.ArmorComponent.LegArmor * materialPriceModifier);
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
                     {
-                        price = 50f + (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f);
+                        price = 16f * (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f);
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
                     {
-                        price = 100f + ((item.ArmorComponent.HeadArmor * materialPriceModifier * 1.2f) + (item.ArmorComponent.BodyArmor * materialPriceModifier * 0.6f));
+                        price = 3f * ((item.ArmorComponent.HeadArmor * materialPriceModifier * 1.2f) + (item.ArmorComponent.BodyArmor * materialPriceModifier * 0.6f));
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.Cape)
                     {
-                        price = 50f + ((item.ArmorComponent.BodyArmor * materialPriceModifier * 0.8f) + (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f));
+                        price = 5f * ((item.ArmorComponent.BodyArmor * materialPriceModifier * 0.8f) + (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f));
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                     {
-                        price = 200f + ((item.ArmorComponent.BodyArmor * materialPriceModifier * 2.5f) + (item.ArmorComponent.LegArmor * materialPriceModifier) + (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f));
+                        price = 2.32f * ((item.ArmorComponent.BodyArmor * materialPriceModifier * 2.5f) + (item.ArmorComponent.LegArmor * materialPriceModifier) + (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f));
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                     {
-                        price = 100f + ((item.ArmorComponent.BodyArmor * 0.2f) + (item.ArmorComponent.ArmArmor * 0.2f) + (item.ArmorComponent.LegArmor * 0.4f) + (item.ArmorComponent.HeadArmor * 0.2f) * 450f);
+                        price = 400f * ((item.ArmorComponent.BodyArmor * 0.2f) + (item.ArmorComponent.ArmArmor * 0.2f) + (item.ArmorComponent.LegArmor * 0.4f) + (item.ArmorComponent.HeadArmor * 0.2f));
                     }
                     price *= RBMConfig.RBMConfig.priceMultipliers.ArmorPriceModifier;
                 }
                 else if (item.ItemComponent is WeaponComponent)
                 {
-                    price = (500f + (tier * 100f)) * 0.7f * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
+                    price = (60f + (tier * 36f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     if (item.ItemType == ItemObject.ItemTypeEnum.Polearm)
                     {
-                        price *= 0.3f;
+                        price = (20f + (tier * 20f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Thrown)
                     {
@@ -95,25 +95,28 @@ namespace RBMCombat
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.TwoHandedWeapon)
                     {
-                        price *= 1.5f;
+                        price *= 2f;
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Shield)
                     {
-                        price *= 0.3f;
+                        price = (120f + (tier * 120f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Arrows || item.ItemType == ItemObject.ItemTypeEnum.Bolts || item.ItemType == ItemObject.ItemTypeEnum.SlingStones)
                     {
-                        price = (30f + (tier * 10f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
+                        price = (20f + (tier * 2f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     }
                 }
                 else if (item.ItemComponent is HorseComponent)
+                //{
+                //    price = 200f * tier * RBMConfig.RBMConfig.priceMultipliers.HorsePriceModifier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f);
+                //}
                 {
-                    price = 200f * tier * RBMConfig.RBMConfig.priceMultipliers.HorsePriceModifier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f);
+                    price = 600f + (2000f * tier * RBMConfig.RBMConfig.priceMultipliers.HorsePriceModifier);
                 }
-                else if (item.ItemComponent is TradeItemComponent)
-                {
-                    price = 100f * tier * RBMConfig.RBMConfig.priceMultipliers.TradePriceModifier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f);
-                }
+                //else if (item.ItemComponent is TradeItemComponent)
+                //{
+                //    price = 100f * tier * RBMConfig.RBMConfig.priceMultipliers.TradePriceModifier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f);
+                //}
                 else
                 {
                     price = 1;
