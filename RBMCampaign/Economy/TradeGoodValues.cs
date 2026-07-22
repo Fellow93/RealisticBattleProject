@@ -60,7 +60,7 @@ namespace RBMCampaign
                 { "meat",        (200,    30f) },
                 { "hides",       (88,     0.8f) },
                 { "planks",      (10,     20f) },
-                { "felt",        (640,    1f) },
+                { "felt",        (250,    1f) },
                 { "iron",        (1,      4f) },    // iron ore
                 { "hardwood",    (11,     200f) },
                 { "charcoal",    (3,      4f) },
