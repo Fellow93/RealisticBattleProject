@@ -77,7 +77,13 @@ namespace RBMConfig
         // A day's wage a stack drinks and gambles away for each day it sits in a settlement. At 1 the
         // men spend everything the day paid them; above that they eat into what they came in with, so
         // a long stay in town costs a stack the kit it was saving for.
-        public static float troopSettlementFunWageFraction = 1.5f;
+        //
+        // A quarter, down from one and a half. At 1.5 a soldier drank half again what he earned, every
+        // day, forever -- which left nothing for his kit and made carousing 98% of all money entering a
+        // town: 62,333 denars per town per day, almost exactly what the old gold controller was
+        // destroying to hide it. A quarter is a man spending a fair share of his pay on drink and
+        // keeping the rest.
+        public static float troopSettlementFunWageFraction = 0.25f;
 
         // Share of a sacked village's plundered wealth its soldiers pocket as spoils, on top of the
         // goods the party carts off. Scaled against how much of the village the raid actually stripped.

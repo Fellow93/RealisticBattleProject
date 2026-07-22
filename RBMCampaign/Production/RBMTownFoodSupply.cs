@@ -75,11 +75,17 @@ namespace RBMCampaign
         /// meaningfully, cannot carry a bad season, and shows a granary bar that is full whatever it
         /// actually has.
         ///
-        /// Five puts a typical town back to about a month of supply. Applied to the whole of
+        /// Ten puts a typical town at about two months of supply. Applied to the whole of
         /// <c>Town.FoodStocksUpperLimit()</c> rather than to the base figure, so granary buildings
         /// keep their proportional worth instead of being swamped.
+        ///
+        /// Raised from five to keep step with <see cref="TownStorage.StorageDays"/>, which is what now
+        /// decides how much a town can actually hold. The two must agree: this figure is only the
+        /// number the granary bar, the prosperity model and the siege AI READ, and if it sat at a month
+        /// while the bins held two, every town would report a full granary at half full and no shortage
+        /// would ever show.
         /// </summary>
-        private const float TownFoodStockScale = 5f;
+        private const float TownFoodStockScale = 10f;
 
         // Market food at the end of each town's last daily tick, and the day-over-day change derived
         // from it. Ephemeral -- both are rebuilt within a day of any gap -- but they hold Town
@@ -241,6 +247,12 @@ namespace RBMCampaign
                 TownMarketData marketData = town.MarketData;
                 ItemRoster itemRoster = town.Owner.ItemRoster;
 
+                // The households' own shopping, bought by quantity off an explicit basket rather than
+                // by gold budget: fuel, salt, crockery, timber, clothes, and whatever luxuries their
+                // savings run to. See CitizenDemand. Runs first so the budget loop below sees what is
+                // left on the shelf after the townspeople have been.
+                CitizenDemand.BuyStaplesAndLuxuries(town, saleLog);
+
                 for (int i = itemRoster.Count - 1; i >= 0; i--)
                 {
                     ItemRosterElement element = itemRoster.GetElementCopyAtIndex(i);
@@ -252,6 +264,12 @@ namespace RBMCampaign
                     // much gold its demand pool happens to carry -- see FeedPopulation. Leaving food
                     // in this loop would have the town eat twice over.
                     if (category.Properties == ItemCategory.Property.BonusToFoodStores)
+                    {
+                        continue;
+                    }
+
+                    // Nor is anything the basket already bought, for the same reason.
+                    if (CitizenDemand.CoversItem(item))
                     {
                         continue;
                     }
@@ -348,6 +366,10 @@ namespace RBMCampaign
                 _foodAtLastTick[town] = closing;
 
                 LogRations(town, openingFood, afterDelivery, closing, wanted, unmet, delivered);
+                // Both halves of the day's shopping are done by now -- MakeConsumption ran the staples
+                // and luxuries immediately before this, in the same tick and for this same town -- so
+                // the basket tally is complete and can be reported and reset.
+                CitizenDemand.ReportAndClear(town);
 
                 return false;
             }
@@ -591,7 +613,15 @@ namespace RBMCampaign
             int unmet = 0;
             if (civilianUnits > 0)
             {
-                unmet += BuyFoodFromMarket(town, civilianUnits, saleLog, provisioned: false);
+                // The households eat a basket -- half bread, a sixth beer, and so on -- rather than
+                // whatever is cheapest. See CitizenDemand. What the market cannot supply in the shape
+                // they wanted, they make up with whatever food is left and cheapest, which is what a
+                // hungry household actually does and what keeps the day's ration count unchanged.
+                int unshaped = CitizenDemand.BuyRation(town, civilianUnits, saleLog);
+                if (unshaped > 0)
+                {
+                    unmet += BuyFoodFromMarket(town, unshaped, saleLog, provisioned: false);
+                }
             }
             if (provisionedUnits > 0)
             {

@@ -12,16 +12,19 @@ namespace RBMCampaign
     /// that read prosperity a value on the scale they were built for
     /// (<see cref="RBMProsperityEquilibrium.EconomicProsperity"/>).
     ///
-    /// Both patches are pure rescalings -- the formulae are vanilla's, term for term, with the
-    /// prosperity input converted. Nothing here changes the shape of the economy; it undoes a change
-    /// of units that the prosperity rework made by accident.
+    /// The two demand patches are pure rescalings -- the formulae are vanilla's, term for term, with
+    /// the prosperity input converted. Nothing there changes the shape of the economy; it undoes a
+    /// change of units that the prosperity rework made by accident.
     ///
-    /// Why both, and not just the treasury: a town's gold is a float that circulates, not income. It
-    /// buys villager cargo and recoups that gold selling to its own townspeople, and the two legs
-    /// scale off different things. <c>SellGoodsForTradeAction</c> is demand-blind -- it buys
-    /// <c>min(units, Gold / price)</c> of whatever arrives, at full price -- while the recouping leg
-    /// is the civilian demand pool, <c>BaseDemand * Prosperity</c>. Enlarging the treasury alone would
-    /// just buy a warhorse sooner and drain again; the outlet has to widen with the inlet.
+    /// The third patch used to do the same for a town's treasury and no longer does anything at all:
+    /// the gold controller it rescaled has since been switched off outright, so a town's money is now
+    /// whatever its trade has left it. See <c>TownGoldChangePatch</c> for why. What that leaves is the
+    /// two demand legs, and they are still needed for the reason they always were: the leg that
+    /// recoups what a town paid its villagers is the civilian demand pool,
+    /// <c>BaseDemand * Prosperity</c>, and it has to be on the same scale as the buying leg --
+    /// <c>SellGoodsForTradeAction</c> is demand-blind, taking <c>min(units, Gold / price)</c> of
+    /// whatever arrives at full price. Now that the treasury is unregulated, the outlet's width is the
+    /// only thing keeping the inlet honest.
     ///
     /// TOWNS ONLY, all three patches, because the re-seed they compensate for is towns-only:
     /// <see cref="RBMProsperityEquilibrium.TargetProsperity"/> returns 0 for a castle and its
@@ -36,19 +39,39 @@ namespace RBMCampaign
     public static class RBMMarketLiquidity
     {
         /// <summary>
-        /// Rebases the target town treasury on the countryside, by way of the prosperity that now
-        /// derives from it. Vanilla's <c>GetTownGoldChange</c> is not income at all: it is a
-        /// proportional controller that closes a quarter of the gap to a target of
-        /// <c>10000 + 12 * Prosperity</c> each day, and it is symmetric -- a town above target has
-        /// gold destroyed. Only the target's prosperity term is rescaled.
+        /// Stops a town's money from being regulated, and lets it simply be what its trade has left it.
         ///
-        /// Recent trade with soldiers is added to the target as a second term. It has to enter HERE
-        /// rather than only as gold in the purse, because the controller is what makes plain income
-        /// meaningless: coin handed to a town already at its target is destroyed within a few days,
-        /// so crediting a soldier's spending without moving the target would net to nothing. Raising
-        /// the target is what lets a garrison town actually hold the wealth its garrison brings --
-        /// and the term decays, so the town gives it back once the army leaves.
+        /// Vanilla's <c>GetTownGoldChange</c> is not income: it is a proportional controller that
+        /// closes a quarter of the gap to a target of <c>10000 + 12 * Prosperity</c> every day, and it
+        /// is symmetric -- a town below target has gold CONJURED and a town above it has gold
+        /// DESTROYED. Nobody pays and nobody receives either way. It runs at the end of the daily tick,
+        /// after everything real has happened, and simply sets the pot back to what prosperity says it
+        /// ought to be.
+        ///
+        /// That was the last unconserved edge in the economy, and it was larger than any real flow in
+        /// it. Measured over seven days at Danustica the ledger of actual credits and debits netted
+        /// +397,964 denars while the balance FELL 60,134 -- some 65,000 a day destroyed, almost exactly
+        /// cancelling what the garrison spent carousing. No amount of tuning elsewhere could show
+        /// through that, in either direction: a town could not accumulate what it earned, and could not
+        /// go broke on what it owed.
+        ///
+        /// So it returns nothing. Citizen wealth is now a real stock, like the village purse and the
+        /// fief treasury before it -- it grows when the town sells and shrinks when the town buys, and
+        /// there is no floor under it and no ceiling over it.
         /// </summary>
+        /// <remarks>
+        /// A zero return rather than an unpatched method, deliberately. Removing the patch does not
+        /// remove the controller -- it hands it back to vanilla, which is the outcome this is meant to
+        /// prevent. The prefix must stay and must keep returning false.
+        ///
+        /// The other two patches below are untouched and must stay: they are unit rescalings of the
+        /// demand pool and of price, unrelated to this, and both are still load-bearing.
+        ///
+        /// What this exposes, stated plainly because it is the thing to watch: soldier spending brings
+        /// a town roughly nine times what deliveries and the wealth tax take out of it. The controller
+        /// was hiding that. With it gone the imbalance is no longer absorbed -- garrison towns will
+        /// accumulate, and the drift line below is how to see by how much.
+        /// </remarks>
         [HarmonyPatch(typeof(DefaultSettlementEconomyModel), "GetTownGoldChange")]
         private static class TownGoldChangePatch
         {
@@ -59,21 +82,25 @@ namespace RBMCampaign
                     return true;
                 }
 
-                float countryside = RBMProsperityEquilibrium.TreasuryProsperity(town) * 12f;
-                float target = 10000f + countryside + TroopMarketFeedback.TreasuryBonus(town, countryside);
-                float gap = target - town.Gold;
-                __result = MathF.Round(0.25f * gap);
+                __result = 0;
 
-                // The single number the next phase turns on: what the controller conjures or destroys
-                // each day, per town. Every other flow in the ledger is now real money moving between
-                // two holders, so this is exactly the hole a conserved economy has to fill by other
-                // means -- and its sign says whether a town is being propped up or bled.
+                // The controller is gone but its target is still the best yardstick there is for what a
+                // town of this size "should" hold, so it is computed and reported without being acted
+                // on. The line now reads as DRIFT: how far real trade has carried the town from the
+                // figure vanilla would have pinned it to, and in which direction. A town drifting up
+                // without limit is the garrison-spending imbalance made visible; one drifting to zero
+                // is a market that has stopped being paid.
                 if (EconomyLog.IsEnabled)
                 {
+                    float countryside = RBMProsperityEquilibrium.TreasuryProsperity(town) * 12f;
+                    float target = 10000f + countryside + TroopMarketFeedback.TreasuryBonus(town, countryside);
+                    float drift = town.Gold - target;
+
                     EconomyLog.Log("LIQUID", town.Settlement.Name != null ? town.Settlement.Name.ToString() : town.Settlement.StringId,
-                        (__result >= 0 ? "conjured +" : "destroyed ") + __result + "d"
-                        + "  ·  gold " + town.Gold + " vs target " + MathF.Round(target)
-                        + "  ·  countryside " + MathF.Round(countryside) + "d");
+                        "drift " + (drift >= 0f ? "+" : "") + MathF.Round(drift) + "d"
+                        + "  ·  gold " + town.Gold + " vs vanilla target " + MathF.Round(target)
+                        + "  ·  countryside " + MathF.Round(countryside) + "d"
+                        + "  ·  controller OFF");
                 }
 
                 return false;

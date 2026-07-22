@@ -1,4 +1,4 @@
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Main Project Properties -->
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -332,7 +332,9 @@
     <Compile Include="Spectate\RBMSpectatorViewPatches.cs" />
     <Compile Include="Spectate\RBMSpectateCampaignBehavior.cs" />
     <Compile Include="Production\RBMVillageProduction.cs" />
+    <Compile Include="Production\CitizenDemand.cs" />
     <Compile Include="Production\RBMTownFoodSupply.cs" />
+    <Compile Include="Production\TownStorage.cs" />
     <Compile Include="Production\TownFoodReserve.cs" />
     <Compile Include="Production\VillagerConvoys.cs" />
     <Compile Include="Production\VillagerDispatch.cs" />
@@ -346,7 +348,12 @@
     <Compile Include="Economy\RBMMarketLiquidity.cs" />
     <Compile Include="Economy\RBMProsperityEquilibrium.cs" />
     <Compile Include="Economy\TradeGoodValues.cs" />
+    <Compile Include="Settlements\NativeTradeConservation.cs" />
+    <Compile Include="Settlements\RansomFunding.cs" />
+    <Compile Include="Settlements\SettlementGoldFunnel.cs" />
     <Compile Include="Settlements\SettlementWealth.cs" />
+    <Compile Include="Settlements\WorkshopDiagnostics.cs" />
+    <Compile Include="Settlements\WorkshopPurse.cs" />
     <Compile Include="Settlements\SettlementWealthTooltip.cs" />
     <Compile Include="Settlements\AdministrativeUpkeep.cs" />
     <Compile Include="Settlements\ConstructionLabour.cs" />

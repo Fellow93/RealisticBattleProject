@@ -126,7 +126,7 @@ namespace RBMConfig
             troopSettlementFoodDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSettlementFoodDays", "20"), CultureInfo.InvariantCulture);
             recruitMaintenanceDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "RecruitMaintenanceDays", "5"), CultureInfo.InvariantCulture);
             troopFoodWageFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopFoodWageFraction", "0.5"), CultureInfo.InvariantCulture);
-            troopSettlementFunWageFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSettlementFunWageFraction", "1.5"), CultureInfo.InvariantCulture);
+            troopSettlementFunWageFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSettlementFunWageFraction", "0.25"), CultureInfo.InvariantCulture);
             troopRaidSpoilsMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopRaidSpoilsMultiplier", "0.25"), CultureInfo.InvariantCulture);
             troopLeaderSpoilsCutFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLeaderSpoilsCutFraction", "0.05"), CultureInfo.InvariantCulture);
             troopSpoilsCapDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsCapDays", "20"), CultureInfo.InvariantCulture);

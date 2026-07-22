@@ -17,29 +17,33 @@ namespace RBMCampaign
     /// Under the ledger the village earns and spends for real, and that purse lives in this same field
     /// -- see <see cref="SettlementWealth"/>. So the daily clamp has to go, or the day a village is paid
     /// is the day its money is deleted.
-    ///
-    /// Nothing else in <c>Village.DailyTick</c> touches gold -- the rest moves hearth and militia -- so
-    /// the whole of the day's change to gold IS the clamp, and restoring the opening balance afterwards
-    /// removes exactly it, without a transpiler and without repeating vanilla's hearth arithmetic.
     /// </summary>
+    /// <remarks>
+    /// This used to let the clamp happen and then undo it, restoring the opening balance in a postfix.
+    /// That worked while nothing watched the gold field. It stopped working the moment
+    /// <see cref="SettlementGoldFunnel"/> began routing every native write into the ledger: the clamp
+    /// and its undo would each have posted as a trade, netting to nothing but printing a phantom pair on
+    /// every village every day.
+    ///
+    /// So the write is suppressed at the source instead, which is what was wanted all along -- vanilla's
+    /// clamp simply does not happen, rather than happening and being reversed. Nothing else in
+    /// <c>Village.DailyTick</c> touches gold (the rest moves hearth and militia), so suppressing for the
+    /// whole call is exact.
+    ///
+    /// The release is a FINALIZER, not a postfix, so it runs even if the tick throws. A suppression left
+    /// raised would swallow every settlement's gold writes for the rest of the session.
+    /// </remarks>
     [HarmonyPatch(typeof(Village), "DailyTick")]
     internal class VillageGoldStock
     {
-        private static void Prefix(Village __instance, ref int __state)
+        private static void Prefix()
         {
-            __state = __instance.Gold;
+            SettlementGoldFunnel.BeginSuppress();
         }
 
-        // The one place in RBMCampaign that writes a settlement's gold without going through
-        // SettlementWealth.Credit/Debit, and deliberately so: this is not a movement of money under any
-        // source, it is the UNDOING of vanilla's own write. Putting it through the ledger would post a
-        // phantom credit every day for money that never went anywhere.
-        private static void Postfix(Village __instance, int __state)
+        private static void Finalizer()
         {
-            if (__instance.Gold != __state)
-            {
-                __instance.ChangeGold(__state - __instance.Gold);
-            }
+            SettlementGoldFunnel.EndSuppress();
         }
     }
 }

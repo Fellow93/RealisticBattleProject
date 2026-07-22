@@ -42,6 +42,9 @@ namespace RBMCampaign
             WealthTax.OnDailyTick(settlement);
             // After the day's charges, so these report against the purse they left behind.
             TradeTariff.FlushDaily(settlement);
+            WorkshopPurse.FlushDaily(settlement);
+            WorkshopDiagnostics.FlushDaily(settlement);
+            TownStorage.FlushDaily(settlement);
             SettlementWealth.FlushDaily(settlement);
         }
 

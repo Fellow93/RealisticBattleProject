@@ -68,7 +68,18 @@ namespace RBMCampaign
         }
 
         /// <summary>The most of a stack's over-cap surplus that carousing can spend in a single hour.</summary>
-        private const float MaxSurplusFunFractionPerHour = 0.25f;
+        /// <remarks>
+        /// Two per cent, down from twenty-five. This is an HOURLY rate applied multiplicatively, which
+        /// is far harsher than it reads: a quarter an hour is <c>0.75^24</c>, so 99.9% of a surplus was
+        /// gone inside one day. Loot and plunder never accumulated at all -- they arrived and were drunk
+        /// before the next dawn, which is what made carousing spike after every battle and made it 98%
+        /// of everything entering a town.
+        ///
+        /// At two per cent a surplus sheds about 38% over a day and takes the better part of a week to
+        /// clear. That is still a stack spending down its winnings noticeably faster than its wage, but
+        /// over the span a soldier would plausibly do it.
+        /// </remarks>
+        private const float MaxSurplusFunFractionPerHour = 0.02f;
 
         /// <summary>
         /// The ceiling on what one man can spend on fun in a day, per tier of his own: a recruit
@@ -77,17 +88,19 @@ namespace RBMCampaign
         /// </summary>
         /// <remarks>
         /// The fraction-of-surplus limit above is a rate, not a bound: a purse far enough over its cap
-        /// still shed a fortune per hour, because a quarter of a large enough number is a large
-        /// number. One stack was measured drinking 110,289 in a single hour, which is not a soldier
-        /// spending his pay but an accounting sink wearing the costume of one -- and once carousing
-        /// began paying the town it stopped being an internal matter.
+        /// still shed a fortune per hour, because a share of a large enough number is a large number.
+        /// One stack was measured drinking 110,289 in a single hour, which is not a soldier spending his
+        /// pay but an accounting sink wearing the costume of one -- and once carousing began paying the
+        /// town it stopped being an internal matter.
         ///
-        /// Sized to sit about three times the wage-driven rate a man of that tier drinks at, so a
-        /// stack over its cap still spends visibly harder than one saving up, and no stack spends like
-        /// a treasury emptying. A man of tier t earns roughly 50t a day and carouses about 75t of it,
-        /// against a ceiling of 200(t+1).
+        /// Twenty-five, down from two hundred. At two hundred it was not a ceiling at all: a man of
+        /// tier t was allowed 200(t+1) a day against a wage of roughly 50t, so it sat four times over
+        /// anything the wage leg could produce and only ever bound in the extreme. A 200-man garrison of
+        /// tier 3 was licensed 160,000 denars a day. Sized now to sit just above the wage-driven rate
+        /// rather than multiples over it, so it actually bounds the surplus drain -- which is the job it
+        /// was added for.
         /// </remarks>
-        private const int MaxFunPerManPerDayPerTier = 200;
+        private const int MaxFunPerManPerDayPerTier = 25;
 
         /// <summary>Men per food item per day: the rate the game's own consumption model eats at.</summary>
         private static int MenPerFoodPerDay

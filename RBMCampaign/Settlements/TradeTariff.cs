@@ -1,10 +1,5 @@
 ﻿using System.Collections.Generic;
-using HarmonyLib;
-using TaleWorlds.CampaignSystem.Actions;
-using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
-using TaleWorlds.Core;
 
 namespace RBMCampaign
 {
@@ -96,79 +91,19 @@ namespace RBMCampaign
             }
         }
 
-        /// <summary>
-        /// Levies the fee on a completed town trade.
-        /// </summary>
-        /// <remarks>
-        /// The value is measured in the prefix, before the goods move, as <c>number x price</c> at the
-        /// pre-trade price. Vanilla re-prices each unit as the roster shifts within a big transaction,
-        /// so this is a hair off the exact figure -- immaterial for a one-percent levy, and far simpler
-        /// than reconstructing vanilla's per-unit loop from a postfix after the roster has already
-        /// changed. The fee is applied in the postfix so it lands after vanilla has settled the trade
-        /// and cannot perturb the price the trade itself used.
-        /// </remarks>
-        [HarmonyPatch(typeof(SellItemsAction), "ApplyInternal")]
-        private static class TradeTariffPatch
-        {
-            private static void Prefix(PartyBase sellerParty, PartyBase buyerParty, ItemRosterElement itemRosterElement, int number, out int __state)
-            {
-                __state = 0;
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || number <= 0)
-                {
-                    return;
-                }
-
-                Town town = TownOf(sellerParty, buyerParty);
-                if (town == null)
-                {
-                    return;
-                }
-
-                // Whoever is not the town is the party doing the trading, exactly as vanilla resolves it.
-                MobileParty tradingParty = buyerParty != null ? buyerParty.MobileParty : null;
-                bool isSelling = false;
-                if (tradingParty == null)
-                {
-                    tradingParty = sellerParty != null ? sellerParty.MobileParty : null;
-                    isSelling = true;
-                }
-                if (tradingParty == null)
-                {
-                    return;
-                }
-
-                int unitPrice = town.GetItemPrice(itemRosterElement.EquipmentElement, tradingParty, isSelling);
-                __state = number * unitPrice;
-            }
-
-            private static void Postfix(PartyBase sellerParty, PartyBase buyerParty, int __state)
-            {
-                if (__state <= 0)
-                {
-                    return;
-                }
-                Town town = TownOf(sellerParty, buyerParty);
-                if (town == null)
-                {
-                    return;
-                }
-
-                Levy(town.Settlement, __state);
-            }
-        }
-
-        /// <summary>The town on the settlement side of a trade, or null when neither side is a town.</summary>
-        private static Town TownOf(PartyBase sellerParty, PartyBase buyerParty)
-        {
-            if (sellerParty != null && sellerParty.IsSettlement && sellerParty.Settlement != null && sellerParty.Settlement.IsTown)
-            {
-                return sellerParty.Settlement.Town;
-            }
-            if (buyerParty != null && buyerParty.IsSettlement && buyerParty.Settlement != null && buyerParty.Settlement.IsTown)
-            {
-                return buyerParty.Settlement.Town;
-            }
-            return null;
-        }
+        // There is deliberately no patch here any more.
+        //
+        // The fee used to be hooked onto SellItemsAction, measuring the trade as number x price in a
+        // prefix. That caught the ordinary market trade and nothing else -- a caravan being bought, a
+        // ship repaired at a port, a tournament forfeit and a prisoner ransom all reached a town's money
+        // without paying a penny of it. Adding a second hook per action would have double-charged the
+        // one already covered, since SellItemsAction settles through GiveGoldAction internally.
+        //
+        // So the levy moved to SettlementWealth.RouteNativeWrite, the single point every native gold
+        // write now passes through. That charges each trade exactly once, charges all of them, and needs
+        // no maintenance when a new path appears. It is also more accurate than the old prefix, which
+        // admitted to being a hair off: vanilla re-prices each unit as the roster shifts within a large
+        // transaction, and the funnel sees the gold that actually moved rather than an estimate made
+        // before it did.
     }
 }

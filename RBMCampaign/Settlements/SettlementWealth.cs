@@ -186,6 +186,107 @@ namespace RBMCampaign
             public const string Carousing = "carousing";
             public const string TroopGoods = "troop-goods";
             public const string Boost = "boost";
+
+            /// <summary>
+            /// Goods bought and sold over the settlement's counter by anyone the ledger does not model
+            /// by hand: caravans, passing lords, the player. Routed in from vanilla's own gold writes --
+            /// see <see cref="RouteNativeWrite"/>.
+            /// </summary>
+            public const string Trade = "trade";
+
+            /// <summary>
+            /// Prisoners sold at the settlement, bought by the brokers and slavers who work its market.
+            /// Vanilla paid the seller out of nothing; see <see cref="RansomFunding"/>.
+            /// </summary>
+            public const string Ransom = "ransom";
+
+            /// <summary>Surgeons and bonesetters paid by soldiers mending in the settlement.</summary>
+            public const string Surgery = "surgery";
+
+            /// <summary>
+            /// Vanilla's commission on a sale struck at the settlement's own stall, on its way to the
+            /// owner through <c>TradeTaxAccumulated</c>. See <see cref="NativeTradeConservation"/>.
+            /// </summary>
+            public const string Commission = "commission";
+
+            /// <summary>
+            /// A workshop's running costs, reaching the townspeople who work it. Vanilla destroyed
+            /// these -- see <see cref="WorkshopPurse"/>.
+            /// </summary>
+            public const string WorkshopWages = "workshop-wages";
+        }
+
+        // Depth of a funnel write in progress. The ChangeGold guard uses it to tell OUR write to the
+        // backing store from a native one that has to be routed -- without it the guard would catch the
+        // funnel's own writes and recurse forever. A counter rather than a flag because Apply can be
+        // reached from inside another purse's move (the boost pass-through credits and debits in one
+        // call chain), and a flag would clear on the inner return.
+        private static int _funnelDepth;
+
+        /// <summary>Whether a purse write currently in progress came from the funnel itself.</summary>
+        internal static bool IsInsideFunnel
+        {
+            get { return _funnelDepth > 0; }
+        }
+
+        /// <summary>
+        /// Takes a gold move vanilla was about to make to a settlement and puts it through the funnel
+        /// instead, so it lands on the ledger under a name like everything else.
+        /// </summary>
+        /// <remarks>
+        /// Returns false when the settlement holds no purse this system models -- a hideout, say -- in
+        /// which case the caller must let vanilla's own write proceed untouched. Routing money into a
+        /// settlement the funnel refuses would silently destroy it.
+        ///
+        /// Which purse it lands in follows the same split as everywhere else: a village has one purse
+        /// and vanilla's gold field IS it, so a sale at a village stall is settlement wealth; a town or
+        /// castle keeps its market money apart from its treasury, and a trade over the counter is the
+        /// market's.
+        ///
+        /// The town's market fee is taken here rather than at any one action, which is what lets it
+        /// apply to ALL of them. A trade is a trade whether it arrived through <c>SellItemsAction</c>, a
+        /// caravan being bought, a ship being repaired at a port, or something a later patch adds --
+        /// they all end at this one write, so charging the fee here charges it once and charges it
+        /// everywhere. See <see cref="TradeTariff"/>, which used to hook <c>SellItemsAction</c> by hand
+        /// and no longer needs to.
+        /// </remarks>
+        internal static bool RouteNativeWrite(Settlement settlement, int amount, bool seeding)
+        {
+            if (settlement == null || amount == 0)
+            {
+                return false;
+            }
+
+            // World generation handing a town its opening market money is not a trade and must not be
+            // taxed as one. Without this the 20,000 denars Town.OnInit deals out would post a phantom
+            // trade on every town and pay a market fee on money that never changed hands.
+            string source = seeding ? Source.Seed : Source.Trade;
+
+            if (settlement.IsVillage)
+            {
+                if (!Holds(settlement))
+                {
+                    return false;
+                }
+                Apply(settlement, amount, source);
+                return true;
+            }
+
+            if (!HasMarket(settlement) || settlement.SettlementComponent == null)
+            {
+                return false;
+            }
+
+            int applied = ApplyCitizens(settlement, amount, source);
+            if (seeding)
+            {
+                return true;
+            }
+            // Charged on what actually moved, and in both directions -- a party buying from the town and
+            // one selling to it both pay the fee. Levied after the money has landed, so the fee comes out
+            // of a market that has already been paid rather than out of its standing float.
+            TradeTariff.Levy(settlement, (applied < 0) ? -applied : applied);
+            return true;
         }
 
         // A day's movements per settlement, by source, signed -- one ledger per purse. Diagnostics only.
@@ -289,7 +390,15 @@ namespace RBMCampaign
                 // the player's stall, the shop-availability line, a sale made at the village -- sees
                 // the real number without a mirror to keep in step. See VillageGoldStock for the two
                 // vanilla behaviours that had to be switched off to free the field for this.
-                settlement.SettlementComponent.ChangeGold(applied);
+                _funnelDepth++;
+                try
+                {
+                    settlement.SettlementComponent.ChangeGold(applied);
+                }
+                finally
+                {
+                    _funnelDepth--;
+                }
             }
             else
             {
@@ -323,6 +432,19 @@ namespace RBMCampaign
                 return 0;
             }
             return settlement.SettlementComponent.Gold;
+        }
+
+        /// <summary>
+        /// Whether this settlement has a market pot at all -- a town or a castle, not a village.
+        /// </summary>
+        /// <remarks>
+        /// Needed because a zero from <see cref="GetCitizenWealth"/> or <see cref="DebitCitizens"/>
+        /// cannot tell "this settlement has no market" from "its market is broke", and a caller that
+        /// treats the first as the second will charge nobody and think it charged everybody.
+        /// </remarks>
+        public static bool HasCitizenPurse(Settlement settlement)
+        {
+            return HasMarket(settlement) && settlement.SettlementComponent != null;
         }
 
         /// <summary>
@@ -361,7 +483,15 @@ namespace RBMCampaign
             {
                 return 0;
             }
-            settlement.SettlementComponent.ChangeGold(applied);
+            _funnelDepth++;
+            try
+            {
+                settlement.SettlementComponent.ChangeGold(applied);
+            }
+            finally
+            {
+                _funnelDepth--;
+            }
 
             if (EconomyLog.IsEnabled && source != null)
             {

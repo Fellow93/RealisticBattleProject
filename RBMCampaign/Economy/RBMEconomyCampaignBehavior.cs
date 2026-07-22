@@ -41,6 +41,9 @@ namespace RBMCampaign
             EconomyLog.StartCampaignLog();
             PartyTradeFlow.Reset();
             TradeTariff.Reset();
+            WorkshopPurse.Reset();
+            WorkshopDiagnostics.Reset();
+            TownStorage.Reset();
         }
 
         /// <summary>

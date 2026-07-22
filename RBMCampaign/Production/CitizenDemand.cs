@@ -1,0 +1,580 @@
+using System.Collections.Generic;
+using System.Text;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
+
+namespace RBMCampaign
+{
+    /// <summary>
+    /// What a town's households actually buy each day, good by good.
+    ///
+    /// Vanilla has no shopping list. Every item category is handed a gold budget out of prosperity
+    /// (<c>GetDailyDemandForCategory</c>) and <c>MakeConsumption</c> then spends it against whatever
+    /// the market happens to be holding -- so a town's diet is decided by its suppliers rather than by
+    /// its appetite, and a town with nothing but fish on the shelf eats fish forever and calls it fed.
+    /// RBM's food rework made that worse in one specific way: rations are bought CHEAPEST FIRST, which
+    /// is right for a garrison's grocer but means the townspeople live on grain alone and touch nothing
+    /// else until the grain is gone.
+    ///
+    /// Here the household has a basket. It is stated per unit of Prosperity per day -- one prosperity
+    /// standing in for one household, the same reading <c>NumberOfProsperityToEatOneFood</c> already
+    /// uses -- and it has three parts:
+    ///
+    /// <list type="bullet">
+    /// <item><b>Food</b> is a MIX rather than a quantity. The day's ration is still whatever the food
+    /// model says (so perks, buildings and the existing calibration are untouched); this only decides
+    /// what it is made of.</item>
+    /// <item><b>Staples</b> are absolute quantities: fuel, salt, crockery, timber. Charcoal alone is
+    /// nearly three times the food throughput, which is what a pre-modern town's fuel bill looks
+    /// like.</item>
+    /// <item><b>Luxuries</b> appear only once the townspeople have savings, and in three widening
+    /// tiers, keyed on citizen wealth measured in days of the town's income.</item>
+    /// </list>
+    ///
+    /// None of this moves money across the settlement's boundary. A townsman buying bread off a
+    /// merchant is a transfer inside citizen wealth, so the pot is unchanged and only the goods leave
+    /// -- exactly as <see cref="RBMTownFoodSupply"/> already treats the civilian ration. The town's
+    /// market fee is the one part that is not internal, and every line here pays it.
+    ///
+    /// A deliberate non-feature: nothing is conjured to meet this demand. Several goods on the list
+    /// have no producer anywhere in the chain -- civilian garments most of all, which no village makes
+    /// and no workshop turns out -- so that demand goes unfilled and the money simply goes unspent.
+    /// That is the honest result and it is worth being able to see; the DEMAND log line reports every
+    /// shortfall by name.
+    /// </summary>
+    public static class CitizenDemand
+    {
+        /// <summary>
+        /// A household's daily income, per unit of Prosperity. Not spent as such -- nothing debits it,
+        /// because citizens' earnings and citizens' spending are the same pot under the ledger. It
+        /// exists to size the luxury thresholds below, which ask how many days of the town's income
+        /// its people have put by.
+        /// </summary>
+        public const float IncomePerProsperity = 127.4f;
+
+        /// <summary>Days of town income in savings before households buy anything beyond necessities.</summary>
+        public const float SmallLuxuryDays = 5f;
+        /// <summary>Days of town income in savings before households buy clothes, trinkets and soft furnishings.</summary>
+        public const float MediumLuxuryDays = 15f;
+        /// <summary>Days of town income in savings before households buy what only the rich buy.</summary>
+        public const float LargeLuxuryDays = 30f;
+
+        /// <summary>
+        /// What the day's ration is made of, as shares summing to 1. Grain is half of it and beer
+        /// another sixth -- the two together are the medieval diet, and beer is food rather than drink
+        /// at this volume.
+        /// </summary>
+        /// <remarks>
+        /// Two of these -- <c>oil</c> and <c>wine</c> -- are NOT food-store goods
+        /// (<c>ItemCategory.Property.BonusToFoodStores</c> is false for both, and their <c>IsFood</c>
+        /// flag is false besides). They are eaten all the same, and counting them as ration filled is
+        /// deliberate: the alternative is a town that buys its oil and then still reads as 3% starving.
+        /// The consequence is only that they do not show in the granary, which is correct -- a barrel
+        /// of wine is not a siege reserve.
+        /// </remarks>
+        private static readonly Line[] FoodMix =
+        {
+            new Line("grain", 0.518f),
+            new Line("beer", 0.176f),
+            new Line("meat", 0.124f),
+            new Line("cheese", 0.053f),
+            new Line("butter", 0.05f),
+            new Line("fish", 0.031f),
+            new Line("wine", 0.02f),
+            new Line("date_fruit", 0.018f),
+            new Line("oil", 0.01f),
+        };
+
+        /// <summary>
+        /// Necessities that are not food, in units per Prosperity per day.
+        /// </summary>
+        /// <remarks>
+        /// Charcoal at 0.6 is the largest physical flow in the whole economy -- larger than the town's
+        /// food -- and that is not an error: cooking and heating a household through a year burns far
+        /// more fuel by weight than it eats. Only lumberjack villages make any, so this will read as a
+        /// chronic shortfall until charcoal supply grows to meet it. Salt is the same story on a
+        /// smaller scale.
+        ///
+        /// Clothing is handled apart from this table because it is not a trade good: it is whatever
+        /// civilian garments happen to be on the shelf, across all five worn slots. See
+        /// <see cref="BuyGarments"/>.
+        /// </remarks>
+        private static readonly Line[] Staples =
+        {
+            new Line("charcoal", 0.6f),
+            new Line("salt", 0.24f),
+            new Line("pottery", 0.005f),
+            new Line("planks", 0.003f),
+        };
+
+        /// <summary>Garments bought per Prosperity per day as a necessity -- replacing what wears out.</summary>
+        private const float StapleGarments = 0.1f;
+
+        /// <summary>The first thing savings buy: a better table.</summary>
+        private static readonly Line[] SmallLuxuries =
+        {
+            new Line("date_fruit", 0.01f),
+            new Line("wine", 0.01f),
+            new Line("oil", 0.01f),
+            new Line("olives", 0.01f),
+            new Line("pottery", 0.002f),
+        };
+
+        /// <summary>The second: dressing well, and a little display.</summary>
+        private static readonly Line[] MediumLuxuries =
+        {
+            new Line("jewelry", 0.0033f),
+            new Line("felt", 0.002f),
+            new Line("fur", 0.0015f),
+        };
+
+        /// <summary>Garments bought per Prosperity per day on top of the staple replacement, once comfortable.</summary>
+        private const float MediumLuxuryGarments = 0.05f;
+
+        /// <summary>
+        /// The third: what only the rich buy.
+        /// </summary>
+        /// <remarks>
+        /// Jewelry appears here as well as in the tier below, and the tiers are cumulative, so a town
+        /// at this level buys twice the medium tier's jewelry. That is the reading the source figures
+        /// support -- the large tier restates jewelry at the same rate rather than raising it, which
+        /// only means anything if it stacks.
+        /// </remarks>
+        private static readonly Line[] LargeLuxuries =
+        {
+            new Line("jewelry", 0.0033f),
+            new Line("velvet", 0.001f),
+        };
+
+        /// <summary>A demanded good and how much of it a household wants, per day.</summary>
+        private struct Line
+        {
+            public readonly string ItemId;
+            public readonly float Rate;
+
+            public Line(string itemId, float rate)
+            {
+                ItemId = itemId;
+                Rate = rate;
+            }
+        }
+
+        // Every good named anywhere in the tables above, for the double-buy guard below. Built once.
+        private static HashSet<string> _basketIds;
+
+        /// <summary>
+        /// Whether the households buy this item by the basket, and so must not also be bought out of
+        /// vanilla's per-category gold budget.
+        /// </summary>
+        /// <remarks>
+        /// Tested per ITEM rather than per category on purpose. Clothing has no category of its own --
+        /// it spreads across garment, light_armor, medium_armor and the rest, categories that also hold
+        /// war gear the basket does not touch -- so a category-level guard would either double-buy the
+        /// tunics or stop the market consuming armour entirely. Trade goods map one to one with their
+        /// category, so for them the two tests are the same thing.
+        ///
+        /// Everything NOT on the basket stays on vanilla's budget: iron, clay, tools, hides, weapons,
+        /// horses. Those have their own sinks -- workshops consume the raw materials, parties buy the
+        /// gear -- and inventing a household appetite for them would be worse than leaving them alone.
+        /// </remarks>
+        public static bool CoversItem(ItemObject item)
+        {
+            if (item == null)
+            {
+                return false;
+            }
+            if (item.IsCivilian && IsWornSlot(item.ItemType))
+            {
+                return true;
+            }
+
+            if (_basketIds == null)
+            {
+                _basketIds = new HashSet<string>();
+                Line[][] tables = { FoodMix, Staples, SmallLuxuries, MediumLuxuries, LargeLuxuries };
+                foreach (Line[] table in tables)
+                {
+                    foreach (Line line in table)
+                    {
+                        _basketIds.Add(line.ItemId);
+                    }
+                }
+            }
+            return _basketIds.Contains(item.StringId);
+        }
+
+        /// <summary>
+        /// Units of one good the town's households get through in a day, at full appetite.
+        /// </summary>
+        /// <remarks>
+        /// Used to size a town's storage for that good -- see <see cref="TownStorage"/>. Deliberately
+        /// counts EVERY tier, including luxuries a poor town cannot currently afford: a warehouse is
+        /// built for the trade it might carry, not the trade it happens to be carrying this week, and a
+        /// cap that shrank as a town got poorer would strangle its recovery.
+        ///
+        /// Returns 0 for anything the basket does not model -- iron, clay, tools, war gear. Those are
+        /// bought by workshops and passing parties rather than by households, so RBM has no figure for
+        /// how much a town gets through and no business capping what it cannot measure.
+        /// </remarks>
+        public static float DailyUnits(Town town, string itemId)
+        {
+            if (town == null || string.IsNullOrEmpty(itemId) || town.Prosperity <= 0f)
+            {
+                return 0f;
+            }
+
+            float prosperity = town.Prosperity;
+            float units = 0f;
+
+            // The food mix is a share of the day's RATION -- a headcount figure, the same one
+            // FeedPopulation works from -- while everything else is a rate per unit of prosperity.
+            float ration = prosperity / Campaign.Current.Models.SettlementFoodModel.NumberOfProsperityToEatOneFood;
+            foreach (Line line in FoodMix)
+            {
+                if (line.ItemId == itemId)
+                {
+                    units += ration * line.Rate;
+                }
+            }
+
+            Line[][] byProsperity = { Staples, SmallLuxuries, MediumLuxuries, LargeLuxuries };
+            foreach (Line[] table in byProsperity)
+            {
+                foreach (Line line in table)
+                {
+                    if (line.ItemId == itemId)
+                    {
+                        units += prosperity * line.Rate;
+                    }
+                }
+            }
+
+            return units;
+        }
+
+        /// <summary>Garments a town gets through in a day: staple replacement plus the comfortable tier.</summary>
+        public static float DailyGarments(Town town)
+        {
+            return (town != null && town.Prosperity > 0f)
+                ? town.Prosperity * (StapleGarments + MediumLuxuryGarments)
+                : 0f;
+        }
+
+        /// <summary>
+        /// How rich a household is: what it has put by, measured in days of its own daily income.
+        /// </summary>
+        /// <remarks>
+        /// Deliberately expressed per household rather than town-wide, because that is the comparison
+        /// the tiers actually mean -- a man buys velvet when HE has thirty days' earnings behind him,
+        /// not when his city does. The two forms happen to be the same number, since dividing both
+        /// sides by Prosperity cancels, but only this one says why the threshold is where it is.
+        ///
+        /// A consequence worth stating: the tiers are therefore blind to town size. A small prosperous
+        /// town reaches the large tier on far less absolute wealth than a big poor one, which is right
+        /// -- it is a statement about how comfortable the people are, not about how big the place is.
+        /// </remarks>
+        public static float SavingsInDaysOfIncome(Town town)
+        {
+            float prosperity = town.Prosperity;
+            if (prosperity <= 0f || IncomePerProsperity <= 0f)
+            {
+                return 0f;
+            }
+
+            float savingsPerHousehold = SettlementWealth.GetCitizenWealth(town.Settlement) / prosperity;
+            return savingsPerHousehold / IncomePerProsperity;
+        }
+
+        // What went unbought today, per town, good by good -- built during the day's purchases and
+        // emitted by ReportAndClear at the end of the same tick.
+        private static readonly Dictionary<string, int> _shortfall = new Dictionary<string, int>();
+        private static int _spentToday;
+
+        /// <summary>
+        /// Buys the households' ration as a basket rather than cheapest-first, and reports the units it
+        /// could not fill by preference.
+        /// </summary>
+        /// <remarks>
+        /// The caller fills that remainder from whatever food is left, cheapest first. That fallback is
+        /// what keeps this change purely compositional: the number of rations a town gets in a day is
+        /// exactly what it was before, so nothing about starvation, prosperity or loyalty moves. Only
+        /// the contents of the basket changed. Without it, a town with no brewery would go permanently
+        /// 17.6% hungry over a preference, which is not what a hungry household does -- it eats bread.
+        /// </remarks>
+        public static int BuyRation(Town town, int units, Dictionary<ItemCategory, int> saleLog)
+        {
+            if (units <= 0)
+            {
+                return 0;
+            }
+
+            int filled = 0;
+            int spend = 0;
+            foreach (Line line in FoodMix)
+            {
+                int wanted = MBRandom.RoundRandomized(units * line.Rate);
+                filled += BuyLine(town, line.ItemId, wanted, saleLog, ref spend);
+            }
+
+            Levy(town, spend);
+            return (units > filled) ? units - filled : 0;
+        }
+
+        /// <summary>
+        /// Buys everything the households want that is not their ration: the staples always, and the
+        /// luxury tiers their savings have reached.
+        /// </summary>
+        /// <remarks>
+        /// Quantities are per Prosperity, so this is a shopping list rather than vanilla's gold budget.
+        /// The distinction matters for the same reason it did for food: a budget denominated in gold
+        /// means a town facing a fuel shortage buys LESS fuel as the price climbs, when what a shortage
+        /// should mean is that the same fuel costs more.
+        /// </remarks>
+        public static void BuyStaplesAndLuxuries(Town town, Dictionary<ItemCategory, int> saleLog)
+        {
+            float prosperity = town.Prosperity;
+            if (prosperity <= 0f)
+            {
+                return;
+            }
+
+            int spend = 0;
+            BuyTable(town, Staples, prosperity, saleLog, ref spend);
+            int garments = MBRandom.RoundRandomized(prosperity * StapleGarments);
+
+            float savings = SavingsInDaysOfIncome(town);
+            if (savings >= SmallLuxuryDays)
+            {
+                BuyTable(town, SmallLuxuries, prosperity, saleLog, ref spend);
+            }
+            if (savings >= MediumLuxuryDays)
+            {
+                BuyTable(town, MediumLuxuries, prosperity, saleLog, ref spend);
+                garments += MBRandom.RoundRandomized(prosperity * MediumLuxuryGarments);
+            }
+            if (savings >= LargeLuxuryDays)
+            {
+                BuyTable(town, LargeLuxuries, prosperity, saleLog, ref spend);
+            }
+
+            BuyGarments(town, garments, saleLog, ref spend);
+            Levy(town, spend);
+        }
+
+        private static void BuyTable(Town town, Line[] table, float prosperity, Dictionary<ItemCategory, int> saleLog, ref int spend)
+        {
+            foreach (Line line in table)
+            {
+                BuyLine(town, line.ItemId, MBRandom.RoundRandomized(prosperity * line.Rate), saleLog, ref spend);
+            }
+        }
+
+        /// <summary>
+        /// Takes up to <paramref name="wanted"/> units of one good off the market at the market price
+        /// and returns how many it got, recording the rest as a shortfall.
+        /// </summary>
+        /// <remarks>
+        /// No money changes hands here beyond the tally the caller levies a fee on. Both sides of the
+        /// counter are inside citizen wealth, so the sale nets to zero across the settlement and the
+        /// goods simply leave. The demand registration is a price signal rather than a payment, and is
+        /// the same call every other buying channel makes -- see
+        /// <see cref="RBMTownFoodSupply.RegisterPurchaseDemand"/>.
+        /// </remarks>
+        private static int BuyLine(Town town, string itemId, int wanted, Dictionary<ItemCategory, int> saleLog, ref int spend)
+        {
+            if (wanted <= 0)
+            {
+                return 0;
+            }
+
+            ItemObject item = Game.Current.ObjectManager.GetObject<ItemObject>(itemId);
+            if (item == null)
+            {
+                return 0;
+            }
+
+            ItemRoster itemRoster = town.Owner.ItemRoster;
+            int available = itemRoster.GetItemNumber(item);
+            int taken = (available < wanted) ? available : wanted;
+            if (taken < wanted)
+            {
+                Record(itemId, wanted - taken);
+            }
+            if (taken <= 0)
+            {
+                return 0;
+            }
+
+            int cost = taken * town.MarketData.GetPrice(item);
+            itemRoster.AddToCounts(item, -taken);
+            spend += cost;
+
+            RBMTownFoodSupply.RegisterPurchaseDemand(town.MarketData, item.ItemCategory, cost);
+            saleLog.TryGetValue(item.ItemCategory, out int logged);
+            saleLog[item.ItemCategory] = logged + taken;
+            return taken;
+        }
+
+        /// <summary>
+        /// Buys civilian clothing off the market -- whatever is on the shelf, cheapest first, across
+        /// the five worn slots.
+        /// </summary>
+        /// <remarks>
+        /// Clothing cannot go through <see cref="BuyLine"/> because there is no clothing trade good:
+        /// it is hundreds of distinct armour items that happen to carry the Civilian flag. Note that
+        /// the flag alone is not a garment test -- every trade good carries it too -- so the slot has
+        /// to be checked as well.
+        ///
+        /// Cheapest first because a household replacing a worn tunic buys a tunic, not the best coat in
+        /// the market. Left unsorted this would have towns quietly consuming the merchants' finest
+        /// stock at forty pieces a day.
+        ///
+        /// Nothing in the game produces civilian garments -- no village, no workshop -- so this will
+        /// usually buy far less than it wants. The shortfall is reported rather than hidden.
+        /// </remarks>
+        private static void BuyGarments(Town town, int wanted, Dictionary<ItemCategory, int> saleLog, ref int spend)
+        {
+            if (wanted <= 0)
+            {
+                return;
+            }
+
+            ItemRoster itemRoster = town.Owner.ItemRoster;
+            List<GarmentLot> lots = new List<GarmentLot>();
+            for (int i = itemRoster.Count - 1; i >= 0; i--)
+            {
+                ItemRosterElement element = itemRoster.GetElementCopyAtIndex(i);
+                ItemObject item = element.EquipmentElement.Item;
+                if (item == null || element.Amount <= 0 || !item.IsCivilian || !IsWornSlot(item.ItemType))
+                {
+                    continue;
+                }
+
+                lots.Add(new GarmentLot
+                {
+                    Element = element.EquipmentElement,
+                    Category = item.ItemCategory,
+                    Amount = element.Amount,
+                    Price = town.MarketData.GetPrice(item),
+                    RosterOrder = lots.Count
+                });
+            }
+
+            lots.Sort(delegate (GarmentLot a, GarmentLot b)
+            {
+                return (a.Price != b.Price) ? a.Price.CompareTo(b.Price) : a.RosterOrder.CompareTo(b.RosterOrder);
+            });
+
+            int remaining = wanted;
+            foreach (GarmentLot lot in lots)
+            {
+                if (remaining <= 0)
+                {
+                    break;
+                }
+
+                int taken = (lot.Amount >= remaining) ? remaining : lot.Amount;
+                remaining -= taken;
+
+                int cost = taken * lot.Price;
+                itemRoster.AddToCounts(lot.Element, -taken);
+                spend += cost;
+
+                RBMTownFoodSupply.RegisterPurchaseDemand(town.MarketData, lot.Category, cost);
+                saleLog.TryGetValue(lot.Category, out int logged);
+                saleLog[lot.Category] = logged + taken;
+            }
+
+            if (remaining > 0)
+            {
+                Record("clothing", remaining);
+            }
+        }
+
+        private static bool IsWornSlot(ItemObject.ItemTypeEnum type)
+        {
+            return type == ItemObject.ItemTypeEnum.HeadArmor
+                || type == ItemObject.ItemTypeEnum.BodyArmor
+                || type == ItemObject.ItemTypeEnum.LegArmor
+                || type == ItemObject.ItemTypeEnum.HandArmor
+                || type == ItemObject.ItemTypeEnum.Cape;
+        }
+
+        /// <summary>A stack of market clothing priced for this purchase, held apart from the roster so
+        /// buying out of price order cannot disturb the iteration.</summary>
+        private struct GarmentLot
+        {
+            public EquipmentElement Element;
+            public ItemCategory Category;
+            public int Amount;
+            public int Price;
+            public int RosterOrder;
+        }
+
+        /// <summary>
+        /// The town's fee on its own people's shopping. The purchase itself is internal to citizen
+        /// wealth, but the fee is not -- it moves a sliver into the treasury, like any trade struck in
+        /// the market. See <see cref="TradeTariff"/>.
+        /// </summary>
+        private static void Levy(Town town, int spend)
+        {
+            _spentToday += spend;
+            if (spend > 0)
+            {
+                TradeTariff.Levy(town.Settlement, spend);
+            }
+        }
+
+        private static void Record(string itemId, int units)
+        {
+            if (!EconomyLog.IsEnabled || units <= 0)
+            {
+                return;
+            }
+            _shortfall.TryGetValue(itemId, out int had);
+            _shortfall[itemId] = had + units;
+        }
+
+        /// <summary>
+        /// Writes the day's basket for one town and resets the tally for the next.
+        /// </summary>
+        /// <remarks>
+        /// The shortfall list is the point of this line. Demand that cannot be filled is the only
+        /// visible evidence of a good nobody produces, and several goods on the basket have no producer
+        /// at all -- so a healthy economy is one where this list shrinks, and it is the readout for
+        /// whether village and workshop output is anywhere near what towns actually want.
+        /// </remarks>
+        public static void ReportAndClear(Town town)
+        {
+            if (EconomyLog.IsEnabled)
+            {
+                float savings = SavingsInDaysOfIncome(town);
+                string tier = (savings >= LargeLuxuryDays) ? "large"
+                    : (savings >= MediumLuxuryDays) ? "medium"
+                    : (savings >= SmallLuxuryDays) ? "small" : "none";
+
+                StringBuilder missing = new StringBuilder();
+                foreach (KeyValuePair<string, int> pair in _shortfall)
+                {
+                    if (missing.Length > 0)
+                    {
+                        missing.Append(", ");
+                    }
+                    missing.Append(pair.Key).Append(" ").Append(pair.Value);
+                }
+
+                EconomyLog.Log("DEMAND", town.Settlement != null ? town.Settlement.Name.ToString() : town.StringId,
+                    "spent " + _spentToday + "d"
+                    + "  ·  prosperity " + EconomyLog.Fmt(town.Prosperity)
+                    + "  ·  savings " + EconomyLog.Fmt(savings) + " days of income → luxuries " + tier
+                    + (missing.Length > 0 ? ("  ·  UNMET: " + missing) : ""));
+            }
+
+            _shortfall.Clear();
+            _spentToday = 0;
+        }
+    }
+}

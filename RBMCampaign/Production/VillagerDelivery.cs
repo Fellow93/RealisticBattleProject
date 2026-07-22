@@ -187,12 +187,23 @@ namespace RBMCampaign
             int sold = 0;
             foreach (Lot lot in lots)
             {
-                int affordable = MathF.Min(lot.Amount, town.Gold / lot.Price);
+                // What the town has ROOM for, before what it can pay for. A store already full of this
+                // good is not a sale the market can be talked into with a treasury advance -- see
+                // TownStorage. The cargo stays on the cart.
+                int wanted = TownStorage.Accept(settlement, lot.Element.Item, lot.Amount);
+                if (wanted <= 0)
+                {
+                    continue;
+                }
+
+                int affordable = MathF.Min(wanted, town.Gold / lot.Price);
                 if (affordable <= 0)
                 {
                     // The market cannot pay. Before the cargo is turned away, the fief buys it out of
                     // the treasury -- see AdvanceForFood.
-                    affordable = AdvanceForFood(settlement, lot);
+                    // Sized off the whole lot, so it has to respect the store's room as well -- an
+                    // advance is the fief finding the money, not the granary finding the space.
+                    affordable = MathF.Min(AdvanceForFood(settlement, lot), wanted);
                 }
                 if (affordable <= 0)
                 {

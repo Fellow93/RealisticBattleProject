@@ -76,6 +76,11 @@ namespace RBMCampaign
         public static void Reset()
         {
             _recentTroopSpend.Clear();
+            // Log-only and keyed the same way, so a previous campaign's part-day would otherwise show
+            // up as one bogus TAVERN line in the new one.
+            _carousedGold.Clear();
+            _carousedUnits.Clear();
+            _carousedGoods.Clear();
         }
 
         /// <summary>
@@ -99,16 +104,20 @@ namespace RBMCampaign
         /// </summary>
         public static void RegisterPurchase(Settlement settlement, ItemCategory category, int goldSpent)
         {
-            Town town = Receiver(settlement, goldSpent);
-            if (town == null)
+            // The coin lands wherever the settlement keeps its money -- a castle's market and a village's
+            // single purse included, which used to burn it. The market fee rides along inside.
+            if (!CreditLocalPurse(settlement, goldSpent, SettlementWealth.Source.TroopGoods))
             {
                 return;
             }
-            SettlementWealth.CreditCitizens(town.Settlement, goldSpent, SettlementWealth.Source.TroopGoods);
-            // A soldier at a stall is a customer like any other, so the town takes its market fee on
-            // what he spends -- see TradeTariff. Levied after the coin lands, so the fee comes out of a
-            // purse that has already been paid rather than out of the town's standing float.
-            TradeTariff.Levy(town.Settlement, goldSpent);
+
+            Town town = Receiver(settlement, goldSpent);
+            if (town == null)
+            {
+                // Paid, but not a town: no demand pool to feed and no trade tally to keep, both of which
+                // are town-scale machinery. See CreditLocalPurse.
+                return;
+            }
             AddToTally(town, goldSpent);
             PartyTradeFlow.RegisterInflow(town.Settlement, "troop-goods", goldSpent);
             if (category == null)
@@ -122,21 +131,156 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Coin spent on no good at all -- taverns, dice and worse. It reaches the town's purse the
-        /// same way, but there is no item and so no category whose demand it could belong to.
+        /// What a soldier's carousing buys that actually comes off a shelf, and in what proportion.
+        /// Beer above all, because that is what a tavern is; wine for the men who can afford it, and
+        /// the rest is what is put in front of them to eat.
         /// </summary>
+        /// <remarks>
+        /// Grape is table fruit here, not a wine input, and it puts the taverns in direct competition
+        /// with the wineries for the same vineyard crop -- which is the correct tension. A wine region
+        /// with a garrison in it should find its presses short.
+        /// </remarks>
+        private static readonly KeyValuePair<string, float>[] TavernFare =
+        {
+            new KeyValuePair<string, float>("beer", 0.38f),
+            new KeyValuePair<string, float>("wine", 0.18f),
+            new KeyValuePair<string, float>("meat", 0.18f),
+            new KeyValuePair<string, float>("cheese", 0.11f),
+            new KeyValuePair<string, float>("fish", 0.08f),
+            new KeyValuePair<string, float>("grape", 0.07f),
+        };
+
+        /// <summary>
+        /// The share of carousing money that buys something physical rather than paying for the house.
+        ///
+        /// The other half is the tavern itself -- the keeper's labour, the room, the fire, the dice, the
+        /// company. That part is a service: it pays the town exactly the same but consumes nothing off
+        /// a shelf, which is why carousing could not simply be turned into a purchase wholesale.
+        /// </summary>
+        private const float CarousingGoodsShare = 0.5f;
+
+        // What the taverns took and what they poured, per town, aggregated over the day's hourly
+        // rounds and emitted by DecayDaily. Ephemeral and log-only.
+        private static readonly Dictionary<string, int> _carousedGold = new Dictionary<string, int>();
+        private static readonly Dictionary<string, int> _carousedUnits = new Dictionary<string, int>();
+        private static readonly Dictionary<string, int> _carousedGoods = new Dictionary<string, int>();
+
+        /// <summary>
+        /// A stack drinking its wage away. The coin reaches the town's purse whole, but only part of it
+        /// buys anything: the rest pays for the house.
+        /// </summary>
+        /// <remarks>
+        /// Carousing used to be pure service -- the largest single inflow a town had, and it drained
+        /// nothing off the market. A garrison could drink in a town for a month and not lower its beer
+        /// by a barrel, which made soldiers the one customer whose money arrived without demand
+        /// following it. Now half of it is spent over a counter on beer, wine, meat, cheese and fish,
+        /// at the market's own prices, and those goods leave.
+        ///
+        /// The gold is UNCHANGED by the split, deliberately. The town is credited the full sum once,
+        /// pays the fee on the full sum once, and tallies it once, exactly as before; all that is new is
+        /// that some of it now removes stock and registers demand. So this cannot move any balance in
+        /// the ledger -- it only decides whether the money took something with it.
+        ///
+        /// Fare the market has not got falls back to the house rather than going unspent. Men who find
+        /// the beer gone do not take their coin home; they drink what there is, and pay the keeper for
+        /// the privilege. That fallback is also what keeps the gold invariant above exactly true.
+        /// </remarks>
         public static void RegisterServiceSpend(Settlement settlement, int goldSpent)
         {
-            Town town = Receiver(settlement, goldSpent);
-            if (town == null)
+            // Every settlement with a purse keeps what its taverns take -- castles and villages have
+            // drinking houses too, and their takings used to be destroyed.
+            if (!CreditLocalPurse(settlement, goldSpent, SettlementWealth.Source.Carousing))
             {
                 return;
             }
-            SettlementWealth.CreditCitizens(town.Settlement, goldSpent, SettlementWealth.Source.Carousing);
-            // Taverns and gambling houses pay the town's fee on their takings like any other trade.
-            TradeTariff.Levy(town.Settlement, goldSpent);
+
+            Town town = Receiver(settlement, goldSpent);
+            if (town == null)
+            {
+                // Paid, but the fare is not bought: pricing it would need market data, and a castle's or
+                // village's is on vanilla's scale where a loaf costs six times a town's. So outside a
+                // town the whole sum stays with the house rather than being priced wrongly.
+                return;
+            }
             AddToTally(town, goldSpent);
             PartyTradeFlow.RegisterInflow(town.Settlement, "carousing", goldSpent);
+
+            PourDrinks(town, MathF.Round(goldSpent * CarousingGoodsShare), goldSpent);
+        }
+
+        /// <summary>
+        /// Takes the fare the drinkers got through off the market, spending up to
+        /// <paramref name="budget"/> denars across <see cref="TavernFare"/> at market prices.
+        /// </summary>
+        /// <remarks>
+        /// Bought by GOLD rather than by quantity, unlike the households' basket in
+        /// <see cref="CitizenDemand"/> -- and that difference is right rather than an inconsistency. A
+        /// household needs a fixed number of meals however dear they are; a soldier has a fixed number
+        /// of coins and drinks whatever they buy. So a town short of beer sells the same men less of it
+        /// at a higher price, which is exactly the pressure a scarce good should feel.
+        ///
+        /// No money moves here. The gold was credited whole by the caller, and both sides of this
+        /// counter are inside citizen wealth anyway -- the soldier paid the tavern, the tavern pays its
+        /// supplier, and neither crosses the settlement's boundary. Only the goods leave.
+        /// </remarks>
+        private static void PourDrinks(Town town, int budget, int goldSpent)
+        {
+            int poured = 0;
+            int spentOnGoods = 0;
+
+            if (budget > 0)
+            {
+                ItemRoster roster = town.Owner.ItemRoster;
+                foreach (KeyValuePair<string, float> fare in TavernFare)
+                {
+                    int share = MathF.Round(budget * fare.Value);
+                    if (share <= 0)
+                    {
+                        continue;
+                    }
+
+                    ItemObject item = Game.Current.ObjectManager.GetObject<ItemObject>(fare.Key);
+                    if (item == null)
+                    {
+                        continue;
+                    }
+
+                    int price = MathF.Max(1, town.MarketData.GetPrice(item));
+                    int wanted = share / price;
+                    if (wanted <= 0)
+                    {
+                        continue;
+                    }
+
+                    int available = roster.GetItemNumber(item);
+                    int taken = (available < wanted) ? available : wanted;
+                    if (taken <= 0)
+                    {
+                        continue;
+                    }
+
+                    int cost = taken * price;
+                    roster.AddToCounts(item, -taken);
+                    poured += taken;
+                    spentOnGoods += cost;
+
+                    RBMTownFoodSupply.RegisterPurchaseDemand(town.MarketData, item.ItemCategory, cost);
+                }
+            }
+
+            if (!EconomyLog.IsEnabled)
+            {
+                return;
+            }
+
+            string key = town.Settlement.StringId;
+            int running;
+            _carousedGold.TryGetValue(key, out running);
+            _carousedGold[key] = running + goldSpent;
+            _carousedUnits.TryGetValue(key, out running);
+            _carousedUnits[key] = running + poured;
+            _carousedGoods.TryGetValue(key, out running);
+            _carousedGoods[key] = running + spentOnGoods;
         }
 
         private static Town Receiver(Settlement settlement, int goldSpent)
@@ -147,6 +291,75 @@ namespace RBMCampaign
             }
             Town town = settlement.Town;
             return (town != null && town.IsTown) ? town : null;
+        }
+
+        /// <summary>
+        /// Puts a soldier's coin into whichever purse the settlement he spent it in actually keeps, and
+        /// reports whether it found one.
+        /// </summary>
+        /// <remarks>
+        /// This exists because the town gate above is about PRICING, not about who gets paid, and the two
+        /// were conflated. Castles and villages sit on vanilla prosperity and vanilla prices, so a
+        /// soldier's bread must not be costed off their market data -- but that is no reason for his
+        /// money to cease to exist when he hands it over, which is exactly what happened: every spend
+        /// path deducted the spoils unconditionally and then dropped the coin on the floor unless the
+        /// settlement was a town.
+        ///
+        /// It was not a rounding error. A castle pays its garrison's wages and its militia's stipend out
+        /// of its own treasury by real debits, every hour, into purses that then incinerated the money --
+        /// so a castle's treasury drained into nothing at exactly the rate it paid its men.
+        ///
+        /// A town or castle takes it into the market, which is where a shopkeeper's takings belong. A
+        /// village has no market -- one purse only -- so it goes there. See <see cref="SettlementWealth"/>.
+        /// </remarks>
+        private static bool CreditLocalPurse(Settlement settlement, int goldSpent, string source)
+        {
+            if (goldSpent <= 0 || settlement == null || !RBMConfig.RBMConfig.rbmCampaignEnabled)
+            {
+                return false;
+            }
+
+            if (SettlementWealth.HasCitizenPurse(settlement))
+            {
+                SettlementWealth.CreditCitizens(settlement, goldSpent, source);
+            }
+            else if (settlement.IsVillage)
+            {
+                SettlementWealth.Credit(settlement, goldSpent, source);
+            }
+            else
+            {
+                return false;
+            }
+
+            // Towns take a market fee; a village has no market to charge one on, and Levy gates on that
+            // itself.
+            TradeTariff.Levy(settlement, goldSpent);
+            return true;
+        }
+
+        /// <summary>
+        /// A surgeon's fee. Reaches the settlement like any other purchase, which it did not before: the
+        /// healing path deducted the coin from the soldier's purse and credited nobody at all, in every
+        /// settlement including towns, despite its own description saying otherwise.
+        /// </summary>
+        /// <remarks>
+        /// Registered as a service rather than a purchase -- no goods leave a shelf, and unlike carousing
+        /// it buys no fare either, so it does not go through <see cref="RegisterServiceSpend"/>. A
+        /// bonesetter's time is the whole of what is bought.
+        /// </remarks>
+        public static void RegisterSurgery(Settlement settlement, int goldSpent)
+        {
+            if (!CreditLocalPurse(settlement, goldSpent, SettlementWealth.Source.Surgery))
+            {
+                return;
+            }
+            Town town = Receiver(settlement, goldSpent);
+            if (town != null)
+            {
+                AddToTally(town, goldSpent);
+                PartyTradeFlow.RegisterInflow(settlement, "surgery", goldSpent);
+            }
         }
 
         private static void AddToTally(Town town, int goldSpent)
@@ -162,6 +375,17 @@ namespace RBMCampaign
         /// capped against the countryside term so it can supplement the land's contribution without
         /// replacing it.
         /// </summary>
+        /// <remarks>
+        /// DIAGNOSTIC ONLY as of the gold controller being switched off. It used to raise the target
+        /// the controller regulated towards, which was the only way a garrison town could keep the
+        /// money its garrison brought -- coin handed to a town already at target was destroyed within
+        /// days, so income without a target move netted to nothing. There is no target to raise any
+        /// more; soldier spending is simply kept, because nothing takes it away.
+        ///
+        /// It survives because the shadow target it feeds is still the yardstick the LIQUID drift line
+        /// is measured against, and a yardstick that ignored garrison trade would read every garrison
+        /// town as runaway. Retire this, its tally and its decay together with that line.
+        /// </remarks>
         public static float TreasuryBonus(Town town, float prosperityTerm)
         {
             if (town == null || !town.IsTown)
@@ -188,6 +412,8 @@ namespace RBMCampaign
                 return;
             }
             string key = town.Settlement.StringId;
+            FlushTavernLog(town, key);
+
             int running;
             if (!_recentTroopSpend.TryGetValue(key, out running) || running <= 0)
             {
@@ -207,6 +433,43 @@ namespace RBMCampaign
             {
                 _recentTroopSpend[key] = decayed;
             }
+        }
+
+        /// <summary>
+        /// Writes the day's takings at one town's taverns and clears the tally.
+        /// </summary>
+        /// <remarks>
+        /// Aggregated over the day rather than written per round, because carousing ticks hourly for
+        /// every stack of every party in the settlement -- logged raw it would drown every other line
+        /// in the file.
+        ///
+        /// The number to read is the gap between what was spent on fare and what the fare share was
+        /// meant to be. A town whose taverns take a fortune and pour almost nothing has no drink to
+        /// sell, and the shortfall is silently reverting to the house.
+        /// </remarks>
+        private static void FlushTavernLog(Town town, string key)
+        {
+            int gold;
+            if (!_carousedGold.TryGetValue(key, out gold) || gold <= 0)
+            {
+                return;
+            }
+
+            int units;
+            int onGoods;
+            _carousedUnits.TryGetValue(key, out units);
+            _carousedGoods.TryGetValue(key, out onGoods);
+
+            _carousedGold.Remove(key);
+            _carousedUnits.Remove(key);
+            _carousedGoods.Remove(key);
+
+            int fareBudget = MathF.Round(gold * CarousingGoodsShare);
+            EconomyLog.Log("TAVERN", town.Settlement.Name != null ? town.Settlement.Name.ToString() : key,
+                "took " + gold + "d"
+                + "  ·  fare " + onGoods + "d of " + fareBudget + "d budgeted → " + units + " units"
+                + "  ·  house " + (gold - onGoods) + "d"
+                + (onGoods < fareBudget ? "  ·  SHORT ON DRINK" : ""));
         }
 
         /// <summary>For the economy log: what a town is currently carrying in recent troop trade.</summary>

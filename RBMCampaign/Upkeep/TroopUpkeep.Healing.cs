@@ -73,6 +73,11 @@ namespace RBMCampaign
                 healedTotal += heal;
             }
 
+            // The surgeon is paid. Until now this money was simply deducted and credited to nobody --
+            // in every settlement, towns included -- despite the description above saying it left for
+            // the settlement the way carousing and provisioning do.
+            TroopMarketFeedback.RegisterSurgery(settlement, spentTotal);
+
             if (healedTotal > 0 && SpoilsLog.IsEnabled)
             {
                 // Hourly, so once a day per party per settlement is enough to see the rate without flooding.

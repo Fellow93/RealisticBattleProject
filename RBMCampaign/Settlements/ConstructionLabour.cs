@@ -30,12 +30,20 @@ namespace RBMCampaign
         /// Takes the owner's boost money into the treasury and pays it out again as wages.
         /// </summary>
         /// <remarks>
-        /// Read as a difference either side of the call so the refund path -- lowering a boost pays the
-        /// owner back -- keeps working untouched and is not credited a second time.
+        /// Read as a difference either side of the call, and applied in BOTH directions -- which the
+        /// first version did not do, and that was an exploitable faucet rather than a cosmetic gap.
+        /// Vanilla refunds a lowered boost to the player out of nothing (<c>BoostBuildingProcessWithGold</c>
+        /// pays a null giver), so an earlier postfix that only acted when the boost ROSE meant: raise
+        /// it, the player pays X and X becomes wages in the market; lower it again, the player is handed
+        /// X back from nowhere and the town keeps its X. Repeatable at will, for as much as you liked.
         ///
-        /// The wage paid out is what the treasury could actually hand over, which after a credit of the
-        /// same size is the whole of it. Reading the debit's return rather than assuming keeps the two
-        /// halves equal even if the credit were ever clamped.
+        /// So a refund now runs the whole chain backwards -- the wages come back out of the market,
+        /// through the treasury, and out to the owner -- and the pair is a closed loop whichever way it
+        /// is walked.
+        ///
+        /// Amounts are read from what each step could actually move rather than assumed, so a market
+        /// that cannot return the full wage bill refunds only what it has instead of minting the
+        /// difference.
         /// </remarks>
         [HarmonyPatch(typeof(BuildingHelper), "BoostBuildingProcessWithGold")]
         private static class BoostPaysLabourPatch
@@ -52,15 +60,26 @@ namespace RBMCampaign
                     return;
                 }
                 int spent = gold - __state;
-                if (spent <= 0)
+                if (spent == 0)
                 {
                     return;
                 }
 
-                // Owner -> treasury -> the men who do the work.
-                SettlementWealth.Credit(town.Settlement, spent, SettlementWealth.Source.Boost);
-                int wages = SettlementWealth.Debit(town.Settlement, spent, SettlementWealth.Source.Construction);
-                SettlementWealth.CreditCitizens(town.Settlement, wages, SettlementWealth.Source.Construction);
+                if (spent > 0)
+                {
+                    // Owner -> treasury -> the men who do the work.
+                    SettlementWealth.Credit(town.Settlement, spent, SettlementWealth.Source.Boost);
+                    int wages = SettlementWealth.Debit(town.Settlement, spent, SettlementWealth.Source.Construction);
+                    SettlementWealth.CreditCitizens(town.Settlement, wages, SettlementWealth.Source.Construction);
+                    return;
+                }
+
+                // The boost was lowered and vanilla has just refunded the owner out of nothing. Walk the
+                // chain backwards so the money he gets back is money the town gives up.
+                int returned = -spent;
+                int fromMarket = SettlementWealth.DebitCitizens(town.Settlement, returned, SettlementWealth.Source.Construction);
+                int toTreasury = SettlementWealth.Credit(town.Settlement, fromMarket, SettlementWealth.Source.Construction);
+                SettlementWealth.Debit(town.Settlement, toTreasury, SettlementWealth.Source.Boost);
             }
         }
     }
