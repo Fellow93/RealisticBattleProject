@@ -20,8 +20,13 @@ namespace RBMCampaign
     ///
     /// The escort is a TARGET, not a per-trip addition: the militia already riding along count
     /// toward it, so repeat trips top the guard back up to strength (replacing losses) instead of
-    /// stacking a fresh escort every run. Militia cost Hearth at the same rate vanilla charges for
-    /// villagers -- they are the same villagers, just carrying a spear.
+    /// stacking a fresh escort every run.
+    ///
+    /// The guard is BORROWED from the village's standing militia, not raised fresh: dispatching a
+    /// convoy debits <c>Settlement.Militia</c>, and every guard that walks back through the gate is
+    /// credited back on arrival. A village with no militia sends its goods out unescorted, and one
+    /// whose escort is ridden down by bandits is left that many defenders short until it trains
+    /// replacements -- the same men are either on the walls or on the road, never both.
     /// </summary>
     internal static class VillagerEscort
     {
@@ -56,6 +61,94 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// Puts the guard back on the walls when the convoy reaches home.
+        ///
+        /// Every militiaman still standing is taken out of the convoy roster and credited back to
+        /// <c>Settlement.Militia</c>, wounded included -- they walked home, they can hold a gate while
+        /// they mend. Men lost on the road simply never come back, which is the whole point of the
+        /// loan: the village bears the cost of its own escorting. Convoys that are wiped out or
+        /// destroyed away from home return nothing.
+        /// </summary>
+        [HarmonyPatch(typeof(VillagerCampaignBehavior), "OnSettlementEntered")]
+        private static class EscortHomecomingPatch
+        {
+            private static void Postfix(MobileParty mobileParty, Settlement settlement)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || mobileParty == null || !mobileParty.IsVillager
+                    || settlement == null || !settlement.IsVillage || settlement.Village == null
+                    || mobileParty.HomeSettlement != settlement)
+                {
+                    return;
+                }
+
+                ReturnEscort(settlement.Village, mobileParty);
+            }
+        }
+
+        /// <summary>
+        /// Strips the militia back out of a convoy roster and hands them to the village. Safe to call on
+        /// a convoy that never carried an escort.
+        /// </summary>
+        private static void ReturnEscort(Village village, MobileParty villagerParty)
+        {
+            CultureObject culture = village.Settlement.Culture;
+            if (culture == null)
+            {
+                return;
+            }
+
+            CharacterObject[] escortTroops =
+            {
+                culture.MeleeMilitiaTroop,
+                culture.RangedMilitiaTroop,
+                culture.MeleeEliteMilitiaTroop,
+                culture.RangedEliteMilitiaTroop
+            };
+
+            TroopRoster roster = villagerParty.MemberRoster;
+            int returned = 0;
+            // Backwards: RemoveTroop drops emptied elements out of the roster and shifts the rest down.
+            for (int i = roster.Count - 1; i >= 0; i--)
+            {
+                CharacterObject character = roster.GetCharacterAtIndex(i);
+                if (character == null)
+                {
+                    continue;
+                }
+                for (int j = 0; j < escortTroops.Length; j++)
+                {
+                    if (character != escortTroops[j])
+                    {
+                        continue;
+                    }
+
+                    int count = roster.GetElementNumber(i);
+                    if (count > 0)
+                    {
+                        roster.RemoveTroop(character, count);
+                        returned += count;
+                    }
+                    break;
+                }
+            }
+
+            if (returned <= 0)
+            {
+                return;
+            }
+
+            float before = village.Settlement.Militia;
+            village.Settlement.Militia = before + returned;
+
+            if (EconomyLog.IsEnabled)
+            {
+                EconomyLog.Log("ESCORT", village.Settlement.Name != null ? village.Settlement.Name.ToString() : village.Settlement.StringId,
+                    "escort home  ·  " + returned + " militia returned"
+                    + "  ·  militia " + (int)before + " → " + (int)village.Settlement.Militia);
+            }
+        }
+
+        /// <summary>
         /// Returns a one-line account of the guard it added, for the economy log, or null when it added
         /// none. The escort is decided from figures (the cargo's worth, the guard already aboard) that
         /// exist only inside this method, so it is described here and printed by the caller.
@@ -85,8 +178,10 @@ namespace RBMCampaign
                 return null;
             }
 
-            // Never strip the village below the population the guards are drawn from.
-            missing = MathF.Min(missing, (int)village.Hearth);
+            // The guard is a loan from the standing militia -- the village can only send out men it
+            // actually has under arms, and it keeps none back: an empty militia means an unescorted run.
+            int available = (int)village.Settlement.Militia;
+            missing = MathF.Min(missing, available);
             if (missing <= 0)
             {
                 return null;
@@ -108,8 +203,8 @@ namespace RBMCampaign
             AddTier(villagerParty.MemberRoster, eliteMelee, eliteRanged, eliteCount);
             AddTier(villagerParty.MemberRoster, melee, ranged, missing - eliteCount);
 
-            // Same Hearth price vanilla pays per villager pulled into the party.
-            village.Hearth = MathF.Max(0f, village.Hearth - (missing + 1) / 2);
+            // Taken off the walls, not off the population -- Hearth is untouched, the militia pays.
+            village.Settlement.Militia = MathF.Max(0f, village.Settlement.Militia - missing);
 
             if (!EconomyLog.IsEnabled)
             {
@@ -118,7 +213,8 @@ namespace RBMCampaign
             return "+" + missing + " militia (" + eliteCount + " elite)"
                 + " for cargo worth " + cargoValue + "d"
                 + "  ·  target guard " + desired + " of max " + MaxEscort
-                + ", elite share " + EconomyLog.Fmt(eliteShare);
+                + ", elite share " + EconomyLog.Fmt(eliteShare)
+                + "  ·  borrowed from militia " + available + " → " + (int)village.Settlement.Militia;
         }
 
         /// <summary>
