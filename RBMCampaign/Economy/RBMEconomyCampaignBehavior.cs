@@ -39,6 +39,8 @@ namespace RBMCampaign
         private void OnSessionLaunched(CampaignGameStarter starter)
         {
             EconomyLog.StartCampaignLog();
+            PartyTradeFlow.Reset();
+            TradeTariff.Reset();
         }
 
         /// <summary>
@@ -52,6 +54,10 @@ namespace RBMCampaign
             // Ahead of the logging gate: the trade tally has to age whether or not anyone is reading
             // the log, or a town would keep a passing army's custom on its books forever.
             TroopMarketFeedback.DecayDaily(settlement);
+
+            // Ahead of the gate for the same reason: the tally has to be cleared each day whether or
+            // not anyone is reading it, or it accumulates for the life of the session.
+            PartyTradeFlow.FlushDaily(settlement);
 
             if (!EconomyLog.IsEnabled || settlement == null)
             {

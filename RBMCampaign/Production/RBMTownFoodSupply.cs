@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using Helpers;
 using HarmonyLib;
@@ -279,8 +279,22 @@ namespace RBMCampaign
                     // Vanilla writes the leftover budget back into the demand dictionary (not the
                     // rounded spend) -- kept as-is so category budgeting does not drift.
                     categoryDemand[category] = budget - affordable * price;
-                    town.ChangeGold(bought * price);
+                    // No credit to the town. Vanilla pays the market here out of nowhere -- the
+                    // townsfolk doing the buying have no purse of their own, so the sale is pure
+                    // invention, and it is the single largest source of manufactured money in the
+                    // economy. Under the two-purse ledger the buyer and the seller are BOTH inside
+                    // citizen wealth: a townsman handing a merchant a denar moves nothing across the
+                    // settlement's boundary, so the pot is unchanged and the goods are simply eaten.
+                    // See SettlementWealth. The demand figure below is a price signal, not money, and
+                    // still has to be registered.
                     RegisterPurchaseDemand(marketData, category, bought * price);
+
+                    // The town's market fee on the townsfolk's own purchases. The sale itself is
+                    // internal to citizen wealth -- a townsman buying off a merchant -- but the tariff
+                    // on it is not: it moves a sliver into the treasury like any trade in the market.
+                    // Food pays the same levy on its own leg in BuyFoodFromMarket; between the two,
+                    // everything a citizen buys pays it. See TradeTariff.
+                    TradeTariff.Levy(town.Settlement, bought * price);
 
                     saleLog.TryGetValue(category, out int logged);
                     saleLog[category] = logged + bought;
@@ -544,8 +558,77 @@ namespace RBMCampaign
             town.AddEffectOfBuildings(BuildingEffectEnum.FoodConsumption, ref rations);
 
             int units = MBRandom.RoundRandomized(rations.ResultNumber);
-            wanted = (units > 0) ? units : 0;
-            return (units > 0) ? BuyFoodFromMarket(town, units, saleLog) : 0;
+
+            // The town's standing administration eats a fixed ration on top of the modelled population,
+            // provisioned out of the treasury exactly like the garrison's -- see AdministrativeUpkeep,
+            // which pays the same staff's wage. A floor, so it is fed even by a town of no prosperity
+            // and no garrison, which is why it is added after the early return below rather than folded
+            // into the model total.
+            int adminUnits = AdministrativeUpkeep.TownDailyFood;
+            wanted = (units + adminUnits > 0) ? units + adminUnits : 0;
+            if (wanted <= 0)
+            {
+                return 0;
+            }
+
+            // Who eats decides who pays. The rations are bought in two groups because a townsman
+            // buying his own bread moves nothing across the settlement's boundary, while a soldier's or
+            // an official's is provisioned FOR him out of the fief's treasury -- see BuyFoodFromMarket.
+            //
+            // Split by the pre-building shares rather than by recomputing each leg through the perk
+            // and building chain, so the day's total ration is exactly what it was before the split.
+            // The food balance is calibrated on that total and must not move.
+            float soldierPart = soldiers.ResultNumber;
+            float bothParts = households.ResultNumber + soldierPart;
+            int soldierUnits = (units > 0 && bothParts > 0f) ? MBRandom.RoundRandomized(units * soldierPart / bothParts) : 0;
+            if (soldierUnits > units)
+            {
+                soldierUnits = units;
+            }
+            int civilianUnits = units - soldierUnits;
+            int provisionedUnits = soldierUnits + adminUnits;
+
+            int unmet = 0;
+            if (civilianUnits > 0)
+            {
+                unmet += BuyFoodFromMarket(town, civilianUnits, saleLog, provisioned: false);
+            }
+            if (provisionedUnits > 0)
+            {
+                unmet += BuyFoodFromMarket(town, provisionedUnits, saleLog, provisioned: true);
+            }
+            return unmet;
+        }
+
+        /// <summary>
+        /// Pays a garrison's grocer's bill: the fief's treasury first, and whatever it cannot cover
+        /// charged to the owner, exactly as <see cref="GarrisonUpkeep"/> splits the same garrison's
+        /// wages. Returns the total that changed hands, which is what the market is owed.
+        /// </summary>
+        /// <remarks>
+        /// The owner backstop is what stops a poor fief from starving the men holding it the moment
+        /// its treasury runs dry. A lord who wants a garrison somewhere pays to feed it if the place
+        /// cannot; the alternative -- taking the food anyway -- would mint the difference, and refusing
+        /// the food would starve a garrison over a bookkeeping shortfall.
+        /// </remarks>
+        private static int PayForGarrisonFood(Settlement settlement, int cost)
+        {
+            int fromTreasury = SettlementWealth.Debit(settlement, cost, SettlementWealth.Source.GarrisonFood);
+            int remainder = cost - fromTreasury;
+            if (remainder > 0)
+            {
+                Hero owner = (settlement.OwnerClan != null) ? settlement.OwnerClan.Leader : null;
+                if (owner != null)
+                {
+                    int fromOwner = (owner.Gold < remainder) ? owner.Gold : remainder;
+                    if (fromOwner > 0)
+                    {
+                        owner.ChangeHeroGold(-fromOwner);
+                        return fromTreasury + fromOwner;
+                    }
+                }
+            }
+            return fromTreasury;
         }
 
         /// <summary>
@@ -572,7 +655,7 @@ namespace RBMCampaign
         /// planned into a list first and then executed against EquipmentElement rather than index --
         /// the same reason <c>SellCargo</c> builds its lots up front.
         /// </summary>
-        private static int BuyFoodFromMarket(Town town, int amount, Dictionary<ItemCategory, int> saleLog)
+        private static int BuyFoodFromMarket(Town town, int amount, Dictionary<ItemCategory, int> saleLog, bool provisioned)
         {
             ItemRoster itemRoster = town.Owner.ItemRoster;
             TownMarketData marketData = town.MarketData;
@@ -603,6 +686,7 @@ namespace RBMCampaign
                 return (a.Price != b.Price) ? a.Price.CompareTo(b.Price) : a.RosterOrder.CompareTo(b.RosterOrder);
             });
 
+            int civilianSpend = 0;
             foreach (FoodLot lot in lots)
             {
                 if (amount <= 0)
@@ -613,11 +697,36 @@ namespace RBMCampaign
                 int taken = (lot.Amount >= amount) ? amount : lot.Amount;
                 amount -= taken;
                 itemRoster.AddToCounts(lot.Element, -taken);
-                town.ChangeGold(taken * lot.Price);
-                RegisterPurchaseDemand(marketData, lot.Category, taken * lot.Price);
+
+                int cost = taken * lot.Price;
+                if (provisioned)
+                {
+                    // The fief buys this ration for men who do not buy their own. Real money leaves the
+                    // treasury and reaches the merchants who sold it, which is the whole point: until
+                    // now feeding a garrison CREDITED the town, so a bigger garrison made a town richer.
+                    SettlementWealth.CreditCitizens(town.Settlement, PayForGarrisonFood(town.Settlement, cost), SettlementWealth.Source.GarrisonFood);
+                }
+                else
+                {
+                    // Civilian rations pay nobody: the townsman handing a merchant a denar is a move
+                    // inside citizen wealth, not across the settlement's boundary. But the town still
+                    // takes its market fee on the sale, the same one every other trade pays -- see the
+                    // levy below.
+                    civilianSpend += cost;
+                }
+
+                RegisterPurchaseDemand(marketData, lot.Category, cost);
 
                 saleLog.TryGetValue(lot.Category, out int logged);
                 saleLog[lot.Category] = logged + taken;
+            }
+
+            // The market fee on the townsfolk's daily bread. The purchase itself is internal to citizen
+            // wealth, but the tariff on it is not: it moves a sliver into the treasury, like any trade
+            // struck in the market. See TradeTariff.
+            if (civilianSpend > 0)
+            {
+                TradeTariff.Levy(town.Settlement, civilianSpend);
             }
 
             return amount;

@@ -49,6 +49,7 @@ namespace RBMCampaign
                 return;
             }
             PartyWageModel wageModel = Campaign.Current.Models.PartyWageModel;
+            bool isMilitia = party?.MobileParty != null && party.MobileParty.IsMilitia;
             int grantedTotal = 0;
             int stacksPaid = 0;
             for (int i = 0; i < roster.Count; i++)
@@ -64,6 +65,14 @@ namespace RBMCampaign
                 // closed loop now -- what lands here is spent on upgrades, food and drink, never handed
                 // back to the owner as gold.
                 int granted = wage;
+                if (isMilitia)
+                {
+                    // Except militia, whose wage nobody pays. They draw a stipend from their own
+                    // settlement instead, and only ever bank what it actually handed over -- so the
+                    // deposit and the payment are one number and neither can invent the other. See
+                    // MilitiaUpkeep.
+                    granted = MilitiaUpkeep.PayStipend(party.MobileParty, wage);
+                }
                 if (granted <= 0)
                 {
                     continue;

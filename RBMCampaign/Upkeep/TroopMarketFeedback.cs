@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -104,8 +104,13 @@ namespace RBMCampaign
             {
                 return;
             }
-            town.ChangeGold(goldSpent);
+            SettlementWealth.CreditCitizens(town.Settlement, goldSpent, SettlementWealth.Source.TroopGoods);
+            // A soldier at a stall is a customer like any other, so the town takes its market fee on
+            // what he spends -- see TradeTariff. Levied after the coin lands, so the fee comes out of a
+            // purse that has already been paid rather than out of the town's standing float.
+            TradeTariff.Levy(town.Settlement, goldSpent);
             AddToTally(town, goldSpent);
+            PartyTradeFlow.RegisterInflow(town.Settlement, "troop-goods", goldSpent);
             if (category == null)
             {
                 // An item with no category still pays the town; there is simply no demand pool for it.
@@ -127,8 +132,11 @@ namespace RBMCampaign
             {
                 return;
             }
-            town.ChangeGold(goldSpent);
+            SettlementWealth.CreditCitizens(town.Settlement, goldSpent, SettlementWealth.Source.Carousing);
+            // Taverns and gambling houses pay the town's fee on their takings like any other trade.
+            TradeTariff.Levy(town.Settlement, goldSpent);
             AddToTally(town, goldSpent);
+            PartyTradeFlow.RegisterInflow(town.Settlement, "carousing", goldSpent);
         }
 
         private static Town Receiver(Settlement settlement, int goldSpent)

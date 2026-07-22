@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
@@ -184,21 +184,87 @@ namespace RBMCampaign
                 return a.RosterOrder.CompareTo(b.RosterOrder);
             });
 
+            int sold = 0;
             foreach (Lot lot in lots)
             {
                 int affordable = MathF.Min(lot.Amount, town.Gold / lot.Price);
+                if (affordable <= 0)
+                {
+                    // The market cannot pay. Before the cargo is turned away, the fief buys it out of
+                    // the treasury -- see AdvanceForFood.
+                    affordable = AdvanceForFood(settlement, lot);
+                }
                 if (affordable <= 0)
                 {
                     continue;
                 }
 
                 villagerParty.PartyTradeGold += affordable * lot.Price;
-                town.ChangeGold(-affordable * lot.Price);
+                SettlementWealth.DebitCitizens(settlement, affordable * lot.Price, SettlementWealth.Source.Delivery);
                 settlement.ItemRoster.AddToCounts(lot.Element, affordable);
                 roster.AddToCounts(lot.Element, -affordable);
+                sold += affordable * lot.Price;
             }
 
-            // Vanilla's transaction event fires only for caravans, and a villager party is never one.
+            // The market fee on the sale, the same one a caravan or the player pays -- a villager party
+            // reaches the market without going through SellItemsAction, so the tariff patch there never
+            // sees this and it has to be charged by hand. See TradeTariff.
+            TradeTariff.Levy(settlement, sold);
+
+            // The convoy carries only its takings home now: nothing is bought here. What the village
+            // keeps and what its owner is owed is settled when it reaches its own gate -- see the
+            // homecoming in VillageHousehold.
+        }
+
+        /// <summary>
+        /// The fief buying grain from public funds because its market has run out of money, and the
+        /// one thing standing between a conserved economy and a town that starves forever.
+        ///
+        /// The trap is that <c>town.Gold</c> is both the money the market holds and the gate on what it
+        /// may buy. A town that spends its last denar cannot buy food; not buying food does not earn it
+        /// anything; so nothing it can do will ever refill the purse. Vanilla never meets this because
+        /// the daily controller tops the purse back up out of nothing. Once that goes, the settlement
+        /// needs a second purse it can fall back on, or the first empty market is permanent.
+        ///
+        /// The advance is deliberately food-only. A town too poor to buy wool should go without wool --
+        /// that is a market working. It is only the food gate that is a one-way door, because hunger
+        /// takes prosperity with it and prosperity is what the town's income rests on.
+        ///
+        /// The gold moves treasury to citizens rather than paying the villagers directly, so the
+        /// purchase itself stays the ordinary one below and the market ends up holding the money it
+        /// needed to make it.
+        /// </summary>
+        private static int AdvanceForFood(Settlement settlement, Lot lot)
+        {
+            if (!lot.IsFood || lot.Price <= 0)
+            {
+                return 0;
+            }
+
+            int treasury = SettlementWealth.GetSettlementWealth(settlement);
+            int affordable = MathF.Min(lot.Amount, treasury / lot.Price);
+            if (affordable <= 0)
+            {
+                return 0;
+            }
+
+            int advance = affordable * lot.Price;
+            int moved = SettlementWealth.Debit(settlement, advance, SettlementWealth.Source.Dearth);
+            if (moved <= 0)
+            {
+                return 0;
+            }
+            SettlementWealth.CreditCitizens(settlement, moved, SettlementWealth.Source.Dearth);
+
+            if (EconomyLog.IsEnabled)
+            {
+                EconomyLog.Log("DEARTH", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
+                    "market broke  ·  treasury advanced " + moved + "d for "
+                    + (moved / lot.Price) + " units of " + lot.Element.Item.Name
+                    + "  ·  treasury now " + SettlementWealth.GetSettlementWealth(settlement) + "d");
+            }
+
+            return moved / lot.Price;
         }
 
         /// <summary>Total units in a roster, and how many of them are food goods.</summary>

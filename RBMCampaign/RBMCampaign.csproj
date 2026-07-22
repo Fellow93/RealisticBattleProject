@@ -333,15 +333,29 @@
     <Compile Include="Spectate\RBMSpectateCampaignBehavior.cs" />
     <Compile Include="Production\RBMVillageProduction.cs" />
     <Compile Include="Production\RBMTownFoodSupply.cs" />
+    <Compile Include="Production\TownFoodReserve.cs" />
     <Compile Include="Production\VillagerConvoys.cs" />
     <Compile Include="Production\VillagerDispatch.cs" />
     <Compile Include="Production\VillagerDelivery.cs" />
     <Compile Include="Production\VillagerEscort.cs" />
+    <Compile Include="Production\VillageHousehold.cs" />
     <Compile Include="Economy\RBMEconomyCampaignBehavior.cs" />
     <Compile Include="Economy\RBMFaminePenalty.cs" />
+    <Compile Include="Economy\PartyTradeFlow.cs" />
+    <Compile Include="Economy\HiddenMarketStock.cs" />
     <Compile Include="Economy\RBMMarketLiquidity.cs" />
     <Compile Include="Economy\RBMProsperityEquilibrium.cs" />
     <Compile Include="Economy\TradeGoodValues.cs" />
+    <Compile Include="Settlements\SettlementWealth.cs" />
+    <Compile Include="Settlements\SettlementWealthTooltip.cs" />
+    <Compile Include="Settlements\AdministrativeUpkeep.cs" />
+    <Compile Include="Settlements\ConstructionLabour.cs" />
+    <Compile Include="Settlements\GarrisonUpkeep.cs" />
+    <Compile Include="Settlements\TradeTariff.cs" />
+    <Compile Include="Settlements\WealthTax.cs" />
+    <Compile Include="Settlements\MilitiaUpkeep.cs" />
+    <Compile Include="Settlements\VillageGoldStock.cs" />
+    <Compile Include="Settlements\RBMSettlementWealthCampaignBehavior.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

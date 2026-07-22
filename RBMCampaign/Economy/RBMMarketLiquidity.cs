@@ -60,8 +60,22 @@ namespace RBMCampaign
                 }
 
                 float countryside = RBMProsperityEquilibrium.TreasuryProsperity(town) * 12f;
-                float gap = 10000f + countryside + TroopMarketFeedback.TreasuryBonus(town, countryside) - town.Gold;
+                float target = 10000f + countryside + TroopMarketFeedback.TreasuryBonus(town, countryside);
+                float gap = target - town.Gold;
                 __result = MathF.Round(0.25f * gap);
+
+                // The single number the next phase turns on: what the controller conjures or destroys
+                // each day, per town. Every other flow in the ledger is now real money moving between
+                // two holders, so this is exactly the hole a conserved economy has to fill by other
+                // means -- and its sign says whether a town is being propped up or bled.
+                if (EconomyLog.IsEnabled)
+                {
+                    EconomyLog.Log("LIQUID", town.Settlement.Name != null ? town.Settlement.Name.ToString() : town.Settlement.StringId,
+                        (__result >= 0 ? "conjured +" : "destroyed ") + __result + "d"
+                        + "  ·  gold " + town.Gold + " vs target " + MathF.Round(target)
+                        + "  ·  countryside " + MathF.Round(countryside) + "d");
+                }
+
                 return false;
             }
         }

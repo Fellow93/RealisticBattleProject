@@ -129,14 +129,34 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// A garrison never leaves the settlement it holds, so it would provision and carouse in it
-        /// forever, standing as a permanent faucet of prosperity fed by nothing. Militia are the same,
-        /// and neither draws on a party's food stores in the first place. This is for parties that
-        /// arrive somewhere.
+        /// A garrison never leaves the settlement it holds, and it does not provision itself: the town
+        /// feeds it off the market as part of its own rations. Militia are the same, and neither draws
+        /// on a party's food stores in the first place. This is for parties that arrive somewhere.
         /// </summary>
         private static bool IsVisitor(MobileParty mobileParty)
         {
             return mobileParty != null && !mobileParty.IsGarrison && !mobileParty.IsMilitia;
+        }
+
+        /// <summary>
+        /// Who may spend their purse on the town's taverns and stalls.
+        ///
+        /// This used to be visitors alone, on the grounds that a garrison standing in one place forever
+        /// would be a permanent faucet of prosperity fed by nothing. That objection was correct, and it
+        /// dissolved the moment the fief began paying a quarter of its own garrison's wages: the coin a
+        /// garrison spends is now the town's own money coming back over the counter, not money invented
+        /// to hand it. Letting it spend is what closes that loop -- treasury to the men, the men to the
+        /// market -- and leaving it shut would simply destroy the wage instead.
+        ///
+        /// Militia are in on the same terms. They used to be excluded because nobody paid them at all,
+        /// which made their purse the very faucet this gate existed to stop; now the settlement pays
+        /// them a fifth of a wage out of its own treasury and their purse holds nothing but that, so
+        /// their spending is the same short loop as the garrison's -- treasury to the men, the men to
+        /// the market -- only smaller. See <see cref="MilitiaUpkeep"/>.
+        /// </summary>
+        private static bool SpendsLocally(MobileParty mobileParty)
+        {
+            return mobileParty != null;
         }
 
         public static void OnSettlementEntered(MobileParty mobileParty, Settlement settlement, Hero hero)
@@ -163,13 +183,15 @@ namespace RBMCampaign
             // it is not the standing faucet of prosperity that free provisioning and carousing would be: a
             // garrison or militia holding a settlement mends its wounded there like any party passing through.
             HealWounded(mobileParty, settlement);
-            if (!IsVisitor(mobileParty))
+            if (IsVisitor(mobileParty))
             {
-                return;
+                BuyFood(mobileParty, settlement);
             }
-            BuyFood(mobileParty, settlement);
-            SpendOnFun(mobileParty, settlement);
-            MaybeBuyLuxury(mobileParty, settlement);
+            if (SpendsLocally(mobileParty))
+            {
+                SpendOnFun(mobileParty, settlement);
+                MaybeBuyLuxury(mobileParty, settlement);
+            }
         }
 
         /// <summary>

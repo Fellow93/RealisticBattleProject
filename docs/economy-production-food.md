@@ -22,7 +22,7 @@ from that, from food being a physical good, or from the prosperity scale the two
 
 ## 1. Village production
 
-Every village produces a base subsistence set of 8 goods plus a speciality set drawn from its village
+Every village produces a base subsistence set of 9 goods plus a speciality set drawn from its village
 type, each at its own per-Hearth daily rate. Horse ranches generate their table from the culture's
 mounts (`HorseNormalRate 0.007`, `HorseWarRate 0.002`, `HorseNobleRate 0.0005`,
 `HorsePackBucket 0.003`); goods that are not merchandise are filtered out.
@@ -61,7 +61,7 @@ Vanilla's `12 + Hearth/[20..40]` band, with the interpolation driven by the vill
 throughput rather than by a sum over `VillageType.Productions`:
 
 ```
-QuietRate = 0.17     (the subsistence base set alone sums to 0.168/Hearth/day)
+QuietRate = 0.17     (below the 0.190/Hearth/day the base set alone sums to — see note)
 BusyRate  = 0.50
 
 busyness  = clamp( (totalRatePerHearth - 0.17) / (0.50 - 0.17), 0, 1 )
@@ -72,6 +72,12 @@ partySize = MinimumNumberOfVillagersAtVillagerParty + floor(Hearth / divisor)
 Rate enters **per-Hearth**, not as an absolute daily figure, because `Hearth` already appears in the
 size term — the absolute would count population twice. Mines and lumber camps sit far above
 `BusyRate` and peg to the largest party.
+
+`QuietRate` was set to the base set's own sum, so that a village with no speciality landed exactly on
+the quiet end of the band. The base set has since grown past it (0.190), so nothing is fully quiet any
+more: the floor is `busyness ≈ 0.06`, `divisor ≈ 38.8`. Every village party is marginally larger than
+the band's low end, and warehouse capacity (§1.1, same total rate) sits ~13% above where it did.
+`QuietRate` should be re-pinned to the base sum when the rates are next calibrated.
 
 ### 1.3 Stored units
 
@@ -137,7 +143,12 @@ then the `FoodConsumption` building effect on the total; then `RoundRandomized`.
 
 Beyond the numbers:
 
-- The town **pays market price** for its rations. Vanilla's siege-only path confiscated food for free.
+- Rations are priced at market, not confiscated as vanilla's siege-only path did — but **who pays
+  depends on who eats**. The day's units are split by the pre-building household/soldier shares, so
+  the total ration is unchanged. Civilian rations move no money: townsman and merchant are both
+  inside citizen wealth. Garrison rations are provisioned out of the fief's settlement wealth, with
+  any shortfall charged to the owner clan's leader (clamped to their gold), and whatever actually
+  moved is credited back to citizen wealth. *(The two purses are not yet documented here — see §10.)*
 - Items with `BonusToFoodStores` are skipped by generic consumption, so food is only eaten as food.
 - Rations are bought **cheapest first**, the same ordering the delivery leg (§3.2) sells in. A ration
   is a ration, so buying the 1,140-denar fish while 60-denar grain sits on the shelf buys the town
@@ -204,10 +215,16 @@ in reverse roster order**. Per lot:
 
 ```
 price      = town.GetItemPrice(element, villagerParty, isSelling: true)
-affordable = min( lotAmount, floor(townGold / price) )
+affordable = min( lotAmount, floor(citizenWealth / price) )
 ```
 
-Ordering is what decides whether a town is fed. Buying in roster order lets wool at ~800/unit and
+When `affordable` reaches zero on a **food** lot the fief advances for it out of settlement wealth,
+moving the same gold into citizen wealth so the market can complete the purchase, and logs `DEARTH`.
+Without a second purse the first empty market would be permanent: `citizenWealth` is both the market's
+money and the gate on what it may buy, and §5.1's top-up controller is the only thing that used to
+break that loop. Non-food is deliberately never advanced for.
+
+Ordering is what decides whether a town is fed. Buying in roster order lets velvet at ~26,500/unit and
 warhorses at ~10,000 drain the purse before food is reached; and among food, fish at ~1,140 buys the
 same +1 stock as grain at 60. Whole-map food demand is roughly 2,400 units/day, which as grain is
 ~150,000 denars and as an unsorted basket is several times that.
@@ -407,7 +424,7 @@ untouched.
 
 | Good | Value | Weight (kg) | | Good | Value | Weight (kg) |
 |---|---:|---:|---|---|---:|---:|
-| grain | 60 | 30 | | wool | 800 | 10 |
+| grain | 60 | 30 | | wool | 160 | 2 |
 | meat | 200 | 30 | | silver | 85 | 0.85 |
 | fish | 1140 | 20 | | jewelry | 420 | 0.025 |
 | cheese | 166 | 15 | | salt | 300 | 10 |
@@ -420,7 +437,7 @@ untouched.
 | oil | 270 | 6.23 | | leather | 176 | 0.8 |
 | hides | 88 | 0.8 | | velvet | 26500 | 0.5 |
 | planks | 10 | 20 | | fur | 833 | 0.75 |
-| hardwood | 11 | 200 | | felt | 3200 | 10 |
+| hardwood | 11 | 200 | | felt | 640 | 1 |
 | charcoal | 3 | 4 | | iron ore | 1 | 4 |
 
 Iron ingot ladder: crude 4 / wrought 11 / iron 22 / steel 40 / fine steel 69 / thamaskene 120,
@@ -490,8 +507,8 @@ for it. Villagers are exempt (`SpoilsPool.IsExemptParty`), caravans deliberately
 ## 9. Supporting systems
 
 **Economy log** — `logs/economy/` next to the config, one file per session, capped by
-`LogRetention.PruneOldest`. Six categories: `PRODUCE`, `DISPATCH`, `DELIVER`, `FOOD`, `DAILY`,
-`PROSPER`. The header echoes `prosperityPerBoundHearth`, `vanillaProsperityScale` and
+`LogRetention.PruneOldest`. Twelve categories: `PRODUCE`, `DISPATCH`, `DELIVER`, `DEARTH`, `FOOD`,
+`GARRISON`, `BASKET`, `HOMECOME`, `LIQUID`, `COUNTER`, `DAILY`, `PROSPER`. The header echoes `prosperityPerBoundHearth`, `vanillaProsperityScale` and
 `townTreasuryScale`; day dividers carry campaign year, day and season (read from
 `CampaignTime.GetSeasonOfYear`). The file opens lazily, so the toggle can be flipped mid-session.
 Everything on the logging path is short-circuited when it is off — production runs for every village
@@ -510,7 +527,16 @@ of that screen's codegen fast path. Requires a restart to take effect.
 
 ## 10. Known gaps
 
+- **Undocumented: the two-purse ledger and the village return leg.** Working-tree systems this
+  document now depends on but does not describe — `SettlementWealth` (citizen wealth backed by
+  vanilla `Gold`, plus a new fief treasury; seeds `Prosperity × 210` / `Hearth × 2`; `SyncData` key
+  `RBM_settlementWealth`), `VillageHousehold` (the 20% homecoming cut of villager trade tax and the
+  35%-of-purse market basket the convoy carries home), `VillageGoldStock` (vanilla's 1,000-gold
+  village clamp suppressed), and the fief-finance legs that fund garrison rations (25% commission
+  share, 25% garrison wage share). §2.1 and §3.1 reference them; they need sections of their own.
 - Every rate and coefficient above is **uncalibrated in-game**.
+- `QuietRate` (§1.2) no longer matches the base set's own sum, so no village sits at the quiet end of
+  the party-size band.
 - Castles are vanilla throughout — outside the food rework (§2), the prosperity equilibrium (§4) and
   the market scaling (§5). A castle neither feeds from its countryside nor participates in the
   reworked price system. Bringing them into §4, and then lifting the §5 gates, is the real fix.
