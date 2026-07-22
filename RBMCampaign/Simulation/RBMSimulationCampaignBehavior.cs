@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.MapEvents;
@@ -66,6 +66,7 @@ namespace RBMCampaign
             HiddenMarketStock.ResetForNewSession();
             RBMProsperityEquilibrium.ResetForNewSession();
             RBMMarketPrices.ResetForNewSession();
+            WorkshopDemand.ResetForNewSession();
             RBMItemWeightTextWidget.ResetForNewSession();
         }
 

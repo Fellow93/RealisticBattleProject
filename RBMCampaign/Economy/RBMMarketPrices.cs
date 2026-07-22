@@ -50,11 +50,17 @@ namespace RBMCampaign
     /// skill and its perks, caravan and village modifiers -- exactly as it was. Only the scarcity
     /// component moves.
     ///
-    /// Goods RBM does not model the consumption of are left entirely on vanilla: iron, clay, tools, war
-    /// gear, horses. There is no daily figure to divide by, so there are no days to speak of, and
-    /// guessing one would misprice the whole workshop economy on no evidence. The same rule governs
+    /// Goods RBM does not model the consumption of are left entirely on vanilla: tools, war gear,
+    /// horses, and anything else with no measured sink. There is no daily figure to divide by, so there
+    /// are no days to speak of, and guessing one would misprice it on no evidence. The same rule governs
     /// <see cref="TownStorage"/>, deliberately -- one boundary, drawn in one place, between what RBM
     /// models and what it leaves alone.
+    ///
+    /// That boundary has two sides to it. <see cref="CitizenDemand"/> measures what the households get
+    /// through and <see cref="WorkshopDemand"/> what the workshops do, so a raw material with a forge or
+    /// a loom to eat it -- iron, planks, wool, clay, hides, flax -- is now inside the model on the
+    /// industrial side even though no household ever buys a sack of it. Those are priced by their whole
+    /// CATEGORY rather than per item, matching how a recipe consumes them.
     /// </remarks>
     public static class RBMMarketPrices
     {
@@ -137,6 +143,12 @@ namespace RBMCampaign
         /// <summary>
         /// What the town pays a supplier, as a share of base value: the wholesale price, and it does
         /// NOT move with scarcity.
+        ///
+        /// Thirty per cent over the floor. Base value is what a good is worth where it is made, so a
+        /// supplier who has carted it somewhere else is owed the carting -- a flat, dependable margin
+        /// that makes growing food for a town worth doing in an ordinary year, which a bare floor price
+        /// does not. It stays flat because the point is that the countryside is paid for its work rather
+        /// than for the town's misfortune.
         /// </summary>
         /// <remarks>
         /// A market has two sides and they are not the same trade. What a convoy is paid at the gate is
@@ -159,8 +171,14 @@ namespace RBMCampaign
         /// coincidence: <c>GetItemsToProduce</c> values a workshop's output with <c>isSelling: true</c>,
         /// so that figure is now wholesale and no longer overshoots the market purse it is tested
         /// against.
+        ///
+        /// Note this is the factor, not the receipt. Vanilla discounts a seller by the merchant's
+        /// spread -- <c>basePriceFactor / (1 + tradePenalty)</c>, about 6% for a villager convoy -- so a
+        /// supplier actually takes home around 1.22x base rather than 1.30x. That spread is left alone
+        /// deliberately: it is how a party's Trade skill earns it a better price, and flattening it here
+        /// would quietly delete the mechanic.
         /// </remarks>
-        public const float WholesaleFactor = 1f;
+        public const float WholesaleFactor = 1.3f;
 
         // Days-of-supply memo, keyed by town and item and stamped with the roster version, which the
         // roster bumps on every change. GetPrice is called constantly -- every tooltip, every AI trade
@@ -200,8 +218,24 @@ namespace RBMCampaign
                 return cached.Value;
             }
 
-            float daily = CitizenDemand.DailyUnits(town, item.StringId);
-            float days = (daily > 0f) ? (roster.GetItemNumber(item) / daily) : -1f;
+            // A workshop input is measured across its whole category, because that is how a recipe
+            // consumes it -- see WorkshopDemand. Where the households buy the same good the two
+            // appetites are already added together, so this supersedes the per-item reading rather
+            // than competing with it.
+            ItemCategory category = item.GetItemCategory();
+            float industrial = WorkshopDemand.DailyUnits(town, category);
+
+            float days;
+            if (industrial > 0f)
+            {
+                days = WorkshopDemand.UnitsInStore(town, category) / industrial;
+            }
+            else
+            {
+                float daily = CitizenDemand.DailyUnits(town, item.StringId);
+                days = (daily > 0f) ? (roster.GetItemNumber(item) / daily) : -1f;
+            }
+
             _daysCache[key] = new KeyValuePair<int, float>(version, days);
             return days;
         }
@@ -218,10 +252,17 @@ namespace RBMCampaign
         /// Writes what every modelled good is worth in this town today, and why.
         /// </summary>
         /// <remarks>
-        /// Four figures per good -- units held, days that lasts, the scarcity multiplier, the price --
-        /// because the whole claim of this file is that the last three follow from the first, and a log
-        /// that showed only the price would prove nothing. If a good sits at the 20x cap the units will
-        /// say whether that is a real shortage or a good the town never stocks at all.
+        /// Per good: units held, the days that lasts, the scarcity multiplier, vanilla's own
+        /// supply/demand for the category, and the price -- because the whole claim of this file is that
+        /// the markup follows from the first two, and a log that showed only the price would prove
+        /// nothing. If a good sits at the ceiling the units will say whether that is a real shortage or a
+        /// good the town never stocks at all.
+        ///
+        /// The supply/demand pair is vanilla's, carried alongside so the two pricings can be read
+        /// against each other. RBM's markup divides days into a full-store figure; vanilla's divides a
+        /// prosperity-fed demand by a gold-valued supply. Where the two disagree -- RBM calling a shelf
+        /// bare while vanilla's supply reads high, or the reverse -- that gap is exactly what the rewrite
+        /// exists to correct, and this is the only line it is visible on.
         ///
         /// This is also the only place the two calibrations can be seen agreeing or not: a town at a
         /// full store should read 1.00x, and if nothing ever does, then
@@ -254,10 +295,19 @@ namespace RBMCampaign
                     continue;
                 }
 
+                // Vanilla's own supply/demand for the good's category -- the EMAs that feed
+                // GetBasePriceFactor, and so the divisor this file's ratio patch divides out. Shown so a
+                // days-based markup can be read against the value-based one it replaced: if RBM says a
+                // shelf is bare (high days markup) while vanilla's demand/supply says the opposite, that
+                // gap is the whole reason the rewrite exists.
+                ItemData data = town.MarketData.GetCategoryData(item.GetItemCategory());
+
                 line.Append("  ").Append(id)
                     .Append(" ").Append(town.Owner.ItemRoster.GetItemNumber(item)).Append("u")
                     .Append(" ").Append(EconomyLog.Fmt(days)).Append("d")
                     .Append(" ").Append(EconomyLog.Fmt(ScarcityFactor(days))).Append("x")
+                    .Append(" ").Append(EconomyLog.Fmt(data.Supply))
+                    .Append("/").Append(EconomyLog.Fmt(data.Demand)).Append("sd")
                     // Retail over wholesale: what a townsman pays, and what the convoy that brought it
                     // was paid. The gap between the two is the whole of this system, so both are shown.
                     .Append(" ").Append(town.MarketData.GetPrice(item))
@@ -267,7 +317,58 @@ namespace RBMCampaign
             if (line.Length > 0)
             {
                 EconomyLog.Log("PRICE", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
-                    "units · days · markup · retail/wholesale  ·" + line);
+                    "units · days · markup · supply/demand · retail/wholesale  ·" + line);
+            }
+
+            LogInputs(settlement, town);
+        }
+
+        /// <summary>
+        /// The same reading for the raw materials the town's own workshops eat, by category.
+        /// </summary>
+        /// <remarks>
+        /// Kept apart from the PRICE line because it is a different measurement, not more of the same
+        /// one: these are counted across a whole category and divided by an industrial draw, so a shared
+        /// line would put two incompatible readings of "units" side by side under one heading.
+        ///
+        /// This is where a stalled workshop economy shows itself. A category sitting at 0 days every day
+        /// is a forge with nothing to forge, and the multiplier beside it says whether the price has any
+        /// room left to call supply in -- if it is pinned at the ceiling and the units still read zero,
+        /// the answer is somewhere in production or carriage, not in pricing.
+        /// </remarks>
+        private static void LogInputs(Settlement settlement, Town town)
+        {
+            System.Text.StringBuilder line = new System.Text.StringBuilder();
+            foreach (string id in WorkshopDemand.InputCategories(town))
+            {
+                ItemCategory category = Game.Current.ObjectManager.GetObject<ItemCategory>(id);
+                if (category == null)
+                {
+                    continue;
+                }
+
+                float daily = WorkshopDemand.DailyUnits(town, category);
+                if (daily <= 0f)
+                {
+                    continue;
+                }
+
+                int units = WorkshopDemand.UnitsInStore(town, category);
+                float days = units / daily;
+                ItemData data = town.MarketData.GetCategoryData(category);
+                line.Append("  ").Append(id)
+                    .Append(" ").Append(units).Append("u")
+                    .Append(" ").Append(EconomyLog.Fmt(daily)).Append("/d")
+                    .Append(" ").Append(EconomyLog.Fmt(days)).Append("d")
+                    .Append(" ").Append(EconomyLog.Fmt(ScarcityFactor(days))).Append("x")
+                    .Append(" ").Append(EconomyLog.Fmt(data.Supply))
+                    .Append("/").Append(EconomyLog.Fmt(data.Demand)).Append("sd");
+            }
+
+            if (line.Length > 0)
+            {
+                EconomyLog.Log("INPUT", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
+                    "units · draw · days · markup · supply/demand  ·" + line);
             }
         }
 

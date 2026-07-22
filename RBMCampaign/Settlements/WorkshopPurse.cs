@@ -122,6 +122,87 @@ namespace RBMCampaign
         // worth a crash. See the settlement-tooltip note for the same cctor trap in another class.
 
         /// <summary>
+        /// Stops the artisans' shop from charging the town for its own work.
+        /// </summary>
+        /// <remarks>
+        /// Every town has a hidden <c>artisans</c> shop in slot 0, and it is not a business in the sense
+        /// the other twelve types are. It is the townspeople themselves: the butcher jointing the cow, the
+        /// smith at his tier-1 blades. It buys its cow off the town shelf and sells the meat back to the
+        /// same shelf, so both sides of the trade are the same pocket, and the gold that vanilla moves
+        /// between them is a transfer from the citizens to the citizens by way of a purse that is also
+        /// theirs. None of it should move.
+        ///
+        /// Left alone it is not even a wash but a drain, because the shop keeps the difference. Hidden
+        /// types are skipped by <c>HandleDailyExpense</c>, so the artisans never pay the wage bill that
+        /// <see cref="PayWages"/> turns back into citizen wealth for every other shop, and nothing else
+        /// reads a notable shop's capital except the price on a change of owner. Meanwhile the
+        /// profitability gate a cycle must clear is <c>income &gt; inputCost</c> for a hidden shop, so
+        /// every cycle that runs is net positive into that capital BY CONSTRUCTION. Roughly fourteen
+        /// livestock cycles a day per town, forever, into a pot with no outflow.
+        ///
+        /// The fix is to take the branch vanilla already takes for the artisans' twenty-six equipment
+        /// recipes, whose outputs are not trade goods: goods move, gold does not. Nothing else changes --
+        /// the roster still gains and loses the same items, the produced/consumed events still fire, and
+        /// the shop still stops butchering when meat is worthless, because the income-over-cost gate is
+        /// untouched. Capital simply sits where it started, comfortably above any input cost.
+        /// </remarks>
+        private static bool IsCitizenLabour(Workshop workshop)
+        {
+            return RBMConfig.RBMConfig.rbmCampaignEnabled
+                && workshop != null
+                && workshop.WorkshopType != null
+                && workshop.WorkshopType.IsHidden;
+        }
+
+        // effectCapital is vanilla's own switch for "this recipe settles in gold", and it is a plain
+        // parameter on all three methods that read it -- so clearing it by ref is exact, and cannot leave
+        // the pair of ChangeGold calls half-applied the way suppressing them one by one could.
+
+        [HarmonyPatch(typeof(WorkshopsCampaignBehavior), "ProduceAnOutputToTown")]
+        private static class OutputIsUnpaidForCitizenLabour
+        {
+            private static void Prefix(Workshop workshop, ref bool effectCapital)
+            {
+                if (IsCitizenLabour(workshop))
+                {
+                    effectCapital = false;
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(WorkshopsCampaignBehavior), "ConsumeInputFromTownMarket")]
+        private static class InputIsUnpaidForCitizenLabour
+        {
+            private static void Prefix(Workshop workshop, ref bool effectCapital)
+            {
+                if (IsCitizenLabour(workshop))
+                {
+                    effectCapital = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// And so the shop is not held back by a till it no longer draws on.
+        /// </summary>
+        /// <remarks>
+        /// The only other thing <c>effectCapital</c> gates is the check that the town can afford the
+        /// output. A town short of gold would otherwise stop its own butchers working over money that is
+        /// no longer changing hands.
+        /// </remarks>
+        [HarmonyPatch(typeof(WorkshopsCampaignBehavior), "CanNotableWorkshopProduceThisCycle")]
+        private static class SolvencyIsMootForCitizenLabour
+        {
+            private static void Prefix(Workshop workshop, ref bool effectCapital)
+            {
+                if (IsCitizenLabour(workshop))
+                {
+                    effectCapital = false;
+                }
+            }
+        }
+
+        /// <summary>
         /// Pays a workshop's running costs to the townspeople who do the work.
         /// </summary>
         /// <remarks>

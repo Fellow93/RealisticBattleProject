@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
+using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
@@ -29,10 +30,15 @@ namespace RBMCampaign
     /// <see cref="CitizenDemand"/> rather than being a second table to keep in step -- grain gets a
     /// large store because grain is half the diet, dates a small one because dates are 1.8% of it.
     ///
-    /// Goods the basket does not model are NOT capped. Iron, clay, tools and war gear are bought by
-    /// workshops and passing parties rather than by households, so RBM has no measure of how fast a town
-    /// gets through them, and capping on a guess would throttle the workshop economy on no evidence.
-    /// Better to leave them uncapped and visibly so.
+    /// A raw material no household buys is capped all the same, on its workshops' draw rather than the
+    /// basket -- see <see cref="WorkshopDemand"/>. A forge town holds two months of iron because that is
+    /// what it will forge; a town with no smithy holds none, and turns the caravan away. Those goods are
+    /// counted and capped by CATEGORY, since the recipe that eats them names a category and takes any
+    /// member of it.
+    ///
+    /// What is left uncapped is what still has no measured sink: tools, war gear, horses. RBM has no
+    /// figure for how fast a town gets through those, and capping on a guess would throttle its trade on
+    /// no evidence. Better to leave them uncapped and visibly so.
     /// </remarks>
     public static class TownStorage
     {
@@ -74,6 +80,14 @@ namespace RBMCampaign
                 return Uncapped;
             }
 
+            // A workshop input is stored by the category, for the same reason it is priced by it: the
+            // forge takes any member of it, so ore and ingots share one shelf and one ceiling.
+            float industrial = WorkshopDemand.DailyUnits(town, item.GetItemCategory());
+            if (industrial > 0f)
+            {
+                return MathF.Max(1, MathF.Ceiling(industrial * StorageDays));
+            }
+
             float daily = CitizenDemand.DailyUnits(town, item.StringId);
             if (daily <= 0f && item.IsCivilian && IsGarment(item))
             {
@@ -105,7 +119,17 @@ namespace RBMCampaign
                 return Uncapped;
             }
 
-            int held = IsGarment(item) ? CountGarments(town) : town.Owner.ItemRoster.GetItemNumber(item);
+            ItemCategory category = item.GetItemCategory();
+            int held;
+            if (WorkshopDemand.DailyUnits(town, category) > 0f)
+            {
+                held = WorkshopDemand.UnitsInStore(town, category);
+            }
+            else
+            {
+                held = IsGarment(item) ? CountGarments(town) : town.Owner.ItemRoster.GetItemNumber(item);
+            }
+
             int room = capacity - held;
             return (room > 0) ? room : 0;
         }

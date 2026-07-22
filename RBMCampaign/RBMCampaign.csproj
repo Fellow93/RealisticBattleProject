@@ -335,6 +335,9 @@
     <Compile Include="Production\CitizenDemand.cs" />
     <Compile Include="Production\RBMTownFoodSupply.cs" />
     <Compile Include="Production\TownStorage.cs" />
+    <Compile Include="Production\WorkshopDemand.cs" />
+    <Compile Include="Production\WorkshopRates.cs" />
+    <Compile Include="Production\WorkshopRecipes.cs" />
     <Compile Include="Production\TownFoodReserve.cs" />
     <Compile Include="Production\VillagerConvoys.cs" />
     <Compile Include="Production\VillagerDispatch.cs" />
