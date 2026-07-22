@@ -164,6 +164,44 @@ namespace RBMCampaign
 
         // Every good named anywhere in the tables above, for the double-buy guard below. Built once.
         private static HashSet<string> _basketIds;
+        private static string[] _modelledGoods;
+
+        /// <summary>
+        /// Every trade good the basket models the consumption of, once each, in table order: the day's
+        /// ration first, then the staples, then the luxury tiers.
+        /// </summary>
+        /// <remarks>
+        /// This set is the boundary of what RBM claims to understand about a town's appetite, and three
+        /// separate systems are drawn along it -- <see cref="TownStorage"/> caps these and nothing else,
+        /// <see cref="RBMMarketPrices"/> prices these and nothing else, and the DEMAND line reports
+        /// these. Keeping it one list rather than three keeps that boundary honest.
+        ///
+        /// Clothing is absent by necessity: it is hundreds of distinct garments rather than a trade
+        /// good, so it has no id to name here and is handled apart in each of those places.
+        /// </remarks>
+        public static string[] ModelledGoods
+        {
+            get
+            {
+                if (_modelledGoods == null)
+                {
+                    List<string> ordered = new List<string>();
+                    Line[][] tables = { FoodMix, Staples, SmallLuxuries, MediumLuxuries, LargeLuxuries };
+                    foreach (Line[] table in tables)
+                    {
+                        foreach (Line line in table)
+                        {
+                            if (!ordered.Contains(line.ItemId))
+                            {
+                                ordered.Add(line.ItemId);
+                            }
+                        }
+                    }
+                    _modelledGoods = ordered.ToArray();
+                }
+                return _modelledGoods;
+            }
+        }
 
         /// <summary>
         /// Whether the households buy this item by the basket, and so must not also be bought out of

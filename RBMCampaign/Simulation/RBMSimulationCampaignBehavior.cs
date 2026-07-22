@@ -65,6 +65,7 @@ namespace RBMCampaign
             TownFoodReserve.ResetForNewSession();
             HiddenMarketStock.ResetForNewSession();
             RBMProsperityEquilibrium.ResetForNewSession();
+            RBMMarketPrices.ResetForNewSession();
             RBMItemWeightTextWidget.ResetForNewSession();
         }
 

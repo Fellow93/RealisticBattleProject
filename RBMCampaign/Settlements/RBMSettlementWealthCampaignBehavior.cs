@@ -45,6 +45,7 @@ namespace RBMCampaign
             WorkshopPurse.FlushDaily(settlement);
             WorkshopDiagnostics.FlushDaily(settlement);
             TownStorage.FlushDaily(settlement);
+            RBMMarketPrices.LogDaily(settlement);
             SettlementWealth.FlushDaily(settlement);
         }
 

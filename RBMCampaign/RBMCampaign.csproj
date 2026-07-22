@@ -346,6 +346,7 @@
     <Compile Include="Economy\PartyTradeFlow.cs" />
     <Compile Include="Economy\HiddenMarketStock.cs" />
     <Compile Include="Economy\RBMMarketLiquidity.cs" />
+    <Compile Include="Economy\RBMMarketPrices.cs" />
     <Compile Include="Economy\RBMProsperityEquilibrium.cs" />
     <Compile Include="Economy\TradeGoodValues.cs" />
     <Compile Include="Settlements\NativeTradeConservation.cs" />
