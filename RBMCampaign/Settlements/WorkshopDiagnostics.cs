@@ -20,6 +20,12 @@ namespace RBMCampaign
     /// the shape of a formula has been wrong repeatedly here.
     ///
     /// So each refusal is counted, by reason, per settlement per day, and written as SHOPBLOCK.
+    ///
+    /// A second, narrower line, SHOPIDLE, answers a question the first cannot: of the artisans' own
+    /// recipes, which were DUE to run and made nothing all day purely because the raw good was not on
+    /// the shelf. SHOPBLOCK counts refused cycles across every shop; SHOPIDLE names the outputs a town
+    /// went entirely without -- no arrows made anywhere, no oil, no tier-2 blades -- and the input each
+    /// was short of. See <see cref="RecipeIdlePatch"/>.
     /// </summary>
     /// <remarks>
     /// Two of the four are worth stating in advance, because they predict different fixes:
@@ -50,10 +56,69 @@ namespace RBMCampaign
 
         private const string Ran = "!ran";
 
+        // A day of the artisans' shop, per recipe: how many cycles it made, how many due-attempts it
+        // lost for want of inputs, and the first input it was short of. A recipe that ends the day with
+        // Produced == 0 && InputFail > 0 is one that WAS due and made nothing purely because the shelf
+        // was bare -- which is the thing being counted. See RecipeIdlePatch.
+        private class RecipeDay
+        {
+            public int Produced;
+            public int InputFail;
+            public string Missing;
+        }
+
+        private static readonly Dictionary<Settlement, Dictionary<string, RecipeDay>> _recipeDay =
+            new Dictionary<Settlement, Dictionary<string, RecipeDay>>();
+
+        // The artisans recipe currently ticking, set for the span of one notable-shop production
+        // attempt and null otherwise. Only ever non-null inside a HIDDEN workshop's cycle, which is what
+        // scopes the input-sufficiency reading below to the artisans and away from the visible shops.
+        private static Workshop _ctxShop;
+        private static string _ctxKey;
+        private static bool _ctxInputOk;
+        private static string _ctxMissing;
+
         /// <summary>Drops the previous session's tallies. Diagnostics only, so a session hook is enough.</summary>
         public static void Reset()
         {
             _blocks.Clear();
+            _recipeDay.Clear();
+            _ctxShop = null;
+            _ctxKey = null;
+        }
+
+        /// <summary>
+        /// A stable, readable key for a recipe: its output plus its inputs. The output alone is not
+        /// unique -- cow, sheep and hog all make meat -- so the inputs are appended to tell them apart.
+        /// </summary>
+        private static string RecipeKey(WorkshopType.Production production)
+        {
+            string output = (production.Outputs.Count > 0 && production.Outputs[0].Item1 != null)
+                ? production.Outputs[0].Item1.StringId
+                : "?";
+            StringBuilder sb = new StringBuilder(output);
+            foreach (var input in production.Inputs)
+            {
+                sb.Append('|').Append(input.Item1 != null ? input.Item1.StringId : "?");
+            }
+            return sb.ToString();
+        }
+
+        private static RecipeDay GetRecipeRecord(Settlement settlement, string key)
+        {
+            Dictionary<string, RecipeDay> byRecipe;
+            if (!_recipeDay.TryGetValue(settlement, out byRecipe))
+            {
+                byRecipe = new Dictionary<string, RecipeDay>();
+                _recipeDay[settlement] = byRecipe;
+            }
+            RecipeDay record;
+            if (!byRecipe.TryGetValue(key, out record))
+            {
+                record = new RecipeDay();
+                byRecipe[key] = record;
+            }
+            return record;
         }
 
         private static void Count(Settlement settlement, string reason)
@@ -109,11 +174,89 @@ namespace RBMCampaign
         {
             private static void Postfix(WorkshopType.Production production, ItemRoster itemRoster, Town town, bool __result)
             {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !EconomyLog.IsEnabled || __result || town == null)
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !EconomyLog.IsEnabled)
+                {
+                    return;
+                }
+
+                // If an artisans recipe is mid-tick, this call is its input check: remember whether it
+                // passed and, if not, what it was short of, so the per-recipe tracker can classify it.
+                if (_ctxShop != null && !__result)
+                {
+                    _ctxInputOk = false;
+                    _ctxMissing = MissingInput(production, itemRoster);
+                }
+
+                if (__result || town == null)
                 {
                     return;
                 }
                 Count(town.Settlement, "no-input:" + MissingInput(production, itemRoster));
+            }
+        }
+
+        /// <summary>
+        /// Counts, per artisans recipe per day, the cycles it made against the due-attempts it lost for
+        /// want of inputs -- so the day's tally can name the recipes that were ready to run and made
+        /// nothing only because the shelf was bare.
+        /// </summary>
+        /// <remarks>
+        /// The context is set only for a hidden workshop, which is the artisans and nothing else, and it
+        /// is read by the input-check postfix above during the same call. A finalizer clears it as well
+        /// as the postfix, so a throwing cycle cannot leave one recipe's label standing over the next.
+        ///
+        /// Being due is implicit and free: <c>RunTownWorkshop</c> only calls this method when a recipe's
+        /// accumulated progress has reached a whole cycle, so a slow recipe that was not ready that day
+        /// is simply never seen here and cannot be miscounted as blocked.
+        /// </remarks>
+        [HarmonyPatch(typeof(WorkshopsCampaignBehavior), "TickOneProductionCycleForNotableWorkshop")]
+        private static class RecipeIdlePatch
+        {
+            private static void Prefix(WorkshopType.Production production, Workshop workshop)
+            {
+                _ctxShop = null;
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !EconomyLog.IsEnabled
+                    || workshop == null || workshop.WorkshopType == null || !workshop.WorkshopType.IsHidden)
+                {
+                    return;
+                }
+                _ctxShop = workshop;
+                _ctxKey = RecipeKey(production);
+                _ctxInputOk = true;
+                _ctxMissing = null;
+            }
+
+            private static void Postfix(Workshop workshop, bool __result)
+            {
+                if (_ctxShop == null || _ctxKey == null)
+                {
+                    return;
+                }
+                Settlement settlement = (workshop != null) ? workshop.Settlement : null;
+                if (settlement != null)
+                {
+                    RecipeDay record = GetRecipeRecord(settlement, _ctxKey);
+                    if (__result)
+                    {
+                        record.Produced++;
+                    }
+                    else if (!_ctxInputOk)
+                    {
+                        record.InputFail++;
+                        if (record.Missing == null)
+                        {
+                            record.Missing = _ctxMissing;
+                        }
+                    }
+                }
+                _ctxShop = null;
+                _ctxKey = null;
+            }
+
+            private static void Finalizer()
+            {
+                _ctxShop = null;
+                _ctxKey = null;
             }
         }
 
@@ -224,6 +367,58 @@ namespace RBMCampaign
 
             EconomyLog.Log("SHOPBLOCK", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
                 "ran " + ran + " of " + (ran + blocked) + " attempted cycles  ·" + breakdown);
+
+            FlushIdleRecipes(settlement);
+        }
+
+        /// <summary>
+        /// Writes the artisans recipes that were due and made nothing all day for want of inputs, and
+        /// clears the settlement's per-recipe tally.
+        /// </summary>
+        /// <remarks>
+        /// A recipe that made even one cycle is not here, however many later attempts it lost -- the
+        /// question this answers is which of the artisans' outputs the town went entirely without, and
+        /// which raw good it was short of when it tried. Its own line, SHOPIDLE, rather than folded into
+        /// the cycle counts above, because it is about outputs the town never saw at all.
+        /// </remarks>
+        private static void FlushIdleRecipes(Settlement settlement)
+        {
+            Dictionary<string, RecipeDay> byRecipe;
+            if (settlement == null || !_recipeDay.TryGetValue(settlement, out byRecipe))
+            {
+                return;
+            }
+            _recipeDay.Remove(settlement);
+
+            if (!EconomyLog.IsEnabled || byRecipe.Count == 0)
+            {
+                return;
+            }
+
+            List<string> idle = new List<string>();
+            foreach (KeyValuePair<string, RecipeDay> pair in byRecipe)
+            {
+                RecipeDay record = pair.Value;
+                if (record.Produced == 0 && record.InputFail > 0)
+                {
+                    idle.Add(record.Missing != null ? pair.Key + "(" + record.Missing + ")" : pair.Key);
+                }
+            }
+
+            if (idle.Count == 0)
+            {
+                return;
+            }
+            idle.Sort();
+
+            StringBuilder list = new StringBuilder();
+            foreach (string entry in idle)
+            {
+                list.Append("  ").Append(entry);
+            }
+
+            EconomyLog.Log("SHOPIDLE", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
+                idle.Count + " artisan recipes made nothing for want of inputs  ·" + list);
         }
     }
 }
