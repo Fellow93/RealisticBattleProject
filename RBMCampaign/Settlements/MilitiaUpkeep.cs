@@ -82,7 +82,7 @@ namespace RBMCampaign
 
             // Militia counted but not yet mustered into a party: nothing to read a wage off, so fall
             // back to a recruit's rate for the headcount.
-            return (int)(settlement.Militia * MilitiaWageShare * RBMConfig.RBMConfig.troopWageTierBase);
+            return (int)(settlement.Militia * MilitiaWageShare * TierBasedWageModel.WageForTier(1, false));
         }
 
         /// <summary>

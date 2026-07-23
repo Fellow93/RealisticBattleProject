@@ -113,7 +113,7 @@
 	<string id="RBM_CON_064" text="Chance each idle hour that an over-cap stack buys a luxury from the settlement. Default 0.02." />
 	<string id="RBM_CON_066" text="Share of a beaten enemy's killed and wounded spoils the victors carry off; the rest is lost. Default 0.75." />
 	<string id="RBM_CON_067" text="Wage Base per Tier" />
-	<string id="RBM_CON_068" text="Daily wage is this base value multiplied by the troop's tier, replacing the vanilla wage. Zero keeps vanilla wages. Default 20." />
+	<string id="RBM_CON_068" text="Daily wage follows a fixed historical pay table by tier -- foot 20/30/40/60/120/240, horse 30/40/60/120/240/480. Zero keeps vanilla wages instead. Default 20." />
 	<string id="RBM_CON_062" text="Reset to Default" />
 	<string id="RBM_CON_070" text="Upgrade Near Town" />
 	<string id="RBM_CON_071" text="Upgrade Supply Range" />

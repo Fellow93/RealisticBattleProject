@@ -254,7 +254,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel TroopWageTierBaseHint { get; } = Hint("{=RBM_CON_068}Daily wage is this base value multiplied by the troop's tier, replacing the vanilla wage. Zero keeps vanilla wages. Default 20.");
+        public BasicTooltipViewModel TroopWageTierBaseHint { get; } = Hint("{=RBM_CON_068}Daily wage follows a fixed historical pay table by tier -- foot 20/30/40/60/120/240, horse 30/40/60/120/240/480. Zero keeps vanilla wages instead. Default 20.");
 
         private float _troopMaintenanceFraction;
 
