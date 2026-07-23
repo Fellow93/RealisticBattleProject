@@ -31,6 +31,10 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
     private Timer _chargeTimer;
 
+    // Resolved once: GetField is slow enough to matter on a per-formation occasional tick, and a null
+    // result (field renamed by a game update) used to NRE on the line that consumed it.
+    private static readonly FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+
     public bool ChargeArchers = true;
     public bool ChargeInfantry = true;
     public bool ChargeCavalry = false;
@@ -64,9 +68,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
     private ChargeState CheckAndChangeState()
     {
-        FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        object tacticValue = base.Formation?.Team?.TeamAI != null ? _currentTacticField.GetValue(base.Formation.Team.TeamAI) : null;
+        object tacticValue = (_currentTacticField != null && base.Formation?.Team?.TeamAI != null) ? _currentTacticField.GetValue(base.Formation.Team.TeamAI) : null;
         if (tacticValue?.ToString().Contains("Embolon") == true)
         {
             _desiredChargeStopDistance = 50f;
@@ -223,10 +225,17 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                 case ChargeState.Charging:
                     {
                         CheckForNewChargeTarget();
-                        if (_lastTarget != null && _lastTarget.Formation != null)
+                        // This null test used to guard SetFormOrder alone while the position maths below
+                        // dereferenced _lastTarget.Formation regardless - so either the guard was needed and
+                        // the next line NREs, or it was dead. Cover the whole arm, falling back to a plain
+                        // charge the way the Undetermined arm does.
+                        if (_lastTarget == null || _lastTarget.Formation == null)
                         {
-                            base.Formation.SetFormOrder(FormOrder.FormOrderCustom(_lastTarget.Formation.Width));
+                            base.CurrentOrder = MovementOrder.MovementOrderCharge;
+                            CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+                            break;
                         }
+                        base.Formation.SetFormOrder(FormOrder.FormOrderCustom(_lastTarget.Formation.Width));
                         Vec2 vec4 = (RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)).Normalized();
                         WorldPosition medianPosition3 = RBMAI.Utilities.GetFormationCenterWorldPosition(_lastTarget.Formation);
                         Vec2 vec5 = medianPosition3.AsVec2 + vec4 * (_desiredChargeStopDistance + _lastTarget.Formation.Depth);
@@ -305,15 +314,24 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             float num5 = MBMath.ClampFloat(num, 4f, 10f);
             num3 = MBMath.Lerp(0.8f, 1.2f, 1f - (num5 - 4f) / 6f);
         }
-        WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(querySystem.Formation);
-        // Sample the enemy's height off the raw median: it already carries a valid Z, so it costs no navmesh
-        // query, and for a slope estimate one soldier's ground height is as good as the centre's.
-        float num6 = medianPosition.GetNavMeshZ() - querySystem.ClosestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.GetNavMeshZ();
         float num7 = 1f;
         if (num <= 4f)
         {
-            float value = num6 / (RBMAI.Utilities.GetFormationCenter(querySystem.Formation) - RBMAI.Utilities.GetFormationCenter(querySystem.ClosestSignificantlyLargeEnemyFormation.Formation)).Length;
-            num7 = MBMath.Lerp(0.9f, 1.1f, (MBMath.ClampFloat(value, -0.58f, 0.58f) + 0.58f) / 1.16f);
+            float length = (RBMAI.Utilities.GetFormationCenter(querySystem.Formation) - RBMAI.Utilities.GetFormationCenter(querySystem.ClosestSignificantlyLargeEnemyFormation.Formation)).Length;
+            // Coincident formation centres divide by zero and GetNavMeshZ returns NaN off the navmesh; either
+            // one poisons the slope term, and a NaN weight loses every behaviour comparison silently, so the
+            // charge would just stop being picked rather than fail loudly. Fall back to the neutral 1f.
+            if (length > float.Epsilon)
+            {
+                WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(querySystem.Formation);
+                // Sample the enemy's height off the raw median: it already carries a valid Z, so it costs no navmesh
+                // query, and for a slope estimate one soldier's ground height is as good as the centre's.
+                float value = (medianPosition.GetNavMeshZ() - querySystem.ClosestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.GetNavMeshZ()) / length;
+                if (!float.IsNaN(value))
+                {
+                    num7 = MBMath.Lerp(0.9f, 1.1f, (MBMath.ClampFloat(value, -0.58f, 0.58f) + 0.58f) / 1.16f);
+                }
+            }
         }
         float num8 = 1f;
         if (num <= 4f && num >= 1.5f)
