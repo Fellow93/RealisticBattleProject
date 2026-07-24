@@ -133,9 +133,15 @@ namespace RBMCampaign
                         }
                     }
 
-                    if (upgradeTarget.Tier > character.Tier && party.MobileParty.HasLimitedWage() && party.MobileParty.TotalWage + count * (wageModel.GetCharacterWage(upgradeTarget) - wageModel.GetCharacterWage(character)) > party.MobileParty.PaymentLimit)
+                    // Vanilla divides by the wage delta unguarded -- safe there because its wages are a
+                    // function of tier, so a higher-tier target always costs strictly more. RBM prices wages
+                    // off equipment value, where a tier-up can be wage-neutral (or cheaper), so the delta can
+                    // be 0 and the division must be gated. A non-positive delta needs no clamp at all: the
+                    // upgrade cannot push the party further past its payment limit.
+                    int wageDelta = wageModel.GetCharacterWage(upgradeTarget) - wageModel.GetCharacterWage(character);
+                    if (wageDelta > 0 && upgradeTarget.Tier > character.Tier && party.MobileParty.HasLimitedWage() && party.MobileParty.TotalWage + count * wageDelta > party.MobileParty.PaymentLimit)
                     {
-                        count = MathF.Max(0, MathF.Min(count, (party.MobileParty.PaymentLimit - party.MobileParty.TotalWage) / (wageModel.GetCharacterWage(upgradeTarget) - wageModel.GetCharacterWage(character))));
+                        count = MathF.Max(0, MathF.Min(count, (party.MobileParty.PaymentLimit - party.MobileParty.TotalWage) / wageDelta));
                         if (count == 0)
                         {
                             continue;
