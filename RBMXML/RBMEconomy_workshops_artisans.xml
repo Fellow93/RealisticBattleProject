@@ -1,0 +1,1344 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WorkshopTypes>
+	<WorkshopType
+		id="artisans"
+		name="{=VHLUHBaT}Artisans"
+		equipment_cost="1000000"
+		frequency="0"
+		jobname="{=qfzkMuLj}Artisan"
+		isHidden="true"
+		description="{=AfiEQPky}Every town has a few craftsman. Someone has to make everyday stuff for everyday people and mosts do it themselves.">
+		<Meshes
+			sign_mesh_name="shop_sign_merchantbakery"
+			shop_prop_mesh_name_1="shop_prop_merchantflour_a"
+			shop_prop_mesh_name_2="shop_prop_merchantflour_b"
+			shop_prop_mesh_name_3_1="shop_prop_merchantflour_c"
+			shop_prop_mesh_name_4="Shop_prop_merchantbakery_d"
+			shop_prop_mesh_name_5="Shop_prop_merchantbakery_e"
+			shop_prop_mesh_name_6="Shop_prop_merchantbakery_f" />
+		<Production
+			conversion_speed="12">
+			<Inputs>
+				<Input
+					input_item="cow" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.meat"
+					output_count="2" />
+				<Output
+					output="ItemCategory.hides"
+					output_count="4" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="24">
+			<Inputs>
+				<Input
+					input_item="sheep" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.meat"
+					output_count="1" />
+				<Output
+					output="ItemCategory.hides"
+					output_count="3" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="30">
+			<Inputs>
+				<Input
+					input_item="hog" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.meat"
+					output_count="1" />
+				<Output
+					output="ItemCategory.hides"
+					output_count="2" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.8">
+			<Inputs>
+				<Input
+					input_item="grape"
+					input_count="6" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.wine"
+					output_count="5" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="ironIngot2" />
+				<Input
+					input_item="planks"
+					input_count="1" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.tools"
+					output_count="16" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="olives" 
+					input_count="8"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.oil"
+					output_count="10" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="linen" 
+					input_count="2"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="3" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="felt" 
+					input_count="3"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="4" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="linen" 
+					input_count="1"/>
+				<Input
+					input_item="wool" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="2" />
+			</Outputs>
+		</Production>
+	<!--< Gambeson - cloth (tier2?) >-->		
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="linen" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.light_armor" />
+			</Outputs>
+		</Production>
+	<!--< Leather - (tier3?) >-->		
+		<Production
+			conversion_speed="0.4">
+			<Inputs>
+				<Input
+					input_item="leather" 
+					input_count="2"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.medium_armor" />
+			</Outputs>
+		</Production>
+	<!--< mail and plate tier 3-4 >-->		
+		<Production
+			conversion_speed="0.1">
+			<Inputs>
+				<Input
+					input_item="ironIngot2"
+					input_count="10"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.12">
+			<Inputs>
+				<Input
+					input_item="ironIngot3"
+					input_count="8"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.25">
+			<Inputs>
+				<Input
+					input_item="ironIngot3"
+					input_count="8"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.2">
+			<Inputs>
+				<Input
+					input_item="ironIngot2"
+					input_count="10"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" />
+			</Outputs>
+		</Production>
+	<!--< mail and plate tier 5-6 >-->			
+		<Production
+			conversion_speed="0.066">
+			<Inputs>
+				<Input
+					input_item="ironIngot3"
+					input_count="18"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ultra_armor" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.08">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="14"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ultra_armor" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.09">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="12"/>
+				<Input
+					input_item="ironIngot5"
+					input_count="1"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ultra_armor" />
+			</Outputs>
+		</Production>
+	<!--< spears >-->			
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="ironIngot2"
+					input_count="3"/>
+				<Input
+					input_item="planks" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons" 
+					output_count="12" />
+			</Outputs>
+		</Production>
+	<!--< basic swords >-->		
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="ironIngot3" 
+					input_count="3"/>
+				<Input
+					input_item="hides" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons_2" 
+					output_count="4" />
+			</Outputs>
+		</Production>
+	<!--< basic axes and maces >-->				
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="ironIngot3" 
+					input_count="2"/>
+				<Input
+					input_item="planks" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons_3" 
+					output_count="3" />
+			</Outputs>
+		</Production>
+	<!--< 2H axes, maces and polearms >-->			
+		<Production
+			conversion_speed="0.5">
+			<Inputs>
+				<Input
+					input_item="ironIngot4" />
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons_4" 
+					output_count="2" />
+			</Outputs>
+		</Production>
+	<!--< Good swords >-->			
+		<Production
+			conversion_speed="0.25">
+			<Inputs>
+				<Input
+					input_item="ironIngot5" 
+					input_count="2"/>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons_5" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.25">
+			<Inputs>
+				<Input
+					input_item="ironIngot6" 
+					input_count="1"/>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons_5" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="ironIngot2"
+					input_count ="6"/>
+				<Input
+					input_item="planks" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.arrows"
+					output_count="6" />
+			</Outputs>
+		</Production>
+		
+	<!--< Longbows >-->
+		<Production
+			conversion_speed="2">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons"
+					output_count="8" />
+			</Outputs>
+		</Production>
+	<!--< Horsebows >-->		
+		<Production
+			conversion_speed="0.5">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_2" />
+			</Outputs>
+		</Production>
+	<!--< Crossbows >-->			
+		<Production
+			conversion_speed="0.12">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="2"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_3" 
+					output_count="2" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.1">
+			<Inputs>
+				<Input
+					input_item="hardwood" />
+				<Input
+					input_item="leather" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_4" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.05">
+			<Inputs>
+				<Input
+					input_item="hardwood" />
+				<Input
+					input_item="leather" />
+				<Input
+					input_item="iron" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_5" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield" 
+					output_count="2" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.7">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="hides" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_2" 
+					output_count="2" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.5">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_3" 
+					output_count="2" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.3">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
+				<Input
+					input_item="ironIngot3" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_4"
+					output_count="2" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.2">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
+				<Input
+					input_item="ironIngot4" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_5"
+					output_count="2" />
+			</Outputs>
+		</Production>
+	<!--< saddle (T1) >-->			
+		<Production
+			conversion_speed="1.0">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="4"/>
+				<Input
+					input_item="hides" 
+					input_count ="4"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment" 
+					output_count="4" />
+			</Outputs>
+		</Production>
+	<!--< Gambeson horse armour (T2?) >-->				
+		<Production
+			conversion_speed="0.25">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="2"/>
+				<Input
+					input_item="felt" 
+					input_count ="3"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_2" />
+			</Outputs>
+		</Production>
+	<!--< Leather horse armour (T3?) >-->			
+		<Production
+			conversion_speed="0.1">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="9"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="felt" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_3" />
+			</Outputs>
+		</Production>
+	<!--< Mail and Scale frontal horse armour (T4?) >-->			
+		<Production
+			conversion_speed="0.05">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="felt" 
+					input_count ="1"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count ="10"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_4" />
+			</Outputs>
+		</Production>
+	<!--< Full Mail and Scale horse armour (T5-6?) >-->			
+		<Production
+			conversion_speed="0.025">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="felt" 
+					input_count ="1"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count ="20"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_5" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.01">
+			<Inputs>
+				<Input
+					input_item="cotton" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.velvet"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.4">
+			<Inputs>
+				<Input
+					input_item="flax" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.linen"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.57">
+			<Inputs>
+				<Input
+					input_item="silver" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.jewelry"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="hides" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.leather"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="grain" 
+					input_count="2"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.beer"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="ironIngot1"
+					input_count="10" />
+				<Input
+					input_item="charcoal" 
+					input_count="10" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ironIngot2"
+					output_count="6" />
+				<Output
+					output="ItemCategory.ironIngot3"
+					output_count="4" />
+			</Outputs>
+		</Production>
+	</WorkshopType>
+	<WorkshopType
+		id="brewery"
+		name="{=GsaLzLfl}Brewery"
+		equipment_cost="3000"
+		frequency="1"
+		jobname="{=pVjxlT1f}Brewer"
+		description="{=hn82dw2C}We malt, mash and ferment grain to brew beer, the most popular beverage for the common people, especially in the northern lands.">
+		<Meshes
+			sign_mesh_name="shop_sign_merchantbeer"
+			shop_prop_mesh_name_1="shop_prop_merchantbeer_a"
+			shop_prop_mesh_name_2="shop_prop_merchantbeer_b"
+			shop_prop_mesh_name_3_1="shop_prop_merchantbeer_c"
+			shop_prop_mesh_name_4="shop_prop_merchantbeer_d"
+			shop_prop_mesh_name_5="shop_prop_merchantbeer_e"
+			shop_prop_mesh_name_6="shop_prop_merchantbeer_f" />
+		<Production
+			conversion_speed="3.5">
+			<Inputs>
+				<Input
+					input_item="grain" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.beer"
+					output_count="2" />
+			</Outputs>
+		</Production>
+	</WorkshopType>
+	<WorkshopType
+		id="velvet_weavery"
+		name="{=EBCKXbTa}Velvet Weavery"
+		frequency="2"
+		equipment_cost="5000"
+		jobname="{=HXuAkbcU}Velvet Weaver"
+		description="{=oFKrLaBy}We weave raw silk into even finer velvet to make the most luxurious garments in Calradia.">
+		<Meshes
+			sign_mesh_name="shop_sign_merchantweaveryvelvet"
+			shop_prop_mesh_name_1="shop_prop_merchantweavery_velvet_a"
+			shop_prop_mesh_name_2="shop_prop_merchantweavery_velvet_b"
+			shop_prop_mesh_name_3_1="shop_prop_merchantweavery_velvet_c"
+			shop_prop_mesh_name_4="shop_prop_merchantweavery_velvet_d"
+			shop_prop_mesh_name_5="shop_prop_merchantweavery_velvet_e"
+			shop_prop_mesh_name_6="shop_prop_merchantweavery_velvet_f" />
+		<Production
+			conversion_speed="0.75">
+			<Inputs>
+				<Input
+					input_item="cotton" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.velvet"
+					output_count="2" />
+			</Outputs>
+		</Production>
+	</WorkshopType>
+	<WorkshopType
+		id="linen_weavery"
+		name="{=tK4IiP3J}Linen Weavery"
+		frequency="2"
+		equipment_cost="3000"
+		jobname="{=RLz2b53X}Clothier"
+		description="{=vDwDPFua}We subject flax stalks to a lengthy process to separate the fibers, then weave them into linen. The fabric is lighter than wool and popular in summers and in hotter regions.">
+		<Meshes
+			sign_mesh_name="shop_sign_merchantweaverylinen"
+			shop_prop_mesh_name_1="shop_prop_merchantweavery_linen_a"
+			shop_prop_mesh_name_2="shop_prop_merchantweavery_linen_b"
+			shop_prop_mesh_name_3_1="shop_prop_merchantweavery_linen_c"
+			shop_prop_mesh_name_4="shop_prop_merchantweavery_linen_d"
+			shop_prop_mesh_name_5="shop_prop_merchantweavery_linen_e"
+			shop_prop_mesh_name_6="shop_prop_merchantweavery_linen_f" />
+		<Production
+			conversion_speed="2">
+			<Inputs>
+				<Input
+					input_item="flax" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.linen"
+					output_count="2" />
+			</Outputs>
+		</Production>
+	</WorkshopType>
+	<WorkshopType
+		id="wine_press"
+		name="{=uy2mSmw3}Wine Press"
+		frequency="2"
+		equipment_cost="3000"
+		jobname="{=PdvjpThP}Vintner"
+		description="{=llI5116T}We press grapes and ferment the juice. Wine is always in high demand throughout Calradia.">
+		<Meshes
+			sign_mesh_name="shop_sign_merchantwinery"
+			shop_prop_mesh_name_1="shop_prop_merchantwinery_a"
+			shop_prop_mesh_name_2="shop_prop_merchantwinery_b"
+			shop_prop_mesh_name_3_1="shop_prop_merchantwinery_c"
+			shop_prop_mesh_name_4="shop_prop_merchantwinery_d"
+			shop_prop_mesh_name_5="shop_prop_merchantwinery_e"
+			shop_prop_mesh_name_6="shop_prop_merchantwinery_f" />
+		<Production
+			conversion_speed="2.5">
+			<Inputs>
+				<Input
+					input_item="grape" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.wine"
+					output_count="2" />
+			</Outputs>
+		</Production>
+	</WorkshopType>
+	<WorkshopType
+		id="pottery_shop"
+		name="{=Tj7ErPfn}Pottery Shop"
+		frequency="2"
+		equipment_cost="1000"
+		jobname="{=wLTQpbIM}Potter"
+		description="{=yI0RHP6R}We fashion pots out of clay then bake them in kilns. People store most everything in pots and they're always in high demand.">
+		<Meshes
+			sign_mesh_name="shop_sign_merchantpottery"
+			shop_prop_mesh_name_1="shop_prop_merchantpottery_a"
+			shop_prop_mesh_name_2="shop_prop_merchantpottery_b"
+			shop_prop_mesh_name_3_1="shop_prop_merchantpottery_c"
+			shop_prop_mesh_name_4="shop_prop_merchantpottery_d"
+			shop_prop_mesh_name_5="shop_prop_merchantpottery_e"
+			shop_prop_mesh_name_6="shop_prop_merchantpottery_f" />
+		<Production
+			conversion_speed="2">
+			<Inputs>
+				<Input
+					input_item="clay" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.pottery"
+					output_count="2" />
+			</Outputs>
+		</Production>
+	</WorkshopType>
+	<WorkshopType
+		id="olive_press"
+		name="{=boupIGPX}Olive Press"
+		frequency="2"
+		equipment_cost="5000"
+		jobname="{=wCuAxt4m}Oilpresser"
+		description="{=qF9UGd2S}We crush olives and then drain the oil to be used for cooking, to light lamps, for soap, and for many other purposes.">
+		<Meshes
+			sign_mesh_name="shop_sign_merchantpottery"
+			shop_prop_mesh_name_1="shop_prop_merchantpottery_a"
+			shop_prop_mesh_name_2="shop_prop_merchantpottery_b"
+			shop_prop_mesh_name_3_1="shop_prop_merchantpottery_c"
+			shop_prop_mesh_name_4="shop_prop_merchantpottery_d"
+			shop_prop_mesh_name_5="shop_prop_merchantpottery_e"
+			shop_prop_mesh_name_6="shop_prop_merchantpottery_f" />
+		<Production
+			conversion_speed="2">
+			<Inputs>
+				<Input
+					input_item="olives" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.oil"
+					output_count="2" />
+			</Outputs>
+		</Production>
+	</WorkshopType>
+	<WorkshopType
+		id="wool_weavery"
+		name="{=bZeZCHoa}Wool Weavery"
+		frequency="2"
+		equipment_cost="1000"
+		jobname="{=eS6nGak1}Wool Weaver"
+		description="{=w94Fl25I}We take wool from sheep and first clean and card it. Then, we wet and press the wool fibers together, creating a thick, warm felt. It keeps out the cold and wet.">
+		<Meshes
+			sign_mesh_name="shop_sign_merchantweaverywool"
+			shop_prop_mesh_name_1="shop_prop_merchantweavery_wool_a"
+			shop_prop_mesh_name_2="shop_prop_merchantweavery_wool_b"
+			shop_prop_mesh_name_3_1="shop_prop_merchantarmory_light_c"
+			shop_prop_mesh_name_4="shop_prop_merchantweavery_wool_d"
+			shop_prop_mesh_name_5="shop_prop_merchantweavery_wool_e"
+			shop_prop_mesh_name_6="shop_prop_merchantweavery_wool_f" />
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="wool" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="2" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="2">
+			<Inputs>
+				<Input
+					input_item="wool" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.felt"
+					output_count="2" />
+			</Outputs>
+		</Production>
+	</WorkshopType>
+	<WorkshopType
+		id="tannery"
+		name="{=7hx2Nlmd}Tannery"
+		frequency="1"
+		equipment_cost="1000"
+		jobname="{=ousGnzju}Tanner"
+		description="{=cawbOcb1}We treat raw hides with lime and other chemicals, and turned them into supple leather.">
+		<Meshes
+			sign_mesh_name="shop_sign_merchantleather"
+			shop_prop_mesh_name_1="shop_prop_merchantarmory_a"
+			shop_prop_mesh_name_2="shop_prop_merchantleather_b"
+			shop_prop_mesh_name_3_1="shop_prop_merchantarmory_medium_c"
+			shop_prop_mesh_name_4="shop_prop_merchantleather_d"
+			shop_prop_mesh_name_5="shop_prop_merchantleather_e"
+			shop_prop_mesh_name_6="shop_prop_merchantleather_f" />
+		<Production
+			conversion_speed="2">
+			<Inputs>
+				<Input
+					input_item="hides" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.leather"
+					output_count="2" />
+			</Outputs>
+		</Production>
+	</WorkshopType>
+	<WorkshopType
+		id="wood_WorkshopType"
+		name="{=UiSes6XY}Wood Workshop"
+		frequency="2"
+		equipment_cost="1000"
+		jobname="{=IO7Jgato}Carpenter"
+		description="{=wUwYYcjM}Well, we take hardwood logs and split them into rough boards. Then, we smooth and shape them with planes and saws to make sturdy planks. Folk use them for all kinds of building, or to make ships.">
+		<Meshes
+			sign_mesh_name="shop_sign_merchantshields"
+			shop_prop_mesh_name_1="shop_prop_merchantcarpenter_a"
+			shop_prop_mesh_name_2="shop_prop_merchantcarpenter_b"
+			shop_prop_mesh_name_3_1="shop_prop_merchantsmithing_tools_c"
+			shop_prop_mesh_name_3_2="shop_prop_merchantweapons_ranged_c"
+			shop_prop_mesh_name_3_3="shop_prop_merchantweapons_shield_c"
+			shop_prop_mesh_name_4="shop_prop_merchantcarpenter_d"
+			shop_prop_mesh_name_5="shop_prop_merchantcarpenter_e"
+			shop_prop_mesh_name_6="shop_prop_merchantcarpenter_f" />
+		<Production
+			conversion_speed="2">
+			<Inputs>
+				<Input
+					input_item="hardwood" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.planks"
+					output_count="2" />
+			</Outputs>
+		</Production>
+		
+	<!--< Longbows >-->
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="planks" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons"
+					output_count="16" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.5">
+			<Inputs>
+				<Input
+					input_item="hardwood" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_2"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.4">
+			<Inputs>
+				<Input
+					input_item="hardwood" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_3"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.3">
+			<Inputs>
+				<Input
+					input_item="hardwood" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_4"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.2">
+			<Inputs>
+				<Input
+					input_item="hardwood" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_5"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="hardwood" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.33">
+			<Inputs>
+				<Input
+					input_item="hardwood" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_2"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.2">
+			<Inputs>
+				<Input
+					input_item="hardwood" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_3"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.1">
+			<Inputs>
+				<Input
+					input_item="hardwood" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_4"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.1">
+			<Inputs>
+				<Input
+					input_item="hardwood" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_5"
+					output_count="1" />
+			</Outputs>
+		</Production>
+	</WorkshopType>
+	<WorkshopType
+		id="smithy"
+		name="{=Kqt8RHh7}Smithy"
+		frequency="2"
+		equipment_cost="5000"
+		jobname="{=8MwqyFfS}Ironmonger"
+		description="{=J2Ioper5}Iron ore is smelted into ingots then forged into tools, nails, weapons and armor in a smithy.">
+		<Meshes
+			sign_mesh_name="shop_sign_merchantsmithing"
+			shop_prop_mesh_name_1="shop_prop_merchantsmithing_a"
+			shop_prop_mesh_name_2="shop_prop_merchantsmithing_b"
+			shop_prop_mesh_name_3_1="shop_prop_merchantweapons_melee_c"
+			shop_prop_mesh_name_3_2="shop_prop_merchantarmory_heavy_c"
+			shop_prop_mesh_name_4="shop_prop_merchantsmithing_d"
+			shop_prop_mesh_name_5="shop_prop_merchantsmithing_e"
+			shop_prop_mesh_name_6="shop_prop_merchantsmithing_f" />
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="iron" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons"
+					output_count="2" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="iron" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons_2" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.5">
+			<Inputs>
+				<Input
+					input_item="iron" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons_3" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.2">
+			<Inputs>
+				<Input
+					input_item="iron" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons_4" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.1">
+			<Inputs>
+				<Input
+					input_item="iron" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons_5" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="iron" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.medium_armor" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.25">
+			<Inputs>
+				<Input
+					input_item="iron" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.1">
+			<Inputs>
+				<Input
+					input_item="iron" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ultra_armor" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1.5">
+			<Inputs>
+				<Input
+					input_item="iron" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.tools"
+					output_count="4" />
+			</Outputs>
+		</Production>
+	</WorkshopType>
+	<!--<WorkshopType id="stable" name="{=zzQdNpXw}Stable" frequency="2" equipment_cost="2000" jobname="{=ZGQAtoSU}Stabler" description="{=*}(Stable definiton)">-->
+	<!--TODO_GOKCEN-->
+	<!--
+    <Meshes sign_mesh_name="shop_sign_merchanthorse" shop_prop_mesh_name_1="shop_prop_merchanthorse_a" shop_prop_mesh_name_2="shop_prop_merchanthorse_b" shop_prop_mesh_name_3_1="shop_prop_merchanthorse_c" shop_prop_mesh_name_4="shop_prop_merchanthorse_d" shop_prop_mesh_name_5="shop_prop_merchanthorse_e" shop_prop_mesh_name_6="shop_prop_merchanthorse_f"/>
+    <Production conversion_speed="1">
+      <Inputs>
+        <Input input_item="horse" />
+      </Inputs>
+      <Outputs>
+        <Output output="ItemCategory.war_horse" />
+      </Outputs>
+    </Production>
+  </WorkshopType>-->
+	<WorkshopType
+		id="silversmithy"
+		name="{=silversmithworkshop}Silversmith"
+		frequency="2"
+		equipment_cost="5000"
+		jobname="{=silversmithworker}Silversmith"
+		description="{=cxrsASao}Rare silver ore is turned into jewelry, the finest of all trade goods, in a Silversmith.">
+		<Meshes
+			sign_mesh_name="shop_sign_merchantsmithing"
+			shop_prop_mesh_name_1="shop_prop_merchantsilversmith_a"
+			shop_prop_mesh_name_2="shop_prop_merchantsilversmith_b"
+			shop_prop_mesh_name_3_1="shop_prop_merchantsilversmith_c"
+			shop_prop_mesh_name_4="shop_prop_merchantsilversmith_d"
+			shop_prop_mesh_name_5="shop_prop_merchantsilversmith_e"
+			shop_prop_mesh_name_6="shop_prop_merchantsilversmith_f" />
+		<Production
+			conversion_speed="0.75">
+			<Inputs>
+				<Input
+					input_item="silver" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.jewelry"
+					output_count="2" />
+			</Outputs>
+		</Production>
+	</WorkshopType>
+</WorkshopTypes>
