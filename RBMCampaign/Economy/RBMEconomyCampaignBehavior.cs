@@ -40,11 +40,6 @@ namespace RBMCampaign
         {
             EconomyLog.StartCampaignLog();
 
-            // Workshop types belong to the object manager rather than to the campaign, so they are
-            // re-read from XML on a new game and on a load alike, and the rewrite has to be re-applied
-            // each time. It is idempotent, so a session that inherits already-fixed types costs nothing.
-            WorkshopRecipes.Apply();
-
             PartyTradeFlow.Reset();
             TradeTariff.Reset();
             WorkshopPurse.Reset();
