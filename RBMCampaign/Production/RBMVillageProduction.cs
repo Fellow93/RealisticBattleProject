@@ -84,7 +84,7 @@ namespace RBMCampaign
                 { "lumberjack", new (string, float)[] { ("charcoal", 1.027f), ("planks", 1.027f) } },
                 { "clay_mine", new (string, float)[] { ("clay", 7.5f) } },
                 { "salt_mine", new (string, float)[] { ("salt", 0.178f) } },
-                { "iron_mine", new (string, float)[] { ("iron", 2f) } },
+                { "iron_mine", new (string, float)[] { ("ironIngot1", 2f) } },
                 { "silver_mine", new (string, float)[] { ("silver", 0.85f) } },
                 { "fisherman", new (string, float)[] { ("fish", 0.055f) } },
                 { "vineyard", new (string, float)[] { ("grape", 0.038f) } },
