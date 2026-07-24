@@ -16,6 +16,19 @@
 			shop_prop_mesh_name_4="Shop_prop_merchantbakery_d"
 			shop_prop_mesh_name_5="Shop_prop_merchantbakery_e"
 			shop_prop_mesh_name_6="Shop_prop_merchantbakery_f" />
+			
+		<Production
+			conversion_speed="4">
+			<Inputs>
+				<Input
+					input_item="clay" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.pottery"
+					output_count="1" />
+			</Outputs>
+		</Production>
 		<Production
 			conversion_speed="12">
 			<Inputs>

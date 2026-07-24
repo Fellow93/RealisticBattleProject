@@ -43,6 +43,11 @@ namespace RBMCampaign
             ("grain", 0.05f),
             ("wool", 0.02f),
             ("sheep", 0.006f),
+            //basic village "industrial" production so cities can function
+            ("charcoal", 0.05f),
+            ("planks", 0.05f),
+            ("clay", 0.1f),
+            ("ironIngot1", 0.1f),
         };
 
         // Horse ranches produce culture-appropriate breeds, one item per tier at the rates below:
