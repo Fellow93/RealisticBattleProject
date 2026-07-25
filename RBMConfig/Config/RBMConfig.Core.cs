@@ -120,7 +120,6 @@ namespace RBMConfig
             troopUpgradeChargeMountValue = ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeChargeMountValue", "1").Equals("1");
             troopLootPiecesPerMan = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLootPiecesPerMan", "3"), CultureInfo.InvariantCulture);
             troopLootOverlookChancePerTier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLootOverlookChancePerTier", "0.5"), CultureInfo.InvariantCulture);
-            troopWageTierBase = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopWageTierBase", "20"), CultureInfo.InvariantCulture);
             troopMaintenanceFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopMaintenanceFraction", "0.005"), CultureInfo.InvariantCulture);
             mercenaryMaintenancePurseFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "MercenaryMaintenancePurseFraction", "0.5"), CultureInfo.InvariantCulture);
             independentMaintenancePurseFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "IndependentMaintenancePurseFraction", "1.0"), CultureInfo.InvariantCulture);
@@ -136,6 +135,7 @@ namespace RBMConfig
             troopSpoilsHealGoldPerTier = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsHealGoldPerTier", "10"), CultureInfo.InvariantCulture);
             troopSpoilsHealFractionPerHour = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsHealFractionPerHour", "0.05"), CultureInfo.InvariantCulture);
             troopFallenSpoilsCaptureFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopFallenSpoilsCaptureFraction", "0.75"), CultureInfo.InvariantCulture);
+            campaignStartingGold = int.Parse(ReadOrCreate("/Config/RBMCampaign", "CampaignStartingGold", "5000"), CultureInfo.InvariantCulture);
             realisticTradeGoodPrices = ReadOrCreate("/Config/RBMCampaign", "RealisticTradeGoodPrices", "1").Equals("1");
             showInventoryItemWeight = ReadOrCreate("/Config/RBMCampaign", "ShowInventoryItemWeight", "1").Equals("1");
             spoilsLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsLoggingEnabled", "1").Equals("1");
@@ -261,7 +261,6 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeChargeMountValue"), troopUpgradeChargeMountValue);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLootPiecesPerMan"), troopLootPiecesPerMan.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLootOverlookChancePerTier"), troopLootOverlookChancePerTier.ToString(CultureInfo.InvariantCulture));
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopWageTierBase"), troopWageTierBase.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopMaintenanceFraction"), troopMaintenanceFraction.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/MercenaryMaintenancePurseFraction"), mercenaryMaintenancePurseFraction.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/IndependentMaintenancePurseFraction"), independentMaintenancePurseFraction.ToString(CultureInfo.InvariantCulture));
@@ -277,6 +276,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsHealGoldPerTier"), troopSpoilsHealGoldPerTier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsHealFractionPerHour"), troopSpoilsHealFractionPerHour.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopFallenSpoilsCaptureFraction"), troopFallenSpoilsCaptureFraction.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/CampaignStartingGold"), campaignStartingGold.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/RealisticTradeGoodPrices"), realisticTradeGoodPrices);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/ShowInventoryItemWeight"), showInventoryItemWeight);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsLoggingEnabled"), spoilsLoggingEnabled);

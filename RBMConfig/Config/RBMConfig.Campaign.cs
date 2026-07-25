@@ -43,9 +43,12 @@ namespace RBMConfig
         // never overlooks kit of his own tier or better. At 1 he sees nothing beneath him at all.
         public static float troopLootOverlookChancePerTier = 0.5f;
 
-        // A troop's daily wage is this flat base value multiplied by its tier, replacing the vanilla
-        // per-tier wage the game hands out. A base of zero leaves the vanilla wage untouched.
-        public static int troopWageTierBase = 20;
+        // Troop wages are NOT configurable. They are a fixed historical pay table in
+        // Wages/TierBasedWageModel.cs (foot 20/30/40/60/120/240, horse 30/40/60/120/240/480, tier 0 paid
+        // as tier 1), and it applies whenever this module is on. The old TroopWageTierBase dial read as a
+        // per-tier multiplier long after the wage stopped being computed that way; once the table landed
+        // the number meant nothing but "not zero", so it was removed rather than left to mislead. To get
+        // the vanilla wage back, turn the campaign module off.
 
         // The daily cost of keeping a soldier in the field, as a share of his whole kit's worth -- his
         // gear, his horse and its armour alike. A lancer in full harness costs more to maintain than a
@@ -132,6 +135,12 @@ namespace RBMConfig
         // a party across its stacks by weight -- men times tier -- so veterans take the larger cut. Zero
         // leaves the dead's purse on the field.
         public static float troopFallenSpoilsCaptureFraction = 0.75f;
+
+        // The purse the player opens a new campaign with, replacing whatever his backstory choices added
+        // up to. RBM prices most of the campaign well above vanilla -- kit, trade goods, upgrades paid out
+        // of a spoils purse -- so the few hundred denars character creation hands out leaves none of the
+        // opening decisions affordable. New games only; a loaded save keeps the gold it was saved with.
+        public static int campaignStartingGold = 5000;
 
         // Replaces the vanilla worth and weight of the trade goods with historically derived figures --
         // a period price in denars times ten, and the real mass in kilograms of one lot. Value and weight

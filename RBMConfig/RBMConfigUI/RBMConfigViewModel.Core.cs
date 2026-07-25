@@ -424,6 +424,7 @@ namespace RBMConfig
                 RBMCampaignEnabled.SelectedIndex = 0;
             }
 
+            _campaignStartingGold = MathF.Clamp(RBMConfig.campaignStartingGold, 1000f, 100000f);
             _troopUpgradeCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeCostMultiplier, 0f, 2f);
             _troopUpgradeSpoilsLootMultiplier = MathF.Clamp(RBMConfig.troopUpgradeSpoilsLootMultiplier, 0f, 5f);
             _troopUpgradeSupplyRadius = MathF.Clamp(RBMConfig.troopUpgradeSupplyRadius, 0f, 200f);
@@ -432,7 +433,6 @@ namespace RBMConfig
             TroopUpgradeChargeMountValue.SelectedIndex = RBMConfig.troopUpgradeChargeMountValue ? 1 : 0;
             _troopLootPiecesPerMan = MathF.Clamp(RBMConfig.troopLootPiecesPerMan, 1f, 10f);
             _troopLootOverlookChancePerTier = MathF.Clamp(RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
-            _troopWageTierBase = MathF.Clamp((float)RBMConfig.troopWageTierBase, 0f, 300f);
             _troopMaintenanceFraction = MathF.Clamp(RBMConfig.troopMaintenanceFraction, 0f, 0.05f);
             _mercenaryMaintenancePurseFraction = MathF.Clamp(RBMConfig.mercenaryMaintenancePurseFraction, 0f, 1f);
             _independentMaintenancePurseFraction = MathF.Clamp(RBMConfig.independentMaintenancePurseFraction, 0f, 1f);
@@ -635,6 +635,7 @@ namespace RBMConfig
                 RBMConfig.rbmCampaignEnabled = true;
             }
 
+            RBMConfig.campaignStartingGold = (int)MathF.Round(_campaignStartingGold);
             RBMConfig.troopUpgradeCostMultiplier = _troopUpgradeCostMultiplier;
             RBMConfig.troopUpgradeSpoilsLootMultiplier = _troopUpgradeSpoilsLootMultiplier;
             RBMConfig.troopUpgradeSupplyRadius = _troopUpgradeSupplyRadius;
@@ -643,7 +644,6 @@ namespace RBMConfig
             RBMConfig.troopUpgradeChargeMountValue = TroopUpgradeChargeMountValue.SelectedIndex == 1;
             RBMConfig.troopLootPiecesPerMan = MathF.Round(_troopLootPiecesPerMan);
             RBMConfig.troopLootOverlookChancePerTier = _troopLootOverlookChancePerTier;
-            RBMConfig.troopWageTierBase = (int)MathF.Round(_troopWageTierBase);
             RBMConfig.troopMaintenanceFraction = _troopMaintenanceFraction;
             RBMConfig.mercenaryMaintenancePurseFraction = _mercenaryMaintenancePurseFraction;
             RBMConfig.independentMaintenancePurseFraction = _independentMaintenancePurseFraction;
@@ -710,6 +710,7 @@ namespace RBMConfig
             RBMCampaignEnabled.SelectedIndex = 1;
 
             // Campaign / spoils
+            CampaignStartingGold = 5000f;
             TroopUpgradeCostMultiplier = 1f;
             TroopUpgradeSpoilsLootMultiplier = 1f;
             TroopUpgradeSupplyRadius = 30f;
@@ -718,7 +719,6 @@ namespace RBMConfig
             TroopUpgradeChargeMountValue.SelectedIndex = 1;
             TroopLootPiecesPerMan = 3f;
             TroopLootOverlookChancePerTier = 0.5f;
-            TroopWageTierBase = 20f;
             TroopSettlementFoodDays = 20f;
             RecruitMaintenanceDays = 20f;
             TroopFoodWageFraction = 0.5f;

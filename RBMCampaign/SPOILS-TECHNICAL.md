@@ -2,13 +2,17 @@
 
 The [narrative README](README.md) explains *what* the spoils economy does and *why*. This document is the *how*: the exact formulas, constants, clamps, and code locations, for anyone tuning the system or reading the source.
 
+For how spoils sit inside the wider campaign economy — the other gold pools, what each flow debits and credits, and which edges still conjure or destroy money — see [`docs/economy-money-flows.md`](../docs/economy-money-flows.md).
+
 All paths are relative to the `RBMCampaign/` project. A **point of spoils == 1 gold piece** — the two are the same currency in different pockets. The purse is a per-troop-**stack** value, keyed `party.Id + "#" + character.StringId`, persisted under the `SyncData` key `RBM_troopSpoilsGold`.
 
 Master switch: `IsEnabled => troopUpgradeCostMultiplier > 0f` (`Spoils/SpoilsPool.cs`). At `0` every entry point below early-returns and the system is inert.
 
 ---
 
-## Config fields and defaults (`RBMConfig/RBMConfig.cs`)
+## Config fields and defaults (`RBMConfig/Config/RBMConfig.Campaign.cs`)
+
+Only the fields this document's formulas read. The full campaign set — maintenance, healing, the leader's cut, the supply-town gate, the recruit seed, the contract purse shares — is tabulated in [README.md](README.md#tuning-it).
 
 | Field | Default | Used by |
 | --- | --- | --- |
@@ -16,12 +20,11 @@ Master switch: `IsEnabled => troopUpgradeCostMultiplier > 0f` (`Spoils/SpoilsPoo
 | `troopUpgradeSpoilsLootMultiplier` | `1f` | battlefield salvage share |
 | `troopLootPiecesPerMan` | `3` | loot carry capacity |
 | `troopLootOverlookChancePerTier` | `0.5f` | per-tier overlook probability |
-| `troopWageTierBase` | `20` | daily wage = base × tier for non-heroes (`0` = vanilla wage) |
 | `troopRaidSpoilsMultiplier` | `0.25f` | raid **and** siege plunder pot |
 | `troopFallenSpoilsCaptureFraction` | `0.75f` | share of a beaten enemy's purse captured |
 | `troopSettlementFoodDays` | `20` | days of rations bought at market (`0` disables food) |
 | `troopFoodWageFraction` | `0.5f` | food price ceiling, as a share of daily wage |
-| `troopSettlementFunWageFraction` | `1.5f` | carousing, as a multiple of daily wage |
+| `troopSettlementFunWageFraction` | `0.25f` | carousing, as a multiple of daily wage |
 | `troopSpoilsCapDays` | `20` | days of keep (wage + field maintenance) a stack holds before upkeep spends the surplus; the flush threshold |
 | `troopLuxuryCooldownDays` | `20` | cooldown between over-cap luxury splurges |
 | `troopLuxurySpendChance` | `0.02f` | per-check chance an over-cap stack buys a luxury |
@@ -204,7 +207,19 @@ wage    = wageModel.GetCharacterWage(character) * element.Number
 granted = wage                                                  // the stack's whole wage
 ```
 
-`GetCharacterWage` is itself overridden for non-heroes (`Wages/TierBasedWageModel.cs`): the daily wage is `troopWageTierBase × character.Tier`, replacing vanilla's wage table (`0` keeps vanilla). A stack's whole wage lands in its purse — the party's gold is untouched, so this only reinterprets where the pay went. Spoils are a **closed loop**: nothing is handed back to gold.
+`GetCharacterWage` is itself overridden for non-heroes (`Wages/TierBasedWageModel.cs`), replacing vanilla's 1/2/3/5/8/12/17/23 table with a per-tier rate read off a table of its own — the medieval daily rates in pence at ten gold to the penny:
+
+```
+tier      1    2    3    4    5     6
+foot     20   30   40   60  120   240
+cavalry  30   40   60  120  240   480
+```
+
+Tier 0 rabble are paid as tier 1 (nobody serves for nothing) and anything above tier 6 clamps to the top rung. Heroes never reach this path and keep vanilla pay.
+
+**Not configurable.** The table applies whenever RBMCampaign's patches are on. The former `troopWageTierBase` dial was removed: it read as a per-tier multiplier long after the wage stopped being a formula, and the only thing it still decided was whether the table applied at all — which is the module toggle's job.
+
+A stack's whole wage lands in its purse — the party's gold is untouched, so this only reinterprets where the pay went. Spoils are otherwise a **closed loop**: the one place they become gold again is the leader's cut (`Spoils/SpoilsPool.LeaderCut.cs`), which draws the share back out of the same purses it was just deposited into, so no coin is minted by it.
 
 ---
 
@@ -236,7 +251,7 @@ if surplus > 0:
 spend = Min(purse, spend)                                                    // never into debt
 ```
 
-The surplus bite scales by how many times over its cap the purse stands, so a bloated garrison drinks faster. At the `1.5` default the base rate alone exceeds a day's wage per day idled.
+The surplus bite scales by how many times over its cap the purse stands, so a bloated garrison drinks faster. At the `0.25` default the base rate alone is a quarter of a day's wage per day idled, and the surplus term is what actually drains a flush stack.
 
 ---
 
@@ -254,7 +269,7 @@ dailyMaintenance = DailyMaintenanceCost(char, stackSize)                      //
 GetSpoilsCap = (dailyWage + dailyMaintenance) * troopSpoilsCapDays            // 0 days ⇒ cap 0
 ```
 
-The cap is a behavioural threshold, not a hard limit: a purse can hold more than its cap (loot and wage both fill past it), but once over, upkeep draws the surplus down — carousing bites harder (§8) and only over-cap stacks splurge on luxuries (§10). Nothing over the cap is minted back to your gold; spoils are a **closed loop** spent only on upgrades, food and drink.
+The cap is a behavioural threshold, not a hard limit: a purse can hold more than its cap (loot and wage both fill past it), but once over, upkeep draws the surplus down — carousing bites harder (§8) and only over-cap stacks splurge on luxuries (§10). Nothing over the cap is minted back to your gold: the surplus is drunk and eaten where the men stand, which credits that settlement's purse rather than yours. Spoils reach gold at one point only, the leader's cut (`Spoils/SpoilsPool.LeaderCut.cs`), and never by way of the cap.
 
 `GetPartyPayee` (owner if alive, else `LeaderHero`) lives in this file too — the party-leader spoils cut pays through it.
 

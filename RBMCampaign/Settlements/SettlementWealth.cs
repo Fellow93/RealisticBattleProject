@@ -34,8 +34,9 @@ namespace RBMCampaign
     /// village -- reads the village's real purse with nothing to keep in step. One number, and no
     /// second village pot to model a circulation a village does not have.
     ///
-    /// Nothing in this phase moves money between them. This file is the ledger and its accessors only, so
-    /// that the flows can be built one at a time on top of a store that already persists correctly.
+    /// This file is the ledger and its accessors only. The flows built on top of it -- tariffs, wages,
+    /// upkeep, trade, the countryside chain -- live in their own files and are mapped end to end in
+    /// `docs/economy-money-flows.md`.
     /// </summary>
     /// <remarks>
     /// Settlement carries no spare serialized field, so settlement wealth cannot ride along on the
@@ -43,9 +44,14 @@ namespace RBMCampaign
     /// save and unique per settlement, following the same pattern as the troop-trade tallies in
     /// <see cref="TroopMarketFeedback"/>.
     ///
-    /// Both purses exist for every village, castle and town. Go through this class rather than calling
-    /// <c>ChangeGold</c> directly: the later phases move the accounting around behind these six methods,
-    /// and a stray <c>ChangeGold</c> is money created or destroyed outside the ledger.
+    /// A town or castle holds BOTH purses; a village holds only the settlement one, in vanilla's own
+    /// <c>Gold</c> field -- <see cref="HasCitizenPurse"/> is false for a village and
+    /// <see cref="GetSettlementWealth"/> reads the field directly for one. Callers that must tell "has no
+    /// market" from "market is broke" have to ask, since both answer zero.
+    ///
+    /// Go through this class rather than calling <c>ChangeGold</c> directly: the accounting moves around
+    /// behind these six methods, and a stray <c>ChangeGold</c> is money created or destroyed outside the
+    /// ledger.
     /// </remarks>
     public static class SettlementWealth
     {

@@ -6,9 +6,19 @@ lives.
 
 ## Big picture
 
-RBMCampaign is a **6th C# project** (not in the "5 projects" list in `CLAUDE.md`). It has its
-own Harmony instance `com.rbmcampaign` and is gated by the config toggle `rbmCampaignEnabled`
-(default on).
+RBMCampaign is the 6th C# project. It has its own Harmony instance `com.rbmcampaign` and is
+gated by the config toggle `rbmCampaignEnabled` (default on).
+
+It has grown well past the spoils system this document was first written for. The module now
+also carries the **settlement wealth ledger** (`Settlements/`), the **village-to-town goods and
+food chain** (`Production/`), the **market and caravan economy** (`Economy/`), the
+**equipment-aware auto-resolve** (`Simulation/`, `Power/`) and the **spectator battle**
+(`Spectate/`). Those have their own documents — see the file map at the foot of this one.
+Everything below is about the spoils purse specifically.
+
+> **Money.** `docs/economy-money-flows.md` maps every gold pool in the campaign layer, every flow
+> between them, how spoils feed the settlement economy, and which edges still conjure or destroy
+> money. Read it before adding anything that moves a denar.
 
 **Spoils = a per-troop-stack purse, denominated in gold.**
 
@@ -19,8 +29,9 @@ party X" is one purse, separate from the same troop in party Y. It lives in a si
 (`SpoilsPool._spoils`) because Bannerlord's `TroopRosterElement` struct has no spare field to
 hang it on.
 
-The purse **fills** from battlefield loot and wages, and **drains** on upgrades, food, and
-carousing.
+The purse **fills** from battlefield loot, raid and siege plunder, and the daily wage, and
+**drains** on upgrades, field maintenance, food, carousing, paid healing, the odd luxury, and
+the leader's cut.
 
 ## How spoils are EARNED
 
@@ -93,7 +104,8 @@ notionally went (kit maintenance). Applies to every party in the world.
 ### 3. Carousing (`TroopUpkeep.SpendOnFun`)
 
 Each hour idling in a settlement, each stack spends `troopSettlementFunWageFraction` of its
-daily wage on drink/dice (>1 day's wage at default). Purse never goes negative.
+daily wage on drink/dice — a quarter of a day's wage at the default, plus a surplus term that
+bites harder the further over its cap the purse stands. Purse never goes negative.
 
 **Garrisons and militia are excluded** from food/carousing (they never leave; would be an
 infinite spending faucet). Only visiting field parties spend in settlements.
@@ -110,9 +122,12 @@ rule. `troopSpoilsCapDays` is 0–60 (default 20); 0 collapses the cap to nothin
 
 The cap governs *behaviour*, not storage: a purse may sit over its cap (loot and wage both fill past
 it), but once it does, upkeep starts drawing the surplus down — carousing bites harder (§3) and only
-over-cap stacks splurge on luxuries. Nothing over the cap is handed back to your gold: spoils are a
-**closed loop**, spent only on upgrades, food and drink. `GetPartyPayee` (owner if alive, else
-`LeaderHero`) also lives here — the party-leader spoils cut pays through it.
+over-cap stacks splurge on luxuries. Nothing over the cap is handed back to your gold — the surplus
+is drunk and eaten where the men stand, which credits that settlement's purse rather than yours.
+
+Spoils reach gold at exactly one point, the leader's cut (`Spoils/SpoilsPool.LeaderCut.cs`), and it
+is conserving: the share is drawn back out of the same purses the gather just filled, so no coin is
+minted. `GetPartyPayee` (owner if alive, else `LeaderHero`) also lives here — the cut pays through it.
 
 ## Who it applies to
 
@@ -140,6 +155,13 @@ Serialized via `SyncData`:
 
 - `RBM_troopSpoilsGold` — the purses (`SpoilsPool`).
 - `RBM_troopFedUntilHours` — when each stack next needs food (`TroopUpkeep`).
+- `RBM_troopLuxuryCooldown` — when each stack may indulge again (`TroopUpkeep`).
+- `RBM_townTroopTrade` — what troops have spent in each town (`TroopMarketFeedback`).
+- `RBM_settlementWealth` — the settlement treasury pot (`SettlementWealth`).
+
+⚠️ A persisted store must be reset in its behavior's **constructor**, not from `OnSessionLaunched`:
+`LoadBehaviorData` runs before `RegisterEvents` on load, and an absent key leaves the field
+untouched, so a null-guard never catches a cross-campaign leak.
 
 The save key was deliberately renamed when a spoils point's meaning changed (was "equipment
 value," now "1 gold"), so **old saves drop stale pools** rather than misreading them. Purses are
@@ -148,7 +170,11 @@ with the stack, like its XP.
 
 ## Config knobs
 
-All under `/Config/RBMCampaign` in the config XML, wired into the in-game settings UI.
+All under `/Config/RBMCampaign` in the config XML, wired into the in-game settings UI. **Only the
+spoils knobs this document discusses are listed here** — the maintenance, healing, luxury,
+leader-cut, supply-town, trade-good and simulation settings are tabulated in
+[README.md](README.md#tuning-it), and the store itself is `RBMConfig/Config/RBMConfig.Campaign.cs`
+plus `RBMConfig.Simulation.cs`.
 
 | Setting | Default | Effect |
 |---|---|---|
@@ -156,33 +182,74 @@ All under `/Config/RBMCampaign` in the config XML, wired into the in-game settin
 | `TroopUpgradeSpoilsLootMultiplier` | 1 | How much battlefield loot yields. |
 | `TroopLootPiecesPerMan` | 3 | Pieces of kit one man can carry off a field. |
 | `TroopLootOverlookChancePerTier` | 0.5 | Chance a troop overlooks kit one tier below him (compounds per tier). |
-| `TroopWageTierBase` | 20 | Daily wage = base × tier for non-heroes, replacing vanilla's wage table. 0 keeps vanilla. |
 | `TroopRaidSpoilsMultiplier` | 0.25 | Plunder soldiers pocket sacking a settlement — of a village's `Hearth × RaidDamage`, or a stormed town's `Prosperity`. 0 disables plunder spoils. |
 | `TroopSpoilsCapDays` | 20 | Days of keep (daily wage + daily field maintenance) a stack holds in `GetSpoilsCap` — the flush threshold above which upkeep spends surplus on drink/luxuries. Slider 0–60, discrete. |
 | `TroopSettlementFoodDays` | 20 | Days of food a stack buys per trip. |
 | `TroopFoodWageFraction` | 0.5 | Food price ceiling a man will pay, relative to his wage. |
-| `TroopSettlementFunWageFraction` | 1.5 | Carousing spend per day idled, as a multiple of daily wage. |
+| `TroopSettlementFunWageFraction` | 0.25 | Carousing spend per day idled, as a multiple of daily wage. |
 | `RBMCampaignEnabled` | 1 | Master on/off for the whole module. |
 | `SpoilsLoggingEnabled` | 1 | Toggles the diagnostic log file. |
 
 ## Diagnostics
 
 `SpoilsLog` writes a detailed trace (loot distribution, wage deposits, upgrade pricing, food
-buying, carousing, save/load counts) to `rbm_spoils_<yyyy-MM-dd_HH-mm-ss>.log` in the config
-folder — one timestamped file per launch so runs don't overwrite each other. When
-`developerMode` is on, lines also print to the in-game message log.
+buying, carousing, save/load counts) to `<configFolder>/logs/campaign/rbm_spoils_<yyyy-MM-dd_HH-mm-ss>.log`
+— one timestamped file per launch so runs don't overwrite each other, with `LogRetention.PruneOldest`
+capping how many are kept. When `developerMode` is on, lines also print to the in-game message log.
+
+`EconomyLog` (`logs/economy/`) and `SimulationLog` (`logs/simulation/`) are the other two sinks,
+each with its own config toggle.
 
 ## File map
 
+Everything is foldered; the namespace stays flat `RBMCampaign`. The csproj lists every file with an
+explicit `<Compile Include>` — **update it when adding or moving one**.
+
+### The spoils purse
+
 | File | Role |
 |---|---|
-| `SpoilsPool.cs` | The heart: purse storage, equipment valuation, loot distribution, wage deposits, upgrade cost math. Contains `RBMSpoilsCampaignBehavior`. |
-| `SpoilsUpgradePatches.cs` | AI upgrade reimplementation + player party-screen staging (`PartyScreenStagedUpgrades`). |
-| `RBMCampaign.cs` | Upgrade gold-cost model patches (`GetGoldCostForUpgrade`) and the tooltip breakdown (`GetUpgradeHint`). |
-| `TroopUpkeep.cs` | Settlement food buying, carousing, food-consumption patch. Contains `RBMTroopUpkeepCampaignBehavior`. |
-| `SpoilsBarWidget.cs` / `SpoilsBarPrefabPatch.cs` | The party-screen purse bar and its prefab injection. |
-| `SpoilsLog.cs` | Diagnostic logging. |
-| `RBMCampaignPatcher.cs` | Entry point (`DoPatching`). |
+| `Spoils/SpoilsPool.cs` | Purse storage, keying, `IsEnabled`. A `partial static class` split across the files below. |
+| `Spoils/SpoilsPool.Equipment.cs` | Equipment valuation and its cache. |
+| `Spoils/SpoilsPool.BattleLoot.cs` / `.Casualties.cs` | Loot distribution off a field, and who is strippable. |
+| `Spoils/SpoilsPool.Plunder.cs` | Raid and siege plunder pots. |
+| `Spoils/SpoilsPool.Wages.cs` | The daily wage deposit. |
+| `Spoils/SpoilsPool.Maintenance.cs` | Daily field upkeep and its market hand-off. |
+| `Spoils/SpoilsPool.UpgradeMath.cs` | Upgrade pricing, the player-side commit path. |
+| `Spoils/SpoilsPool.Cap.cs` | The days-of-keep ceiling and `GetPartyPayee`. |
+| `Spoils/SpoilsPool.LeaderCut.cs` | The commander's cut — the one spoils→gold exit. |
+| `Spoils/SpoilsPool.Transfers.cs` | Carrying a purse across a party transfer. |
+| `Spoils/RBMSpoilsCampaignBehavior.cs` | Event subscriptions and `SyncData`. |
+| `Spoils/MaintenanceFinanceLine.cs` / `MaintenancePartyWageLine.cs` | Clan-finance and party-wage tooltip lines (display only). |
+| `Spoils/SpoilsTransferOnPartyScreen.cs` | Purse follows men moved on the party screen. |
+
+### Spending and upgrades
+
+| File | Role |
+|---|---|
+| `Upgrades/SpoilsUpgradePatches.cs` | AI upgrade reimplementation (`UpgradeReadyTroops`). |
+| `Upgrades/PartyScreenStagedUpgrades.cs` | Player-side staging and gold-math fix. |
+| `Upgrades/RBMCampaignPatches.cs` | `GetGoldCostForUpgrade` + the `GetUpgradeHint` tooltip breakdown. |
+| `Upgrades/UpgradeSupply.cs` | The supply-town gate, the market draw, and the payment leg. |
+| `Upgrades/MountValueUpgrade.cs` | Pricing the horse instead of consuming one. |
+| `Upkeep/TroopUpkeep.cs` (+ `.Food.cs` / `.Healing.cs` / `.Luxury.cs`) | Settlement food, carousing, paid healing, luxuries. |
+| `Upkeep/TroopMarketFeedback.cs` | Where troop spending lands in a settlement's purse. |
+| `Upkeep/RBMTroopUpkeepCampaignBehavior.cs` | Event subscriptions and `SyncData`. |
+| `Wages/TierBasedWageModel.cs` | The per-tier wage table. |
+
+### Everything else in the module
+
+| Folder | Role |
+|---|---|
+| `Settlements/` | The two-pot settlement wealth ledger (`SettlementWealth`), its funnel over vanilla's writes, tariffs, ransoms, garrison/militia/admin/construction upkeep, workshop purses. |
+| `Production/` | Village production, villager convoys and deliveries, town food supply and storage, citizen and workshop demand. |
+| `Economy/` | Market prices and liquidity, caravan capital and trade volume, recruit supply, trade-good values, prosperity equilibrium. |
+| `Simulation/` | The equipment-aware auto-resolve: weapon model, hit points, arm targeting, perks, morale, rout, player participation. |
+| `Power/` | `StrategicTroopPower` and its tooltip — the campaign-side power figure. |
+| `Spectate/` | Watching an AI-vs-AI battle as a no-agent spectator. |
+| `UI/` | The party-screen spoils bar, the inventory weight column, and their prefab injections. |
+| `Diagnostics/` | `SpoilsLog`, `EconomyLog`, `SimulationLog`, `LogRetention`. |
+| `RBMCampaignPatcher.cs` | Entry point (`DoPatching`), at the project root. |
 
 ## Lifecycle wiring (in `RBM/SubModule.cs`)
 
@@ -191,18 +258,23 @@ folder — one timestamped file per launch so runs don't overwrite each other. W
 - `OnSubModuleLoad()` → `SpoilsBarPrefabPatch.ApplyEarly(...)` — **must** run here, not in
   `ApplyHarmonyPatches`, because Gauntlet parses and caches the party-screen prefab before
   `OnGameStart`. `ApplyEarly` also calls `SpoilsLog.Reset()`.
-- `OnGameStart()` (Campaign only) → adds `RBMSpoilsCampaignBehavior` +
-  `RBMTroopUpkeepCampaignBehavior`.
+- `OnGameStart()` (Campaign only) → adds six behaviors: `RBMSpoilsCampaignBehavior`,
+  `RBMTroopUpkeepCampaignBehavior`, `RBMSimulationCampaignBehavior`, `RBMSpectateCampaignBehavior`,
+  `RBMEconomyCampaignBehavior`, `RBMSettlementWealthCampaignBehavior`.
 
 ### Campaign event listeners
 
 `RBMSpoilsCampaignBehavior` (`SpoilsPool`):
+- `OnSessionLaunchedEvent` → session setup
 - `MapEventEnded` → loot distribution
 - `RaidCompletedEvent` → village-raid plunder
 - `OnSettlementOwnerChangedEvent` → town/castle sack plunder (siege captures only)
 - `DailyTickPartyEvent` → wage deposits
 - `MobilePartyDestroyed` → prune purses
 - `PlayerUpgradedTroopsEvent` → charge staged spoils
+- `OnTroopRecruitedEvent` / `OnUnitRecruitedEvent` → seed a recruit's upkeep. The two are
+  **disjoint by source**, not duplicates: the player's recruit screen fires the second (with no
+  settlement argument) and the AI path fires the first.
 
 `RBMTroopUpkeepCampaignBehavior` (`TroopUpkeep`):
 - `SettlementEntered` → buy food

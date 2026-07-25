@@ -240,21 +240,32 @@ namespace RBMCampaign
             private static void ApplyEffects(PartyBase party, UpgradeOption option, int spoilsSpend)
             {
                 Hero payer = (party.Owner != null && party.Owner.IsAlive) ? party.Owner : party.LeaderHero;
+                // What was actually billed to a hero, which is nothing at all for a party that has none.
+                // Only this reaches the town below -- charging one sum and paying over another would mint
+                // the difference, and paying over a bill nobody was sent would mint the whole of it.
+                int goldCharged = 0;
                 if (payer != null && payer.IsAlive)
                 {
                     SkillLevelingManager.OnUpgradeTroops(party, option.Target, option.UpgradeTarget, option.Count);
                     GiveGoldAction.ApplyBetweenCharacters(payer, null, option.TotalGoldCost, true);
-                    // What the promotion cost goes over to the town that armed the men -- both halves of it:
-                    // the gold destroyed by the null-recipient call above, and the spoils drawn from the
-                    // men's own purse in UpgradeTroop. With the SupplyTown gate on, value-appropriate kit
-                    // leaves that town's market too; with it off the money still lands, which is why the
-                    // town is resolved here rather than taken from the gate's own _supplyTown alone.
-                    if (UpgradeSupply.PaymentEnabled)
-                    {
-                        Town market = (_supplyTown != null) ? _supplyTown : UpgradeSupply.ResolveMarketTown(party.MobileParty);
-                        UpgradeSupply.SupplyUpgradeFromTown(market, party, option.Target, option.UpgradeTarget,
-                            option.Count, option.TotalGoldCost + spoilsSpend);
-                    }
+                    goldCharged = option.TotalGoldCost;
+                }
+
+                // What the promotion cost goes over to the town that armed the men -- both halves of it:
+                // the gold destroyed by the null-recipient call above, and the spoils drawn from the
+                // men's own purse in UpgradeTroop. With the SupplyTown gate on, value-appropriate kit
+                // leaves that town's market too; with it off the money still lands, which is why the
+                // town is resolved here rather than taken from the gate's own _supplyTown alone.
+                //
+                // OUTSIDE the payer check, deliberately. UpgradeTroop draws the men's spoils whether or not
+                // the party has a hero to bill, so a looter band or an ownerless garrison stack paid for its
+                // promotion out of its own purse and, while this sat inside the branch above, had that
+                // payment destroyed. A party with no payer simply hands over the spoils leg alone.
+                if (UpgradeSupply.PaymentEnabled)
+                {
+                    Town market = (_supplyTown != null) ? _supplyTown : UpgradeSupply.ResolveMarketTown(party.MobileParty);
+                    UpgradeSupply.SupplyUpgradeFromTown(market, party, option.Target, option.UpgradeTarget,
+                        option.Count, goldCharged + spoilsSpend);
                 }
             }
         }

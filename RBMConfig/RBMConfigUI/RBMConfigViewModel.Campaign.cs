@@ -39,6 +39,50 @@ namespace RBMConfig
         public TextViewModel TroopUpgradeChargeMountValueText { get; }
         public SelectorVM<SelectorItemVM> TroopUpgradeChargeMountValue { get; }
 
+        private float _campaignStartingGold;
+
+        [DataSourceProperty]
+        public float CampaignStartingGold
+        {
+            get
+            {
+                return _campaignStartingGold;
+            }
+            set
+            {
+                // Slider reports continuous values; snap to whole 500-denar steps.
+                float snapped = MathF.Round(value / 500f) * 500f;
+                snapped = MathF.Clamp(snapped, 1000f, 100000f);
+                if (snapped != _campaignStartingGold)
+                {
+                    _campaignStartingGold = snapped;
+                    OnPropertyChangedWithValue(snapped, "CampaignStartingGold");
+                    OnPropertyChanged("CampaignStartingGoldValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string CampaignStartingGoldValue
+        {
+            get
+            {
+                return _campaignStartingGold.ToString("0");
+            }
+        }
+
+        [DataSourceProperty]
+        public string CampaignStartingGoldt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_109}Starting Gold").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel CampaignStartingGoldHint { get; } = Hint("{=RBM_CON_110}The purse a new campaign opens with, replacing whatever character creation handed out. Only applies to a new game; a loaded save keeps its own gold. Default 5000.");
+
         private float _troopUpgradeCostMultiplier;
 
         [DataSourceProperty]
@@ -214,51 +258,8 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopLootOverlookChancePerTierHint { get; } = Hint("{=RBM_CON_053}Chance a man steps over a piece of kit one tier beneath him, leaving it for greener troops. Default 0.50.");
 
-        private float _troopWageTierBase;
-
-        /// <summary>
-        /// A flat gold base multiplied by the troop's tier. Whole numbers, so the slider is discrete;
-        /// float only because SliderWidget binds float. Rounded to an int on save.
-        /// </summary>
-        [DataSourceProperty]
-        public float TroopWageTierBase
-        {
-            get
-            {
-                return _troopWageTierBase;
-            }
-            set
-            {
-                float snapped = MathF.Clamp(MathF.Round(value), 0f, 300f);
-                if (snapped != _troopWageTierBase)
-                {
-                    _troopWageTierBase = snapped;
-                    OnPropertyChangedWithValue(snapped, "TroopWageTierBase");
-                    OnPropertyChanged("TroopWageTierBaseValue");
-                }
-            }
-        }
-
-        [DataSourceProperty]
-        public string TroopWageTierBaseValue
-        {
-            get
-            {
-                return _troopWageTierBase.ToString("0");
-            }
-        }
-
-        [DataSourceProperty]
-        public string TroopWageTierBaset
-        {
-            get
-            {
-                return new TextObject("{=RBM_CON_067}Wage Base per Tier").ToString();
-            }
-        }
-
-        [DataSourceProperty]
-        public BasicTooltipViewModel TroopWageTierBaseHint { get; } = Hint("{=RBM_CON_068}Daily wage follows a fixed historical pay table by tier -- foot 20/30/40/60/120/240, horse 30/40/60/120/240/480. Zero keeps vanilla wages instead. Default 20.");
+        // Troop wages are a fixed table (RBMCampaign/Wages/TierBasedWageModel.cs) and have no dial.
+        // The former TroopWageTierBase slider was removed along with its config field.
 
         private float _troopMaintenanceFraction;
 
@@ -573,7 +574,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel TroopSettlementFunWageFractionHint { get; } = Hint("{=RBM_CON_057}A day's wage a man drinks away for each day he sits idle in a settlement. Default 1.50.");
+        public BasicTooltipViewModel TroopSettlementFunWageFractionHint { get; } = Hint("{=RBM_CON_057}A day's wage a man drinks away for each day he sits idle in a settlement. Default 0.25.");
 
 
         private float _troopRaidSpoilsMultiplier;

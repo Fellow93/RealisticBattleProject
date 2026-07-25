@@ -87,26 +87,38 @@ re-measured daily). `Measure` (`721-784`) averages `PowerOfSet` over **all** of 
 troop's battle equipment sets, then divides by a scale constant:
 
 ```
-detail.Power = (sum over sets of PowerOfSet) / setCount / PowerScale       // PowerScale = 197f
+detail.Power = (sum over sets of PowerOfSet) / setCount / PowerScale       // PowerScale = 272f
 ```
 
-**`PowerScale = 197`** is *measured, not chosen* (`StrategicTroopPower.cs:96-133`). It
-maps the model's raw output (in the low hundreds) back onto vanilla's 0.40 → 2.56
-range, so that hardcoded AI constants elsewhere in the game — the army-power floor of
-1000, siege dampers, etc. — still behave. Without it, an unreadable villager rescued by
-the `GetDefaultTroopPower` fallback (0.4–2.56) would count ~197× less than his
-neighbours priced in the hundreds.
+**`PowerScale = 272`** is *measured, not chosen*. It maps the model's raw output (in the
+low hundreds) back onto vanilla's 0.40 → 2.56 range, so that hardcoded AI constants
+elsewhere in the game — the army-power floor of 1000, siege dampers, etc. — still behave.
+Without it, an unreadable villager rescued by the `GetDefaultTroopPower` fallback
+(0.4–2.56) would count hundreds of times less than his neighbours priced in the hundreds.
+
+**Re-measure it after any offence, armour or passive retune** — never re-pick it:
+`k = men-weighted Σ(men × pm_new) / Σ(men × pm_old)` over matched troops, then
+`newScale = oldScale × k`, checking that melee↔ranged parity holds. It has moved
+197 → 260 (passive divisor began tracking `100/armorMultiplier`) → 272 (mount became a
+proportional term).
 
 ### 1.4 `PowerOfSet` — pricing one kit
 
 `PowerOfSet` (`StrategicTroopPower.cs:793-867`) is the heart of the strategic model:
 
 ```
-power = offense × activeFactor × passiveFactor
+product = offense × activeFactor × passiveFactor
+power   = product + product × MountFractionOf(set)
 ```
 
 Three stages of one blow — first it must not be turned aside, then it must get
 through the armour — so what each buys **multiplies** rather than adds.
+
+The mount then adds a **share of the rider's own power**, sized by how survivable the animal
+is (its hit points plus its barding, against a barded warhorse as the yardstick). Because the
+share tracks the horse and not the base, lighter cavalry gain less than armoured: roughly
++18% for a bare mount, +30% for a knight's, +34% for a cataphract's. A flat additive term
+inverted that ordering, which is why it is proportional.
 
 **Offense** (`814-829`):
 ```
@@ -134,10 +146,16 @@ activeFactor = (1 / (1 − active)) ^ ActiveDefenseDamping
 shield stops an arrow (`839-848`):
 ```
 weighted = head·0.16 + neck·0.03 + torso·0.44 + shoulder·0.12 + arm·0.14 + leg·0.11
-weighted += BardingWeight·barding
 weighted += ShieldPassiveWeight·shieldTier
-passiveFactor = 1 + weighted / ArmorConstant
+armorConstant = rbmCombat ? ArmorConstant / armorMultiplier : ArmorConstant
+passiveFactor = 1 + weighted / armorConstant
 ```
+
+**Barding is not in this term** — it is the horse's armour, priced once in the mount share
+above. **The divisor tracks the combat module**: RBM's armour equation divides a blow by
+`100/(100 + armor·armorMultiplier)`, so the passive term only agrees with a real blow when its
+divisor is `100/armorMultiplier`. At the default multiplier of 2 that doubles armour's weight.
+With RBM Combat off, the flat `ArmorConstant` is used.
 
 ### 1.5 Morale factor
 
@@ -155,11 +173,13 @@ These live **in code** (`StrategicTroopPower.cs:96-288`), *not* in the config sc
 
 | Constant | Value | Meaning |
 |---|---|---|
-| `PowerScale` | `197f` | maps model output onto vanilla's power range |
+| `PowerScale` | `272f` | maps model output onto vanilla's power range. **Measured, not chosen.** |
 | Zone weights H/N/T/Sh/A/L | `0.16 / 0.03 / 0.44 / 0.12 / 0.14 / 0.11` | hit-share per armour zone |
-| `ArmorConstant` | `100f` | armour → passive-factor divisor |
+| `ArmorConstant` | `100f` | armour → passive-factor divisor, **÷ `armorMultiplier` under RBM Combat** |
 | `ShieldPassiveWeight` | `4f` | shield's passive (arrow-stopping) worth |
-| `BardingWeight` | `0.35f` | horse armour worth |
+| `ReferenceMountSurvival` | `440f` | the barded-warhorse yardstick the mount share is scaled off |
+| `MountBonusAtReference` | `0.43f` | share of his own power a rider gains at that yardstick |
+| `BardingToHealth` | `2f` | barding → horse survivability; the only place barding is priced |
 | `BestWeaponWeight` | `0.7f` | weight of the best weapon among a kit |
 | `RangedShare` | `0.7f` | fraction of battle an archer spends shooting |
 | `RangedOffenseWeight` | `1.35f` | archer offense premium |

@@ -106,14 +106,12 @@
 	<string id="RBM_CON_053" text="Chance a man steps over a piece of kit one tier beneath him, leaving it for greener troops. Default 0.50." />
 	<string id="RBM_CON_055" text="Days of food a man buys when he passes through a settlement. 0 stops him buying any. Default 20." />
 	<string id="RBM_CON_056" text="Share of a day's wage a man spends to feed himself for a day. Default 0.50." />
-	<string id="RBM_CON_057" text="A day's wage a man drinks away for each day he sits idle in a settlement. Default 1.50." />
+	<string id="RBM_CON_057" text="A day's wage a man drinks away for each day he sits idle in a settlement. Default 0.25." />
 	<string id="RBM_CON_059" text="Share of a raid's plunder its soldiers keep for themselves as spoils. Default 0.25." />
 	<string id="RBM_CON_061" text="Days of keep a stack holds in its purse before upkeep spends the surplus: this many days of its wage and its field maintenance together. Default 20." />
 	<string id="RBM_CON_063" text="Days a stack waits after buying a luxury before it splurges again. Default 20." />
 	<string id="RBM_CON_064" text="Chance each idle hour that an over-cap stack buys a luxury from the settlement. Default 0.02." />
 	<string id="RBM_CON_066" text="Share of a beaten enemy's killed and wounded spoils the victors carry off; the rest is lost. Default 0.75." />
-	<string id="RBM_CON_067" text="Wage Base per Tier" />
-	<string id="RBM_CON_068" text="Daily wage follows a fixed historical pay table by tier -- foot 20/30/40/60/120/240, horse 30/40/60/120/240/480. Zero keeps vanilla wages instead. Default 20." />
 	<string id="RBM_CON_062" text="Reset to Default" />
 	<string id="RBM_CON_070" text="Upgrade Near Town" />
 	<string id="RBM_CON_071" text="Upgrade Supply Range" />
@@ -127,7 +125,7 @@
 		<string id="RBM_CON_081" text="Daily Maintenance" />
 		<string id="RBM_CON_082" text="Daily upkeep per soldier as a share of his whole kit's worth -- gear, horse and harness. Paid first from the men's own spoils; any shortfall falls to the party leader's gold. Zero stops maintenance. Default 0.005." />
 		<string id="RBM_CON_083" text="Recruit Maintenance Days" />
-		<string id="RBM_CON_084" text="Days of maintenance a recruit mustered from a village or town brings in his stack's purse, priced off the same daily upkeep. 0 seeds nothing. Default 5." />
+		<string id="RBM_CON_084" text="Days of maintenance a recruit mustered from a village or town brings in his stack's purse, priced off the same daily upkeep. 0 seeds nothing. Default 20." />
 		<string id="RBM_CON_087" text="Buy Mounts For Upgrades" />
 		<string id="RBM_CON_088" text="Upgrading into a mounted troop no longer needs a horse in the baggage train and consumes none; the horse and harness are paid for in gold/spoils instead. Off restores the vanilla horse-item requirement. Default on." />
 		<string id="RBM_CON_089" text="Mercenary Maintenance Share" />
@@ -443,6 +441,8 @@
 	<string id="RBM_CON_106" text="Wt." />
 	<string id="RBM_CON_107" text="Economy Logging" />
 	<string id="RBM_CON_108" text="Writes the village-to-town goods and food chain to logs/economy next to the config: each village's daily production, every villager party sent out with its size, composition and cargo, each town's rations, and the end-of-day state of every settlement. Verbose, and only useful for tuning the economy." />
+	<string id="RBM_CON_109" text="Starting Gold" />
+	<string id="RBM_CON_110" text="The purse a new campaign opens with, replacing whatever character creation handed out. Only applies to a new game; a loaded save keeps its own gold. Default 5000." />
 	<!-- Spectate Strings -->
 	<string id="RBM_CON_099" text="Spectate AI Battles" />
 	<string id="RBM_CON_101" text="Spectate Minimum Troops Per Side" />

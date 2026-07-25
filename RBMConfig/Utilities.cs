@@ -368,8 +368,6 @@ namespace RBMConfig
             TroopLootPiecesPerMan.InnerText = RBMConfig.troopLootPiecesPerMan.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopLootOverlookChancePerTier = xmlconfig.CreateElement("TroopLootOverlookChancePerTier");
             TroopLootOverlookChancePerTier.InnerText = RBMConfig.troopLootOverlookChancePerTier.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            XmlElement TroopWageTierBase = xmlconfig.CreateElement("TroopWageTierBase");
-            TroopWageTierBase.InnerText = RBMConfig.troopWageTierBase.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopMaintenanceFraction = xmlconfig.CreateElement("TroopMaintenanceFraction");
             TroopMaintenanceFraction.InnerText = RBMConfig.troopMaintenanceFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TroopSettlementFoodDays = xmlconfig.CreateElement("TroopSettlementFoodDays");
@@ -411,7 +409,6 @@ namespace RBMConfig
             RBMCampaign.AppendChild(TroopUpgradeChargeMountValue);
             RBMCampaign.AppendChild(TroopLootPiecesPerMan);
             RBMCampaign.AppendChild(TroopLootOverlookChancePerTier);
-            RBMCampaign.AppendChild(TroopWageTierBase);
             RBMCampaign.AppendChild(TroopMaintenanceFraction);
             RBMCampaign.AppendChild(TroopSettlementFoodDays);
             RBMCampaign.AppendChild(RecruitMaintenanceDays);

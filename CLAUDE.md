@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Realistic Battle Mod (RBM) for Mount & Blade II: Bannerlord. A comprehensive combat overhaul mod that rewrites damage calculations, armor mechanics, AI behavior, and adds a stamina/posture system. Built on Harmony 2.4.2 for non-invasive runtime patching of game methods.
 
-Current version: v4.3.4 (SubModule.xml). Targets Bannerlord v1.4.6+ (per the
-`DependedModules` entries in SubModule.xml); currently developed against v1.4.7.
+Current version: v4.3.4 (`RBMXML/SubModule.xml`). Targets Bannerlord v1.4.6+ (per the
+`DependedModules` entries there); currently developed against v1.4.7.
 
 ## Build
 
@@ -62,12 +62,17 @@ No test suite exists — testing is manual via in-game verification.
 
 **RBMTournament** — Optional tournament mode enhancements. No project dependencies. As of 2026-07-19 `RBMTournament.cs` was split into `Tournament/` via `internal partial class RBMTournament`: `.Core.cs` (shared `calculatePlayerTournamentTier`), `.FightSimulation.cs`, `.Participants.cs`, `.Prizes.cs`. Patches are attribute-discovered by `PatchAll`.
 
-**RBMCampaign** — Campaign-layer economy overhaul (the "spoils" system). Patcher entry: `RBMCampaignPatcher.DoPatching` (calls `PatchAll` + registers the party-screen widget). References RBMConfig. Unlike the combat modules, most logic lives in `CampaignBehavior` subclasses (added in `OnGameStart` for `Campaign` sessions), not just Harmony patches. Organized into folders (namespace stays flat `RBMCampaign`; the old-style csproj lists every file with an explicit `<Compile Include>` — **update it when adding/moving files**):
-- `Spoils/` — the core system. `SpoilsPool` (a `partial static class` split across several files) is a per-troop-**stack** purse in gold (1 spoils point = 1 gold), keyed by `party.Id + "#" + character.StringId`, persisted via `SyncData` key `RBM_troopSpoilsGold`. Fills from battle loot, plunder (raided villages / stormed towns), and a wage fraction; drains on upgrades, food, and carousing; surplus over a cap spills back to the owner's gold. `RBMSpoilsCampaignBehavior` subscribes the campaign events.
-- `Upkeep/` — `TroopUpkeep` (settlement food buying, carousing) + `RBMTroopUpkeepCampaignBehavior`.
-- `Upgrades/` — gold-cost/tooltip patches plus reimplemented AI (`UpgradeReadyTroops`) and player-side (`PartyScreenLogic.UpgradeTroop`) upgrade paths.
-- `UI/` — `RBMTroopSpoilsBarWidget` (a `FillBarVerticalWidget`) injected into the native party-screen prefab.
-- `Diagnostics/SpoilsLog.cs` — file logger under `<configFolder>/logs/campaign/`, gated by `spoilsLoggingEnabled`.
+**RBMCampaign** — Campaign-layer overhaul: the "spoils" troop economy, the settlement wealth ledger, the village-to-town production chain, and the equipment-aware auto-resolve. Patcher entry: `RBMCampaignPatcher.DoPatching` (calls `PatchAll` + registers the party-screen widget). References RBMConfig. Unlike the combat modules, most logic lives in `CampaignBehavior` subclasses, not just Harmony patches — six are added in `OnGameStart` for `Campaign` sessions (`RBM/SubModule.cs`): Spoils, TroopUpkeep, Simulation, Spectate, Economy, SettlementWealth. Organized into folders (namespace stays flat `RBMCampaign`; the old-style csproj lists every file with an explicit `<Compile Include>` — **update it when adding/moving files**). See `RBMCampaign/ARCHITECTURE.md` for the full file map.
+- `Spoils/` — `SpoilsPool` (a `partial static class` split across several files) is a per-troop-**stack** purse in gold (1 spoils point = 1 gold), keyed by `party.Id + "#" + character.StringId`, persisted via `SyncData` key `RBM_troopSpoilsGold`. Fills from battle loot, raid/siege plunder, and the stack's **whole** daily wage; drains on upgrades, field maintenance, food, carousing, paid healing and luxuries. Surplus over the cap is **drunk in settlements** (crediting that settlement's purse), NOT returned to the owner's gold — the one spoils→gold exit is the leader's cut in `SpoilsPool.LeaderCut.cs`, which draws from the purse first and so mints nothing.
+- `Upkeep/` — `TroopUpkeep` (+ `.Food`/`.Healing`/`.Luxury`) and `TroopMarketFeedback`, which lands troop spending in a settlement's purse.
+- `Upgrades/` — gold-cost/tooltip patches, the reimplemented AI (`UpgradeReadyTroops`) and player-side upgrade paths, and `UpgradeSupply` (supply-town gate + market draw + payment leg).
+- `Wages/TierBasedWageModel.cs` — the per-tier wage table (foot 20/30/40/60/120/240, horse 30/40/60/120/240/480). **Not configurable** — it applies whenever the module's patches are on.
+- `Settlements/` — the two-pot wealth ledger (`SettlementWealth` + `SettlementGoldFunnel` over vanilla's writes), tariffs, ransoms, garrison/militia/admin/construction upkeep, workshop purses.
+- `Production/` — village production, villager convoys/deliveries, town food supply and storage, citizen and workshop demand.
+- `Economy/` — market prices and liquidity, caravan capital, recruit supply, trade-good values.
+- `Simulation/` + `Power/` — the equipment-aware auto-resolve and `StrategicTroopPower`. `Spectate/` — no-agent AI-vs-AI spectator battle.
+- `UI/` — `RBMTroopSpoilsBarWidget` (a `FillBarVerticalWidget`) and the inventory weight column, both injected into native prefabs.
+- `Diagnostics/` — `SpoilsLog` (`logs/campaign/`), `EconomyLog` (`logs/economy/`), `SimulationLog` (`logs/simulation/`), `LogRetention`; each gated by its own config toggle.
 
 ### Dependency Graph
 ```

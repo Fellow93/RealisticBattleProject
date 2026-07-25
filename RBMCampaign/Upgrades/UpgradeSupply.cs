@@ -228,16 +228,21 @@ namespace RBMCampaign
         public static void SupplyUpgradeFromTown(Town town, PartyBase buyer, CharacterObject character,
             CharacterObject upgradeTarget, int count, int goldPaid)
         {
-            if (town == null || count <= 0)
+            if (count <= 0)
             {
                 return;
             }
+            // A null town used to end the call right here, which burnt the promotion's whole cost -- the
+            // caller has already charged it by the time this runs, so returning early destroys it exactly
+            // as the old missing payment leg did. The DRAW needs a real supply town; the PAYMENT only needs
+            // somewhere for the coin to land. From here on the two are resolved apart.
+            Town payee = (town != null) ? town : FindFenceTown(buyer);
             // What one upgraded man's new kit is worth over his old, which is what we look to spend
             // it on in the town's stock. Zero for a cheaper-kit upgrade: nothing is bought, though
             // anything the promotion still cost is paid over all the same.
             int perManValue = SpoilsPool.GetSpoilsCostForUpgrade(buyer, character, upgradeTarget);
 
-            ItemRoster market = town.Settlement.ItemRoster;
+            ItemRoster market = (town != null) ? town.Settlement.ItemRoster : null;
             int bought = 0;
             int wanted = 0;
             int drawnValue = 0;
@@ -294,32 +299,78 @@ namespace RBMCampaign
             // above managed to find, exactly as the recruit price is: a picked-clean market still armed
             // the men as best it could and the party still paid for the promotion. The market fee rides
             // along inside RegisterPurchase.
-            if (goldPaid > 0)
+            if (goldPaid > 0 && payee != null)
             {
-                TroopMarketFeedback.RegisterPurchase(town.Settlement, null, goldPaid, SettlementWealth.Source.Upgrade);
+                TroopMarketFeedback.RegisterPurchase(payee.Settlement, null, goldPaid, SettlementWealth.Source.Upgrade);
             }
             // The fee is on the goods that changed hands, so where the kit drawn is worth more than the
             // coin handed over -- which is the ordinary case, since spoils make the leading men free and
             // the gold cost is only the differential -- the balance is charged it too. Levy takes the fee
             // out of the market's own money, so this moves no wealth into or out of the town: only the
-            // split between its citizens and its treasury.
+            // split between its citizens and its treasury. Charged against the town whose shelves were
+            // emptied, so a fence sale with no draw behind it is not levied on.
             int untaxed = drawnValue - goldPaid;
-            if (untaxed > 0)
+            if (town != null && untaxed > 0)
             {
                 TradeTariff.Levy(town.Settlement, untaxed);
             }
 
             // Logged whenever a supply is attempted, not only when stock was pulled: a draw that came
-            // away with nothing is the case most worth seeing, and it would otherwise be silent.
+            // away with nothing is the case most worth seeing, and it would otherwise be silent. A
+            // promotion no town at all could be found for is the one case still burnt, so it says so.
             if (SpoilsLog.IsEnabled)
             {
+                string marketName = (town != null)
+                    ? town.Settlement.Name.ToString()
+                    : (payee != null ? payee.Settlement.Name + " (fence)" : "nowhere — cost burnt");
                 SpoilsLog.Log("UPGRADE", buyer, SpoilsLog.Describe(buyer) + " supplied " + bought + "/" + wanted
                     + " item(s) worth " + drawnValue + "d for " + count + "x " + SpoilsLog.Describe(upgradeTarget)
-                    + " kit from " + town.Settlement.Name + " (~" + perManValue + " each man)"
+                    + " kit from " + marketName + " (~" + perManValue + " each man)"
                     + "; paid " + goldPaid + "d"
-                    + (untaxed > 0 ? " (fee also charged on " + untaxed + "d of kit beyond the coin)" : "")
+                    + (untaxed > 0 && town != null ? " (fee also charged on " + untaxed + "d of kit beyond the coin)" : "")
                     + (bought < wanted ? " — market short " + (wanted - bought) : ""));
             }
+        }
+
+        /// <summary>
+        /// The last resort payee: the nearest town of ANY faction, war or no war. Null only on a map with
+        /// no towns left standing.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="FindNearestFriendlyTown"/> comes back empty for a party at war with every faction
+        /// holding a city -- a looter band above all, but equally a rebel clan or a kingdom down to its
+        /// last castle. Those parties still promote men, and their promotions are still charged, so
+        /// without a payee their coin was simply destroyed.
+        ///
+        /// Nobody arms a bandit over the counter, which is the point: this names a fence, not a supplier.
+        /// It is used for the PAYMENT only -- no stock is drawn from a town resolved this way, so a
+        /// hostile market is never emptied by the men raiding it. The money reaching those townspeople
+        /// rather than vanishing is the whole of what changes.
+        /// </remarks>
+        private static Town FindFenceTown(PartyBase buyer)
+        {
+            MobileParty party = (buyer != null) ? buyer.MobileParty : null;
+            if (party == null)
+            {
+                return null;
+            }
+            Town best = null;
+            float bestDistance = float.MaxValue;
+            foreach (Town town in Town.AllTowns)
+            {
+                Settlement settlement = town.Settlement;
+                if (settlement == null)
+                {
+                    continue;
+                }
+                float distance = party.GetPosition2D.Distance(settlement.GetPosition2D);
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    best = town;
+                }
+            }
+            return best;
         }
 
         /// <summary>

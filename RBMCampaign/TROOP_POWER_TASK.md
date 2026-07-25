@@ -1,6 +1,16 @@
 # Task: Equipment- & commander-based troop power for player/AI oversight
 
-**Status:** specification only — nothing implemented.
+**Status: IMPLEMENTED — this document is kept as the original design rationale, not as a description
+of the shipped code.** The system lives in `Power/StrategicTroopPower.cs`. For what it actually does
+now — including the constants, which have moved since this was written — read
+[STRATEGIC_POWER.md](STRATEGIC_POWER.md) and [POWER_COMPUTATION.md](POWER_COMPUTATION.md); those two
+are maintained against the source, this one is not.
+
+Where they disagree, they are right and this is history. Known divergences: `PowerScale` is 272, not
+any figure below; barding was pulled out of the passive armour term and is now priced only inside the
+mount share; the passive divisor tracks `ArmorConstant / armorMultiplier` under RBM Combat; and the
+captain-perk half of the design was ultimately built for **auto-resolve** (`Simulation/SimulationPerks.cs`,
+gated on `simulationPerkSystem`), which §2 below rules out of scope. That constraint no longer holds.
 
 ## Goal
 

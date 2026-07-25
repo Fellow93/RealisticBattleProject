@@ -66,12 +66,19 @@ result = total * morale;                                   // morale applied onc
 equipment sets, then divides by a scale constant:
 
 ```
-detail.Power = (sum over sets of PowerOfSet) / setCount / PowerScale     // PowerScale = 197f
+detail.Power = (sum over sets of PowerOfSet) / setCount / PowerScale     // PowerScale = 272f
 ```
 
-### PowerScale = 197 is measured, not chosen
+### PowerScale = 272 is measured, not chosen
 
-The raw model output lands in the low hundreds; dividing by 197 maps it back onto
+It is **re-measured, never re-picked**, after any offence, armour or passive retune:
+`k = men-weighted Σ(men × pm_new) / Σ(men × pm_old)` over matched troops, and
+`newScale = oldScale × k`. It has moved 197 → 260 (when the passive divisor began
+tracking `100/armorMultiplier`, doubling armour's weight) → 272 (when the mount became a
+proportional term). A stale value here silently rescales every AI fight/flee decision in
+the game.
+
+The raw model output lands in the low hundreds; dividing by it maps the result back onto
 vanilla's `0.40 → 2.56` power range, so hardcoded AI thresholds elsewhere in the game
 (the 1000 army-power floor, siege dampers) still behave. It also keeps the
 `GetDefaultTroopPower` fallback (which returns a vanilla 0.4–2.56 value) in the same
@@ -82,11 +89,19 @@ units as everyone else.
 `PowerOfSet` (`793-867`):
 
 ```
-power = offense × activeFactor × passiveFactor
+product = offense × activeFactor × passiveFactor
+power   = product + product × MountFractionOf(set)
 ```
 
 First the blow must not be turned aside, then it must get through the armour — so
 what each stage buys **multiplies** rather than adds.
+
+The mount is a **proportional** term, not a flat addition: a horse is worth a share of the
+rider it carries, scaled by how survivable the animal is (its own hit points plus its
+barding, against a barded warhorse as the yardstick). Because the share tracks the horse
+rather than the base, lighter cavalry gain less than armoured — a bare mount is worth about
++18% to its rider, a knight's +30%, a cataphract's +34%. Making it flat-additive inverted
+that ordering, which is why it is written this way.
 
 **Offense** (`814-829`):
 ```
@@ -111,10 +126,17 @@ activeFactor = (1 / (1 − active)) ^ ActiveDefenseDamping
 shield stops an arrow (`839-848`):
 ```
 weighted = head·0.16 + neck·0.03 + torso·0.44 + shoulder·0.12 + arm·0.14 + leg·0.11
-weighted += BardingWeight·barding
 weighted += ShieldPassiveWeight·shieldTier
-passiveFactor = 1 + weighted / ArmorConstant
+armorConstant = rbmCombat ? ArmorConstant / armorMultiplier : ArmorConstant
+passiveFactor = 1 + weighted / armorConstant
 ```
+
+**Barding is not here.** It is the horse's armour, and it is priced once, in the mount term
+above. **And the divisor tracks the combat module**: RBM's own armour equation divides a blow
+by `100/(100 + armor·armorMultiplier)`, so the passive term only agrees with a real blow when
+its divisor is `100/armorMultiplier`. At the default multiplier of 2 that doubles armour's
+weight — exactly the price of protection RBM charges on the field. With RBM Combat off, the
+flat `ArmorConstant` is used.
 
 ### Two subtleties baked in
 
@@ -157,11 +179,13 @@ These are hardcoded in `StrategicTroopPower.cs` (lines `96-288`):
 
 | Constant | Value | Meaning |
 |---|---|---|
-| `PowerScale` | `197f` | maps model output onto vanilla's power range |
+| `PowerScale` | `272f` | maps model output onto vanilla's power range. **Measured, not chosen** — re-derive it after any retune. |
 | Zone weights H/N/T/Sh/A/L | `0.16 / 0.03 / 0.44 / 0.12 / 0.14 / 0.11` | hit-share per armour zone |
-| `ArmorConstant` | `100f` | armour → passive-factor divisor |
+| `ArmorConstant` | `100f` | armour → passive-factor divisor, **divided by `armorMultiplier` when RBM Combat is on** |
 | `ShieldPassiveWeight` | `4f` | shield's passive (arrow-stopping) worth |
-| `BardingWeight` | `0.35f` | horse-armour worth |
+| `ReferenceMountSurvival` | `440f` | the barded-warhorse yardstick the mount share is scaled off |
+| `MountBonusAtReference` | `0.43f` | share of his own power a rider gains at that yardstick |
+| `BardingToHealth` | `2f` | how barding converts into the horse's survivability — the only place barding is priced |
 | `BestWeaponWeight` | `0.7f` | weight of the best weapon in a kit |
 | `RangedShare` | `0.7f` | fraction of battle an archer spends shooting |
 | `RangedOffenseWeight` | `1.35f` | archer offense premium |

@@ -30,6 +30,7 @@ namespace RBMCampaign
             CampaignEvents.OnNewGameCreatedPartialFollowUpEndEvent.AddNonSerializedListener(this, OnNewGameCreatedFollowUpEnd);
             CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
             CampaignEvents.DailyTickSettlementEvent.AddNonSerializedListener(this, OnDailyTickSettlement);
+            CampaignEvents.OnCharacterCreationIsOverEvent.AddNonSerializedListener(this, OnCharacterCreationIsOver);
         }
 
         /// <summary>
@@ -167,6 +168,28 @@ namespace RBMCampaign
                 + "  (gap " + EconomyLog.Fmt(gap) + ", " + closing + ")"
                 + "  ·  change " + (change >= 0f ? "+" : "") + EconomyLog.Fmt(change) + "/day"
                 + (terms.Length > 0 ? ("  ·  " + terms) : ""));
+        }
+
+        /// <summary>
+        /// Sets the player's opening purse to a flat <see cref="RBMConfig.RBMConfig.campaignStartingGold"/>
+        /// instead of whatever the backstory choices happened to add up to. RBM reprices most of the campaign --
+        /// troop upgrades are paid out of a spoils purse, gear and trade goods cost several times the
+        /// vanilla figure -- so vanilla's few hundred denars leaves the player unable to take any of
+        /// the opening decisions the economy is built around.
+        ///
+        /// Fires once, when character creation finalizes, which is after the narrative stages have
+        /// applied their own gold; a loaded save never passes through here, so an existing campaign
+        /// keeps the gold it was saved with.
+        /// </summary>
+        private void OnCharacterCreationIsOver()
+        {
+            Hero player = Hero.MainHero;
+            if (player == null)
+            {
+                return;
+            }
+
+            player.ChangeHeroGold(RBMConfig.RBMConfig.campaignStartingGold - player.Gold);
         }
 
         public override void SyncData(IDataStore dataStore)

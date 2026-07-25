@@ -3,6 +3,10 @@
 How the settlement economy works: what villages make, how it reaches a town, what a town does with
 it, what everything costs, and — in detail — where the money comes from and where it goes.
 
+> For the **money** view specifically — every pool that holds gold, every flow between them, where
+> spoils fit, and the full conjured/destroyed list — see
+> [`economy-money-flows.md`](economy-money-flows.md). This document is the goods chain.
+
 All of it lives in `RBMCampaign` and is gated behind `rbmCampaignEnabled`. Almost every patch
 re-checks that flag at runtime, so toggling the module off mid-session falls back to vanilla rather
 than freezing the economy.
@@ -23,7 +27,7 @@ to a town. The town's households buy them with money that came from somewhere. W
 buy, its treasury advances for. What the town eats leaves the shelf physically. Prosperity follows
 the countryside that feeds it rather than a ladder.
 
-The circuit is not yet closed — §12 names every edge where money is still conjured or destroyed.
+The circuit is not yet closed — §13 names every edge where money is still conjured or destroyed.
 The largest by far is soldier spending (§10).
 
 Two ideas carry most of the design:
@@ -151,7 +155,7 @@ settlement kind. Only what the treasury actually handed over is banked as spoils
   wealth and otherwise only records it.
 - **Clan and hero gold.** Party wages, tax income, tournament prizes — all outside.
 - **`SpoilsPool`.** A parallel currency minted from wages and spent into citizen wealth. The largest
-  unconserved edge remaining (§10, §12).
+  unconserved edge remaining (§10, §13).
 
 ---
 
