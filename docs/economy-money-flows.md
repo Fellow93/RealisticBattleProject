@@ -308,11 +308,9 @@ The honest list. Sorted by size.
 | Tournament prizes and betting | both | vanilla | |
 | Garrison wage share | destroyed | `GarrisonUpkeep` | RBM moves a quarter of the bill from clan gold onto the fief's treasury, but the debit still credits nobody. It relocates the sink rather than closing it. |
 | Recruit upkeep seed | conjured | `SpoilsPool` | `RecruitMaintenanceDays` of upkeep appears in a fresh recruit's purse. |
-| No-buyer sales | conjured | | A settlement selling with no counterparty is credited, and tariffed, for a sale nobody paid for. |
-| Village admin salary | destroyed | | Deliberate — a fixed sum per village per day into the untracked household economy. |
+| Village admin salary | destroyed | `AdministrativeUpkeep` | Deliberate, and structural: a village has no citizen pot for the wage to land in, so it leaves the purse into the untracked household economy. Up to 100/day, capped at what the purse holds — a ceiling, not a rate. A town's equivalent is conserving, since its officials are townsfolk and the wage lands back in citizen wealth. |
 | Perk-based tax mints | conjured | vanilla | `Tollgates`, `TravelingRumors`, Naval `Salvage` add straight to `TradeTaxAccumulated` with no counterparty. Small. |
-| Hideout gold | conjured | vanilla | Inert — never spent. |
-| Worldgen seeding | conjured | `SettlementGoldFunnel` | Deliberate, once, and marked as seeding so it is not booked as a taxable trade. |
+| Worldgen seeding | conjured | `SettlementGoldFunnel` | Deliberate, once. `Town.OnInit` deals every town 20,000 through the same `ChangeGold` as everything else; the funnel books it as `Source.Seed` so it is not counted as a trade or charged a market fee. |
 
 ### Clamps that swallow a shortfall
 
@@ -342,6 +340,16 @@ Worth knowing so they are not "fixed" twice:
   for +120,999 while the balance moved +87,749 — a hidden drain of ~2,500 a day, negative every single
   day. `SettlementGoldFunnel` now catches `ChangeGold` itself, so every path in or out lands in the
   funnel whether or not anyone wrote a wrapper for it.
+- **Civilian purchases off the town's own market.** Vanilla's `ItemConsumptionBehavior.MakeConsumption`
+  credits the town for every household purchase even though the townsfolk have no purse to pay from —
+  vanilla's single largest manufactured-money source. Both legs are reimplemented and neither credits
+  anything: the goods leg in `RBMTownFoodSupply.MakeConsumptionPatch`, the food leg in
+  `BuyFoodFromMarket`. Under the two-purse ledger a townsman paying a merchant is a move *inside*
+  citizen wealth, so the pot is unchanged and the goods are simply eaten. The market fee on those sales
+  is still levied — deliberately, and it conserves: citizens are debited and the treasury credited.
+  Garrison and administrative rations are the one leg where money genuinely crosses, and it now runs
+  the right way (treasury → citizens) where it once credited the town, making a bigger garrison enrich
+  the fief that fed it.
 - **Recruitment gold**, which vanilla destroys in full on every path, now reaches the settlement.
 - **Market-funded ransoms**, via `RansomFunding`.
 - **Caravan payouts**, via `CaravanCapital`.

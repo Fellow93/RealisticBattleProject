@@ -869,11 +869,25 @@ instrument for detecting drift between `AbundantDays` and `StorageDays`, which m
 
 | Edge | Direction | Note |
 |---|---|---|
-| **Soldier spending** | conjured | §10. By far the largest. Spoils are minted from wages; nothing absorbs them now the controller is off |
-| Worldgen seeding | conjured | deliberate, once |
-| No-buyer sales | conjured | a settlement selling with no counterparty is credited, and tariffed, for a sale nobody paid for |
-| Village admin salary | destroyed | deliberate — 100/day/village into the untracked household economy |
-| Hideout gold | conjured | vanilla, inert — hideout gold is never spent |
+| **Soldier spending** | conjured | §10. By far the largest. The stack's whole wage is minted as spoils and spent into citizen wealth. Vanilla separately destroys that same wage out of clan gold, so the two roughly cancel in aggregate — but not in place, and no transfer links them |
+| Worldgen seeding | conjured | deliberate, once. `Town.OnInit` deals every town 20,000; booked as `Source.Seed` so it is not taxed as a trade |
+| Village admin salary | destroyed | deliberate — up to 100/day/village into the untracked household economy. A village has no citizen pot for the wage to land in, so it leaves the purse. Capped at what the purse holds, so 100 is a ceiling, not a rate |
+| ~~No-buyer sales~~ | **closed** | the town is no longer credited for a sale nobody paid for — see below |
+| ~~Hideout gold~~ | **not real** | `SettlementComponent.Gold` defaults to 0 and only `ChangeGold` writes it; nothing in `CampaignSystem` ever calls it for a hideout. There is no faucet here to close — and RBM's funnel passes hideouts through untouched, since `RouteNativeWrite` handles only villages, towns and castles |
+
+**Why no-buyer sales are closed.** Vanilla's `ItemConsumptionBehavior.MakeConsumption` credits the town
+for every civilian purchase, though the townsfolk buying have no purse — the single largest source of
+manufactured money in the economy. Both of its legs are now reimplemented and neither credits anything:
+the goods leg in `RBMTownFoodSupply.MakeConsumptionPatch` and the food leg in `BuyFoodFromMarket`. Under
+the two-purse ledger the buyer and the seller are *both* inside citizen wealth, so a townsman handing a
+merchant a denar moves nothing across the settlement's boundary — the pot is unchanged and the goods are
+simply eaten.
+
+The **tariff** on those sales is still charged, and that is deliberate rather than a leftover: it debits
+citizens and credits the treasury, so it conserves. The fee is on the trade, not on the trader. Garrison
+and administrative rations are the one leg where money really does move, and it moves the right way —
+out of the treasury and into citizen wealth (`Source.GarrisonFood`), where before, feeding a garrison
+*credited* the town and so made a bigger garrison make a town richer.
 
 **Clamps that swallow a shortfall.** Most callers credit the mover's returned figure. Three do not, and
 conjure the difference when a purse runs dry mid-transaction: the delivery sale pays the convoy before
