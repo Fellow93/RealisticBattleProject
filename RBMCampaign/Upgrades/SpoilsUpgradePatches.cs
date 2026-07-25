@@ -233,23 +233,27 @@ namespace RBMCampaign
                 SpoilsPool.ClearSpoilsIfStackGone(party, option.Target);
                 if (option.Count > 0)
                 {
-                    ApplyEffects(party, option);
+                    ApplyEffects(party, option, spoilsSpend);
                 }
             }
 
-            private static void ApplyEffects(PartyBase party, UpgradeOption option)
+            private static void ApplyEffects(PartyBase party, UpgradeOption option, int spoilsSpend)
             {
                 Hero payer = (party.Owner != null && party.Owner.IsAlive) ? party.Owner : party.LeaderHero;
                 if (payer != null && payer.IsAlive)
                 {
                     SkillLevelingManager.OnUpgradeTroops(party, option.Target, option.UpgradeTarget, option.Count);
                     GiveGoldAction.ApplyBetweenCharacters(payer, null, option.TotalGoldCost, true);
-                    // SupplyTown gate: the worth of the promotion settles into the town that outfitted it
-                    // and value-appropriate kit leaves its market. Off when the feature is off, leaving
-                    // the plain gold sink above as the party's only cost.
-                    if (UpgradeSupply.IsEnabled)
+                    // What the promotion cost goes over to the town that armed the men -- both halves of it:
+                    // the gold destroyed by the null-recipient call above, and the spoils drawn from the
+                    // men's own purse in UpgradeTroop. With the SupplyTown gate on, value-appropriate kit
+                    // leaves that town's market too; with it off the money still lands, which is why the
+                    // town is resolved here rather than taken from the gate's own _supplyTown alone.
+                    if (UpgradeSupply.PaymentEnabled)
                     {
-                        UpgradeSupply.SupplyUpgradeFromTown(_supplyTown, party, option.Target, option.UpgradeTarget, option.Count);
+                        Town market = (_supplyTown != null) ? _supplyTown : UpgradeSupply.ResolveMarketTown(party.MobileParty);
+                        UpgradeSupply.SupplyUpgradeFromTown(market, party, option.Target, option.UpgradeTarget,
+                            option.Count, option.TotalGoldCost + spoilsSpend);
                     }
                 }
             }

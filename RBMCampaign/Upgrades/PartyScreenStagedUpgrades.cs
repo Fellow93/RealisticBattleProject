@@ -26,6 +26,11 @@ namespace RBMCampaign
         // rather than all at once, or the second branch would carry its purse share off the wrong pool.
         private static readonly Dictionary<string, int> _stagedByTarget = new Dictionary<string, int>();
 
+        // Gold staged for one (source -> target) pair, keyed the same way. Kept because the commit has to
+        // hand the supply town what the player was ACTUALLY charged, and by then it cannot be recomputed:
+        // GetBatchUpgradeGoldCost prices against the stockpile as it stands, and the stockpile has moved.
+        private static readonly Dictionary<string, int> _stagedGold = new Dictionary<string, int>();
+
         // Men of a source troop staged to upgrade this visit, summed over its targets. The commit fires
         // after every staged roster move is already applied, so the source stack has shrunk by all of them;
         // adding the still-pending count back is what recovers the size it stood at before a branch's men
@@ -49,12 +54,22 @@ namespace RBMCampaign
         /// the source stack stood at before this branch's men left, for the carried-purse share. Draws the
         /// reserved spoils down both from the per-target pool and the source total.
         /// </summary>
-        public static int ConsumeStagedUpgrade(PartyBase party, CharacterObject from, CharacterObject to, int count, out int stackSizeBefore)
+        /// <param name="goldPaid">
+        /// The gold the screen charged for this branch, so the commit can pay the supply town what the
+        /// player actually handed over. Zero when the branch was never staged through this class.
+        /// </param>
+        public static int ConsumeStagedUpgrade(PartyBase party, CharacterObject from, CharacterObject to, int count,
+            out int stackSizeBefore, out int goldPaid)
         {
             stackSizeBefore = SpoilsPool.GetStackSize(party, from) + count;
+            goldPaid = 0;
             if (party != PartyBase.MainParty)
             {
                 return 0;
+            }
+            if (_stagedGold.TryGetValue(TargetKey(from, to), out goldPaid))
+            {
+                _stagedGold.Remove(TargetKey(from, to));
             }
 
             // Recover the pre-commit stack size: the roster already lost every staged man of this source,
@@ -107,6 +122,7 @@ namespace RBMCampaign
         {
             _stagedSpoils.Clear();
             _stagedByTarget.Clear();
+            _stagedGold.Clear();
             _stagedCount.Clear();
         }
 
@@ -151,6 +167,9 @@ namespace RBMCampaign
                 int stagedForTarget;
                 _stagedByTarget.TryGetValue(targetKey, out stagedForTarget);
                 _stagedByTarget[targetKey] = stagedForTarget + spend;
+                int stagedGoldForTarget;
+                _stagedGold.TryGetValue(targetKey, out stagedGoldForTarget);
+                _stagedGold[targetKey] = stagedGoldForTarget + actualGold;
                 int stagedMen;
                 _stagedCount.TryGetValue(character, out stagedMen);
                 _stagedCount[character] = stagedMen + count;

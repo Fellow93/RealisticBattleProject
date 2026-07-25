@@ -378,6 +378,11 @@ namespace RBMConfig
             TroopUpgradeRequireSupplyTownText = new TextViewModel(new TextObject("{=RBM_CON_070}Upgrade Near Town"));
             TroopUpgradeRequireSupplyTown = new SelectorVM<SelectorItemVM>(troopUpgradeRequireSupplyTownOptions, 0, null);
 
+            // RecruitSupply draw: Enabled is the default, so its option carries the "(Default)" tag.
+            List<string> recruitDrawsFromSettlementStockOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            RecruitDrawsFromSettlementStockText = new TextViewModel(new TextObject("{=RBM_CON_110}Recruits Kitted From Market"));
+            RecruitDrawsFromSettlementStock = new SelectorVM<SelectorItemVM>(recruitDrawsFromSettlementStockOptions, 0, null);
+
             // Charge mount in gold: Enabled is the default, so its option carries the "(Default)" tag.
             List<string> troopUpgradeChargeMountValueOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             TroopUpgradeChargeMountValueText = new TextViewModel(new TextObject("{=RBM_CON_087}Buy Mounts For Upgrades"));
@@ -423,6 +428,7 @@ namespace RBMConfig
             _troopUpgradeSpoilsLootMultiplier = MathF.Clamp(RBMConfig.troopUpgradeSpoilsLootMultiplier, 0f, 5f);
             _troopUpgradeSupplyRadius = MathF.Clamp(RBMConfig.troopUpgradeSupplyRadius, 0f, 200f);
             TroopUpgradeRequireSupplyTown.SelectedIndex = RBMConfig.troopUpgradeRequireSupplyTown ? 1 : 0;
+            RecruitDrawsFromSettlementStock.SelectedIndex = RBMConfig.recruitDrawsFromSettlementStock ? 1 : 0;
             TroopUpgradeChargeMountValue.SelectedIndex = RBMConfig.troopUpgradeChargeMountValue ? 1 : 0;
             _troopLootPiecesPerMan = MathF.Clamp(RBMConfig.troopLootPiecesPerMan, 1f, 10f);
             _troopLootOverlookChancePerTier = MathF.Clamp(RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
@@ -633,6 +639,7 @@ namespace RBMConfig
             RBMConfig.troopUpgradeSpoilsLootMultiplier = _troopUpgradeSpoilsLootMultiplier;
             RBMConfig.troopUpgradeSupplyRadius = _troopUpgradeSupplyRadius;
             RBMConfig.troopUpgradeRequireSupplyTown = TroopUpgradeRequireSupplyTown.SelectedIndex == 1;
+            RBMConfig.recruitDrawsFromSettlementStock = RecruitDrawsFromSettlementStock.SelectedIndex == 1;
             RBMConfig.troopUpgradeChargeMountValue = TroopUpgradeChargeMountValue.SelectedIndex == 1;
             RBMConfig.troopLootPiecesPerMan = MathF.Round(_troopLootPiecesPerMan);
             RBMConfig.troopLootOverlookChancePerTier = _troopLootOverlookChancePerTier;
@@ -707,12 +714,13 @@ namespace RBMConfig
             TroopUpgradeSpoilsLootMultiplier = 1f;
             TroopUpgradeSupplyRadius = 30f;
             TroopUpgradeRequireSupplyTown.SelectedIndex = 1;
+            RecruitDrawsFromSettlementStock.SelectedIndex = 1;
             TroopUpgradeChargeMountValue.SelectedIndex = 1;
             TroopLootPiecesPerMan = 3f;
             TroopLootOverlookChancePerTier = 0.5f;
             TroopWageTierBase = 20f;
             TroopSettlementFoodDays = 20f;
-            RecruitMaintenanceDays = 5f;
+            RecruitMaintenanceDays = 20f;
             TroopFoodWageFraction = 0.5f;
             TroopSettlementFunWageFraction = 1.5f;
             TroopRaidSpoilsMultiplier = 0.25f;

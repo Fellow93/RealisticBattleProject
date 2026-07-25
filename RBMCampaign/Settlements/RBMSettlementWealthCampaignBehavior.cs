@@ -49,14 +49,30 @@ namespace RBMCampaign
             SettlementWealth.FlushDaily(settlement);
         }
 
+        // Whether this session began as a new campaign. Set on the new-game hook and read one hook
+        // later; not serialized, so a save loaded later in the same process starts false again.
+        private bool _newCampaign;
+
         private void OnNewGameCreatedFollowUpEnd(CampaignGameStarter starter)
         {
+            _newCampaign = true;
             SettlementWealth.SeedVillagePurses();
         }
 
         private void OnSessionLaunched(CampaignGameStarter starter)
         {
             SettlementWealth.InitializeAll();
+
+            // Deliberately NOT on the new-game hook beside the village purses, even though it is just as
+            // much a new-game-only step. RBMEconomyCampaignBehavior re-seeds every town's prosperity on
+            // that same event, and two listeners on one event run in behaviour registration order --
+            // which would leave this reading prosperity on whichever scale happened to win. Here it is
+            // unambiguously after the whole of OnNewGameCreated. Villages are safe where they are: their
+            // seed reads Hearth, which nothing rewrites.
+            if (_newCampaign)
+            {
+                SettlementWealth.SeedCitizenWealth();
+            }
             // Installed here, once the session is up: the game registers the settlement tooltip refresher
             // at startup, so re-registering now sticks for the whole process. See SettlementWealthTooltip
             // for why this is a re-registration rather than a Harmony patch.

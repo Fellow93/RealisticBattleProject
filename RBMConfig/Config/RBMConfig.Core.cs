@@ -115,6 +115,7 @@ namespace RBMConfig
             troopUpgradeCostMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeCostMultiplier", "1"), CultureInfo.InvariantCulture);
             troopUpgradeSpoilsLootMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeSpoilsLootMultiplier", "1"), CultureInfo.InvariantCulture);
             troopUpgradeRequireSupplyTown = ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeRequireSupplyTown", "1").Equals("1");
+            recruitDrawsFromSettlementStock = ReadOrCreate("/Config/RBMCampaign", "RecruitDrawsFromSettlementStock", "1").Equals("1");
             troopUpgradeSupplyRadius = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeSupplyRadius", "30"), CultureInfo.InvariantCulture);
             troopUpgradeChargeMountValue = ReadOrCreate("/Config/RBMCampaign", "TroopUpgradeChargeMountValue", "1").Equals("1");
             troopLootPiecesPerMan = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLootPiecesPerMan", "3"), CultureInfo.InvariantCulture);
@@ -124,7 +125,7 @@ namespace RBMConfig
             mercenaryMaintenancePurseFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "MercenaryMaintenancePurseFraction", "0.5"), CultureInfo.InvariantCulture);
             independentMaintenancePurseFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "IndependentMaintenancePurseFraction", "1.0"), CultureInfo.InvariantCulture);
             troopSettlementFoodDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSettlementFoodDays", "20"), CultureInfo.InvariantCulture);
-            recruitMaintenanceDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "RecruitMaintenanceDays", "5"), CultureInfo.InvariantCulture);
+            recruitMaintenanceDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "RecruitMaintenanceDays", "20"), CultureInfo.InvariantCulture);
             troopFoodWageFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopFoodWageFraction", "0.5"), CultureInfo.InvariantCulture);
             troopSettlementFunWageFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSettlementFunWageFraction", "0.25"), CultureInfo.InvariantCulture);
             troopRaidSpoilsMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopRaidSpoilsMultiplier", "0.25"), CultureInfo.InvariantCulture);
@@ -255,6 +256,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeCostMultiplier"), troopUpgradeCostMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeSpoilsLootMultiplier"), troopUpgradeSpoilsLootMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeRequireSupplyTown"), troopUpgradeRequireSupplyTown);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/RecruitDrawsFromSettlementStock"), recruitDrawsFromSettlementStock);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeSupplyRadius"), troopUpgradeSupplyRadius.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeChargeMountValue"), troopUpgradeChargeMountValue);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLootPiecesPerMan"), troopLootPiecesPerMan.ToString(CultureInfo.InvariantCulture));

@@ -21,6 +21,11 @@ namespace RBMConfig
         // False (0) restores upgrade-anywhere and the plain gold sink.
         public static bool troopUpgradeRequireSupplyTown = true;
 
+        // RecruitSupply draw: a man mustered out of a settlement is outfitted from its market -- a town's
+        // own, a village's trade-bound town's -- and value-appropriate stock leaves it. A soft sink: it
+        // draws what the market has and never blocks a recruitment. False (0) recruits gear from nowhere.
+        public static bool recruitDrawsFromSettlementStock = true;
+
         // How near, in campaign-map units, a friendly town must be to supply a party's upgrades. Roughly
         // a short march at the default; raise it to be lenient, lower it to force troops back to town.
         public static float troopUpgradeSupplyRadius = 30f;
@@ -67,7 +72,7 @@ namespace RBMConfig
         // Days of maintenance a recruit mustered from a village or town brings in his stack's purse, so a
         // fresh soldier arrives with his kit in order and a little put by rather than penniless. Priced
         // off the same daily upkeep the maintenance charge uses. Zero seeds nothing.
-        public static int recruitMaintenanceDays = 5;
+        public static int recruitMaintenanceDays = 20;
 
         // Share of a day's wage a man will lay out on a day's rations before he calls it extravagant.
         // Nothing else sets a soldier's taste, so raising this feeds veterans on meat and cheese while

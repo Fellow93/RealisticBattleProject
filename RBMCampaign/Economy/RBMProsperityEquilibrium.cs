@@ -88,10 +88,34 @@ namespace RBMCampaign
             return town.Prosperity * VanillaProsperityScale;
         }
 
+        /// <summary>
+        /// A fortification's prosperity on the HOUSEHOLD scale, whichever scale it is actually stored
+        /// on. Use this anywhere a figure has to mean the same thing for a town and for a castle.
+        ///
+        /// Prosperity is not stored on one scale across the map. <see cref="TargetProsperity"/> rewrites
+        /// every TOWN onto the household scale at world generation, but castles are excluded from the
+        /// countryside model entirely and keep the far larger figure the world was authored with --
+        /// 420-960 against a re-seeded town's 250-300. Both are correct for what reads them: castles run
+        /// vanilla's economy untouched (all three patches in <see cref="RBMMarketLiquidity"/> are
+        /// <c>IsTown</c>-gated) and vanilla's economy wants the vanilla scale.
+        ///
+        /// It stops being correct the moment one of RBM's OWN constants, derived against the household
+        /// scale, is multiplied by a castle's prosperity. That is a twentyfold error, and it was seeding
+        /// castle treasuries at roughly three times a town's.
+        /// </summary>
+        public static float HouseholdProsperity(Town town)
+        {
+            if (town == null)
+            {
+                return 0f;
+            }
+            return town.IsTown ? town.Prosperity : (town.Prosperity / VanillaProsperityScale);
+        }
+
         /// <summary>A fief's prosperity as the town-treasury controller expects it.</summary>
         public static float TreasuryProsperity(Town town)
         {
-            return town.Prosperity * TownTreasuryScale;
+            return HouseholdProsperity(town) * TownTreasuryScale;
         }
 
         /// <summary>

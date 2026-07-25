@@ -39,6 +39,11 @@ namespace RBMCampaign
         // one. This is the counterparty vanilla forgets when it has no LeaderHero to hand.
         private static MobileParty _trader;
 
+        // Whether the settlement is the SELLER in the trade being settled -- the only case in which a
+        // commission is charged at all. See TryTakeCommission, which without this cannot tell the
+        // commission apart from a town paying for what it just bought.
+        private static bool _settlementIsSeller;
+
         /// <summary>
         /// Remembers the trading party for the duration of one stall trade.
         /// </summary>
@@ -58,7 +63,9 @@ namespace RBMCampaign
                     return;
                 }
 
-                PartyBase other = (sellerParty != null && sellerParty.IsSettlement) ? buyerParty : sellerParty;
+                _settlementIsSeller = sellerParty != null && sellerParty.IsSettlement;
+
+                PartyBase other = _settlementIsSeller ? buyerParty : sellerParty;
                 _trader = (other != null && other.IsMobile) ? other.MobileParty : null;
 
                 // A town buying has only so much room for any one good. Clamping the count here rather
@@ -74,6 +81,7 @@ namespace RBMCampaign
             private static void Finalizer()
             {
                 _trader = null;
+                _settlementIsSeller = false;
             }
         }
 
@@ -131,9 +139,17 @@ namespace RBMCampaign
         /// Called from <see cref="SettlementGoldFunnel"/> rather than patched separately, so there is
         /// exactly one prefix on <c>ChangeGold</c> and no question of which runs first.
         ///
-        /// Identifying the write is unambiguous: within <c>SellItemsAction</c> the only NEGATIVE direct
-        /// write to a settlement's gold is the commission line. The sale itself is settled through
-        /// <c>GiveGoldAction</c> in every branch but one, and that one is positive.
+        /// Identifying the write takes BOTH the trade being in progress and the settlement being the
+        /// seller. A negative write alone is not enough, and the belief that it was cost the towns their
+        /// money: when a settlement BUYS, <c>GiveGoldAction</c> pays for it out of
+        /// <c>SettlementComponent.ChangeGold(-goldAmount)</c> -- negative, direct, and inside the same
+        /// action. Both of vanilla's buy branches do it, <c>ApplyForSettlementToParty</c> through the
+        /// giver arm and <c>ApplyForSettlementToCharacter</c> by passing a negated amount to the
+        /// recipient arm. Every one of those was being swallowed here and charged to the citizens as
+        /// commission, so a town's purchases never reached the ledger as trade, never paid the market
+        /// fee, and read as a commission many times larger than any sale could justify. The seller flag
+        /// is set by <see cref="MarkTradePatch"/> from the same test vanilla itself branches on, so the
+        /// two cannot disagree.
         ///
         /// The two cases differ in which half was broken:
         /// <list type="bullet">
@@ -148,7 +164,7 @@ namespace RBMCampaign
         /// </remarks>
         internal static bool TryTakeCommission(Settlement settlement, int changeAmount)
         {
-            if (_trader == null || changeAmount >= 0 || settlement == null)
+            if (_trader == null || !_settlementIsSeller || changeAmount >= 0 || settlement == null)
             {
                 return false;
             }

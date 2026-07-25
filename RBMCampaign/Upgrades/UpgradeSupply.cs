@@ -11,9 +11,9 @@ namespace RBMCampaign
 {
     /// <summary>
     /// "Supply-town gated upgrades": a party may only upgrade its troops while a friendly or neutral
-    /// town is within reach, and the upgrade is treated as buying the new kit from that town -- the
-    /// worth of the upgrade settles into the town's prosperity and value-appropriate stock leaves its
-    /// market.
+    /// town is within reach, and the upgrade is bought from that town -- value-appropriate stock leaves
+    /// its market, and what the promotion cost the party reaches the townspeople who armed them, market
+    /// fee and all. See <see cref="SupplyUpgradeFromTown"/>.
     ///
     /// The whole feature lives in this file plus a handful of call sites, each tagged with the comment
     /// "SupplyTown gate". Switch it off at runtime with RBMConfig.troopUpgradeRequireSupplyTown = 0;
@@ -21,10 +21,30 @@ namespace RBMCampaign
     /// </summary>
     public static class UpgradeSupply
     {
-        /// <summary>On only when the spoils economy is on and the gate is switched on in config.</summary>
+        /// <summary>
+        /// The GATE and the DRAW: whether an upgrade needs a town in reach, and whether the new kit comes
+        /// off that town's shelves. On only when the spoils economy is on and the gate is switched on in
+        /// config.
+        /// </summary>
         public static bool IsEnabled
         {
             get { return SpoilsPool.IsEnabled && RBMConfig.RBMConfig.troopUpgradeRequireSupplyTown; }
+        }
+
+        /// <summary>
+        /// The PAYMENT: whether what a promotion cost reaches the town that armed the men. Deliberately
+        /// NOT tied to <see cref="IsEnabled"/>.
+        /// </summary>
+        /// <remarks>
+        /// The gate is a difficulty knob -- switch it off and armies may promote wherever they stand,
+        /// taking nothing off anyone's shelves. Conservation is not a difficulty knob: whatever a player
+        /// thinks of the gate, an upgrade's cost must not simply cease to exist, which is what happened on
+        /// every path before this and would happen again the moment the gate was turned off. So the money
+        /// follows the spoils economy alone, and finds a town to land in whether or not one was required.
+        /// </remarks>
+        public static bool PaymentEnabled
+        {
+            get { return SpoilsPool.IsEnabled; }
         }
 
         /// <summary>
@@ -116,36 +136,115 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// The town a promotion is bought from. With the gate on that is the town that satisfied it -- the
+        /// men were armed by the place that let them be armed at all. With the gate off there is no such
+        /// town, so it falls back to the nearest not at war with the party, at any distance, and the money
+        /// still has somewhere to go. Null only when the party can reach no friendly town on the map.
+        /// </summary>
+        public static Town ResolveMarketTown(MobileParty party)
+        {
+            if (party == null)
+            {
+                return null;
+            }
+            Town town;
+            if (IsEnabled && TryGetSupplyTown(party, out town) && town != null)
+            {
+                return town;
+            }
+            // Also the fallback when the gate is ON but resolved nothing -- a party stationed in a castle
+            // whose faction has no city left is allowed to upgrade regardless (see TryGetSupplyTown), and
+            // its coin would otherwise be the one case still burnt.
+            return FindNearestFriendlyTown(party);
+        }
+
+        /// <summary>
+        /// The nearest town of a faction the party is not at war with, however far off it lies.
+        /// </summary>
+        /// <remarks>
+        /// Measured straight-line rather than through <c>SettlementHelper.FindNearestTownToMobileParty</c>,
+        /// which the gate above uses. That helper runs a map-distance query per town, and this is called
+        /// from paths that run for every party on the map -- the daily maintenance charge above all. The
+        /// two want different things besides: the gate has to know whether a town is genuinely in reach,
+        /// while this only has to name a payee, and a payee picked as the crow flies is close enough even
+        /// where the crow would have to cross a sea.
+        /// </remarks>
+        internal static Town FindNearestFriendlyTown(MobileParty party)
+        {
+            Town best = null;
+            float bestDistance = float.MaxValue;
+            foreach (Town town in Town.AllTowns)
+            {
+                Settlement settlement = town.Settlement;
+                if (settlement == null || !IsFriendlyOrNeutral(party, settlement))
+                {
+                    continue;
+                }
+                float distance = party.GetPosition2D.Distance(settlement.GetPosition2D);
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    best = town;
+                }
+            }
+            return best;
+        }
+
+        /// <summary>
         /// Buys the new kit for an upgrade off the supply town: value-appropriate stock leaves the
-        /// market and the worth of the promotion settles into the town's prosperity, the same
-        /// buy-then-credit path the food and luxury spending already run. A soft sink -- it buys what
-        /// the market has and never holds an upgrade up for want of stock.
+        /// market, and what the promotion cost -- <paramref name="goldPaid"/>, the men's own spoils and
+        /// their lord's gold together -- goes over to the townspeople who armed them. Soft on stock: it
+        /// takes what the market has and never holds an upgrade up for want of it.
         ///
         /// The stock pulled matches the slots the promotion actually improves: a mounted upgrade takes a
         /// horse, a barding upgrade takes horse armour, a body upgrade takes body armour, a new sidearm
         /// takes a one-handed weapon, and so on -- each of the tier the new gear is worth. Only when no
         /// slot reads as improved does it fall back to pulling one generic in-band item per man.
         /// </summary>
+        /// <param name="goldPaid">
+        /// What the promotion actually cost the party -- spoils drawn from the men's purses plus the gold
+        /// billed to their lord. Both were charged by the caller before this runs, and both were destroyed
+        /// where they were charged, so handing the whole sum over here neither mints nor burns.
+        /// </param>
+        /// <remarks>
+        /// NOTHING IS CHARGED HERE, as on the recruit side -- see <see cref="RecruitSupply"/>, which this
+        /// now matches leg for leg. The gold was taken by a null-recipient <c>GiveGoldAction</c> on the AI
+        /// path and by the party screen's own vanilla debit on the player's; the spoils were drawn from the
+        /// stack's purse. This only decides where that money lands instead of vanishing.
+        ///
+        /// The payment leg used to be missing outright: the promotion's cost was destroyed at both call
+        /// sites while the town's shelves were emptied for nothing, which was the last unconserved flow in
+        /// the spoils economy. It was deleted in d347ad3 ("Remove the settlement gold-to-prosperity layer
+        /// from RBMCampaign", 2026-07-20) and nothing replaced it until now.
+        ///
+        /// The money reaches CITIZEN WEALTH rather than the treasury -- an armourer's takings are his own
+        /// -- and the town's market fee is taken out of it on the way, since a promotion outfitted off the
+        /// stalls is a trade like any other. Where the kit drawn is worth more than the coin handed over,
+        /// the balance is charged the fee too: the levy is on the goods that changed hands, and a
+        /// spoils-discounted promotion must not be a way of walking gear past the tollhouse.
+        /// </remarks>
         // TODO: a future revision may turn this into a hard gate -- no suitable stock in the town, no
         // upgrade -- rather than the soft sink it is now.
-        public static void SupplyUpgradeFromTown(Town town, PartyBase buyer, CharacterObject character, CharacterObject upgradeTarget, int count)
+        public static void SupplyUpgradeFromTown(Town town, PartyBase buyer, CharacterObject character,
+            CharacterObject upgradeTarget, int count, int goldPaid)
         {
             if (town == null || count <= 0)
             {
                 return;
             }
             // What one upgraded man's new kit is worth over his old, which is what we look to spend
-            // it on in the town's stock. Zero for a cheaper-kit upgrade: nothing is bought.
+            // it on in the town's stock. Zero for a cheaper-kit upgrade: nothing is bought, though
+            // anything the promotion still cost is paid over all the same.
             int perManValue = SpoilsPool.GetSpoilsCostForUpgrade(buyer, character, upgradeTarget);
-            if (perManValue <= 0)
-            {
-                return;
-            }
 
             ItemRoster market = town.Settlement.ItemRoster;
             int bought = 0;
             int wanted = 0;
-            if (market != null)
+            int drawnValue = 0;
+            // The DRAW is the gated half: switch the supply-town feature off and a promotion takes nothing
+            // off anyone's shelves, as it did before the feature existed. The payment below runs either
+            // way -- see PaymentEnabled for why the two are not one switch.
+            if (market != null && perManValue > 0 && IsEnabled)
             {
                 List<SpoilsPool.SlotPurchase> slots = SpoilsPool.GetUpgradedSlots(character, upgradeTarget);
                 if (slots.Count > 0)
@@ -162,7 +261,10 @@ namespace RBMCampaign
                             {
                                 break; // soft sink: this class is out of stock, the rest are outfitted off-screen
                             }
-                            market.AddToCounts(market.GetItemAtIndex(index), -1);
+                            if (!TakeFromStock(town, market, index, ref drawnValue))
+                            {
+                                break;
+                            }
                             bought++;
                         }
                     }
@@ -179,20 +281,75 @@ namespace RBMCampaign
                         {
                             break;
                         }
-                        market.AddToCounts(market.GetItemAtIndex(index), -1);
+                        if (!TakeFromStock(town, market, index, ref drawnValue))
+                        {
+                            break;
+                        }
                         bought++;
                     }
                 }
             }
-            // Logged whenever a supply lands, not only when stock was pulled: the prosperity credit
-            // above happens even to a bare market, and the shortfall is worth seeing on its own line.
+
+            // The whole cost of the promotion, into the town's market purse. Independent of what the draw
+            // above managed to find, exactly as the recruit price is: a picked-clean market still armed
+            // the men as best it could and the party still paid for the promotion. The market fee rides
+            // along inside RegisterPurchase.
+            if (goldPaid > 0)
+            {
+                TroopMarketFeedback.RegisterPurchase(town.Settlement, null, goldPaid, SettlementWealth.Source.Upgrade);
+            }
+            // The fee is on the goods that changed hands, so where the kit drawn is worth more than the
+            // coin handed over -- which is the ordinary case, since spoils make the leading men free and
+            // the gold cost is only the differential -- the balance is charged it too. Levy takes the fee
+            // out of the market's own money, so this moves no wealth into or out of the town: only the
+            // split between its citizens and its treasury.
+            int untaxed = drawnValue - goldPaid;
+            if (untaxed > 0)
+            {
+                TradeTariff.Levy(town.Settlement, untaxed);
+            }
+
+            // Logged whenever a supply is attempted, not only when stock was pulled: a draw that came
+            // away with nothing is the case most worth seeing, and it would otherwise be silent.
             if (SpoilsLog.IsEnabled)
             {
                 SpoilsLog.Log("UPGRADE", buyer, SpoilsLog.Describe(buyer) + " supplied " + bought + "/" + wanted
-                    + " item(s) for " + count + "x " + SpoilsLog.Describe(upgradeTarget) + " kit from " + town.Settlement.Name
-                    + " (~" + perManValue + " each man), " + (perManValue * count) + " into its prosperity"
+                    + " item(s) worth " + drawnValue + "d for " + count + "x " + SpoilsLog.Describe(upgradeTarget)
+                    + " kit from " + town.Settlement.Name + " (~" + perManValue + " each man)"
+                    + "; paid " + goldPaid + "d"
+                    + (untaxed > 0 ? " (fee also charged on " + untaxed + "d of kit beyond the coin)" : "")
                     + (bought < wanted ? " — market short " + (wanted - bought) : ""));
             }
+        }
+
+        /// <summary>
+        /// Takes one piece off the stall and reports what it was worth, adding it to
+        /// <paramref name="drawnValue"/>. False only when the slot held nothing to take.
+        /// </summary>
+        /// <remarks>
+        /// Priced through <see cref="TroopMarketFeedback.UnitPrice"/> rather than off the item's base
+        /// value, so a town stripped of mail values what it has left the way it would sell it. No money
+        /// moves here: the promotion's cost is paid once, in one sum, by the caller.
+        ///
+        /// The demand registered is a price signal, not a payment -- the same way the recruit draw feeds
+        /// it. It is what teaches a garrison town's market to restock the arms its promotions keep
+        /// walking off with, which the old unpaid draw never did.
+        /// </remarks>
+        private static bool TakeFromStock(Town town, ItemRoster market, int index, ref int drawnValue)
+        {
+            ItemObject item = market.GetItemAtIndex(index);
+            if (item == null)
+            {
+                return false;
+            }
+            int price = TroopMarketFeedback.UnitPrice(town.Settlement, item, market, index);
+            market.AddToCounts(item, -1);
+            drawnValue += price;
+            if (item.ItemCategory != null)
+            {
+                RBMTownFoodSupply.RegisterPurchaseDemand(town.MarketData, item.ItemCategory, price);
+            }
+            return true;
         }
 
         /// <summary>Looters and bandit-clan parties, which have no friendly settlements to supply from.</summary>
@@ -202,7 +359,8 @@ namespace RBMCampaign
         }
 
         /// <summary>Friendly or neutral: the party's faction is not at war with the town's owner.</summary>
-        private static bool IsFriendlyOrNeutral(MobileParty party, Settlement settlement)
+        /// <remarks>Shared with the maintenance draw, which picks its market the same way.</remarks>
+        internal static bool IsFriendlyOrNeutral(MobileParty party, Settlement settlement)
         {
             IFaction partyFaction = party.MapFaction;
             IFaction townFaction = settlement.MapFaction;
@@ -219,7 +377,8 @@ namespace RBMCampaign
         /// its coin on something wildly off tier. -1 when the market holds nothing of that class in band.
         /// Matching the class is what makes a horse upgrade pull a horse and a body upgrade pull body armour.
         /// </summary>
-        private static int FindKitInStock(ItemRoster market, ItemObject.ItemTypeEnum itemType, int targetValue)
+        /// <remarks>Shared with <see cref="RecruitSupply"/>, which draws a recruit's kit the same way.</remarks>
+        internal static int FindKitInStock(ItemRoster market, ItemObject.ItemTypeEnum itemType, int targetValue)
         {
             int best = -1;
             int bestDelta = int.MaxValue;
@@ -257,7 +416,8 @@ namespace RBMCampaign
         /// is never kit. -1 when the market holds nothing in band. The fallback for when the slot diff comes
         /// back empty and there is no specific class to match.
         /// </summary>
-        private static int FindKitInStock(ItemRoster market, int targetValue)
+        /// <remarks>Shared with <see cref="RecruitSupply"/>, which falls back the same way.</remarks>
+        internal static int FindKitInStock(ItemRoster market, int targetValue)
         {
             int best = -1;
             int bestDelta = int.MaxValue;

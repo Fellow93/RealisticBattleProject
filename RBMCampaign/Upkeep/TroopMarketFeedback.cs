@@ -102,11 +102,17 @@ namespace RBMCampaign
         /// A completed purchase off the stalls: the coin into the town's purse, the pressure into the
         /// category's demand, and the sum into the trade tally.
         /// </summary>
-        public static void RegisterPurchase(Settlement settlement, ItemCategory category, int goldSpent)
+        /// <param name="source">
+        /// The ledger line the coin arrives under. Defaults to the stack's own upkeep, which is what
+        /// nearly every purchase here is; recruit kit passes its own so the daily ledger can tell a
+        /// settlement outfitting its musters apart from one feeding a passing army.
+        /// </param>
+        public static void RegisterPurchase(Settlement settlement, ItemCategory category, int goldSpent,
+            string source = SettlementWealth.Source.TroopGoods)
         {
             // The coin lands wherever the settlement keeps its money -- a castle's market and a village's
             // single purse included, which used to burn it. The market fee rides along inside.
-            if (!CreditLocalPurse(settlement, goldSpent, SettlementWealth.Source.TroopGoods))
+            if (!CreditLocalPurse(settlement, goldSpent, source))
             {
                 return;
             }
@@ -359,6 +365,38 @@ namespace RBMCampaign
             {
                 AddToTally(town, goldSpent);
                 PartyTradeFlow.RegisterInflow(settlement, "surgery", goldSpent);
+            }
+        }
+
+        /// <summary>
+        /// What a lord pays to muster a man, into the TOWN'S OWN TREASURY rather than its market. Raising
+        /// soldiers is something the fief does as a body -- its notables find the men and answer for them
+        /// -- so the fee for it belongs to the settlement, not to the shopkeepers. Vanilla destroyed the
+        /// whole recruit price; this is where it goes instead.
+        /// </summary>
+        /// <remarks>
+        /// Deliberately NOT through <see cref="CreditLocalPurse"/>, and deliberately untariffed. A tariff
+        /// is a market fee: <see cref="TradeTariff.Levy"/> takes its cut OUT of citizen wealth and moves
+        /// it to the treasury, which only makes sense for money that reached the citizens first. Levying
+        /// on a payment that went straight to the treasury would debit the townspeople for a sale they
+        /// were never part of -- taking money off them rather than taxing money they had just been given.
+        ///
+        /// The goods a recruit walks off with are handled where they leave, when he is first raised, and
+        /// are not paid for at all -- so nothing is registered as demand here either.
+        /// </remarks>
+        public static void RegisterRecruitPay(Settlement settlement, int goldSpent)
+        {
+            if (goldSpent <= 0 || settlement == null || !RBMConfig.RBMConfig.rbmCampaignEnabled)
+            {
+                return;
+            }
+            SettlementWealth.Credit(settlement, goldSpent, SettlementWealth.Source.Recruit);
+
+            Town town = Receiver(settlement, goldSpent);
+            if (town != null)
+            {
+                AddToTally(town, goldSpent);
+                PartyTradeFlow.RegisterInflow(settlement, "recruit", goldSpent);
             }
         }
 

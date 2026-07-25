@@ -174,6 +174,39 @@ namespace RBMCampaign
             return result;
         }
 
+        /// <summary>
+        /// Every slot a fresh recruit's kit fills, each paired with the class and worth of the item that
+        /// fills it. The recruit counterpart of <see cref="GetUpgradedSlots"/>: a promotion buys only the
+        /// slots it improves, but a man mustered out of a settlement is outfitted head to foot, so his
+        /// whole set is drawn rather than a diff. Empty when the troop declares no battle equipment,
+        /// leaving the caller to a generic buy.
+        /// </summary>
+        /// <param name="includeMount">
+        /// Whether the horse and its harness count as slots to be bought. False for the recruit draw,
+        /// which leaves the mount to vanilla's own horse surcharge on the recruit price rather than
+        /// charging for it twice -- see <see cref="RecruitSupply"/>.
+        /// </param>
+        public static List<SlotPurchase> GetKitSlots(CharacterObject character, bool includeMount = false)
+        {
+            List<SlotPurchase> result = new List<SlotPurchase>();
+            Equipment kit = GetRepresentativeEquipment(character);
+            if (kit == null)
+            {
+                return result;
+            }
+            // The same slots GetSetValue prices, walked so each can be sought in the market on its own --
+            // a helmet drawn against helmets, a sword against swords.
+            foreach (EquipmentElement element in EnumerateEquipmentSlots(kit, includeMount))
+            {
+                if (element.Item == null)
+                {
+                    continue;
+                }
+                result.Add(new SlotPurchase(element.Item.ItemType, element.ItemValue));
+            }
+            return result;
+        }
+
         /// <summary>Appends a <see cref="SlotPurchase"/> for each slot in [begin, end) the target dearer-kits.</summary>
         private static void AddImprovedSlots(List<SlotPurchase> result, Equipment from, Equipment to, EquipmentIndex begin, EquipmentIndex end)
         {

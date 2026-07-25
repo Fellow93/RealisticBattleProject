@@ -188,8 +188,8 @@ namespace RBMCampaign
             foreach (Lot lot in lots)
             {
                 // What the town has ROOM for, before what it can pay for. A store already full of this
-                // good is not a sale the market can be talked into with a treasury advance -- see
-                // TownStorage. The cargo stays on the cart.
+                // good buys none of it however deep the purse is -- see TownStorage. The cargo stays on
+                // the cart.
                 int wanted = TownStorage.Accept(settlement, lot.Element.Item, lot.Amount);
                 if (wanted <= 0)
                 {
@@ -199,8 +199,12 @@ namespace RBMCampaign
                 int affordable = MathF.Min(wanted, town.Gold / lot.Price);
                 if (affordable <= 0)
                 {
-                    // The market cannot pay. Before the cargo is turned away, the fief buys it out of
-                    // the treasury -- see AdvanceForFood.
+                    // The market cannot pay. In the ordinary case that is the end of it -- the fief does
+                    // not buy the townspeople their groceries, and the cargo goes home on the cart. It
+                    // is only when the granary itself has run low that the town steps in and buys the
+                    // food on its own account, which is a different thing from subsidising a shopper.
+                    // See AdvanceForFood.
+                    //
                     // Sized off the whole lot, so it has to respect the store's room as well -- an
                     // advance is the fief finding the money, not the granary finding the space.
                     affordable = MathF.Min(AdvanceForFood(settlement, lot), wanted);
@@ -228,8 +232,27 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The fief buying grain from public funds because its market has run out of money, and the
-        /// one thing standing between a conserved economy and a town that starves forever.
+        /// Share of a town's granary below which the fief will buy food out of its own treasury because
+        /// the market has run out of money to buy it with.
+        ///
+        /// A quarter, so that the town is provisioning a granary rather than doing the townspeople's
+        /// shopping. Above the mark a broke market simply turns the cargo away: the food it failed to
+        /// buy would have been eaten by citizens who could not pay for it, and a treasury that bought it
+        /// for them is the lord's purse feeding the town -- exactly the manufactured money the ledger
+        /// exists to remove. Below it the same purchase is a fief keeping a stocked granary, which is
+        /// its own business and has always been paid for out of public funds.
+        ///
+        /// It also bounds the exposure. The old ungated advance fired on any empty purse whatever the
+        /// granary held, so treasuries poured money into markets that were merely illiquid -- 3,867
+        /// denars a day at the old price ceiling, propping up towns that had food (see
+        /// <c>RBMMarketPrices.MaxFactor</c>).
+        /// </summary>
+        private const float DearthStockShare = 0.25f;
+
+        /// <summary>
+        /// The fief buying grain from public funds because its granary has run low and its market has
+        /// run out of money, and the one thing standing between a conserved economy and a town that
+        /// starves forever.
         ///
         /// The trap is that <c>town.Gold</c> is both the money the market holds and the gate on what it
         /// may buy. A town that spends its last denar cannot buy food; not buying food does not earn it
@@ -237,23 +260,40 @@ namespace RBMCampaign
         /// the daily controller tops the purse back up out of nothing. Once that goes, the settlement
         /// needs a second purse it can fall back on, or the first empty market is permanent.
         ///
-        /// The advance is deliberately food-only. A town too poor to buy wool should go without wool --
-        /// that is a market working. It is only the food gate that is a one-way door, because hunger
-        /// takes prosperity with it and prosperity is what the town's income rests on.
+        /// Two limits keep it from becoming the old blanket subsidy:
+        /// <list type="bullet">
+        /// <item>Food only. A town too poor to buy wool should go without wool -- that is a market
+        /// working. It is only the food gate that is a one-way door, because hunger takes prosperity
+        /// with it and prosperity is what the town's income rests on.</item>
+        /// <item>Only up to <see cref="DearthStockShare"/> of the granary, and only as far as that mark.
+        /// The fief fills the shortfall and stops; everything above it is the market's own trade, paid
+        /// for with the market's own money or not at all. Re-read per lot off the live roster, so a
+        /// large convoy stops being advanced for the moment the granary crosses the line.</item>
+        /// </list>
         ///
         /// The gold moves treasury to citizens rather than paying the villagers directly, so the
-        /// purchase itself stays the ordinary one below and the market ends up holding the money it
+        /// purchase itself stays the ordinary one above and the market ends up holding the money it
         /// needed to make it.
         /// </summary>
         private static int AdvanceForFood(Settlement settlement, Lot lot)
         {
-            if (!lot.IsFood || lot.Price <= 0)
+            Town town = settlement.Town;
+            if (!lot.IsFood || lot.Price <= 0 || town == null)
+            {
+                return 0;
+            }
+
+            // How far the granary is under the low-water mark. Measured off the market roster rather
+            // than town.FoodStocks so the reading is the raw stock, not the clamped figure the UI shows.
+            int lowWaterMark = MathF.Round(town.FoodStocksUpperLimit() * DearthStockShare);
+            int shortfall = lowWaterMark - RBMTownFoodSupply.FoodUnitsInMarket(town);
+            if (shortfall <= 0)
             {
                 return 0;
             }
 
             int treasury = SettlementWealth.GetSettlementWealth(settlement);
-            int affordable = MathF.Min(lot.Amount, treasury / lot.Price);
+            int affordable = MathF.Min(MathF.Min(lot.Amount, shortfall), treasury / lot.Price);
             if (affordable <= 0)
             {
                 return 0;
@@ -270,7 +310,8 @@ namespace RBMCampaign
             if (EconomyLog.IsEnabled)
             {
                 EconomyLog.Log("DEARTH", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
-                    "market broke  ·  treasury advanced " + moved + "d for "
+                    "market broke at " + RBMTownFoodSupply.FoodUnitsInMarket(town) + "/" + lowWaterMark
+                    + " food  ·  treasury advanced " + moved + "d for "
                     + (moved / lot.Price) + " units of " + lot.Element.Item.Name
                     + "  ·  treasury now " + SettlementWealth.GetSettlementWealth(settlement) + "d");
             }

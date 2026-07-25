@@ -164,7 +164,9 @@ namespace RBMCampaign
             // Draw this branch's reservation, and recover the size the source stack stood at before its
             // men left -- both accounting for other branches of the same source upgraded this same visit.
             int stackSizeBefore;
-            int spend = PartyScreenStagedUpgrades.ConsumeStagedUpgrade(party, character, upgradeTarget, count, out stackSizeBefore);
+            int goldPaid;
+            int spend = PartyScreenStagedUpgrades.ConsumeStagedUpgrade(party, character, upgradeTarget, count,
+                out stackSizeBefore, out goldPaid);
             // A cheaper-kitted upgrade salvages the surplus into the purse of the men who now hold it,
             // the upgradeTarget stack, so it survives the old stack emptying out beneath them.
             int credit = GetSpoilsCreditForUpgrade(character, upgradeTarget) * count;
@@ -182,16 +184,15 @@ namespace RBMCampaign
             }
             ClearSpoilsIfStackGone(party, character);
 
-            // SupplyTown gate: the screen already took the player's gold, so this only moves the worth of
-            // the promotion into the town that outfitted it and pulls value-appropriate kit from its
-            // market. Off when the feature is off.
-            if (UpgradeSupply.IsEnabled)
+            // Hands the town that armed the men what the promotion cost -- the gold the screen took from
+            // the player (staged at the time it was charged, since it cannot be recomputed once the
+            // stockpile has moved) and the spoils drawn from the men's purse above. With the SupplyTown
+            // gate on, value-appropriate kit leaves that town's market too; with it off only the money
+            // moves. ResolveMarketTown covers both cases.
+            if (UpgradeSupply.PaymentEnabled)
             {
-                Town town;
-                if (UpgradeSupply.TryGetSupplyTown(MobileParty.MainParty, out town))
-                {
-                    UpgradeSupply.SupplyUpgradeFromTown(town, party, character, upgradeTarget, count);
-                }
+                UpgradeSupply.SupplyUpgradeFromTown(UpgradeSupply.ResolveMarketTown(MobileParty.MainParty),
+                    party, character, upgradeTarget, count, goldPaid + spend);
             }
         }
     }

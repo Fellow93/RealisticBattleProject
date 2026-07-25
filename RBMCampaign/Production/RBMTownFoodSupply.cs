@@ -717,6 +717,7 @@ namespace RBMCampaign
             });
 
             int civilianSpend = 0;
+            int provisionedSpend = 0;
             foreach (FoodLot lot in lots)
             {
                 if (amount <= 0)
@@ -734,7 +735,12 @@ namespace RBMCampaign
                     // The fief buys this ration for men who do not buy their own. Real money leaves the
                     // treasury and reaches the merchants who sold it, which is the whole point: until
                     // now feeding a garrison CREDITED the town, so a bigger garrison made a town richer.
-                    SettlementWealth.CreditCitizens(town.Settlement, PayForGarrisonFood(town.Settlement, cost), SettlementWealth.Source.GarrisonFood);
+                    //
+                    // Tallied on what actually reached the market rather than on the asking price: a
+                    // broke treasury with no owner to fall back on buys the food short, and the fee is
+                    // owed on the trade that happened.
+                    provisionedSpend += SettlementWealth.CreditCitizens(town.Settlement,
+                        PayForGarrisonFood(town.Settlement, cost), SettlementWealth.Source.GarrisonFood);
                 }
                 else
                 {
@@ -751,13 +757,15 @@ namespace RBMCampaign
                 saleLog[lot.Category] = logged + taken;
             }
 
-            // The market fee on the townsfolk's daily bread. The purchase itself is internal to citizen
-            // wealth, but the tariff on it is not: it moves a sliver into the treasury, like any trade
-            // struck in the market. See TradeTariff.
-            if (civilianSpend > 0)
-            {
-                TradeTariff.Levy(town.Settlement, civilianSpend);
-            }
+            // The market fee on the day's bread, whoever it was for. The townsfolk's own purchase is
+            // internal to citizen wealth and the fee on it is not -- it moves a sliver into the treasury,
+            // like any trade struck in the market. The garrison's and the administration's rations are a
+            // trade in the same market and pay the same fee, even though the buyer is the fief itself:
+            // the levy is on the trade, not on the trader. See TradeTariff.
+            //
+            // Only one of the two is ever non-zero in a single call -- the two legs are bought
+            // separately -- but they are summed rather than levied apart so the fee is rounded once.
+            TradeTariff.Levy(town.Settlement, civilianSpend + provisionedSpend);
 
             return amount;
         }

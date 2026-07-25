@@ -245,6 +245,17 @@ namespace RBM
             base.OnMissionBehaviorInitialize(mission);
         }
 
+        /// <summary>
+        /// Runs from Game.InitializeDefaultGameObjects, after the default item categories are built
+        /// and before DefaultItems, the Items XML and the WorkshopTypes XML -- the one point at which
+        /// RBM's own categories can be added and still be seen by everything that reads them.
+        /// </summary>
+        public override void InitializeSubModuleGameObjects(Game game)
+        {
+            base.InitializeSubModuleGameObjects(game);
+            TradeGoodCategories.Register(game);
+        }
+
         public override void OnGameInitializationFinished(Game game)
         {
             if (Campaign.Current != null && Campaign.Current.Clans != null)

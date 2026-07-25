@@ -57,6 +57,9 @@ namespace RBMCampaign
         /// is about 0.35 per point of prosperity per day on the scale its models expect, which RBM
         /// reaches through <see cref="RBMProsperityEquilibrium.VanillaProsperityScale"/> -- so
         /// 0.35 x 20 x 30 days lands here.
+        ///
+        /// Per point of HOUSEHOLD-scale prosperity, which is what a town stores but not what a castle
+        /// does -- always go through <see cref="RBMProsperityEquilibrium.HouseholdProsperity"/>.
         /// </summary>
         public const int TreasuryPerProsperity = 210;
 
@@ -97,6 +100,19 @@ namespace RBMCampaign
         /// </summary>
         public static void InitializeAll()
         {
+            // The seed reads the countryside sums, and the cache holding them is stamped with the
+            // campaign day, so it does not expire between two campaigns sitting on the same date: load a
+            // save at day 20 having just played a different campaign to day 20 and the stamp matches.
+            // The dead campaign's entries are keyed on Settlement objects that no longer exist, so every
+            // lookup would miss and every fief would seed at ZERO -- and a seed is banked once and kept
+            // for the life of the campaign, so there is no recovering from it afterwards.
+            //
+            // RBMSimulationCampaignBehavior already clears the cache for exactly this reason, and being
+            // registered first (RBM.SubModule) its OnSessionLaunched runs before this one. This does not
+            // duplicate that so much as refuse to depend on it: behaviour registration order is not a
+            // contract, and a silent permanent zero is far too expensive to leave resting on one.
+            RBMProsperityEquilibrium.InvalidateHearthCache();
+
             foreach (Settlement settlement in Settlement.All)
             {
                 EnsureInitialized(settlement);
@@ -149,6 +165,48 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>
+        /// Replaces the flat 20,000 <c>Town.OnInit</c> deals out with a market float sized on the fief,
+        /// for every town and castle.
+        /// </summary>
+        /// <remarks>
+        /// This seed only started mattering when the liquidity controller was switched off. While
+        /// <c>GetTownGoldChange</c> ran it closed a quarter of the gap to <c>10000 + 12 x prosperity</c>
+        /// every day, so whatever a town opened with was gone inside a week and the seed was cosmetic.
+        /// With the controller gone -- see <see cref="RBMMarketLiquidity"/> -- there is no longer
+        /// anything pulling a market toward the size it ought to be, and the opening balance is simply
+        /// the opening balance for good.
+        ///
+        /// Flat 20,000 against a target of 48,000-154,000 left every town on the map opening between two
+        /// and seven times short, with no way back up but trade. That is the deadlock
+        /// <c>TownTreasuryScale</c> was raised to 40 to break: food is priced on demand over supply, so a
+        /// market too poor to stock itself keeps paying the scarcity price and stays too poor. The scale
+        /// was fixed and the seed was not, so campaigns still opened inside the trap.
+        ///
+        /// New campaigns only, for the same reason villages are: citizen wealth IS vanilla's gold field,
+        /// so on a loaded save a balance of 20,000 cannot be told from 20,000 a town traded its way to,
+        /// and rewriting it would confiscate real money.
+        /// </remarks>
+        public static void SeedCitizenWealth()
+        {
+            foreach (Settlement settlement in Settlement.All)
+            {
+                if (!HasCitizenPurse(settlement) || settlement.Town == null)
+                {
+                    continue;
+                }
+                int gap = InitialCitizenWealth(settlement) - GetCitizenWealth(settlement);
+                if (gap > 0)
+                {
+                    CreditCitizens(settlement, gap, Source.Seed);
+                }
+                else if (gap < 0)
+                {
+                    DebitCitizens(settlement, -gap, Source.Seed);
+                }
+            }
+        }
+
         /// <summary>The settlement's own purse.</summary>
         public static int GetSettlementWealth(Settlement settlement)
         {
@@ -179,13 +237,43 @@ namespace RBMCampaign
             public const string Militia = "militia";
             public const string Admin = "admin";
             public const string Construction = "construction";
+
+            /// <summary>
+            /// The fief buying food off a convoy its market was too broke to pay for, and only once the
+            /// granary has run low -- see <c>VillagerDelivery.AdvanceForFood</c>.
+            /// </summary>
             public const string Dearth = "dearth";
             public const string Seed = "seed";
             public const string Delivery = "delivery";
             public const string WealthTax = "wealth-tax";
             public const string Carousing = "carousing";
             public const string TroopGoods = "troop-goods";
+
+            /// <summary>
+            /// What a lord paid to muster a man, into the treasury of the town that raised him -- its own
+            /// recruits, or a village's through the town it trades with. Raising soldiers is the fief's
+            /// business as a body, so the fee is the settlement's rather than its shopkeepers'. Untariffed,
+            /// the coin never having passed through the market. Vanilla destroyed every denar of it; the
+            /// man's gear is a separate matter entirely. See <see cref="RecruitSupply"/>.
+            /// </summary>
+            public const string Recruit = "recruit";
             public const string Boost = "boost";
+
+            /// <summary>
+            /// A stack's daily field upkeep, spent over the counter of whatever market supplies it: the
+            /// straps, shafts, shoes and mail rings a soldier goes through keeping his kit serviceable.
+            /// Charged to the men's own purses and their lord's gold in
+            /// <see cref="SpoilsPool.ChargeClanMaintenance"/> and destroyed there until now; it is the
+            /// single largest thing an army buys.
+            /// </summary>
+            public const string Maintenance = "maintenance";
+
+            /// <summary>
+            /// What a promotion cost, reaching the town whose armourers turned the man out in his new
+            /// kit -- the men's own spoils and their lord's gold alike. Vanilla destroyed the gold and
+            /// RBM's draw took the gear for nothing besides; see <see cref="UpgradeSupply"/>.
+            /// </summary>
+            public const string Upgrade = "upgrade";
 
             /// <summary>
             /// Goods bought and sold over the settlement's counter by anyone the ledger does not model
@@ -285,7 +373,14 @@ namespace RBMCampaign
             // Charged on what actually moved, and in both directions -- a party buying from the town and
             // one selling to it both pay the fee. Levied after the money has landed, so the fee comes out
             // of a market that has already been paid rather than out of its standing float.
-            TradeTariff.Levy(settlement, (applied < 0) ? -applied : applied);
+            //
+            // Skipped while the player's shop screen is settling, because that one write is a whole
+            // visit's worth of trades netted against each other rather than a trade. TradeTariff charges
+            // it on the gross instead; see PlayerMarketSessionPatch.
+            if (!TradeTariff.IsSessionDeferred)
+            {
+                TradeTariff.Levy(settlement, (applied < 0) ? -applied : applied);
+            }
             return true;
         }
 
@@ -529,6 +624,43 @@ namespace RBMCampaign
             return settlement != null && (settlement.IsTown || settlement.IsCastle);
         }
 
+        /// <summary>
+        /// The prosperity figure a fief's opening purses are sized on: what its countryside supports,
+        /// not what its prosperity field happens to hold at the moment it is seeded.
+        ///
+        /// For a TOWN this is <see cref="RBMProsperityEquilibrium.TargetProsperity"/>, computed from
+        /// bound hearths and therefore always on the household scale whatever the save holds. Reading
+        /// the stored value instead is only safe when RBM itself wrote it, which is true of a new
+        /// campaign and false of the case <see cref="InitializeAll"/> explicitly supports: a save the
+        /// mod was just added to still carries authored prosperity of 2800-5100, twenty times the
+        /// household scale <see cref="TreasuryPerProsperity"/> is derived against, so such a town seeded
+        /// a treasury of 840,000 against a new campaign's 52,000. Prosperity then converges down over
+        /// the following days and the treasury does not -- it is a seed, banked once.
+        ///
+        /// For a CASTLE there is no countryside figure at all -- castles are outside the equilibrium
+        /// model -- so the stored value is all there is, converted off the vanilla scale it is kept on.
+        /// The 20x hazard does not arise there: a castle's prosperity is authored, never rewritten, so
+        /// a fresh campaign and an adopted save read the same number.
+        /// </summary>
+        private static float SeedProsperity(Settlement settlement)
+        {
+            if (settlement == null || settlement.Town == null)
+            {
+                return 0f;
+            }
+            if (!settlement.IsTown)
+            {
+                return RBMProsperityEquilibrium.HouseholdProsperity(settlement.Town);
+            }
+
+            // Zero means the countryside is not known yet -- no bound village has been read, which on a
+            // built map means the cache was consulted too early rather than that the town has no land.
+            // Its own prosperity is a poorer figure than the target but a far better one than nothing,
+            // and a zero here would be cached as the town's treasury for the life of the campaign.
+            float target = RBMProsperityEquilibrium.TargetProsperity(settlement);
+            return (target > 0f) ? target : RBMProsperityEquilibrium.HouseholdProsperity(settlement.Town);
+        }
+
         private static int InitialSettlementWealth(Settlement settlement)
         {
             if (settlement.IsVillage && settlement.Village != null)
@@ -537,9 +669,32 @@ namespace RBMCampaign
             }
             if (settlement.Town != null)
             {
-                return (int)(settlement.Town.Prosperity * TreasuryPerProsperity);
+                return (int)(SeedProsperity(settlement) * TreasuryPerProsperity);
             }
             return 0;
+        }
+
+        /// <summary>
+        /// What a fief's market ought to open the campaign holding.
+        ///
+        /// Vanilla's own figure, which is the best yardstick there is for the money a settlement of this
+        /// size needs circulating in it: <c>10000 + 12 x prosperity</c>, the target
+        /// <c>DefaultSettlementEconomyModel.GetTownGoldChange</c> used to pull every town to. Taken on
+        /// the treasury scale, the same one the drift line in <see cref="RBMMarketLiquidity"/> reports
+        /// against, so a freshly seeded town opens at drift zero rather than deep in the red. Exactly
+        /// zero because this runs on the new-game path alone, where a town's prosperity has just been
+        /// set to the same countryside figure <see cref="SeedProsperity"/> reads.
+        ///
+        /// <c>TroopMarketFeedback.TreasuryBonus</c> is deliberately left out. It is a running response to
+        /// what a garrison has been spending, and on day one no garrison has spent anything.
+        /// </summary>
+        private static int InitialCitizenWealth(Settlement settlement)
+        {
+            if (settlement.Town == null)
+            {
+                return 0;
+            }
+            return (int)(10000f + 12f * SeedProsperity(settlement) * RBMProsperityEquilibrium.TownTreasuryScale);
         }
     }
 }

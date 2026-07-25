@@ -31,6 +31,10 @@ namespace RBMConfig
         public TextViewModel TroopUpgradeRequireSupplyTownText { get; }
         public SelectorVM<SelectorItemVM> TroopUpgradeRequireSupplyTown { get; }
 
+        // RecruitSupply draw: on/off toggle for outfitting recruits out of the settlement's market stock.
+        public TextViewModel RecruitDrawsFromSettlementStockText { get; }
+        public SelectorVM<SelectorItemVM> RecruitDrawsFromSettlementStock { get; }
+
         // Charge mount in gold: on/off toggle for dropping the horse-item requirement and pricing the mount.
         public TextViewModel TroopUpgradeChargeMountValueText { get; }
         public SelectorVM<SelectorItemVM> TroopUpgradeChargeMountValue { get; }
@@ -485,7 +489,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel RecruitMaintenanceDaysHint { get; } = Hint("{=RBM_CON_084}Days of maintenance a recruit mustered from a village or town brings in his stack's purse, priced off the same daily upkeep. 0 seeds nothing. Default 5.");
+        public BasicTooltipViewModel RecruitMaintenanceDaysHint { get; } = Hint("{=RBM_CON_084}Days of maintenance a recruit mustered from a village or town brings in his stack's purse, priced off the same daily upkeep. 0 seeds nothing. Default 20.");
 
         private float _troopFoodWageFraction;
 
@@ -684,6 +688,18 @@ namespace RBMConfig
             get
             {
                 return new TextObject("{=RBM_CON_070}Upgrade Near Town").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel RecruitDrawsFromSettlementStockHint { get; } = Hint("{=RBM_CON_109}A man recruited in a town is outfitted from that town's market; one recruited in a village is outfitted from the town it trades with. Gear of the right kind and tier leaves that market. It draws what the market has and never blocks a recruitment. Default on.");
+
+        [DataSourceProperty]
+        public string RecruitDrawsFromSettlementStockt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_110}Recruits Kitted From Market").ToString();
             }
         }
 

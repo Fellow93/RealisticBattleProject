@@ -16,8 +16,16 @@ namespace RBMCampaign
     ///
     /// The table below is the single source of truth and covers goods from BOTH sources: the ones
     /// declared in SandBoxCore's <c>horses_and_others.xml</c> and the ones built in code by
-    /// <c>DefaultItems.InitializeTradeGood</c>. Any item not named here -- tools, stolen goods, the
-    /// trash item, and every non-Goods item in the game -- is left exactly as the game shipped it.
+    /// <c>DefaultItems.InitializeTradeGood</c>. Any item not named here -- stolen goods, the trash
+    /// item, and every non-Goods item in the game -- is left exactly as the game shipped it.
+    ///
+    /// Tools were on that untouched list until it became clear what an untouched price costs. Every
+    /// metal good around it had been repriced onto the historical scale -- planks 180 to 10, wrought
+    /// iron 30 to 11 -- while tools stayed at vanilla's 250, so a workshop turned one ingot and one
+    /// plank, 21 denars of stock, into sixteen lots of tools worth four thousand. Once the artisans
+    /// started paying their hands out of that margin it was the largest wage in Calradia and it came
+    /// out of nothing. The price here is the same reasoning as the rest of the table: a ten-kilo lot
+    /// of finished ironwork, at about four times the wrought iron that goes into it.
     ///
     /// NOTE on the code-defined goods: their StringIds come from the <c>Create(...)</c> calls in
     /// <c>DefaultItems.RegisterAll</c>, NOT from the mesh name passed to InitializeTradeGood. So
@@ -60,6 +68,7 @@ namespace RBMCampaign
                 { "meat",        (200,    30f) },
                 { "hides",       (88,     0.8f) },
                 { "planks",      (10,     20f) },
+                { "tools",       (480,    10f) },    // finished ironwork, ~4x the wrought iron in it
                 { "felt",        (250,    1f) },
                 { "iron",        (1,      4f) },    // iron ore
                 { "hardwood",    (11,     200f) },

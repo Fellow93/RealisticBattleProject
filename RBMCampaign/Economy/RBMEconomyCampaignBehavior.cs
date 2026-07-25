@@ -40,6 +40,7 @@ namespace RBMCampaign
         {
             EconomyLog.StartCampaignLog();
 
+            ArtisanOutput.ResetForNewSession();
             PartyTradeFlow.Reset();
             TradeTariff.Reset();
             WorkshopPurse.Reset();
@@ -111,6 +112,7 @@ namespace RBMCampaign
             if (town.IsTown)
             {
                 LogProsperityEquilibrium(name, town, target);
+                ArtisanOutput.LogDaily(town);
             }
         }
 

@@ -252,8 +252,11 @@
 			<GameType value = "CustomGame"/>
 		</IncludedGameTypes>
 	</XmlNode>
-	<XmlNode>                
+	<XmlNode>
 		<XmlName id="GameText" path="RBMAI_module_strings"/>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="GameText" path="RBMEconomy_module_strings"/>
 	</XmlNode>
 	
   </Xmls>

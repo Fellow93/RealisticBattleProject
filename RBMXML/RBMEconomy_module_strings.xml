@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Names for the item categories RBM registers in code (TradeGoodCategories): charcoal and the six
+	iron grades. ItemCategory.GetName() is GameTexts.FindText("str_item_category", StringId), so a
+	category with no entry here renders as an error string everywhere a category is named: trade
+	notifications, the "Category:" line of an item tooltip, workshop input lists.
+
+	The text and the localisation ids are lifted from the ITEMS of the same name in
+	DefaultItems.InitializeAll, deliberately. The category and its one member are the same good to a
+	reader, and reusing the shipped ids means every language TaleWorlds translated comes for free.
+-->
+<strings>
+	<string id="str_item_category.charcoal" text="{=iQadPYNe}Charcoal{@Plural}loads of charcoal{\@}" />
+	<string id="str_item_category.ironIngot1" text="{=gOpodlt1}Crude Iron{@Plural}loads of crude iron{\@}" />
+	<string id="str_item_category.ironIngot2" text="{=7HvtT8bm}Wrought Iron{@Plural}loads of wrought iron{\@}" />
+	<string id="str_item_category.ironIngot3" text="{=XHmmbnbB}Iron{@Plural}loads of iron{\@}" />
+	<string id="str_item_category.ironIngot4" text="{=UfuLKuaI}Steel{@Plural}loads of steel{\@}" />
+	<string id="str_item_category.ironIngot5" text="{=azjMBa86}Fine Steel{@Plural}loads of fine steel{\@}" />
+	<string id="str_item_category.ironIngot6" text="{=vLVAfcta}Thamaskene Steel{@Plural}loads of thamaskene steel{\@}" />
+</strings>
