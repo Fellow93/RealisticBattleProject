@@ -244,7 +244,7 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Settlements/` | The two-pot settlement wealth ledger (`SettlementWealth`), its funnel over vanilla's writes, tariffs, ransoms, garrison/militia/admin/construction upkeep, workshop purses. |
 | `Production/` | Village production, villager convoys and deliveries, town food supply and storage, citizen and workshop demand. |
 | `Economy/` | Market prices and liquidity, caravan capital and trade volume, recruit supply, trade-good values, prosperity equilibrium. |
-| `Simulation/` | The equipment-aware auto-resolve: weapon model, hit points, arm targeting, perks, morale, rout, player participation. |
+| `Simulation/` | The equipment-aware auto-resolve: weapon model, hit points, arm targeting, perks, morale, rout, player participation, and the two-phase wall assault (`SimulationSiege.cs`). |
 | `Power/` | `StrategicTroopPower` and its tooltip — the campaign-side power figure. |
 | `Spectate/` | Watching an AI-vs-AI battle as a no-agent spectator. |
 | `UI/` | The party-screen spoils bar, the inventory weight column, and their prefab injections. |

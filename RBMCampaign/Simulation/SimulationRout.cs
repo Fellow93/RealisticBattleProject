@@ -29,6 +29,60 @@ namespace RBMCampaign
     /// (see <c>MapEventSide.OnTroopRouted</c>, which refuses to rout a siege defender), so forcing a break here would
     /// be both wrong and fragile. This fires on field battles, raids and hideouts.
     /// </summary>
+    /// <summary>
+    /// WHO BROKE, AND HOW MANY OF THEM -- because the casualty figure cannot say.
+    ///
+    /// Native's <c>MapEventSide.Route()</c> walks every man still standing and puts him through
+    /// <c>OnTroopRouted</c>, which increments <c>TroopCasualties</c> exactly as a death does. The men live -- they
+    /// leave the field as fugitives and most come back -- but the number the battle reports afterwards is
+    /// identical to the number it would report if they had all been killed where they stood. So a log reading
+    /// "attacker 1010, defender 570" has been unable to say whether the besiegers were destroyed or simply gave up
+    /// and ran, which are not remotely the same event and want completely different answers from anyone reading.
+    ///
+    /// This catches the break itself. A prefix, deliberately: it has to count the men BEFORE Route() puts them
+    /// through, because afterwards there are none left to count.
+    ///
+    /// It catches EVERY break, not just this file's own -- vanilla's morale rout in CalculateWinner, the
+    /// strength-ratio rout below, and the siege repulse (SimulationSiegeRepulse) all end by calling Route(), and
+    /// all three should be legible in the log as what they are.
+    /// </summary>
+    [HarmonyPatch(typeof(MapEventSide), "Route")]
+    internal static class SimulationRoutMarker
+    {
+        private static void Prefix(MapEventSide __instance)
+        {
+            if (__instance == null)
+            {
+                return;
+            }
+
+            SimulationBattleState.BattleState state = SimulationBattleState.Get(__instance.MapEvent);
+            if (state == null)
+            {
+                return;
+            }
+
+            int fugitives = __instance.NumRemainingSimulationTroops;
+            if (fugitives <= 0)
+            {
+                return;
+            }
+
+            if (__instance.MissionSide == BattleSideEnum.Attacker)
+            {
+                state.AttackerRouted += fugitives;
+            }
+            else
+            {
+                state.DefenderRouted += fugitives;
+            }
+            if (state.RoutRound < 0)
+            {
+                state.RoutRound = state.Round;
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(MapEvent), "SimulateBattleRound")]
     internal static class SimulationRout
     {

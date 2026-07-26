@@ -908,6 +908,14 @@ namespace RBMCampaign
                 __result = new ExplainedNumber(vanillaDamage * correction);
             }
 
+            // THE SIEGE WIDTH WATCHES THE MELEE. A blow struck hand to hand at an opening may widen or narrow it,
+            // but only if it puts its man down -- and whether it did is not known yet, so the blow is parked and
+            // the game's own verdict claims it a breath later (SimulationDownedMarker). Parked for EVERY blow, not
+            // only the logged ones: the width is a fact about the fight and must move whether or not anybody is
+            // writing it down. "melee" is the damage model's own label for a blow struck in the press -- a shot or
+            // a throw is labelled otherwise and moves nothing.
+            SimulationSiege.NoteBlow(state, strikerIsAttacker, breakdown.Phase == "melee");
+
             RecordHit(state, strikerTroop, struckTroop, strikerIsAttacker, battle, breakdown, vanillaDamage);
 
             // AND THE PARRY BITES BACK. The defender out-fought his attacker, turned the blow, and answered it -- a
@@ -976,6 +984,13 @@ namespace RBMCampaign
             hit.Round = state.Round;
             hit.VolleyPhase = SimulationBattleState.IsVolleyPhase(state);
             hit.SkirmishPhase = SimulationBattleState.IsSkirmishPhase(state);
+            if (state != null && state.SiegeAssaultBattle)
+            {
+                hit.SiegePhase = SimulationSiege.IsAssault(state) ? "assault" : "approach";
+                hit.SiegeAttackWidth = state.AttackWidth;
+                hit.SiegeDefendWidth = state.DefendWidth;
+                hit.SiegeWallFactor = state.SiegeWallFactor;
+            }
             // The defender is the one landing this blow, so its side is the OTHER side from the attacker's.
             hit.StrikerIsAttacker = !strikerIsAttacker;
             hit.Striker = defenderTroop;
@@ -1047,6 +1062,13 @@ namespace RBMCampaign
             hit.Round = state.Round;
             hit.VolleyPhase = SimulationBattleState.IsVolleyPhase(state);
             hit.SkirmishPhase = SimulationBattleState.IsSkirmishPhase(state);
+            if (state != null && state.SiegeAssaultBattle)
+            {
+                hit.SiegePhase = SimulationSiege.IsAssault(state) ? "assault" : "approach";
+                hit.SiegeAttackWidth = state.AttackWidth;
+                hit.SiegeDefendWidth = state.DefendWidth;
+                hit.SiegeWallFactor = state.SiegeWallFactor;
+            }
             hit.StrikerIsAttacker = strikerIsAttacker;
             hit.Striker = strikerTroop;
             hit.Struck = struckTroop;
@@ -1409,6 +1431,32 @@ namespace RBMCampaign
                 return true;
             }
 
+            // AND ON THE APPROACH TO A WALL, A BESIEGER CAN ONLY REACH THE MEN SHOOTING AT HIM.
+            //
+            // The defenders who are not shooting are behind the parapet -- that is what a parapet is for -- and an
+            // arrow aimed at one of them hits masonry. Only the men leaning out to loose are exposed, and they are
+            // exposed precisely because they are loosing. So a besieger's shot at a defending swordsman is not a
+            // weak blow, it is not a blow: it is a shaft in the stonework.
+            //
+            // This is the HARD half of the rule. The striker selection already biases the besieger's shots toward
+            // the defenders who are shooting (ExposedDefenderWeight), but that sampler deliberately never forbids an
+            // arm outright -- it redraws and then takes what it has -- so a garrison with few archers, or none at
+            // all, would still see its infantry picked off through the wall. The line has to be held here, where a
+            // blow can actually be refused. A garrison with no archers on the parapet simply cannot be hurt while
+            // the ground is being crossed, which is correct: there is nobody up there to shoot at.
+            //
+            // The defender is under no such restriction -- from a wall he can see the whole army -- and neither side
+            // is restricted once the ladders are up, which is the entire point of getting them up.
+            if (strikerIsAttacker && SimulationSiege.IsApproach(state) && !struck.IsRanged)
+            {
+                breakdown.Phase = "closing";
+                breakdown.Weapon = "-";
+                breakdown.BodyPart = -1;
+                breakdown.Closing = true;
+                breakdown.Correction = 0f;
+                return true;
+            }
+
             // THE SHAFT GOES WIDE, and it goes wide BEFORE it is a blow at all.
             //
             // Note where this sits: above the hit zones, above the horse-or-man roll, above the shield. That order is
@@ -1432,6 +1480,22 @@ namespace RBMCampaign
                 {
                     float skew = RBMConfig.RBMConfig.simulationSiegeRangedMissSkew;
                     missChance *= strikerIsAttacker ? skew : MathF.Max(0f, 2f - skew);
+                    missChance = MBMath.ClampFloat(missChance, 0f, RangedMaxMissChance);
+                }
+
+                // AND A STORMING BESIEGER MISSES MORE STILL. The skew above is the GEOMETRY of a siege -- shooting
+                // up at a battlement against shooting down into a press -- and it applies to any battle fought at a
+                // besieged settlement. This is the wall ASSAULT's own term on the same number, and it stacks on it
+                // deliberately: a man crossing the killing ground is not merely shooting upward, he is shooting
+                // upward while walking, in a press, at a head that ducks behind a merlon between his shafts. It
+                // eases once he is on the ladder -- he is closer -- but it never goes away, because he is still
+                // fighting from the worse footing. The defender gets nothing here; his edge on the approach is the
+                // rate of fire and the weight of the shot, both handled elsewhere.
+                // ...and how much of it he suffers is the WALL's answer: a palisade scatters him less than a great
+                // city's battlements do. See SimulationSiege.MeasureWall.
+                if (strikerIsAttacker && state != null && state.SiegeAssaultBattle)
+                {
+                    missChance *= SimulationSiege.AttackerMissMultiplier(state);
                     missChance = MBMath.ClampFloat(missChance, 0f, RangedMaxMissChance);
                 }
 
@@ -1581,6 +1645,33 @@ namespace RBMCampaign
             if (shooting && volley && !RBMConfig.RBMConfig.simulationArmTargeting)
             {
                 actual *= SimulationBattleState.VolleyFocus(state, strikerIsAttacker);
+            }
+
+            // THE WALL DECIDES WHOSE SHAFTS BITE.
+            //
+            // On the approach the man on the parapet is shooting DOWN, standing still, braced against stone, at
+            // men who are packed together and climbing and cannot answer him properly -- so his shots find the
+            // gaps in the harness and carry the drop behind them. The besieger is shooting UP, on the move, at a
+            // head that is mostly helmet and mostly hidden, and what does land lands soft and at a bad angle.
+            //
+            // Once the ladders are up the defender's bonus GOES AWAY ENTIRELY, and that is the design and not an
+            // omission: in the assault his advantage is the frontage and the rate of fire, not the weight of the
+            // arrow. Making him hit harder there as well would be paying him three times for the same wall. The
+            // besieger's penalty stays, because he is still the one fighting from a ladder.
+            //
+            // Fired shots only. A siege has few thrown weapons in it and no javelin duel at all (there is no
+            // skirmish phase -- see SimulationBattleState.IsSkirmishPhase), and a melee blow at the top of a ladder
+            // is priced by the width and the wall's defence bonus, not by this.
+            // And HOW MUCH of all that a wall is worth is a question about the wall. A palisade thrown up around a
+            // frontier castle is not the curtain of a great city: the parapet is lower, the merlons are worse, the
+            // climb is shorter, and the edge it hands the man on top of it is correspondingly smaller. Both figures
+            // come back already scaled by the settlement's fortification level, so the two phases read the same
+            // either way. See SimulationSiege.MeasureWall -- and note it does NOT scale the assault's width.
+            if (shooting && state != null && state.SiegeAssaultBattle)
+            {
+                actual *= strikerIsAttacker
+                    ? SimulationSiege.AttackerShotMagnitude(state)
+                    : SimulationSiege.DefenderShotMagnitude(state);
             }
 
             // The charge: weight and speed, which a horseman has only some of the time, and only against a man standing

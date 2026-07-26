@@ -6,6 +6,7 @@ using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.CampaignSystem.Siege;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
@@ -55,14 +56,35 @@ namespace RBMCampaign
             }
 
             float mult = TickMultiplier;
-            __result = new ValueTuple<int, int>(
-                Math.Max(1, MathF.Round(__result.Item1 * mult)),
-                Math.Max(1, MathF.Round(__result.Item2 * mult)));
+            int defenderTicks = Math.Max(1, MathF.Round(__result.Item1 * mult));
+            int attackerTicks = Math.Max(1, MathF.Round(__result.Item2 * mult));
+
             // The pace of THIS round -- how much of the fight it carries, and the unit the phase boundaries are
             // counted in. Nothing varies the multiplier per battle, so this is always exactly 1 and Progress tracks
             // the raw round. It is written as a ratio, and passed rather than assumed, so that a model which DOES
             // vary the allocation has one seam to vary it at. See BattleState.Progress.
             SimulationBattleState.AdvanceRound(mapEvent, mult / TickMultiplier);
+
+            // A WALL ASSAULT DIVIDES ITS ROUND DIFFERENTLY. The defender shoots five times as often while the ground
+            // is being crossed and twice as often once the ladders are up, and the melee is split by the width of
+            // the openings rather than evenly. The TOTAL is left exactly as it was -- this redistributes a round, it
+            // does not inflate one -- so nothing about a siege's lethality moves for a reason that is not the wall.
+            //
+            // AFTER AdvanceRound, and that ordering is load-bearing: AdvanceRound is what turns the approach into
+            // the assault, and the blows allocated here are the blows of the round that turn belongs to. Split first
+            // and every phase change would be honoured a full round late -- the round the ladders go up would still
+            // be diced out as though the men were in the open.
+            SimulationBattleState.BattleState state = SimulationBattleState.Get(mapEvent);
+            SimulationSiege.SplitTicks(state, ref defenderTicks, ref attackerTicks);
+
+            __result = new ValueTuple<int, int>(defenderTicks, attackerTicks);
+
+            // AND THE ARTILLERY FIRES. Engines are not troops and do not take turns in the blow-by-blow, so they
+            // are given their own volley, once, at the top of the round -- ahead of the round's fighting rather
+            // than after it, which is safe because SimulateBattleRound opens by asking who has won (a side the
+            // engines have just finished off ends the battle cleanly instead of being asked for a man it no longer
+            // has). See SimulationSiegeEngines.
+            SimulationSiegeEngines.Fire(mapEvent, state);
         }
     }
 
@@ -281,6 +303,22 @@ namespace RBMCampaign
 
         public bool SkirmishPhase;
 
+        /// <summary>A wall assault, and which of its two acts this blow fell in -- the approach across the killing
+        /// ground, or the storm itself. Null for every battle that is not one. See SimulationSiege.</summary>
+        public string SiegePhase;
+
+        /// <summary>The frontage at the openings when this blow was struck, attacker's and defender's. The whole
+        /// siege turns on the ratio between them, and it moves with every melee kill, so the log has to carry it or
+        /// the assault cannot be read back. Zero outside a wall assault's storm.</summary>
+        public int SiegeAttackWidth;
+
+        public int SiegeDefendWidth;
+
+        /// <summary>How good the wall was -- the multiplier on the whole defending advantage. Printed with the
+        /// approach, because two sieges with identical rosters and different fortifications should be readable
+        /// apart in the log without going and looking the settlement up.</summary>
+        public float SiegeWallFactor = 1f;
+
         public bool StrikerIsAttacker;
 
         public CharacterObject Striker;
@@ -338,6 +376,50 @@ namespace RBMCampaign
     }
 
     /// <summary>
+    /// A SHOT FROM AN ENGINE, which is not a blow and cannot be written down as one.
+    ///
+    /// Everything in <see cref="HitRecord"/> assumes a man struck a man: it has a striker, a weapon he drew, the
+    /// part of the body it found and the armour standing over it. An engine has none of that. But a siege in which
+    /// the artillery does a third of the killing and the log shows only the sword-work is a log that lies by
+    /// omission -- the casualties would appear as a step in the headcount that nothing on the page accounts for.
+    /// So the engines keep their own book, and it is printed beside the blows.
+    /// </summary>
+    internal class ArtilleryRecord
+    {
+        public int Round;
+
+        /// <summary>Which side served the engine.</summary>
+        public bool FiredByAttacker;
+
+        /// <summary>The engine's own name -- "catapult", "fire_onager", "trebuchet".</summary>
+        public string Engine;
+
+        /// <summary>What it was shooting at: "men" or "engine".</summary>
+        public string Target;
+
+        /// <summary>Whether the shot arrived at all. A shot that went wide still took a round and still goes in the
+        /// book, for exactly the reason a missed arrow does: the hit RATE is the only thing an accuracy figure can
+        /// be calibrated against.</summary>
+        public bool Hit;
+
+        /// <summary>Men put down outright by this shot.</summary>
+        public int Killed;
+
+        /// <summary>Men wounded but still standing -- the pot's burns. Kept apart from the kills because they are
+        /// a different weapon behaving differently, and because their toll arrives rounds later.</summary>
+        public int Wounded;
+
+        /// <summary>What it hit, when it was shooting at equipment, and what that cost the machine.</summary>
+        public string TargetEngine;
+
+        public float EngineDamage;
+
+        /// <summary>Whether that shot finished the machine. This is the single most consequential thing artillery
+        /// does in a siege -- an engine broken here narrows the assault that follows -- so it gets its own flag.</summary>
+        public bool Destroyed;
+    }
+
+    /// <summary>
     /// Whether the last blow put its man down is not decided by SimulateHit -- it is decided afterwards, in
     /// MapEventSide.ApplySimulationDamageToSelectedTroop, which rolls the damage against the man's hit points (or,
     /// for a hero, adds it to what he has already soaked). So the answer is taken from there, from the game's own
@@ -349,6 +431,13 @@ namespace RBMCampaign
     {
         private static void Postfix(bool __result)
         {
+            // THE WIDTH HEARS THE VERDICT FIRST, and it must hear it whether or not anybody is writing the battle
+            // down. Every melee kill at a siege opening moves the frontage -- the attackers' by widening it, the
+            // defenders' by closing it -- and that is a fact about the fight, not about the log. The HitRecord
+            // below exists ONLY when the hit log is switched on, so the width cannot be hung off it; SimulationSiege
+            // parks its own blow and claims it here. Ahead of the null check for exactly that reason.
+            SimulationSiege.NoteVerdict(__result);
+
             HitRecord hit = SimulationBattleState.LastHit;
             if (hit == null)
             {
@@ -540,12 +629,117 @@ namespace RBMCampaign
             /// </summary>
             public bool Dismounted;
 
+            /// <summary>
+            /// A WALL BEING STORMED, which is a different battle from the one the three acts above describe -- and
+            /// when this is set, those acts do not run at all. The volley/skirmish/contact clock is replaced end to
+            /// end by the two-phase siege model: an approach in which nobody is in reach of anybody, and an assault
+            /// fought at whatever openings the siege equipment bought. See <see cref="SimulationSiege"/>.
+            /// </summary>
+            public bool SiegeAssaultBattle;
+
+            /// <summary>Which of the two acts this battle is in -- approach, assault, or the storm that could not be
+            /// started at all. Owned by SimulationSiege; meaningless unless <see cref="SiegeAssaultBattle"/>.</summary>
+            public int SiegePhase;
+
+            /// <summary>
+            /// How good a wall this is, as a multiplier on the besieged side's whole advantage -- 1 for a fully
+            /// fortified city or castle, 0.75 for the middle level, 0.5 for a palisade. Level 3 is the reference
+            /// and nothing scales ABOVE it. Read once from the settlement's fortification building level when the
+            /// battle is set up (nobody finishes a building under assault), and it scales the rate of fire, the
+            /// magnitudes and the besieger's scatter. It does NOT touch the width: a hole in a great wall is the
+            /// same size as a hole in a poor one. See SimulationSiege.MeasureWall.
+            /// </summary>
+            public float SiegeWallFactor = 1f;
+
+            /// <summary>How many men each side can bring to bear at the openings, as a proportion of one another.
+            /// Frozen from the surviving siege equipment when the approach ends, then moved by melee kills. See
+            /// SimulationSiege.Widths.</summary>
+            public int AttackWidth;
+
+            public int DefendWidth;
+
+            /// <summary>What the equipment bought at the moment the ladders went up -- the floor the widths can be
+            /// ground back down to, and no further.</summary>
+            public int StartAttackWidth;
+
+            public int StartDefendWidth;
+
+            /// <summary>
+            /// What the three lanes actually held when the ladders went up -- "gate: ram 8/8 · wall: breach 4/4".
+            /// Written once at the transition, purely so the log can say WHY the assault had the frontage it had.
+            /// Live width is printed every round and moves with the killing; this is the thing that bought it, and
+            /// without it a reader can see that a storm was hopeless but not that it was hopeless because two of
+            /// the three lanes were empty. Null for a battle that never reached the assault.
+            /// </summary>
+            public string SiegeLanes;
+
+            /// <summary>
+            /// The round this battle stopped being a wall assault, or -1 if it never did. See
+            /// SimulationSiege.StandDown -- native reclassifies a siege the moment a relief army joins the
+            /// defenders, and the model has to follow it off the wall.
+            /// </summary>
+            public int SiegeStoodDownRound = -1;
+
+            /// <summary>Every ranged engine both sides had at the muster, and the state of each -- deployed, still
+            /// building, redeploying, broken, or sitting in reserve. Diagnostic only. See
+            /// SimulationSiege.DescribeEngines for why it is worth carrying.</summary>
+            public string SiegeEngineReport;
+
+            /// <summary>
+            /// How many men on each side BROKE AND RAN rather than fell.
+            ///
+            /// This matters because the game's casualty figure does not distinguish them. Native's
+            /// <c>MapEventSide.Route()</c> puts every man still standing through <c>OnTroopRouted</c>, which
+            /// increments <c>TroopCasualties</c> exactly as a death does -- so a side that broke and a side that
+            /// was butchered to the last man report the identical number, and the log has been unable to tell an
+            /// army that fled from an army that was destroyed. They are very different events: the fugitives live,
+            /// and most of them come back. See SimulationRoutMarker.
+            /// </summary>
+            public int AttackerRouted;
+
+            public int DefenderRouted;
+
+            /// <summary>The round the break happened, or -1 if neither side ever broke.</summary>
+            public int RoutRound = -1;
+
+            /// <summary>
+            /// What share of a side's blows this round must be SHOT rather than swung, for a siege's two ratios --
+            /// the rate of fire and the width -- to both come out right. The tick allocation can only hand each side
+            /// one number; this is the other half of the answer, and the striker selection is what honours it. Set
+            /// every round by SimulationSiege.SplitTicks; ignored outside a wall assault.
+            /// </summary>
+            public float AttackerRangedTickTarget;
+
+            public float DefenderRangedTickTarget;
+
+            /// <summary>
+            /// What each defending catapult decided to spend this siege on -- the besieger's equipment, or his men.
+            /// Decided once per engine, the first time it fires, and held for the rest of the battle; two mangonels
+            /// on the same wall may well be doing different jobs. Keyed on the engine itself. See
+            /// SimulationSiegeEngines.
+            /// </summary>
+            public readonly Dictionary<SiegeEvent.SiegeEngineConstructionProgress, bool> SiegeEngineOrders =
+                new Dictionary<SiegeEvent.SiegeEngineConstructionProgress, bool>();
+
+            /// <summary>
+            /// How many stones each heavy engine has thrown in THIS battle. A catapult or a trebuchet carries a
+            /// finite pile of shot to the wall and it does not refill mid-assault; when the pile is gone the crew
+            /// stand and watch. Counted per battle, not per siege -- the pile is restocked between assaults, and a
+            /// besieger who storms twice does not do so with half a catapult. See SimulationSiegeEngines.
+            /// </summary>
+            public readonly Dictionary<SiegeEvent.SiegeEngineConstructionProgress, int> SiegeEngineShots =
+                new Dictionary<SiegeEvent.SiegeEngineConstructionProgress, int>();
+
             public readonly Dictionary<CharacterObject, TroopState> Attackers = new Dictionary<CharacterObject, TroopState>();
 
             public readonly Dictionary<CharacterObject, TroopState> Defenders = new Dictionary<CharacterObject, TroopState>();
 
             /// <summary>Every blow of this battle, as it was really struck. Empty unless the hit log is on.</summary>
             public readonly List<HitRecord> Trace = new List<HitRecord>();
+
+            /// <summary>Every shot the engines took. Empty unless the hit log is on, and for any battle without a
+            /// wall in it. See <see cref="ArtilleryRecord"/>.</summary>
+            public readonly List<ArtilleryRecord> Artillery = new List<ArtilleryRecord>();
 
             /// <summary>The muster roll: how many of each troop stand on each side, over all its parties.</summary>
             public Dictionary<CharacterObject, int> AttackerCounts = new Dictionary<CharacterObject, int>();
@@ -668,6 +862,7 @@ namespace RBMCampaign
                 state.DefenderCounts = Muster(mapEvent.DefenderSide);
                 state.AttackerRangedShare = RangedShare(state.AttackerCounts);
                 state.DefenderRangedShare = RangedShare(state.DefenderCounts);
+                SimulationSiege.Begin(mapEvent, state);
                 _battles[mapEvent] = state;
             }
             return state;
@@ -727,6 +922,62 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// The engines' own book, handed over before the battle is forgotten -- the same hand-off
+        /// <see cref="TakeTrace"/> makes, and for the same reason. Null when nothing fired.
+        /// </summary>
+        internal static List<ArtilleryRecord> TakeArtillery(MapEvent mapEvent)
+        {
+            BattleState state;
+            if (mapEvent == null || !_battles.TryGetValue(mapEvent, out state) || state.Artillery.Count == 0)
+            {
+                return null;
+            }
+            return state.Artillery;
+        }
+
+        /// <summary>
+        /// How the wall assault went, in the four facts that are not visible anywhere else: how good the wall was,
+        /// what the lanes held, the frontage that bought, and whether the storm happened at all. Handed over before
+        /// Forget, like the trace and the artillery. Null for any battle that was not a wall assault.
+        /// </summary>
+        internal static BattleState TakeSiegeReport(MapEvent mapEvent)
+        {
+            BattleState state;
+            if (mapEvent == null || !_battles.TryGetValue(mapEvent, out state))
+            {
+                return null;
+            }
+            // A battle that WAS a wall assault still owes the log an account of itself, even if it stopped being
+            // one when a relief army turned up (SimulationSiege.StandDown clears the flag). Reporting only the
+            // battles still flagged at the end would make exactly the fights that went strangest disappear.
+            if (!state.SiegeAssaultBattle && state.SiegeStoodDownRound < 0)
+            {
+                return null;
+            }
+            return state;
+        }
+
+        /// <summary>
+        /// How many men each side lost to a BREAK rather than to the fighting, handed over before the battle is
+        /// forgotten. Both zero for a battle nobody ran from -- which, for the losing side, means it was destroyed.
+        /// </summary>
+        internal static void TakeRout(MapEvent mapEvent, out int attackerRouted, out int defenderRouted,
+            out int routRound)
+        {
+            attackerRouted = 0;
+            defenderRouted = 0;
+            routRound = -1;
+            BattleState state;
+            if (mapEvent == null || !_battles.TryGetValue(mapEvent, out state))
+            {
+                return;
+            }
+            attackerRouted = state.AttackerRouted;
+            defenderRouted = state.DefenderRouted;
+            routRound = state.RoutRound;
+        }
+
+        /// <summary>
         /// The chain of command each side fought under, handed over before the battle is forgotten -- the same
         /// hand-off <see cref="TakeTrace"/> makes, and for the same reason: the write-up happens at MapEventEnded,
         /// by which time Forget has dropped all of this. Null for a battle nobody simulated (the player fought it
@@ -764,6 +1015,8 @@ namespace RBMCampaign
         internal static void ResetForNewSession()
         {
             _battles.Clear();
+            // And the blow the siege width is holding, which points into one of the states just dropped.
+            SimulationSiege.ResetForNewSession();
         }
 
         /// <summary>
@@ -793,6 +1046,12 @@ namespace RBMCampaign
             {
                 state.SkirmishStartRound = state.Round;
             }
+
+            // A WALL ASSAULT TURNS ITS OWN PHASE HERE. The approach ends, the siege equipment is read for whatever
+            // survived it, and the widths are frozen -- or the storm is called off because nothing did. This must
+            // sit after Progress has moved (the transition is a question about how much fighting has happened) and
+            // before the round is fought, so the round about to be thrown belongs to the phase it is fought in.
+            SimulationSiege.OnRound(mapEvent, state);
 
             // The first round is the first moment the battle can be seen WHOLE. MapEventStarted fires before a
             // lord's allies and the rest of his army have attached themselves to the event, so anything counted
@@ -874,6 +1133,35 @@ namespace RBMCampaign
             {
                 state.DefenderCommand.RetireTheFallen();
             }
+        }
+
+        /// <summary>
+        /// RE-READ THE GROUND. Every terrain fact a battle has is measured once, when its state is made, because a
+        /// field does not move while it is being fought over. A SIEGE CAN, though -- not the ground, but what kind
+        /// of battle is being fought on it: native reclassifies a wall assault the instant a relief army joins the
+        /// defenders (see SimulationSiege.StandDown), and everything measured for a wall is then wrong. There are no
+        /// horses in a siege, no room to charge and no room to kite; there are all three in the open field the
+        /// battle has just become.
+        ///
+        /// So this re-measures the five, from the battle as it now is. It is the ONLY thing that may re-measure
+        /// them, and it is called from exactly one place.
+        ///
+        /// Progress is deliberately NOT rewound. The fighting that has happened has happened; a battle forty rounds
+        /// old does not owe anybody a fresh volley. With Progress already past the field volley and skirmish, the
+        /// phase predicates put it straight into contact, which is exactly what it is: the lines are long since met.
+        /// </summary>
+        internal static void RelatchTerrain(MapEvent mapEvent, BattleState state)
+        {
+            if (mapEvent == null || state == null)
+            {
+                return;
+            }
+            state.VolleyRounds = GetVolleyRounds(mapEvent);
+            state.DefenderOnlyRounds = GetDefenderOnlyRounds(mapEvent);
+            state.DefendersShootFromStores = mapEvent.IsSiegeAssault;
+            state.KitingRoom = GetKitingRoom(mapEvent);
+            state.ChargeChance = GetChargeChance(mapEvent);
+            state.Dismounted = IsDismounted(mapEvent);
         }
 
         /// <summary>The number of parties standing on a side -- cheap to count without walking any roster.</summary>
@@ -959,6 +1247,14 @@ namespace RBMCampaign
         /// </summary>
         private static float GetVolleyRounds(MapEvent mapEvent)
         {
+            // A WALL ASSAULT'S APPROACH IS NOT A VOLLEY and is not measured like one -- it is its own phase, its own
+            // length, and its own rules (see SimulationSiege). The figure is still written here because everything
+            // that reads a progress-through-the-approach -- the shot-accuracy ramp, chiefly -- reads VolleyRounds,
+            // and it must be the siege's length or the ramp would run against a number this battle never uses.
+            if (mapEvent.IsSiegeAssault)
+            {
+                return SimulationSiege.ApproachRounds;
+            }
             return GetVolleyRounds(mapEvent.SimulationContext, mapEvent.IsSiegeAssault, BattleSize(mapEvent));
         }
 
@@ -1229,6 +1525,15 @@ namespace RBMCampaign
         /// </summary>
         private static float GetDefenderOnlyRounds(MapEvent mapEvent)
         {
+            // A WALL ASSAULT HAS NO SUCH WINDOW, and needs none. The field's version silences the attacker's bows
+            // outright for the opening rounds, which is a blunt way of saying the defender shoots and the attacker
+            // mostly cannot. A siege says the same thing far better and for the WHOLE approach, as a rate: five
+            // shots to one (SimulationSiege.ApproachDefenderFireRatio). Leaving both in would silence the besieger
+            // twice over -- barred at the start and out-shot five to one thereafter.
+            if (mapEvent.IsSiegeAssault)
+            {
+                return 0f;
+            }
             if (IsFixedApproach(mapEvent.SimulationContext, mapEvent.IsSiegeAssault))
             {
                 return DefenderOnlyRoundsFull;
@@ -1285,6 +1590,16 @@ namespace RBMCampaign
 
         internal static bool IsVolleyPhase(BattleState state)
         {
+            // A WALL ASSAULT ANSWERS THIS ITS OWN WAY. Its approach is the same KIND of thing the volley is -- a
+            // stretch of fighting in which only the bows act and a man not shooting lands nothing -- so it answers
+            // yes here and inherits all of that machinery. What it does NOT inherit is the volley's length, its
+            // defender-only window, or the skirmish that follows it: those are facts about a field, and a siege's
+            // are set by SimulationSiege instead. See GetVolleyRounds and IsSkirmishPhase.
+            if (state != null && state.SiegeAssaultBattle)
+            {
+                return SimulationSiege.IsApproach(state);
+            }
+
             // Progress rather than the raw round -- the same number today, but the volley is a length of FIGHTING and
             // this is the side of the comparison that says so. What makes a small battle's volley short is the volley
             // itself being sized to the fight (see GetVolleyRounds), not the rounds running thin. Progress is advanced
@@ -1295,6 +1610,15 @@ namespace RBMCampaign
         /// <summary>The horse are out, the javelins are in the air, and the foot are still walking.</summary>
         internal static bool IsSkirmishPhase(BattleState state)
         {
+            // THERE IS NO SKIRMISH IN A SIEGE. The skirmish is the ground between two lines -- javelins hurled
+            // across it, and each side's horse riding out at the other before the foot arrive. A wall assault has
+            // none of those things: no second line, no open ground, and no horses at all (see IsDismounted). The
+            // approach ends and the ladders go up, with nothing in between.
+            if (state != null && state.SiegeAssaultBattle)
+            {
+                return false;
+            }
+
             return state != null
                 && state.Progress > state.VolleyRounds
                 && state.Progress <= (state.VolleyRounds + SkirmishRounds);
@@ -1303,6 +1627,11 @@ namespace RBMCampaign
         /// <summary>The point in the fight the foot finally reach each other -- in Progress units, like the phases.</summary>
         internal static float ContactRound(BattleState state)
         {
+            if (state != null && state.SiegeAssaultBattle)
+            {
+                // The ladders go up the moment the killing ground has been crossed; there is no skirmish to wait out.
+                return SimulationSiege.ApproachRounds + 1f;
+            }
             return (state != null) ? (state.VolleyRounds + SkirmishRounds + 1f) : 1f;
         }
 

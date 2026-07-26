@@ -381,7 +381,7 @@ How long the approach lasts is a question about the ground:
 
 | Context | Volley rounds |
 |---|---|
-| **Siege** (assault or not) | **12** |
+| **Siege**, not an assault | **12** |
 | Plain, steppe, desert, dune, snow, river, forest | 6 |
 | Naval raid, sea, open sea, river crossing | 4 |
 | **Village** | **2** |
@@ -397,6 +397,110 @@ For the first **two** rounds, only the defender may loose. He is standing on his
 The attacker is not merely out-shot in those rounds — he is doing **nothing at all**, because a man in the volley who is not shooting lands no blow (see above). Two rounds of free fire is the price of crossing open ground at somebody who is already there.
 
 Javelins are unaffected: nobody throws during the volley at all, so there is nothing to delay.
+
+### A stormed wall has two acts, not three
+
+**None of the three acts above happen in a siege assault.** A wall assault (`MapEvent.IsSiegeAssault`) replaces the volley/skirmish/contact clock outright with two acts of its own, in `Simulation/SimulationSiege.cs`. Battles merely *fought at* a besieged settlement — sally-outs, siege ambushes, relief actions — are ordinary field battles and keep the three acts.
+
+**And a wall assault does not necessarily stay one.** Native keeps the battle's kind in a *mutable* field: the instant a defending party that is not inside the settlement joins — a relief army arriving to lift the siege — `MapEvent.AddParty` rewrites the type from `Siege` to `SiegeOutside`, and `SimulationContext` is derived from that same field, so the ground changes with it. Every siege fact is latched at round 1, which is right for a fact about a wall and wrong once the battle has stopped being about one.
+
+So the model **re-checks every round and stands down** when the battle leaves the wall: the terrain is re-read as what it now is, the horses and the charge come back, the wall's bonuses stop, the artillery falls silent, and the frontage stops mattering. It is **one-way** — native flips the type *back* to `Siege` once the relief force is gone, which would otherwise re-arm a storm whose approach was crossed an hour earlier, with fresh widths read off equipment the assault had already spent.
+
+This was not hypothetical. At Tamnuh Castle on 1084-030 the garrison went from 223 men to 673 at round 13, and the storm rules ran on to round 116 — attackers dismounted, unable to charge, confined to their ladders' frontage and eating the wall's bonuses, against an army standing in the open field beside them. The log now prints `wall: LEFT THE WALL at round N`.
+
+| | |
+|---|---|
+| **1. The approach** (12 rounds) | The killing ground. Nobody is in reach of anybody: the men on the parapet shoot down, the besiegers shoot back up, and no sword touches anything. |
+| **2. The assault** | The ladders go up and the fighting is hand to hand at whatever openings the siege equipment bought. |
+
+**On the approach the defender has every advantage there is.** He looses **five shots for every one** the attacker gets — he is standing still behind stone with the town's arrow stores at his elbow, while the besieger is walking uphill carrying a ladder. His shots are worth **×1.25** and the attacker's **×0.85**, and the attacker misses half again as often on top of the wall skew that already applies to any siege.
+
+**And a besieger can only reach the men shooting at him.** The defending infantry are behind the parapet; an arrow aimed at one of them hits masonry. This is a *hard* rule, not a preference — a garrison with no archers on the wall simply cannot be hurt while the ground is being crossed, which is correct, because there is nobody up there to shoot at. The defender is under no such restriction: from a wall he can see the whole army.
+
+**In the assault the defender's edge narrows.** Two shots to one rather than five, and **no** magnitude bonus — his advantage there is the frontage and the rate of fire, not the weight of the arrow. The attacker keeps his penalties (he is still fighting from a ladder) but can now reach anybody.
+
+**And how good the wall is scales all of it.** Fortifications are built, and native tracks the level on the settlement (`Town.GetWallLevel()`, 1–3, off `SettlementFortifications` for a town and `CastleFortifications` for a castle). A higher wall means a higher parapet, better merlons to shoot from and hide behind, and a longer, worse climb.
+
+What scales is the **advantage**, not the raw number: every dial is a departure from parity, and the wall scales that departure. **Level 3 is the reference and nothing scales above it** — a fully fortified city plays exactly as this model did before wall level was read at all, and every lesser wall is a lesser version of the same edge, 25% of the advantage per level down. So nothing can invert into a handicap.
+
+| | palisade (1) | middling (2) | great walls (3) |
+|---|---|---|---|
+| Defender shots per attacker shot, approach | 3 : 1 | 4 : 1 | **5 : 1** |
+| …assault | 1.5 : 1 | 1.75 : 1 | **2 : 1** |
+| Defender magnitude, approach | ×1.13 | ×1.19 | **×1.25** |
+| Attacker magnitude | ×0.93 | ×0.89 | **×0.85** |
+| Attacker miss, approach | ×1.25 | ×1.38 | **×1.50** |
+
+A settlement whose wall level cannot be read falls back to the **reference**, not to a poor wall — the conservative failure, since a bad reading can then never quietly hand a siege to the besieger by treating a great city as a palisade. (`GetWallLevel()` genuinely returns 0, not 1, when it cannot find the building.)
+
+**It does not touch the width**, deliberately. Width is a fact about the *openings* — how wide the breach is, how many men fit through a gatehouse, how many can stand at the top of one ladder — and a hole in a great wall is the same size as a hole in a poor one. A better wall buys a worse approach to it, not a narrower gap once it is down.
+
+### Width — the frontage at the openings
+
+Three lanes, which is native's own `MaximumAttackerMeleeSiegeEngineCount = 3`. What stands in each decides how many men can fight there, and the two sides get **different** numbers:
+
+| Lane content | Attacker | Defender |
+|---|---|---|
+| Breach in the wall | 4 | 4 |
+| Siege tower | 4 | 4 |
+| Battering ram (middle lane only) | 8 | 8 |
+| Siege ladder | 1 | **5** |
+| Empty | 0 | 0 |
+
+The ladder row is the shape of the whole idea: one man can be at the top of it at a time, and five can be waiting for him when he arrives.
+
+**Lanes are identified by what stands in them, never by slot index.** Native's three melee slots look like three positions on the wall and are nothing of the kind: `DefaultSiegeStrategyActionModel` deploys into `FindIndex(engine == null)` — the first free slot — so the index is just the order the besieger finished building things in. Reading slot 1 as "the gate" put a real ram (slot 0, Tamnuh Castle 1084-029) outside the model entirely: it was standing, the defenders were shooting at it, and it bought its side nothing.
+
+So the lanes are assembled from the equipment: **the gate** is wherever the ram is, and **the two wall lanes** are the settlement's two wall sections (`WallSectionCount` is hardcoded to 2 for every fortification), each either a hole or whatever climbing engine is assigned to it. Engines count only if `IsActive` and `Hitpoints > 0`.
+
+**A breached section is a hole and nothing else** — men walk through a gap, they do not queue for a ladder beside it. **An empty lane is worth nothing**: no fallback, no floor. And with only two stretches of wall, a besieger who built three towers has one with nowhere to go — that surplus is *logged*, never silently dropped.
+
+The widths are frozen at the moment the approach ends, so a ram broken on the way in contributes nothing.
+
+**Width is a hard ceiling on melee actions, not a share of them.** At most `attackWidth` attacker melee blows and `defendWidth` defender melee blows in a round, whatever the size of the armies — bounded also by each side's own natural melee output, so a side with few melee troops does not suddenly field a full frontage of them. That is what a breach *is*: a gap only so many men can fight in at once, with a thousand more behind them who do not widen it by standing there.
+
+It was a ratio first, and eight logged sieges showed why that could not work. Native's besiegers build rams and towers and nothing else, and both are symmetric (8/8, 4/4) — so every siege opened at 12:12 or 16:16, and since both widths step together a ratio of equals is 1:1 for ever. The frontage never once touched an outcome. The ladder's 1/5, the whole reason widths differ at all, was never built in any of them.
+
+A consequence worth stating: the round's total blow count is **no longer preserved**. A storm through a single gap contains less fighting than a field battle between the same armies, so a siege resolves over more rounds — and each still bills the campaign clock at `simulationRoundMinutes`. If sieges start taking implausible campaign *time*, the round clock is the thing to reprice, not the ceiling.
+
+**Ranged fire is untouched by width** — men shoot over the fight from the whole length of the wall, and no gap in the masonry limits that.
+
+**Width moves.** Every man the attackers put down at an opening widens it by one for *both* sides — the press gives ground, the fight spills along the wall; every man the defenders put down narrows it by one for both. Melee kills only: an archer picking a man off the ground below does not close a breach. The floor is what the equipment bought at the start, and there is no ceiling — an assault that is going well goes better, which is what a collapse looks like from outside.
+
+**If nothing survives, there is no assault.** Every ladder burned, every tower broken, the ram destroyed and the wall still whole: the men who crossed the killing ground have arrived at a sheer face with empty hands. The besiegers are **repulsed** on the spot, through native's own `Route()` so the survivors leave as fugitives, carrying whatever the crossing cost them.
+
+**How the round is divided.** The game hands each side one number — its tick count — and a siege has two ratios to honour at once. So the allocation solves for all four counts directly (the two sides' shots and the two sides' melee blows), from the rate of fire, the width, and the archers the two sides actually brought; the tick counts carry half the answer and the striker selection carries the other half. **The round's total is unchanged**: this redistributes a round, it does not inflate one, so no siege lethality moves for a reason that is not the wall.
+
+Every number here is a hardcoded constant, uncalibrated as of this writing.
+
+### The artillery
+
+Engines are not troops, and everything above is built around one soldier striking another — so they get their own volley, fired once at the top of each round, outside the blow-by-blow entirely (`Simulation/SimulationSiegeEngines.cs`). They are read from `SiegeEnginesContainer.DeployedRangedSiegeEngines`, four slots a side, counted only while built and unbroken.
+
+Engines are bucketed by id the way native itself buckets them for map projectiles. **By id, not by `DefaultSiegeEngineTypes`** — `FireTrebuchet` there is a native bug that returns the plain trebuchet's object, so a real fire trebuchet matches nothing.
+
+| Kind | Native ids |
+|---|---|
+| Ballista | `ballista`, `fire_ballista` |
+| Stone catapult | `catapult`, `onager`, `bricole` |
+| Pot catapult | `fire_catapult`, `fire_onager` |
+| Trebuchet | `trebuchet`, `fire_trebuchet` — the besieger's alone |
+
+**Hit chances and engine damage come from the data**, not from constants: `hit_chance`, `anti_personnel_hit_chance` and `damage` off `SiegeEngineType`, which RBM already overrides in `RBMXML/RBMCombat_siege_engines.xml`. Retuning that XML retunes this with no code change. Only the rates of fire and what a hit means for the men are hardcoded here.
+
+**Catapults halve their rate in the assault**, on both sides and whatever they are shooting at: on the approach a crew loose at a fixed point they have been ranging on for days, but once the ladders are up the fight is moving and their own men are in it, so every shot has to be spotted and re-laid. Ballistas keep their rate (a bolt-thrower is spanned in the time a mangonel's arm is winched once); trebuchets already fire at that pace.
+
+**And the ammunition runs out** — 15 shots per catapult or trebuchet, 30 per ballista, per battle. Every stone has to be cut, hauled and stacked beside the machine before the assault, and what is stacked there is what it has; a bolt is a smaller thing a crew carries by the armful, hence the larger sheaf. A miss spends one too. This is the archers' quiver rule applied to artillery, and it fixes the same failure: an engine that never runs dry decides a long battle by itself simply because the battle was long. The pile is restocked between assaults, so storming twice does not mean doing it the second time with half a catapult.
+
+Ballistas were exempt at first, on the reasoning that nobody runs a bolt-thrower dry in an afternoon. The logs said otherwise: capping the catapults and not the ballistas simply handed the siege to the one engine still working. Across eight sieges the defending ballistas fired 340 of 470 shots, and in one of them 350 shots killed 241 men — near a quarter of the storming army — purely because they never stopped.
+
+**On the wall.** A ballista looses one or two bolts a round at men only, and a bolt that finds someone puts a terrible wound in him — 50–100% of that man's own pool, so it is lethal to a whole man at the top of its band, survivable in good armour, and cumulative. It used to kill outright on every hit; that threw away everything the rest of the model says about armour for the engine that fires most often, and in one siege it meant 241 dead from 350 bolts. A defending catapult decides once, at the start, whether it is working on the besieger's equipment or on his men, and holds to it — until the ladders go up, when every engine on the wall turns to the men climbing it. Firing at men, a stone kills two or three at a stroke; a pot kills one and burns ten more for 20–60% of their pools apiece. There is no accuracy roll on the approach — a mangonel does not miss a column crossing open ground it has been ranging on for days — but there is one in the assault, because now it is dropping rocks near a fight its own men are in.
+
+**Below it.** Every besieger's shot is 30% likelier to go wide. His ballistas work exactly as the wall's do. His heavy engines shoot at the defender's engines the whole battle through, assault included, and what they kill among the garrison they kill incidentally, rolled *separately* from the hit — a stone that misses a mangonel still lands somewhere. A stone catapult takes a man a quarter of the time; a pot kills the one it lands on and burns three to six more; a trebuchet fires every second round, hits timber hardest of anything on the field, and drops a rock big enough to take two or three men a third of the time.
+
+**A broken engine stays broken.** It is removed from the campaign's own siege event, by slot — not through native's `BreakSiegeEngine`, which takes a *type* and would break the wrong one of a matched pair. So a ram lost to a mangonel has to be rebuilt before the next assault, and — because the assault widths are read from the survivors at the end of the approach — **a garrison that breaks the ram in time has genuinely narrowed the storm that follows.** That is the loop that makes the artillery matter.
+
+Casualties go through the game's own `ApplySimulationDamageToSelectedTroop`, so they book against the right party, run RBM's wound pools, and let the surgeon decide dead or merely carried off, exactly like a casualty from a sword.
 
 ### Ammunition — counted in rounds, not blows
 

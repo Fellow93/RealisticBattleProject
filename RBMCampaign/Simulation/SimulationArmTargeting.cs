@@ -213,11 +213,23 @@ namespace RBMCampaign
                 {
                     SimulationBattleState.BattleState state = SimulationBattleState.Get(_pendingEvent);
                     int phase = PhaseOf(state);
-                    // The volley is share-weighted, not forced: see PickVolleyStriker. Every other phase is a plain
-                    // keep-weight pick.
-                    int index = (phase == PhaseVolley)
-                        ? PickVolleyStriker(instance, state)
-                        : PickIndex(instance, phase, StrikerKeepWeight, strikerArm: -1);
+                    int index;
+                    if (state != null && state.SiegeAssaultBattle)
+                    {
+                        // A WALL ASSAULT IS TOLD EXACTLY WHAT FRACTION OF ITS BLOWS MUST BE SHOTS. The tick
+                        // allocation can hand each side only one number, and a siege has two ratios to honour at
+                        // once -- the rate of fire and the width of the openings -- so the allocation solved for
+                        // both and left this half of the answer on the battle. See SimulationSiege.SplitTicks.
+                        index = PickSiegeStriker(instance, state, _pendingStrikerSide == _pendingEvent.AttackerSide);
+                    }
+                    else
+                    {
+                        // The volley is share-weighted, not forced: see PickVolleyStriker. Every other phase is a
+                        // plain keep-weight pick.
+                        index = (phase == PhaseVolley)
+                            ? PickVolleyStriker(instance, state)
+                            : PickIndex(instance, phase, StrikerKeepWeight, strikerArm: -1);
+                    }
                     CharacterObject chosen = ApplySelection(instance, index, ref result);
                     _strikerArm = ArmOf(chosen);
                     _stage = StageStruck;
@@ -226,7 +238,18 @@ namespace RBMCampaign
                 {
                     SimulationBattleState.BattleState state = SimulationBattleState.Get(_pendingEvent);
                     int phase = PhaseOf(state);
-                    int index = PickIndex(instance, phase, StruckKeepWeight, strikerArm: _strikerArm);
+
+                    // ON THE APPROACH A BESIEGER CAN ONLY REACH THE MEN SHOOTING AT HIM. The defending infantry are
+                    // behind the parapet, and an arrow loosed at a wall is an arrow loosed at a wall; the only
+                    // defenders exposed are the ones leaning out to shoot. This is the SELECTION half of that rule
+                    // -- a bias, since the sampler never truly forbids an arm -- and the damage model holds the hard
+                    // line beside it, nullifying any blow that still lands on a man who was not shooting.
+                    // The defender is under no such restriction: from a wall he can see the whole army.
+                    bool besiegerOnTheApproach = SimulationSiege.IsApproach(state)
+                        && _pendingStrikerSide == _pendingEvent.AttackerSide;
+                    int index = besiegerOnTheApproach
+                        ? PickIndex(instance, phase, ExposedDefenderWeight, strikerArm: _strikerArm)
+                        : PickIndex(instance, phase, StruckKeepWeight, strikerArm: _strikerArm);
                     ApplySelection(instance, index, ref result);
                     _stage = StageDone;
                 }
@@ -307,6 +330,42 @@ namespace RBMCampaign
             _shareCachedRound = round;
             _shareCachedValue = share;
             return share;
+        }
+
+        /// <summary>
+        /// A WALL ASSAULT'S STRIKER, picked to a quota rather than to a share.
+        ///
+        /// Everywhere else the archers' turn count is derived -- from how many of them there are, tempered by an
+        /// exponent (see PickVolleyStriker). A siege cannot afford that, because its two ratios (the defender shoots
+        /// five times as often on the approach, twice as often in the assault; the melee is split by the width of
+        /// the openings) are only both satisfiable if the ranged fraction of each side's blows is set EXACTLY. The
+        /// tick allocation solves for that fraction and leaves it on the battle; this spends it.
+        ///
+        /// The two outcomes differ by phase, and both are right. On the approach a blow that does not go to an
+        /// archer goes to a man walking up to a wall, and the damage model gives him nothing -- which is what a man
+        /// carrying a ladder is worth. In the assault it goes to a man at the opening with a sword, which is the
+        /// melee the width was dividing in the first place. Either pick degrades to a plain random draw if that arm
+        /// is simply absent from the side, exactly as every other pick here does.
+        /// </summary>
+        private static int PickSiegeStriker(MapEventSide side, SimulationBattleState.BattleState state, bool attacker)
+        {
+            float wantRanged = attacker ? state.AttackerRangedTickTarget : state.DefenderRangedTickTarget;
+            if (MBRandom.RandomFloat < wantRanged)
+            {
+                return PickIndex(side, PhaseVolley, ArcherStrikerWeight, strikerArm: -1);
+            }
+            return PickIndex(side, PhaseContact, FootFillStrikerWeight, strikerArm: -1);
+        }
+
+        /// <summary>
+        /// The only defenders a besieger crossing the killing ground can touch: the ones shooting back. Everyone
+        /// else is behind stone. See the note at the call site -- the damage model enforces the same rule hard, so
+        /// this is a bias that saves wasted draws rather than the rule itself.
+        /// </summary>
+        private static float ExposedDefenderWeight(int unusedStrikerArm, int phase, CharacterObject candidate)
+        {
+            int arm = ArmOf(candidate);
+            return (arm == SimulationEquipmentPower.ArcherType || arm == SimulationEquipmentPower.HorseArcherType) ? 1f : 0f;
         }
 
         /// <summary>Keep an archer, pass everyone else -- to pick the archer a weighted volley shot goes to.</summary>
@@ -445,6 +504,21 @@ namespace RBMCampaign
             _shareCachedSide = null;
             _shareCachedRound = -1;
             _shareCachedValue = 0f;
+            _pendingEvent = null;
+            _pendingStrikerSide = null;
+            _pendingStruckSide = null;
+            _stage = StageDisarmed;
+            _strikerArm = -1;
+        }
+
+        /// <summary>
+        /// Stand the coordinator down until the next blow arms it again. Anything that picks a simulation troop
+        /// OUTSIDE the blow-by-blow -- the siege artillery, which chooses its own victims once a round -- must call
+        /// this first, or a stale half-finished bracket would re-pick the engine's target by phase and arm as
+        /// though it were the struck man of a blow that is no longer happening.
+        /// </summary>
+        internal static void Disarm()
+        {
             _pendingEvent = null;
             _pendingStrikerSide = null;
             _pendingStruckSide = null;
