@@ -365,6 +365,27 @@ namespace RBMCampaign
         private const int DaysOfMaterialsHeld = 3;
 
         /// <summary>
+        /// The largest share of a town's money the artisans are allowed to hold as their float, as a
+        /// divisor: 10 means a tenth.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="DaysOfMaterialsHeld"/> sizes the float against the bench, which is the right
+        /// measure for a bench and the wrong one for a town. It is an absolute number of denars, and a
+        /// poor town's artisans buy materials in the same market at the same prices as a rich one's --
+        /// so three days of them is a rounding error in Lageta and most of the money in circulation in
+        /// Balgard, where the float was measured holding MORE than the townspeople had between them.
+        ///
+        /// That is a trap and not merely an imbalance, because citizen wealth gates production: the
+        /// people have to be able to buy the output before the bench may run. A float that large is
+        /// therefore holding the very money that would have bought the goods it is waiting to sell, and
+        /// the town locks -- which is exactly where the lowest wage-per-prosperity readings were found.
+        ///
+        /// A tenth leaves the rule untouched everywhere it was already working. It binds on the middle
+        /// band and hands the poorest towns their circulating money back.
+        /// </remarks>
+        private const int MaxFloatShareOfCitizenWealth = 10;
+
+        /// <summary>
         /// What a named workshop pays its hands for one production cycle.
         /// </summary>
         /// <remarks>
@@ -553,6 +574,34 @@ namespace RBMCampaign
             if (held < opening)
             {
                 held = opening;
+            }
+
+            // Then held against the town rather than the bench -- see MaxFloatShareOfCitizenWealth.
+            //
+            // Skipped on a day the bench bought nothing, for two reasons. There is no day's-worth to
+            // fall back to, so the cap would have no floor and could drain an idle shop to nothing; and
+            // an idle day repriced no materials, so there is nothing about it to reprice the float for.
+            //
+            // The floor is one day of materials, not none, because the cap must not be able to close
+            // the bench it is trying to feed: a shop drained past tomorrow's shopping cannot buy inputs,
+            // cannot produce, and so never earns the takings that would have refilled it. Between the
+            // two, the rule reads: three days of materials, but never more than a tenth of the town's
+            // money and never less than one day's.
+            //
+            // Read after the day's trades and before the wage, so this is citizen wealth at its trough
+            // -- the townspeople have already paid for the output and have not yet been paid for making
+            // it. The conservative point in the day to measure a claim on their money.
+            if (spentOnMaterials > 0)
+            {
+                int cap = SettlementWealth.GetCitizenWealth(settlement) / MaxFloatShareOfCitizenWealth;
+                if (cap < spentOnMaterials)
+                {
+                    cap = spentOnMaterials;
+                }
+                if (held > cap)
+                {
+                    held = cap;
+                }
             }
 
             // Taken whether or not there is anything to pay, so a day the bench worked for nothing still
