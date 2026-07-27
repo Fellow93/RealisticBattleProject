@@ -24,22 +24,58 @@ namespace RBMAI
         {
             public static Dictionary<Agent, float> itemPickupDistanceStorage = new Dictionary<Agent, float> { };
 
+            // Agents whose automatic target selection we turned off in the banner-bearer block below. We cannot key the
+            // restore off IsBannerBearer, because that reads the live wielded slots and the engine empties them mid-mission
+            // (siege ladders and standing points sheath both hands, item pickup overwrites the main hand, weapons get
+            // knocked away). Without this set an agent that stops holding its banner never gets automatic selection back
+            // and stays permanently passive with its target parked on a squadmate.
+            public static HashSet<Agent> bannerBearersWithHeldTarget = new HashSet<Agent>();
+
             private static void Postfix(ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent)
             {
                 // Banner bearers (Raise Your Banner) lock onto a distant enemy as their melee target and the native
                 // combat AI swings at it regardless of range - "attacking air". It is not gated by AIAttackOnDecideChance
-                // nor by the wielded weapon (an empty-handed bearer just punches). While no enemy is in melee range we
-                // clear the locked target so there is nothing to swing at, and sheath any drawn weapon so the banner
-                // stays raised. Once an enemy closes within melee range we leave the agent alone so it can still fight.
-                if (___Agent.IsActive() && Mission.Current != null && RBMAI.Utilities.IsBannerBearer(___Agent))
+                // nor by the wielded weapon (an empty-handed bearer just punches). InvalidateTargetAgent alone does not
+                // hold: the engine's automatic target selection re-acquires the same distant enemy on the next tick.
+                // So while no enemy is in melee range we turn automatic selection off and park the target on a squadmate
+                // - a friendly target gives the combat AI nothing to swing at. Once an enemy closes within melee range
+                // we hand automatic selection back so the bearer can still fight.
+                if (Mission.Current != null)
                 {
-                    MBList<Agent> bannerNearbyEnemies = new MBList<Agent>();
-                    bannerNearbyEnemies = Mission.Current.GetNearbyEnemyAgents(___Agent.GetWorldPosition().AsVec2, 5f, ___Agent.Team, bannerNearbyEnemies);
-                    // Fleeing routers run through our lines and end up within 5m; a banner bearer shouldn't chase-swing
-                    // at them (it can't catch them = "attacking air"), so treat only non-routing enemies as a reason to fight.
-                    bannerNearbyEnemies.RemoveAll((Agent a) => a.IsRunningAway);
-                    if (bannerNearbyEnemies.Count == 0)
+                    bool bannerHoldTarget = false;
+                    if (___Agent.IsActive() && RBMAI.Utilities.IsBannerBearer(___Agent))
                     {
+                        MBList<Agent> bannerNearbyEnemies = new MBList<Agent>();
+                        bannerNearbyEnemies = Mission.Current.GetNearbyEnemyAgents(___Agent.GetWorldPosition().AsVec2, 5f, ___Agent.Team, bannerNearbyEnemies);
+                        // Fleeing routers run through our lines and end up within 5m; a banner bearer shouldn't chase-swing
+                        // at them (it can't catch them = "attacking air"), so treat only non-routing enemies as a reason to fight.
+                        bannerNearbyEnemies.RemoveAll((Agent a) => a.IsRunningAway);
+                        if (bannerNearbyEnemies.Count == 0 && ___Agent.Formation != null)
+                        {
+                            // ___Agent is a ref parameter and cannot be captured by the lambda below.
+                            Agent bannerBearer = ___Agent;
+                            MBList<Agent> bannerNearbyAllies = new MBList<Agent>();
+                            bannerNearbyAllies = Mission.Current.GetNearbyAllyAgents(bannerBearer.GetWorldPosition().AsVec2, 10f, bannerBearer.Team, bannerNearbyAllies);
+                            Agent bannerFriendlyTarget = bannerNearbyAllies.FirstOrDefault((Agent a) => a != bannerBearer && a.IsHuman && a.IsActive() && a.Formation == bannerBearer.Formation);
+                            if (bannerFriendlyTarget != null)
+                            {
+                                ___Agent.SetAutomaticTargetSelection(false);
+                                ___Agent.SetTargetAgent(bannerFriendlyTarget);
+                                bannerBearersWithHeldTarget.Add(___Agent);
+                                bannerHoldTarget = true;
+                            }
+                            else
+                            {
+                                // No squadmate to park on - fall back to the one-shot clear.
+                                ___Agent.InvalidateTargetAgent();
+                            }
+                        }
+                    }
+                    // Hand automatic selection back the moment we stop holding this agent's target, whatever the reason:
+                    // an enemy closed to melee range, the formation went away, or the agent is no longer wielding a banner.
+                    if (!bannerHoldTarget && bannerBearersWithHeldTarget.Remove(___Agent))
+                    {
+                        ___Agent.SetAutomaticTargetSelection(true);
                         ___Agent.InvalidateTargetAgent();
                     }
                 }
