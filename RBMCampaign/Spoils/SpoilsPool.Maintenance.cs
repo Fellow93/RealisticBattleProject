@@ -30,11 +30,14 @@ namespace RBMCampaign
     /// the march wore through and replacing what is past mending. The men pay it out of their own
     /// spoils first; whatever the purse cannot cover falls to the party leader, out of his gold.
     ///
-    /// That money is spent somewhere, and it takes something with it. It goes over to the town that
-    /// supplies the party -- the one it stands in, or the nearest not at war with it -- which pays the
-    /// market fee on the way like any other purchase struck there (<see cref="PayMaintenanceToMarket"/>);
-    /// and gear to the value of the day's wear comes off that town's shelves, matched to what the men
-    /// actually wear (<see cref="DrawMaintenanceStock"/>).
+    /// That money is spent somewhere: it goes over to the town that supplies the party -- the one it
+    /// stands in, or the nearest not at war with it -- which pays the market fee on the way like any
+    /// other purchase struck there (<see cref="PayMaintenanceToMarket"/>).
+    ///
+    /// It takes NOTHING off that town's shelves. Maintenance buys the armourer's and the farrier's
+    /// labour, not stock: mending a strap, re-shoeing a horse, working a dent out of a helm. What an
+    /// army buys off the stalls it buys when it upgrades or recruits, and those draws
+    /// (<see cref="UpgradeSupply"/>, <see cref="RecruitSupply"/>) are where market goods move.
     /// </summary>
     /// <remarks>
     /// Charged once per clan per day, off the clan finance model's apply pass
@@ -250,12 +253,9 @@ namespace RBMCampaign
             // any shortfall does, so Total stays the whole cost and only Covered/Shortfall move with it.
             float purseFraction = ContractPurseFraction(party);
 
-            // Where the day's mending is bought and paid for. Resolved once for the party rather than per
-            // stack: it costs a sweep of the town list, and every stack mends at the same market anyway.
+            // Where the day's mending is paid for. Resolved once for the party rather than per stack: it
+            // costs a sweep of the town list, and every stack mends at the same market anyway.
             Settlement market = apply ? ResolveMaintenanceMarket(party.MobileParty) : null;
-            ItemRoster stock = (market != null) ? market.ItemRoster : null;
-            int drawnItems = 0;
-            int drawnValue = 0;
 
             int stacksCharged = 0;
             for (int i = 0; i < roster.Count; i++)
@@ -280,12 +280,6 @@ namespace RBMCampaign
                 result.Total += cost;
                 result.Covered += fromSpoils;
                 stacksCharged++;
-                // What the day's wear actually took off the shelves, sized by this stack's own share of
-                // the bill and matched to the gear this stack wears.
-                if (stock != null)
-                {
-                    DrawMaintenanceStock(market, stock, element.Character, cost, ref drawnItems, ref drawnValue);
-                }
                 if (apply && SpoilsLog.Verbose && party == PartyBase.MainParty)
                 {
                     SpoilsLog.LogVerbose("UPKEEP", party, SpoilsLog.Describe(element.Character) + " x" + element.Number
@@ -299,7 +293,7 @@ namespace RBMCampaign
             result.Shortfall = result.Total - result.Covered;
 
             // Both halves were genuinely paid by the party's side -- the purses gave one, the leader's
-            // gold the other -- so the whole of it is handed over to the market that supplied the gear.
+            // gold the other -- so the whole of it is handed over to the town whose tradesmen did the work.
             if (market != null && result.Total > 0)
             {
                 PayMaintenanceToMarket(market, result.Total);
@@ -311,97 +305,25 @@ namespace RBMCampaign
                     + " maintenance across " + stacksCharged + (stacksCharged == 1 ? " stack" : " stacks")
                     + " (spoils covered " + result.Covered + ", " + result.Shortfall + " to clan gold)"
                     + (market != null
-                        ? " — paid to " + market.Name + ", drew " + drawnItems + " item(s) worth " + drawnValue + "d"
+                        ? " — paid to " + market.Name
                         : " — no town in reach, coin burnt"));
             }
             return result;
         }
 
         /// <summary>
-        /// Takes the day's wear for one stack off the market: for one of the slots this troop's kit fills,
-        /// a piece of that class and tier, so long as the stack's share of the bill covers it. Repairs are
-        /// mostly replacements -- a strap, a shaft, a shoe, a hauberk past mending -- and this is the shelf
-        /// they come off.
-        /// </summary>
-        /// <remarks>
-        /// The stack's budget is a day's maintenance, which is a small share of its kit worth, so most days
-        /// most stacks can afford one piece and no more -- a big stack of well-armoured men replaces
-        /// something daily, a handful of levies replaces nothing for weeks. That is the intended shape: the
-        /// money is spent either way, and what a small stack's coin bought was the smith's labour rather
-        /// than a piece of kit.
-        ///
-        /// It stops at the first slot the budget cannot afford rather than hunting on down the list for
-        /// something cheaper, which is both how <see cref="RecruitSupply"/> reads an empty purse and what
-        /// keeps this to one or two market sweeps per stack -- it runs for every stack of every party on
-        /// the map on the daily tick, so a full walk of eight slots against a two-hundred-line market would
-        /// be felt.
-        ///
-        /// The starting slot is picked at random so it is not always the helmet that gets replaced: a fixed
-        /// order plus a one-item budget would mean the first slot in the list is the only one an army ever
-        /// wears out, and towns would be stripped of exactly one class of goods.
-        ///
-        /// The mount and its harness are in the list, unlike the recruit draw's, because maintenance is
-        /// priced off <see cref="GetEquipmentValueWithMount"/> -- a remount is a real part of what keeping
-        /// cavalry in the field costs, and the stack is being billed for it.
-        /// </remarks>
-        private static void DrawMaintenanceStock(Settlement market, ItemRoster stock, CharacterObject character,
-            int budget, ref int items, ref int value)
-        {
-            if (budget <= 0)
-            {
-                return;
-            }
-            List<SlotPurchase> slots = GetKitSlots(character, includeMount: true);
-            if (slots.Count == 0)
-            {
-                return;
-            }
-            int start = MBRandom.RandomInt(slots.Count);
-            for (int n = 0; n < slots.Count; n++)
-            {
-                SlotPurchase slot = slots[(start + n) % slots.Count];
-                int index = UpgradeSupply.FindKitInStock(stock, slot.ItemType, slot.Value);
-                if (index < 0)
-                {
-                    // Nothing of that class in band on the stalls: the men mend it themselves or go without.
-                    continue;
-                }
-                ItemObject item = stock.GetItemAtIndex(index);
-                if (item == null)
-                {
-                    continue;
-                }
-                int price = TroopMarketFeedback.UnitPrice(market, item, stock, index);
-                if (price > budget)
-                {
-                    break;
-                }
-                stock.AddToCounts(item, -1);
-                budget -= price;
-                items++;
-                value += price;
-                // A price signal, not a payment -- the whole day's coin is handed over in one sum by the
-                // caller. This is how the town learns to restock what the armies passing through wear out.
-                if (market.Town != null && item.ItemCategory != null)
-                {
-                    RBMTownFoodSupply.RegisterPurchaseDemand(market.Town.MarketData, item.ItemCategory, price);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Hands the day's maintenance over to the town that supplied the gear.
+        /// Hands the day's maintenance over to the town whose tradesmen did the work.
         /// </summary>
         /// <remarks>
         /// Paid through <see cref="TroopMarketFeedback.RegisterPurchase"/>, which is what makes this a
         /// purchase rather than a gift: the coin lands in the town's market purse, the market fee is taken
         /// out of it on the way (see <see cref="TradeTariff"/>), and the sum joins the town's recent troop
-        /// trade. The whole day's bill goes over in ONE sum, not per item, so the town is paid what the
-        /// army was actually charged rather than what its draw happened to find on the shelves.
+        /// trade. The whole day's bill goes over in ONE sum, so the town is paid what the army was
+        /// actually charged.
         ///
-        /// No category is passed with it, deliberately: the demand for what was drawn is registered piece
-        /// by piece in <see cref="DrawMaintenanceStock"/>, and passing the whole sum's category here as
-        /// well would count the same pressure twice.
+        /// No category is passed with it, and none should be: nothing came off the shelves, so there is no
+        /// goods demand to register. What the army bought was labour, and the town's restocking should not
+        /// be pushed at by it.
         ///
         /// NOTHING IS CHARGED HERE. The men's purses were drained a few lines above and the shortfall is
         /// on its way onto the leader's daily gold change; this only decides where that money lands
@@ -421,8 +343,8 @@ namespace RBMCampaign
         /// <remarks>
         /// A TOWN always, never the castle or village the party happens to be sitting in. An armourer who
         /// can re-sole a hauberk is a town trade; a village has a man who shoes horses and a castle has a
-        /// smith for the garrison's own gear, and neither keeps the stock an army wears through. So a party
-        /// resting in either is supplied from the nearest city, as the upgrade and recruit draws are.
+        /// smith for the garrison's own gear, and neither keeps the hands an army's mending wants. So a
+        /// party resting in either pays the nearest city, as the upgrade and recruit draws buy from it.
         ///
         /// Keeping it to towns also keeps the money and the fee together: the market fee is a town levy, so
         /// paying a village would be the one path where an army's coin arrived untariffed.
