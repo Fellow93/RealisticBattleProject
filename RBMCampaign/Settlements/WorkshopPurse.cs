@@ -41,13 +41,12 @@ namespace RBMCampaign
         private const string Output = "output";
         private const string Inputs = "inputs";
 
-        // Three separate things used to share one "wages" label, which made the SHOPS line unreadable
-        // the moment the artisans and the named shops started paying by different rules. They are the
-        // standing overhead vanilla charges whether or not a shop worked, the per-batch payroll a named
-        // shop pays its hands, and the whole of what the artisans' day added.
+        // Two separate things used to share one "wages" label, which made the SHOPS line unreadable: the
+        // standing overhead vanilla charges whether or not a shop worked, and the per-batch payroll a
+        // named shop pays its hands. (A third, "craftwage", was the artisans' -- they no longer move gold
+        // at all, so there is nothing left to label. See IsCitizenLabour.)
         private const string Overhead = "overhead";
         private const string Payroll = "payroll";
-        private const string Craft = "craftwage";
 
         private const string Owner = "owner";
         private const string Other = "other";
@@ -69,7 +68,6 @@ namespace RBMCampaign
             _ledger.Clear();
             _cyclesToday.Clear();
             _cyclesLogged.Clear();
-            _inputSpendToday.Clear();
             _wageDay.Clear();
             _context = null;
         }
@@ -115,51 +113,22 @@ namespace RBMCampaign
         [HarmonyPatch(typeof(WorkshopsCampaignBehavior), "ProduceAnOutputToTown")]
         private static class OutputContext
         {
-            private static void Prefix(EquipmentElement outputItem, Workshop workshop, ref bool effectCapital,
-                out int[] __state)
+            /// <remarks>
+            /// Nothing is charged for the finished good and nothing is levied on it. A man setting his own
+            /// work on his own stall has not crossed a counter, and the fee already came off the materials
+            /// that made it -- taking it twice would tax the same goods on the way in and on the way out.
+            ///
+            /// This also disposes of vanilla's <c>min(1000, price)</c> per-cycle ceiling, which used to
+            /// need correcting after the fact: it only ever mattered because the number was being paid to
+            /// somebody. Now that nobody is paid, an armour and a barrel of beer settle alike, at nothing.
+            /// </remarks>
+            private static void Prefix(Workshop workshop, ref bool effectCapital)
             {
                 _context = Output;
-                __state = null;
-                if (!IsCitizenLabour(workshop))
+                if (IsCitizenLabour(workshop))
                 {
-                    return;
+                    effectCapital = false;
                 }
-
-                effectCapital = true;
-                Town town = workshop.Settlement != null ? workshop.Settlement.Town : null;
-                if (town != null)
-                {
-                    __state = new int[] { town.GetItemPrice(outputItem) };
-                }
-            }
-
-            /// <summary>Pays the part of the price vanilla's per-cycle ceiling leaves on the table.</summary>
-            /// <remarks>
-            /// Vanilla settles an output at <c>min(1000, price)</c> on both sides, which is a wash for a
-            /// brewery selling beer and a swindle for a bench turning out mail: the town takes the armour
-            /// onto its shelf at full value and pays a thousand for it. Under the old gold-free artisans
-            /// that cost nothing, since neither side moved. Now that the shop's takings are what its hands
-            /// are paid, the ceiling would be a standing cut in the wages of exactly the highest-skilled
-            /// work in the town, so the remainder is moved after the fact.
-            /// </remarks>
-            private static void Postfix(Workshop workshop, int[] __state)
-            {
-                if (__state == null || !Campaign.Current.GameStarted)
-                {
-                    return;
-                }
-                int rest = __state[0] - 1000;
-                if (rest <= 0)
-                {
-                    return;
-                }
-                Town town = workshop.Settlement != null ? workshop.Settlement.Town : null;
-                if (town == null)
-                {
-                    return;
-                }
-                workshop.ChangeGold(rest);
-                town.ChangeGold(-rest);
             }
 
             private static void Finalizer()
@@ -168,8 +137,27 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>
+        /// The artisans draw their materials off the shelf without paying for them, and pay the market fee.
+        /// </summary>
+        /// <remarks>
+        /// The goods are the townspeople's already, so no price changes hands -- but the stall is the
+        /// town's, and the town takes its penny for the counter whoever is standing at it. That is the one
+        /// leg of the artisans' day where anything still moves, and it moves the way every other trade in
+        /// the ledger does: out of citizen wealth and into the treasury, at
+        /// <see cref="TradeTariff.TariffRate"/>.
+        ///
+        /// Levied on the whole draw, not on one unit. Vanilla prices ONE item and removes
+        /// <c>productionInputCount</c> of them -- harmless in vanilla, where every recipe takes one of
+        /// everything, but RBM's recipes take up to twenty ingots at a time. The fee is on what left the
+        /// shelf.
+        ///
+        /// The price is read in the prefix because a recipe that clears the last of a good leaves nothing
+        /// to price afterwards; the walk matches <c>ConsumeInputFromTownMarket</c>'s own <c>FindIndex</c>,
+        /// so it prices the same item vanilla is about to take.
+        /// </remarks>
         [HarmonyPatch(typeof(WorkshopsCampaignBehavior), "ConsumeInputFromTownMarket")]
-        private static class InputContext
+        private static class CitizenLabourTariff
         {
             private static void Prefix(ItemCategory productionInput, int productionInputCount, Town town,
                 Workshop workshop, ref bool effectCapital, out int[] __state)
@@ -181,11 +169,8 @@ namespace RBMCampaign
                     return;
                 }
 
-                effectCapital = true;
+                effectCapital = false;
 
-                // The price of the item vanilla is about to take, read before it is taken -- a recipe that
-                // clears the last of a good off the shelf leaves nothing to price afterwards. Same walk
-                // and same first match as ConsumeInputFromTownMarket's own FindIndex.
                 if (town == null || town.Owner == null || productionInput == null)
                 {
                     return;
@@ -196,35 +181,19 @@ namespace RBMCampaign
                     ItemObject item = roster.GetItemAtIndex(i);
                     if (item != null && item.ItemCategory == productionInput)
                     {
-                        __state = new int[] { town.GetItemPrice(item), productionInputCount };
+                        __state = new int[] { town.GetItemPrice(item) * productionInputCount };
                         break;
                     }
                 }
             }
 
-            /// <summary>Pays for the rest of the units the recipe just took off the shelf.</summary>
-            /// <remarks>
-            /// Vanilla charges ONE item's price and removes <c>productionInputCount</c> of them, which no
-            /// vanilla recipe notices because vanilla recipes take one of everything. RBM's take up to
-            /// twenty ingots at a time, so left alone the bench would buy an armour's worth of steel for
-            /// the price of a single ingot -- goods off the citizens' shelf for a nineteenth of their
-            /// worth, and every denar of the difference showing up as wages. The shortfall is charged
-            /// here, at the same price vanilla used for the first unit.
-            /// </remarks>
-            private static void Postfix(Workshop workshop, Town town, int[] __state)
+            private static void Postfix(Town town, int[] __state)
             {
                 if (__state == null || !Campaign.Current.GameStarted || town == null)
                 {
                     return;
                 }
-                int owed = __state[0] * (__state[1] - 1);
-                if (owed > 0)
-                {
-                    workshop.ChangeGold(-owed);
-                    town.ChangeGold(owed);
-                }
-
-                RecordInputSpend(workshop, __state[0] * __state[1]);
+                TradeTariff.Levy(town.Settlement, __state[0]);
             }
 
             private static void Finalizer()
@@ -248,27 +217,41 @@ namespace RBMCampaign
         // worth a crash. See the settlement-tooltip note for the same cctor trap in another class.
 
         /// <summary>
-        /// The artisans: the town's own craftsmen, who buy their materials off the shelf, sell their work
-        /// back to it, and are paid for the difference.
+        /// The artisans: the town's own craftsmen, working their own materials on their own account. They
+        /// move no gold at all -- only the market fee on what they take off the shelf.
         /// </summary>
         /// <remarks>
         /// Every town has a hidden <c>artisans</c> shop in slot 0, and it is not a business in the sense
         /// the other twelve types are. It is the townspeople themselves: the butcher jointing the cow, the
         /// smith at his tier-1 blades.
         ///
-        /// That reading once argued for moving no money at all -- both sides of the trade are the same
-        /// pocket, so why shuffle denars between them. But a purse that neither takes nor pays is a trade
-        /// that never reaches the man who did the work: the town's largest body of craftsmen earned
-        /// nothing, and the goods appeared on the shelf as if by weather. So the circuit is closed
-        /// instead. Citizens pay the shop for what it makes, the shop pays the citizens for making it,
-        /// and its capital is only the buffer between the two -- see <see cref="PayCitizenLabourWage"/>.
+        /// This went the long way round. The bench was first made to trade for real -- citizens paying the
+        /// shop for its output, the shop paying a wage back for the labour -- on the reasoning that a purse
+        /// which neither takes nor pays is a trade that never reaches the man who did the work. Measured
+        /// over fourteen logged days, that circuit turned out to be almost entirely self-cancelling: the
+        /// wage credit is the output debit coming home, and the whole apparatus resolved to the market fee
+        /// plus whatever the working float happened to be doing that day. It bought a great deal of
+        /// machinery for a residue.
         ///
-        /// Three things follow, and all three are deliberate. Both trade legs pay the market fee, because
-        /// goods crossing the counter are what the fee is for, whoever is buying; the wage itself is not
-        /// taxed, here or for any other shop. The per-cycle price ceiling is lifted, or the best-paid work
-        /// in town would be the worst paid. And citizen wealth becomes a gate on production: a town whose
-        /// people have no money cannot buy its own craftsmen's output, and the bench idles until the wages
-        /// land.
+        /// It also did real harm, because the float is a claim on the town's money. In the poorest towns
+        /// it was measured holding MORE than the townspeople had between them -- and since citizen wealth
+        /// gated production, the float was holding the very money that would have bought the goods it was
+        /// waiting to sell. Those towns locked, and they were exactly the ones with the worst output.
+        ///
+        /// So the circuit is gone. A man working his own stock does not buy from himself, pay himself, or
+        /// keep a float against his own wages, and the ledger should not pretend otherwise. Materials come
+        /// off the shelf and finished goods go back onto it; what the day added is a better shelf, not a
+        /// bigger pile of denars. The town's gold rises when an OUTSIDER buys the work -- a caravan, a
+        /// passing lord, the player -- which is the only point at which value actually leaves the town, and
+        /// which the trade routing already handles.
+        ///
+        /// One thing still moves, and it is the exception that proves the rule: the market fee on the
+        /// materials drawn. The stall a man takes his iron from is the town's, not his, and the town takes
+        /// its penny for the counter whoever is standing at it -- see <see cref="CitizenLabourTariff"/>.
+        ///
+        /// The gate on production is deliberately not replaced. It was never the binding constraint: the
+        /// SHOPBLOCK lines put the refusals overwhelmingly on missing inputs and on vanilla's margin floor,
+        /// with shop-broke a rarity.
         /// </remarks>
         private static bool IsCitizenLabour(Workshop workshop)
         {
@@ -279,21 +262,26 @@ namespace RBMCampaign
         }
 
         // effectCapital is vanilla's own switch for "this recipe settles in gold", and it is a plain
-        // parameter on every method that reads it, so setting it by ref is exact. Vanilla clears it for
-        // any recipe whose goods are not all trade goods -- which is most of the artisans' bench, every
-        // blade and every mail shirt -- and that work should be paid for like the rest of it.
+        // parameter on every method that reads it, so clearing it by ref is exact -- and it is the whole
+        // of the change. Vanilla's own methods still move the ITEMS either way: ConsumeInputFromTownMarket
+        // takes them off the roster and ProduceAnOutputToTown adds them, and only the ChangeGold pair is
+        // behind the flag. So the bench goes on working and only the denars stop.
+        //
+        // Cleared rather than merely left alone, because vanilla SETS it for any recipe whose goods are
+        // all trade goods -- grain to beer, grape to wine -- and those are the artisans' commonest work.
+        // Leaving it would settle half the bench in gold and half of it not.
 
         /// <summary>
-        /// Holds the artisans to the same solvency test as any other shop, now that they trade for real.
+        /// Excuses the artisans the solvency test, there being nothing for them to be short of.
         /// </summary>
         [HarmonyPatch(typeof(WorkshopsCampaignBehavior), "CanNotableWorkshopProduceThisCycle")]
-        private static class CitizenLabourSettlesInGold
+        private static class CitizenLabourSettlesInKind
         {
             private static void Prefix(Workshop workshop, ref bool effectCapital)
             {
                 if (IsCitizenLabour(workshop))
                 {
-                    effectCapital = true;
+                    effectCapital = false;
                 }
             }
         }
@@ -354,38 +342,6 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// How many days of materials the artisans keep in hand before paying the rest out.
-        /// </summary>
-        /// <remarks>
-        /// The float is what lets the bench open tomorrow: a cycle is refused outright when the shop's
-        /// capital is short of one cycle's materials, so a shop that paid itself to nothing would stop
-        /// the whole town's craft for a day. Three days is enough to ride out a day of dear iron without
-        /// being so much that a town's wages sit in a till instead of in its pockets.
-        /// </remarks>
-        private const int DaysOfMaterialsHeld = 3;
-
-        /// <summary>
-        /// The largest share of a town's money the artisans are allowed to hold as their float, as a
-        /// divisor: 10 means a tenth.
-        /// </summary>
-        /// <remarks>
-        /// <see cref="DaysOfMaterialsHeld"/> sizes the float against the bench, which is the right
-        /// measure for a bench and the wrong one for a town. It is an absolute number of denars, and a
-        /// poor town's artisans buy materials in the same market at the same prices as a rich one's --
-        /// so three days of them is a rounding error in Lageta and most of the money in circulation in
-        /// Balgard, where the float was measured holding MORE than the townspeople had between them.
-        ///
-        /// That is a trap and not merely an imbalance, because citizen wealth gates production: the
-        /// people have to be able to buy the output before the bench may run. A float that large is
-        /// therefore holding the very money that would have bought the goods it is waiting to sell, and
-        /// the town locks -- which is exactly where the lowest wage-per-prosperity readings were found.
-        ///
-        /// A tenth leaves the rule untouched everywhere it was already working. It binds on the middle
-        /// band and hands the poorest towns their circulating money back.
-        /// </remarks>
-        private const int MaxFloatShareOfCitizenWealth = 10;
-
-        /// <summary>
         /// What a named workshop pays its hands for one production cycle.
         /// </summary>
         /// <remarks>
@@ -394,9 +350,11 @@ namespace RBMCampaign
         /// that was supposed to represent workshop labour was blind to whether any labour happened.
         ///
         /// This is per CYCLE, so it scales with the work actually done -- one batch a day costs a
-        /// hundred and fifty, ten batches fifteen hundred. And it is roughly twice what the artisans'
-        /// bench yields for a batch, which is the point: a brewer, a vintner or a silversmith is a
-        /// tradesman at a craft he was apprenticed to, and the general bench is not.
+        /// hundred and fifty, ten batches fifteen hundred.
+        ///
+        /// A named shop pays a wage and the artisans do not, and the asymmetry is the whole distinction
+        /// between them: a brewery has an owner, and the hands who work it are not him. The artisans have
+        /// no owner to be separate from -- see <see cref="IsCitizenLabour"/>.
         ///
         /// Left alongside vanilla's flat expense rather than replacing it, because the two now mean
         /// different things -- the hundred is the shop's standing overhead, this is its payroll.
@@ -407,11 +365,9 @@ namespace RBMCampaign
         // by whichever payroll pays that shop, so an entry never outlives the day that made it.
         private static readonly Dictionary<Workshop, int> _cyclesToday = new Dictionary<Workshop, int>();
 
-        /// <summary>A settlement's day of wages, split by the two rules that pay them.</summary>
+        /// <summary>A settlement's day of workshop payroll.</summary>
         private struct WageDay
         {
-            public int CraftCycles;
-            public int CraftPaid;
             public int ShopCycles;
             public int ShopPaid;
         }
@@ -437,7 +393,7 @@ namespace RBMCampaign
             return cycles;
         }
 
-        private static void RecordWage(Settlement settlement, int cycles, int paid, bool isCraft)
+        private static void RecordWage(Settlement settlement, int cycles, int paid)
         {
             if (!EconomyLog.IsEnabled || settlement == null)
             {
@@ -445,16 +401,8 @@ namespace RBMCampaign
             }
             WageDay day;
             _wageDay.TryGetValue(settlement, out day);
-            if (isCraft)
-            {
-                day.CraftCycles += cycles;
-                day.CraftPaid += paid;
-            }
-            else
-            {
-                day.ShopCycles += cycles;
-                day.ShopPaid += paid;
-            }
+            day.ShopCycles += cycles;
+            day.ShopPaid += paid;
             _wageDay[settlement] = day;
         }
 
@@ -519,128 +467,33 @@ namespace RBMCampaign
             _context = null;
 
             SettlementWealth.CreditCitizens(settlement, wage, SettlementWealth.Source.WorkshopWages);
-            RecordWage(settlement, cycles, wage, false);
-        }
-
-        // What each town's artisans spent on materials today, so the float can be sized against the work
-        // actually being done rather than a figure picked in advance. Read and cleared by the daily wage.
-        private static readonly Dictionary<Settlement, int> _inputSpendToday = new Dictionary<Settlement, int>();
-
-        private static void RecordInputSpend(Workshop workshop, int spend)
-        {
-            if (spend <= 0 || workshop == null || workshop.Settlement == null)
-            {
-                return;
-            }
-            int running;
-            _inputSpendToday.TryGetValue(workshop.Settlement, out running);
-            _inputSpendToday[workshop.Settlement] = running + spend;
+            RecordWage(settlement, cycles, wage);
         }
 
         /// <summary>
-        /// Pays the day's takings out to the townspeople, keeping back a working float.
+        /// The payroll, at the point vanilla has finished a shop's day.
         /// </summary>
         /// <remarks>
-        /// The wage is not a rate but a remainder, and that is the point: production is the only thing
-        /// that moves this purse, so everything in it above the float IS the value the day's work added.
-        /// Paying that out needs no wage rate to be invented and no share to be guessed at, and it scales
-        /// with the bench itself -- a big town runs more cycles, earns more, and pays more.
+        /// <c>DailyTickTown</c> runs a shop's production and then calls this, so the cycles are counted by
+        /// the time the wage is worked out.
         ///
-        /// A bad day, where materials cost more than the work fetched, simply pays nothing and eats into
-        /// the float rather than charging anyone for the loss.
-        ///
-        /// Runs from <c>HandleDailyExpense</c>, which vanilla calls immediately after a shop's production
-        /// for the day and then skips for hidden types -- so the ordering is already right and the hook is
-        /// otherwise unused for the artisans.
-        /// </remarks>
-        private static void PayCitizenLabourWage(Workshop shop)
-        {
-            if (!IsCitizenLabour(shop))
-            {
-                return;
-            }
-            Settlement settlement = shop.Settlement;
-            if (settlement == null || !SettlementWealth.HasCitizenPurse(settlement))
-            {
-                return;
-            }
-
-            int spentOnMaterials;
-            _inputSpendToday.TryGetValue(settlement, out spentOnMaterials);
-            _inputSpendToday.Remove(settlement);
-
-            int held = spentOnMaterials * DaysOfMaterialsHeld;
-            int opening = Campaign.Current.Models.WorkshopModel.InitialCapital;
-            if (held < opening)
-            {
-                held = opening;
-            }
-
-            // Then held against the town rather than the bench -- see MaxFloatShareOfCitizenWealth.
-            //
-            // Skipped on a day the bench bought nothing, for two reasons. There is no day's-worth to
-            // fall back to, so the cap would have no floor and could drain an idle shop to nothing; and
-            // an idle day repriced no materials, so there is nothing about it to reprice the float for.
-            //
-            // The floor is one day of materials, not none, because the cap must not be able to close
-            // the bench it is trying to feed: a shop drained past tomorrow's shopping cannot buy inputs,
-            // cannot produce, and so never earns the takings that would have refilled it. Between the
-            // two, the rule reads: three days of materials, but never more than a tenth of the town's
-            // money and never less than one day's.
-            //
-            // Read after the day's trades and before the wage, so this is citizen wealth at its trough
-            // -- the townspeople have already paid for the output and have not yet been paid for making
-            // it. The conservative point in the day to measure a claim on their money.
-            if (spentOnMaterials > 0)
-            {
-                int cap = SettlementWealth.GetCitizenWealth(settlement) / MaxFloatShareOfCitizenWealth;
-                if (cap < spentOnMaterials)
-                {
-                    cap = spentOnMaterials;
-                }
-                if (held > cap)
-                {
-                    held = cap;
-                }
-            }
-
-            // Taken whether or not there is anything to pay, so a day the bench worked for nothing still
-            // clears its own tally instead of carrying the count into tomorrow.
-            int cycles = TakeCycles(shop);
-
-            int wage = shop.Capital - held;
-            if (wage <= 0)
-            {
-                return;
-            }
-
-            _context = Craft;
-            shop.ChangeGold(-wage);
-            _context = null;
-
-            // Untaxed, for the same reason the other shops' wages are: the fee belongs on the two trades
-            // that bracket this one, which the artisans now pay like anyone else.
-            SettlementWealth.CreditCitizens(settlement, wage, SettlementWealth.Source.WorkshopWages);
-            RecordWage(settlement, cycles, wage, true);
-        }
-
-        /// <summary>
-        /// Both payrolls, at the point vanilla has finished a shop's day.
-        /// </summary>
-        /// <remarks>
-        /// <c>DailyTickTown</c> runs a shop's production and then calls this, so the cycles are counted
-        /// by the time the wage is worked out. The two branches are the two kinds of shop: the artisans
-        /// are self-employed and take the whole of what the day added, a named workshop pays a wage per
-        /// batch and its owner keeps the rest.
+        /// The artisans reach this hook too, and are handled by taking their tally and paying nothing.
+        /// That is not a no-op: <c>TakeCycles</c> is what clears the day's count and hands it to the log,
+        /// and a bench whose count is never taken carries it into tomorrow and reports the whole campaign
+        /// as one enormous day.
         /// </remarks>
         [HarmonyPatch(typeof(WorkshopsCampaignBehavior), "HandleDailyExpense")]
-        private static class CitizenLabourWagePatch
+        private static class WorkshopPayrollPatch
         {
             private static void Postfix(Workshop shop)
             {
-                if (shop != null && shop.WorkshopType != null && shop.WorkshopType.IsHidden)
+                if (shop == null || shop.WorkshopType == null)
                 {
-                    PayCitizenLabourWage(shop);
+                    return;
+                }
+                if (shop.WorkshopType.IsHidden)
+                {
+                    TakeCycles(shop);
                 }
                 else
                 {
@@ -755,7 +608,7 @@ namespace RBMCampaign
                         {
                             shopOut -= pair.Value;
                         }
-                        if (pair.Key == Payroll || pair.Key == Craft)
+                        if (pair.Key == Payroll)
                         {
                             wage -= pair.Value;
                         }
@@ -830,17 +683,14 @@ namespace RBMCampaign
             }
             _wageDay.Remove(settlement);
 
-            if (!EconomyLog.IsEnabled || (day.CraftCycles == 0 && day.ShopCycles == 0))
+            if (!EconomyLog.IsEnabled || day.ShopCycles == 0)
             {
                 return;
             }
 
             EconomyLog.Log("SHOPWAGE", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
-                "artisans " + day.CraftPaid + "d over " + day.CraftCycles + " batches"
-                + " (" + Per(day.CraftPaid, day.CraftCycles) + "/batch)"
-                + "  ·  shops " + day.ShopPaid + "d over " + day.ShopCycles + " batches"
-                + " (" + Per(day.ShopPaid, day.ShopCycles) + "/batch)"
-                + "  ·  total " + (day.CraftPaid + day.ShopPaid) + "d to citizens");
+                "shops " + day.ShopPaid + "d over " + day.ShopCycles + " batches"
+                + " (" + Per(day.ShopPaid, day.ShopCycles) + "/batch) to citizens");
         }
 
         private static string Per(int paid, int cycles)
