@@ -89,7 +89,7 @@ write to a settlement's gold is routed rather than intercepted case by case. In 
 | **Construction labour** — the player boosting a build project pays wages | what the owner actually paid | **Conserved** — owner → treasury → market |
 | **Dearth advance** — the fief buys food its market cannot afford (§4.3) | `units × price`, food only | **Conserved** — treasury → market |
 | **Garrison rations** — the fief provisions its soldiers (§6.3) | `units × price` | **Conserved** — treasury, then owner's gold, → market |
-| **Workshop wages** | measured capital + owner gold spent | **Conserved** — closes a vanilla destroy |
+| **Workshop wages** (§5.4) — named shops only | overhead: measured capital + owner gold spent; payroll: 150/cycle | **Conserved** — closes a vanilla destroy |
 | **Soldier spending** — troop goods, carousing, surgery (§10) | see §10 | ⚠️ **Conjured.** Paid from `SpoilsPool`, a parallel currency minted from wages without deducting the payer's gold. The dominant faucet in the economy |
 
 Explicitly *no longer* a source: the townsfolk's own purchases. A townsman paying a merchant is
@@ -153,8 +153,9 @@ settlement kind. Only what the treasury actually handed over is banked as spoils
 
 - **`TradeTaxAccumulated` → owner clan.** A write-only ledger RBM only adds to and, for the village
   share, subtracts from.
-- **Workshops.** `Workshop.Capital` is a third purse. RBM redirects the expense leg into citizen
-  wealth and otherwise only records it.
+- **Workshops.** `Workshop.Capital` is a third purse, and a **named shop's** only. RBM redirects the
+  expense leg into citizen wealth and otherwise only records it. The artisans hold no capital worth
+  the name and move no gold at all — see §5.4.
 - **Clan and hero gold.** Party wages, tax income, tournament prizes — all outside.
 - **`SpoilsPool`.** A parallel currency minted from wages and spent into citizen wealth. The largest
   unconserved edge remaining (§10, §13).
@@ -447,6 +448,71 @@ Deliberately disjoint, covering the two different buyers:
   view, and on a confirmed trade the delta is applied to the real roster. Cancel touches nothing.
   Integer truncation means a stack of one shows whole. The campaign side — prices, rations, caravans —
   always reads the full roster.
+
+### 5.4 The workshops turn the shelf over
+
+Every town holds thirteen workshops: up to twelve **named** businesses — brewery, wine press, weavery
+— and one hidden `artisans` shop in slot 0. They are the step between §3's villages and §6's
+households: grain becomes beer, clay becomes pottery, iron becomes mail, and nearly every good the
+`DEMAND` line reports as unmet went unmet because a bench did not run.
+
+The two kinds are economically different things, and RBM treats them differently.
+
+**Named shops have an owner.** Their capital is his, the hands who work them are not him, and a wage
+between the two is a real transfer.
+
+| Leg | Amount | Where it goes |
+|---|---|---|
+| **Overhead** — vanilla's `DailyExpense` | flat **100**/day, run or idle | citizen wealth, as `WorkshopWages`. Vanilla destroyed it |
+| **Payroll** — RBM's addition | **150** per production cycle, clamped to capital | citizen wealth, as `WorkshopWages` |
+
+Overhead is measured as the difference across vanilla's own call rather than read off `Expense`,
+because it comes out of the owner's personal gold when capital is short and out of neither when the
+shop goes bankrupt — which branch ran decides how much actually moved. Payroll is per *cycle*, so it
+scales with work actually done: vanilla's one labour number was blind to whether any labour happened.
+The clamp to capital is deliberate — a wage that could bankrupt a shop on a good production day would
+be a strange way to reward it, and vanilla's flat expense already owns the bankruptcy path.
+
+**The artisans have no owner.** They are the townspeople themselves — the butcher jointing the cow,
+the smith at his tier-1 blades — and they move **no gold at all**:
+
+- Materials come off the shelf **unpaid for**. The goods are the townspeople's already.
+- Finished goods go back on the shelf **unpaid for**, and untaxed.
+- **No wage.** A man working his own stock does not pay himself.
+- The one exception: the **market fee** on the materials drawn, `TariffRate` = **1%**, citizen wealth
+  → town treasury. The stall is the town's even when the goods are not. Levied on the whole draw, not
+  the single unit vanilla prices — RBM recipes take up to twenty ingots at a time.
+
+Their *capacity* still scales with the town (`Production/ArtisanOutput.cs`): recipe speed is
+multiplied by prosperity and divided by the number of recipes the town can currently supply, so the
+bench is a labour pool rather than a bonus. Adding a recipe never adds capacity, it re-slices it.
+
+This went the long way round, and the history is worth keeping because the failure was invisible
+without the log. The bench was first made to trade for real — citizens paying it for output, it
+paying a wage back — reasoning that a purse which neither takes nor pays is a trade that never
+reaches the man who did the work. Fourteen logged days said that circuit was almost entirely
+self-cancelling: the wage credit is the output debit coming home, and the whole apparatus resolved to
+the market fee plus whatever the shop's working float was doing that day.
+
+The float was the real damage. Sized against the bench (three days of materials) rather than against
+the town, it is an absolute number of denars in a range of citizen wealth spanning 11,000 to 3.8
+million. Measured: **Balgard's artisans held 123% of everything its townspeople had between them**,
+Hvalvik's 109%, against a median of 7%. And because citizen wealth then *gated* production — the
+people had to afford the output before the bench could run — the float was holding the very money
+that would have bought the goods it was waiting to sell. Those towns locked, and they were exactly
+the ones with the worst measured output (`corr(float share, wage per prosperity point) = −0.46`).
+
+So the circuit is gone. The gate went with it and is deliberately not replaced: `SHOPBLOCK` puts the
+refusals overwhelmingly on missing inputs and on vanilla's margin floor, with shop-broke a rarity.
+
+Implementation is one flag. `effectCapital` — vanilla's own "this recipe settles in gold" switch — is
+forced **false** for the hidden shop at all three sites that read it. Vanilla moves the *items* either
+way; only the `ChangeGold` pair sits behind the flag, so the bench works and only the denars stop. It
+must be forced rather than left alone, because vanilla *sets* it for all-trade-good recipes, which is
+the artisans' commonest work.
+
+⚠️ The measurements above all predate the change. The first log run under gold-free artisans is the
+first real reading on any of it.
 
 ---
 
@@ -842,16 +908,26 @@ short-circuited when it is off — production runs for every village on the map 
 |---|---|
 | `PRODUCE` | what each village made, good by good |
 | `DISPATCH` | every convoy that set out: escort, roster, cargo manifest with values and weight |
+| `ESCORT` | militia lent to a convoy and returned to the village |
 | `DELIVER` | what the town bought off a convoy, and what went unsold |
-| `DEARTH` | the fief advancing for food its market could not afford |
+| `HOMECOME` | the village's cut of its convoy's trade tax |
+| `DEARTH` | the fief advancing for food its market could not afford (§4.3) |
 | `FOOD` | a town's rations: eaten, delivered, unmet, stock against limit |
 | `DEMAND` | what the household basket wanted and could not get, by name |
+| `TAVERN` | the drink budget against what the shelf could supply |
 | `STORE` | goods turned away for want of storage room |
 | `PRICE` | days of supply and the resulting multiplier, per modelled good |
+| `INPUT` | the raw draw behind `PRICE`: units, daily draw, days of cover, markup, supply against demand |
+| `SHOPS` | workshop capital movement, per town and then per shop |
+| `SHOPWAGE` | the named shops' payroll: denars over batches. Artisans do not appear — they pay none (§5.4) |
+| `SHOPBLOCK` | cycles refused, counted **by reason** — `no-input`, `margin`, `shop-broke`. The first question to ask of a town that makes nothing |
+| `SHOPIDLE` | artisan recipes that were due to run and made nothing all day, named with the input that stopped them |
+| `SHOPSCALE` | the artisans' labour pool: prosperity, recipes active of total, speed multiplier, cycles due against declared (§5.4) |
+| `TARIFF` | the market fee taken, against the trade value it was taken on |
+| `WEALTHTAX` | what the owner levied off citizen wealth |
+| `ADMIN` | the fief's daily salary bill, paid or short |
 | `GARRISON` | the garrison wage share the fief paid |
-| `HOMECOME` | the village's cut of its convoy's trade tax |
 | `PURSE` / `MARKET` | daily movement in each of the two purses |
-| `SHOPS` | workshop capital movement |
 | `COUNTER` | who the money over the counter came from — player, lord, caravan, villager, garrison, bandit |
 | `LIQUID` | how far real trade has carried the market from vanilla's target (§8.1) |
 | `DAILY` / `PROSPER` | end-of-day state of every settlement, and the prosperity terms |
@@ -859,6 +935,11 @@ short-circuited when it is off — production runs for every village on the map 
 `STORE` and `DEMAND` read against each other: a good refused daily while another goes unmet means the
 villages are producing the wrong thing, and no town-side adjustment will fix it. `PRICE` is the
 instrument for detecting drift between `AbundantDays` and `StorageDays`, which must stay equal.
+
+The four `SHOP*` lines answer four different questions and are easy to confuse. `SHOPSCALE` is how
+much the bench *could* have run, `SHOPBLOCK` is how much was refused and why, `SHOPIDLE` is which
+recipes never got a turn at all, and `SHOPS` is the money. A town producing nothing reads them in
+that order.
 
 **Config** — three toggles, all default on: `realisticTradeGoodPrices`, `showInventoryItemWeight`,
 `economyLoggingEnabled`. The latter two are additionally gated on `rbmCampaignEnabled`.

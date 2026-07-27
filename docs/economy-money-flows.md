@@ -46,7 +46,7 @@ Seven places hold money. Everything in §4–§6 is a movement between two of th
 | **Citizen wealth** | `SettlementComponent.Gold` of a **town or castle** | the townsfolk and merchants collectively | vanilla |
 | **Settlement treasury** | RBM's own store, keyed by `StringId` | the settlement as a body | `RBM_settlementWealth` |
 | **Village purse** | `SettlementComponent.Gold` of a **village** | the village as a body | vanilla |
-| **Workshop capital** | `Workshop.Capital` | the shop's owner | vanilla |
+| **Workshop capital** | `Workshop.Capital` | the shop's owner — **named shops only** | vanilla |
 | **Spoils purse** | RBM's own store, per troop **stack** | the soldiers in that stack | `RBM_troopSpoilsGold` |
 
 ### 1.1 The two settlement purses
@@ -209,7 +209,7 @@ ledger records it under, which is what you grep the economy log for.
 | Troop upgrades | spoils + the lord's gold | `Upgrade` | `UpgradeSupply` |
 | Field maintenance | spoils + the lord's gold | `Maintenance` | `SpoilsPool.Maintenance` |
 | Recruitment | the recruiter's gold | `Recruit` | `RecruitSupply` |
-| Workshop wages | the shop's capital | `WorkshopWages` | `WorkshopPurse` |
+| Workshop wages — named shops only | the shop's capital | `WorkshopWages` | `WorkshopPurse` |
 | Construction labour | the town treasury | `Construction` | `ConstructionLabour` |
 | Administrative pay | the town treasury | `Admin` | `AdministrativeUpkeep` |
 | Dearth advance | the town treasury | `Dearth` | `VillagerDelivery` |
@@ -220,6 +220,7 @@ ledger records it under, which is what you grep the economy log for.
 | Flow | From | Source |
 |---|---|---|
 | Market fee on a trade | citizen wealth | `Tariff` |
+| Market fee on the artisans' materials — their only money movement | citizen wealth | `Tariff` |
 | Stall commission | citizen wealth | `Commission` |
 | Construction repayment | citizen wealth | `Construction` |
 | Wealth tax — the fief's own levy | citizen wealth | `WealthTax` |
