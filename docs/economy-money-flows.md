@@ -222,6 +222,7 @@ ledger records it under, which is what you grep the economy log for.
 | Market fee on a trade | citizen wealth | `Tariff` |
 | Stall commission | citizen wealth | `Commission` |
 | Construction repayment | citizen wealth | `Construction` |
+| Wealth tax — the fief's own levy | citizen wealth | `WealthTax` |
 | Worldgen seeding | nowhere — deliberate, once | `Seed` |
 
 ### 4.3 Into a village purse
@@ -243,7 +244,7 @@ ledger records it under, which is what you grep the economy log for.
 | Counter trade — the town buys from a party | the party | `Trade` |
 | Market fee / tariff | the treasury | `Tariff` |
 | Stall commission | the treasury, then the owner via `TradeTaxAccumulated` | `Commission` |
-| Wealth tax | the **owner hero's gold** | `WealthTax` |
+| Wealth tax | the **owner hero's gold** at 0.00027/day, and the treasury at 0.00014/day | `WealthTax` |
 | Ransoms | the ransomed hero | `Ransom` |
 
 ### 5.2 Out of the treasury
@@ -266,7 +267,7 @@ ledger records it under, which is what you grep the economy log for.
 | Flow | From |
 |---|---|
 | Fief tax income | the settlement's `TradeTaxAccumulated` — a real drain on it |
-| Wealth tax | citizen wealth of a fief he owns |
+| Wealth tax | citizen wealth of a fief he owns — his own 0.00027/day levy only; the fief's 0.00014 is separate and stays home |
 | Caravan payouts | the caravan's own `PartyTradeGold`, debited by exactly what he receives |
 | The leader's cut | his men's spoils purses |
 | Selling goods | the buyer's purse |

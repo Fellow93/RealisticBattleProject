@@ -4,32 +4,45 @@ using TaleWorlds.CampaignSystem.Settlements;
 namespace RBMCampaign
 {
     /// <summary>
-    /// A daily levy on a town's accumulated citizen wealth, paid to the lord who holds it.
+    /// A daily levy on a town's accumulated citizen wealth, assessed twice: once for the lord who holds
+    /// the fief, and again, at its own lower rate, for the fief itself.
     ///
     /// The fief's other income to its owner is a tax on TRADE -- it moves when goods move. This is a tax
     /// on STOCK: a small daily bite of the money standing in the town's market, whether or not anyone
     /// traded that day. It is what makes a rich town worth holding for its own sake and not only for the
     /// caravans passing through it, and -- unlike every other flow in the ledger, which keeps money
-    /// circulating inside the settlement -- it is a real drain OUT of the town to the lord, the one
-    /// place citizen wealth leaves the market for good.
+    /// circulating inside the settlement -- the lord's share of it is a real drain OUT of the town, the
+    /// one place citizen wealth leaves the market for good. The town's own share stays put, moving from
+    /// the market's pocket into the fief's strongbox to pay the garrison, the militia and the clerks.
     /// </summary>
     public static class WealthTax
     {
         /// <summary>
-        /// Fraction of citizen wealth taken each day. At roughly a tenth of a tenth of a percent it
-        /// compounds to about a tenth of the town's standing wealth over a year -- a wealth tax, not a
-        /// confiscation, and gentle enough day to day that a town rebuilds its float between levies.
+        /// Fraction of citizen wealth taken each day for the owner. At roughly a tenth of a tenth of a
+        /// percent it compounds to about a tenth of the town's standing wealth over a year -- a wealth
+        /// tax, not a confiscation, and gentle enough day to day that a town rebuilds its float between
+        /// levies.
         /// </summary>
         public const float DailyRate = 0.00027f;
 
         /// <summary>
-        /// Takes the day's levy from a town's citizen wealth and hands it to the owner.
+        /// Fraction of citizen wealth the fief takes for its own strongbox each day, off the same balance
+        /// the owner is assessed on. A little over half the lord's rate: the town keeps a smaller bite
+        /// than the man it answers to.
+        /// </summary>
+        public const float SettlementDailyRate = 0.00014f;
+
+        /// <summary>
+        /// Takes the day's two levies from a town's citizen wealth -- the owner's and the fief's own --
+        /// and hands each to its collector.
         /// </summary>
         /// <remarks>
         /// Towns only, matching the rest of the market model; a castle holds citizen wealth but sits
-        /// outside this the same way it sits outside the food and administration systems. The lord is
-        /// paid whatever the market could actually cover -- a town with an empty market owes nothing --
-        /// so this can never push citizen wealth below zero.
+        /// outside this the same way it sits outside the food and administration systems. Both levies are
+        /// assessed against the same morning balance, but each is paid only to the extent the market can
+        /// actually cover it -- a town with an empty market owes nothing -- so this can never push citizen
+        /// wealth below zero. The lord is served first, as he is in every other reckoning; on a market too
+        /// thin to pay both, the strongbox is what goes short.
         /// </remarks>
         public static void OnDailyTick(Settlement settlement)
         {
@@ -39,29 +52,39 @@ namespace RBMCampaign
             }
 
             int wealth = SettlementWealth.GetCitizenWealth(settlement);
-            int levy = (int)(wealth * DailyRate);
-            if (levy <= 0)
+            int ownerLevy = (int)(wealth * DailyRate);
+            int settlementLevy = (int)(wealth * SettlementDailyRate);
+            if (ownerLevy <= 0 && settlementLevy <= 0)
             {
                 return;
             }
 
-            int taken = SettlementWealth.DebitCitizens(settlement, levy, SettlementWealth.Source.WealthTax);
-            if (taken <= 0)
+            int takenForOwner = (ownerLevy > 0)
+                ? SettlementWealth.DebitCitizens(settlement, ownerLevy, SettlementWealth.Source.WealthTax)
+                : 0;
+            if (takenForOwner > 0)
             {
-                return;
+                Hero owner = (settlement.OwnerClan != null) ? settlement.OwnerClan.Leader : null;
+                if (owner != null)
+                {
+                    owner.ChangeHeroGold(takenForOwner);
+                }
             }
 
-            Hero owner = (settlement.OwnerClan != null) ? settlement.OwnerClan.Leader : null;
-            if (owner != null)
+            int takenForSettlement = (settlementLevy > 0)
+                ? SettlementWealth.DebitCitizens(settlement, settlementLevy, SettlementWealth.Source.WealthTax)
+                : 0;
+            if (takenForSettlement > 0)
             {
-                owner.ChangeHeroGold(taken);
+                SettlementWealth.Credit(settlement, takenForSettlement, SettlementWealth.Source.WealthTax);
             }
 
-            if (EconomyLog.IsEnabled)
+            if (EconomyLog.IsEnabled && (takenForOwner > 0 || takenForSettlement > 0))
             {
                 EconomyLog.Log("WEALTHTAX", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
-                    "levied " + taken + "d to owner"
-                    + "  ·  citizen wealth now " + SettlementWealth.GetCitizenWealth(settlement) + "d");
+                    "levied " + takenForOwner + "d to owner, " + takenForSettlement + "d to treasury"
+                    + "  ·  citizen wealth now " + SettlementWealth.GetCitizenWealth(settlement) + "d"
+                    + "  ·  settlement wealth now " + SettlementWealth.GetSettlementWealth(settlement) + "d");
             }
         }
     }

@@ -104,6 +104,7 @@ Only the market fee moves.
 | **Villager delivery** — paying a convoy for its cargo (§4.2) | `units × price` | **Conserved** → the convoy's trade gold |
 | **Trade tariff** — a market fee on every transaction | `TariffRate` = **1%** of trade value, towns only | **Conserved** → treasury |
 | **Wealth tax** — the owner's cut of the market | `DailyRate` = **0.00027** of citizen wealth/day, towns only | **Conserved**, but *leaves the settlement* — the one permanent drain to the owner clan |
+| **Wealth tax** — the fief's own cut, levied the same day | `SettlementDailyRate` = **0.00014** of citizen wealth/day, towns only | **Conserved** → treasury |
 | **Commission** — vanilla's trade tax, rerouted so it is paid rather than conjured | per `SettlementTaxModel` | **Conserved** → owner via the tax ledger |
 | **Ransom** — the market funds prisoner ransoms | prisoner price, clamped | **Conserved** |
 
@@ -113,6 +114,7 @@ Only the market fee moves.
 |---|---|---|
 | **Seed** | `Prosperity × 210`; villages `Hearth × 2` | *Conjured*, worldgen only |
 | **Trade tariff** | 1% of every town transaction | **Conserved** from citizen wealth |
+| **Wealth tax** | `SettlementDailyRate` = 0.00014 of citizen wealth a day | **Conserved** from citizen wealth |
 | **Village homecoming** (§4.4) | `VillageShare` = **20%** of the trade tax the convoy's sale generated | **Conserved** — taken off the owner's accrued tax |
 | **Village stall trade** | whatever a party buys at the village | **Conserved** |
 | **Construction refunds** | the owner's own money | **Conserved** |
