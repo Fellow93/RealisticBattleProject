@@ -41,14 +41,8 @@ namespace RBMCampaign
     /// </remarks>
     public static class ArtisanOutput
     {
-        // The hidden every-town workshop. Named shops keep their declared rates.
-        private const string ArtisansTypeId = "artisans";
+        private const float OwnedWorkshopProsperityShare = 0.10f;
 
-        // A day's reading of one town's bench: the recipes it could supply, how many recipes the shop
-        // has in total, and the declared speeds of the supplied ones added up. The last two are for
-        // the log alone -- the multiplier needs only the count -- but they come free from the same
-        // walk, and taking them later would mean walking every recipe against the market a second
-        // time on a day the answer is already known.
         private struct Bench
         {
             public int Day;
@@ -57,42 +51,54 @@ namespace RBMCampaign
             public float ActiveSpeed;
         }
 
-        // Settlement id -> that town's reading, taken once a campaign day.
+        // "settlement#workshopType" -> that type's reading, taken once a campaign day.
         private static readonly Dictionary<string, Bench> _activeCache = new Dictionary<string, Bench>();
 
         private static readonly TextObject ScaleText = new TextObject("{=RBM_ARTISAN_SCALE}Town crafts");
+        private static readonly TextObject OwnedScaleText = new TextObject("{=RBM_WORKSHOP_SCALE}Workshop share");
 
         internal static void ResetForNewSession()
         {
             _activeCache.Clear();
         }
 
-        /// <summary>
-        /// The multiplier on every artisan recipe in this town: prosperity split across the recipes
-        /// the town can currently feed. 1 (no change) for a town whose artisans can make nothing,
-        /// where there is nothing to scale anyway.
-        /// </summary>
         public static float Scale(Workshop workshop)
         {
-            if (workshop == null || workshop.Settlement == null || workshop.Settlement.Town == null)
+            if (workshop == null || workshop.Settlement == null || workshop.Settlement.Town == null
+                || workshop.WorkshopType == null)
             {
                 return 1f;
             }
 
             Town town = workshop.Settlement.Town;
-            Bench bench = BenchFor(town, workshop.WorkshopType);
-            if (bench.Active <= 0)
-            {
-                return 1f;
-            }
-
             float prosperity = town.Prosperity;
-            if (prosperity <= 0f)
+            if (prosperity <= 0f) return 1f;
+
+            Bench bench = BenchFor(town, workshop.WorkshopType);
+            if (bench.Active <= 0) return 1f;
+
+            if (workshop.WorkshopType.IsHidden)
             {
-                return 1f;
+                int ownedCount = CountOwnedWorkshops(town);
+                float share = 1f - OwnedWorkshopProsperityShare * ownedCount;
+                if (share <= 0f) return 1f;
+                return (prosperity * share) / bench.Active;
             }
 
-            return prosperity / bench.Active;
+            return (prosperity * OwnedWorkshopProsperityShare) / bench.Active;
+        }
+
+        private static int CountOwnedWorkshops(Town town)
+        {
+            Workshop[] shops = town.Workshops;
+            if (shops == null) return 0;
+            int count = 0;
+            for (int i = 0; i < shops.Length; i++)
+            {
+                if (shops[i] != null && shops[i].WorkshopType != null && !shops[i].WorkshopType.IsHidden)
+                    count++;
+            }
+            return count;
         }
 
         private static Bench BenchFor(Town town, WorkshopType type)
@@ -103,7 +109,7 @@ namespace RBMCampaign
                 return bench;
             }
 
-            string key = town.Settlement.StringId;
+            string key = town.Settlement.StringId + "#" + type.StringId;
             int today = (int)CampaignTime.Now.ToDays;
 
             Bench cached;
@@ -176,34 +182,42 @@ namespace RBMCampaign
                 return;
             }
 
-            Workshop artisans = null;
             Workshop[] shops = town.Workshops;
-            if (shops != null)
+            if (shops == null) return;
+
+            string name = town.Settlement.Name != null ? town.Settlement.Name.ToString() : town.Settlement.StringId;
+            int ownedCount = CountOwnedWorkshops(town);
+
+            foreach (Workshop shop in shops)
             {
-                foreach (Workshop shop in shops)
+                if (shop == null || shop.WorkshopType == null) continue;
+
+                Bench bench = BenchFor(town, shop.WorkshopType);
+                float scale = Scale(shop);
+
+                if (shop.WorkshopType.IsHidden)
                 {
-                    if (shop != null && shop.WorkshopType != null && shop.WorkshopType.StringId == ArtisansTypeId)
-                    {
-                        artisans = shop;
-                        break;
-                    }
+                    float artisanPct = (1f - OwnedWorkshopProsperityShare * ownedCount) * 100f;
+                    EconomyLog.Log("SHOPSCALE", name,
+                        "artisans  prosperity " + EconomyLog.Fmt(town.Prosperity)
+                        + " × " + EconomyLog.Fmt(artisanPct) + "%"
+                        + "  ·  active " + bench.Active + " of " + bench.Total + " recipes"
+                        + "  ·  speed x" + EconomyLog.Fmt(scale)
+                        + "  ·  " + EconomyLog.Fmt(bench.ActiveSpeed * scale) + " cycles/day due"
+                        + " (declared " + EconomyLog.Fmt(bench.ActiveSpeed) + ")");
+                }
+                else
+                {
+                    string shopName = shop.WorkshopType.Name != null
+                        ? shop.WorkshopType.Name.ToString()
+                        : shop.WorkshopType.StringId;
+                    EconomyLog.Log("SHOPSCALE", name,
+                        shopName + "  prosperity " + EconomyLog.Fmt(town.Prosperity)
+                        + " × " + EconomyLog.Fmt(OwnedWorkshopProsperityShare * 100f) + "%"
+                        + "  ·  active " + bench.Active + " of " + bench.Total + " recipes"
+                        + "  ·  speed x" + EconomyLog.Fmt(scale));
                 }
             }
-            if (artisans == null)
-            {
-                return;
-            }
-
-            Bench bench = BenchFor(town, artisans.WorkshopType);
-            float scale = Scale(artisans);
-            string name = town.Settlement.Name != null ? town.Settlement.Name.ToString() : town.Settlement.StringId;
-
-            EconomyLog.Log("SHOPSCALE", name,
-                "artisans  prosperity " + EconomyLog.Fmt(town.Prosperity)
-                + "  ·  active " + bench.Active + " of " + bench.Total + " recipes"
-                + "  ·  speed x" + EconomyLog.Fmt(scale)
-                + "  ·  " + EconomyLog.Fmt(bench.ActiveSpeed * scale) + " cycles/day due"
-                + " (declared " + EconomyLog.Fmt(bench.ActiveSpeed) + ")");
         }
 
         [HarmonyPatch(typeof(DefaultWorkshopModel), "GetEffectiveConversionSpeedOfProduction")]
@@ -213,19 +227,16 @@ namespace RBMCampaign
             {
                 if (!RBMConfig.RBMConfig.rbmCampaignEnabled
                     || workshop == null
-                    || workshop.WorkshopType == null
-                    || workshop.WorkshopType.StringId != ArtisansTypeId)
+                    || workshop.WorkshopType == null)
                 {
                     return;
                 }
 
                 float scale = Scale(workshop);
-                if (scale == 1f)
-                {
-                    return;
-                }
+                if (scale == 1f) return;
 
-                __result.AddFactor(scale - 1f, ScaleText);
+                TextObject text = workshop.WorkshopType.IsHidden ? ScaleText : OwnedScaleText;
+                __result.AddFactor(scale - 1f, text);
             }
         }
     }
