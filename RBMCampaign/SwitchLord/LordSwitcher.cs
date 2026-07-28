@@ -4,8 +4,6 @@ using System.Linq;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
-using TaleWorlds.CampaignSystem.Encounters;
-using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.InputSystem;
@@ -22,6 +20,12 @@ namespace RBMCampaign
         public static void CheckHotkey()
         {
             if (Campaign.Current == null)
+                return;
+
+            if (MobileParty.MainParty == null || MobileParty.MainParty.CurrentSettlement != null)
+                return;
+
+            if (Campaign.Current.CurrentMenuContext != null)
                 return;
 
             bool ctrl = Input.IsKeyDown(InputKey.LeftControl) || Input.IsKeyDown(InputKey.RightControl);
@@ -116,19 +120,6 @@ namespace RBMCampaign
             Hero oldHero = Hero.MainHero;
             Clan oldClan = Clan.PlayerClan;
             Clan newClan = targetHero.Clan;
-
-            if (MobileParty.MainParty != null && MobileParty.MainParty.CurrentSettlement != null)
-            {
-                LeaveSettlementAction.ApplyForParty(MobileParty.MainParty);
-            }
-            if (PlayerEncounter.Current != null)
-            {
-                PlayerEncounter.Finish(true);
-            }
-            if (Campaign.Current.CurrentMenuContext != null)
-            {
-                GameMenu.ExitToLast();
-            }
 
             if (newClan != null && newClan != oldClan && PlayerDefaultFactionProp != null)
             {
