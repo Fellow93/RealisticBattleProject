@@ -333,6 +333,7 @@
     <Compile Include="Spectate\RBMSpectatorMissionLogics.cs" />
     <Compile Include="Spectate\RBMSpectatorViewPatches.cs" />
     <Compile Include="Spectate\RBMSpectateCampaignBehavior.cs" />
+    <Compile Include="SwitchLord\LordSwitcher.cs" />
     <Compile Include="Production\RBMVillageProduction.cs" />
     <Compile Include="Production\CitizenDemand.cs" />
     <Compile Include="Production\RBMTownFoodSupply.cs" />
@@ -386,7 +387,8 @@
   </ItemGroup>
   <!-- Post-Build -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_workshops_artisans.xml" "$(SolutionDir)..\RBM\ModuleData\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_workshops_artisans.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_module_strings.xml" "$(SolutionDir)..\RBM\ModuleData\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

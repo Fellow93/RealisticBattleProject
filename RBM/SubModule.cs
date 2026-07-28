@@ -108,6 +108,10 @@ namespace RBM
             CustomBattlePatches.TickInput();
             if (Mission.Current == null)
             {
+                if (RBMConfig.RBMConfig.rbmCampaignEnabled && Campaign.Current != null)
+                {
+                    LordSwitcher.CheckHotkey();
+                }
                 return;
             }
             try
