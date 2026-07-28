@@ -310,6 +310,9 @@
     <Compile Include="UI\SpoilsPartyTooltip.cs" />
     <Compile Include="UI\ItemWeightWidget.cs" />
     <Compile Include="UI\ItemWeightPrefabPatch.cs" />
+    <Compile Include="UI\SimulationPanel\SimulationBattlePanelVM.cs" />
+    <Compile Include="UI\SimulationPanel\SimulationEventItemVM.cs" />
+    <Compile Include="UI\SimulationPanel\SimulationBattlePanelPatch.cs" />
     <Compile Include="Power\StrategicPowerLog.cs" />
     <Compile Include="Power\StrategicPowerTooltip.cs" />
     <Compile Include="Power\StrategicPowerTooltipVM.cs" />

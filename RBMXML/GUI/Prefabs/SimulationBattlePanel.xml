@@ -1,0 +1,234 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" IsVisible="@IsVisible"
+            DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
+      <Children>
+
+        <!-- ═══ Left-side panel ═══ -->
+        <Widget WidthSizePolicy="Fixed" HeightSizePolicy="StretchToParent" SuggestedWidth="540"
+                HorizontalAlignment="Left" VerticalAlignment="Top"
+                MarginLeft="10" MarginTop="10" MarginBottom="80">
+          <Children>
+
+            <!-- Dark background -->
+            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                    Sprite="BlankWhiteSquare_9" Color="#000000FF" AlphaFactor="0.85" />
+
+            <!-- Scrollable content -->
+            <ScrollablePanel Id="PanelScroll"
+                WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                MarginLeft="14" MarginRight="24" MarginTop="12" MarginBottom="12"
+                ClipRect="PanelClip"
+                InnerPanel="PanelClip\PanelInner"
+                VerticalScrollbar="..\PanelScrollbarBox\PanelScrollbar"
+                MouseScrollAxis="Vertical"
+                AutoHideScrollBars="true">
+              <Children>
+                <Widget Id="PanelClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+                        ClipContents="true">
+                  <Children>
+                    <Widget Id="PanelInner"
+                            WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                            VerticalAlignment="Top">
+                      <Children>
+                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                   LayoutImp.LayoutMethod="VerticalTopToBottom">
+                          <Children>
+
+                            <!-- ── Header ── -->
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                        Brush="ScoreboardDefaultFontBrush" Brush.FontSize="14"
+                                        Brush.TextAlphaFactor="0.40"
+                                        Brush.TextHorizontalAlignment="Center"
+                                        MarginBottom="6"
+                                        Text="RBM Campaign — Detailed Auto-Resolve" />
+
+                            <!-- ── Phase Banner ── -->
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                        Brush="ScoreboardTitleFontBrush" Brush.FontSize="28"
+                                        Text="@PhaseName" />
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                        Brush="ScoreboardDefaultFontBrush" Brush.FontSize="18"
+                                        Brush.TextAlphaFactor="0.55"
+                                        MarginTop="2"
+                                        Text="@RoundText" />
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                        Brush="ScoreboardDefaultFontBrush" Brush.FontSize="16"
+                                        Brush.TextAlphaFactor="0.50"
+                                        MarginTop="2"
+                                        Text="@PhaseDescription" />
+
+                            <!-- ── Divider ── -->
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="1"
+                                    Sprite="BlankWhiteSquare_9" Color="#FFFFFF33"
+                                    MarginTop="10" MarginBottom="8" />
+
+                            <!-- ── Siege Info (conditional) ── -->
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                        Brush="ScoreboardDefaultFontBrush" Brush.FontSize="15"
+                                        Brush.TextAlphaFactor="0.70"
+                                        MarginBottom="6"
+                                        IsVisible="@IsSiege"
+                                        Text="@SiegeInfo" />
+
+                            <!-- ── Attackers ── -->
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                        Brush="ScoreboardTitleFontBrush" Brush.FontSize="18"
+                                        Brush.TextAlphaFactor="0.95"
+                                        Text="@AttackerName" />
+                            <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                       LayoutImp.LayoutMethod="HorizontalLeftToRight" MarginTop="2">
+                              <Children>
+                                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="110"
+                                            Brush="ScoreboardDefaultFontBrush" Brush.FontSize="16"
+                                            Brush.TextAlphaFactor="0.80"
+                                            Text="@AttackerInfantryText" />
+                                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="110"
+                                            Brush="ScoreboardDefaultFontBrush" Brush.FontSize="16"
+                                            Brush.TextAlphaFactor="0.80"
+                                            Text="@AttackerRangedText" />
+                                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="110"
+                                            Brush="ScoreboardDefaultFontBrush" Brush.FontSize="16"
+                                            Brush.TextAlphaFactor="0.80"
+                                            Text="@AttackerCavalryText" />
+                              </Children>
+                            </ListPanel>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                        Brush="ScoreboardDefaultFontBrush" Brush.FontSize="16"
+                                        Brush.TextAlphaFactor="0.90"
+                                        MarginTop="2"
+                                        Text="@AttackerTotalText" />
+
+                            <!-- ── Small gap ── -->
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="6" />
+
+                            <!-- ── Defenders ── -->
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                        Brush="ScoreboardTitleFontBrush" Brush.FontSize="18"
+                                        Brush.TextAlphaFactor="0.95"
+                                        Text="@DefenderName" />
+                            <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                       LayoutImp.LayoutMethod="HorizontalLeftToRight" MarginTop="2">
+                              <Children>
+                                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="110"
+                                            Brush="ScoreboardDefaultFontBrush" Brush.FontSize="16"
+                                            Brush.TextAlphaFactor="0.80"
+                                            Text="@DefenderInfantryText" />
+                                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="110"
+                                            Brush="ScoreboardDefaultFontBrush" Brush.FontSize="16"
+                                            Brush.TextAlphaFactor="0.80"
+                                            Text="@DefenderRangedText" />
+                                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="110"
+                                            Brush="ScoreboardDefaultFontBrush" Brush.FontSize="16"
+                                            Brush.TextAlphaFactor="0.80"
+                                            Text="@DefenderCavalryText" />
+                              </Children>
+                            </ListPanel>
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                        Brush="ScoreboardDefaultFontBrush" Brush.FontSize="16"
+                                        Brush.TextAlphaFactor="0.90"
+                                        MarginTop="2"
+                                        Text="@DefenderTotalText" />
+
+                            <!-- ── Divider ── -->
+                            <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="1"
+                                    Sprite="BlankWhiteSquare_9" Color="#FFFFFF33"
+                                    MarginTop="10" MarginBottom="8" />
+
+                            <!-- ── Battle Chronicle ── -->
+                            <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                        Brush="ScoreboardTitleFontBrush" Brush.FontSize="18"
+                                        Brush.TextAlphaFactor="0.75"
+                                        MarginBottom="4"
+                                        Text="Battle Chronicle" />
+
+                            <!-- Event list -->
+                            <ListPanel DataSource="{Events}"
+                                       WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                       LayoutImp.LayoutMethod="VerticalTopToBottom">
+                              <ItemTemplate>
+                                <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                       MarginTop="3" MarginBottom="3">
+                                  <Children>
+                                    <!-- Normal event (no hero) -->
+                                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                                Brush="ScoreboardDefaultFontBrush" Brush.FontSize="15"
+                                                Brush.TextAlphaFactor="0.85"
+                                                Text="@Message"
+                                                IsHidden="@IsHeroEvent" />
+                                    <!-- Player hero: green name -->
+                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                               LayoutImp.LayoutMethod="HorizontalLeftToRight"
+                                               IsVisible="@IsPlayerHero">
+                                      <Children>
+                                        <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
+                                                    Brush="ScoreboardDefaultFontBrush" Brush.FontSize="15"
+                                                    Brush.FontColor="#8CDBB5FF"
+                                                    Text="@HeroName" />
+                                        <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
+                                                    Brush="ScoreboardDefaultFontBrush" Brush.FontSize="15"
+                                                    Brush.TextAlphaFactor="0.85"
+                                                    Text="@RestMessage" />
+                                      </Children>
+                                    </ListPanel>
+                                    <!-- Other hero: yellow name -->
+                                    <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+                                               LayoutImp.LayoutMethod="HorizontalLeftToRight"
+                                               IsVisible="@IsOtherHero">
+                                      <Children>
+                                        <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
+                                                    Brush="ScoreboardDefaultFontBrush" Brush.FontSize="15"
+                                                    Brush.FontColor="#E8D174FF"
+                                                    Text="@HeroName" />
+                                        <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
+                                                    Brush="ScoreboardDefaultFontBrush" Brush.FontSize="15"
+                                                    Brush.TextAlphaFactor="0.85"
+                                                    Text="@RestMessage" />
+                                      </Children>
+                                    </ListPanel>
+                                  </Children>
+                                </Widget>
+                              </ItemTemplate>
+                            </ListPanel>
+
+                          </Children>
+                        </ListPanel>
+                      </Children>
+                    </Widget>
+                  </Children>
+                </Widget>
+              </Children>
+            </ScrollablePanel>
+
+            <!-- Scrollbar (sibling of ScrollablePanel) -->
+            <Widget Id="PanelScrollbarBox"
+                    HeightSizePolicy="StretchToParent" WidthSizePolicy="CoverChildren"
+                    HorizontalAlignment="Right"
+                    MarginRight="4" MarginTop="12" MarginBottom="12">
+              <Children>
+                <ScrollbarWidget Id="PanelScrollbar"
+                    HeightSizePolicy="StretchToParent" WidthSizePolicy="Fixed"
+                    SuggestedWidth="4"
+                    MinValue="0" MaxValue="100"
+                    AlignmentAxis="Vertical"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Sprite="BlankWhiteSquare_9" AlphaFactor="0.3" Color="#A18661FF"
+                    Handle="PanelScrollHandle" ValueInt="0">
+                  <Children>
+                    <Widget Id="PanelScrollHandle"
+                        WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                        SuggestedWidth="6" MinHeight="20"
+                        HorizontalAlignment="Center" VerticalAlignment="Top"
+                        Sprite="BlankWhiteSquare_9" Color="#A18661FF" />
+                  </Children>
+                </ScrollbarWidget>
+              </Children>
+            </Widget>
+
+          </Children>
+        </Widget>
+
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>
