@@ -68,7 +68,7 @@ namespace RBMCampaign
                 { "meat",        (200,    30f) },
                 { "hides",       (88,     0.8f) },
                 { "planks",      (10,     20f) },
-                { "tools",       (480,    10f) },    // finished ironwork, ~4x the wrought iron in it
+                { "tools",       (48,     1f) },    // finished ironwork, ~4x the wrought iron in it
                 { "felt",        (250,    1f) },
                 { "iron",        (1,      4f) },    // iron ore
                 { "hardwood",    (11,     200f) },

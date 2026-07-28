@@ -89,16 +89,12 @@
 			</Outputs>
 		</Production>
 		
-	<!--< Tools. Ten one-kilo ingots make one ten-kilo lot of ironwork, so the metal is conserved, and
-	     at 120 denars of stock against a 480 lot the materials are a quarter of the price, which is
-	     what a manufactured good should look like. It used to be one ingot and one plank into sixteen
-	     lots: 21 denars into 4,000. >-->
 		<Production
 			conversion_speed="1">
 			<Inputs>
 				<Input
 					input_item="ironIngot2"
-					input_count="10" />
+					input_count="5" />
 				<Input
 					input_item="planks"
 					input_count="1" />
@@ -106,7 +102,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.tools"
-					output_count="1" />
+					output_count="10" />
 			</Outputs>
 		</Production>
 		
@@ -123,7 +119,19 @@
 					output_count="10" />
 			</Outputs>
 		</Production>
-		
+
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="wool" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.felt"
+					output_count="1" />
+			</Outputs>
+		</Production>		
 		<Production
 			conversion_speed="1">
 			<Inputs>
@@ -198,136 +206,6 @@
 					output="ItemCategory.medium_armor" />
 			</Outputs>
 		</Production>
-	<!--< mail and plate tier 3-4 >-->		
-		<Production
-			conversion_speed="0.1">
-			<Inputs>
-				<Input
-					input_item="ironIngot2"
-					input_count="10"/>
-				<Input
-					input_item="felt" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.heavy_armor" />
-			</Outputs>
-		</Production>
-		
-		<Production
-			conversion_speed="0.12">
-			<Inputs>
-				<Input
-					input_item="ironIngot3"
-					input_count="8"/>
-				<Input
-					input_item="felt" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.heavy_armor" />
-			</Outputs>
-		</Production>
-		
-		<Production
-			conversion_speed="0.25">
-			<Inputs>
-				<Input
-					input_item="ironIngot3"
-					input_count="8"/>
-				<Input
-					input_item="felt" 
-					input_count="1"/>
-				<Input
-					input_item="leather" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.heavy_armor" />
-			</Outputs>
-		</Production>
-		
-		<Production
-			conversion_speed="0.2">
-			<Inputs>
-				<Input
-					input_item="ironIngot2"
-					input_count="10"/>
-				<Input
-					input_item="felt" 
-					input_count="1"/>
-				<Input
-					input_item="leather" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.heavy_armor" />
-			</Outputs>
-		</Production>
-	<!--< mail and plate tier 5-6 >-->			
-		<Production
-			conversion_speed="0.066">
-			<Inputs>
-				<Input
-					input_item="ironIngot3"
-					input_count="18"/>
-				<Input
-					input_item="felt" 
-					input_count="1"/>
-				<Input
-					input_item="leather" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ultra_armor" />
-			</Outputs>
-		</Production>
-		
-		<Production
-			conversion_speed="0.08">
-			<Inputs>
-				<Input
-					input_item="ironIngot4"
-					input_count="14"/>
-				<Input
-					input_item="felt" 
-					input_count="1"/>
-				<Input
-					input_item="leather" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ultra_armor" />
-			</Outputs>
-		</Production>
-		
-		<Production
-			conversion_speed="0.09">
-			<Inputs>
-				<Input
-					input_item="ironIngot4"
-					input_count="12"/>
-				<Input
-					input_item="ironIngot5"
-					input_count="1"/>
-				<Input
-					input_item="felt" 
-					input_count="1"/>
-				<Input
-					input_item="leather" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ultra_armor" />
-			</Outputs>
-		</Production>
 	<!--< spears >-->			
 		<Production
 			conversion_speed="1">
@@ -353,6 +231,9 @@
 					input_item="ironIngot3" 
 					input_count="3"/>
 				<Input
+					input_item="planks" 
+					input_count="1"/>
+				<Input
 					input_item="hides" 
 					input_count="1"/>
 			</Inputs>
@@ -368,65 +249,18 @@
 			<Inputs>
 				<Input
 					input_item="ironIngot3" 
-					input_count="2"/>
+					input_count="3"/>
 				<Input
 					input_item="planks" 
+					input_count="1"/>
+				<Input
+					input_item="hides" 
 					input_count="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.melee_weapons_3" 
 					output_count="3" />
-			</Outputs>
-		</Production>
-	<!--< 2H axes, maces and polearms >-->			
-		<Production
-			conversion_speed="0.5">
-			<Inputs>
-				<Input
-					input_item="ironIngot4" />
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.melee_weapons_4" 
-					output_count="2" />
-			</Outputs>
-		</Production>
-	<!--< Good swords >-->			
-		<Production
-			conversion_speed="0.25">
-			<Inputs>
-				<Input
-					input_item="ironIngot5" 
-					input_count="2"/>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.melee_weapons_5" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.25">
-			<Inputs>
-				<Input
-					input_item="ironIngot6" 
-					input_count="1"/>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.melee_weapons_5" />
 			</Outputs>
 		</Production>
 		
@@ -448,7 +282,7 @@
 		
 	<!--< Longbows >-->
 		<Production
-			conversion_speed="2">
+			conversion_speed="0.7">
 			<Inputs>
 				<Input
 					input_item="planks" 
@@ -498,36 +332,6 @@
 		</Production>
 		
 		<Production
-			conversion_speed="0.1">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_4" />
-			</Outputs>
-		</Production>
-		
-		<Production
-			conversion_speed="0.05">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot1" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_5" />
-			</Outputs>
-		</Production>
-		
-		<Production
 			conversion_speed="1">
 			<Inputs>
 				<Input
@@ -567,40 +371,6 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_3" 
-					output_count="2" />
-			</Outputs>
-		</Production>
-		
-		<Production
-			conversion_speed="0.3">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.shield_4"
-					output_count="2" />
-			</Outputs>
-		</Production>
-		
-		<Production
-			conversion_speed="0.2">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot4" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.shield_5"
 					output_count="2" />
 			</Outputs>
 		</Production>
@@ -675,74 +445,7 @@
 			</Outputs>
 		</Production>
 	<!--< Mail and Scale frontal horse armour (T4?) >-->			
-		<Production
-			conversion_speed="0.05">
-			<Inputs>
-				<Input
-					input_item="planks" 
-					input_count ="1"/>
-				<Input
-					input_item="leather" 
-					input_count ="1"/>
-				<Input
-					input_item="hides" 
-					input_count ="1"/>
-				<Input
-					input_item="linen" 
-					input_count ="1"/>
-				<Input
-					input_item="felt" 
-					input_count ="1"/>
-				<Input
-					input_item="ironIngot3" 
-					input_count ="10"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.horse_equipment_4" />
-			</Outputs>
-		</Production>
-	<!--< Full Mail and Scale horse armour (T5-6?) >-->			
-		<Production
-			conversion_speed="0.025">
-			<Inputs>
-				<Input
-					input_item="planks" 
-					input_count ="1"/>
-				<Input
-					input_item="leather" 
-					input_count ="1"/>
-				<Input
-					input_item="hides" 
-					input_count ="1"/>
-				<Input
-					input_item="linen" 
-					input_count ="1"/>
-				<Input
-					input_item="felt" 
-					input_count ="1"/>
-				<Input
-					input_item="ironIngot3" 
-					input_count ="20"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.horse_equipment_5" />
-			</Outputs>
-		</Production>
 		
-		<Production
-			conversion_speed="0.01">
-			<Inputs>
-				<Input
-					input_item="cotton" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.velvet"
-					output_count="1" />
-			</Outputs>
-		</Production>
 		<Production
 			conversion_speed="0.4">
 			<Inputs>
@@ -812,65 +515,37 @@
 					output_count="4" />
 			</Outputs>
 		</Production>
-	<!--< The rest of the grade ladder. Refining changes the QUALITY of the metal, not how much of it
-	     there is, so each step returns what it was given and the smith is paid out of the price step
-	     between the grades. The first cut of these lost a quarter of the metal each time, which the
-	     1.8x price step could not carry: materials came to four fifths of the output and a day at the
-	     furnace earned twenty denars. At one for one the margin is a fifth of the good, thin against
-	     the quarter-materials a manufactured item shows but honest for a refining trade, where the
-	     metal really is most of what a steel ingot is worth. Only the price ladder itself could
-	     change that. Each step is slower than the one below it, so the high grades stay rare by the
-	     they take. Without them the steel grades have no source and every recipe asking for one
-	     stands idle. >-->
 	<!--< Steel >-->
 		<Production
-			conversion_speed="0.5">
+			conversion_speed="1">
 			<Inputs>
 				<Input
-					input_item="ironIngot3"
-					input_count="4" />
+					input_item="ironIngot2"
+					input_count="7" />
 				<Input
 					input_item="charcoal"
-					input_count="3" />
+					input_count="7" />
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.ironIngot4"
-					output_count="4" />
+					output_count="7" />
 			</Outputs>
 		</Production>
-	<!--< Fine steel >-->
 		<Production
-			conversion_speed="0.25">
+			conversion_speed="1">
 			<Inputs>
 				<Input
-					input_item="ironIngot4"
-					input_count="4" />
+					input_item="ironIngot3"
+					input_count="7" />
 				<Input
 					input_item="charcoal"
-					input_count="3" />
+					input_count="7" />
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.ironIngot5"
-					output_count="4" />
-			</Outputs>
-		</Production>
-	<!--< Thamaskene steel >-->
-		<Production
-			conversion_speed="0.12">
-			<Inputs>
-				<Input
-					input_item="ironIngot5"
-					input_count="4" />
-				<Input
-					input_item="charcoal"
-					input_count="4" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ironIngot6"
-					output_count="4" />
+					output="ItemCategory.ironIngot4"
+					output_count="7" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -891,15 +566,16 @@
 			shop_prop_mesh_name_5="shop_prop_merchantbeer_e"
 			shop_prop_mesh_name_6="shop_prop_merchantbeer_f" />
 		<Production
-			conversion_speed="3.5">
+			conversion_speed="3">
 			<Inputs>
 				<Input
-					input_item="grain" />
+					input_item="grain" 
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.beer"
-					output_count="2" />
+					output_count="1" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -920,7 +596,7 @@
 			shop_prop_mesh_name_5="shop_prop_merchantweavery_velvet_e"
 			shop_prop_mesh_name_6="shop_prop_merchantweavery_velvet_f" />
 		<Production
-			conversion_speed="0.75">
+			conversion_speed="0.03">
 			<Inputs>
 				<Input
 					input_item="cotton" />
@@ -928,7 +604,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.velvet"
-					output_count="2" />
+					output_count="1" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -949,7 +625,7 @@
 			shop_prop_mesh_name_5="shop_prop_merchantweavery_linen_e"
 			shop_prop_mesh_name_6="shop_prop_merchantweavery_linen_f" />
 		<Production
-			conversion_speed="2">
+			conversion_speed="1.2">
 			<Inputs>
 				<Input
 					input_item="flax" />
@@ -957,7 +633,75 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.linen"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="3">
+			<Inputs>
+				<Input
+					input_item="linen" 
+					input_count="1"/>
+				<Input
+					input_item="wool" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
 					output_count="2" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="3">
+			<Inputs>
+				<Input
+					input_item="linen" 
+					input_count="2"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="3" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="3">
+			<Inputs>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="linen" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.light_armor" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.75">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="2"/>
+				<Input
+					input_item="felt" 
+					input_count ="3"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_2" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -978,15 +722,16 @@
 			shop_prop_mesh_name_5="shop_prop_merchantwinery_e"
 			shop_prop_mesh_name_6="shop_prop_merchantwinery_f" />
 		<Production
-			conversion_speed="2.5">
+			conversion_speed="2">
 			<Inputs>
 				<Input
-					input_item="grape" />
+					input_item="grape"
+					input_count="6" />
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.wine"
-					output_count="2" />
+					output_count="6" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -1007,7 +752,7 @@
 			shop_prop_mesh_name_5="shop_prop_merchantpottery_e"
 			shop_prop_mesh_name_6="shop_prop_merchantpottery_f" />
 		<Production
-			conversion_speed="2">
+			conversion_speed="12">
 			<Inputs>
 				<Input
 					input_item="clay" />
@@ -1015,7 +760,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.pottery"
-					output_count="2" />
+					output_count="1" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -1036,15 +781,16 @@
 			shop_prop_mesh_name_5="shop_prop_merchantpottery_e"
 			shop_prop_mesh_name_6="shop_prop_merchantpottery_f" />
 		<Production
-			conversion_speed="2">
+			conversion_speed="1">
 			<Inputs>
 				<Input
-					input_item="olives" />
+					input_item="olives" 
+					input_count="16"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.oil"
-					output_count="2" />
+					output_count="26" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -1065,15 +811,16 @@
 			shop_prop_mesh_name_5="shop_prop_merchantweavery_wool_e"
 			shop_prop_mesh_name_6="shop_prop_merchantweavery_wool_f" />
 		<Production
-			conversion_speed="1">
+			conversion_speed="2">
 			<Inputs>
 				<Input
-					input_item="wool" />
+					input_item="felt" 
+					input_count="3"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="2" />
+					output_count="4" />
 			</Outputs>
 		</Production>
 		<Production
@@ -1085,7 +832,62 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.felt"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="2">
+			<Inputs>
+				<Input
+					input_item="linen" 
+					input_count="1"/>
+				<Input
+					input_item="wool" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
 					output_count="2" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="linen" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.light_armor" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.75">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="2"/>
+				<Input
+					input_item="felt" 
+					input_count ="3"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_2" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -1106,7 +908,7 @@
 			shop_prop_mesh_name_5="shop_prop_merchantleather_e"
 			shop_prop_mesh_name_6="shop_prop_merchantleather_f" />
 		<Production
-			conversion_speed="2">
+			conversion_speed="3">
 			<Inputs>
 				<Input
 					input_item="hides" />
@@ -1114,7 +916,65 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.leather"
-					output_count="2" />
+					output_count="1" />
+			</Outputs>
+		</Production>		
+		<Production
+			conversion_speed="3.0">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="4"/>
+				<Input
+					input_item="hides" 
+					input_count ="4"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment" 
+					output_count="4" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.3">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="9"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="felt" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_3" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1.2">
+			<Inputs>
+				<Input
+					input_item="leather" 
+					input_count="2"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.medium_armor" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -1152,126 +1012,218 @@
 			</Outputs>
 		</Production>
 	-->
-
-	<!--< Longbows >-->
+		<Production
+			conversion_speed="3">
+			<Inputs>
+				<Input
+					input_item="ironIngot2"
+					input_count ="6"/>
+				<Input
+					input_item="planks" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.arrows"
+					output_count="6" />
+			</Outputs>
+		</Production>
+	<!--< spears >-->			
 		<Production
 			conversion_speed="1">
 			<Inputs>
 				<Input
-					input_item="planks" />
+					input_item="ironIngot2"
+					input_count="3"/>
+				<Input
+					input_item="planks" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons" 
+					output_count="12" />
+			</Outputs>
+		</Production>
+	<!--< basic swords >-->		
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="ironIngot3" 
+					input_count="3"/>
+				<Input
+					input_item="planks" 
+					input_count="1"/>
+				<Input
+					input_item="hides" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons_2" 
+					output_count="4" />
+			</Outputs>
+		</Production>
+	<!--< Longbows >-->
+		<Production
+			conversion_speed="2">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.ranged_weapons"
-					output_count="16" />
+					output_count="8" />
 			</Outputs>
 		</Production>
+	<!--< Horsebows >-->		
 		<Production
-			conversion_speed="0.5">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
-					input_item="planks" />
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.ranged_weapons_2"
-					output_count="1" />
+					output="ItemCategory.ranged_weapons_2" />
 			</Outputs>
 		</Production>
+	<!--< Crossbows >-->			
 		<Production
-			conversion_speed="0.4">
+			conversion_speed="0.36">
 			<Inputs>
 				<Input
-					input_item="planks" />
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="2"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count ="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.ranged_weapons_3"
-					output_count="1" />
+					output="ItemCategory.ranged_weapons_3" 
+					output_count="2" />
 			</Outputs>
 		</Production>
+		
 		<Production
-			conversion_speed="0.3">
+			conversion_speed="0.15">
 			<Inputs>
 				<Input
 					input_item="planks" />
+				<Input
+					input_item="leather" />
+				<Input
+					input_item="ironIngot3" 
+					input_count ="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.ranged_weapons_4"
-					output_count="1" />
+					output="ItemCategory.ranged_weapons_4" />
 			</Outputs>
 		</Production>
+		
 		<Production
-			conversion_speed="0.2">
+			conversion_speed="0.06">
 			<Inputs>
 				<Input
 					input_item="planks" />
+				<Input
+					input_item="leather" />
+				<Input
+					input_item="ironIngot3" 
+					input_count ="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.ranged_weapons_5"
-					output_count="1" />
+					output="ItemCategory.ranged_weapons_5" />
 			</Outputs>
 		</Production>
+		
 		<Production
-			conversion_speed="1">
+			conversion_speed="3">
 			<Inputs>
 				<Input
-					input_item="planks" />
+					input_item="planks" 
+					input_count ="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.shield"
-					output_count="1" />
+					output="ItemCategory.shield" 
+					output_count="2" />
 			</Outputs>
 		</Production>
+		
 		<Production
-			conversion_speed="0.33">
+			conversion_speed="2.1">
 			<Inputs>
 				<Input
 					input_item="planks" />
+				<Input
+					input_item="hides" />
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.shield_2"
-					output_count="1" />
+					output="ItemCategory.shield_2" 
+					output_count="2" />
 			</Outputs>
 		</Production>
+		
 		<Production
-			conversion_speed="0.2">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="planks" />
+				<Input
+					input_item="leather" />
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.shield_3"
-					output_count="1" />
+					output="ItemCategory.shield_3" 
+					output_count="2" />
 			</Outputs>
 		</Production>
+		
 		<Production
-			conversion_speed="0.1">
+			conversion_speed="0.9">
 			<Inputs>
 				<Input
 					input_item="planks" />
+				<Input
+					input_item="leather" />
+				<Input
+					input_item="ironIngot3" />
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_4"
-					output_count="1" />
+					output_count="2" />
 			</Outputs>
 		</Production>
+		
 		<Production
-			conversion_speed="0.1">
+			conversion_speed="0.6">
 			<Inputs>
 				<Input
 					input_item="planks" />
+				<Input
+					input_item="leather" />
+				<Input
+					input_item="ironIngot4" />
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_5"
-					output_count="1" />
+					output_count="2" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -1292,56 +1244,200 @@
 			shop_prop_mesh_name_4="shop_prop_merchantsmithing_d"
 			shop_prop_mesh_name_5="shop_prop_merchantsmithing_e"
 			shop_prop_mesh_name_6="shop_prop_merchantsmithing_f" />
+
 		<Production
 			conversion_speed="1">
 			<Inputs>
 				<Input
-					input_item="ironIngot1" />
+					input_item="ironIngot2"
+					input_count="5" />
+				<Input
+					input_item="planks"
+					input_count="1" />
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.melee_weapons"
+					output="ItemCategory.tools"
+					output_count="10" />
+			</Outputs>
+		</Production>			
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="ironIngot1"
+					input_count="30" />
+				<Input
+					input_item="charcoal" 
+					input_count="30" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ironIngot2"
+					output_count="18" />
+				<Output
+					output="ItemCategory.ironIngot3"
+					output_count="12" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="ironIngot1"
+					input_count="15" />
+				<Input
+					input_item="charcoal" 
+					input_count="30" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ironIngot4"
+					output_count="10" />
+				<Output
+					output="ItemCategory.ironIngot5"
+					output_count="5" />
+			</Outputs>
+		</Production>
+	<!--< Steel >-->
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="ironIngot2"
+					input_count="15" />
+				<Input
+					input_item="charcoal"
+					input_count="15" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ironIngot4"
+					output_count="15" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="ironIngot3"
+					input_count="15" />
+				<Input
+					input_item="charcoal"
+					input_count="15" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ironIngot4"
+					output_count="15" />
+			</Outputs>
+		</Production>
+	<!--< Fine steel >-->
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="ironIngot3"
+					input_count="8" />
+				<Input
+					input_item="charcoal"
+					input_count="8" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ironIngot5"
+					output_count="8" />
+			</Outputs>
+		</Production>
+	<!--< Thamaskene steel >-->
+		<Production
+			conversion_speed="0.3">
+			<Inputs>
+				<Input
+					input_item="ironIngot1"
+					input_count="5" />
+				<Input
+					input_item="charcoal"
+					input_count="10" />
+				<Input
+					input_item="silver"
+					input_count="1" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ironIngot6"
+					output_count="5" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.6">
+			<Inputs>
+				<Input
+					input_item="ironIngot3"
+					input_count="5" />
+				<Input
+					input_item="charcoal"
+					input_count="5" />
+				<Input
+					input_item="silver"
+					input_count="1" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ironIngot6"
+					output_count="5" />
+			</Outputs>
+		</Production>
+			
+	<!--< basic axes and maces >-->				
+		<Production
+			conversion_speed="3">
+			<Inputs>
+				<Input
+					input_item="ironIngot3" 
+					input_count="3"/>
+				<Input
+					input_item="planks" 
+					input_count="1"/>
+				<Input
+					input_item="hides" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons_3" 
+					output_count="3" />
+			</Outputs>
+		</Production>
+	<!--< 2H axes, maces and polearms >-->			
+		<Production
+			conversion_speed="1.5">
+			<Inputs>
+				<Input
+					input_item="ironIngot4" 
+					input_count="2"/>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons_4" 
 					output_count="2" />
 			</Outputs>
 		</Production>
+	<!--< Good swords >-->			
 		<Production
-			conversion_speed="1">
+			conversion_speed="0.75">
 			<Inputs>
 				<Input
-					input_item="ironIngot1" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.melee_weapons_2" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.5">
-			<Inputs>
+					input_item="ironIngot5" 
+					input_count="2"/>
 				<Input
-					input_item="ironIngot1" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.melee_weapons_3" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.2">
-			<Inputs>
+					input_item="planks" />
 				<Input
-					input_item="ironIngot1" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.melee_weapons_4" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.1">
-			<Inputs>
-				<Input
-					input_item="ironIngot1" />
+					input_item="leather" />
 			</Inputs>
 			<Outputs>
 				<Output
@@ -1349,55 +1445,205 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="1">
+			conversion_speed="0.75">
 			<Inputs>
 				<Input
-					input_item="ironIngot1" />
+					input_item="ironIngot6" 
+					input_count="1"/>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.medium_armor" />
+					output="ItemCategory.melee_weapons_5" />
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="0.25">
+			conversion_speed="0.3">
 			<Inputs>
 				<Input
-					input_item="ironIngot1" />
+					input_item="ironIngot2"
+					input_count="10"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.heavy_armor" />
 			</Outputs>
 		</Production>
+		
 		<Production
-			conversion_speed="0.1">
+			conversion_speed="0.36">
 			<Inputs>
 				<Input
-					input_item="ironIngot1" />
+					input_item="ironIngot3"
+					input_count="8"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.75">
+			<Inputs>
+				<Input
+					input_item="ironIngot3"
+					input_count="8"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.6">
+			<Inputs>
+				<Input
+					input_item="ironIngot2"
+					input_count="10"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" />
+			</Outputs>
+		</Production>
+	<!--< mail and plate tier 5-6 >-->			
+		<Production
+			conversion_speed="0.2">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="18"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.ultra_armor" />
 			</Outputs>
 		</Production>
-	<!--< Tools, the smithy's version: same lot, made from crude iron rather than wrought, so a good
-	     part of the metal is lost in the working and it takes far more of it. Priced to the same
-	     quarter-of-the-price rule as the artisans' bench. >-->
+		
 		<Production
-			conversion_speed="1.5">
+			conversion_speed="0.24">
 			<Inputs>
 				<Input
-					input_item="ironIngot1"
-					input_count="25" />
+					input_item="ironIngot5"
+					input_count="14"/>
 				<Input
-					input_item="charcoal"
-					input_count="5" />
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.tools"
-					output_count="1" />
+					output="ItemCategory.ultra_armor" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.27">
+			<Inputs>
+				<Input
+					input_item="ironIngot5"
+					input_count="12"/>
+				<Input
+					input_item="ironIngot6"
+					input_count="1"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ultra_armor" />
+			</Outputs>
+		</Production>		
+
+	<!--< Mail and Scale frontal horse armour (T4?) >-->			
+		<Production
+			conversion_speed="0.15">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="felt" 
+					input_count ="1"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count ="10"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_4" />
+			</Outputs>
+		</Production>
+	<!--< Full Mail and Scale horse armour (T5-6?) >-->			
+		<Production
+			conversion_speed="0.075">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="felt" 
+					input_count ="1"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count ="20"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_5" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -1431,7 +1677,7 @@
 			shop_prop_mesh_name_5="shop_prop_merchantsilversmith_e"
 			shop_prop_mesh_name_6="shop_prop_merchantsilversmith_f" />
 		<Production
-			conversion_speed="0.75">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="silver" />
@@ -1439,7 +1685,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.jewelry"
-					output_count="2" />
+					output_count="1" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
