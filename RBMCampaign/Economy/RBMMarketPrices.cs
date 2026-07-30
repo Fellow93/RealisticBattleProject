@@ -44,11 +44,13 @@ namespace RBMCampaign
     /// price by definition. Absence speaks.
     /// </summary>
     /// <remarks>
-    /// Applied as a RATIO against vanilla's own factor rather than as a replacement price. The postfix
-    /// divides out what vanilla's scarcity term contributed and multiplies in this one, which leaves
-    /// every other part of the price -- item value, trade penalties, war markups, the player's Trade
-    /// skill and its perks, caravan and village modifiers -- exactly as it was. Only the scarcity
-    /// component moves.
+    /// Applied as a REPLACEMENT of vanilla's price, not a ratio against it. The postfix throws away
+    /// what the price model returned and rebuilds the number from RBM's own terms: the good's base
+    /// value, this scarcity factor, and nothing else vanilla decided -- its supply/demand term, its war
+    /// markup, and its village/caravan spreads are all gone. The ONE vanilla contribution kept is the
+    /// player's own trade spread, their Trade skill and the goods' trade perks, recovered by asking
+    /// vanilla's <c>GetTradePenalty</c> with no merchant (which is what the war markup and every
+    /// location spread key off, so a null merchant strips them and leaves only the party's own margin).
     ///
     /// Goods RBM does not model the consumption of are left entirely on vanilla: tools, war gear,
     /// horses, and anything else with no measured sink. There is no daily figure to divide by, so there
@@ -74,10 +76,12 @@ namespace RBMCampaign
         /// made, in a year when there is plenty of it. Everything a market does to that figure is a
         /// markup, so the scarcity term is clamped at 1 below and never discounts.
         ///
-        /// Sixty days is a full store (<see cref="TownStorage.StorageDays"/>), so a town that has
-        /// filled its granary pays the floor and nobody profits carrying grain to it.
+        /// Fifteen days is a comfortably stocked market: a town holding that much or more (up to a full
+        /// <see cref="TownStorage.StorageDays"/> granary) pays the floor and nobody profits carrying
+        /// grain to it. Set below the warehouse cap on purpose, so prices bottom out at an ordinary
+        /// stock rather than only at a brim-full store no supply chain reliably reaches.
         /// </summary>
-        public const float AbundantDays = 60f;
+        public const float AbundantDays = 15f;
 
         /// <summary>
         /// Floor on the days figure, purely to keep the division finite. It is NOT the ceiling --
@@ -96,20 +100,22 @@ namespace RBMCampaign
         /// is the floor:
         ///
         /// <list type="bullet">
-        /// <item>60 days (full store) -- 1.0x, the historical floor price</item>
-        /// <item>30 days -- 1.5x</item>
-        /// <item>15 days -- 2.3x</item>
-        /// <item>10 days -- 2.9x</item>
-        /// <item>5 days -- 4.1x</item>
-        /// <item>4.7 days or less -- 8.0x, the ceiling</item>
+        /// <item>15 days or more (comfortably stocked) -- 1.0x, the historical floor price</item>
+        /// <item>10 days -- 1.3x</item>
+        /// <item>5 days -- 1.9x</item>
+        /// <item>3 days -- 2.6x</item>
+        /// <item>2 days -- 3.4x</item>
+        /// <item>1 day -- 5.2x</item>
+        /// <item>0.5 days or less -- 8.0x, the ceiling</item>
         /// </list>
         ///
-        /// That shape is the point of the whole change. An ordinarily stocked town pays about half as
-        /// much again as the floor, which leaves an honest margin for a merchant without inflating
-        /// everything; a town down to a week pays four times; a famine runs to ten or more, which is
-        /// what grain actually did in a bad year. Vanilla could not express any of it, because its 10x
-        /// ceiling was measured from a floor of 0.1x -- so the "expensive" price and the "cheap" price
-        /// were both fictions either side of a value that meant nothing in particular.
+        /// That shape is the point of the whole change. An ordinarily stocked town pays the floor and a
+        /// week's stock only about half as much again, which leaves an honest margin for a merchant
+        /// without inflating everything; a town down to a day or two pays four to six times; a bare
+        /// shelf runs to the ceiling, which is what grain actually did in a bad year. Vanilla could not
+        /// express any of it, because its 10x ceiling was measured from a floor of 0.1x -- so the
+        /// "expensive" price and the "cheap" price were both fictions either side of a value that meant
+        /// nothing in particular.
         /// </summary>
         public const float ScarcityExponent = 0.6f;
 
@@ -122,7 +128,7 @@ namespace RBMCampaign
 
         /// <summary>
         /// The ceiling: dearest a famine can make a good, against a floor that is a real historical
-        /// price. Reached at about 4.7 days of stock and held there however empty the shelf gets.
+        /// price. Reached at about 0.5 days of stock and held there however empty the shelf gets.
         /// </summary>
         /// <remarks>
         /// Lowered from an effective 17.68x, which was measured and did real damage. Every good with no
@@ -264,9 +270,10 @@ namespace RBMCampaign
         /// bare while vanilla's supply reads high, or the reverse -- that gap is exactly what the rewrite
         /// exists to correct, and this is the only line it is visible on.
         ///
-        /// This is also the only place the two calibrations can be seen agreeing or not: a town at a
-        /// full store should read 1.00x, and if nothing ever does, then
-        /// <see cref="AbundantDays"/> and <see cref="TownStorage.StorageDays"/> have drifted apart.
+        /// This is also the only place the two calibrations can be seen agreeing or not: any town
+        /// holding at least <see cref="AbundantDays"/> of a good should read 1.00x, and if nothing ever
+        /// does -- if even well-stocked markets carry a markup -- then <see cref="AbundantDays"/> is set
+        /// higher than a working supply chain can keep the shelves.
         /// </remarks>
         public static void LogDaily(Settlement settlement)
         {
@@ -390,14 +397,19 @@ namespace RBMCampaign
         private static class ScarcityPricePatch
         {
             private static void Postfix(TownMarketData __instance, Town ____town,
-                EquipmentElement itemRosterElement, bool isSelling, ref int __result)
+                EquipmentElement itemRosterElement, MobileParty tradingParty, bool isSelling, ref int __result)
             {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || __result <= 0 || ____town == null)
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || ____town == null)
                 {
                     return;
                 }
 
                 ItemObject item = itemRosterElement.Item;
+                if (item == null)
+                {
+                    return;
+                }
+
                 float days = DaysOfSupply(____town, item);
                 if (days < 0f)
                 {
@@ -405,23 +417,26 @@ namespace RBMCampaign
                     return;
                 }
 
-                ItemCategory category = item.GetItemCategory();
-                ItemData data = __instance.GetCategoryData(category);
-                float vanilla = Campaign.Current.Models.TradeItemPriceFactorModel.GetBasePriceFactor(
-                    category, data.InStoreValue, data.Supply, data.Demand, isSelling, 0);
-                if (vanilla <= 0.001f)
-                {
-                    return;
-                }
-
-                // isSelling is from the PARTY's side: true means the party is selling and the town is
-                // buying, which is the wholesale leg and carries no scarcity markup. See WholesaleFactor.
+                // Ours, and only ours: the good's base value is the historical floor price
+                // (TradeGoodValues), scarcity is the sole markup on a retail sale, and a wholesale sale
+                // pays a flat carriage margin. isSelling is from the PARTY's side -- true means the party
+                // is selling and the town is buying, the wholesale leg, which carries no scarcity markup.
                 float factor = isSelling ? WholesaleFactor : ScarcityFactor(days);
 
-                // Divide out what vanilla's scarcity term contributed, multiply in ours. Everything else
-                // the price model did -- penalties, perks, war markups -- rides through untouched.
-                int priced = MathF.Round(__result * (factor / vanilla));
-                __result = (priced > 1) ? priced : 1;
+                // The one thing kept from vanilla: the party's own trade spread -- their Trade skill and
+                // the goods' trade perks. Passing a null merchant is what strips everything else, because
+                // the war markup and every village/caravan spread key off the merchant party; with none
+                // supplied GetTradePenalty returns just the base margin scaled by the party's skill and
+                // the perks the goods carry. Vanilla applies that spread as (1 + penalty) to a buyer and
+                // 1 / (1 + penalty) to a seller.
+                ItemData data = __instance.GetCategoryData(item.GetItemCategory());
+                float penalty = Campaign.Current.Models.TradeItemPriceFactorModel.GetTradePenalty(
+                    item, tradingParty, null, isSelling, data.InStoreValue, data.Supply, data.Demand);
+                float spread = isSelling ? (1f / (1f + penalty)) : (1f + penalty);
+
+                float priced = itemRosterElement.ItemValue * factor * spread;
+                int rounded = isSelling ? MathF.Floor(priced) : MathF.Ceiling(priced);
+                __result = (rounded > 1) ? rounded : 1;
             }
         }
     }

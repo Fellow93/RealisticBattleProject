@@ -117,9 +117,37 @@ namespace RBMCampaign
             if (Campaign.Current == null || targetHero == null)
                 return;
 
+            // The target has to have a party of his own to hand us. Without one, ChangePlayerCharacterAction
+            // falls into its heir-with-no-party branch and mints a fresh player party at a guessed position --
+            // never what a "switch to this lord" is asking for.
+            if (targetHero.PartyBelongedTo == null || targetHero.IsPrisoner)
+            {
+                InformationManager.DisplayMessage(new InformationMessage(
+                    targetHero.Name + " has no field party to switch into.", Colors.Red));
+                return;
+            }
+
             Hero oldHero = Hero.MainHero;
             Clan oldClan = Clan.PlayerClan;
             Clan newClan = targetHero.Clan;
+
+            // The two parties in play: the one we are leaving (the current main party) and the one we are taking
+            // over (the target lord's). Captured before Apply moves MainParty off the first onto the second.
+            MobileParty oldParty = MobileParty.MainParty;
+            MobileParty newParty = targetHero.PartyBelongedTo;
+
+            // THE FIX FOR THE PERMANENT STUTTER.
+            //
+            // ChangePlayerCharacterAction was written for heir SUCCESSION -- the old character is dead, the heir
+            // usually had no party -- so it never considers that either party might be in an ARMY. Switching to a
+            // LIVING lord routinely does: in wartime most lords are armied. If we let the swap run with the target
+            // still attached to an AI army, the player party ends up INSIDE an AI-commanded army, and the army's
+            // per-tick logic (cohesion decay, gather-around, disband checks, and the leader's move orders to its
+            // members) runs every frame against a party that now answers only to the player -- a conflict that
+            // never resolves. That is the sudden, extreme, and unending stutter. Pull both parties clear of any
+            // army first: setting Army = null removes a member cleanly, or disbands the army if the party led it.
+            DetachFromArmy(newParty);
+            DetachFromArmy(oldParty);
 
             if (newClan != null && newClan != oldClan && PlayerDefaultFactionProp != null)
             {
@@ -128,9 +156,38 @@ namespace RBMCampaign
 
             ChangePlayerCharacterAction.Apply(targetHero);
 
+            // Repair the party we just left. Apply's succession branch handed it to the NEW hero
+            // (LordPartyComponent.ChangePartyOwner(Hero.MainHero), which by that point is already the target) while
+            // leaving its Leader as the old hero -- an ownerless-feeling, split-brain party owned by the player's
+            // new clan but led by an old-clan hero. Reassigning the old hero as leader routes through
+            // LordPartyComponent.OnChangePartyLeader, which sets both _leader AND Owner back to him, turning it
+            // into a clean AI lord party for the lord we stopped playing. (ActualClan already tracks the old clan,
+            // so MapFaction stays correct.)
+            if (oldParty != null && oldParty != MobileParty.MainParty && oldParty.IsActive
+                && oldParty.MemberRoster.TotalManCount > 0
+                && oldHero != null && oldHero.IsAlive && !oldHero.IsPrisoner
+                && oldParty.LordPartyComponent != null && oldParty.LeaderHero != oldHero)
+            {
+                oldParty.ChangePartyLeader(oldHero);
+            }
+
             string msg = "Switched from " + oldHero.Name + " (" + (oldClan != null ? oldClan.Name.ToString() : "?") +
                          ") to " + targetHero.Name + " (" + (newClan != null ? newClan.Name.ToString() : "?") + ")";
             InformationManager.DisplayMessage(new InformationMessage(msg, Colors.Green));
+        }
+
+        /// <summary>
+        /// Take a party out of whatever army it is in, if any. A player party must never sit inside an AI army:
+        /// the army ticks its members every frame and would fight the player's control indefinitely. Nulling Army
+        /// removes a member cleanly (OnRemovePartyInternal) or, if this party was the army's leader, disbands the
+        /// army (DisbandArmyAction.ApplyByLeaderPartyRemoved) -- both acceptable outcomes for a debug switch.
+        /// </summary>
+        private static void DetachFromArmy(MobileParty party)
+        {
+            if (party != null && party.Army != null)
+            {
+                party.Army = null;
+            }
         }
 
         [CommandLineFunctionality.CommandLineArgumentFunction("switch_lord", "campaign")]
