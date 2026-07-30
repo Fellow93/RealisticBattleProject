@@ -41,17 +41,18 @@ namespace RBMCampaign
         public const float HoardThresholdPerProsperity = 1000f;
 
         /// <summary>
-        /// Fraction of citizen wealth taken each day for the owner once the market is hoarding -- a flat
-        /// tenth, in place of <see cref="DailyRate"/>. A punitive bracket, not a levy: it exists to pull a
-        /// runaway market back down rather than to fund the lord, and it bites hard enough to do so in days
-        /// rather than years.
+        /// Fraction of the hoarded SURPLUS -- citizen wealth above the threshold, not the whole balance --
+        /// taken each day for the owner while the market is over the line, in place of
+        /// <see cref="DailyRate"/>. A punitive bracket, not a levy: it exists to pull the surplus back down
+        /// rather than to fund the lord, and it bites hard enough to do so in days rather than years while
+        /// leaving the town its proper float alone.
         /// </summary>
         public const float HoardOwnerRate = 0.10f;
 
         /// <summary>
-        /// Fraction of citizen wealth the fief takes for its own strongbox each day once the market is
-        /// hoarding, in place of <see cref="SettlementDailyRate"/> -- a flat tenth, matching the owner's,
-        /// so a glutted market is drained equally into the lord's purse and the town's own.
+        /// Fraction of the hoarded SURPLUS the fief takes for its own strongbox each day while the market
+        /// is over the line, in place of <see cref="SettlementDailyRate"/> -- a flat tenth, matching the
+        /// owner's, so the surplus is drained equally into the lord's purse and the town's own.
         /// </summary>
         public const float HoardSettlementRate = 0.10f;
 
@@ -76,17 +77,20 @@ namespace RBMCampaign
 
             int wealth = SettlementWealth.GetCitizenWealth(settlement);
 
-            // A market carrying more than 1000d per point of prosperity has hoarded far past its healthy
-            // float, and the day's levies switch to a flat tenth apiece -- assessed on the whole standing
-            // balance, not just the excess -- to haul it back down in days. Below the line the gentle
-            // year-scale rates apply as before.
+            // A market carrying more than 1000d per point of prosperity has hoarded past its healthy
+            // float, and the day's levies switch to a flat tenth apiece -- but only on the EXCESS above
+            // that line, not the whole balance -- to haul the surplus back down in days while leaving the
+            // town its proper float untouched. Below the line the gentle year-scale rates apply as before,
+            // assessed on the whole standing balance.
             float prosperity = (settlement.Town != null) ? settlement.Town.Prosperity : 0f;
-            bool hoarding = wealth > prosperity * HoardThresholdPerProsperity;
+            int threshold = (int)(prosperity * HoardThresholdPerProsperity);
+            bool hoarding = wealth > threshold;
+            int taxable = hoarding ? (wealth - threshold) : wealth;
             float ownerRate = hoarding ? HoardOwnerRate : DailyRate;
             float settlementRate = hoarding ? HoardSettlementRate : SettlementDailyRate;
 
-            int ownerLevy = (int)(wealth * ownerRate);
-            int settlementLevy = (int)(wealth * settlementRate);
+            int ownerLevy = (int)(taxable * ownerRate);
+            int settlementLevy = (int)(taxable * settlementRate);
             if (ownerLevy <= 0 && settlementLevy <= 0)
             {
                 return;
