@@ -22,10 +22,10 @@ namespace RBMCampaign
     internal static class RBMCaravanDispatch
     {
         // Days of its own supply above which a town's stock of a good counts as a surplus worth moving.
-        private const float SurplusDays = 40f;
+        private const float SurplusDays = 30f;
 
         // Days of supply below which a town counts as short of a good and worth supplying.
-        private const float ShortageDays = 5f;
+        private const float ShortageDays = 10f;
 
         // Days of supply the source is left after loading a caravan, so moving its surplus cannot itself
         // tip it into shortage. Must stay below SurplusDays.

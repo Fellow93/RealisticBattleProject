@@ -33,17 +33,17 @@ namespace RBMCampaign
         // economy's real scale instead of fixed denars. A source above WealthyPerProsperity×prosperity is
         // rich enough to invest abroad; a destination below StrugglePerProsperity×prosperity is
         // cash-starved for its size.
-        private const float WealthyPerProsperity = 500f;
-        private const float StrugglePerProsperity = 150f;
+        private const float WealthyPerProsperity = 300f;
+        private const float StrugglePerProsperity = 300f;
 
         // ...and the destination's prosperity must also be below this share of its countryside target.
-        private const float StruggleProsperityFrac = 0.6f;
+        private const float StruggleProsperityFrac = 0.9f;
 
         // Share of the source's excess wealth (above its wealthy line) one caravan may carry as investment.
-        private const float InvestFraction = 0.1f;
+        private const float InvestFraction = 0.2f;
 
         // Below this much (per point of the destination's prosperity), an injection is not worth doing.
-        private const float MinInjectPerProsperity = 20f;
+        private const float MinInjectPerProsperity = 5f;
 
         // The return baked into the debt at injection: the debtor repays principal × (1 + this).
         private const float InvestReturn = 0.15f;
