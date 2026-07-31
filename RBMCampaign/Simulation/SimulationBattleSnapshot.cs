@@ -174,7 +174,13 @@ namespace RBMCampaign
             snapshot.AttackerName = Describe(mapEvent.AttackerSide);
             snapshot.DefenderName = Describe(mapEvent.DefenderSide);
 
-            snapshot.AttackerPower = StrategicTroopPower.SidePower(mapEvent.AttackerSide);
+            // For a naval raid the attacker is priced by what it can land, not what it embarked -- the same discount
+            // the raid-decision AI was given (see StrategicTroopPower.AmphibiousLandingFactor). Without this the log
+            // would print the full manifest (e.g. 348 for 223 men) while the AI acted on a fraction of it, and the
+            // raid it "should have won on paper" reads as an unexplained upset. The defenders are ashore already and
+            // are always priced whole.
+            bool navalRaid = snapshot.Context == MapEvent.PowerCalculationContext.NavalRaid;
+            snapshot.AttackerPower = StrategicTroopPower.SidePower(mapEvent.AttackerSide, navalRaid);
             snapshot.DefenderPower = StrategicTroopPower.SidePower(mapEvent.DefenderSide);
 
             try

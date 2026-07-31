@@ -166,5 +166,19 @@ namespace RBMConfig
         // town rations, and the daily state of every settlement -- to its own logs/economy folder.
         // Separate from the spoils log because it is about the countryside, not the troops' purses.
         public static bool economyLoggingEnabled = true;
+
+        // Whether the module spawns intra-kingdom supply caravans: parties that carry a surplus good from
+        // one of a kingdom's towns to another town of the same kingdom that is short of it. Off leaves the
+        // map on vanilla caravans alone.
+        public static bool kingdomCaravansEnabled = true;
+
+        // Whether those caravans also carry a repayable capital injection on wealthy→struggling routes,
+        // propping up a dying town so it can afford goods, repaid out of the town's hoard levy once it
+        // recovers. Off leaves the caravans as pure goods arbitrage.
+        public static bool caravanInvestmentEnabled = true;
+
+        // Writes the supply-caravan system to its own logs/caravans folder -- each caravan dispatched,
+        // its arrival and sale, and any lost on the road. No effect unless the caravans above are on.
+        public static bool caravanLoggingEnabled = true;
     }
 }

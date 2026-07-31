@@ -6,6 +6,7 @@ using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.MapEvents;
+using TaleWorlds.CampaignSystem.Naval;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
@@ -460,6 +461,18 @@ namespace RBMCampaign
         /// </summary>
         internal static float SidePower(MapEventSide side)
         {
+            return SidePower(side, false);
+        }
+
+        /// <summary>
+        /// As above, but with <paramref name="discountLanding"/> the caller can ask for each party to be priced at only
+        /// the share of it that can come off its ships -- the same amphibious discount the raid-decision AI is given
+        /// (see <see cref="LandingFactor"/>). Passed true only for the ATTACKER of a naval raid, so the logged
+        /// AttackerPower shows the landing party the AI weighed rather than the whole manifest that never gets ashore.
+        /// The defenders stand on land and are always priced whole.
+        /// </summary>
+        internal static float SidePower(MapEventSide side, bool discountLanding)
+        {
             if (side == null)
             {
                 return 0f;
@@ -474,7 +487,12 @@ namespace RBMCampaign
                 }
                 try
                 {
-                    total += party.CalculateCurrentStrength();
+                    float strength = party.CalculateCurrentStrength();
+                    if (discountLanding)
+                    {
+                        strength *= LandingFactor(party);
+                    }
+                    total += strength;
                 }
                 catch (Exception)
                 {
@@ -541,6 +559,11 @@ namespace RBMCampaign
             bool estimated = context == MapEvent.PowerCalculationContext.Estimated;
             float total = 0f;
 
+            // Running headcount of the men actually priced below, kept only for the amphibious landing discount at
+            // the foot of this method (see AmphibiousLandingFactor). Wounded are already dropped, so this is the
+            // fighting strength -- exactly the number the landing capacity is measured against.
+            int healthyMen = 0;
+
             // Only ever non-null while TryExplainParty is on the stack above us, for this exact party.
             List<StackPower> capture = (_captureFor == party) ? _captureInto : null;
 
@@ -563,6 +586,7 @@ namespace RBMCampaign
                 {
                     continue;
                 }
+                healthyMen += healthy;
 
                 float power = PowerOf(troop);
                 if (power <= 0f)
@@ -612,6 +636,16 @@ namespace RBMCampaign
 
             result = total * morale;
 
+            // AN AT-SEA PARTY IS ONLY AS STRONG ASHORE AS IT CAN PUT ASHORE. A raider carrying 223 men whose shallow-
+            // draft hulls seat 30 lands 30 a wave and feeds them into the defenders piecemeal -- the War Sails sim caps
+            // the beach party to that deck crew (NavalDLCCombatSimulationModel.GetParticipatingTroopCount), and the
+            // remaining 193 never touch the fight. Yet the raid decision weighs the WHOLE party: the AI's own strength
+            // for target scoring is GetTotalLandStrengthWithFollowers, which prices the raider through this method with
+            // the PlainBattle context, so an amphibious raider reads three times the strength it can actually land and
+            // commits to raids it then loses. Discount the LAND strength of an at-sea party by the fraction of it that
+            // can come off the ships, so the AI weighs the landing party, not the manifest. See AmphibiousLandingFactor.
+            result *= AmphibiousLandingFactor(party, context, healthyMen);
+
             // The one call into the log, and it asks first: building a block walks the perk table and formats a row
             // per stack, which must not happen on the thousands of prices that will never be written down.
             if (StrategicPowerLog.ShouldWrite(party))
@@ -619,6 +653,96 @@ namespace RBMCampaign
                 StrategicPowerLog.WriteParty(party, side, context, morale, result);
             }
             return true;
+        }
+
+        /// <summary>
+        /// The least an amphibious raider's land strength can be discounted to. A party at sea whose hulls are all
+        /// deep-water can put no one ashore and by the letter of the cap is worth nothing on land -- true, but a raw
+        /// zero is a brittle thing to hand a scoring model (it turns "a poor raid" into "no party at all"), so the
+        /// discount bottoms out here and leaves a token weight. It never fires for a party with a shallow hull, which
+        /// is every party that would actually be choosing to raid.
+        /// </summary>
+        private const float MinLandingFactor = 0.1f;
+
+        /// <summary>
+        /// How much of an at-sea party's land strength it can actually put on a beach, in [<see cref="MinLandingFactor"/>, 1].
+        /// Mirrors the War Sails auto-resolve cap (NavalDLCCombatSimulationModel.GetShallowShipDeckCrewCapacity): only
+        /// hulls that can navigate shallow water land men, and only as many as their main deck seats. The fraction of
+        /// the party's fighting men that fits aboard those hulls is the fraction of its strength that can land.
+        ///
+        /// Fires for ONE case: the <see cref="MapEvent.PowerCalculationContext.PlainBattle"/> land-strength query on a
+        /// party that is currently at sea. That query is <c>MobileParty.GetTotalLandStrengthWithFollowers</c>, the
+        /// number the raid-decision AI weighs as its own strength. <c>GetContextForPosition</c> never returns
+        /// PlainBattle for a party on the water, so the ordinary strength bar and the sea-battle prices (which run
+        /// under SeaBattle/OpenSeaBattle, where every embarked man does fight) are untouched -- and so is the tooltip
+        /// capture path, which prices through <c>CalculateCurrentStrength</c> under a sea context. A party with no
+        /// ships -- every party when War Sails is absent -- is never at sea, so this reads 1 and the feature no-ops
+        /// with no DLC present and no reflection needed.
+        /// </summary>
+        private static float AmphibiousLandingFactor(PartyBase party, MapEvent.PowerCalculationContext context, int healthyMen)
+        {
+            if (context != MapEvent.PowerCalculationContext.PlainBattle)
+            {
+                return 1f;
+            }
+
+            MobileParty mobile = party.IsMobile ? party.MobileParty : null;
+            if (mobile == null || !mobile.IsCurrentlyAtSea)
+            {
+                return 1f;
+            }
+
+            return LandingFactorFromCapacity(ShallowLandingCapacity(party), healthyMen);
+        }
+
+        /// <summary>
+        /// The landing discount for a party priced by its SHIPS AND MEN alone, without the context or at-sea guards
+        /// <see cref="AmphibiousLandingFactor"/> wraps it in -- for a caller that already knows the fight is an
+        /// amphibious raid and only wants the number. That caller is the sim log, so the AttackerPower it prints is
+        /// the strength the raid-decision AI actually weighed (the landing party) rather than the whole manifest.
+        /// Returns 1 for a party with no ships, so it is harmless on any side of any battle and no-ops without the DLC.
+        /// </summary>
+        internal static float LandingFactor(PartyBase party)
+        {
+            if (party == null || party.MemberRoster == null)
+            {
+                return 1f;
+            }
+            return LandingFactorFromCapacity(ShallowLandingCapacity(party), party.MemberRoster.TotalHealthyCount);
+        }
+
+        /// <summary>The men a party can put ashore in one wave: its main-deck crew across every shallow-draft hull it
+        /// owns. Mirrors NavalDLC's GetShallowShipDeckCrewCapacity. Zero for a party with no shallow hulls (and so for
+        /// every party when War Sails is absent, whose ship list is empty).</summary>
+        private static int ShallowLandingCapacity(PartyBase party)
+        {
+            MBReadOnlyList<Ship> ships = (party != null) ? party.Ships : null;
+            if (ships == null || ships.Count == 0)
+            {
+                return 0;
+            }
+
+            int landingCapacity = 0;
+            foreach (Ship ship in ships)
+            {
+                if (ship != null && ship.ShipHull != null && ship.ShipHull.CanNavigateShallowWater)
+                {
+                    landingCapacity += ship.MainDeckCrewCapacity;
+                }
+            }
+            return landingCapacity;
+        }
+
+        /// <summary>The fraction of a party's strength that fits into <paramref name="landingCapacity"/> beach slots,
+        /// clamped to [<see cref="MinLandingFactor"/>, 1]. A party that can land everyone -- or has no men to land --
+        /// is undiscounted.</summary>
+        private static float LandingFactorFromCapacity(int landingCapacity, int healthyMen)
+        {
+            if (healthyMen <= 0 || landingCapacity >= healthyMen)
+            {
+                return 1f;
+            }
+            return MathF.Max(MinLandingFactor, (float)landingCapacity / healthyMen);
         }
 
         /// <summary>

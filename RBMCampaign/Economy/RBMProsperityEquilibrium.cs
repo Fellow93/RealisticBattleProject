@@ -80,6 +80,34 @@ namespace RBMCampaign
         public const float TownTreasuryScale = 40f;
 
         /// <summary>
+        /// A castle's resting prosperity as a multiple of the AVERAGE hearth of the villages bound to
+        /// it -- its own administratively-bound countryside, not the trade-bound set a town equilibrium
+        /// counts. A castle is a big village's worth of settled life clustered behind a wall, so it
+        /// rests half again above the size of a typical one of its own villages, and rises and falls
+        /// with them as they grow or are raided.
+        ///
+        /// Deliberately the AVERAGE and not the sum: a castle with three thriving villages is not three
+        /// times the place a castle with one is, it is a place of the same kind whose land happens to be
+        /// divided differently. Averaging keeps the resting figure a statement about the quality of the
+        /// countryside rather than a headcount of it, so a castle's prosperity does not balloon simply
+        /// for having been drawn more villages on the map.
+        ///
+        /// This is the castle counterpart to the town's <see cref="ProsperityPerBoundHearth"/>, and it
+        /// lands a castle at roughly 400-900 -- the same band the world authors castles at, so nothing
+        /// downstream that reads a castle's raw prosperity sees its scale shift.
+        /// </summary>
+        public const float CastleProsperityHearthFactor = 1.5f;
+
+        /// <summary>
+        /// Fraction of the gap to its resting figure a castle closes per day -- the castle counterpart
+        /// to the town's <see cref="ConvergenceRate"/> (0.1). Set lower so a castle still drifts toward
+        /// its countryside more deliberately than a town chases its own, over roughly three weeks
+        /// rather than ten days, but not so slow that a raided or recovering village takes a season to
+        /// register on the keep it feeds.
+        /// </summary>
+        private const float CastleConvergenceRate = 0.05f;
+
+        /// <summary>
         /// A fief's prosperity as the vanilla economic models expect to receive it. Use this ONLY for
         /// gold and market demand; anything counting mouths wants the raw value.
         /// </summary>
@@ -163,6 +191,34 @@ namespace RBMCampaign
             return hearths * ProsperityPerBoundHearth;
         }
 
+        /// <summary>
+        /// The prosperity a CASTLE rests at: the average hearth of its own bound villages times
+        /// <see cref="CastleProsperityHearthFactor"/>, or 0 for anything that is not a castle or that
+        /// has no bound villages to draw on.
+        ///
+        /// Administratively bound (<c>Settlement.BoundVillages</c>), not trade-bound: these are the
+        /// villages the castle actually holds, the ones whose fortunes are its own, even though they
+        /// sell their cargo at a nearby town. A zero return means "leave it alone" -- a castle with no
+        /// villages, or one queried before its bounds are assigned -- and callers keep the castle's
+        /// current prosperity rather than driving it to nothing.
+        /// </summary>
+        public static float CastleTargetProsperity(Settlement settlement)
+        {
+            if (settlement == null || !settlement.IsCastle || settlement.BoundVillages == null)
+            {
+                return 0f;
+            }
+
+            float sum = 0f;
+            int count = 0;
+            foreach (Village village in settlement.BoundVillages)
+            {
+                sum += village.Hearth;
+                count++;
+            }
+            return (count > 0) ? (sum / count) * CastleProsperityHearthFactor : 0f;
+        }
+
         // Hearths trading into each town, rebuilt once a campaign day. Hearth moves daily, so a
         // longer-lived cache would drift; a shorter-lived one would rescan every village for every
         // settlement that asks.
@@ -232,9 +288,25 @@ namespace RBMCampaign
         {
             private static void Postfix(Town fortification, ref ExplainedNumber __result)
             {
-                // Towns only. A castle keeps vanilla prosperity untouched -- including vanilla's
-                // housing ladder, which was town-gated to begin with and so needs no cancelling.
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || fortification == null || !fortification.IsTown)
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || fortification == null)
+                {
+                    return;
+                }
+
+                // A castle drifts toward the average hearth of its own bound villages. Vanilla's
+                // housing ladder was town-gated to begin with, so a castle needs no cancellation --
+                // only the pull. A zero target means the bounds are not readable yet; leave it be.
+                if (fortification.IsCastle)
+                {
+                    float castleTarget = CastleTargetProsperity(fortification.Settlement);
+                    if (castleTarget > 0f)
+                    {
+                        __result.Add((castleTarget - fortification.Prosperity) * CastleConvergenceRate, CountrysideText);
+                    }
+                    return;
+                }
+
+                if (!fortification.IsTown)
                 {
                     return;
                 }

@@ -27,6 +27,18 @@ namespace RBMConfig
         public TextViewModel EconomyLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> EconomyLoggingEnabled { get; }
 
+        // Intra-kingdom supply caravans: master on/off.
+        public TextViewModel KingdomCaravansEnabledText { get; }
+        public SelectorVM<SelectorItemVM> KingdomCaravansEnabled { get; }
+
+        // The repayable wealth injection bundled onto wealthy→struggling caravan routes: on/off.
+        public TextViewModel CaravanInvestmentEnabledText { get; }
+        public SelectorVM<SelectorItemVM> CaravanInvestmentEnabled { get; }
+
+        // Supply-caravan logging (logs/caravans): on/off.
+        public TextViewModel CaravanLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> CaravanLoggingEnabled { get; }
+
         // SupplyTown gate: on/off toggle for gating upgrades on a nearby friendly town.
         public TextViewModel TroopUpgradeRequireSupplyTownText { get; }
         public SelectorVM<SelectorItemVM> TroopUpgradeRequireSupplyTown { get; }
@@ -639,6 +651,35 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel EconomyLoggingEnabledHint { get; } = Hint("{=RBM_CON_108}Writes the village-to-town goods and food chain to logs/economy next to the config: each village's daily production, every villager party sent out with its size, composition and cargo, each town's rations, and the end-of-day state of every settlement. Verbose, and only useful for tuning the economy.");
+
+        // Caravan toggle labels and hints. Plain literal TextObjects (no {=KEY}) to sidestep the
+        // LOC-eng.xml key-collision issue, like the category headers below.
+        [DataSourceProperty]
+        public string KingdomCaravansEnabledt
+        {
+            get { return new TextObject("Kingdom Supply Caravans").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel KingdomCaravansEnabledHint { get; } = Hint("Spawns caravans that carry a surplus good from one of a kingdom's towns to another town of the same kingdom that is short of it -- real goods and money move, and the caravan can be raided. Off leaves the map on vanilla caravans alone. Default on.");
+
+        [DataSourceProperty]
+        public string CaravanInvestmentEnabledt
+        {
+            get { return new TextObject("Caravan Investment").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel CaravanInvestmentEnabledHint { get; } = Hint("On a wealthy→struggling route, a caravan also injects capital into the struggling town so it can afford the goods, booked as a debt the town repays out of its hoard tax once it recovers. Needs Kingdom Supply Caravans on. Default on.");
+
+        [DataSourceProperty]
+        public string CaravanLoggingEnabledt
+        {
+            get { return new TextObject("Caravan Logging").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel CaravanLoggingEnabledHint { get; } = Hint("Writes the supply-caravan system to logs/caravans next to the config: each caravan dispatched, its arrival and sale, capital injected and repaid, and any lost on the road. Needs Kingdom Supply Caravans on. Default on.");
 
         // SupplyTown gate: radius slider (whole map units) + the toggle's row label.
         private float _troopUpgradeSupplyRadius;

@@ -251,6 +251,21 @@ namespace RBMCampaign
             public const string Dearth = "dearth";
             public const string Seed = "seed";
             public const string Delivery = "delivery";
+
+            /// <summary>
+            /// An RBM supply caravan trading between two towns of one kingdom: the source market being
+            /// paid for the surplus it loaded, or the destination market paying for the shortage it
+            /// received. See <see cref="RBMCaravanArrival"/> and <see cref="RBMCaravanDispatch"/>.
+            /// </summary>
+            public const string Caravan = "caravan";
+
+            /// <summary>
+            /// A supply caravan on a wealthy→struggling route injecting capital into the destination
+            /// market as a repayable investment, and the destination later repaying its rescuers out of
+            /// its hoard levy. See <see cref="RBMCaravanInvestment"/>.
+            /// </summary>
+            public const string CaravanInvest = "caravan-invest";
+            public const string CaravanRepay = "caravan-repay";
             public const string WealthTax = "wealth-tax";
             public const string Carousing = "carousing";
             public const string TroopGoods = "troop-goods";
@@ -308,6 +323,28 @@ namespace RBMCampaign
             /// these -- see <see cref="WorkshopPurse"/>.
             /// </summary>
             public const string WorkshopWages = "workshop-wages";
+
+            /// <summary>
+            /// A castle's daily income drawn straight from its prosperity -- the taxable life behind the
+            /// wall, apart from the town market model. See <see cref="CastleEconomy"/>.
+            /// </summary>
+            public const string CastleIncome = "castle-income";
+
+            /// <summary>
+            /// A village spending its accumulated purse on finished goods at its market town, once the
+            /// purse has grown past a headman's reserve. The village's savings leaving for the town
+            /// market instead of hoarding forever; the goods bought leave the town's shelves, consumed
+            /// by the countryside. See <see cref="VillageShopping"/>.
+            /// </summary>
+            public const string VillageDemand = "village-demand";
+
+            /// <summary>
+            /// A village paying its market town for the gear its new recruits take off the shelves. The
+            /// gear leg of recruitment moves no money when a town arms its own sons, but a village draws
+            /// its kit from a DIFFERENT settlement's market and now pays that town's merchants for it out
+            /// of its own purse. See <see cref="RecruitSupply.DrawKitFromMarket"/>.
+            /// </summary>
+            public const string VillageArms = "village-arms";
         }
 
         // Depth of a funnel write in progress. The ChangeGold guard uses it to tell OUR write to the
@@ -627,7 +664,11 @@ namespace RBMCampaign
         /// </summary>
         private static bool HasMarket(Settlement settlement)
         {
-            return settlement != null && (settlement.IsTown || settlement.IsCastle);
+            // Towns only. A castle has no market circulating money and so no citizen purse: it holds a
+            // SINGLE pool, its settlement wealth (see CastleEconomy), and everything that would credit a
+            // castle's "citizens" -- garrison spending, trade or a ransom struck there -- has no second
+            // pot to land in and falls back to vanilla, the castle's income being its lands, not its bar.
+            return settlement != null && settlement.IsTown;
         }
 
         /// <summary>
@@ -673,6 +714,13 @@ namespace RBMCampaign
             {
                 return (int)(settlement.Village.Hearth * TreasuryPerHearth);
             }
+            // A castle sizes its single wealth pool on its RAW prosperity -- the same figure its daily
+            // income is measured against (see CastleEconomy) -- not the household-scale conversion a
+            // town uses for its treasury.
+            if (settlement.IsCastle && settlement.Town != null)
+            {
+                return (int)(settlement.Town.Prosperity * CastleEconomy.SeedPerProsperity);
+            }
             if (settlement.Town != null)
             {
                 return (int)(SeedProsperity(settlement) * TreasuryPerProsperity);
@@ -700,6 +748,9 @@ namespace RBMCampaign
             {
                 return 0;
             }
+            // Towns only. A castle has no citizen purse (see HasMarket); its single wealth pool is
+            // seeded as settlement wealth in InitialSettlementWealth, and this seeder skips it because
+            // HasCitizenPurse is false for a castle.
             return (int)(10000f + 12f * SeedProsperity(settlement) * RBMProsperityEquilibrium.TownTreasuryScale);
         }
     }

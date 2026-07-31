@@ -175,6 +175,7 @@ namespace RBM
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSpectateCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMEconomyCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSettlementWealthCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMCaravanBehavior());
             }
             base.OnGameStart(game, gameStarterObject);
         }

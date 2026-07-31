@@ -70,7 +70,18 @@ namespace RBMCampaign
         /// </remarks>
         public static void OnDailyTick(Settlement settlement)
         {
-            if (!RBMConfig.RBMConfig.rbmCampaignEnabled || settlement == null || !settlement.IsTown)
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled || settlement == null)
+            {
+                return;
+            }
+            // A castle is taxed only on a hoard, never on its healthy float -- its income is minted
+            // fresh each day, so a gentle stock levy on top would just be a second tax to the lord.
+            if (settlement.IsCastle)
+            {
+                OnDailyTickCastle(settlement);
+                return;
+            }
+            if (!settlement.IsTown)
             {
                 return;
             }
@@ -94,6 +105,24 @@ namespace RBMCampaign
             if (ownerLevy <= 0 && settlementLevy <= 0)
             {
                 return;
+            }
+
+            // A hoarding town is a recovered one: before the owner and fief take the hoard levy, up to
+            // half of it repays any supply-caravan investment this town still owes its rescuers. The town
+            // has crossed the same line that marks it as hoarding, so it is paying back out of money it
+            // plainly did not need; the other half of the levy still reaches the lord and treasury. See
+            // RBMCaravanInvestment.
+            if (hoarding && RBMCaravanInvestment.IsEnabled)
+            {
+                int pool = ownerLevy + settlementLevy;
+                int repayCap = (int)(pool * RBMCaravanInvestment.RepayShareOfHoardTax);
+                int repaid = RBMCaravanInvestment.RepayFromHoardTax(settlement, repayCap);
+                if (repaid > 0)
+                {
+                    int remainder = pool - repaid;
+                    ownerLevy = remainder / 2;
+                    settlementLevy = remainder - ownerLevy;
+                }
             }
 
             int takenForOwner = (ownerLevy > 0)
@@ -122,6 +151,52 @@ namespace RBMCampaign
                     (hoarding ? "HOARDING -- " : "") + "levied " + takenForOwner + "d to owner, " + takenForSettlement + "d to treasury"
                     + "  ·  citizen wealth now " + SettlementWealth.GetCitizenWealth(settlement) + "d"
                     + "  ·  settlement wealth now " + SettlementWealth.GetSettlementWealth(settlement) + "d");
+            }
+        }
+
+        /// <summary>
+        /// The castle levy: the surplus skim, and a castle's only drain to its lord. A castle collects
+        /// its income into a single wealth pool and pays its own upkeep from it (see
+        /// <see cref="CastleEconomy"/>); whatever stands above the hoard line
+        /// (<see cref="CastleEconomy.HoardThresholdPerProsperity"/> per point of prosperity) is what the
+        /// castle did not need, and a flat tenth of that is remitted to the holding lord each day. Below
+        /// the line nothing is taken. There is no fixed head-tax and no citizen share -- the lord's
+        /// income from a castle is simply that it ran a surplus, and this is the one thing that keeps
+        /// the pool from piling up without bound.
+        /// </summary>
+        private static void OnDailyTickCastle(Settlement settlement)
+        {
+            int wealth = SettlementWealth.GetSettlementWealth(settlement);
+            float prosperity = (settlement.Town != null) ? settlement.Town.Prosperity : 0f;
+            int threshold = (int)(prosperity * CastleEconomy.HoardThresholdPerProsperity);
+            if (wealth <= threshold)
+            {
+                return;
+            }
+
+            int levy = (int)((wealth - threshold) * HoardOwnerRate);
+            if (levy <= 0)
+            {
+                return;
+            }
+
+            int taken = SettlementWealth.Debit(settlement, levy, SettlementWealth.Source.WealthTax);
+            if (taken <= 0)
+            {
+                return;
+            }
+
+            Hero owner = (settlement.OwnerClan != null) ? settlement.OwnerClan.Leader : null;
+            if (owner != null)
+            {
+                owner.ChangeHeroGold(taken);
+            }
+
+            if (EconomyLog.IsEnabled)
+            {
+                EconomyLog.Log("WEALTHTAX", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
+                    "CASTLE SURPLUS -- remitted " + taken + "d to owner"
+                    + "  ·  castle wealth now " + SettlementWealth.GetSettlementWealth(settlement) + "d");
             }
         }
     }

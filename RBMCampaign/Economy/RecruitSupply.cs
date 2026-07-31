@@ -254,7 +254,14 @@ namespace RBMCampaign
         /// <summary>
         /// Takes <paramref name="count"/> men's worth of kit off <paramref name="market"/>: for every
         /// slot the troop's gear fills, one item of that class and tier per man, up to the full worth of
-        /// what he wears. No money moves -- see the class summary.
+        /// what he wears.
+        ///
+        /// A TOWN arming its own sons pays nothing -- the stock simply goes, as the class summary sets
+        /// out. A VILLAGE draws its kit from a different settlement's market, so it PAYS that town's
+        /// merchants for what it takes: the village purse is debited and the town market credited by the
+        /// worth of the gear drawn, money moving village → town exactly as the goods move town → village.
+        /// A village can arm only what its purse covers, so the budget is capped at what it holds and a
+        /// broke village turns its recruits out in whatever they had.
         ///
         /// Soft on stock: it takes what the market has and never holds anything up for want of it, since
         /// a picked-clean market would otherwise stop a countryside arming itself at all. What it cannot
@@ -273,8 +280,26 @@ namespace RBMCampaign
                 return;
             }
 
+            // A village buys its recruits' gear off its market town and pays for it; a town serving its
+            // own recruits does not. The village can only arm what its purse covers, so the kit budget is
+            // capped at what it holds -- a broke village simply arms fewer men, or none.
+            bool villagePays = raisedAt != null && raisedAt.IsVillage && market != raisedAt
+                && SettlementWealth.HasCitizenPurse(market);
+
             ItemRoster stock = market.ItemRoster;
             int budget = perManValue * count;
+            if (villagePays)
+            {
+                int purse = SettlementWealth.GetSettlementWealth(raisedAt);
+                if (purse < budget)
+                {
+                    budget = purse;
+                }
+                if (budget <= 0)
+                {
+                    return;
+                }
+            }
             int drawn = 0;
             int taken = 0;
             int wanted = 0;
@@ -287,10 +312,12 @@ namespace RBMCampaign
                     bool exhausted = false;
                     for (int man = 0; man < count; man++)
                     {
-                        int index = UpgradeSupply.FindKitInStock(stock, slot.ItemType, slot.Value);
+                        // The right class and tier first, then any war gear at that value: a picked-over
+                        // market still arms the man from what it has. See UpgradeSupply.FindKitOrAnyWarGear.
+                        int index = UpgradeSupply.FindKitOrAnyWarGear(stock, slot.ItemType, slot.Value);
                         if (index < 0)
                         {
-                            break; // this class is out of stock; the rest of the kit is found elsewhere
+                            break; // no war gear in band at all; the rest of the kit is found off-screen
                         }
                         if (!TryDrawFromStock(market, stock, index, budget - drawn, ref drawn))
                         {
@@ -323,12 +350,27 @@ namespace RBMCampaign
                 }
             }
 
+            // The village pays the town's merchants for the gear its recruits walked off with. The kit
+            // budget was capped at the purse above, so drawn ≤ budget ≤ purse and the debit is exact --
+            // no gear is taken that the village did not pay for. Money village → town market, mirroring
+            // the goods that went town → village. A town arming its own sons falls through and pays none.
+            int paid = 0;
+            if (villagePays && drawn > 0)
+            {
+                paid = SettlementWealth.Debit(raisedAt, drawn, SettlementWealth.Source.VillageArms);
+                if (paid > 0)
+                {
+                    SettlementWealth.CreditCitizens(market, paid, SettlementWealth.Source.VillageArms);
+                }
+            }
+
             if (SpoilsLog.IsEnabled && taken > 0)
             {
                 SpoilsLog.Log("RECRUIT", (raisedAt != null ? raisedAt.Name.ToString() : "?") + " raised "
                     + count + "x " + SpoilsLog.Describe(character) + "; armed from " + market.Name
                     + " with " + taken + "/" + wanted + " item(s) worth " + drawn + "d of " + budget
-                    + "d kit" + (taken < wanted ? " — market short " + (wanted - taken) : ""));
+                    + "d kit" + (villagePays ? ", paid " + paid + "d" : "")
+                    + (taken < wanted ? " — market short " + (wanted - taken) : ""));
             }
         }
 

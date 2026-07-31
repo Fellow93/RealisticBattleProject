@@ -169,6 +169,15 @@ namespace RBMCampaign
                     return true;
                 }
 
+                // An RBM supply caravan is not an asset trading for its owner's profit -- its money moves
+                // between town purses, not into a clan's gold -- so it pays out nothing and its inflated
+                // seed capital is never bled to an owner. See RBMCaravanArrival.
+                if (RBMCaravanRegister.IsManaged(party))
+                {
+                    __result = 0;
+                    return false;
+                }
+
                 __result = 0;
 
                 // Vanilla's own guard. A caravan the clan leader leads in person is not an asset paying
@@ -215,6 +224,28 @@ namespace RBMCampaign
                         DefaultClanFinanceModel.AssetIncomeType.Caravan, income);
                 }
 
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// A managed supply caravan costs its owner clan nothing on the expense side either: its guard
+        /// wages are drawn from its own seed trade gold and it is dissolved once its errand is done, so it
+        /// should never land on the owner's ledger as a party expense -- not even the top-up a normal
+        /// caravan draws once its purse runs low, which is the one path by which a long-lived caravan could
+        /// otherwise start bleeding the owner. Forces the expense to zero and skips the original for our
+        /// caravans; every other party (real caravans included) falls straight through.
+        /// </summary>
+        [HarmonyPatch(typeof(DefaultClanFinanceModel), "AddPartyExpense")]
+        private static class ManagedCaravanNoExpensePatch
+        {
+            private static bool Prefix(MobileParty party, ref int __result)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || party == null || !RBMCaravanRegister.IsManaged(party))
+                {
+                    return true;
+                }
+                __result = 0;
                 return false;
             }
         }

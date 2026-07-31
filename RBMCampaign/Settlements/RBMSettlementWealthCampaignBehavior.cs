@@ -38,6 +38,9 @@ namespace RBMCampaign
 
         private void OnDailyTickSettlement(Settlement settlement)
         {
+            // A castle earns first, then pays: income is minted before the day's upkeep and wealth tax
+            // so those act on the post-income balance.
+            CastleEconomy.OnDailyTick(settlement);
             AdministrativeUpkeep.OnDailyTick(settlement);
             WealthTax.OnDailyTick(settlement);
             // After the day's charges, so these report against the purse they left behind.

@@ -62,9 +62,16 @@ namespace RBMCampaign
             // A blank line sets these off from the settlement's own stats above them.
             propertyBasedTooltipVM.AddProperty(string.Empty, string.Empty, -1);
 
-            // A village has one purse and no market, so showing it a citizen-wealth line would be
-            // showing it a permanent zero. See SettlementWealth.HasMarket.
-            if (!settlement.IsVillage)
+            // A castle holds a single pool -- its own wealth -- with no market and so no citizen purse;
+            // a village likewise has one purse and no market. Only a town shows both a citizen-wealth
+            // line and a settlement line. See SettlementWealth.HasMarket.
+            if (settlement.IsCastle)
+            {
+                propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_wealth_castle}Castle wealth").ToString(),
+                    SettlementWealth.GetSettlementWealth(settlement).ToString(), 0);
+                return;
+            }
+            if (settlement.IsTown)
             {
                 propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_wealth_citizen}Citizen wealth").ToString(),
                     SettlementWealth.GetCitizenWealth(settlement).ToString(), 0);

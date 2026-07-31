@@ -218,12 +218,22 @@ namespace RBMCampaign
             // the cache may already hold a copy taken mid-worldgen, before castle villages had one.
             RBMProsperityEquilibrium.InvalidateHearthCache();
 
-            // Towns only -- castles keep whatever prosperity the world was authored with.
+            // Start every fief on its own equilibrium so the map does not open mid-correction: a town
+            // on its trade-bound hearths, a castle on the average hearth of its own bound villages. A
+            // castle whose bounds are not readable yet (target 0) keeps its authored prosperity.
             foreach (Settlement settlement in Settlement.All)
             {
                 if (settlement.IsTown)
                 {
                     settlement.Town.Prosperity = RBMProsperityEquilibrium.TargetProsperity(settlement);
+                }
+                else if (settlement.IsCastle)
+                {
+                    float castleTarget = RBMProsperityEquilibrium.CastleTargetProsperity(settlement);
+                    if (castleTarget > 0f)
+                    {
+                        settlement.Town.Prosperity = castleTarget;
+                    }
                 }
             }
         }

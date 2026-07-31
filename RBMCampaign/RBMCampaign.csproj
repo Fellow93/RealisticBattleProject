@@ -277,7 +277,13 @@
     <Compile Include="RBMCampaignPatcher.cs" />
     <Compile Include="Diagnostics\SpoilsLog.cs" />
     <Compile Include="Diagnostics\EconomyLog.cs" />
+    <Compile Include="Diagnostics\CaravanLog.cs" />
     <Compile Include="Diagnostics\LogRetention.cs" />
+    <Compile Include="Caravans\RBMCaravanRegister.cs" />
+    <Compile Include="Caravans\RBMCaravanDispatch.cs" />
+    <Compile Include="Caravans\RBMCaravanArrival.cs" />
+    <Compile Include="Caravans\RBMCaravanInvestment.cs" />
+    <Compile Include="Caravans\RBMCaravanBehavior.cs" />
     <Compile Include="Spoils\SpoilsPool.cs" />
     <Compile Include="Spoils\SpoilsPool.Equipment.cs" />
     <Compile Include="Spoils\SpoilsPool.UpgradeMath.cs" />
@@ -350,6 +356,7 @@
     <Compile Include="Production\VillagerDelivery.cs" />
     <Compile Include="Production\VillagerEscort.cs" />
     <Compile Include="Production\VillageHousehold.cs" />
+    <Compile Include="Production\VillageShopping.cs" />
     <Compile Include="Economy\RBMEconomyCampaignBehavior.cs" />
     <Compile Include="Economy\RBMFaminePenalty.cs" />
     <Compile Include="Economy\PartyTradeFlow.cs" />
@@ -370,6 +377,7 @@
     <Compile Include="Settlements\WorkshopPurse.cs" />
     <Compile Include="Settlements\SettlementWealthTooltip.cs" />
     <Compile Include="Settlements\AdministrativeUpkeep.cs" />
+    <Compile Include="Settlements\CastleEconomy.cs" />
     <Compile Include="Settlements\ConstructionLabour.cs" />
     <Compile Include="Settlements\GarrisonUpkeep.cs" />
     <Compile Include="Settlements\TradeTariff.cs" />

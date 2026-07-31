@@ -261,10 +261,12 @@ namespace RBMCampaign
                     {
                         for (int man = 0; man < count; man++)
                         {
-                            int index = FindKitInStock(market, slot.ItemType, slot.Value);
+                            // The right class and tier first, then any war gear at that value: a town short
+                            // of the exact piece still arms the man from what it has. See FindKitOrAnyWarGear.
+                            int index = FindKitOrAnyWarGear(market, slot.ItemType, slot.Value);
                             if (index < 0)
                             {
-                                break; // soft sink: this class is out of stock, the rest are outfitted off-screen
+                                break; // soft sink: no war gear in band at all, the rest are outfitted off-screen
                             }
                             if (!TakeFromStock(town, market, index, ref drawnValue))
                             {
@@ -423,6 +425,71 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// The in-stock market item of the right class and tier if the market has one, and otherwise ANY
+        /// war gear of about that worth. -1 only when the market holds no war gear at all in band.
+        /// </summary>
+        /// <remarks>
+        /// This is the two-stage search both the recruit and the upgrade draws walk each kit slot with:
+        /// find the nearest part of the same class first -- a body upgrade pulling body armour, a horse
+        /// upgrade a horse -- and, when that class is out of stock, broaden to whatever war gear the town
+        /// does hold at that value rather than leaving the slot bare and outfitting the man off-screen. A
+        /// picked-over frontier market still arms its men from what it has, spending the kit's worth on
+        /// spare shields or helmets when the exact piece is gone. Trade goods and food are never kit --
+        /// see <see cref="IsWarGear"/>.
+        /// </remarks>
+        internal static int FindKitOrAnyWarGear(ItemRoster market, ItemObject.ItemTypeEnum itemType, int targetValue)
+        {
+            int index = FindKitInStock(market, itemType, targetValue);
+            if (index < 0)
+            {
+                index = FindKitInStock(market, targetValue);
+            }
+            return index;
+        }
+
+        /// <summary>
+        /// Actual equipment a soldier can be armed with -- weapons, ammunition, shields, armour, mounts and
+        /// barding -- as opposed to the trade goods, livestock, books and food a market also stocks. What
+        /// the broadened kit search is allowed to buy: a man's kit money spent on any war gear in band, but
+        /// never on a bale of wool or a cask of wine because the helmets ran out.
+        /// </summary>
+        internal static bool IsWarGear(ItemObject item)
+        {
+            if (item == null)
+            {
+                return false;
+            }
+            switch (item.ItemType)
+            {
+                case ItemObject.ItemTypeEnum.Horse:
+                case ItemObject.ItemTypeEnum.OneHandedWeapon:
+                case ItemObject.ItemTypeEnum.TwoHandedWeapon:
+                case ItemObject.ItemTypeEnum.Polearm:
+                case ItemObject.ItemTypeEnum.Arrows:
+                case ItemObject.ItemTypeEnum.Bolts:
+                case ItemObject.ItemTypeEnum.SlingStones:
+                case ItemObject.ItemTypeEnum.Shield:
+                case ItemObject.ItemTypeEnum.Bow:
+                case ItemObject.ItemTypeEnum.Crossbow:
+                case ItemObject.ItemTypeEnum.Sling:
+                case ItemObject.ItemTypeEnum.Thrown:
+                case ItemObject.ItemTypeEnum.HeadArmor:
+                case ItemObject.ItemTypeEnum.BodyArmor:
+                case ItemObject.ItemTypeEnum.LegArmor:
+                case ItemObject.ItemTypeEnum.HandArmor:
+                case ItemObject.ItemTypeEnum.Pistol:
+                case ItemObject.ItemTypeEnum.Musket:
+                case ItemObject.ItemTypeEnum.Bullets:
+                case ItemObject.ItemTypeEnum.ChestArmor:
+                case ItemObject.ItemTypeEnum.Cape:
+                case ItemObject.ItemTypeEnum.HorseHarness:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
         /// The in-stock market item of class <paramref name="itemType"/> closest in worth to
         /// <paramref name="targetValue"/>, kept inside a half-to-double band so a promotion never spends
         /// its coin on something wildly off tier. -1 when the market holds nothing of that class in band.
@@ -462,9 +529,11 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The in-stock market item closest in worth to <paramref name="targetValue"/>, of any class, kept
-        /// inside a half-to-double band so a promotion never spends its coin on something wildly off. Food
-        /// is never kit. -1 when the market holds nothing in band. The fallback for when the slot diff comes
+        /// The in-stock war gear closest in worth to <paramref name="targetValue"/>, of any class, kept
+        /// inside a half-to-double band so a promotion never spends its coin on something wildly off. Only
+        /// war gear is kit -- trade goods, livestock and food are passed over (<see cref="IsWarGear"/>).
+        /// -1 when the market holds no war gear in band. The broadened half of the search: what a slot
+        /// falls back to when its own class is out of stock, and the fallback for when the slot diff comes
         /// back empty and there is no specific class to match.
         /// </summary>
         /// <remarks>Shared with <see cref="RecruitSupply"/>, which falls back the same way.</remarks>
@@ -481,7 +550,7 @@ namespace RBMCampaign
                     continue;
                 }
                 ItemObject item = market.GetItemAtIndex(i);
-                if (item == null || item.IsFood)
+                if (!IsWarGear(item))
                 {
                     continue;
                 }

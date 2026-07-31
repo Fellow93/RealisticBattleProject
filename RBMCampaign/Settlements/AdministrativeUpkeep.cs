@@ -52,9 +52,45 @@ namespace RBMCampaign
                 ConsumeVillageFood(settlement, VillageDailyFood);
                 PayWage(settlement, VillageDailySalary, toCitizens: false);
             }
-            // Castles are left out for now, the same as they are left out of the food pipeline: they
-            // sit outside the market model this rests on. A castle's administration rides on its
-            // garrison until that gap is closed.
+            else if (settlement.IsCastle)
+            {
+                // A castle earns its own income now (see CastleEconomy), so it carries its own
+                // administration too: the keep's clerks and wardens, and the standing cost of the
+                // walls that are its whole purpose. A castle has one pool and no market for a wage to
+                // circulate back into, so both simply leave it, the way a village's spending does.
+                PayWage(settlement, CastleEconomy.AdminDailySalary, toCitizens: false);
+                PayWallsUpkeep(settlement);
+            }
+        }
+
+        /// <summary>
+        /// The daily cost of keeping a castle's walls sound -- masons, mortar, the gate-works -- scaled
+        /// to how high the fortifications have been built (<c>Town.GetWallLevel</c>). Unlike the
+        /// administration's wage this leaves the economy: it is paid out to tradesmen the ledger does
+        /// not track, the way any coin a settlement spends on its own fabric does. A castle's keep is
+        /// its reason to exist, so its walls are a cost it always carries.
+        /// </summary>
+        private static void PayWallsUpkeep(Settlement settlement)
+        {
+            if (settlement.Town == null)
+            {
+                return;
+            }
+            int wallLevel = settlement.Town.GetWallLevel();
+            int cost = wallLevel * CastleEconomy.WallUpkeepPerLevel;
+            if (cost <= 0)
+            {
+                return;
+            }
+
+            int paid = SettlementWealth.Debit(settlement, cost, SettlementWealth.Source.Maintenance);
+            if (EconomyLog.IsEnabled && paid > 0)
+            {
+                EconomyLog.Log("WALLS", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
+                    "upkeep " + paid + "/" + cost + "d (wall lvl " + wallLevel + ")"
+                    + (paid < cost ? "  ·  purse short" : "")
+                    + "  ·  purse now " + SettlementWealth.GetSettlementWealth(settlement) + "d");
+            }
         }
 
         /// <summary>
