@@ -29,8 +29,20 @@ namespace RBMCampaign
     /// available for the first time:
     ///
     /// <code>
-    /// factor = clamp( (AbundantDays / days) ^ ScarcityExponent , 1 , MaxFactor )
+    /// cap      = MarkupCap(good)                              // 2x basic, 4x medium, 8x luxury
+    /// exponent = ln(cap) / ln(AbundantDays / CeilingDays)     // derived, so the curve fits the cap
+    /// factor   = clamp( (AbundantDays / days) ^ exponent , 1 , cap )
     /// </code>
+    ///
+    /// The ceiling is the one thing that is NOT uniform across goods, and it does not merely clip a
+    /// shared curve -- it RESHAPES it. The exponent is derived from the cap so that every tier reads
+    /// 1.0x at a full store and reaches its own ceiling at the same near-empty point, which makes the
+    /// cap a statement about a good's price ELASTICITY rather than its base value: a staple people must
+    /// buy and every region grows ramps gently and cannot spike far however bare the shelf (basic, 2x);
+    /// a semi-processed or regional good answers scarcity harder (medium, 4x); a status luxury commands
+    /// whatever the shortage will bear (luxury, 8x). Clipping instead of reshaping would have pinned a
+    /// basic good at 2x from a week's stock down to empty -- a flat tax, not a scarcity signal. See
+    /// <see cref="MarkupCap(ItemObject)"/> and <see cref="ScarcityFactor(float, float)"/>.
     ///
     /// The lower clamp is 1 rather than a discount, because an item's <c>Value</c> is already the price
     /// of that good where it is plentiful -- <see cref="TradeGoodValues"/> sets it from a table of
@@ -96,28 +108,33 @@ namespace RBMCampaign
         public const float FloorDays = 0.1f;
 
         /// <summary>
-        /// How sharply price answers scarcity. Chosen on what the curve does, against a base value that
-        /// is the floor:
+        /// Days of stock at which a good reaches its tier ceiling -- the near-empty point every curve is
+        /// anchored to. The scarcity exponent is DERIVED from this and the good's cap
+        /// (<c>ln(cap) / ln(AbundantDays / CeilingDays)</c>) so that, whatever the cap, the curve reads
+        /// 1.0x at <see cref="AbundantDays"/> and exactly the cap here.
+        ///
+        /// Kept at 0.5 because that is where the old single 8x ceiling was reached, so the luxury tier
+        /// (cap 8) keeps precisely the curve the mod shipped -- exponent 0.61, and the same reference
+        /// points it was calibrated against:
         ///
         /// <list type="bullet">
         /// <item>15 days or more (comfortably stocked) -- 1.0x, the historical floor price</item>
-        /// <item>10 days -- 1.3x</item>
-        /// <item>5 days -- 1.9x</item>
-        /// <item>3 days -- 2.6x</item>
-        /// <item>2 days -- 3.4x</item>
-        /// <item>1 day -- 5.2x</item>
-        /// <item>0.5 days or less -- 8.0x, the ceiling</item>
+        /// <item>10 days -- 1.3x (luxury) · 1.1x (basic)</item>
+        /// <item>5 days -- 1.9x (luxury) · 1.3x (basic)</item>
+        /// <item>2 days -- 3.4x (luxury) · 1.5x (basic)</item>
+        /// <item>1 day -- 5.2x (luxury) · 3.0x (medium) · 1.7x (basic)</item>
+        /// <item>0.5 days or less -- the cap: 8x luxury, 4x medium, 2x basic</item>
         /// </list>
         ///
         /// That shape is the point of the whole change. An ordinarily stocked town pays the floor and a
-        /// week's stock only about half as much again, which leaves an honest margin for a merchant
-        /// without inflating everything; a town down to a day or two pays four to six times; a bare
-        /// shelf runs to the ceiling, which is what grain actually did in a bad year. Vanilla could not
-        /// express any of it, because its 10x ceiling was measured from a floor of 0.1x -- so the
-        /// "expensive" price and the "cheap" price were both fictions either side of a value that meant
-        /// nothing in particular.
+        /// week's stock only a little more, which leaves an honest margin for a merchant without
+        /// inflating everything; a town down to a day or two pays a multiple set by what the good is;
+        /// a bare shelf runs to the ceiling, which is what grain actually did in a bad year. Vanilla
+        /// could not express any of it, because its 10x ceiling was measured from a floor of 0.1x -- so
+        /// the "expensive" price and the "cheap" price were both fictions either side of a value that
+        /// meant nothing in particular.
         /// </summary>
-        public const float ScarcityExponent = 0.6f;
+        public const float CeilingDays = 0.5f;
 
         /// <summary>
         /// The floor, and it is exactly 1: a market never sells below the base value, because that
@@ -127,8 +144,10 @@ namespace RBMCampaign
         public const float MinFactor = 1f;
 
         /// <summary>
-        /// The ceiling: dearest a famine can make a good, against a floor that is a real historical
-        /// price. Reached at about 0.5 days of stock and held there however empty the shelf gets.
+        /// The luxury-tier ceiling and the default for any untiered good: dearest a famine can make a
+        /// good whose demand a shortage can inflate without limit, against a floor that is a real
+        /// historical price. Reached at <see cref="CeilingDays"/> and held there however empty the shelf
+        /// gets. This is what the old single ceiling was, kept for the goods that earn it.
         /// </summary>
         /// <remarks>
         /// Lowered from an effective 17.68x, which was measured and did real damage. Every good with no
@@ -142,9 +161,74 @@ namespace RBMCampaign
         /// The deeper reason it had to come down: an unbounded markup only means something where supply
         /// can ANSWER it. Velvet has no producer anywhere in the chain, so pinning it at the ceiling
         /// forever was not a scarcity signal but a permanent tax on a good that will never arrive --
-        /// and the gates downstream read that number as real.
+        /// and the gates downstream read that number as real. That is also why the ceiling is now a
+        /// TIER (<see cref="MarkupCap(ItemObject)"/>): the goods most likely to sit unanswered at the
+        /// top -- staples every region grows -- are the ones held to 2x, while the 8x is reserved for
+        /// the luxuries whose price a shortage really does carry that far.
         /// </remarks>
         public const float MaxFactor = 8f;
+
+        /// <summary>The medium tier: semi-processed and regional goods a shortage stretches to 4x.</summary>
+        public const float MediumCap = 4f;
+
+        /// <summary>The basic tier: staples every region grows, held to 2x however bare the shelf.</summary>
+        public const float BasicCap = 2f;
+
+        /// <summary>
+        /// The per-good scarcity ceiling, by trade tier. This is the ONE term of the price that is not
+        /// uniform across goods; everything else in <see cref="ScarcityFactor(float, float)"/> is shared
+        /// and the exponent is derived from the value this returns.
+        /// </summary>
+        /// <remarks>
+        /// The tier is a good's price ELASTICITY, not its base value -- so a cheap, volatile good and a
+        /// dear, steady one sit in different tiers regardless of price: spice (base 13) is a luxury at
+        /// 8x, grape (base 275) a staple at 2x. Keyed by <see cref="ItemObject.StringId"/> so it spans
+        /// both value tables uniformly (<see cref="TradeGoodValues"/> and the naval
+        /// <see cref="NavalTradeGoodValues"/>); a good named in neither keeps the old 8x default, so a
+        /// good is never silently given a TIGHTER cap than it had before this split without being
+        /// listed here.
+        /// </remarks>
+        private static readonly Dictionary<string, float> MarkupCaps = new Dictionary<string, float>
+        {
+            // Basic (2x) -- staples every region produces; a shortage cannot spike them far.
+            { "flax", BasicCap }, { "clay", BasicCap }, { "pottery", BasicCap }, { "cheese", BasicCap },
+            { "butter", BasicCap }, { "olives", BasicCap }, { "grape", BasicCap }, { "wool", BasicCap },
+            { "grain", BasicCap }, { "hides", BasicCap }, { "meat", BasicCap }, { "planks", BasicCap },
+            { "silver", BasicCap }, { "iron", BasicCap }, { "hardwood", BasicCap }, { "charcoal", BasicCap },
+            { "ironIngot1", BasicCap }, { "ironIngot2", BasicCap }, { "ironIngot3", BasicCap },
+            { "linen", BasicCap }, { "felt", BasicCap },
+
+            // Medium (4x) -- semi-processed or regional goods that answer scarcity harder.
+            { "leather", MediumCap }, { "fish", MediumCap }, { "salt", MediumCap }, { "cotton", MediumCap },
+            { "beer", MediumCap }, { "date_fruit", MediumCap }, { "tools", MediumCap }, { "wine", MediumCap },
+            { "oil", MediumCap }, { "ironIngot4", MediumCap }, { "ironIngot5", MediumCap },
+            { "whale_oil", MediumCap },
+
+            // Luxury (8x) -- status goods a shortage carries as far as the shelf is bare.
+            { "jewelry", MaxFactor }, { "spice", MaxFactor }, { "velvet", MaxFactor }, { "fur", MaxFactor },
+            { "ironIngot6", MaxFactor }, { "walrus_tusk", MaxFactor },
+        };
+
+        /// <summary>The scarcity ceiling for this good's tier; the default 8x for an untiered good.</summary>
+        public static float MarkupCap(ItemObject item)
+        {
+            return MarkupCap((item != null) ? item.StringId : null);
+        }
+
+        /// <summary>
+        /// The tier ceiling by id. The <see cref="ItemCategory"/> overload of the price path uses this
+        /// too -- a workshop input is priced per item but read per category, and a raw material's
+        /// category id matches its good id (wool, iron, clay), so the same table serves both.
+        /// </summary>
+        public static float MarkupCap(string id)
+        {
+            float cap;
+            if (id != null && MarkupCaps.TryGetValue(id, out cap))
+            {
+                return cap;
+            }
+            return MaxFactor;
+        }
 
         /// <summary>
         /// What the town pays a supplier, as a share of base value: the wholesale price, and it does
@@ -246,12 +330,23 @@ namespace RBMCampaign
             return days;
         }
 
-        /// <summary>The scarcity multiplier for a stock that would last <paramref name="days"/>.</summary>
-        public static float ScarcityFactor(float days)
+        /// <summary>
+        /// The scarcity multiplier for a stock that would last <paramref name="days"/>, on a curve
+        /// scaled to the good's ceiling <paramref name="maxFactor"/>.
+        /// </summary>
+        /// <remarks>
+        /// The exponent is derived from the cap rather than shared, so the ceiling reshapes the whole
+        /// curve instead of clipping a common one: <c>exponent = ln(cap) / ln(AbundantDays/CeilingDays)</c>
+        /// makes the factor read 1.0x at <see cref="AbundantDays"/> and reach exactly the cap at
+        /// <see cref="CeilingDays"/>, whatever the cap. The luxury cap of 8 recovers the original 0.61
+        /// exponent, so that tier is unchanged; lower caps ramp more gently rather than flat-lining early.
+        /// </remarks>
+        public static float ScarcityFactor(float days, float maxFactor)
         {
             float effective = (days > FloorDays) ? days : FloorDays;
-            float factor = (float)Math.Pow(AbundantDays / effective, ScarcityExponent);
-            return MathF.Clamp(factor, MinFactor, MaxFactor);
+            float exponent = (float)(Math.Log(maxFactor) / Math.Log(AbundantDays / CeilingDays));
+            float factor = (float)Math.Pow(AbundantDays / effective, exponent);
+            return MathF.Clamp(factor, MinFactor, maxFactor);
         }
 
         /// <summary>
@@ -312,7 +407,7 @@ namespace RBMCampaign
                 line.Append("  ").Append(id)
                     .Append(" ").Append(town.Owner.ItemRoster.GetItemNumber(item)).Append("u")
                     .Append(" ").Append(EconomyLog.Fmt(days)).Append("d")
-                    .Append(" ").Append(EconomyLog.Fmt(ScarcityFactor(days))).Append("x")
+                    .Append(" ").Append(EconomyLog.Fmt(ScarcityFactor(days, MarkupCap(item)))).Append("x")
                     .Append(" ").Append(EconomyLog.Fmt(data.Supply))
                     .Append("/").Append(EconomyLog.Fmt(data.Demand)).Append("sd")
                     // Retail over wholesale: what a townsman pays, and what the convoy that brought it
@@ -367,7 +462,7 @@ namespace RBMCampaign
                     .Append(" ").Append(units).Append("u")
                     .Append(" ").Append(EconomyLog.Fmt(daily)).Append("/d")
                     .Append(" ").Append(EconomyLog.Fmt(days)).Append("d")
-                    .Append(" ").Append(EconomyLog.Fmt(ScarcityFactor(days))).Append("x")
+                    .Append(" ").Append(EconomyLog.Fmt(ScarcityFactor(days, MarkupCap(id)))).Append("x")
                     .Append(" ").Append(EconomyLog.Fmt(data.Supply))
                     .Append("/").Append(EconomyLog.Fmt(data.Demand)).Append("sd");
             }
@@ -421,7 +516,7 @@ namespace RBMCampaign
                 // (TradeGoodValues), scarcity is the sole markup on a retail sale, and a wholesale sale
                 // pays a flat carriage margin. isSelling is from the PARTY's side -- true means the party
                 // is selling and the town is buying, the wholesale leg, which carries no scarcity markup.
-                float factor = isSelling ? WholesaleFactor : ScarcityFactor(days);
+                float factor = isSelling ? WholesaleFactor : ScarcityFactor(days, MarkupCap(item));
 
                 // The one thing kept from vanilla: the party's own trade spread -- their Trade skill and
                 // the goods' trade perks. Passing a null merchant is what strips everything else, because

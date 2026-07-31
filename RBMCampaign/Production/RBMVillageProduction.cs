@@ -122,6 +122,16 @@ namespace RBMCampaign
                 { "whaler", new (string, float)[] { ("whale_oil", 0.29f) } },           // Naval DLC
             };
 
+        // Village types whose "primary production" icon should be pinned to a specific good rather
+        // than the automatic rate*Value pick. Desert ranches are chiefly known for their camels even
+        // though horses out-weight them on rate*Value, so they show a camel on the map. Keyed by
+        // VillageType.StringId -> item id (the item still has to resolve and be merchandise).
+        private static readonly Dictionary<string, string> PrimaryOverride =
+            new Dictionary<string, string>
+            {
+                { "desert_horse_ranch", "camel" },
+            };
+
         private static readonly Dictionary<ItemObject, float> Empty = new Dictionary<ItemObject, float>();
 
         // Resolved rate tables are cached per VillageType. VillageType objects (and the ItemObjects
@@ -129,6 +139,10 @@ namespace RBMCampaign
         // current Campaign changes to avoid handing out stale item references.
         private static readonly Dictionary<VillageType, Dictionary<ItemObject, float>> _cache =
             new Dictionary<VillageType, Dictionary<ItemObject, float>>();
+        // Resolved speciality good shown as each type's "primary production" (map icon, tooltips).
+        // Same per-campaign lifetime as _cache -- dropped together when the campaign changes.
+        private static readonly Dictionary<VillageType, ItemObject> _primaryCache =
+            new Dictionary<VillageType, ItemObject>();
         private static Campaign _cachedCampaign;
 
         /// <summary>
@@ -141,6 +155,7 @@ namespace RBMCampaign
             if (_cachedCampaign != Campaign.Current)
             {
                 _cache.Clear();
+                _primaryCache.Clear();
                 _cachedCampaign = Campaign.Current;
             }
 
@@ -221,6 +236,97 @@ namespace RBMCampaign
                 sum += kv.Value;
             }
             return sum;
+        }
+
+        /// <summary>
+        /// The single good shown as a village's "primary production" -- its type speciality, chosen
+        /// as the speciality good with the greatest <c>rate * Value</c>. Deliberately drawn from
+        /// <see cref="SpecByType"/> alone, NOT the shared subsistence base set (which would show
+        /// iron/charcoal on every village) and NOT vanilla's value-weighted pick over its now-stale
+        /// <c>VillageType.Productions</c> list. So an iron mine reads as iron, a palm orchard as
+        /// dates, a forester as charcoal. Returns null for a type with no resolved speciality, which
+        /// leaves vanilla's own getter standing.
+        /// </summary>
+        public static ItemObject GetPrimaryProduction(VillageType villageType)
+        {
+            if (villageType == null || Game.Current == null)
+            {
+                return null;
+            }
+
+            // Reuse GetRates' per-campaign invalidation so a new campaign drops stale item refs.
+            GetRates(villageType);
+
+            ItemObject cached;
+            if (_primaryCache.TryGetValue(villageType, out cached))
+            {
+                return cached;
+            }
+
+            // A pinned icon wins outright, provided its item resolves and is sellable.
+            string overrideId;
+            if (PrimaryOverride.TryGetValue(villageType.StringId, out overrideId))
+            {
+                ItemObject pinned = Game.Current.ObjectManager.GetObject<ItemObject>(overrideId);
+                if (pinned != null && !pinned.NotMerchandise)
+                {
+                    _primaryCache[villageType] = pinned;
+                    return pinned;
+                }
+            }
+
+            ItemObject best = null;
+            float bestWeight = -1f;
+            (string id, float rate)[] spec;
+            if (SpecByType.TryGetValue(villageType.StringId, out spec))
+            {
+                foreach (var s in spec)
+                {
+                    ItemObject item = Game.Current.ObjectManager.GetObject<ItemObject>(s.id);
+                    if (item == null || item.NotMerchandise)
+                    {
+                        continue;
+                    }
+
+                    float weight = s.rate * item.Value;
+                    if (weight > bestWeight)
+                    {
+                        bestWeight = weight;
+                        best = item;
+                    }
+                }
+            }
+
+            _primaryCache[villageType] = best;
+            return best;
+        }
+
+        /// <summary>
+        /// Points the game's "primary production" at the village type's RBM speciality good, so the
+        /// map nameplate icon -- and every other reader of <c>PrimaryProduction</c> (hover tooltip,
+        /// town-management list, trade issues) -- shows what the village actually produces under the
+        /// reworked table instead of vanilla's value-weighted pick over its stale Productions list.
+        /// Falls through to vanilla for any type without a resolved speciality.
+        /// </summary>
+        [HarmonyPatch(typeof(VillageType), "PrimaryProduction", MethodType.Getter)]
+        private static class PrimaryProductionPatch
+        {
+            private static bool Prefix(VillageType __instance, ref ItemObject __result)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled)
+                {
+                    return true;
+                }
+
+                ItemObject primary = GetPrimaryProduction(__instance);
+                if (primary == null)
+                {
+                    return true;
+                }
+
+                __result = primary;
+                return false;
+            }
         }
 
         // Days of production the warehouse holds. Vanilla's warehouse sizing.

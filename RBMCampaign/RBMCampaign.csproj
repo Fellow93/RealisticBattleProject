@@ -358,6 +358,7 @@
     <Compile Include="Economy\RBMMarketPrices.cs" />
     <Compile Include="Economy\RBMProsperityEquilibrium.cs" />
     <Compile Include="Economy\TradeGoodValues.cs" />
+    <Compile Include="Economy\NavalTradeGoodValues.cs" />
     <Compile Include="Economy\CaravanTradeVolume.cs" />
     <Compile Include="Economy\CaravanCapital.cs" />
     <Compile Include="Economy\RecruitSupply.cs" />
