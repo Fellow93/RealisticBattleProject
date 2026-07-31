@@ -46,7 +46,7 @@ namespace RBMCampaign
         private const float MinInjectPerProsperity = 5f;
 
         // The return baked into the debt at injection: the debtor repays principal × (1 + this).
-        private const float InvestReturn = 0.15f;
+        private const float InvestReturn = 0.06f;
 
         // Share of a hoarding town's daily hoard levy diverted to repaying its investment debt first.
         public const float RepayShareOfHoardTax = 0.5f;
