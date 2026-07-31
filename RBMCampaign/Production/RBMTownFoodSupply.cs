@@ -100,12 +100,45 @@ namespace RBMCampaign
         // tooltips, AI target scoring, siege checks) and the uncached form is a full roster scan.
         private static readonly Dictionary<Town, KeyValuePair<int, int>> _foodCountCache = new Dictionary<Town, KeyValuePair<int, int>>();
 
+        // The garrison-food shortfall billed to each fief's OWNER on its last daily tick -- the part its
+        // treasury could not cover (see PayForGarrisonFood). Display only: the charge is applied to the
+        // owner's gold at once, so this is read solely by GarrisonFoodFinanceLine to surface that drain on
+        // the clan finance screen -- the food-side twin of the garrison-wage line GarrisonUpkeep already
+        // shows. NOT a pending pool like WealthTax keeps: nothing is owed later, the money already moved,
+        // so it is not serialized and simply repopulates on the next tick. Holds Settlement references,
+        // so it is cleared per session.
+        private static readonly Dictionary<Settlement, int> _lastFoodOwnerCost = new Dictionary<Settlement, int>();
+
         internal static void ResetForNewSession()
         {
             _foodAtLastTick.Clear();
             _measuredFoodChange.Clear();
             _unmetRations.Clear();
             _foodCountCache.Clear();
+            _lastFoodOwnerCost.Clear();
+        }
+
+        /// <summary>
+        /// The garrison-food shortfall a clan's fiefs last billed to it, summed over the settlements it
+        /// holds now -- the owner's own gold, spent feeding garrisons its treasuries could not cover.
+        /// Zero for a clan whose fiefs have yet to tick this session. Read by GarrisonFoodFinanceLine.
+        /// </summary>
+        internal static int GetClanDailyGarrisonFoodOwnerCost(Clan clan)
+        {
+            if (clan == null)
+            {
+                return 0;
+            }
+            int total = 0;
+            foreach (Settlement settlement in clan.Settlements)
+            {
+                int amount;
+                if (_lastFoodOwnerCost.TryGetValue(settlement, out amount))
+                {
+                    total += amount;
+                }
+            }
+            return total;
         }
 
         /// <summary>
@@ -561,6 +594,12 @@ namespace RBMCampaign
         /// </summary>
         private static int FeedPopulation(Town town, Dictionary<ItemCategory, int> saleLog, out int wanted)
         {
+            // Start the day's owner-cost tally at zero; PayForGarrisonFood accumulates into it across the
+            // provisioned purchases below, and it stands as the last-day figure the finance line reads
+            // until this town feeds again. Reset here rather than in PayForGarrisonFood so a day that buys
+            // no provisioned food (an early return below) correctly reads zero.
+            _lastFoodOwnerCost[town.Settlement] = 0;
+
             SettlementFoodModel foodModel = Campaign.Current.Models.SettlementFoodModel;
 
             ExplainedNumber households = new ExplainedNumber(town.Prosperity / foodModel.NumberOfProsperityToEatOneFood);
@@ -654,6 +693,12 @@ namespace RBMCampaign
                     if (fromOwner > 0)
                     {
                         owner.ChangeHeroGold(-fromOwner);
+                        // Tally the owner's leg for the finance display line (see
+                        // GetClanDailyGarrisonFoodOwnerCost). Accumulated across the day's lots; the
+                        // day's total is zeroed at the top of FeedPopulation.
+                        int prior;
+                        _lastFoodOwnerCost.TryGetValue(settlement, out prior);
+                        _lastFoodOwnerCost[settlement] = prior + fromOwner;
                         return fromTreasury + fromOwner;
                     }
                 }

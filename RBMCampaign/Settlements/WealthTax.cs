@@ -1,4 +1,5 @@
-﻿using TaleWorlds.CampaignSystem;
+﻿using System.Collections.Generic;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Settlements;
 
 namespace RBMCampaign
@@ -57,6 +58,121 @@ namespace RBMCampaign
         public const float HoardSettlementRate = 0.10f;
 
         /// <summary>
+        /// The owner's wealth-tax / castle-surplus income owed but not yet handed over, per owning clan
+        /// (by <see cref="TaleWorlds.Core.MBObjectBase.StringId"/>). The levy is debited from the market
+        /// on the settlement's daily tick -- where it belongs, off the morning balance -- but the lord is
+        /// paid on his clan's next finance apply pass instead of straight to his gold, so the income runs
+        /// through the Daily Gold Change like every other clan revenue (see
+        /// <see cref="SettlementIncomeFinanceLine"/>). This pool is the money in flight between the two:
+        /// SERIALIZED, so a save taken in that window credits the lord on load rather than dropping the
+        /// coin the market already gave up. Conserved by construction -- every accrual is a debit that
+        /// already happened, every consume becomes a gold credit on the finance pass.
+        /// </summary>
+        private static Dictionary<string, int> _pendingOwnerIncome = new Dictionary<string, int>();
+
+        /// <summary>
+        /// Display only, and separate from the pending pool: the owner's share each settlement actually
+        /// remitted on its most recent daily tick. Summed per clan for a STABLE finance-screen line --
+        /// the pending pool empties to zero the moment the clan is paid, so it would flicker, while this
+        /// holds each fief's last full day. Never read to move money.
+        /// </summary>
+        private static readonly Dictionary<Settlement, int> _lastOwnerIncome = new Dictionary<Settlement, int>();
+
+        /// <summary>Records what a settlement remitted to its owner today, overwriting yesterday's figure.</summary>
+        private static void RecordOwnerIncome(Settlement settlement, int amount)
+        {
+            if (settlement != null)
+            {
+                _lastOwnerIncome[settlement] = amount;
+            }
+        }
+
+        /// <summary>
+        /// Books the owner's share of a levy already taken from the market to its clan's pending pool, to
+        /// be paid on that clan's next finance apply pass. Null clan drops it, matching the old
+        /// null-owner path -- a levy with no lord to collect it was never paid before this either.
+        /// </summary>
+        private static void AccruePendingOwnerIncome(Clan clan, int amount)
+        {
+            if (clan == null || amount <= 0)
+            {
+                return;
+            }
+            int current;
+            _pendingOwnerIncome.TryGetValue(clan.StringId, out current);
+            _pendingOwnerIncome[clan.StringId] = current + amount;
+        }
+
+        /// <summary>
+        /// Hands a clan the wealth-tax income accrued to it since it was last paid, and empties the pool.
+        /// Called once per clan per day from the finance apply pass, which turns the returned sum into the
+        /// leader's gold; a point returned here is a point that has already left some market of the clan's.
+        /// </summary>
+        internal static int ConsumePendingOwnerIncome(Clan clan)
+        {
+            if (clan == null)
+            {
+                return 0;
+            }
+            int amount;
+            if (_pendingOwnerIncome.TryGetValue(clan.StringId, out amount) && amount != 0)
+            {
+                _pendingOwnerIncome.Remove(clan.StringId);
+                return amount;
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// The daily wealth-tax / castle-surplus income a clan's fiefs last remitted to it, summed over
+        /// the settlements it holds now. The stable figure the finance screen shows; zero for a clan
+        /// whose fiefs have yet to tick this session.
+        /// </summary>
+        internal static int GetClanDailyOwnerIncome(Clan clan)
+        {
+            if (clan == null)
+            {
+                return 0;
+            }
+            int total = 0;
+            foreach (Settlement settlement in clan.Settlements)
+            {
+                int amount;
+                if (_lastOwnerIncome.TryGetValue(settlement, out amount))
+                {
+                    total += amount;
+                }
+            }
+            return total;
+        }
+
+        /// <summary>
+        /// Persists the in-flight pending pool with the rest of the settlement-wealth store, so income
+        /// the market has already given up but the lord has not yet been paid is not lost across a save.
+        /// The display record (<see cref="_lastOwnerIncome"/>) is not saved -- it is a cosmetic estimate
+        /// that repopulates on the next tick.
+        /// </summary>
+        internal static void SyncData(IDataStore dataStore)
+        {
+            dataStore.SyncData("RBM_pendingWealthTaxIncome", ref _pendingOwnerIncome);
+            if (_pendingOwnerIncome == null)
+            {
+                _pendingOwnerIncome = new Dictionary<string, int>();
+            }
+        }
+
+        /// <summary>
+        /// Drops the previous campaign's state before this one's save is read, the same reason and place
+        /// <see cref="SettlementWealth.Reset"/> runs. The pending pool is re-read from the save by
+        /// <see cref="SyncData"/>; the display record belongs to the departing campaign's settlements.
+        /// </summary>
+        internal static void ResetForNewSession()
+        {
+            _pendingOwnerIncome = new Dictionary<string, int>();
+            _lastOwnerIncome.Clear();
+        }
+
+        /// <summary>
         /// Takes the day's two levies from a town's citizen wealth -- the owner's and the fief's own --
         /// and hands each to its collector.
         /// </summary>
@@ -104,6 +220,7 @@ namespace RBMCampaign
             int settlementLevy = (int)(taxable * settlementRate);
             if (ownerLevy <= 0 && settlementLevy <= 0)
             {
+                RecordOwnerIncome(settlement, 0);
                 return;
             }
 
@@ -128,14 +245,11 @@ namespace RBMCampaign
             int takenForOwner = (ownerLevy > 0)
                 ? SettlementWealth.DebitCitizens(settlement, ownerLevy, SettlementWealth.Source.WealthTax)
                 : 0;
-            if (takenForOwner > 0)
-            {
-                Hero owner = (settlement.OwnerClan != null) ? settlement.OwnerClan.Leader : null;
-                if (owner != null)
-                {
-                    owner.ChangeHeroGold(takenForOwner);
-                }
-            }
+            // Debited from the market now; booked to the owner's clan and handed over on its next finance
+            // apply pass, so the income shows in the Daily Gold Change like every other clan revenue.
+            AccruePendingOwnerIncome(settlement.OwnerClan, takenForOwner);
+            // The owner's real take today, for the stable finance display line (see GetClanDailyOwnerIncome).
+            RecordOwnerIncome(settlement, takenForOwner);
 
             int takenForSettlement = (settlementLevy > 0)
                 ? SettlementWealth.DebitCitizens(settlement, settlementLevy, SettlementWealth.Source.WealthTax)
@@ -171,26 +285,28 @@ namespace RBMCampaign
             int threshold = (int)(prosperity * CastleEconomy.HoardThresholdPerProsperity);
             if (wealth <= threshold)
             {
+                RecordOwnerIncome(settlement, 0);
                 return;
             }
 
             int levy = (int)((wealth - threshold) * HoardOwnerRate);
             if (levy <= 0)
             {
+                RecordOwnerIncome(settlement, 0);
                 return;
             }
 
             int taken = SettlementWealth.Debit(settlement, levy, SettlementWealth.Source.WealthTax);
             if (taken <= 0)
             {
+                RecordOwnerIncome(settlement, 0);
                 return;
             }
 
-            Hero owner = (settlement.OwnerClan != null) ? settlement.OwnerClan.Leader : null;
-            if (owner != null)
-            {
-                owner.ChangeHeroGold(taken);
-            }
+            // As the town levy: booked to the owner's clan and paid on its next finance apply pass.
+            AccruePendingOwnerIncome(settlement.OwnerClan, taken);
+            // The owner's real take today, for the stable finance display line (see GetClanDailyOwnerIncome).
+            RecordOwnerIncome(settlement, taken);
 
             if (EconomyLog.IsEnabled)
             {

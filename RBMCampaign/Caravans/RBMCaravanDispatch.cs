@@ -39,12 +39,10 @@ namespace RBMCampaign
         // is a comfort figure, not a hard capacity.
         private const int UnitsPerPackAnimal = 8;
 
-        // How many caravans the whole map may have on the road at once, and how many new ones one
-        // dispatch pass may send. Goods and relief (investment-only) caravans have SEPARATE per-pass
-        // budgets, so a busy goods pass never starves the relief runs to struggling towns.
-        private const int MaxActiveCaravans = 12;
-        private const int MaxDispatchPerRun = 4;
-        private const int MaxReliefDispatchPerRun = 3;
+        // Per-pass dispatch budget SCALES WITH KINGDOM SIZE: a realm may send up to this many caravans per
+        // town each pass, counted separately for goods and for relief (investment-only). There is
+        // deliberately no global cap -- every kingdom trades on its own, so bigger realms move more.
+        private const int CaravansPerTownPerPass = 2;
 
         // A destination whose market holds less than this cannot be trusted to pay for a caravan's load.
         private const int MinBuyerWealth = 1000;
@@ -70,10 +68,6 @@ namespace RBMCampaign
             {
                 return;
             }
-            if (RBMCaravanRegister.ActiveCount >= MaxActiveCaravans)
-            {
-                return;
-            }
 
             Dictionary<IFaction, List<Town>> byFaction = new Dictionary<IFaction, List<Town>>();
             foreach (Town town in Town.AllTowns)
@@ -95,20 +89,20 @@ namespace RBMCampaign
                 list.Add(town);
             }
 
-            int goodsDispatched = 0;
-            int reliefDispatched = 0;
             foreach (KeyValuePair<IFaction, List<Town>> realm in byFaction)
             {
-                if (goodsDispatched >= MaxDispatchPerRun && reliefDispatched >= MaxReliefDispatchPerRun)
-                {
-                    break; // both budgets spent for this pass
-                }
                 List<Town> towns = realm.Value;
                 if (towns.Count < 2)
                 {
                     // A realm needs at least two towns to run a caravan between.
                     continue;
                 }
+
+                // Per-kingdom budgets, scaled to the realm's size and reset each pass. No global limit --
+                // every kingdom runs its own caravans independently.
+                int budget = towns.Count * CaravansPerTownPerPass;
+                int goodsDispatched = 0;
+                int reliefDispatched = 0;
 
                 // The deepest-surplus source for each good, and how much it has to give this pass. Snapshot
                 // once; the per-good remaining spare is drawn down as caravans are committed so one source
@@ -158,7 +152,7 @@ namespace RBMCampaign
                 HashSet<Town> served = new HashSet<Town>();
                 foreach (Town dst in dests)
                 {
-                    if (goodsDispatched >= MaxDispatchPerRun)
+                    if (goodsDispatched >= budget)
                     {
                         break;
                     }
@@ -226,7 +220,7 @@ namespace RBMCampaign
                     // One caravan per source supplying this town, up to the goods budget.
                     foreach (KeyValuePair<Town, List<RBMCaravanRegister.GoodLot>> pair in bySource)
                     {
-                        if (goodsDispatched >= MaxDispatchPerRun)
+                        if (goodsDispatched >= budget)
                         {
                             break;
                         }
@@ -245,7 +239,7 @@ namespace RBMCampaign
                 {
                     foreach (Town dst in dests)
                     {
-                        if (reliefDispatched >= MaxReliefDispatchPerRun)
+                        if (reliefDispatched >= budget)
                         {
                             break;
                         }

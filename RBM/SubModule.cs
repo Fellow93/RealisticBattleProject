@@ -95,6 +95,12 @@ namespace RBM
                 // Same story for the inventory screen: its prefabs are parsed and cached long before
                 // OnGameStart, so the weight column has to be injected at module load or not at all.
                 ItemWeightPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // The maintenance line under the party screen's selected-troop wage, injected the same
+                // way and for the same reason as the spoils bar above.
+                MaintenanceLabelPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // The per-party upgrade-budget slider + checkbox beside the clan Parties panel's wage cap,
+                // injected the same way -- the clan screen's prefabs are likewise cached before OnGameStart.
+                UpgradeLimitPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
             }
 
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate

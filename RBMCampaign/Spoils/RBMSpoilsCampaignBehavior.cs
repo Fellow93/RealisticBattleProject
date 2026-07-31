@@ -9,6 +9,9 @@ namespace RBMCampaign
         public RBMSpoilsCampaignBehavior()
         {
             SpoilsPool.Reset();
+            // Same reset-before-load ordering: drop the previous campaign's per-party upgrade caps so a new
+            // game starts uncapped and only a real save repopulates them.
+            PartyUpgradeBudget.Reset();
         }
 
         public override void RegisterEvents()
@@ -21,6 +24,7 @@ namespace RBMCampaign
             CampaignEvents.OnSettlementOwnerChangedEvent.AddNonSerializedListener(this, SpoilsPool.OnSettlementCaptured);
             CampaignEvents.DailyTickPartyEvent.AddNonSerializedListener(this, SpoilsPool.OnDailyTickParty);
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, SpoilsPool.OnMobilePartyDestroyed);
+            CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, PartyUpgradeBudget.OnMobilePartyDestroyed);
             CampaignEvents.PlayerUpgradedTroopsEvent.AddNonSerializedListener(this, SpoilsPool.OnPlayerUpgradedTroops);
             // A stack mustered from a village or town brings a few days' maintenance in its purse.
             // OnTroopRecruited is the AI/action path (carries the settlement); OnUnitRecruited is the
@@ -40,6 +44,7 @@ namespace RBMCampaign
         public override void SyncData(IDataStore dataStore)
         {
             SpoilsPool.SyncData(dataStore);
+            PartyUpgradeBudget.SyncData(dataStore);
         }
     }
 }

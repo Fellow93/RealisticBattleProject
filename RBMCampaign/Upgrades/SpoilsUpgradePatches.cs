@@ -43,6 +43,16 @@ namespace RBMCampaign
             // single-threaded so this scratch field is safe.
             private static Town _supplyTown;
 
+            // The gold this party may still spend on upgrades today, resolved once at the top of each Prefix
+            // pass and drawn down in ApplyEffects as each stack is billed. int.MaxValue means the party's cap
+            // is unlimited (the default), in which case nothing below changes behaviour. Single-threaded tick,
+            // so this scratch field is as safe as _supplyTown beside it.
+            private static int _upgradeGoldBudgetRemaining;
+
+            // Set within a pass when the daily budget -- not the purse -- was what trimmed an upgrade batch,
+            // so one line can be logged per party per pass rather than per stack. Reset with the budget above.
+            private static bool _budgetBitThisPass;
+
             private static bool Prefix(PartyBase party)
             {
                 // Vanilla dereferences party.MobileParty unguarded further down, so anything that
@@ -73,6 +83,12 @@ namespace RBMCampaign
                     return false;
                 }
 
+                // How much gold this party is still allowed to spend on upgrades today. Drawn down per
+                // stack in ApplyEffects; int.MaxValue when the player has set no cap, which leaves the
+                // affordability maths below untouched.
+                _upgradeGoldBudgetRemaining = PartyUpgradeBudget.GetRemainingDailyBudget(party);
+                _budgetBitThisPass = false;
+
                 TroopRoster memberRoster = party.MemberRoster;
                 PartyTroopUpgradeModel upgradeModel = Campaign.Current.Models.PartyTroopUpgradeModel;
                 for (int i = 0; i < memberRoster.Count; i++)
@@ -87,6 +103,17 @@ namespace RBMCampaign
                     {
                         UpgradeTroop(party, i, SelectPossibleUpgrade(options));
                     }
+                }
+
+                // One line per party per day when the daily upgrade budget actually held the party back:
+                // it had men it could otherwise have paid to promote, but its cap was spent. Keyed per party
+                // per day so the daily tick and any post-battle passes the same day collapse to a single line.
+                if (_budgetBitThisPass && SpoilsLog.IsEnabled)
+                {
+                    SpoilsLog.LogOnce("upgcap-" + party.Id + "-" + (int)(CampaignTime.Now.ToHours / 24),
+                        "UPGRADE", party, SpoilsLog.Describe(party) + " held back upgrades: its daily upgrade budget of "
+                        + PartyUpgradeBudget.GetFiniteCap(party) + " gold is spent (" + party.MobileParty.PartyTradeGold
+                        + " gold still in purse)");
                 }
                 return false;
             }
@@ -155,7 +182,19 @@ namespace RBMCampaign
                     if (party.LeaderHero != null && fullGold > 0)
                     {
                         float coveredMen = SpoilsPool.GetCoveredMen(party, character, upgradeTarget);
-                        int affordable = (int)(coveredMen + party.MobileParty.PartyTradeGold / (float)fullGold);
+                        // The gold leg is limited by the smaller of the purse and the party's remaining daily
+                        // upgrade budget: the player's clan-screen cap on gold spent, spoils-covered men aside.
+                        // With no cap the remaining budget is int.MaxValue, so this is just PartyTradeGold.
+                        int tradeGold = party.MobileParty.PartyTradeGold;
+                        float goldPool = MathF.Min(tradeGold, _upgradeGoldBudgetRemaining);
+                        int affordable = (int)(coveredMen + goldPool / (float)fullGold);
+                        // The budget bit here iff a finite cap left less room than the purse held AND that
+                        // trimmed the batch -- i.e. the party had the gold to promote more men but its cap
+                        // stopped it. Flagged for a single per-party line after the pass, not logged per stack.
+                        if (_upgradeGoldBudgetRemaining != int.MaxValue && _upgradeGoldBudgetRemaining < tradeGold && affordable < count)
+                        {
+                            _budgetBitThisPass = true;
+                        }
                         count = MathF.Min(count, affordable);
                         if (count <= 0)
                         {
@@ -249,6 +288,18 @@ namespace RBMCampaign
                     SkillLevelingManager.OnUpgradeTroops(party, option.Target, option.UpgradeTarget, option.Count);
                     GiveGoldAction.ApplyBetweenCharacters(payer, null, option.TotalGoldCost, true);
                     goldCharged = option.TotalGoldCost;
+                }
+
+                // Draw the gold just billed against this party's daily upgrade budget, so a later stack in
+                // the same pass -- or a second pass after a battle the same day -- sees the reduced ceiling.
+                // No-op for an uncapped party (the store ignores the spend and the scratch stays MaxValue).
+                if (goldCharged > 0)
+                {
+                    PartyUpgradeBudget.RecordDailySpend(party, goldCharged);
+                    if (_upgradeGoldBudgetRemaining != int.MaxValue)
+                    {
+                        _upgradeGoldBudgetRemaining = MathF.Max(0, _upgradeGoldBudgetRemaining - goldCharged);
+                    }
                 }
 
                 // What the promotion cost goes over to the town that armed the men -- both halves of it:

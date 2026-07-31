@@ -217,6 +217,32 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// SupplyTown gate (visual): grey the upgrade arrows out when the main party has no friendly town
+        /// in reach, so a stranded player sees the promotion cannot be made here rather than clicking a lit
+        /// arrow the command gate (PartyScreenStagedUpgrades.GateUpgradeOnSupplyTown) then silently refuses.
+        /// Runs after InitializeUpgrades has set each arrow's state and only clears it: IsAvailable false
+        /// drives the arrow's UnavailableBrush and blocks UpgradeTargetVM.ExecuteUpgrade. Pairs with the
+        /// tooltip note (NoteSupplyTownInUpgradeHint), which says why. CanUpgradeNear returns true whenever
+        /// the feature is off, so nothing is greyed then. Delete this class to keep the arrows lit.
+        /// </summary>
+        [HarmonyPatch(typeof(PartyCharacterVM))]
+        [HarmonyPatch("InitializeUpgrades")]
+        private class GreyUpgradesWithoutSupplyTown
+        {
+            private static void Postfix(PartyCharacterVM __instance)
+            {
+                if (__instance.Upgrades == null || UpgradeSupply.CanUpgradeNear(MobileParty.MainParty))
+                {
+                    return;
+                }
+                foreach (UpgradeTargetVM upgrade in __instance.Upgrades)
+                {
+                    upgrade.IsAvailable = false;
+                }
+            }
+        }
+
+        /// <summary>
         /// A shown hint is a snapshot: BasicTooltipViewModel.ExecuteBeginHint reads the text once on
         /// hover-begin and hands it to the tooltip layer, and nothing polls it after that. Under spoils
         /// every upgrade shifts the "Spoils cover / You pay" split, so a tooltip the player is still

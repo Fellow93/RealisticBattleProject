@@ -8,6 +8,7 @@ namespace RBMCampaign
         {
             rbmcampaignHarmony.PatchAll();
             RBMTroopSpoilsBarWidget.RegisterWidgetType();
+            UpgradeLimitWidgets.RegisterWidgetTypes();
         }
     }
 }

@@ -17,6 +17,7 @@ namespace RBMCampaign
         public RBMSettlementWealthCampaignBehavior()
         {
             SettlementWealth.Reset();
+            WealthTax.ResetForNewSession();
         }
 
         public override void RegisterEvents()
@@ -85,6 +86,9 @@ namespace RBMCampaign
         public override void SyncData(IDataStore dataStore)
         {
             SettlementWealth.SyncData(dataStore);
+            // The wealth-tax income owed but not yet paid to lords rides in the same store, so a save in
+            // that window credits them on load rather than dropping coin the market already gave up.
+            WealthTax.SyncData(dataStore);
         }
     }
 }

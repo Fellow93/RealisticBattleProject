@@ -100,6 +100,20 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// The daily maintenance one man of this troop costs -- per man, so it sits beside his per-man
+        /// wage in the troop tooltip. Zero when the feature or maintenance is off, or for heroes. Reports
+        /// the same figure the daily charge and the finance breakdown price a day's upkeep at.
+        /// </summary>
+        public static int GetDailyMaintenancePerMan(CharacterObject character)
+        {
+            if (!IsEnabled || character == null || character.IsHero)
+            {
+                return 0;
+            }
+            return DailyMaintenanceCost(character, 1);
+        }
+
+        /// <summary>
         /// Seeds a freshly recruited stack's purse with several days' maintenance, so a man drawn from a
         /// settlement arrives with his kit in order and a little put by against the coming march rather
         /// than penniless. Added on top of whatever the stack already carries. No gold changes hands --
