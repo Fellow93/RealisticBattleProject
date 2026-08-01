@@ -129,6 +129,10 @@ namespace RBMCampaign
             new Line("jewelry", 0.0033f),
             new Line("felt", 0.002f),
             new Line("fur", 0.0015f),
+            new Line("date_fruit", 0.01f),
+            new Line("oil", 0.01f),
+            new Line("wine", 0.01f),
+            new Line("pottery", 0.003f),
         };
 
         /// <summary>Garments bought per Prosperity per day on top of the staple replacement, once comfortable.</summary>
