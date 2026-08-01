@@ -58,7 +58,7 @@ namespace RBMCombat
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
                     {
-                        price = 16f * (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f);
+                        price = 5f * (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f);
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
                     {
@@ -111,7 +111,7 @@ namespace RBMCombat
                 //    price = 200f * tier * RBMConfig.RBMConfig.priceMultipliers.HorsePriceModifier * (1f + 0.2f * (item.Appearance - 1f)) + 100f * Math.Max(0f, item.Appearance - 1f);
                 //}
                 {
-                    price = 600f + (2000f * tier * RBMConfig.RBMConfig.priceMultipliers.HorsePriceModifier);
+                    price = 600f + (1000f * tier * RBMConfig.RBMConfig.priceMultipliers.HorsePriceModifier);
                 }
                 //else if (item.ItemComponent is TradeItemComponent)
                 //{
