@@ -63,15 +63,19 @@ namespace RBMCampaign
         // later; not serialized, so a save loaded later in the same process starts false again.
         private bool _newCampaign;
 
-        // Whether the treasury store came back empty from the save. Recorded in SyncData on the load
-        // path, before InitializeAll fills it; a save started without RBM campaign never wrote the store
-        // and so loads it empty, which is the one signal that none of the new-game economy seeding ran
-        // on it. Not serialized -- it describes this load, not the campaign.
-        private bool _wealthStoreEmptyOnLoad;
+        // The one durable proof that a campaign was CREATED with RBM campaign on and so got its
+        // new-game economy seeding. Stamped true on the new-game hook and serialized, it rides in the
+        // save for good -- a save started without RBM campaign never wrote it and loads it false, no
+        // matter how many times it is later opened under RBM. This is the only provenance signal that
+        // survives: every other trace of the seeding (village purses, citizen wealth, treasuries,
+        // prosperity) rides on vanilla's own fields, which a later load re-touches and so cannot be
+        // told from a save that always had them.
+        private bool _campaignSeeded;
 
         private void OnNewGameCreatedFollowUpEnd(CampaignGameStarter starter)
         {
             _newCampaign = true;
+            _campaignSeeded = true;
             SettlementWealth.SeedVillagePurses();
         }
 
@@ -94,12 +98,13 @@ namespace RBMCampaign
             // for why this is a re-registration rather than a Harmony patch.
             SettlementWealthTooltip.Install();
 
-            // A save that predates RBM campaign carried none of the store, so it loaded empty and never
-            // got the new-game seeding (village purses, citizen wealth, treasuries, starting prosperity).
-            // Its economy is half-built and cannot be repaired after the fact -- the seeds ride on
+            // A loaded save with no seed stamp was never created as an RBM campaign, so none of the
+            // new-game seeding (village purses, citizen wealth, treasuries, starting prosperity) ran on
+            // it. Its economy is half-built and cannot be repaired after the fact -- the seeds ride on
             // vanilla's own gold fields and there is no telling a seed from money later earned -- so all
-            // that is left is to tell the player plainly.
-            if (!_newCampaign && _wealthStoreEmptyOnLoad)
+            // that is left is to tell the player plainly. (_newCampaign guards a brand-new game, whose
+            // stamp is only set moments earlier on the new-game hook.)
+            if (!_newCampaign && !_campaignSeeded)
             {
                 WarnUnseededSave();
             }
@@ -120,13 +125,11 @@ namespace RBMCampaign
         public override void SyncData(IDataStore dataStore)
         {
             SettlementWealth.SyncData(dataStore);
-            // The treasury store is written for every fief every session, so an empty load means the save
-            // has never run under RBM campaign. Captured here, before InitializeAll seeds it on session
-            // launch, so OnSessionLaunched can warn on a save that predates the module.
-            if (dataStore.IsLoading)
-            {
-                _wealthStoreEmptyOnLoad = !SettlementWealth.HasAnyStoredWealth();
-            }
+            // The provenance stamp. A save that predates this key -- one never created as an RBM campaign,
+            // or made before the stamp existed -- has no entry to read, so the load leaves the field at
+            // its fresh-instance false, and OnSessionLaunched warns. A campaign created under RBM wrote
+            // true on its new-game hook and carries it here for the life of the save.
+            dataStore.SyncData("RBM_campaignSeeded", ref _campaignSeeded);
             // The wealth-tax income owed but not yet paid to lords rides in the same store, so a save in
             // that window credits them on load rather than dropping coin the market already gave up.
             WealthTax.SyncData(dataStore);

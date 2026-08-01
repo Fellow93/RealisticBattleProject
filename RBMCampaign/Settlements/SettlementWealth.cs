@@ -100,18 +100,6 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Whether the treasury store carries any entry. Every session seeds one for every town and
-        /// castle in <see cref="InitializeAll"/>, so a save that has ever run with RBM campaign on loads
-        /// this non-empty; a save started without the module -- which never wrote the store -- loads it
-        /// empty. Read straight after <see cref="SyncData"/> on load, before InitializeAll fills it, this
-        /// is the tell that a save predates RBM campaign and never got its new-game economy seeding.
-        /// </summary>
-        public static bool HasAnyStoredWealth()
-        {
-            return _settlementWealth.Count > 0;
-        }
-
-        /// <summary>
         /// Seeds a treasury for every settlement that has none yet. Run once the session is up, this
         /// covers a fresh campaign, a save the mod was just added to, and any settlement a loaded save
         /// has never carried -- an entry already present keeps its stored value.
