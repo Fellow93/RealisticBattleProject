@@ -31,6 +31,16 @@ namespace RBMCampaign
         public const int VillageDailySalary = 100;
 
         /// <summary>
+        /// The daily cost of keeping fortifications sound, per tier of the walls built
+        /// (<c>Town.GetWallLevel</c>, 1-3): masons, mortar, the gate-works. A city's are dearer than a
+        /// castle's at every tier -- a longer circuit of wall around a larger place -- so a tier-3 city
+        /// pays 600 a day to a tier-3 castle's 450. Cost is <c>base × tier</c>, matching the spec's
+        /// 150/300/450 for a castle and 200/400/600 for a city.
+        /// </summary>
+        public const int CastleWallUpkeepPerTier = 150;
+        public const int CityWallUpkeepPerTier = 200;
+
+        /// <summary>
         /// A settlement's daily administration: the wage from the purse, and for a village its food off
         /// the store. A town's administrative FOOD is bought with the rest of its rations in
         /// <see cref="RBMTownFoodSupply"/>, where the market and the treasury payment already live; only
@@ -46,6 +56,10 @@ namespace RBMCampaign
             if (settlement.IsTown)
             {
                 PayWage(settlement, TownDailySalary, toCitizens: true);
+                // A city's walls are a standing charge on its treasury like a castle's, and dearer:
+                // a longer circuit around a larger place. Paid from the town's own wealth (Pot B), not
+                // its citizens' market money -- masonry, not offices.
+                PayWallsUpkeep(settlement);
             }
             else if (settlement.IsVillage)
             {
@@ -64,11 +78,12 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The daily cost of keeping a castle's walls sound -- masons, mortar, the gate-works -- scaled
-        /// to how high the fortifications have been built (<c>Town.GetWallLevel</c>). Unlike the
-        /// administration's wage this leaves the economy: it is paid out to tradesmen the ledger does
-        /// not track, the way any coin a settlement spends on its own fabric does. A castle's keep is
-        /// its reason to exist, so its walls are a cost it always carries.
+        /// The daily cost of keeping a settlement's walls sound -- masons, mortar, the gate-works --
+        /// scaled to how high the fortifications have been built (<c>Town.GetWallLevel</c>, 1-3) and to
+        /// whether it is a castle or a city. Unlike the administration's wage this leaves the economy:
+        /// it is paid out to tradesmen the ledger does not track, the way any coin a settlement spends
+        /// on its own fabric does. Drawn from the settlement's own wealth (Pot B) for a castle and a
+        /// city alike -- the treasury's strongbox, never a town's circulating market money.
         /// </summary>
         private static void PayWallsUpkeep(Settlement settlement)
         {
@@ -77,7 +92,8 @@ namespace RBMCampaign
                 return;
             }
             int wallLevel = settlement.Town.GetWallLevel();
-            int cost = wallLevel * CastleEconomy.WallUpkeepPerLevel;
+            int perTier = settlement.IsCastle ? CastleWallUpkeepPerTier : CityWallUpkeepPerTier;
+            int cost = wallLevel * perTier;
             if (cost <= 0)
             {
                 return;

@@ -48,8 +48,23 @@ namespace RBMCampaign
             {
                 return;
             }
+            // A garrison is pulled out of the spoils economy entirely: its wages are the fief's to pay
+            // (see GarrisonUpkeep) and its promotions are billed straight to the fief's treasury (see
+            // SpoilsUpgradePatches), so it keeps no purse of its own to skim a wage into.
+            if (party?.MobileParty != null && party.MobileParty.IsGarrison)
+            {
+                return;
+            }
             PartyWageModel wageModel = Campaign.Current.Models.PartyWageModel;
             bool isMilitia = party?.MobileParty != null && party.MobileParty.IsMilitia;
+            // A mercenary company's men are kept at double pay while the contract holds, so a stack under it
+            // banks twice its wage into spoils. This is the second wage the company is charged for through the
+            // finance model (see MercenaryContractPay) and the crown then reimburses, so the extra deposit is
+            // backed by real coin, not minted. Player and AI mercenaries alike; read the payee clan off the
+            // same chain the spoils are paid to.
+            bool mercDouble = !isMilitia
+                && MercenaryContractPay.CountsForMercWage(party?.MobileParty)
+                && MercenaryContractPay.IsMercenaryClan(GetPartyPayee(party)?.Clan);
             int grantedTotal = 0;
             int stacksPaid = 0;
             for (int i = 0; i < roster.Count; i++)
@@ -65,13 +80,19 @@ namespace RBMCampaign
                 // closed loop now -- what lands here is spent on upgrades, food and drink, never handed
                 // back to the owner as gold.
                 int granted = wage;
+                if (mercDouble)
+                {
+                    // Twice the wage, banked. The extra half is the crown's, paid through the leader.
+                    granted = wage * 2;
+                }
                 if (isMilitia)
                 {
-                    // Except militia, whose wage nobody pays. They draw a stipend from their own
-                    // settlement instead, and only ever bank what it actually handed over -- so the
-                    // deposit and the payment are one number and neither can invent the other. See
-                    // MilitiaUpkeep.
-                    granted = MilitiaUpkeep.PayStipend(party.MobileParty, wage);
+                    // Except militia, whose wage nobody pays. Their settlement pays their upkeep out of
+                    // the pots the spec names, and a stack only ever banks the maintenance that upkeep
+                    // actually covered -- so the deposit and the payment are one number and neither can
+                    // invent the other. A village's maintenance leaves for its market town instead of
+                    // the purse, so it banks nothing. See MilitiaUpkeep.
+                    granted = MilitiaUpkeep.PayMilitiaUpkeep(party.MobileParty, wage);
                 }
                 if (granted <= 0)
                 {

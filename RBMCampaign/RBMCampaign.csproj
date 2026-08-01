@@ -352,7 +352,6 @@
     <Compile Include="Production\RBMVillageProduction.cs" />
     <Compile Include="Production\CitizenDemand.cs" />
     <Compile Include="Production\RBMTownFoodSupply.cs" />
-    <Compile Include="Production\GarrisonFoodFinanceLine.cs" />
     <Compile Include="Production\TownStorage.cs" />
     <Compile Include="Economy\TradeGoodCategories.cs" />
     <Compile Include="Production\ArtisanOutput.cs" />
@@ -384,10 +383,12 @@
     <Compile Include="Settlements\WorkshopPurse.cs" />
     <Compile Include="Settlements\SettlementWealthTooltip.cs" />
     <Compile Include="Settlements\SettlementIncomeFinanceLine.cs" />
+    <Compile Include="Settlements\MercenaryContractPay.cs" />
     <Compile Include="Settlements\AdministrativeUpkeep.cs" />
     <Compile Include="Settlements\CastleEconomy.cs" />
     <Compile Include="Settlements\ConstructionLabour.cs" />
     <Compile Include="Settlements\GarrisonUpkeep.cs" />
+    <Compile Include="Settlements\GarrisonRecruitCost.cs" />
     <Compile Include="Settlements\TradeTariff.cs" />
     <Compile Include="Settlements\WealthTax.cs" />
     <Compile Include="Settlements\MilitiaUpkeep.cs" />

@@ -43,9 +43,6 @@ namespace RBMCampaign
         /// <summary>The castle administration's daily wage, between a town's (300) and a village's (100).</summary>
         public const int AdminDailySalary = 200;
 
-        /// <summary>The daily cost of maintaining a castle's walls, per level of the fortifications built.</summary>
-        public const int WallUpkeepPerLevel = 75;
-
         /// <summary>
         /// Mints a castle's daily income into its wealth. Runs before the day's upkeep and the surplus
         /// skim so those act on the post-income balance -- the castle collects first, then pays and

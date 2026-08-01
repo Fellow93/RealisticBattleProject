@@ -6,26 +6,32 @@ using TaleWorlds.CampaignSystem.Settlements;
 namespace RBMCampaign
 {
     /// <summary>
-    /// Makes a fief pay part of its own garrison's wages out of its treasury, instead of the owner
-    /// carrying the whole bill from anywhere in the world.
+    /// Makes a fief pay its own garrison's wages out of its treasury, instead of the owner carrying the
+    /// whole bill from anywhere in the world.
     ///
     /// A garrison is the settlement's, not the field army's: it never marches, it exists to hold this
     /// one place, and the place it holds is the thing that benefits. Vanilla charges every denar of it
     /// to the owner clan, which is why a fief is pure profit to its holder and why garrison payroll is
     /// one of the economy's dead ends -- clan gold deducted and credited to nobody.
     ///
-    /// Under the ledger the same wage becomes a real local flow: the treasury pays a quarter, that
-    /// quarter reaches the men, and the men spend it in the market they are standing in. The lord still
-    /// pays the rest, so a garrison is no cheaper overall -- it is simply no longer free to the town it
-    /// defends, and the money now lands somewhere instead of evaporating.
+    /// Under the ledger the wage becomes a real local charge: the fief pays its garrison first, out of
+    /// its own wealth, and only what the treasury cannot cover falls back to the owner. A well-run fief
+    /// pays for its own defence; a poor one leans on its lord, who keeps a frontier castle garrisoned
+    /// at a loss because he wants it held. Either way the money now lands somewhere -- the men, and the
+    /// market they stand in -- instead of evaporating off the owner's books.
     /// </summary>
     public static class GarrisonUpkeep
     {
-        /// <summary>Share of a garrison's wage bill the settlement carries; the owner pays the rest.</summary>
-        public const float TownGarrisonWageShare = 0.25f;
+        /// <summary>
+        /// Share of a garrison's wage bill the fief pays before the owner. One: a garrison is the
+        /// settlement's own charge, and the owner is only the backstop for what its treasury cannot
+        /// cover. Left as a knob rather than inlined so the split can be softened later without hunting
+        /// the arithmetic down.
+        /// </summary>
+        public const float GarrisonFiefWageShare = 1.0f;
 
         /// <summary>
-        /// Moves the settlement's share of a garrison's wage off the owner's books and onto the fief's.
+        /// Moves the fief's share of a garrison's wage off the owner's books and onto the treasury's.
         /// </summary>
         /// <remarks>
         /// Patched HERE, at the wage calculation, rather than at <c>AddPartyExpense</c>, because the
@@ -39,10 +45,10 @@ namespace RBMCampaign
         /// <c>ApplyMoraleEffect</c> has already run by the time this returns, against the full wage, so
         /// the men's morale still reflects being paid in full. Only the question of who paid changes.
         ///
-        /// A fief that cannot afford its share pays what it has and the owner covers the remainder, so
-        /// an empty treasury shifts the burden back to the lord rather than leaving the garrison
-        /// unpaid. That also makes this safe before the treasury has any income: with a balance of zero
-        /// it simply does nothing.
+        /// Fief-first with an owner backstop: the treasury pays as much of its share as it holds, and
+        /// whatever is left over stays on the owner's books. An empty treasury shifts the whole burden
+        /// back to the lord rather than leaving the garrison unpaid, which is also what makes this safe
+        /// before the treasury has any income -- with a balance of zero it simply does nothing.
         /// </remarks>
         [HarmonyPatch(typeof(DefaultClanFinanceModel), "CalculatePartyWage")]
         private static class GarrisonWageSharePatch
@@ -61,7 +67,7 @@ namespace RBMCampaign
                     return;
                 }
 
-                int share = (int)(__result * TownGarrisonWageShare);
+                int share = (int)(__result * GarrisonFiefWageShare);
                 if (share <= 0)
                 {
                     return;

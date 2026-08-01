@@ -100,45 +100,12 @@ namespace RBMCampaign
         // tooltips, AI target scoring, siege checks) and the uncached form is a full roster scan.
         private static readonly Dictionary<Town, KeyValuePair<int, int>> _foodCountCache = new Dictionary<Town, KeyValuePair<int, int>>();
 
-        // The garrison-food shortfall billed to each fief's OWNER on its last daily tick -- the part its
-        // treasury could not cover (see PayForGarrisonFood). Display only: the charge is applied to the
-        // owner's gold at once, so this is read solely by GarrisonFoodFinanceLine to surface that drain on
-        // the clan finance screen -- the food-side twin of the garrison-wage line GarrisonUpkeep already
-        // shows. NOT a pending pool like WealthTax keeps: nothing is owed later, the money already moved,
-        // so it is not serialized and simply repopulates on the next tick. Holds Settlement references,
-        // so it is cleared per session.
-        private static readonly Dictionary<Settlement, int> _lastFoodOwnerCost = new Dictionary<Settlement, int>();
-
         internal static void ResetForNewSession()
         {
             _foodAtLastTick.Clear();
             _measuredFoodChange.Clear();
             _unmetRations.Clear();
             _foodCountCache.Clear();
-            _lastFoodOwnerCost.Clear();
-        }
-
-        /// <summary>
-        /// The garrison-food shortfall a clan's fiefs last billed to it, summed over the settlements it
-        /// holds now -- the owner's own gold, spent feeding garrisons its treasuries could not cover.
-        /// Zero for a clan whose fiefs have yet to tick this session. Read by GarrisonFoodFinanceLine.
-        /// </summary>
-        internal static int GetClanDailyGarrisonFoodOwnerCost(Clan clan)
-        {
-            if (clan == null)
-            {
-                return 0;
-            }
-            int total = 0;
-            foreach (Settlement settlement in clan.Settlements)
-            {
-                int amount;
-                if (_lastFoodOwnerCost.TryGetValue(settlement, out amount))
-                {
-                    total += amount;
-                }
-            }
-            return total;
         }
 
         /// <summary>
@@ -594,12 +561,6 @@ namespace RBMCampaign
         /// </summary>
         private static int FeedPopulation(Town town, Dictionary<ItemCategory, int> saleLog, out int wanted)
         {
-            // Start the day's owner-cost tally at zero; PayForGarrisonFood accumulates into it across the
-            // provisioned purchases below, and it stands as the last-day figure the finance line reads
-            // until this town feeds again. Reset here rather than in PayForGarrisonFood so a day that buys
-            // no provisioned food (an early return below) correctly reads zero.
-            _lastFoodOwnerCost[town.Settlement] = 0;
-
             SettlementFoodModel foodModel = Campaign.Current.Models.SettlementFoodModel;
 
             ExplainedNumber households = new ExplainedNumber(town.Prosperity / foodModel.NumberOfProsperityToEatOneFood);
@@ -633,8 +594,9 @@ namespace RBMCampaign
             }
 
             // Who eats decides who pays. The rations are bought in two groups because a townsman
-            // buying his own bread moves nothing across the settlement's boundary, while a soldier's or
-            // an official's is provisioned FOR him out of the fief's treasury -- see BuyFoodFromMarket.
+            // buying his own bread moves money inside citizen wealth and pays the market fee, while a
+            // soldier's or an official's is drawn from the city's own stocks for free -- the settlement
+            // feeds its defenders as the duty of holding the place. See BuyFoodFromMarket.
             //
             // Split by the pre-building shares rather than by recomputing each leg through the perk
             // and building chain, so the day's total ration is exactly what it was before the split.
@@ -667,43 +629,6 @@ namespace RBMCampaign
                 unmet += BuyFoodFromMarket(town, provisionedUnits, saleLog, provisioned: true);
             }
             return unmet;
-        }
-
-        /// <summary>
-        /// Pays a garrison's grocer's bill: the fief's treasury first, and whatever it cannot cover
-        /// charged to the owner, exactly as <see cref="GarrisonUpkeep"/> splits the same garrison's
-        /// wages. Returns the total that changed hands, which is what the market is owed.
-        /// </summary>
-        /// <remarks>
-        /// The owner backstop is what stops a poor fief from starving the men holding it the moment
-        /// its treasury runs dry. A lord who wants a garrison somewhere pays to feed it if the place
-        /// cannot; the alternative -- taking the food anyway -- would mint the difference, and refusing
-        /// the food would starve a garrison over a bookkeeping shortfall.
-        /// </remarks>
-        private static int PayForGarrisonFood(Settlement settlement, int cost)
-        {
-            int fromTreasury = SettlementWealth.Debit(settlement, cost, SettlementWealth.Source.GarrisonFood);
-            int remainder = cost - fromTreasury;
-            if (remainder > 0)
-            {
-                Hero owner = (settlement.OwnerClan != null) ? settlement.OwnerClan.Leader : null;
-                if (owner != null)
-                {
-                    int fromOwner = (owner.Gold < remainder) ? owner.Gold : remainder;
-                    if (fromOwner > 0)
-                    {
-                        owner.ChangeHeroGold(-fromOwner);
-                        // Tally the owner's leg for the finance display line (see
-                        // GetClanDailyGarrisonFoodOwnerCost). Accumulated across the day's lots; the
-                        // day's total is zeroed at the top of FeedPopulation.
-                        int prior;
-                        _lastFoodOwnerCost.TryGetValue(settlement, out prior);
-                        _lastFoodOwnerCost[settlement] = prior + fromOwner;
-                        return fromTreasury + fromOwner;
-                    }
-                }
-            }
-            return fromTreasury;
         }
 
         /// <summary>
@@ -762,7 +687,6 @@ namespace RBMCampaign
             });
 
             int civilianSpend = 0;
-            int provisionedSpend = 0;
             foreach (FoodLot lot in lots)
             {
                 if (amount <= 0)
@@ -777,22 +701,18 @@ namespace RBMCampaign
                 int cost = taken * lot.Price;
                 if (provisioned)
                 {
-                    // The fief buys this ration for men who do not buy their own. Real money leaves the
-                    // treasury and reaches the merchants who sold it, which is the whole point: until
-                    // now feeding a garrison CREDITED the town, so a bigger garrison made a town richer.
-                    //
-                    // Tallied on what actually reached the market rather than on the asking price: a
-                    // broke treasury with no owner to fall back on buys the food short, and the fee is
-                    // owed on the trade that happened.
-                    provisionedSpend += SettlementWealth.CreditCitizens(town.Settlement,
-                        PayForGarrisonFood(town.Settlement, cost), SettlementWealth.Source.GarrisonFood);
+                    // The garrison and the town's officials eat from the city's own stocks for free:
+                    // holding the place is the settlement's duty, and feeding its defenders is part of
+                    // it. The food still LEAVES the market -- the shelves empty and the demand signal
+                    // below fires on the scarcity -- but no money changes hands, so a bigger garrison
+                    // costs the treasury and the owner nothing to provision, only stock. Nobody is
+                    // credited either: the food was taken, not bought.
                 }
                 else
                 {
-                    // Civilian rations pay nobody: the townsman handing a merchant a denar is a move
-                    // inside citizen wealth, not across the settlement's boundary. But the town still
-                    // takes its market fee on the sale, the same one every other trade pays -- see the
-                    // levy below.
+                    // Civilian rations pay nobody across the boundary: the townsman handing a merchant a
+                    // denar is a move inside citizen wealth. But the town still takes its market fee on
+                    // the sale, the same one every other trade pays -- see the levy below.
                     civilianSpend += cost;
                 }
 
@@ -802,15 +722,11 @@ namespace RBMCampaign
                 saleLog[lot.Category] = logged + taken;
             }
 
-            // The market fee on the day's bread, whoever it was for. The townsfolk's own purchase is
-            // internal to citizen wealth and the fee on it is not -- it moves a sliver into the treasury,
-            // like any trade struck in the market. The garrison's and the administration's rations are a
-            // trade in the same market and pay the same fee, even though the buyer is the fief itself:
-            // the levy is on the trade, not on the trader. See TradeTariff.
-            //
-            // Only one of the two is ever non-zero in a single call -- the two legs are bought
-            // separately -- but they are summed rather than levied apart so the fee is rounded once.
-            TradeTariff.Levy(town.Settlement, civilianSpend + provisionedSpend);
+            // The market fee on the day's bread. Only the townsfolk's own purchase is a sale: the money
+            // moving inside citizen wealth still pays the fee, which moves a sliver into the treasury
+            // like any trade struck in the market. The garrison's and the administration's rations are
+            // taken from stock for free, not traded, so they are levied nothing. See TradeTariff.
+            TradeTariff.Levy(town.Settlement, civilianSpend);
 
             return amount;
         }

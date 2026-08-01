@@ -201,6 +201,27 @@ namespace RBMCampaign
                             continue;
                         }
                     }
+                    // A garrison has neither an owner to bill nor -- now it is out of the spoils economy --
+                    // a purse of its own: its promotions come out of the fief's treasury. Clamp the batch
+                    // to what the treasury can spare above the reserve it keeps to go on paying the
+                    // garrison's wages, and require it to hold ten times a man's promotion before arming any.
+                    else if (party.MobileParty.IsGarrison && fullGold > 0)
+                    {
+                        Settlement fief = GarrisonFiefOf(party);
+                        int wealth = (fief != null) ? SettlementWealth.GetSettlementWealth(fief) : 0;
+                        int reserve = party.MobileParty.TotalWage * GarrisonRecruitCost.GarrisonReserveDays;
+                        int spendable = MathF.Max(0, wealth - reserve);
+                        int affordable = spendable / fullGold;
+                        if (wealth < fullGold * GarrisonRecruitCost.GarrisonSpawnReserveMult)
+                        {
+                            affordable = 0;
+                        }
+                        count = MathF.Min(count, affordable);
+                        if (count <= 0)
+                        {
+                            continue;
+                        }
+                    }
 
                     if ((!party.Culture.IsBandit || upgradeTarget.Culture.IsBandit) && (character.Occupation != Occupation.Bandit || upgradeModel.CanPartyUpgradeTroopToTarget(party, character, upgradeTarget)))
                     {
@@ -241,6 +262,14 @@ namespace RBMCampaign
                     }
                 }
                 return result;
+            }
+
+            /// <summary>The fief a garrison belongs to -- the town or castle it holds -- or null.</summary>
+            private static Settlement GarrisonFiefOf(PartyBase party)
+            {
+                MobileParty mobileParty = party.MobileParty;
+                Settlement settlement = (mobileParty != null) ? (mobileParty.CurrentSettlement ?? mobileParty.HomeSettlement) : null;
+                return (settlement != null && (settlement.IsTown || settlement.IsCastle)) ? settlement : null;
             }
 
             private static void UpgradeTroop(PartyBase party, int rosterIndex, UpgradeOption option)
@@ -288,6 +317,18 @@ namespace RBMCampaign
                     SkillLevelingManager.OnUpgradeTroops(party, option.Target, option.UpgradeTarget, option.Count);
                     GiveGoldAction.ApplyBetweenCharacters(payer, null, option.TotalGoldCost, true);
                     goldCharged = option.TotalGoldCost;
+                }
+                else if (party.MobileParty.IsGarrison)
+                {
+                    // No owner to send the bill to: the fief buys its own garrison's promotion out of its
+                    // treasury. The clamp in GetPossibleUpgradeTargets kept the batch inside what it holds,
+                    // so this debit is what reaches the town below -- treasury out, the armourers who did
+                    // the work paid in (SupplyUpgradeFromTown credits the town's citizens the same sum).
+                    Settlement fief = GarrisonFiefOf(party);
+                    if (fief != null)
+                    {
+                        goldCharged = SettlementWealth.Debit(fief, option.TotalGoldCost, SettlementWealth.Source.Upgrade);
+                    }
                 }
 
                 // Draw the gold just billed against this party's daily upgrade budget, so a later stack in

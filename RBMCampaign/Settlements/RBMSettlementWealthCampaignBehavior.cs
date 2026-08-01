@@ -18,6 +18,7 @@ namespace RBMCampaign
         {
             SettlementWealth.Reset();
             WealthTax.ResetForNewSession();
+            MilitiaUpkeep.ResetForNewSession();
         }
 
         public override void RegisterEvents()
@@ -43,6 +44,9 @@ namespace RBMCampaign
             // so those act on the post-income balance.
             CastleEconomy.OnDailyTick(settlement);
             AdministrativeUpkeep.OnDailyTick(settlement);
+            // Arm the day's new militia, out here rather than in the DailyTick that grew them so a
+            // village purse write is not caught inside VillageGoldStock's suppression window.
+            MilitiaUpkeep.ChargePendingSpawn(settlement);
             WealthTax.OnDailyTick(settlement);
             // After the day's charges, so these report against the purse they left behind.
             TradeTariff.FlushDaily(settlement);

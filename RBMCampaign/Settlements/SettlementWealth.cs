@@ -240,6 +240,15 @@ namespace RBMCampaign
             public const string Homecoming = "homecoming";
             public const string GarrisonWage = "garrison-wage";
             public const string GarrisonFood = "garrison-food";
+
+            /// <summary>
+            /// A fief arming a garrison troop it auto-recruited: the equipment cost, drawn from the
+            /// fief's own treasury rather than the owner's gold as vanilla charged it. In a town it
+            /// reaches the armourers who kitted the man (citizen wealth); a castle, with no market,
+            /// sources the gear from outside and the coin leaves the ledger. See
+            /// <see cref="GarrisonRecruitCost"/>.
+            /// </summary>
+            public const string GarrisonRecruit = "garrison-recruit";
             public const string Militia = "militia";
             public const string Admin = "admin";
             public const string Construction = "construction";
@@ -271,11 +280,13 @@ namespace RBMCampaign
             public const string TroopGoods = "troop-goods";
 
             /// <summary>
-            /// What a lord paid to muster a man, into the treasury of the town that raised him -- its own
-            /// recruits, or a village's through the town it trades with. Raising soldiers is the fief's
-            /// business as a body, so the fee is the settlement's rather than its shopkeepers'. Untariffed,
-            /// the coin never having passed through the market. Vanilla destroyed every denar of it; the
-            /// man's gear is a separate matter entirely. See <see cref="RecruitSupply"/>.
+            /// What a lord paid to muster a man, into the purse of the settlement that raised him -- a
+            /// town its own treasury, a village its own purse (NOT the town it trades with: the village
+            /// bought the kit off that town at muster and is reimbursed here, turning a profit on the men
+            /// it raises). Raising soldiers is the fief's business as a body, so the fee is the
+            /// settlement's rather than its shopkeepers'. Untariffed, the coin never having passed through
+            /// the market. Vanilla destroyed every denar of it; the man's gear is a separate leg. See
+            /// <see cref="RecruitSupply"/>.
             /// </summary>
             public const string Recruit = "recruit";
             public const string Boost = "boost";
