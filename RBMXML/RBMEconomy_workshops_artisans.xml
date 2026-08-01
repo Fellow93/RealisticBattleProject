@@ -117,6 +117,9 @@
 				<Output
 					output="ItemCategory.oil"
 					output_count="10" />
+				<Output
+					output="ItemCategory.charcoal"
+					output_count="40" />
 			</Outputs>
 		</Production>
 
@@ -142,7 +145,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="3" />
+					output_count="6" />
 			</Outputs>
 		</Production>
 		<Production
@@ -155,7 +158,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="4" />
+					output_count="8" />
 			</Outputs>
 		</Production>
 		<Production
@@ -171,7 +174,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="2" />
+					output_count="4" />
 			</Outputs>
 		</Production>
 	<!--< Gambeson - cloth (tier2?) >-->		
@@ -187,7 +190,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.light_armor" />
+					output="ItemCategory.light_armor" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 	<!--< Leather - (tier3?) >-->		
@@ -203,7 +207,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.medium_armor" />
+					output="ItemCategory.medium_armor" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 	<!--< spears >-->			
@@ -287,11 +292,14 @@
 				<Input
 					input_item="planks" 
 					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.ranged_weapons"
-					output_count="8" />
+					output_count="2" />
 			</Outputs>
 		</Production>
 	<!--< Horsebows >-->		
@@ -553,7 +561,7 @@
 		_replaceWhileMerging="true"
 		id="brewery"
 		name="{=GsaLzLfl}Brewery"
-		equipment_cost="3000"
+		equipment_cost="144000"
 		frequency="1"
 		jobname="{=pVjxlT1f}Brewer"
 		description="{=hn82dw2C}We malt, mash and ferment grain to brew beer, the most popular beverage for the common people, especially in the northern lands.">
@@ -584,7 +592,7 @@
 		id="velvet_weavery"
 		name="{=EBCKXbTa}Velvet Weavery"
 		frequency="2"
-		equipment_cost="5000"
+		equipment_cost="240000"
 		jobname="{=HXuAkbcU}Velvet Weaver"
 		description="{=oFKrLaBy}We weave raw silk into even finer velvet to make the most luxurious garments in Calradia.">
 		<Meshes
@@ -613,7 +621,7 @@
 		id="linen_weavery"
 		name="{=tK4IiP3J}Linen Weavery"
 		frequency="2"
-		equipment_cost="3000"
+		equipment_cost="144000"
 		jobname="{=RLz2b53X}Clothier"
 		description="{=vDwDPFua}We subject flax stalks to a lengthy process to separate the fibers, then weave them into linen. The fabric is lighter than wool and popular in summers and in hotter regions.">
 		<Meshes
@@ -677,7 +685,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.light_armor" />
+					output="ItemCategory.light_armor" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -710,7 +719,7 @@
 		id="wine_press"
 		name="{=uy2mSmw3}Wine Press"
 		frequency="2"
-		equipment_cost="3000"
+		equipment_cost="144000"
 		jobname="{=PdvjpThP}Vintner"
 		description="{=llI5116T}We press grapes and ferment the juice. Wine is always in high demand throughout Calradia.">
 		<Meshes
@@ -740,7 +749,7 @@
 		id="pottery_shop"
 		name="{=Tj7ErPfn}Pottery Shop"
 		frequency="2"
-		equipment_cost="1000"
+		equipment_cost="48000"
 		jobname="{=wLTQpbIM}Potter"
 		description="{=yI0RHP6R}We fashion pots out of clay then bake them in kilns. People store most everything in pots and they're always in high demand.">
 		<Meshes
@@ -769,7 +778,7 @@
 		id="olive_press"
 		name="{=boupIGPX}Olive Press"
 		frequency="2"
-		equipment_cost="5000"
+		equipment_cost="240000"
 		jobname="{=wCuAxt4m}Oilpresser"
 		description="{=qF9UGd2S}We crush olives and then drain the oil to be used for cooking, to light lamps, for soap, and for many other purposes.">
 		<Meshes
@@ -791,6 +800,9 @@
 				<Output
 					output="ItemCategory.oil"
 					output_count="26" />
+				<Output
+					output="ItemCategory.charcoal"
+					output_count="75" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -799,7 +811,7 @@
 		id="wool_weavery"
 		name="{=bZeZCHoa}Wool Weavery"
 		frequency="2"
-		equipment_cost="1000"
+		equipment_cost="48000"
 		jobname="{=eS6nGak1}Wool Weaver"
 		description="{=w94Fl25I}We take wool from sheep and first clean and card it. Then, we wet and press the wool fibers together, creating a thick, warm felt. It keeps out the cold and wet.">
 		<Meshes
@@ -820,7 +832,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="4" />
+					output_count="8" />
 			</Outputs>
 		</Production>
 		<Production
@@ -848,7 +860,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="2" />
+					output_count="4" />
 			</Outputs>
 		</Production>
 		<Production
@@ -863,7 +875,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.light_armor" />
+					output="ItemCategory.light_armor" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -896,7 +909,7 @@
 		id="tannery"
 		name="{=7hx2Nlmd}Tannery"
 		frequency="1"
-		equipment_cost="1000"
+		equipment_cost="48000"
 		jobname="{=ousGnzju}Tanner"
 		description="{=cawbOcb1}We treat raw hides with lime and other chemicals, and turned them into supple leather.">
 		<Meshes
@@ -974,7 +987,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.medium_armor" />
+					output="ItemCategory.medium_armor" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -983,7 +997,7 @@
 		id="wood_WorkshopType"
 		name="{=UiSes6XY}Wood Workshop"
 		frequency="2"
-		equipment_cost="1000"
+		equipment_cost="48000"
 		jobname="{=IO7Jgato}Carpenter"
 		description="{=wUwYYcjM}Well, we take hardwood logs and split them into rough boards. Then, we smooth and shape them with planes and saws to make sturdy planks. Folk use them for all kinds of building, or to make ships.">
 		<Meshes
@@ -1071,11 +1085,14 @@
 				<Input
 					input_item="planks" 
 					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.ranged_weapons"
-					output_count="8" />
+					output_count="2" />
 			</Outputs>
 		</Production>
 	<!--< Horsebows >-->		
@@ -1232,7 +1249,7 @@
 		id="smithy"
 		name="{=Kqt8RHh7}Smithy"
 		frequency="2"
-		equipment_cost="5000"
+		equipment_cost="240000"
 		jobname="{=8MwqyFfS}Ironmonger"
 		description="{=J2Ioper5}Iron ore is smelted into ingots then forged into tools, nails, weapons and armor in a smithy.">
 		<Meshes
@@ -1472,7 +1489,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.heavy_armor" />
+					output="ItemCategory.heavy_armor" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		
@@ -1488,7 +1506,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.heavy_armor" />
+					output="ItemCategory.heavy_armor" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		
@@ -1507,7 +1526,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.heavy_armor" />
+					output="ItemCategory.heavy_armor" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		
@@ -1526,7 +1546,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.heavy_armor" />
+					output="ItemCategory.heavy_armor" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 	<!--< mail and plate tier 5-6 >-->			
@@ -1545,7 +1566,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.ultra_armor" />
+					output="ItemCategory.ultra_armor" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		
@@ -1564,7 +1586,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.ultra_armor" />
+					output="ItemCategory.ultra_armor" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		
@@ -1586,7 +1609,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.ultra_armor" />
+					output="ItemCategory.ultra_armor" 
+					output_count="2"/>
 			</Outputs>
 		</Production>		
 
@@ -1665,7 +1689,7 @@
 		id="silversmithy"
 		name="{=silversmithworkshop}Silversmith"
 		frequency="2"
-		equipment_cost="5000"
+		equipment_cost="240000"
 		jobname="{=silversmithworker}Silversmith"
 		description="{=cxrsASao}Rare silver ore is turned into jewelry, the finest of all trade goods, in a Silversmith.">
 		<Meshes
