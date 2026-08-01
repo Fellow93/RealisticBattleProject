@@ -3,11 +3,13 @@ using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
+using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace RBMCampaign
 {
@@ -32,8 +34,14 @@ namespace RBMCampaign
     /// </summary>
     internal static class VillagerConvoys
     {
-        /// <summary>How many trade convoys one village may have out at once.</summary>
-        public const int MaxConvoysPerVillage = 2;
+        /// <summary>
+        /// How many trade convoys one village may have out at once. Set to 1: a village keeps a single
+        /// convoy (as vanilla does), but that convoy carries proportionally more -- see
+        /// <see cref="VillagerCarryCapacityPatch"/>. At 1 the register below degrades to a safe vanilla
+        /// passthrough: with no convoy the native first-party path raises one, and a lone convoy on the
+        /// road never triggers a second.
+        /// </summary>
+        public const int MaxConvoysPerVillage = 1;
 
         private static readonly Dictionary<Village, List<MobileParty>> Convoys = new Dictionary<Village, List<MobileParty>>();
 
@@ -318,6 +326,38 @@ namespace RBMCampaign
                     + "  ·  " + convoy.MemberRoster.TotalManCount + " men"
                     + "  ·  village store " + stored + "/" + village.GetWarehouseCapacity()
                     + "  hearth left " + EconomyLog.Fmt(village.Hearth));
+            }
+        }
+
+        /// <summary>
+        /// How much more a single villager convoy can haul than its troops and animals would otherwise
+        /// allow. With one convoy per village instead of two, each trip has to move roughly twice the
+        /// cargo to keep the same goods reaching town, so the factor pairs with
+        /// <see cref="MaxConvoysPerVillage"/> above -- raise the convoy count and you would lower this,
+        /// and vice versa.
+        /// </summary>
+        private const float VillagerCarryMultiplier = 2f;
+
+        private static readonly TextObject CarryText = new TextObject("{=rbm_villager_convoy_carry}Trade convoy");
+
+        /// <summary>
+        /// Multiplies a villager party's inventory capacity so one convoy can carry the load two used
+        /// to. This is the weight budget vanilla's <c>VillagerCampaignBehavior.MoveItemsToVillagerParty</c>
+        /// fills from the village warehouse when the party sets out, so a bigger budget means a bigger
+        /// load -- and, because capacity also governs the overload speed penalty, the heavier convoy is
+        /// not slowed for carrying it. Villager parties only; every other party is left untouched.
+        /// </summary>
+        [HarmonyPatch(typeof(DefaultInventoryCapacityModel), "CalculateInventoryCapacity")]
+        private static class VillagerCarryCapacityPatch
+        {
+            private static void Postfix(MobileParty mobileParty, ref ExplainedNumber __result)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || mobileParty == null || !mobileParty.IsVillager)
+                {
+                    return;
+                }
+
+                __result.AddFactor(VillagerCarryMultiplier - 1f, CarryText);
             }
         }
     }

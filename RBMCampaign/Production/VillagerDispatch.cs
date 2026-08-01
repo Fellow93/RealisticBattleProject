@@ -51,6 +51,47 @@ namespace RBMCampaign
     }
 
     /// <summary>
+    /// Raises the share of a village warehouse a single convoy loads when it sets out. Vanilla
+    /// <c>VillagerCampaignBehavior.MoveItemsToVillagerParty</c> walks the store four times taking
+    /// <c>0.2</c> of each remaining stack per pass -- <c>1 - 0.8^4 ≈ 59%</c> of the warehouse per trip.
+    /// With one convoy per village instead of two (see <see cref="VillagerConvoys.MaxConvoysPerVillage"/>)
+    /// that leaves too much behind: the store backs up while the lone convoy is away and production
+    /// halts against the warehouse cap. This transpiler rewrites the single per-pass fraction to
+    /// <see cref="PerPassLoadFraction"/>, so a departing convoy nearly empties the store.
+    ///
+    /// The share is still capped by the party's weight budget in the same method
+    /// (<c>InventoryCapacity - TotalWeightCarried</c>, itself doubled for villager parties by
+    /// <see cref="VillagerConvoys.VillagerCarryCapacityPatch"/>): the fraction sets how much the convoy
+    /// TRIES to take, capacity sets how much it CAN. Compounds over the four passes as
+    /// <c>1 - (1-f)^4</c> -- 0.5 ≈ 94%, 0.4 ≈ 87%, 0.34 ≈ 81%.
+    ///
+    /// Surgical by design: <c>0.2f</c> is the method's only float literal, so the anchor is
+    /// unambiguous. If it ever stops matching, the transpiler no-ops and vanilla's 59% remains.
+    /// Applied only under rbmCampaignEnabled (PatchAll runs only then).
+    /// </summary>
+    [HarmonyPatch(typeof(VillagerCampaignBehavior), "MoveItemsToVillagerParty")]
+    internal static class VillagerLoadSharePatch
+    {
+        internal const float PerPassLoadFraction = 0.5f;
+
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            foreach (CodeInstruction instruction in instructions)
+            {
+                if (instruction.opcode == OpCodes.Ldc_R4 && instruction.operand is float value
+                    && System.Math.Abs(value - 0.2f) < 1e-6f)
+                {
+                    yield return new CodeInstruction(OpCodes.Ldc_R4, PerPassLoadFraction);
+                }
+                else
+                {
+                    yield return instruction;
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// Writes down every villager party that sets out: who is walking, what they are carrying, and what
     /// it is worth. The cargo is the whole point of the party and nothing in game ever shows it, so a
     /// village that never seems to enrich its town can only be diagnosed from here.
