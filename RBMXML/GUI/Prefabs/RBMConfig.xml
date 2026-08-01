@@ -97,6 +97,142 @@
 										    <ListPanel Id="CampaignOptions" DoNotAcceptEvents="true" IsVisible="false" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
 										      <Children>
 
+									<!-- CampaignCatLoggingt category (collapsible, collapsed by default) -->
+									<ListPanel Id="CampaignLoggingSection" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
+									  <Children>
+									    <ListPanel Id="CampaignLoggingOptions" DoNotAcceptEvents="true" IsVisible="false" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
+									      <Children>
+<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+  <Children>
+<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SpoilsLoggingt"/>
+
+											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
+											  <Children>
+												<RichTextWidget DataSource="{SpoilsLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{SpoilsLoggingEnabled}" />
+											  </Children>
+											</ListPanel>
+
+										  </Children>
+										</ListPanel>
+<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+											<Children>
+
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SpoilsVerboseLoggingt"/>
+
+												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
+													<Children>
+													  <RichTextWidget DataSource="{SpoilsVerboseLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+													  <Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{SpoilsVerboseLoggingEnabled}" />
+													</Children>
+												</ListPanel>
+
+											</Children>
+										</ListPanel>
+<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+										  <Children>
+
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@EconomyLoggingt"/>
+												<HintWidget DataSource="{EconomyLoggingEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
+
+											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
+											  <Children>
+												<RichTextWidget DataSource="{EconomyLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{EconomyLoggingEnabled}" />
+											  </Children>
+											</ListPanel>
+
+										  </Children>
+										</ListPanel>
+										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+										  <Children>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@CaravanLoggingEnabledt"/>
+												<HintWidget DataSource="{CaravanLoggingEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
+											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
+											  <Children>
+												<RichTextWidget DataSource="{CaravanLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{CaravanLoggingEnabled}" />
+											  </Children>
+											</ListPanel>
+										  </Children>
+										</ListPanel>
+<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+											<Children>
+
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@BattleHitLoggingt"/>
+
+												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
+													<Children>
+														<RichTextWidget DataSource="{BattleHitLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+														<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{BattleHitLoggingEnabled}" />
+													</Children>
+												</ListPanel>
+
+											</Children>
+										</ListPanel>
+<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+											<Children>
+
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SimulationLoggingt"/>
+
+												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
+													<Children>
+														<RichTextWidget DataSource="{SimulationLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+														<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{SimulationLoggingEnabled}" />
+													</Children>
+												</ListPanel>
+
+											</Children>
+										</ListPanel>
+											<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+												<Children>
+
+													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SimulationLogHitst"/>
+
+													<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
+														<Children>
+															<RichTextWidget DataSource="{SimulationLogHitsText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+															<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{SimulationLogHits}" />
+														</Children>
+													</ListPanel>
+
+												</Children>
+											</ListPanel>
+											<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+												<Children>
+
+													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@StrategicPowerLoggingt"/>
+
+													<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
+														<Children>
+															<RichTextWidget DataSource="{StrategicPowerLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+															<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{StrategicPowerLoggingEnabled}" />
+														</Children>
+													</ListPanel>
+
+												</Children>
+											</ListPanel>
+									      </Children>
+									    </ListPanel>
+									    <PartyHeaderToggleWidget DoNotPassEventsToChildren="true" UpdateChildrenStates="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Center" MarginTop="!AT.Heading.MarginTop" MarginBottom="!AT.Heading.MarginBottom" WidgetToClose="..\CampaignLoggingOptions" CollapseIndicator="CampaignLoggingSectionTitle\CollapseIndicator">
+									      <Children>
+									        <TextWidget Id="CampaignLoggingSectionTitle" DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Center" MarginLeft="30" Brush="SPOptions.GameKeysGroup.Title.Text" Text="@CampaignCatLoggingt" ClipContents="false">
+									          <Children>
+									            <BrushWidget Id="CollapseIndicator" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="19" SuggestedWidth="19" VerticalAlignment="Center" PositionXOffset="-26" PositionYOffset="-3" Brush="SPOptions.GameKeysgroup.ExpandIndicator" OverrideDefaultStateSwitchingEnabled="true" />
+									          </Children>
+									        </TextWidget>
+									      </Children>
+									    </PartyHeaderToggleWidget>
+									  </Children>
+									</ListPanel>
 								<!-- CampaignCatUpkeept category (collapsible, expanded by default) -->
 								<ListPanel Id="CampaignUpkeepSection" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
 								  <Children>
@@ -743,34 +879,6 @@
 <ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 											<Children>
 
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SimulationLoggingt"/>
-
-												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
-													<Children>
-														<RichTextWidget DataSource="{SimulationLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
-														<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{SimulationLoggingEnabled}" />
-													</Children>
-												</ListPanel>
-
-											</Children>
-										</ListPanel>
-<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-											<Children>
-
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@BattleHitLoggingt"/>
-
-												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
-													<Children>
-														<RichTextWidget DataSource="{BattleHitLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
-														<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{BattleHitLoggingEnabled}" />
-													</Children>
-												</ListPanel>
-
-											</Children>
-										</ListPanel>
-<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-											<Children>
-
 												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SpectateBattlest"/>
 
 												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
@@ -860,20 +968,6 @@
 											</Children>
 										</ListPanel>
 <ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-											<Children>
-
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SpoilsVerboseLoggingt"/>
-
-												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
-													<Children>
-													  <RichTextWidget DataSource="{SpoilsVerboseLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
-													  <Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{SpoilsVerboseLoggingEnabled}" />
-													</Children>
-												</ListPanel>
-
-											</Children>
-										</ListPanel>
-<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
 											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
@@ -902,38 +996,6 @@
 </ListPanel>
   </Children>
 </ListPanel>
-<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-  <Children>
-<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SpoilsLoggingt"/>
-
-											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
-											  <Children>
-												<RichTextWidget DataSource="{SpoilsLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
-												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{SpoilsLoggingEnabled}" />
-											  </Children>
-											</ListPanel>
-
-										  </Children>
-										</ListPanel>
-<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-										  <Children>
-
-											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
-											  <Children>
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@EconomyLoggingt"/>
-												<HintWidget DataSource="{EconomyLoggingEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
-											  </Children>
-											</Widget>
-
-											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
-											  <Children>
-												<RichTextWidget DataSource="{EconomyLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
-												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{EconomyLoggingEnabled}" />
-											  </Children>
-											</ListPanel>
-
-										  </Children>
-										</ListPanel>
 
 										<!-- Kingdom Supply Caravans (master toggle) -->
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
@@ -966,24 +1028,6 @@
 											  <Children>
 												<RichTextWidget DataSource="{CaravanInvestmentEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
 												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{CaravanInvestmentEnabled}" />
-											  </Children>
-											</ListPanel>
-										  </Children>
-										</ListPanel>
-
-										<!-- Caravan Logging -->
-										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-										  <Children>
-											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
-											  <Children>
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@CaravanLoggingEnabledt"/>
-												<HintWidget DataSource="{CaravanLoggingEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
-											  </Children>
-											</Widget>
-											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
-											  <Children>
-												<RichTextWidget DataSource="{CaravanLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
-												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{CaravanLoggingEnabled}" />
 											  </Children>
 											</ListPanel>
 										  </Children>

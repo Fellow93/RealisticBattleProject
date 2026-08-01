@@ -1089,7 +1089,16 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Module & Diagnostics").ToString();
+                return new TextObject("Module & Simulation").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string CampaignCatLoggingt
+        {
+            get
+            {
+                return new TextObject("Logging").ToString();
             }
         }
 

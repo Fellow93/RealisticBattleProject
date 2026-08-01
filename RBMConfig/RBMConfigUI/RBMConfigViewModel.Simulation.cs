@@ -23,6 +23,10 @@ namespace RBMConfig
         public TextViewModel StrategicPowerEnabledText { get; }
         public SelectorVM<SelectorItemVM> StrategicPowerEnabled { get; }
 
+        // The troop-power breakdown written to logs/powerCalculation. On/off only; needs Equipment Based Troop Power on.
+        public TextViewModel StrategicPowerLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> StrategicPowerLoggingEnabled { get; }
+
         // Real captain perks in auto-resolve (in place of vanilla's flat count of the side commander's), plus the
         // commander's hit-point perks restored to his men. On/off only.
         public TextViewModel SimulationPerkSystemText { get; }
@@ -30,6 +34,11 @@ namespace RBMConfig
 
         public TextViewModel SimulationLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> SimulationLoggingEnabled { get; }
+
+        // The blow-by-blow detail inside the auto-resolve trace. Off just trims the per-hit lines; the per-round
+        // summary still writes while Detailed Auto Resolve Logging is on. Needs Detailed Auto Resolve Logging on.
+        public TextViewModel SimulationLogHitsText { get; }
+        public SelectorVM<SelectorItemVM> SimulationLogHits { get; }
 
         // Field-battle blow-by-blow log, the counterpart to the auto-resolve trace, meant to be read against it.
         public TextViewModel BattleHitLoggingEnabledText { get; }
@@ -82,6 +91,24 @@ namespace RBMConfig
             get
             {
                 return new TextObject("{=RBM_CON_094}Detailed Auto Resolve Logging").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string SimulationLogHitst
+        {
+            get
+            {
+                return new TextObject("Auto Resolve Per-Hit Detail").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string StrategicPowerLoggingt
+        {
+            get
+            {
+                return new TextObject("Troop Power Logging").ToString();
             }
         }
 

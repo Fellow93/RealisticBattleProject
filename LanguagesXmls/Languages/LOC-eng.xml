@@ -468,5 +468,7 @@
 	<string id="RBM_SPECTATE_006" text="Defenders: {NAME} ({COUNT} men Â· power {POWER})" />
 	<string id="RBM_SPECTATE_007" text="Watch this assault?" />
 	<string id="RBM_SPECTATE_008" text="An army is storming the walls. You may watch the assault from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the siege on the map resolves on its own, and nothing you see here changes it." />
+	<string id="RBM_CAMP_001" text="RBM Campaign: incompatible save" />
+	<string id="RBM_CAMP_002" text="This save was not started with RBM Campaign features enabled.{newline}{newline}The one-time economy setup (settlement treasuries, citizen wealth, village purses and starting prosperity) only runs when a campaign is CREATED with RBM Campaign on, and it cannot be applied to an existing save. This campaign will run with a half-built, unbalanced economy -- markets stuck poor, treasuries and prosperity wrong, spoils and upkeep skewed.{newline}{newline}To get the intended experience, start a NEW campaign with RBM Campaign enabled. You can keep playing this save, but the economy will not behave correctly." />
   </strings>
 </base>

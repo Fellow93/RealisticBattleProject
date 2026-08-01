@@ -365,6 +365,11 @@ namespace RBMConfig
             StrategicPowerEnabledText = new TextViewModel(new TextObject("{=RBM_CON_098}Equipment Based Troop Power"));
             StrategicPowerEnabled = new SelectorVM<SelectorItemVM>(strategicPowerOptions, 0, null);
 
+            // Troop power logging: on by default, so its option carries the "(Default)" tag.
+            List<string> strategicPowerLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            StrategicPowerLoggingEnabledText = new TextViewModel(new TextObject("Troop Power Logging"));
+            StrategicPowerLoggingEnabled = new SelectorVM<SelectorItemVM>(strategicPowerLoggingOptions, 0, null);
+
             // Auto resolve perks: on by default, so its option carries the "(Default)" tag.
             List<string> simulationPerkOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             SimulationPerkSystemText = new TextViewModel(new TextObject("{=RBM_CON_097}Auto Resolve Perks"));
@@ -374,6 +379,11 @@ namespace RBMConfig
             List<string> simulationLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             SimulationLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_094}Detailed Auto Resolve Logging"));
             SimulationLoggingEnabled = new SelectorVM<SelectorItemVM>(simulationLoggingOptions, 0, null);
+
+            // Auto resolve per-hit detail: on by default, so its option carries the "(Default)" tag.
+            List<string> simulationLogHitsOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            SimulationLogHitsText = new TextViewModel(new TextObject("Auto Resolve Per-Hit Detail"));
+            SimulationLogHits = new SelectorVM<SelectorItemVM>(simulationLogHitsOptions, 0, null);
 
             // Field battle logging: off by default -- a diagnostic for comparing a fought battle to the sim trace,
             // so Disabled carries the "(Default)" tag.
@@ -468,6 +478,8 @@ namespace RBMConfig
             StrategicPowerEnabled.SelectedIndex = RBMConfig.strategicPowerEnabled ? 1 : 0;
             SimulationPerkSystem.SelectedIndex = RBMConfig.simulationPerkSystem ? 1 : 0;
             SimulationLoggingEnabled.SelectedIndex = RBMConfig.simulationLoggingEnabled ? 1 : 0;
+            SimulationLogHits.SelectedIndex = RBMConfig.simulationLogHits ? 1 : 0;
+            StrategicPowerLoggingEnabled.SelectedIndex = RBMConfig.strategicPowerLoggingEnabled ? 1 : 0;
             BattleHitLoggingEnabled.SelectedIndex = RBMConfig.battleHitLoggingEnabled ? 1 : 0;
             SpectateBattlesEnabled.SelectedIndex = RBMConfig.spectateBattlesEnabled ? 1 : 0;
             _spectateMinTroopsPerSide = MathF.Clamp(RBMConfig.spectateMinTroopsPerSide, 10f, 1000f);
@@ -682,6 +694,8 @@ namespace RBMConfig
             RBMConfig.strategicPowerEnabled = StrategicPowerEnabled.SelectedIndex == 1;
             RBMConfig.simulationPerkSystem = SimulationPerkSystem.SelectedIndex == 1;
             RBMConfig.simulationLoggingEnabled = SimulationLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.simulationLogHits = SimulationLogHits.SelectedIndex == 1;
+            RBMConfig.strategicPowerLoggingEnabled = StrategicPowerLoggingEnabled.SelectedIndex == 1;
             RBMConfig.battleHitLoggingEnabled = BattleHitLoggingEnabled.SelectedIndex == 1;
             RBMConfig.spectateBattlesEnabled = SpectateBattlesEnabled.SelectedIndex == 1;
             RBMConfig.spectateMinTroopsPerSide = (int)MathF.Round(_spectateMinTroopsPerSide);
@@ -764,6 +778,8 @@ namespace RBMConfig
             StrategicPowerEnabled.SelectedIndex = 1;
             SimulationPerkSystem.SelectedIndex = 1;
             SimulationLoggingEnabled.SelectedIndex = 1;
+            SimulationLogHits.SelectedIndex = 1;
+            StrategicPowerLoggingEnabled.SelectedIndex = 1;
             BattleHitLoggingEnabled.SelectedIndex = 0;
             SpectateBattlesEnabled.SelectedIndex = 0;
             SpectateMinTroopsPerSide = 100f;

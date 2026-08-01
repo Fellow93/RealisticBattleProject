@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -6,6 +7,7 @@ using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
@@ -120,6 +122,43 @@ namespace RBMCampaign
             return MathF.Round(StipendPerStandingPoint * standing);
         }
 
+        // These two patches touch DefaultClanFinanceModel, whose static initializer reads
+        // Game.Current.GameTextManager.FindText(...) across a score of fields. The type is
+        // beforefieldinit, so the runtime may run that initializer the moment the type is first prepared
+        // -- which Harmony patching one of its methods does. Left to PatchAll they would be applied at
+        // module load, before any game exists, and the initializer would dereference a null Game.Current,
+        // throw, and be cached as a failed type-init for the life of the process -- surfacing much later
+        // as a TypeInitializationException while the map screen builds. So they are kept OFF the
+        // attribute-discovered PatchAll (no [HarmonyPatch]) and applied by hand from ApplyDeferred once a
+        // game is live. See WorkshopPurse for the same cctor trap on a neighbouring method.
+        private static bool _deferredApplied;
+
+        /// <summary>
+        /// Applies the two DefaultClanFinanceModel patches, but only once a game exists so its
+        /// Game.Current-reading static initializer runs safely. A no-op while <see cref="Game.Current"/>
+        /// is null; RBMCampaignPatcher.DoPatching calls this on every patch pass, so it takes effect on
+        /// the OnGameStart pass, by which point Game.Current is set for a new game and a loaded save alike.
+        /// </summary>
+        public static void ApplyDeferred(Harmony harmony)
+        {
+            if (_deferredApplied || Game.Current == null)
+            {
+                return;
+            }
+            // Force the initializer to complete now, with Game.Current live, so its texts are cached once
+            // and for good; after this the patching below can prepare the type without risk.
+            RuntimeHelpers.RunClassConstructor(typeof(DefaultClanFinanceModel).TypeHandle);
+
+            harmony.Patch(
+                AccessTools.Method(typeof(DefaultClanFinanceModel), "AddMercenaryIncome"),
+                prefix: new HarmonyMethod(AccessTools.Method(typeof(MercenaryContractPay), nameof(SuppressVanillaMercenaryIncomePrefix))));
+            harmony.Patch(
+                AccessTools.Method(typeof(DefaultClanFinanceModel), "CalculateClanGoldChange"),
+                postfix: new HarmonyMethod(AccessTools.Method(typeof(MercenaryContractPay), nameof(PayMercenaryContractThroughFinancePostfix))));
+
+            _deferredApplied = true;
+        }
+
         /// <summary>
         /// RBM pays every mercenary contract in full (stipend + doubled-wage reimbursement), so vanilla's
         /// influence-based mercenary award must not land on top of it, or the company is paid twice. Skip
@@ -127,84 +166,76 @@ namespace RBMCampaign
         /// the pay, so a clan not under RBM's mercenary bookkeeping (feature off) keeps vanilla's award,
         /// drawn from its employer's <c>MercenaryWallet</c>, untouched.
         /// </summary>
-        [HarmonyPatch(typeof(DefaultClanFinanceModel), "AddMercenaryIncome")]
-        private class SuppressVanillaMercenaryIncome
+        private static bool SuppressVanillaMercenaryIncomePrefix(Clan clan)
         {
-            private static bool Prefix(Clan clan)
-            {
-                return !(RBMConfig.RBMConfig.rbmCampaignEnabled && IsMercenaryClan(clan));
-            }
+            return !(RBMConfig.RBMConfig.rbmCampaignEnabled && IsMercenaryClan(clan));
         }
 
-        [HarmonyPatch(typeof(DefaultClanFinanceModel), "CalculateClanGoldChange")]
-        private class PayMercenaryContractThroughFinance
+        private static void PayMercenaryContractThroughFinancePostfix(Clan clan, bool applyWithdrawals, ref ExplainedNumber __result)
         {
-            private static void Postfix(Clan clan, bool applyWithdrawals, ref ExplainedNumber __result)
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !IsMercenaryClan(clan))
             {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !IsMercenaryClan(clan))
-                {
-                    return;
-                }
+                return;
+            }
 
-                Hero ruler = clan.Kingdom.Leader;
-                int baseWages = ClanFieldTroopBaseWages(clan);
-                int stipend = StipendFor(clan);
+            Hero ruler = clan.Kingdom.Leader;
+            int baseWages = ClanFieldTroopBaseWages(clan);
+            int stipend = StipendFor(clan);
 
-                // The second wage the company lays out on its men, the one that makes the mercenary rate a
-                // double. Vanilla already charged the first; this is the extra, and the men bank it as the
-                // doubled spoils deposit (see DepositWageSpoils). Unconditional while under contract and on
-                // both passes, a negative as any wage expense is -- it stands whether or not the crown pays.
-                if (baseWages > 0)
-                {
-                    __result.Add(-baseWages, new TextObject("{=RBM_merc_wage_cost}Mercenary troop wages"));
-                }
+            // The second wage the company lays out on its men, the one that makes the mercenary rate a
+            // double. Vanilla already charged the first; this is the extra, and the men bank it as the
+            // doubled spoils deposit (see DepositWageSpoils). Unconditional while under contract and on
+            // both passes, a negative as any wage expense is -- it stands whether or not the crown pays.
+            if (baseWages > 0)
+            {
+                __result.Add(-baseWages, new TextObject("{=RBM_merc_wage_cost}Mercenary troop wages"));
+            }
 
-                // Vanilla slips a mercenary bonus into the landless-clan subsistence stipend as well -- an
-                // extra 40 per tier on top of the 80 every fiefless minor clan draws (CalculateClanIncomeInternal
-                // line 133). That extra is a mercenary payment too, and RBM is now the company's sole paymaster,
-                // so cancel it; the 80-per-tier floor is left, being a minor-clan subsistence rather than a
-                // mercenary award. Vanilla excludes the player from that stipend outright, so this only ever
-                // fires for AI companies, which is why it goes unlabelled -- no one reads their finance screen.
-                if (clan != Clan.PlayerClan && clan.Fiefs.Count == 0)
+            // Vanilla slips a mercenary bonus into the landless-clan subsistence stipend as well -- an
+            // extra 40 per tier on top of the 80 every fiefless minor clan draws (CalculateClanIncomeInternal
+            // line 133). That extra is a mercenary payment too, and RBM is now the company's sole paymaster,
+            // so cancel it; the 80-per-tier floor is left, being a minor-clan subsistence rather than a
+            // mercenary award. Vanilla excludes the player from that stipend outright, so this only ever
+            // fires for AI companies, which is why it goes unlabelled -- no one reads their finance screen.
+            if (clan != Clan.PlayerClan && clan.Fiefs.Count == 0)
+            {
+                int mercBonus = clan.Tier * 40;
+                if (mercBonus > 0)
                 {
-                    int mercBonus = clan.Tier * 40;
-                    if (mercBonus > 0)
-                    {
-                        __result.Add(-mercBonus);
-                    }
+                    __result.Add(-mercBonus);
                 }
+            }
 
-                // What the crown owes today: the full doubled wage, and the standing stipend on top. Capped
-                // at what the ruler can actually afford -- stipend first, wages with whatever is left -- so a
-                // poor employer pays what he can and the company eats the rest, as a stiffed mercenary would.
-                int wageDue = 2 * baseWages;
-                int affordable = MathF.Max(0, ruler.Gold);
-                int stipendPaid = MathF.Min(stipend, affordable);
-                int wagePaid = MathF.Min(wageDue, affordable - stipendPaid);
+            // What the crown owes today: the full doubled wage, and the standing stipend on top. Capped
+            // at what the ruler can actually afford -- stipend first, wages with whatever is left -- so a
+            // poor employer pays what he can and the company eats the rest, as a stiffed mercenary would.
+            int wageDue = 2 * baseWages;
+            int affordable = MathF.Max(0, ruler.Gold);
+            int stipendPaid = MathF.Min(stipend, affordable);
+            int wagePaid = MathF.Min(wageDue, affordable - stipendPaid);
 
-                if (applyWithdrawals)
+            if (applyWithdrawals)
+            {
+                // The authoritative once-a-day pass whose result becomes the leader's gold. Debit the
+                // ruler for exactly what the mercenary is paid (a null-recipient give takes it out of
+                // him), then book the pay as income; the two net to no coin created.
+                int total = stipendPaid + wagePaid;
+                if (total > 0)
                 {
-                    // The authoritative once-a-day pass whose result becomes the leader's gold. Debit the
-                    // ruler for exactly what the mercenary is paid (a null-recipient give takes it out of
-                    // him), then book the pay as income; the two net to no coin created.
-                    int total = stipendPaid + wagePaid;
-                    if (total > 0)
-                    {
-                        GiveGoldAction.ApplyBetweenCharacters(ruler, null, total, true);
-                    }
+                    GiveGoldAction.ApplyBetweenCharacters(ruler, null, total, true);
                 }
+            }
 
-                // Both passes book the same income lines: the apply pass turns them into gold, the display
-                // pass only makes the breakdown read what the day paid. Capped identically to the debit, so
-                // the two never disagree.
-                if (stipendPaid > 0)
-                {
-                    __result.Add(stipendPaid, new TextObject("{=RBM_merc_stipend}Mercenary stipend"));
-                }
-                if (wagePaid > 0)
-                {
-                    __result.Add(wagePaid, new TextObject("{=RBM_merc_wage_pay}Mercenary wage pay"));
-                }
+            // Both passes book the same income lines: the apply pass turns them into gold, the display
+            // pass only makes the breakdown read what the day paid. Capped identically to the debit, so
+            // the two never disagree.
+            if (stipendPaid > 0)
+            {
+                __result.Add(stipendPaid, new TextObject("{=RBM_merc_stipend}Mercenary stipend"));
+            }
+            if (wagePaid > 0)
+            {
+                __result.Add(wagePaid, new TextObject("{=RBM_merc_wage_pay}Mercenary wage pay"));
             }
         }
     }
