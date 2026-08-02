@@ -1,7 +1,9 @@
 using HarmonyLib;
+using Helpers;
 using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
@@ -223,10 +225,20 @@ namespace RBMCampaign
         {
             CharacterObject character = ResolveTroop(TroopId);
             // A prisoner row has no member purse to speak for, so the bar becomes a ransom indicator
-            // instead -- filled to the spoils share of the whole prize, hovered for the breakdown.
+            // instead -- filled to the spoils share of the whole prize, hovered for the breakdown. It is
+            // shown ONLY on the ransom screen, where selling the captives is what the screen is for;
+            // everywhere else prisoners still appear (loot, management), a ransom bar has no business, so
+            // the slot stays empty there rather than drawing a bar the player cannot act on.
             if (character != null && SpoilsPool.IsEnabled && Campaign.Current != null && IsPrisoner)
             {
-                RefreshPrisoner(character);
+                if (IsRansomScreen())
+                {
+                    RefreshPrisoner(character);
+                }
+                else
+                {
+                    IsVisible = false;
+                }
                 return;
             }
             // A troop with nowhere left to upgrade still carries a purse, and still spends it on his
@@ -299,6 +311,17 @@ namespace RBMCampaign
             int baseRansom = Campaign.Current.Models.RansomValueCalculationModel.PrisonerRansomValue(character, Hero.MainHero) * count;
             MaxAmount = MathF.Max(1, gear + baseRansom);
             InitialAmount = MathF.Min(gear, MaxAmount);
+        }
+
+        /// <summary>
+        /// Whether the party screen currently open is the prisoner-ransom one. The mode is stamped on the
+        /// active <see cref="PartyState"/> by <c>PartyScreenHelper.OpenScreenAsRansom</c>; any other screen
+        /// (loot aftermath, troop management) reads as not-ransom, so the ransom bar stays off there.
+        /// </summary>
+        private static bool IsRansomScreen()
+        {
+            PartyState state = Game.Current?.GameStateManager?.ActiveState as PartyState;
+            return state != null && state.PartyScreenMode == PartyScreenHelper.PartyScreenMode.Ransom;
         }
 
         /// <summary>The number of a given captive in the main party's prison roster, or zero if none.</summary>
