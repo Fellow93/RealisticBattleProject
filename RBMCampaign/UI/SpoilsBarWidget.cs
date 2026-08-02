@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Engine.GauntletUI;
@@ -20,6 +21,12 @@ namespace RBMCampaign
     /// accumulate enough looted kit to cover their next upgrade; a full bar means that upgrade costs
     /// no gold at all. A stack with no upgrade left to buy still has a purse and still fills a bar,
     /// measured against the worth of the kit one of its men is already wearing.
+    ///
+    /// On a PRISONER row -- the same prefab renders both -- it turns into a ransom indicator instead: the
+    /// bar fills to the spoils share of the whole prize (the captives' stripped kit against that plus the
+    /// gold ransom), and its tooltip shows what ransoming the stack would hand the men and skim as the
+    /// leader's cut. Prisoners hold no spoils purse, so the member path would only ever draw an empty bar
+    /// there; this gives that slot a meaning on the ransom screen.
     /// </summary>
     public class RBMTroopSpoilsBarWidget : FillBarVerticalWidget
     {
@@ -86,13 +93,40 @@ namespace RBMCampaign
 
         private List<TooltipProperty> BuildTooltip()
         {
-            List<TooltipProperty> properties = new List<TooltipProperty>();
             CharacterObject character = ResolveTroop(TroopId);
             if (character == null || Campaign.Current == null)
             {
+                return new List<TooltipProperty>();
+            }
+            return IsPrisoner ? BuildPrisonerTooltip(character) : BuildSpoilsTooltip(character);
+        }
+
+        /// <summary>
+        /// The ransom breakdown for a captive stack: what the men keep off its stripped kit as spoils and
+        /// the leader's cut of that. The same two figures the tavern ransom option quotes, and priced off
+        /// the same helpers, so screen and menu never disagree. Gold ransom is not shown -- the men-ransom
+        /// is a separate leg, and the whole point of the row is what the KIT is worth.
+        /// </summary>
+        private List<TooltipProperty> BuildPrisonerTooltip(CharacterObject character)
+        {
+            List<TooltipProperty> properties = new List<TooltipProperty>();
+            PartyBase party = PartyBase.MainParty;
+            int gear = SpoilsPool.GetEquipmentValueWithMount(character) * GetPrisonerStackSize(party, character);
+            if (gear <= 0)
+            {
                 return properties;
             }
+            int leaderCut = SpoilsPool.PreviewLeaderCut(party, gear);
+            TextObject text = new TextObject("{=RBM_SPOILS_026}Their kit is stripped for spoils:{newline}Spoils to your men: {SPOILS}{newline}Your leader's cut: {CUT} gold");
+            text.SetTextVariable("SPOILS", gear - leaderCut);
+            text.SetTextVariable("CUT", leaderCut);
+            properties.Add(new TooltipProperty("", text.ToString(), 0, false, TooltipProperty.TooltipPropertyFlags.MultiLine));
+            return properties;
+        }
 
+        private List<TooltipProperty> BuildSpoilsTooltip(CharacterObject character)
+        {
+            List<TooltipProperty> properties = new List<TooltipProperty>();
             PartyBase party = PartyBase.MainParty;
             int stackSize = SpoilsPool.GetStackSize(party, character);
             properties.Add(new TooltipProperty(new TextObject("{=RBM_SPOILS_001}Spoils Stockpile").ToString(),
@@ -172,6 +206,13 @@ namespace RBMCampaign
         /// </remarks>
         public bool IsTroopUpgradable { get; set; }
 
+        /// <summary>
+        /// Bound to the view model's IsPrisonerOfPlayer. When set, this row is one of the player's captives
+        /// and the bar runs as a ransom indicator rather than a spoils purse. Owned as a plain bound field;
+        /// a row is a prisoner or a member for its whole life, so it never flips at runtime.
+        /// </summary>
+        public bool IsPrisoner { get; set; }
+
         protected override void OnUpdate(float dt)
         {
             base.OnUpdate(dt);
@@ -181,6 +222,13 @@ namespace RBMCampaign
         private void Refresh()
         {
             CharacterObject character = ResolveTroop(TroopId);
+            // A prisoner row has no member purse to speak for, so the bar becomes a ransom indicator
+            // instead -- filled to the spoils share of the whole prize, hovered for the breakdown.
+            if (character != null && SpoilsPool.IsEnabled && Campaign.Current != null && IsPrisoner)
+            {
+                RefreshPrisoner(character);
+                return;
+            }
             // A troop with nowhere left to upgrade still carries a purse, and still spends it on his
             // bread and his beer, so the bar is his too. Neither IsTroopUpgradable nor an upgrade
             // target gates it: only whether there is a troop, and a spoils system to speak for.
@@ -231,6 +279,37 @@ namespace RBMCampaign
                 " | equip ", SpoilsPool.GetEquipmentValue(character).ToString(),
                 " | stockpile ", stockpile.ToString(), " against ", MaxAmount.ToString(),
                 " | stack ", SpoilsPool.GetStackSize(party, character).ToString()));
+        }
+
+        /// <summary>
+        /// Fills the bar on a captive stack to the spoils share of its whole ransom prize -- the stripped
+        /// kit against that kit plus the gold ransom -- so a prisoner worth mostly his armour reads fuller
+        /// than one worth mostly his head. Hidden when the stack is gone or worth nothing to strip.
+        /// </summary>
+        private void RefreshPrisoner(CharacterObject character)
+        {
+            PartyBase party = PartyBase.MainParty;
+            int count = GetPrisonerStackSize(party, character);
+            int gear = SpoilsPool.GetEquipmentValueWithMount(character) * count;
+            IsVisible = count > 0 && gear > 0;
+            if (!IsVisible)
+            {
+                return;
+            }
+            int baseRansom = Campaign.Current.Models.RansomValueCalculationModel.PrisonerRansomValue(character, Hero.MainHero) * count;
+            MaxAmount = MathF.Max(1, gear + baseRansom);
+            InitialAmount = MathF.Min(gear, MaxAmount);
+        }
+
+        /// <summary>The number of a given captive in the main party's prison roster, or zero if none.</summary>
+        private static int GetPrisonerStackSize(PartyBase party, CharacterObject character)
+        {
+            if (party == null || party.PrisonRoster == null)
+            {
+                return 0;
+            }
+            int index = party.PrisonRoster.FindIndexOfTroop(character);
+            return index < 0 ? 0 : party.PrisonRoster.GetElementCopyAtIndex(index).Number;
         }
 
         /// <summary>

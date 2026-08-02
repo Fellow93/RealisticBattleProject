@@ -153,6 +153,7 @@ namespace RBMCampaign
             bar.SetAttribute("FillWidget", "FillWidget");
             bar.SetAttribute("IsDirectionUpward", "true");
             bar.SetAttribute("IsTroopUpgradable", "@IsUpgradableTroop");
+            bar.SetAttribute("IsPrisoner", "@IsPrisonerOfPlayer");
             bar.SetAttribute("TroopId", "@TroopID");
 
             XmlElement children = document.CreateElement("Children");
