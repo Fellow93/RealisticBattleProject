@@ -43,8 +43,38 @@ namespace RBMCampaign
                 return;
             }
 
+            int pot = SumRansomGearValue(prisoners);
+            if (pot <= 0)
+            {
+                return;
+            }
+
+            int granted = GrantSpoilsWeightedByTier(sellerParty, pot, "RANSOM");
+            if (SpoilsLog.IsEnabled)
+            {
+                SpoilsLog.Log("RANSOM", sellerParty, SpoilsLog.Describe(sellerParty)
+                    + " ransomed prisoners; their kit worth " + pot + " split to the stacks by tier weight ("
+                    + granted + ")");
+            }
+            int leaderCut = ApplyLeaderCut(sellerParty, granted);
+            if (sellerParty == PartyBase.MainParty)
+            {
+                AnnounceRansomSpoilsToPlayer(granted, leaderCut);
+            }
+        }
+
+        /// <summary>
+        /// The stripped-kit pot a roster of prisoners yields: every captive's kit worth -- heroes and levy
+        /// alike -- priced off <see cref="GetEquipmentValueWithMount"/> and summed over the stack. The gross
+        /// the ransom gather grants and the ransom-menu tooltip previews, so the two always agree.
+        /// </summary>
+        public static int SumRansomGearValue(TroopRoster prisoners)
+        {
+            if (prisoners == null)
+            {
+                return 0;
+            }
             long gross = 0L;
-            int men = 0;
             for (int i = 0; i < prisoners.Count; i++)
             {
                 TroopRosterElement element = prisoners.GetElementCopyAtIndex(i);
@@ -58,26 +88,8 @@ namespace RBMCampaign
                 {
                     gross += (long)per * element.Number;
                 }
-                men += element.Number;
             }
-
-            int pot = (int)MathF.Min(gross, (float)int.MaxValue);
-            if (pot <= 0)
-            {
-                return;
-            }
-
-            int granted = GrantSpoilsWeightedByTier(sellerParty, pot, "RANSOM");
-            if (SpoilsLog.IsEnabled)
-            {
-                SpoilsLog.Log("RANSOM", sellerParty, SpoilsLog.Describe(sellerParty) + " ransomed " + men
-                    + " prisoners; their kit worth " + pot + " split to the stacks by tier weight (" + granted + ")");
-            }
-            int leaderCut = ApplyLeaderCut(sellerParty, granted);
-            if (sellerParty == PartyBase.MainParty)
-            {
-                AnnounceRansomSpoilsToPlayer(granted, leaderCut);
-            }
+            return (int)MathF.Min(gross, (float)int.MaxValue);
         }
 
         /// <summary>

@@ -37,6 +37,43 @@ namespace RBMCampaign
         /// -- the gather guarantees the purse holds at least it -- so the men net the remainder.
         /// </summary>
         /// <returns>The gold the leader pocketed, which the gather's own announcement can note.</returns>
+        /// <summary>
+        /// The share of a fresh gather a party's leader skims as gold before any of it settles into the
+        /// stacks: the base cut scaled by clan tier (tier + 1, so even a tier-0 or clanless leader takes
+        /// the base share once over), half again as large while a mercenary contract holds, and clamped so
+        /// it never runs past all of it. Zero when the party has no living payee to take a cut. Shared by
+        /// <see cref="ApplyLeaderCut"/>, which applies it, and the ransom-menu tooltip, which previews it,
+        /// so the two can never quote different numbers.
+        /// </summary>
+        public static float GetLeaderCutFraction(PartyBase party)
+        {
+            Hero payee = GetPartyPayee(party);
+            if (payee == null || !payee.IsAlive)
+            {
+                return 0f;
+            }
+            int clanTier = (payee.Clan != null) ? payee.Clan.Tier : 0;
+            float fraction = RBMConfig.RBMConfig.troopLeaderSpoilsCutFraction * (clanTier + 1);
+            if (MercenaryContractPay.IsMercenaryClan(payee.Clan))
+            {
+                fraction *= MercenaryLeaderCutMultiplier;
+            }
+            return MathF.Clamp(fraction, 0f, 1f);
+        }
+
+        /// <summary>
+        /// What the leader would skim off a gather of <paramref name="gathered"/> spoils, touching no
+        /// purse -- the same figure <see cref="ApplyLeaderCut"/> draws, for a tooltip to quote in advance.
+        /// </summary>
+        public static int PreviewLeaderCut(PartyBase party, int gathered)
+        {
+            if (gathered <= 0)
+            {
+                return 0;
+            }
+            return MathF.Round(gathered * GetLeaderCutFraction(party));
+        }
+
         public static int ApplyLeaderCut(PartyBase party, int gathered)
         {
             if (party == null || gathered <= 0)
@@ -48,24 +85,12 @@ namespace RBMCampaign
             {
                 return 0;
             }
-            // The base share scales with clan tier: a greater house commands a heavier cut of its men's
-            // spoils. Tier + 1 is the multiplier, so a tier-0 (or clanless) leader still takes the base
-            // share once over and a tier-6 dynasty takes seven times it.
-            int clanTier = (payee.Clan != null) ? payee.Clan.Tier : 0;
-            float fraction = RBMConfig.RBMConfig.troopLeaderSpoilsCutFraction * (clanTier + 1);
-            // A captain in a kingdom's pay is running a business, not holding a fief: he skims a heavier
-            // share of the spoils his contract wins than a lord fighting his own war would. While the
-            // mercenary contract holds, his cut is half again as large. Clamped below so the multiplied
-            // share never runs past all of it.
-            if (MercenaryContractPay.IsMercenaryClan(payee.Clan))
-            {
-                fraction *= MercenaryLeaderCutMultiplier;
-            }
-            fraction = MathF.Clamp(fraction, 0f, 1f);
+            float fraction = GetLeaderCutFraction(party);
             if (fraction <= 0f)
             {
                 return 0;
             }
+            int clanTier = (payee.Clan != null) ? payee.Clan.Tier : 0;
             int cut = MathF.Round(gathered * fraction);
             if (cut <= 0)
             {
