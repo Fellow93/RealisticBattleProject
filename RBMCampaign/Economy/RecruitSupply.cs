@@ -450,7 +450,14 @@ namespace RBMCampaign
         /// a picked-clean market would otherwise stop a countryside arming itself at all. What it cannot
         /// supply is simply not drawn, and the man is turned out in whatever he had.
         /// </summary>
-        public static void DrawKitFromMarket(Settlement market, Settlement raisedAt, CharacterObject character, int count)
+        /// <param name="valueShare">
+        /// Fraction of each man's full kit value to actually draw and pay for. One for a recruit, who is
+        /// armed properly; a quarter for a village's militia levy, who is not (see
+        /// <see cref="MilitiaUpkeep.MilitiaVillageGearShare"/>). Scales the kit budget, so the man draws
+        /// the cheap end of his kit up to that share and the village pays only for what it drew.
+        /// </param>
+        public static void DrawKitFromMarket(Settlement market, Settlement raisedAt, CharacterObject character, int count,
+            float valueShare = 1f)
         {
             if (!IsEnabled || market == null || market.ItemRoster == null
                 || character == null || character.IsHero || count <= 0)
@@ -470,7 +477,11 @@ namespace RBMCampaign
                 && SettlementWealth.HasCitizenPurse(market);
 
             ItemRoster stock = market.ItemRoster;
-            int budget = perManValue * count;
+            int budget = (int)(perManValue * count * valueShare);
+            if (budget <= 0)
+            {
+                return;
+            }
             if (villagePays)
             {
                 int purse = SettlementWealth.GetSettlementWealth(raisedAt);

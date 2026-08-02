@@ -102,6 +102,29 @@ namespace RBMCampaign
         /// <summary>Times a militiaman's kit cost the funding pot must hold before it may arm a new one.</summary>
         public const int MilitiaSpawnReserveMult = 5;
 
+        /// <summary>
+        /// The same reserve for a VILLAGE, held lower than a fortification's. A village purse is small and
+        /// spiky -- it swells on a convoy's return and empties again -- so demanding as many days of a
+        /// kit's cost in hand as a town would gate its levy out of ever mustering. Three rather than five,
+        /// alongside the quarter-price kit (<see cref="MilitiaVillageGearShare"/>), so a village that has
+        /// turned a season's trade can actually arm the watch its hearths support.
+        /// </summary>
+        public const int MilitiaVillageSpawnReserveMult = 3;
+
+        /// <summary>
+        /// Share of a militiaman's full war-kit value a VILLAGE actually pays to arm one. A village
+        /// levy is not outfitted like a soldier: the men bring their own tools and cheap arms and are
+        /// given only what the muster cannot do without, so the village buys a quarter of a real kit off
+        /// the town it trades with rather than a whole one. Priced at full value everywhere else -- a
+        /// town or castle arms its watch properly.
+        ///
+        /// Applied to both the affordability gate (so the reserve it must hold is a quarter as steep) and
+        /// the charge itself, keeping the two in step: at full value the ~18k Empire kit put the 5x
+        /// spawn reserve (~89k) out of every village purse's reach, so no village ever fielded a growing
+        /// militia at all.
+        /// </summary>
+        public const float MilitiaVillageGearShare = 0.25f;
+
         private static readonly TextObject UnaffordableText = new TextObject("{=RBM_militia_unpaid}Cannot be paid");
         private static readonly TextObject OverCapText = new TextObject("{=RBM_militia_overcap}Over muster");
         private static readonly TextObject CannotArmText = new TextObject("{=RBM_militia_unarmed}Cannot be armed");
@@ -401,17 +424,29 @@ namespace RBMCampaign
             return (settlement != null && settlement.Culture != null) ? settlement.Culture.MeleeMilitiaTroop : null;
         }
 
-        /// <summary>What arming one militiaman costs -- his kit's worth, mount-less like a recruit's.</summary>
+        /// <summary>
+        /// What arming one militiaman costs -- his kit's worth, mount-less like a recruit's, and cut to
+        /// <see cref="MilitiaVillageGearShare"/> for a village, whose levy is armed on the cheap. Drives
+        /// both the affordability gate and the arming charge, so the two never disagree.
+        /// </summary>
         private static int SpawnCostPerMan(Settlement settlement)
         {
             CharacterObject troop = SpawnTroop(settlement);
-            return (troop != null) ? SpoilsPool.GetEquipmentValue(troop) : 0;
+            if (troop == null)
+            {
+                return 0;
+            }
+            int full = SpoilsPool.GetEquipmentValue(troop);
+            return (settlement != null && settlement.IsVillage)
+                ? (int)(full * MilitiaVillageGearShare)
+                : full;
         }
 
         /// <summary>
-        /// Whether the funding pot can arm a new militiaman with a reserve to spare -- five times his
-        /// kit in hand. Read against the same pot the maintenance is drawn from, so the place that pays
-        /// to keep him is the place that must be able to afford to raise him.
+        /// Whether the funding pot can arm a new militiaman with a reserve to spare -- so many times his
+        /// kit in hand, five for a fortification and three for a village (its purse being smaller and
+        /// spikier). Read against the same pot the maintenance is drawn from, so the place that pays to
+        /// keep him is the place that must be able to afford to raise him.
         /// </summary>
         public static bool CanAffordSpawn(Settlement settlement)
         {
@@ -420,7 +455,10 @@ namespace RBMCampaign
             {
                 return true;
             }
-            return MaintenancePot(settlement) >= per * MilitiaSpawnReserveMult;
+            int mult = (settlement != null && settlement.IsVillage)
+                ? MilitiaVillageSpawnReserveMult
+                : MilitiaSpawnReserveMult;
+            return MaintenancePot(settlement) >= per * mult;
         }
 
         /// <summary>
@@ -532,8 +570,10 @@ namespace RBMCampaign
             if (settlement.IsVillage)
             {
                 // The village buys the kit off the town it trades with and pays that town's merchants --
-                // the recruit gear leg, which already does exactly this (debit village, credit town).
-                RecruitSupply.DrawKitFromMarket(RecruitSupply.GetSupplyMarket(settlement), settlement, troop, 1);
+                // the recruit gear leg, which already does exactly this (debit village, credit town) --
+                // but only a quarter of a full kit's worth, the cheap arming of a levy.
+                RecruitSupply.DrawKitFromMarket(RecruitSupply.GetSupplyMarket(settlement), settlement, troop, 1,
+                    MilitiaVillageGearShare);
                 return;
             }
             int cost = SpoilsPool.GetEquipmentValue(troop);
