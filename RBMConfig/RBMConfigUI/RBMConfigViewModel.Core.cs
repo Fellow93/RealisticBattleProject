@@ -313,7 +313,7 @@ namespace RBMConfig
             RBMCampaignEnabledText = new TextViewModel(new TextObject("RBM Campaign"));
             RBMCampaignEnabled = new SelectorVM<SelectorItemVM>(rbmCampaignEnabledOptions, 0, null);
 
-            List<string> spoilsLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            List<string> spoilsLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
             SpoilsLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_039}Spoils Logging"));
             SpoilsLoggingEnabled = new SelectorVM<SelectorItemVM>(spoilsLoggingOptions, 0, null);
 
@@ -327,12 +327,12 @@ namespace RBMConfig
             ShowInventoryItemWeightText = new TextViewModel(new TextObject("{=RBM_CON_105}Inventory Weight Column"));
             ShowInventoryItemWeight = new SelectorVM<SelectorItemVM>(showInventoryItemWeightOptions, 0, null);
 
-            List<string> spoilsVerboseLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            List<string> spoilsVerboseLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
             SpoilsVerboseLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_049}Verbose Logging"));
             SpoilsVerboseLoggingEnabled = new SelectorVM<SelectorItemVM>(spoilsVerboseLoggingOptions, 0, null);
 
             // Economy logging: on by default, so Enabled carries the "(Default)" tag.
-            List<string> economyLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            List<string> economyLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
             EconomyLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_107}Economy Logging"));
             EconomyLoggingEnabled = new SelectorVM<SelectorItemVM>(economyLoggingOptions, 0, null);
 
@@ -346,7 +346,7 @@ namespace RBMConfig
             CaravanInvestmentEnabledText = new TextViewModel(new TextObject("Caravan Investment"));
             CaravanInvestmentEnabled = new SelectorVM<SelectorItemVM>(caravanInvestmentOptions, 0, null);
 
-            List<string> caravanLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            List<string> caravanLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
             CaravanLoggingEnabledText = new TextViewModel(new TextObject("Caravan Logging"));
             CaravanLoggingEnabled = new SelectorVM<SelectorItemVM>(caravanLoggingOptions, 0, null);
 
@@ -366,7 +366,7 @@ namespace RBMConfig
             StrategicPowerEnabled = new SelectorVM<SelectorItemVM>(strategicPowerOptions, 0, null);
 
             // Troop power logging: on by default, so its option carries the "(Default)" tag.
-            List<string> strategicPowerLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            List<string> strategicPowerLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
             StrategicPowerLoggingEnabledText = new TextViewModel(new TextObject("Troop Power Logging"));
             StrategicPowerLoggingEnabled = new SelectorVM<SelectorItemVM>(strategicPowerLoggingOptions, 0, null);
 
@@ -376,12 +376,12 @@ namespace RBMConfig
             SimulationPerkSystem = new SelectorVM<SelectorItemVM>(simulationPerkOptions, 0, null);
 
             // Detailed auto resolve logging: on by default, so its option carries the "(Default)" tag.
-            List<string> simulationLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            List<string> simulationLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
             SimulationLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_094}Detailed Auto Resolve Logging"));
             SimulationLoggingEnabled = new SelectorVM<SelectorItemVM>(simulationLoggingOptions, 0, null);
 
             // Auto resolve per-hit detail: on by default, so its option carries the "(Default)" tag.
-            List<string> simulationLogHitsOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            List<string> simulationLogHitsOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
             SimulationLogHitsText = new TextViewModel(new TextObject("Auto Resolve Per-Hit Detail"));
             SimulationLogHits = new SelectorVM<SelectorItemVM>(simulationLogHitsOptions, 0, null);
 
@@ -767,19 +767,19 @@ namespace RBMConfig
             TroopSpoilsHealFractionPerHour = 0.05f;
             RealisticTradeGoodPrices.SelectedIndex = 1;
             ShowInventoryItemWeight.SelectedIndex = 1;
-            SpoilsLoggingEnabled.SelectedIndex = 1;
-            SpoilsVerboseLoggingEnabled.SelectedIndex = 1;
-            EconomyLoggingEnabled.SelectedIndex = 1;
+            SpoilsLoggingEnabled.SelectedIndex = 0;
+            SpoilsVerboseLoggingEnabled.SelectedIndex = 0;
+            EconomyLoggingEnabled.SelectedIndex = 0;
             KingdomCaravansEnabled.SelectedIndex = 1;
             CaravanInvestmentEnabled.SelectedIndex = 1;
-            CaravanLoggingEnabled.SelectedIndex = 1;
+            CaravanLoggingEnabled.SelectedIndex = 0;
             SimulationEquipmentEnabled.SelectedIndex = 1;
             SimulationRoutEnabled.SelectedIndex = 0;
             StrategicPowerEnabled.SelectedIndex = 1;
             SimulationPerkSystem.SelectedIndex = 1;
-            SimulationLoggingEnabled.SelectedIndex = 1;
-            SimulationLogHits.SelectedIndex = 1;
-            StrategicPowerLoggingEnabled.SelectedIndex = 1;
+            SimulationLoggingEnabled.SelectedIndex = 0;
+            SimulationLogHits.SelectedIndex = 0;
+            StrategicPowerLoggingEnabled.SelectedIndex = 0;
             BattleHitLoggingEnabled.SelectedIndex = 0;
             SpectateBattlesEnabled.SelectedIndex = 0;
             SpectateMinTroopsPerSide = 100f;

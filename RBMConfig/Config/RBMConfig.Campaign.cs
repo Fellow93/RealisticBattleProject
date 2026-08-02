@@ -155,17 +155,17 @@ namespace RBMConfig
         public static bool showInventoryItemWeight = true;
 
         // Writes every spoils pool change, loot award and upgrade to rbm_spoils.log next to this config.
-        public static bool spoilsLoggingEnabled = true;
+        public static bool spoilsLoggingEnabled = false;
 
         // Whether that log carries the full per-stack detail or only the party-level summaries. On, it
         // reads as now: a line per stack. Off, individual-soldier lines are dropped and only what each
         // party did is kept. No effect unless logging above is on.
-        public static bool spoilsVerboseLoggingEnabled = true;
+        public static bool spoilsVerboseLoggingEnabled = false;
 
         // Writes the village-to-town goods and food chain -- village production, villager dispatches,
         // town rations, and the daily state of every settlement -- to its own logs/economy folder.
         // Separate from the spoils log because it is about the countryside, not the troops' purses.
-        public static bool economyLoggingEnabled = true;
+        public static bool economyLoggingEnabled = false;
 
         // Whether the module spawns intra-kingdom supply caravans: parties that carry a surplus good from
         // one of a kingdom's towns to another town of the same kingdom that is short of it. Off leaves the
@@ -179,6 +179,6 @@ namespace RBMConfig
 
         // Writes the supply-caravan system to its own logs/caravans folder -- each caravan dispatched,
         // its arrival and sale, and any lost on the road. No effect unless the caravans above are on.
-        public static bool caravanLoggingEnabled = true;
+        public static bool caravanLoggingEnabled = false;
     }
 }

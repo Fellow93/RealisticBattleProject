@@ -1,0 +1,57 @@
+<Brushes>
+
+  <!-- Left tab-strip button. Dark by default, parchment on hover, amber when selected. -->
+  <Brush Name="RBMLedger.TabButton" TransitionDuration="0.1">
+    <Layers>
+      <BrushLayer Name="Fill" Sprite="BlankWhiteSquare" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Fill" Color="#0A0806FF" AlphaFactor="0.38" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Fill" Color="#C8B48CFF" AlphaFactor="0.32" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Fill" Color="#C8B48CFF" AlphaFactor="0.48" />
+      </Style>
+      <Style Name="Selected">
+        <BrushLayer Name="Fill" Color="#9A7420FF" AlphaFactor="0.95" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Fill" Color="#0A0806FF" AlphaFactor="0.15" />
+      </Style>
+    </Styles>
+  </Brush>
+
+  <!-- Village data row: flat and transparent by default, subtle parchment highlight on hover. -->
+  <Brush Name="RBMLedger.Row" TransitionDuration="0.08">
+    <Layers>
+      <BrushLayer Name="Fill" Sprite="BlankWhiteSquare" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Fill" Color="#C8B48CFF" AlphaFactor="0.05" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Fill" Color="#C8B48CFF" AlphaFactor="0.16" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Fill" Color="#C8B48CFF" AlphaFactor="0.24" />
+      </Style>
+    </Styles>
+  </Brush>
+
+  <!-- Left tab-strip label. Light on the dark/hover fills, dark on the amber selected fill. -->
+  <Brush Name="RBMLedger.TabText" Font="Galahad">
+    <Layers>
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#C8B48CFF" FontSize="24" TextHorizontalAlignment="Center" TextVerticalAlignment="Center" TextGlowColor="#000000FF" />
+      <Style Name="Hovered" FontColor="#FAF4DEFF" FontSize="24" TextHorizontalAlignment="Center" TextVerticalAlignment="Center" TextGlowColor="#000000FF" />
+      <Style Name="Pressed" FontColor="#FAF4DEFF" FontSize="24" TextHorizontalAlignment="Center" TextVerticalAlignment="Center" TextGlowColor="#000000FF" />
+      <Style Name="Selected" FontColor="#160F06FF" FontSize="24" TextHorizontalAlignment="Center" TextVerticalAlignment="Center" TextGlowColor="#00000000" />
+    </Styles>
+  </Brush>
+
+</Brushes>

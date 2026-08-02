@@ -138,16 +138,16 @@ namespace RBMConfig
             campaignStartingGold = int.Parse(ReadOrCreate("/Config/RBMCampaign", "CampaignStartingGold", "5000"), CultureInfo.InvariantCulture);
             realisticTradeGoodPrices = ReadOrCreate("/Config/RBMCampaign", "RealisticTradeGoodPrices", "1").Equals("1");
             showInventoryItemWeight = ReadOrCreate("/Config/RBMCampaign", "ShowInventoryItemWeight", "1").Equals("1");
-            spoilsLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsLoggingEnabled", "1").Equals("1");
-            spoilsVerboseLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsVerboseLoggingEnabled", "1").Equals("1");
-            economyLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "EconomyLoggingEnabled", "1").Equals("1");
+            spoilsLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsLoggingEnabled", "0").Equals("1");
+            spoilsVerboseLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsVerboseLoggingEnabled", "0").Equals("1");
+            economyLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "EconomyLoggingEnabled", "0").Equals("1");
             kingdomCaravansEnabled = ReadOrCreate("/Config/RBMCampaign", "KingdomCaravansEnabled", "1").Equals("1");
             caravanInvestmentEnabled = ReadOrCreate("/Config/RBMCampaign", "CaravanInvestmentEnabled", "1").Equals("1");
-            caravanLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "CaravanLoggingEnabled", "1").Equals("1");
+            caravanLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "CaravanLoggingEnabled", "0").Equals("1");
             simulationEquipmentEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentEnabled", "1").Equals("1");
             simulationEquipmentPowerWeight = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentPowerWeight", "1"), CultureInfo.InvariantCulture);
             strategicPowerEnabled = ReadOrCreate("/Config/RBMCampaign", "StrategicPowerEnabled", "1").Equals("1");
-            strategicPowerLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "StrategicPowerLogging", "1").Equals("1");
+            strategicPowerLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "StrategicPowerLogging", "0").Equals("1");
             simulationAbsoluteDamage = ReadOrCreate("/Config/RBMCampaign", "SimulationAbsoluteDamage", "1").Equals("1");
             simulationAbsoluteScale = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationAbsoluteScale", "1"), CultureInfo.InvariantCulture);
             simulationAbsoluteBlowCap = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationAbsoluteBlowCap", "1.5"), CultureInfo.InvariantCulture);
@@ -162,8 +162,8 @@ namespace RBMConfig
             simulationSiegeRangedMissSkew = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationSiegeRangedMissSkew", "1.4"), CultureInfo.InvariantCulture);
             simulationRoutEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationRoutEnabled", "0").Equals("1");
             simulationPerkSystem = ReadOrCreate("/Config/RBMCampaign", "SimulationPerkSystem", "1").Equals("1");
-            simulationLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationLoggingEnabled", "1").Equals("1");
-            simulationLogHits = ReadOrCreate("/Config/RBMCampaign", "SimulationLogHits", "1").Equals("1");
+            simulationLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationLoggingEnabled", "0").Equals("1");
+            simulationLogHits = ReadOrCreate("/Config/RBMCampaign", "SimulationLogHits", "0").Equals("1");
             spectateBattlesEnabled = ReadOrCreate("/Config/RBMCampaign", "SpectateBattlesEnabled", "0").Equals("1");
             spectateMinTroopsPerSide = int.Parse(ReadOrCreate("/Config/RBMCampaign", "SpectateMinTroopsPerSide", "100"), CultureInfo.InvariantCulture);
 

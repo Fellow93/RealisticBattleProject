@@ -289,6 +289,7 @@
     <Compile Include="Spoils\SpoilsPool.UpgradeMath.cs" />
     <Compile Include="Spoils\SpoilsPool.BattleLoot.cs" />
     <Compile Include="Spoils\SpoilsPool.Casualties.cs" />
+    <Compile Include="Spoils\SpoilsPool.PrisonerStrip.cs" />
     <Compile Include="Spoils\SpoilsPool.Plunder.cs" />
     <Compile Include="Spoils\SpoilsPool.Wages.cs" />
     <Compile Include="Spoils\SpoilsPool.Maintenance.cs" />
@@ -325,6 +326,14 @@
     <Compile Include="UI\SimulationPanel\SimulationBattlePanelVM.cs" />
     <Compile Include="UI\SimulationPanel\SimulationEventItemVM.cs" />
     <Compile Include="UI\SimulationPanel\SimulationBattlePanelPatch.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerTabVM.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerViewModel.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerScreen.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerMapTickGuard.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerHotkey.cs" />
+    <Compile Include="UI\Ledger\RBMVillageLedger.cs" />
+    <Compile Include="UI\Ledger\RBMVillageLedgerCampaignBehavior.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerVillageVM.cs" />
     <Compile Include="Power\StrategicPowerLog.cs" />
     <Compile Include="Power\StrategicPowerTooltip.cs" />
     <Compile Include="Power\StrategicPowerTooltipVM.cs" />
@@ -377,6 +386,7 @@
     <Compile Include="Economy\RecruitSupply.cs" />
     <Compile Include="Settlements\NativeTradeConservation.cs" />
     <Compile Include="Settlements\RansomFunding.cs" />
+    <Compile Include="Settlements\RansomGearValue.cs" />
     <Compile Include="Settlements\SettlementGoldFunnel.cs" />
     <Compile Include="Settlements\SettlementWealth.cs" />
     <Compile Include="Settlements\WorkshopDiagnostics.cs" />

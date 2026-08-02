@@ -57,6 +57,28 @@ namespace RBMCampaign
 
                 // The whole dispatch -- party, cargo, escort -- written down once the guards are aboard.
                 VillagerDispatchLog.LogDispatch(village, villagerParty, escortNote);
+
+                // Note the dispatch in the village's Ledger history for the day it happened.
+                RBMVillageLedger.AddEvent(village.Settlement, RBMVillageLedger.EvDispatch);
+            }
+        }
+
+        // Notes in the Ledger when a village's convoy reaches its trade-bound town. Keyed to the
+        // origin village (mobileParty.HomeSettlement), not the town, so it shows in that village's
+        // history. Separate from the homecoming patch above, which fires on return to the village.
+        [HarmonyPatch(typeof(VillagerCampaignBehavior), "OnSettlementEntered")]
+        private static class ArrivalLedgerPatch
+        {
+            private static void Postfix(MobileParty mobileParty, Settlement settlement)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || mobileParty == null || !mobileParty.IsVillager
+                    || settlement == null || !settlement.IsTown
+                    || mobileParty.HomeSettlement == null || !mobileParty.HomeSettlement.IsVillage)
+                {
+                    return;
+                }
+
+                RBMVillageLedger.AddEvent(mobileParty.HomeSettlement, RBMVillageLedger.EvArrive);
             }
         }
 
@@ -83,6 +105,53 @@ namespace RBMCampaign
 
                 ReturnEscort(settlement.Village, mobileParty);
             }
+        }
+
+        /// <summary>
+        /// Number of militia currently riding in a villager party as its borrowed escort (0 if none).
+        /// Lets the Ledger report a village's TOTAL militia -- men at home plus men out guarding convoys.
+        /// </summary>
+        internal static int CountEscortMilitia(MobileParty villagerParty)
+        {
+            if (villagerParty == null || villagerParty.HomeSettlement == null)
+            {
+                return 0;
+            }
+            CultureObject culture = villagerParty.HomeSettlement.Culture;
+            if (culture == null)
+            {
+                return 0;
+            }
+            CharacterObject[] escortTroops =
+            {
+                culture.MeleeMilitiaTroop,
+                culture.RangedMilitiaTroop,
+                culture.MeleeEliteMilitiaTroop,
+                culture.RangedEliteMilitiaTroop
+            };
+            TroopRoster roster = villagerParty.MemberRoster;
+            if (roster == null)
+            {
+                return 0;
+            }
+            int count = 0;
+            for (int i = 0; i < roster.Count; i++)
+            {
+                CharacterObject character = roster.GetCharacterAtIndex(i);
+                if (character == null)
+                {
+                    continue;
+                }
+                for (int j = 0; j < escortTroops.Length; j++)
+                {
+                    if (character == escortTroops[j])
+                    {
+                        count += roster.GetElementNumber(i);
+                        break;
+                    }
+                }
+            }
+            return count;
         }
 
         /// <summary>

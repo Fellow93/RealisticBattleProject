@@ -117,6 +117,7 @@ namespace RBM
                 if (RBMConfig.RBMConfig.rbmCampaignEnabled && Campaign.Current != null)
                 {
                     LordSwitcher.CheckHotkey();
+                    RBMLedgerHotkey.CheckHotkey();
                 }
                 return;
             }
@@ -182,6 +183,7 @@ namespace RBM
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMEconomyCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSettlementWealthCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMCaravanBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMVillageLedgerCampaignBehavior());
             }
             base.OnGameStart(game, gameStarterObject);
         }

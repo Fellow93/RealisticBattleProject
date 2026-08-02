@@ -35,7 +35,7 @@ namespace RBMConfig
         // Writes every party out as it was priced -- the perks that reached it, then each stack with what one man of
         // it is worth and what he is made of -- to logs/powerCalculation. None of the model's constants are derived,
         // so this is how they get tuned. One block per party per in-game day; see StrategicPowerLog for why.
-        public static bool strategicPowerLoggingEnabled = true;
+        public static bool strategicPowerLoggingEnabled = false;
 
         // ABSOLUTE DAMAGE. When true, a simulated blow is worth its own real magnitude rather than a ratio to a
         // typical blow of its arm. The model still keeps every one of vanilla's surviving factors -- side
@@ -172,14 +172,14 @@ namespace RBMConfig
         // Writes every auto-resolved battle to its own log under logs/simulation, as it was actually fought: who
         // stood on each side, what they carried, how it ended. Costs nothing while off -- no battle is snapshotted
         // and no blow is recorded.
-        public static bool simulationLoggingEnabled = true;
+        public static bool simulationLoggingEnabled = false;
 
         // And the battle itself, BLOW BY BLOW: every man who swung, what he was doing at the time (shooting,
         // hurling a javelin, charging, setting a spear, or just walking into arrows while the lines closed), what
         // armour he met, what his shield turned aside, what vanilla alone would have hit for, and what the model
         // made of it. The matchup table says what a blow would do in the abstract; only this can tell you the
         // archers ran dry in round fifteen. A large battle runs to several thousand lines. Needs the log above.
-        public static bool simulationLogHits = true;
+        public static bool simulationLogHits = false;
 
         // Offers to open a battle between two AI lords as a real-time fight you watch and take no part in: both sides
         // under their own commanders, no player agent on the field at all, RTSCamera's free camera the only way to

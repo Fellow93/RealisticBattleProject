@@ -24,6 +24,13 @@ namespace RBMCampaign
     public static partial class SpoilsPool
     {
         /// <summary>
+        /// How much heavier a mercenary captain's spoils cut runs than a settled lord's while his contract
+        /// holds -- half again as large. A hired company fights for the purse, so its leader keeps a larger
+        /// share of what it wins than one whose men fight for his realm.
+        /// </summary>
+        private const float MercenaryLeaderCutMultiplier = 1.5f;
+
+        /// <summary>
         /// Skims the party leader's share off a fresh gather and hands it to him as gold. Called with the
         /// spoils the men actually took (loot, plunder or a sack), so the cut is a share of what reached
         /// the stacks, not of what the field nominally held. The share is drawn back out of those stacks
@@ -43,10 +50,18 @@ namespace RBMCampaign
             }
             // The base share scales with clan tier: a greater house commands a heavier cut of its men's
             // spoils. Tier + 1 is the multiplier, so a tier-0 (or clanless) leader still takes the base
-            // share once over and a tier-6 dynasty takes seven times it. Clamped so the multiplied share
-            // never runs past all of it.
+            // share once over and a tier-6 dynasty takes seven times it.
             int clanTier = (payee.Clan != null) ? payee.Clan.Tier : 0;
-            float fraction = MathF.Clamp(RBMConfig.RBMConfig.troopLeaderSpoilsCutFraction * (clanTier + 1), 0f, 1f);
+            float fraction = RBMConfig.RBMConfig.troopLeaderSpoilsCutFraction * (clanTier + 1);
+            // A captain in a kingdom's pay is running a business, not holding a fief: he skims a heavier
+            // share of the spoils his contract wins than a lord fighting his own war would. While the
+            // mercenary contract holds, his cut is half again as large. Clamped below so the multiplied
+            // share never runs past all of it.
+            if (MercenaryContractPay.IsMercenaryClan(payee.Clan))
+            {
+                fraction *= MercenaryLeaderCutMultiplier;
+            }
+            fraction = MathF.Clamp(fraction, 0f, 1f);
             if (fraction <= 0f)
             {
                 return 0;
@@ -68,7 +83,9 @@ namespace RBMCampaign
             {
                 SpoilsLog.Log("LEADER", party, SpoilsLog.Describe(party) + " leader " + payee.Name
                     + " took a " + drawn + " gold cut (" + fraction.ToString("0.00") + " = base x (clan tier "
-                    + clanTier + " + 1)) of " + gathered + " gathered");
+                    + clanTier + " + 1)"
+                    + (MercenaryContractPay.IsMercenaryClan(payee.Clan) ? " x " + MercenaryLeaderCutMultiplier.ToString("0.0") + " mercenary" : "")
+                    + ") of " + gathered + " gathered");
             }
             return drawn;
         }

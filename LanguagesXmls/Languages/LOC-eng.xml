@@ -160,6 +160,7 @@
 	<string id="RBM_SPOILS_021" text="Includes mount: {AMOUNT}" />
 	<string id="RBM_SPOILS_022" text="Maintenance" />
 	<string id="RBM_SPOILS_023" text="Maintenance: {AMOUNT}" />
+	<string id="RBM_SPOILS_024" text="Your men strip the {COUNT} prisoners you left behind and recover {AMOUNT} in spoils." />
 	<string id="RBM_UPGCAP_TITLE" text="Upgrade Budget / Day" />
 	<string id="RBM_UPGCAP_UNLIMITED" text="Unlimited" />
 	<string id="RBM_militia_unpaid" text="Cannot be paid" />
