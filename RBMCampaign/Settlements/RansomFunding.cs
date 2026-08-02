@@ -47,13 +47,6 @@ namespace RBMCampaign
         // duration of SellPrisonersAction so the gold hand-off below knows whose money it is spending.
         private static Settlement _market;
 
-        // The gear-value slice of the ransom being struck, in gold, summed over every prisoner in the
-        // sale. RBMLedger's RansomGearValue folds each captive's kit into what he ransoms for; that slice
-        // is paid for by the town RECEIVING the prisoner and his gear, so it is minted to the seller
-        // rather than drawn from citizen wealth like the man himself. Held here so the gold hand-off below
-        // can tell the two apart and charge citizens only for the base ransom.
-        private static int _pendingGearValue;
-
         /// <summary>
         /// Marks the settlement a prisoner sale is happening in, for the duration of the sale.
         /// </summary>
@@ -69,7 +62,7 @@ namespace RBMCampaign
         [HarmonyPatch(typeof(SellPrisonersAction), "ApplyInternal")]
         private static class MarkSalePatch
         {
-            private static void Prefix(PartyBase sellerParty, PartyBase buyerParty, TroopRoster prisoners)
+            private static void Prefix(PartyBase sellerParty, PartyBase buyerParty)
             {
                 if (!RBMConfig.RBMConfig.rbmCampaignEnabled)
                 {
@@ -77,41 +70,11 @@ namespace RBMCampaign
                 }
                 Settlement seller = (sellerParty != null) ? sellerParty.Settlement : null;
                 _market = seller ?? ((buyerParty != null) ? buyerParty.Settlement : null);
-                _pendingGearValue = SumGearValue(prisoners);
             }
 
             private static void Finalizer()
             {
                 _market = null;
-                _pendingGearValue = 0;
-            }
-
-            /// <summary>
-            /// The gear-value slice of a whole prisoner sale: each captive's kit worth (the same figure
-            /// <see cref="RansomGearValue"/> folds into his ransom) times how many of him are being sold.
-            /// </summary>
-            /// <remarks>
-            /// Mirrors exactly what vanilla's own loop adds to the payout -- every prisoner but the main
-            /// hero contributes -- so this sum is precisely the gear portion of the gold that will change
-            /// hands, and the base ransom is whatever is left when it is subtracted off.
-            /// </remarks>
-            private static int SumGearValue(TroopRoster prisoners)
-            {
-                if (prisoners == null)
-                {
-                    return 0;
-                }
-                int total = 0;
-                foreach (TroopRosterElement element in prisoners.GetTroopRoster())
-                {
-                    CharacterObject character = element.Character;
-                    if (character == null || character == Hero.MainHero.CharacterObject)
-                    {
-                        continue;
-                    }
-                    total += element.Number * SpoilsPool.GetEquipmentValueWithMount(character);
-                }
-                return total;
             }
         }
 
@@ -150,38 +113,13 @@ namespace RBMCampaign
                     return;
                 }
 
-                // Split the ransom into the man and his kit. The town pays for the man out of its citizen
-                // wealth -- the ransom broker's money is the market's money -- but the GEAR it takes off
-                // the prisoner is a real good it now owns, so its worth is minted to the seller rather than
-                // drained from citizens: the town gets the prisoner and his gear, the party gets the gear's
-                // value, and nobody's purse is emptied to pay for goods that arrived with the prisoner.
-                int gearMint = _pendingGearValue;
-                if (gearMint > goldAmount)
-                {
-                    gearMint = goldAmount;
-                }
-                int baseAmount = goldAmount - gearMint;
+                goldAmount = SettlementWealth.DebitCitizens(_market, goldAmount, SettlementWealth.Source.Ransom);
 
-                int chargedBase = 0;
-                if (baseAmount > 0)
-                {
-                    chargedBase = SettlementWealth.DebitCitizens(_market, baseAmount, SettlementWealth.Source.Ransom);
-
-                    // The man-ransom is a trade struck in the market and pays the town's fee. Levied here
-                    // rather than at the funnel because this leg never reaches it: the charge is made
-                    // straight against citizen wealth, so RouteNativeWrite -- which levies on everything
-                    // that does pass through it -- never sees this one. The minted gear slice is left out:
-                    // no citizen paid it, so there is nothing of theirs to take a fee from.
-                    TradeTariff.Levy(_market, chargedBase);
-                }
-
-                // Seller is paid what the citizens could raise for the man plus the full value of the kit.
-                // A poor town still buys the prisoner off you for his gear even when it cannot afford him.
-                goldAmount = chargedBase + gearMint;
-
-                // Spent -- so a second unfunded hand-off in the same sale (there is none today) cannot
-                // mint the gear a second time before the finalizer clears it.
-                _pendingGearValue = 0;
+                // A ransom struck in the market is a trade like any other and pays the town's fee. Levied
+                // here rather than at the funnel because this leg never reaches it: the charge is made
+                // straight against citizen wealth, so RouteNativeWrite -- which levies on everything that
+                // does pass through it -- never sees this one.
+                TradeTariff.Levy(_market, goldAmount);
             }
         }
     }

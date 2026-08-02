@@ -290,6 +290,7 @@
     <Compile Include="Spoils\SpoilsPool.BattleLoot.cs" />
     <Compile Include="Spoils\SpoilsPool.Casualties.cs" />
     <Compile Include="Spoils\SpoilsPool.PrisonerStrip.cs" />
+    <Compile Include="Spoils\SpoilsPool.Ransom.cs" />
     <Compile Include="Spoils\SpoilsPool.Plunder.cs" />
     <Compile Include="Spoils\SpoilsPool.Wages.cs" />
     <Compile Include="Spoils\SpoilsPool.Maintenance.cs" />
@@ -307,6 +308,7 @@
     <Compile Include="Upkeep\TroopUpkeep.Healing.cs" />
     <Compile Include="Upkeep\TroopUpkeep.Luxury.cs" />
     <Compile Include="Upkeep\RBMTroopUpkeepCampaignBehavior.cs" />
+    <Compile Include="Recruitment\TavernMercenaryTroopsPatch.cs" />
     <Compile Include="Upgrades\RBMCampaignPatches.cs" />
     <Compile Include="Wages\TierBasedWageModel.cs" />
     <Compile Include="Upgrades\SpoilsUpgradePatches.cs" />
@@ -386,7 +388,6 @@
     <Compile Include="Economy\RecruitSupply.cs" />
     <Compile Include="Settlements\NativeTradeConservation.cs" />
     <Compile Include="Settlements\RansomFunding.cs" />
-    <Compile Include="Settlements\RansomGearValue.cs" />
     <Compile Include="Settlements\SettlementGoldFunnel.cs" />
     <Compile Include="Settlements\SettlementWealth.cs" />
     <Compile Include="Settlements\WorkshopDiagnostics.cs" />
