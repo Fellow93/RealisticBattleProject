@@ -393,26 +393,27 @@ namespace RBMCampaign
 
         /// <summary>
         /// How much of a stack's daily maintenance the men's own purse is allowed to cover, set by the
-        /// party's standing in the field. An independent lord's men fund their upkeep in full; a mercenary
-        /// company under a kingdom's pay meets only a part from its purses, its employer the rest; a sworn
-        /// vassal's or ruler's men pay none of it from their purses, their liege bearing the whole. Whatever
-        /// the purse is not allowed to meet always falls to the party leader's gold, as any shortfall does.
-        /// The clan is read off the same payee chain the spoils are paid to (owner if alive, else leader);
-        /// a party with no clan to answer to stands on its own and funds its upkeep in full.
+        /// party's standing in the field. An independent lord's men -- and a mercenary company's, whose
+        /// pay is doubled while the contract holds -- fund their upkeep from their own spoils first; a
+        /// sworn vassal's or ruler's men pay none of it from their purses, their liege bearing the whole.
+        /// Whatever the purse is not allowed to meet always falls to the party leader's gold, as any
+        /// shortfall does. The clan is read off the same payee chain the spoils are paid to (owner if
+        /// alive, else leader); a party with no clan to answer to stands on its own and funds its upkeep
+        /// in full.
         /// </summary>
         private static float ContractPurseFraction(PartyBase party)
         {
             Hero payee = GetPartyPayee(party);
             Clan clan = payee?.Clan;
-            // No clan, or a clan sworn to no kingdom, answers to no liege -- its men pay their own way.
-            if (clan == null || clan.Kingdom == null)
+            // A clan sworn to no kingdom, or a mercenary company under contract, funds its own upkeep: its
+            // men are paid out of their own purse (a mercenary's doubled while the contract holds), so the
+            // day's maintenance is met from their spoils first and only the genuine shortfall falls to the
+            // party leader's gold. The employer's coin reaches a mercenary as the doubled wage the crown
+            // reimburses (see MercenaryContractPay), not as a maintenance subsidy -- so maintenance is
+            // never doubled with the wage.
+            if (clan == null || clan.Kingdom == null || clan.IsUnderMercenaryService)
             {
                 return RBMConfig.RBMConfig.independentMaintenancePurseFraction;
-            }
-            // Hired swords in a kingdom's service share the burden: their purses meet a part, the crown the rest.
-            if (clan.IsUnderMercenaryService)
-            {
-                return RBMConfig.RBMConfig.mercenaryMaintenancePurseFraction;
             }
             // A sworn vassal or ruler bears the whole of it: none is met from the men's purses.
             return 0f;

@@ -56,15 +56,11 @@ namespace RBMConfig
         // the purse cannot cover falls to the party leader, out of his gold. Zero stops maintenance.
         public static float troopMaintenanceFraction = 0.005f;
 
-        // How much of each stack's daily maintenance the men's own spoils may cover, by the party's
-        // standing in the field. A mercenary company in a kingdom's pay meets this share from its purses,
-        // its employer the rest; the leftover, as ever, falls to the party leader's gold. A sworn
-        // vassal's or ruler's men pay none from their purses (their liege bears it all, not configurable).
-        public static float mercenaryMaintenancePurseFraction = 0.5f;
-
-        // How much of each stack's daily maintenance the men's own spoils may cover for an independent
-        // clan -- one sworn to no kingdom. At the default their men fund their upkeep in full from their
-        // purses, whatever the purse cannot meet falling to the party leader's gold as any shortfall does.
+        // How much of each stack's daily maintenance the men's own spoils may cover for a self-funded
+        // clan -- one sworn to no kingdom, or a mercenary company under contract (whose pay is doubled
+        // while it holds). At the default their men fund their upkeep in full from their purses, whatever
+        // the purse cannot meet falling to the party leader's gold as any shortfall does. A sworn vassal's
+        // or ruler's men pay none from their purses (their liege bears it all, not configurable).
         public static float independentMaintenancePurseFraction = 1.0f;
 
         // How long a stack's men stay fed on one visit to a settlement. They buy exactly the food they

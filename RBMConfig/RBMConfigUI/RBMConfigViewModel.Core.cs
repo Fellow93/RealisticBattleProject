@@ -458,7 +458,6 @@ namespace RBMConfig
             _troopLootPiecesPerMan = MathF.Clamp(RBMConfig.troopLootPiecesPerMan, 1f, 10f);
             _troopLootOverlookChancePerTier = MathF.Clamp(RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
             _troopMaintenanceFraction = MathF.Clamp(RBMConfig.troopMaintenanceFraction, 0f, 0.05f);
-            _mercenaryMaintenancePurseFraction = MathF.Clamp(RBMConfig.mercenaryMaintenancePurseFraction, 0f, 1f);
             _independentMaintenancePurseFraction = MathF.Clamp(RBMConfig.independentMaintenancePurseFraction, 0f, 1f);
             _troopSettlementFoodDays = MathF.Clamp(RBMConfig.troopSettlementFoodDays, 0f, 60f);
             _recruitMaintenanceDays = MathF.Clamp(RBMConfig.recruitMaintenanceDays, 0f, 30f);
@@ -674,7 +673,6 @@ namespace RBMConfig
             RBMConfig.troopLootPiecesPerMan = MathF.Round(_troopLootPiecesPerMan);
             RBMConfig.troopLootOverlookChancePerTier = _troopLootOverlookChancePerTier;
             RBMConfig.troopMaintenanceFraction = _troopMaintenanceFraction;
-            RBMConfig.mercenaryMaintenancePurseFraction = _mercenaryMaintenancePurseFraction;
             RBMConfig.independentMaintenancePurseFraction = _independentMaintenancePurseFraction;
             RBMConfig.troopSettlementFoodDays = (int)MathF.Round(_troopSettlementFoodDays);
             RBMConfig.recruitMaintenanceDays = (int)MathF.Round(_recruitMaintenanceDays);

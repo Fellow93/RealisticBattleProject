@@ -192,12 +192,12 @@ namespace RBMCampaign
         /// mount and all, which is why this uses the with-mount valuation rather than the mount-less
         /// <see cref="KitValue"/> the market-draw leg uses.
         /// </remarks>
-        public static ExplainedNumber RecruitPrice(CharacterObject troop, Hero recruiter, Settlement settlement)
+        public static ExplainedNumber RecruitPrice(CharacterObject troop, Hero recruiter, Settlement settlement, bool describe = false)
         {
             bool atSettlement = settlement != null && (settlement.IsVillage || settlement.IsTown);
             if (atSettlement && RecruitsFree(settlement, recruiter))
             {
-                return new ExplainedNumber(0f);
+                return new ExplainedNumber(0f, describe);
             }
 
             Clan clan = (recruiter != null) ? recruiter.Clan : null;
@@ -212,7 +212,7 @@ namespace RBMCampaign
             int gear = hasRealm ? SpoilsPool.GetEquipmentValueWithMount(troop) : 0;
             int premium = EnlistmentPremium(troop);
 
-            ExplainedNumber cost = new ExplainedNumber(0f);
+            ExplainedNumber cost = new ExplainedNumber(0f, describe);
             if (gear > 0)
             {
                 cost.Add(gear, GearLine);
@@ -233,6 +233,17 @@ namespace RBMCampaign
             // lost. Also floors the price at one denar, as vanilla does.
             ApplyRecruitmentPerks(ref cost, troop, recruiter);
             return cost;
+        }
+
+        /// <summary>
+        /// The main party's recruit price for this troop, itemised for the UI. The same model path the
+        /// recruit screen's Cost reads, but built with descriptions on so the wage (enlistment) and gear
+        /// legs can be broken out as a tooltip -- see RecruitCostHint. Its RoundedResultNumber is the
+        /// figure shown on the tile; its GetLines() are the named parts that sum to it.
+        /// </summary>
+        public static ExplainedNumber MainPartyRecruitCost(CharacterObject troop)
+        {
+            return RecruitPrice(troop, Hero.MainHero, RecruiterSettlement(Hero.MainHero), describe: true);
         }
 
         /// <summary>

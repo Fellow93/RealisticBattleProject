@@ -128,10 +128,8 @@
 		<string id="RBM_CON_084" text="Days of maintenance a recruit mustered from a village or town brings in his stack's purse, priced off the same daily upkeep. 0 seeds nothing. Default 20." />
 		<string id="RBM_CON_087" text="Buy Mounts For Upgrades" />
 		<string id="RBM_CON_088" text="Upgrading into a mounted troop no longer needs a horse in the baggage train and consumes none; the horse and harness are paid for in gold/spoils instead. Off restores the vanilla horse-item requirement. Default on." />
-		<string id="RBM_CON_089" text="Mercenary Maintenance Share" />
-		<string id="RBM_CON_090" text="Share of daily maintenance a mercenary company under a kingdom's pay meets from its own spoils; its employer covers the rest, any shortfall falling to the party leader's gold. Default 0.50." />
-		<string id="RBM_CON_091" text="Independent Maintenance Share" />
-		<string id="RBM_CON_092" text="Share of daily maintenance an independent clan -- one sworn to no kingdom -- meets from its own spoils; any shortfall falls to the party leader's gold. Sworn vassals and rulers pay none from their purses. Default 1.00." />
+		<string id="RBM_CON_091" text="Self-Funded Maintenance Share" />
+		<string id="RBM_CON_092" text="Share of daily maintenance a self-funded clan -- one sworn to no kingdom, or a mercenary company under contract (whose pay is doubled while it holds) -- meets from its own spoils; any shortfall falls to the party leader's gold. Sworn vassals and rulers pay none from their purses. Default 1.00." />
 		<string id="RBM_CON_093" text="Detailed Auto Resolve" />
 		<string id="RBM_CON_094" text="Detailed Auto Resolve Logging" />
 		<string id="RBM_CON_095" text="Field Battle Logging" />
@@ -170,6 +168,8 @@
 	<string id="RBM_militia_unarmed" text="Cannot be armed" />
 	<string id="RBM_recruit_tithe" text="Foreign levy" />
 	<string id="RBM_recruit_gear" text="Equipment" />
+	<string id="RBM_recruit_cost_title" text="Recruitment cost" />
+	<string id="RBM_recruit_cost_free" text="Free" />
 	<string id="RBM_wealth_citizen" text="Citizen wealth" />
 	<string id="RBM_wealth_income" text="Settlement wealth tax" />
 	<string id="RBM_merc_wage_cost" text="Mercenary troop wages" />

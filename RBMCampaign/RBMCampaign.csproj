@@ -387,6 +387,7 @@
     <Compile Include="Economy\NavalTradeGoodValues.cs" />
     <Compile Include="Economy\CaravanTradeVolume.cs" />
     <Compile Include="Economy\CaravanCapital.cs" />
+    <Compile Include="Economy\RecruitCostHint.cs" />
     <Compile Include="Economy\RecruitSupply.cs" />
     <Compile Include="Settlements\NativeTradeConservation.cs" />
     <Compile Include="Settlements\RansomFunding.cs" />

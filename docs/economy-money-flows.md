@@ -190,7 +190,7 @@ How much the men are expected to find themselves depends on the clan's contract 
 | Contract | Share met from the men's purses | Dial |
 |---|---|---|
 | Independent (no kingdom) | all of it | `IndependentMaintenancePurseFraction` (1.0) |
-| Mercenary (under contract) | half; the employer bears the rest | `MercenaryMaintenancePurseFraction` (0.5) |
+| Mercenary (under contract) | all of it — the men are paid double, so their spoils meet it first; only a genuine shortfall falls to the leader | `IndependentMaintenancePurseFraction` (1.0) |
 | Sworn vassal or ruler | none — the liege bears the whole bill | not configurable |
 
 ---
