@@ -70,6 +70,13 @@ namespace RBMCampaign
         private static readonly Dictionary<Settlement, Dictionary<string, RecipeDay>> _recipeDay =
             new Dictionary<Settlement, Dictionary<string, RecipeDay>>();
 
+        // Per settlement: output good -> how many production cycles the headroom gate skipped because the
+        // town was already at its storage ceiling for that good. Written as SHOPCAP. Distinct from the
+        // SHOPBLOCK reasons because a gated cycle is refused by RBM on purpose, before vanilla's own gates
+        // are ever consulted, so it never reaches the counters those record. See WorkshopHeadroomGate.
+        private static readonly Dictionary<Settlement, Dictionary<string, int>> _capped =
+            new Dictionary<Settlement, Dictionary<string, int>>();
+
         // The artisans recipe currently ticking, set for the span of one notable-shop production
         // attempt and null otherwise. Only ever non-null inside a HIDDEN workshop's cycle, which is what
         // scopes the input-sufficiency reading below to the artisans and away from the visible shops.
@@ -83,6 +90,7 @@ namespace RBMCampaign
         {
             _blocks.Clear();
             _recipeDay.Clear();
+            _capped.Clear();
             _ctxShop = null;
             _ctxKey = null;
         }
@@ -136,6 +144,28 @@ namespace RBMCampaign
             int running;
             byReason.TryGetValue(reason, out running);
             byReason[reason] = running + 1;
+        }
+
+        /// <summary>
+        /// Records one production cycle the headroom gate skipped for a full store, by the output it would
+        /// have made. Called from <see cref="WorkshopHeadroomGate"/>; a no-op when logging is off so no
+        /// tally accumulates unread.
+        /// </summary>
+        public static void CountCapped(Settlement settlement, string output)
+        {
+            if (settlement == null || !EconomyLog.IsEnabled)
+            {
+                return;
+            }
+            Dictionary<string, int> byOutput;
+            if (!_capped.TryGetValue(settlement, out byOutput))
+            {
+                byOutput = new Dictionary<string, int>();
+                _capped[settlement] = byOutput;
+            }
+            int running;
+            byOutput.TryGetValue(output, out running);
+            byOutput[output] = running + 1;
         }
 
         /// <summary>The first input category a production could not find enough of, for naming a block.</summary>
@@ -327,6 +357,10 @@ namespace RBMCampaign
         /// </remarks>
         public static void FlushDaily(Settlement settlement)
         {
+            // Independent of the block tally below: a town can gate cycles on a full store while refusing
+            // none for the reasons SHOPBLOCK counts, so this must not sit behind that early return.
+            FlushCapped(settlement);
+
             Dictionary<string, int> byReason;
             if (settlement == null || !_blocks.TryGetValue(settlement, out byReason))
             {
@@ -419,6 +453,53 @@ namespace RBMCampaign
 
             EconomyLog.Log("SHOPIDLE", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
                 idle.Count + " artisan recipes made nothing for want of inputs  ·" + list);
+        }
+
+        /// <summary>
+        /// Writes the production cycles the headroom gate skipped for a full store, by output, and clears
+        /// the settlement's tally.
+        /// </summary>
+        /// <remarks>
+        /// This is the counterpart to SHOPBLOCK for a refusal that is deliberate rather than a symptom: a
+        /// good on this line is one the town makes faster than it uses and has now stopped topping up,
+        /// which is the gate working, not a shortage. Read against the PRICE line's days-of-supply for that
+        /// good -- a SHOPCAP output should be one sitting at or above the storage ceiling.
+        /// </remarks>
+        private static void FlushCapped(Settlement settlement)
+        {
+            Dictionary<string, int> byOutput;
+            if (settlement == null || !_capped.TryGetValue(settlement, out byOutput))
+            {
+                return;
+            }
+            _capped.Remove(settlement);
+
+            if (!EconomyLog.IsEnabled || byOutput.Count == 0)
+            {
+                return;
+            }
+
+            int total = 0;
+            List<KeyValuePair<string, int>> outputs = new List<KeyValuePair<string, int>>();
+            foreach (KeyValuePair<string, int> pair in byOutput)
+            {
+                total += pair.Value;
+                outputs.Add(pair);
+            }
+
+            outputs.Sort(delegate (KeyValuePair<string, int> a, KeyValuePair<string, int> b)
+            {
+                return b.Value.CompareTo(a.Value);
+            });
+
+            StringBuilder breakdown = new StringBuilder();
+            foreach (KeyValuePair<string, int> pair in outputs)
+            {
+                breakdown.Append("  ").Append(pair.Key).Append(" x").Append(pair.Value);
+            }
+
+            EconomyLog.Log("SHOPCAP", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
+                total + " cycles skipped -- town at its storage ceiling  ·" + breakdown);
         }
     }
 }

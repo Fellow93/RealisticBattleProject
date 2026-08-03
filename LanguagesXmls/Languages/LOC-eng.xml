@@ -175,6 +175,7 @@
 	<string id="RBM_merc_wage_cost" text="Mercenary troop wages" />
 	<string id="RBM_merc_wage_pay" text="Mercenary wage pay" />
 	<string id="RBM_merc_stipend" text="Mercenary stipend" />
+	<string id="RBM_merc_unpaid" text="Employer could not pay" />
 	<string id="RBM_garrison_food" text="Garrison provisioning" />
 	<string id="RBM_wealth_settlement" text="Settlement wealth" />
 	<string id="RBM_SPOILS_004" text="Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. The veterans pick first, and the further beneath a man a piece lies the likelier he is to step over it, so what they overlook falls to greener troops. What his men do not spend on their own upgrades they spend on food and drink in the settlements you stop in." />

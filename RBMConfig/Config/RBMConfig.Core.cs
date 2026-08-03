@@ -139,6 +139,8 @@ namespace RBMConfig
             stewardMountedFootmanXpPerHorse = float.Parse(ReadOrCreate("/Config/RBMCampaign", "StewardMountedFootmanXpPerHorse", "0.25"), CultureInfo.InvariantCulture);
             campaignStartingGold = int.Parse(ReadOrCreate("/Config/RBMCampaign", "CampaignStartingGold", "5000"), CultureInfo.InvariantCulture);
             realisticTradeGoodPrices = ReadOrCreate("/Config/RBMCampaign", "RealisticTradeGoodPrices", "1").Equals("1");
+            rbmDaysOfSupplyAiSignal = ReadOrCreate("/Config/RBMCampaign", "DaysOfSupplyAiSignal", "1").Equals("1");
+            workshopHeadroomGateEnabled = ReadOrCreate("/Config/RBMCampaign", "WorkshopHeadroomGate", "1").Equals("1");
             showInventoryItemWeight = ReadOrCreate("/Config/RBMCampaign", "ShowInventoryItemWeight", "1").Equals("1");
             spoilsLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsLoggingEnabled", "0").Equals("1");
             spoilsVerboseLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsVerboseLoggingEnabled", "0").Equals("1");
@@ -285,6 +287,8 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/StewardMountedFootmanXpPerHorse"), stewardMountedFootmanXpPerHorse.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/CampaignStartingGold"), campaignStartingGold.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/RealisticTradeGoodPrices"), realisticTradeGoodPrices);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/DaysOfSupplyAiSignal"), rbmDaysOfSupplyAiSignal);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/WorkshopHeadroomGate"), workshopHeadroomGateEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/ShowInventoryItemWeight"), showInventoryItemWeight);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsLoggingEnabled"), spoilsLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SpoilsVerboseLoggingEnabled"), spoilsVerboseLoggingEnabled);

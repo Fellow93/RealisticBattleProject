@@ -130,7 +130,6 @@ namespace RBMCampaign
         // as a TypeInitializationException while the map screen builds. So they are kept OFF the
         // attribute-discovered PatchAll (no [HarmonyPatch]) and applied by hand from ApplyDeferred once a
         // game is live. See WorkshopPurse for the same cctor trap on a neighbouring method.
-        private static bool _deferredApplied;
 
         /// <summary>
         /// Applies the two DefaultClanFinanceModel patches, but only once a game exists so its
@@ -138,9 +137,17 @@ namespace RBMCampaign
         /// is null; RBMCampaignPatcher.DoPatching calls this on every patch pass, so it takes effect on
         /// the OnGameStart pass, by which point Game.Current is set for a new game and a loaded save alike.
         /// </summary>
+        /// <remarks>
+        /// Must re-apply on EVERY pass, not just the first: ApplyHarmonyPatches strips the whole
+        /// rbmcampaign harmony with UnpatchAll before each DoPatching, so a game started or a save loaded
+        /// after the first campaign of a process would otherwise be left with these two patches removed
+        /// and never restored (a stale "already applied" flag was the bug). Re-applying is safe -- the
+        /// preceding UnpatchAll clears any prior copy, so no duplicate postfix ever double-pays, and
+        /// RunClassConstructor is idempotent (the cctor runs at most once per process).
+        /// </remarks>
         public static void ApplyDeferred(Harmony harmony)
         {
-            if (_deferredApplied || Game.Current == null)
+            if (Game.Current == null)
             {
                 return;
             }
@@ -154,8 +161,6 @@ namespace RBMCampaign
             harmony.Patch(
                 AccessTools.Method(typeof(DefaultClanFinanceModel), "CalculateClanGoldChange"),
                 postfix: new HarmonyMethod(AccessTools.Method(typeof(MercenaryContractPay), nameof(PayMercenaryContractThroughFinancePostfix))));
-
-            _deferredApplied = true;
         }
 
         /// <summary>
@@ -225,16 +230,40 @@ namespace RBMCampaign
                 }
             }
 
-            // Both passes book the same income lines: the apply pass turns them into gold, the display
-            // pass only makes the breakdown read what the day paid. Capped identically to the debit, so
-            // the two never disagree.
-            if (stipendPaid > 0)
+            // Both passes book the same income lines: the apply pass turns them into gold, the display pass
+            // only makes the breakdown read what the day paid. The net booked here is always the paid amount
+            // (stipendPaid + wagePaid), identical to the debit, so the Daily Gold Change and the ruler's
+            // debit never disagree -- but how it is spelt out depends on who reads the screen.
+            int unpaid = (stipend - stipendPaid) + (wageDue - wagePaid);
+            if (clan == Clan.PlayerClan && unpaid > 0)
             {
-                __result.Add(stipendPaid, new TextObject("{=RBM_merc_stipend}Mercenary stipend"));
+                // The player reads a finance screen, so when the crown falls short show the full pay owed as
+                // income and book the unpaid remainder back as a matching shortfall line -- the breakdown
+                // then reads what was earned AND what a broke employer failed to hand over, netting to the
+                // paid amount all the same.
+                if (stipend > 0)
+                {
+                    __result.Add(stipend, new TextObject("{=RBM_merc_stipend}Mercenary stipend"));
+                }
+                if (wageDue > 0)
+                {
+                    __result.Add(wageDue, new TextObject("{=RBM_merc_wage_pay}Mercenary wage pay"));
+                }
+                __result.Add(-unpaid, new TextObject("{=RBM_merc_unpaid}Employer could not pay"));
             }
-            if (wagePaid > 0)
+            else
             {
-                __result.Add(wagePaid, new TextObject("{=RBM_merc_wage_pay}Mercenary wage pay"));
+                // Paid in full, or an AI clan whose breakdown no one reads: book only what was actually
+                // handed over. For an AI clan this is what keeps its gold conserved without an informational
+                // shortfall line it would never see.
+                if (stipendPaid > 0)
+                {
+                    __result.Add(stipendPaid, new TextObject("{=RBM_merc_stipend}Mercenary stipend"));
+                }
+                if (wagePaid > 0)
+                {
+                    __result.Add(wagePaid, new TextObject("{=RBM_merc_wage_pay}Mercenary wage pay"));
+                }
             }
         }
     }

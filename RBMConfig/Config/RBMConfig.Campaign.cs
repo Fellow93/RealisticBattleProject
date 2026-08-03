@@ -163,6 +163,21 @@ namespace RBMConfig
         // the game's own numbers. Only the trade goods are touched; no other item changes.
         public static bool realisticTradeGoodPrices = true;
 
+        // When on, the AI navigates by RBM's days-of-supply scarcity instead of vanilla's parallel demand
+        // EMA: TownMarketData.GetPriceFactor is overridden with the same signal the retail price is built
+        // on, so trade caravans, the settlement trade budget, and village/workshop AI all read the real
+        // shortage -- a caravan scores a bare town as a place to sell and a glutted one as a place to buy.
+        // Off leaves that AI path on the game's own numbers. Default on.
+        public static bool rbmDaysOfSupplyAiSignal = true;
+
+        // When on, a town's workshops stop producing an output the town already holds its full storage
+        // ceiling of (TownStorage's 60 days of consumption). Vanilla dumps workshop output straight onto
+        // the roster, past the cap that only gates external deliveries -- so a low-demand output like
+        // pottery piles to many times its ceiling. The gate skips the whole cycle before any input is
+        // consumed, so nothing is wasted; a multi-output recipe is only skipped if EVERY output is full.
+        // Applies to AI and player shops alike. Off restores vanilla's uncapped production. Default on.
+        public static bool workshopHeadroomGateEnabled = true;
+
         // Adds a weight column to the inventory and trade item rows, showing the unit weight of one of
         // the item. With the goods repriced above, weight spans four orders of magnitude and decides
         // what a party can profitably carry, so it stops being a footnote. The column is carved out of

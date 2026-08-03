@@ -135,6 +135,31 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// Whether the town already holds its full storage ceiling of a whole category -- used to stop a
+        /// workshop producing more of an output nobody has room for.
+        /// </summary>
+        /// <remarks>
+        /// Measured in days rather than units because the two are the same test: the ceiling is
+        /// <see cref="StorageDays"/> of the town's own consumption, so "held at or over the cap" is exactly
+        /// "days-of-supply at or over <see cref="StorageDays"/>". This reuses
+        /// <see cref="RBMMarketPrices.DaysOfSupplyForCategory"/> so the modelled-good boundary lives in one
+        /// place, and inherits its per-roster-version memo -- which is what keeps this cheap when it is
+        /// asked once per recipe per production cycle. A category RBM does not model reads a negative day
+        /// count and is never full here, so the goods TownStorage leaves uncapped (tools, war gear) are
+        /// never gated.
+        /// </remarks>
+        public static bool OutputHasNoRoom(Town town, ItemCategory category)
+        {
+            if (town == null || category == null || !town.IsTown)
+            {
+                return false;
+            }
+            float cap;
+            float days = RBMMarketPrices.DaysOfSupplyForCategory(town, category, out cap);
+            return days >= StorageDays;
+        }
+
+        /// <summary>
         /// Clamps an intended purchase to what the town has room for, recording anything turned away.
         /// </summary>
         public static int Accept(Settlement settlement, ItemObject item, int offered)

@@ -77,7 +77,7 @@ namespace RBMCampaign
         /// chest of some fifteen thousand -- enough for a handful of levies and the odd convoy escort,
         /// still a fraction of what a town treasury per head holds.
         /// </summary>
-        public const int TreasuryPerHearth = 25;
+        public const int TreasuryPerHearth = 150;
 
         private static Dictionary<string, int> _settlementWealth = new Dictionary<string, int>();
 

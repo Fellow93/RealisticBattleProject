@@ -196,7 +196,10 @@ namespace RBMCampaign
                 }
                 totalCarried += carried;
 
-                // The town is buying, so this is its wholesale price.
+                // The town is buying. A managed supply caravan is a real CaravanPartyComponent, not a
+                // villager, so the price patch prices this at the live days-of-supply rate, not the flat
+                // wholesale floor -- a caravan relieving a shortage is paid the scarcity price the shortage
+                // has earned, and the destination pays it out of its own citizen wealth (bounded below).
                 int price = town.GetItemPrice(new EquipmentElement(good), caravan, isSelling: true);
                 if (price <= 0)
                 {

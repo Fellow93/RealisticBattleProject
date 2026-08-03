@@ -252,15 +252,25 @@ namespace RBMCampaign
         /// made <c>town-broke</c> the largest single blocker of production and why halving the ceiling
         /// did nothing to fix it.
         ///
-        /// So the supplier is paid the floor and the scarcity rent stays inside the town, recirculated
-        /// between its own people instead of exported to the countryside. That is the ordinary shape of
-        /// the trade anyway: a merchant buys at wholesale and sells at the famine price, and the margin
-        /// is his.
+        /// So the village convoy is paid the floor and the scarcity rent stays inside the town,
+        /// recirculated between its own people instead of exported to the countryside. That is the ordinary
+        /// shape of the trade anyway: a merchant buys at wholesale and sells at the famine price, and the
+        /// margin is his.
+        ///
+        /// This floor is for the daily bulk flow only -- the village convoys, keyed on
+        /// <see cref="MobileParty.IsVillager"/> in the price patch. A caravan, a lord, or the player
+        /// selling into the town is paid the real days-of-supply price instead, so a shortage advertises
+        /// its own reward and the market can pull supply toward it without waiting on the administrative
+        /// caravans. That reopens a self-relieving channel the flat floor had closed, while the convoy
+        /// stays flat so the drain that motivated this in the first place cannot come back through the one
+        /// flow big enough to cause it. An opportunistic caravan is occasional and self-limiting -- a broke
+        /// town buys fewer units at the dearer price -- so it cannot drain a town the way a daily convoy
+        /// would.
         ///
         /// A side effect worth naming, because it is the fix for the blocked production rather than a
-        /// coincidence: <c>GetItemsToProduce</c> values a workshop's output with <c>isSelling: true</c>,
-        /// so that figure is now wholesale and no longer overshoots the market purse it is tested
-        /// against.
+        /// coincidence: <c>GetItemsToProduce</c> values a workshop's output with <c>isSelling: true</c> and
+        /// a null trading party, so that figure stays wholesale and no longer overshoots the market purse
+        /// it is tested against.
         ///
         /// Note this is the factor, not the receipt. Vanilla discounts a seller by the merchant's
         /// spread -- <c>basePriceFactor / (1 + tradePenalty)</c>, about 6% for a villager convoy -- so a
@@ -276,9 +286,25 @@ namespace RBMCampaign
         private static readonly Dictionary<string, KeyValuePair<int, float>> _daysCache =
             new Dictionary<string, KeyValuePair<int, float>>();
 
+        // The category reading feeds the AI price signal (GetPriceFactor), which is called for every
+        // caravan scoring every reachable town's every cargo category -- so it is memoised the same way
+        // the per-item days are, against the roster version, and carries the tier cap alongside the days
+        // because both come out of the same branch and recomputing the cap would mean redoing it.
+        private struct CatReading { public int Version; public float Days; public float Cap; }
+        private static readonly Dictionary<string, CatReading> _catDaysCache =
+            new Dictionary<string, CatReading>();
+
+        // ItemCategory id -> the one modelled citizen good that stands for it, built once from
+        // CitizenDemand.ModelledGoods. Only the non-workshop branch needs it; a raw material is read across
+        // its whole category by WorkshopDemand instead. First good wins, which is immaterial since a food
+        // category maps to a single good.
+        private static Dictionary<string, ItemObject> _catToItem;
+
         internal static void ResetForNewSession()
         {
             _daysCache.Clear();
+            _catDaysCache.Clear();
+            _catToItem = null;
         }
 
         /// <summary>
@@ -331,6 +357,98 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// How many days the town's stock of a whole category would last, and the tier ceiling that goes
+        /// with it, or a negative number for a category RBM does not model. This is the category-level
+        /// reading the AI price signal is built on -- see <see cref="SupplySignalPatch"/>.
+        /// </summary>
+        /// <remarks>
+        /// It mirrors the branch in <see cref="DaysOfSupply"/> exactly, so the signal and the retail price
+        /// never disagree about whether a good is scarce: a workshop input is measured across its category
+        /// by <see cref="WorkshopDemand"/> and capped by its category id; a citizen good is measured on the
+        /// one modelled item that stands for the category and capped by that item. A category matching
+        /// neither returns -1, and the patch leaves vanilla's factor untouched -- the same boundary the
+        /// retail path draws around tools, war gear and horses.
+        /// </remarks>
+        public static float DaysOfSupplyForCategory(Town town, ItemCategory category, out float cap)
+        {
+            cap = MaxFactor;
+            if (town == null || category == null || !town.IsTown)
+            {
+                return -1f;
+            }
+
+            ItemRoster roster = town.Owner.ItemRoster;
+            string key = town.Settlement.StringId + "#" + category.StringId;
+            int version = roster.VersionNo;
+
+            CatReading cached;
+            if (_catDaysCache.TryGetValue(key, out cached) && cached.Version == version)
+            {
+                cap = cached.Cap;
+                return cached.Days;
+            }
+
+            float days;
+            float industrial = WorkshopDemand.DailyUnits(town, category);
+            if (industrial > 0f)
+            {
+                cap = MarkupCap(category.StringId);
+                days = WorkshopDemand.UnitsInStore(town, category) / industrial;
+            }
+            else
+            {
+                ItemObject item = RepresentativeItem(category);
+                if (item != null)
+                {
+                    float daily = CitizenDemand.DailyUnits(town, item.StringId);
+                    if (daily > 0f)
+                    {
+                        cap = MarkupCap(item);
+                        days = roster.GetItemNumber(item) / daily;
+                    }
+                    else
+                    {
+                        days = -1f;
+                    }
+                }
+                else
+                {
+                    days = -1f;
+                }
+            }
+
+            _catDaysCache[key] = new CatReading { Version = version, Days = days, Cap = cap };
+            return days;
+        }
+
+        /// <summary>
+        /// The one modelled citizen good that stands for a category, or null if the category has none.
+        /// </summary>
+        private static ItemObject RepresentativeItem(ItemCategory category)
+        {
+            if (_catToItem == null)
+            {
+                _catToItem = new Dictionary<string, ItemObject>();
+                foreach (string id in CitizenDemand.ModelledGoods)
+                {
+                    ItemObject good = Game.Current.ObjectManager.GetObject<ItemObject>(id);
+                    if (good == null)
+                    {
+                        continue;
+                    }
+                    ItemCategory cat = good.GetItemCategory();
+                    if (cat != null && !_catToItem.ContainsKey(cat.StringId))
+                    {
+                        _catToItem[cat.StringId] = good;
+                    }
+                }
+            }
+
+            ItemObject item;
+            return _catToItem.TryGetValue(category.StringId, out item) ? item : null;
+        }
+
+        /// <summary>
         /// The scarcity multiplier for a stock that would last <paramref name="days"/>, on a curve
         /// scaled to the good's ceiling <paramref name="maxFactor"/>.
         /// </summary>
@@ -347,6 +465,35 @@ namespace RBMCampaign
             float exponent = (float)(Math.Log(maxFactor) / Math.Log(AbundantDays / CeilingDays));
             float factor = (float)Math.Pow(AbundantDays / effective, exponent);
             return MathF.Clamp(factor, MinFactor, maxFactor);
+        }
+
+        /// <summary>
+        /// The floor of the AI price SIGNAL, below the retail floor of 1.0 so that an over-stocked town
+        /// reads cheaper than a merely-comfortable one. Vanilla's own factor bottoms out at 0.1 for a
+        /// glutted good; matching it keeps every consumer that reads a sub-1.0 factor as "abundant" -- the
+        /// caravan buy score, the settlement gold budget, and the workshop-placement input-abundance term
+        /// (<c>Max(0, 1 - priceFactor)</c>) -- working as it did on vanilla's number.
+        /// </summary>
+        public const float SignalFloor = 0.1f;
+
+        /// <summary>
+        /// The same days-of-supply curve as <see cref="ScarcityFactor"/>, but floored at
+        /// <see cref="SignalFloor"/> rather than 1.0.
+        /// </summary>
+        /// <remarks>
+        /// This is what drives the AI's read of a town -- caravan routing, the trade budget, workshop
+        /// placement -- not what anyone is charged. The retail price must never fall below the good's floor
+        /// value, so <see cref="ScarcityFactor"/> clamps up to 1.0; the signal has no such rule and is free
+        /// to say a good is cheap where it is abundant, which is exactly what the AI needs to prefer a
+        /// glutted town to buy from and a bare one to sell to. Both read 1.0x at <see cref="AbundantDays"/>,
+        /// so the two never contradict each other about where the shortage is.
+        /// </remarks>
+        public static float SignalFactor(float days, float maxFactor)
+        {
+            float effective = (days > FloorDays) ? days : FloorDays;
+            float exponent = (float)(Math.Log(maxFactor) / Math.Log(AbundantDays / CeilingDays));
+            float factor = (float)Math.Pow(AbundantDays / effective, exponent);
+            return MathF.Clamp(factor, SignalFloor, maxFactor);
         }
 
         /// <summary>
@@ -407,7 +554,11 @@ namespace RBMCampaign
                 line.Append("  ").Append(id)
                     .Append(" ").Append(town.Owner.ItemRoster.GetItemNumber(item)).Append("u")
                     .Append(" ").Append(EconomyLog.Fmt(days)).Append("d")
-                    .Append(" ").Append(EconomyLog.Fmt(ScarcityFactor(days, MarkupCap(item)))).Append("x")
+                    // Retail markup over the AI signal: the first is floored at 1.0 (a sale never dips
+                    // below the good's floor), the second at 0.1, so an abundant town reads below 1.0 here
+                    // and nowhere else -- that sub-1.0 number is what the caravan AI reads to buy here.
+                    .Append(" ").Append(EconomyLog.Fmt(ScarcityFactor(days, MarkupCap(item))))
+                    .Append("/").Append(EconomyLog.Fmt(SignalFactor(days, MarkupCap(item)))).Append("x")
                     .Append(" ").Append(EconomyLog.Fmt(data.Supply))
                     .Append("/").Append(EconomyLog.Fmt(data.Demand)).Append("sd")
                     // Retail over wholesale: what a townsman pays, and what the convoy that brought it
@@ -419,7 +570,7 @@ namespace RBMCampaign
             if (line.Length > 0)
             {
                 EconomyLog.Log("PRICE", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
-                    "units · days · markup · supply/demand · retail/wholesale  ·" + line);
+                    "units · days · markup/signal · supply/demand · retail/wholesale  ·" + line);
             }
 
             LogInputs(settlement, town);
@@ -462,7 +613,10 @@ namespace RBMCampaign
                     .Append(" ").Append(units).Append("u")
                     .Append(" ").Append(EconomyLog.Fmt(daily)).Append("/d")
                     .Append(" ").Append(EconomyLog.Fmt(days)).Append("d")
-                    .Append(" ").Append(EconomyLog.Fmt(ScarcityFactor(days, MarkupCap(id)))).Append("x")
+                    // Retail markup over the AI signal -- see the PRICE line. The signal is the number the
+                    // caravan/workshop AI actually navigates by for this category.
+                    .Append(" ").Append(EconomyLog.Fmt(ScarcityFactor(days, MarkupCap(id))))
+                    .Append("/").Append(EconomyLog.Fmt(SignalFactor(days, MarkupCap(id)))).Append("x")
                     .Append(" ").Append(EconomyLog.Fmt(data.Supply))
                     .Append("/").Append(EconomyLog.Fmt(data.Demand)).Append("sd");
             }
@@ -470,7 +624,7 @@ namespace RBMCampaign
             if (line.Length > 0)
             {
                 EconomyLog.Log("INPUT", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
-                    "units · draw · days · markup · supply/demand  ·" + line);
+                    "units · draw · days · markup/signal · supply/demand  ·" + line);
             }
         }
 
@@ -513,10 +667,20 @@ namespace RBMCampaign
                 }
 
                 // Ours, and only ours: the good's base value is the historical floor price
-                // (TradeGoodValues), scarcity is the sole markup on a retail sale, and a wholesale sale
-                // pays a flat carriage margin. isSelling is from the PARTY's side -- true means the party
-                // is selling and the town is buying, the wholesale leg, which carries no scarcity markup.
-                float factor = isSelling ? WholesaleFactor : ScarcityFactor(days, MarkupCap(item));
+                // (TradeGoodValues), scarcity is the markup, and the base value is the floor. isSelling is
+                // from the PARTY's side -- true means the party is selling and the town is buying.
+                //
+                // Who is selling decides whether the sale carries scarcity. A village convoy delivering
+                // its harvest is paid the flat wholesale floor: that is the daily bulk flow, and paying it
+                // the famine price would drain a short town on its own countryside's food -- the very harm
+                // WholesaleFactor exists to prevent. A caravan, a lord, or the player selling into the town
+                // is instead paid the real days-of-supply price, the same curve a buyer pays, so a shortage
+                // rewards whoever hauls the good in and the market can pull supply toward it on its own
+                // rather than waiting on the administrative caravans. A null party is not a trade at all but
+                // an internal valuation -- GetItemsToProduce values a workshop's output isSelling:true -- and
+                // keeps the flat wholesale figure it was tuned against; see WholesaleFactor.
+                bool wholesale = isSelling && (tradingParty == null || tradingParty.IsVillager);
+                float factor = wholesale ? WholesaleFactor : ScarcityFactor(days, MarkupCap(item));
 
                 // The one thing kept from vanilla: the party's own trade spread -- their Trade skill and
                 // the goods' trade perks. Passing a null merchant is what strips everything else, because
@@ -532,6 +696,50 @@ namespace RBMCampaign
                 float priced = itemRosterElement.ItemValue * factor * spread;
                 int rounded = isSelling ? MathF.Floor(priced) : MathF.Ceiling(priced);
                 __result = (rounded > 1) ? rounded : 1;
+            }
+        }
+
+        /// <summary>
+        /// Replaces vanilla's category price FACTOR with RBM's days-of-supply signal, so the AI navigates
+        /// by the same scarcity the retail price is built on instead of by vanilla's parallel demand EMA.
+        /// </summary>
+        /// <remarks>
+        /// This is the seam that collapses the two price signals into one. Vanilla's caravan routing, its
+        /// trade budget, its village trade AI and its workshop-placement AI all read
+        /// <c>GetPriceFactor(category)</c> -- a different method from the per-item <c>GetPrice</c> the
+        /// retail patch above rewrites -- and it was still returning a factor built from the stale
+        /// <c>Supply</c>/<c>Demand</c> EMA that RBM's own pricing ignores. Overriding it here, for exactly
+        /// the categories RBM models, makes every one of those consumers see the real shortage: a caravan
+        /// now scores a bare town as a good place to sell and a glutted one as a good place to buy.
+        ///
+        /// The per-town factor and the network average the routing compares it against are BOTH built from
+        /// this method (the average, in CaravansCampaignBehavior, sums GetItemCategoryPriceIndex which is
+        /// GetPriceFactor), so patching this one place keeps them on a single scale by construction. The
+        /// signal uses <see cref="SignalFactor"/>, not the retail <see cref="ScarcityFactor"/>, so an
+        /// abundant town can read below 1.0 the way vanilla's factor did. Four underscores on the town
+        /// field for the same reason the retail patch needs them -- see <see cref="ScarcityPricePatch"/>.
+        /// </remarks>
+        [HarmonyPatch(typeof(TownMarketData), "GetPriceFactor", new Type[] { typeof(ItemCategory) })]
+        private static class SupplySignalPatch
+        {
+            private static void Postfix(TownMarketData __instance, Town ____town,
+                ItemCategory itemCategory, ref float __result)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !RBMConfig.RBMConfig.rbmDaysOfSupplyAiSignal
+                    || ____town == null)
+                {
+                    return;
+                }
+
+                float cap;
+                float days = DaysOfSupplyForCategory(____town, itemCategory, out cap);
+                if (days < 0f)
+                {
+                    // Not a category RBM models. Vanilla's factor stands.
+                    return;
+                }
+
+                __result = SignalFactor(days, cap);
             }
         }
     }
