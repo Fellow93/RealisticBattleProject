@@ -3,6 +3,7 @@ using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.Settlements.Buildings;
 using TaleWorlds.Core;
 using TaleWorlds.Localization;
 
@@ -167,13 +168,76 @@ namespace RBMCampaign
         private const float ConvergenceRate = 0.1f;
 
         /// <summary>
-        /// Prosperity the countryside TRADING with this town can support, or 0 for anything that is
-        /// not a town.
+        /// How much each point of a town's <see cref="InfrastructureScore"/> lifts its resting
+        /// prosperity, as a fraction of the countryside figure. A tier-3 building is worth three
+        /// points, so at +2%/point a single fully-built structure adds ~6% and a town summing ~17
+        /// points across its buildings rests about a third above what the bare countryside can carry.
+        ///
+        /// The countryside sets how many mouths the land can feed; infrastructure sets how densely a
+        /// town can house and employ them on that same food. A granary, aqueduct or paved market lets
+        /// the same hearths support a larger settled population, which is the sense in which a
+        /// well-built city outgrows a shantytown fed by identical villages.
+        /// </summary>
+        public const float InfrastructureBonusPerTierPoint = 0.02f;
+
+        /// <summary>
+        /// Ceiling on <see cref="InfrastructureMultiplier"/>, so the best-developed town rests at most
+        /// this multiple of its countryside figure. Caps the compounding at a doubling (+100%) rather
+        /// than letting a modded building set or an unusually dense slot count run the target away from
+        /// the food the land actually provides.
+        /// </summary>
+        public const float MaxInfrastructureMultiplier = 2f;
+
+        /// <summary>
+        /// A town's development as the summed level of everything it has built: a tier-3 structure is
+        /// worth three points, a tier-1 one point, an unbuilt slot nothing. Rotating daily projects
+        /// (festivals, the marketplace boost) are skipped -- they are a standing choice of focus, not a
+        /// permanent improvement, and would otherwise add a phantom point that comes and goes with the
+        /// governor's orders.
+        /// </summary>
+        public static int InfrastructureScore(Town town)
+        {
+            if (town == null || town.Buildings == null)
+            {
+                return 0;
+            }
+
+            int score = 0;
+            foreach (Building building in town.Buildings)
+            {
+                if (building.BuildingType != null && building.BuildingType.IsDailyProject)
+                {
+                    continue;
+                }
+                score += building.CurrentLevel;
+            }
+            return score;
+        }
+
+        /// <summary>
+        /// The factor a town's <see cref="InfrastructureScore"/> applies to its countryside prosperity
+        /// figure: 1 for a town that has built nothing, rising by
+        /// <see cref="InfrastructureBonusPerTierPoint"/> per point and clamped at
+        /// <see cref="MaxInfrastructureMultiplier"/>.
+        /// </summary>
+        public static float InfrastructureMultiplier(Town town)
+        {
+            float multiplier = 1f + InfrastructureScore(town) * InfrastructureBonusPerTierPoint;
+            return (multiplier > MaxInfrastructureMultiplier) ? MaxInfrastructureMultiplier : multiplier;
+        }
+
+        /// <summary>
+        /// Prosperity the countryside TRADING with this town can support, scaled by how well the town
+        /// itself is built; 0 for anything that is not a town.
         ///
         /// Trade-bound rather than administratively bound, so the countryside counted here is the
         /// same one the food chain actually uses: a villager party walks to <c>Village.TradeBound</c>
         /// and sells there. A castle's villages trade at a nearby town, so their hearths feed that
         /// town's market and belong in its equilibrium, not the castle's.
+        ///
+        /// The bare hearth figure is the food the land provides; <see cref="InfrastructureMultiplier"/>
+        /// then raises the ceiling for how much settled population that food can house, so a
+        /// well-developed town rests higher than a neglected one fed by the same villages.
         ///
         /// Castles are excluded entirely for now -- they keep vanilla prosperity. Nothing about them
         /// fits this model yet: they buy nothing (only towns trade with villagers), and the villages
@@ -188,7 +252,7 @@ namespace RBMCampaign
 
             EnsureHearthCache();
             _tradeBoundHearths.TryGetValue(settlement, out float hearths);
-            return hearths * ProsperityPerBoundHearth;
+            return hearths * ProsperityPerBoundHearth * InfrastructureMultiplier(settlement.Town);
         }
 
         /// <summary>
