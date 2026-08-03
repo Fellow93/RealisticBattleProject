@@ -176,7 +176,7 @@ namespace RBMCampaign
         {
             if (IsVisitor(mobileParty))
             {
-                BuyFood(mobileParty, settlement);
+                GrantProvisioningXp(mobileParty, BuyFood(mobileParty, settlement));
             }
         }
 
@@ -196,15 +196,19 @@ namespace RBMCampaign
             // it is not the standing faucet of prosperity that free provisioning and carousing would be: a
             // garrison or militia holding a settlement mends its wounded there like any party passing through.
             HealWounded(mobileParty, settlement);
+            int provisioned = 0;
             if (IsVisitor(mobileParty))
             {
-                BuyFood(mobileParty, settlement);
+                provisioned += BuyFood(mobileParty, settlement);
             }
             if (SpendsLocally(mobileParty))
             {
+                // Carousing is deliberately left out: drinking pay away is not thrift, so it earns no
+                // stewardship. Only the food and the luxuries the men lay in for themselves count.
                 SpendOnFun(mobileParty, settlement);
-                MaybeBuyLuxury(mobileParty, settlement);
+                provisioned += MaybeBuyLuxury(mobileParty, settlement);
             }
+            GrantProvisioningXp(mobileParty, provisioned);
         }
 
         /// <summary>

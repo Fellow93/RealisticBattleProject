@@ -114,6 +114,21 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// The daily kit-value maintenance of a whole stack of <paramref name="number"/> men -- the same
+        /// figure the field charge prices a stack's upkeep at. Exposed so the stationary forces (a
+        /// garrison, a settlement's militia) can be billed the identical formula a marching troop pays,
+        /// scaled by their own reduced factor. Zero when the feature or maintenance is off, or for heroes.
+        /// </summary>
+        public static int GetDailyMaintenanceCost(CharacterObject character, int number)
+        {
+            if (!IsEnabled || character == null || character.IsHero || number <= 0)
+            {
+                return 0;
+            }
+            return DailyMaintenanceCost(character, number);
+        }
+
+        /// <summary>
         /// Seeds a freshly recruited stack's purse with several days' maintenance, so a man drawn from a
         /// settlement arrives with his kit in order and a little put by against the coming march rather
         /// than penniless. Added on top of whatever the stack already carries. No gold changes hands --

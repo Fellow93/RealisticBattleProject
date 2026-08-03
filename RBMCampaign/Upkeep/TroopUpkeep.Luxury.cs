@@ -21,19 +21,20 @@ namespace RBMCampaign
         /// Rolls each over-cap stack for an indulgence. Only stacks with coin to spare over their ceiling
         /// take part, only one purchase per stack per cooldown, and only now and then even then.
         /// </summary>
-        private static void MaybeBuyLuxury(MobileParty mobileParty, Settlement settlement)
+        private static int MaybeBuyLuxury(MobileParty mobileParty, Settlement settlement)
         {
             if (!SpoilsPool.IsEnabled)
             {
-                return;
+                return 0;
             }
             PartyBase party = mobileParty.Party;
             ItemRoster market = settlement.ItemRoster;
             if (party?.MemberRoster == null || market == null)
             {
-                return;
+                return 0;
             }
 
+            int totalSpent = 0;
             TroopRoster roster = party.MemberRoster;
             for (int i = 0; i < roster.Count; i++)
             {
@@ -57,8 +58,9 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                BuyLuxury(party, settlement, market, element, purse);
+                totalSpent += BuyLuxury(party, settlement, market, element, purse);
             }
+            return totalSpent;
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace RBMCampaign
         /// drawing the price from its purse and leaving it in the settlement. Sets the cooldown only if a
         /// purchase actually lands, so a stack that finds nothing to its taste rolls again next hour.
         /// </summary>
-        private static void BuyLuxury(PartyBase party, Settlement settlement, ItemRoster market, TroopRosterElement element, int purse)
+        private static int BuyLuxury(PartyBase party, Settlement settlement, ItemRoster market, TroopRosterElement element, int purse)
         {
             List<int> affordable = null;
             for (int i = 0; i < market.Count; i++)
@@ -95,7 +97,7 @@ namespace RBMCampaign
             }
             if (affordable == null)
             {
-                return;
+                return 0;
             }
 
             int index = affordable[MBRandom.RandomInt(affordable.Count)];
@@ -118,6 +120,7 @@ namespace RBMCampaign
                 SpoilsLog.Log("LUX", party, SpoilsLog.Describe(party) + " indulged in " + chosen.Name
                     + " at " + settlement.Name + " for " + cost + " spoils");
             }
+            return cost;
         }
 
         private static bool IsLuxuryOnCooldown(PartyBase party, CharacterObject character)

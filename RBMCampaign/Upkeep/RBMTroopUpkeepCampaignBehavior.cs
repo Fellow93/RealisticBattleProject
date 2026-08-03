@@ -15,6 +15,7 @@ namespace RBMCampaign
         {
             CampaignEvents.SettlementEntered.AddNonSerializedListener(this, TroopUpkeep.OnSettlementEntered);
             CampaignEvents.HourlyTickPartyEvent.AddNonSerializedListener(this, TroopUpkeep.OnHourlyTickParty);
+            CampaignEvents.DailyTickPartyEvent.AddNonSerializedListener(this, TroopUpkeep.OnDailyTickParty);
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, TroopUpkeep.OnMobilePartyDestroyed);
         }
 

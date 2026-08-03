@@ -308,6 +308,7 @@
     <Compile Include="Upkeep\TroopUpkeep.Food.cs" />
     <Compile Include="Upkeep\TroopUpkeep.Healing.cs" />
     <Compile Include="Upkeep\TroopUpkeep.Luxury.cs" />
+    <Compile Include="Upkeep\TroopUpkeep.Stewardship.cs" />
     <Compile Include="Upkeep\RBMTroopUpkeepCampaignBehavior.cs" />
     <Compile Include="Recruitment\TavernMercenaryTroopsPatch.cs" />
     <Compile Include="Upgrades\RBMCampaignPatches.cs" />

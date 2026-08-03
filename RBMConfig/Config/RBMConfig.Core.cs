@@ -135,6 +135,9 @@ namespace RBMConfig
             troopSpoilsHealGoldPerTier = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsHealGoldPerTier", "10"), CultureInfo.InvariantCulture);
             troopSpoilsHealFractionPerHour = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsHealFractionPerHour", "0.05"), CultureInfo.InvariantCulture);
             troopFallenSpoilsCaptureFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopFallenSpoilsCaptureFraction", "0.75"), CultureInfo.InvariantCulture);
+            stewardProvisioningXpPerSpoils = float.Parse(ReadOrCreate("/Config/RBMCampaign", "StewardProvisioningXpPerSpoils", "0.05"), CultureInfo.InvariantCulture);
+            stewardFoodReserveXpPerTier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "StewardFoodReserveXpPerTier", "3.0"), CultureInfo.InvariantCulture);
+            stewardMountedFootmanXpPerHorse = float.Parse(ReadOrCreate("/Config/RBMCampaign", "StewardMountedFootmanXpPerHorse", "0.25"), CultureInfo.InvariantCulture);
             campaignStartingGold = int.Parse(ReadOrCreate("/Config/RBMCampaign", "CampaignStartingGold", "5000"), CultureInfo.InvariantCulture);
             realisticTradeGoodPrices = ReadOrCreate("/Config/RBMCampaign", "RealisticTradeGoodPrices", "1").Equals("1");
             showInventoryItemWeight = ReadOrCreate("/Config/RBMCampaign", "ShowInventoryItemWeight", "1").Equals("1");
@@ -279,6 +282,9 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsHealGoldPerTier"), troopSpoilsHealGoldPerTier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsHealFractionPerHour"), troopSpoilsHealFractionPerHour.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopFallenSpoilsCaptureFraction"), troopFallenSpoilsCaptureFraction.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/StewardProvisioningXpPerSpoils"), stewardProvisioningXpPerSpoils.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/StewardFoodReserveXpPerTier"), stewardFoodReserveXpPerTier.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/StewardMountedFootmanXpPerHorse"), stewardMountedFootmanXpPerHorse.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/CampaignStartingGold"), campaignStartingGold.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/RealisticTradeGoodPrices"), realisticTradeGoodPrices);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/ShowInventoryItemWeight"), showInventoryItemWeight);

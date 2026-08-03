@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 
 namespace RBMCampaign
@@ -29,6 +30,16 @@ namespace RBMCampaign
         /// the arithmetic down.
         /// </summary>
         public const float GarrisonFiefWageShare = 1.0f;
+
+        /// <summary>
+        /// Share of a field troop's kit-value maintenance a garrison soldier costs to keep -- the second
+        /// leg of a garrison's upkeep, added so a garrison is billed the way a marching company is: a wage
+        /// (above) plus maintenance. A quarter, because a garrison stands its post rather than marching a
+        /// campaign, so its gear wears slowly. Priced off kit value like any troop's (see
+        /// <see cref="SpoilsPool.GetDailyMaintenanceCost"/>) and paid, like the wage, out of the fief's own
+        /// treasury -- the coin landing in the town that mends the gear.
+        /// </summary>
+        public const float GarrisonMaintFactor = 0.25f;
 
         /// <summary>
         /// Moves the fief's share of a garrison's wage off the owner's books and onto the treasury's.
@@ -94,6 +105,69 @@ namespace RBMCampaign
                 }
 
                 __result -= paid;
+            }
+        }
+
+        /// <summary>
+        /// Charges a settlement its garrison's daily maintenance -- the second leg of a garrison's upkeep,
+        /// the kit-value maintenance a field troop pays scaled to <see cref="GarrisonMaintFactor"/> for a
+        /// force that stands its post. Called from the daily settlement pass.
+        /// </summary>
+        /// <remarks>
+        /// Priced off the same kit-value formula a marching troop's maintenance is (<see cref="SpoilsPool.GetDailyMaintenanceCost"/>),
+        /// summed over the garrison roster and drawn from the fief's treasury -- the pot its wage comes from
+        /// -- with the coin paid over to the town that does the mending (a town itself, else the nearest
+        /// friendly one). No owner backstop and no purse: a garrison keeps none, so a treasury too empty to
+        /// pay simply leaves that day's mending undone, and only what the treasury could give reaches the
+        /// market. Money conserved throughout -- the fief pays exactly what the market receives.
+        /// </remarks>
+        public static void ChargeMaintenance(Settlement settlement)
+        {
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled || settlement == null || settlement.Town == null)
+            {
+                return;
+            }
+            MobileParty garrison = settlement.Town.GarrisonParty;
+            if (garrison == null || !garrison.IsActive || garrison.MemberRoster == null)
+            {
+                return;
+            }
+
+            TroopRoster roster = garrison.MemberRoster;
+            int bill = 0;
+            for (int i = 0; i < roster.Count; i++)
+            {
+                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+                if (element.Character.IsHero || element.Number <= 0)
+                {
+                    continue;
+                }
+                bill += (int)(SpoilsPool.GetDailyMaintenanceCost(element.Character, element.Number) * GarrisonMaintFactor);
+            }
+            if (bill <= 0)
+            {
+                return;
+            }
+
+            int paid = SettlementWealth.Debit(settlement, bill, SettlementWealth.Source.Maintenance);
+            if (paid <= 0)
+            {
+                return;
+            }
+
+            Settlement market = settlement.IsTown ? settlement
+                : (UpgradeSupply.FindNearestFriendlyTown(garrison)?.Settlement);
+            if (market != null)
+            {
+                TroopMarketFeedback.RegisterPurchase(market, null, paid, SettlementWealth.Source.Maintenance);
+            }
+
+            if (EconomyLog.IsEnabled)
+            {
+                EconomyLog.Log("GARRISON", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
+                    "maintenance " + bill + "d  ·  fief paid " + paid + "d"
+                    + (market != null ? " to " + market.Name : " — no town in reach")
+                    + "  ·  treasury now " + SettlementWealth.GetSettlementWealth(settlement) + "d");
             }
         }
     }

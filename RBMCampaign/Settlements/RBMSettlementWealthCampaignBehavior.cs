@@ -46,6 +46,10 @@ namespace RBMCampaign
             // so those act on the post-income balance.
             CastleEconomy.OnDailyTick(settlement);
             AdministrativeUpkeep.OnDailyTick(settlement);
+            // The garrison's maintenance leg -- its wage is billed through the finance model (see
+            // GarrisonUpkeep.GarrisonWageSharePatch); this is the kit-value half, charged here so it lands
+            // on the post-income treasury with the day's other upkeep.
+            GarrisonUpkeep.ChargeMaintenance(settlement);
             // Arm the day's new militia, out here rather than in the DailyTick that grew them so a
             // village purse write is not caught inside VillageGoldStock's suppression window.
             MilitiaUpkeep.ChargePendingSpawn(settlement);
@@ -77,6 +81,10 @@ namespace RBMCampaign
             _newCampaign = true;
             _campaignSeeded = true;
             SettlementWealth.SeedVillagePurses();
+            // Fires after vanilla's MilitiasCampaignBehavior seed (the "...End" event runs once the
+            // partial follow-up is done), so this overwrites its cap-blind MilitiaChange*45 with a
+            // quarter of each settlement's soft cap.
+            MilitiaUpkeep.SeedInitialMilitia();
         }
 
         private void OnSessionLaunched(CampaignGameStarter starter)

@@ -76,6 +76,14 @@ namespace RBMCampaign
                 }
                 // The stack's wage, not one man's, so a small troop's half-point is not rounded away.
                 int wage = wageModel.GetCharacterWage(element.Character) * element.Number;
+                if (isMilitia)
+                {
+                    // Militia are billed like a field troop -- a reduced wage into the purse, then kit-value
+                    // maintenance out of it -- but the settlement is the payer, not the leader, so the whole
+                    // of it happens inside MilitiaUpkeep rather than being banked by the caller here.
+                    MilitiaUpkeep.PayMilitiaUpkeep(party.MobileParty, element.Character, element.Number, wage);
+                    continue;
+                }
                 // The men skim their whole day's wage into their purse, cap or no cap. Spoils are a
                 // closed loop now -- what lands here is spent on upgrades, food and drink, never handed
                 // back to the owner as gold.
@@ -84,15 +92,6 @@ namespace RBMCampaign
                 {
                     // Twice the wage, banked. The extra half is the crown's, paid through the leader.
                     granted = wage * 2;
-                }
-                if (isMilitia)
-                {
-                    // Except militia, whose wage nobody pays. Their settlement pays their upkeep out of
-                    // the pots the spec names, and a stack only ever banks the maintenance that upkeep
-                    // actually covered -- so the deposit and the payment are one number and neither can
-                    // invent the other. A village's maintenance leaves for its market town instead of
-                    // the purse, so it banks nothing. See MilitiaUpkeep.
-                    granted = MilitiaUpkeep.PayMilitiaUpkeep(party.MobileParty, wage);
                 }
                 if (granted <= 0)
                 {

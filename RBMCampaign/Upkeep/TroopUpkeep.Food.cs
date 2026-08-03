@@ -21,17 +21,17 @@ namespace RBMCampaign
         /// market has and his purse can reach, so a stack that empties a starving village's stalls
         /// goes hungry sooner.
         /// </summary>
-        private static void BuyFood(MobileParty mobileParty, Settlement settlement)
+        private static int BuyFood(MobileParty mobileParty, Settlement settlement)
         {
             if (!SpoilsPool.IsEnabled || RBMConfig.RBMConfig.troopSettlementFoodDays <= 0)
             {
-                return;
+                return 0;
             }
             PartyBase party = mobileParty.Party;
             ItemRoster market = settlement.ItemRoster;
             if (party?.MemberRoster == null || market == null)
             {
-                return;
+                return 0;
             }
 
             int foodDays = RBMConfig.RBMConfig.troopSettlementFoodDays;
@@ -69,6 +69,7 @@ namespace RBMCampaign
                 SpoilsLog.Log("FOOD", party, SpoilsLog.Describe(party) + " provisioned " + stacksFed
                     + (stacksFed == 1 ? " stack" : " stacks") + " in " + settlement.Name + " for " + totalSpent + " spoils");
             }
+            return totalSpent;
         }
 
         /// <summary>One kind of food on sale: what it is, what a unit costs, how much is left.</summary>

@@ -71,9 +71,13 @@ namespace RBMCampaign
 
         /// <summary>
         /// Starting treasury per point of hearth, for a village. Villages are poor as institutions --
-        /// a headman's chest, not a town's -- so this is a fraction of what a fief holds per head.
+        /// a headman's chest, not a town's -- but at two per hearth the chest held barely a thousand
+        /// denars, too little to arm a single militiaman, so a village opened the campaign unable to
+        /// raise the watch its hearths support. Twenty-five per hearth gives a fair-sized village a
+        /// chest of some fifteen thousand -- enough for a handful of levies and the odd convoy escort,
+        /// still a fraction of what a town treasury per head holds.
         /// </summary>
-        public const int TreasuryPerHearth = 2;
+        public const int TreasuryPerHearth = 25;
 
         private static Dictionary<string, int> _settlementWealth = new Dictionary<string, int>();
 

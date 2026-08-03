@@ -136,6 +136,25 @@ namespace RBMConfig
         // leaves the dead's purse on the field.
         public static float troopFallenSpoilsCaptureFraction = 0.75f;
 
+        // Stewardship a party leader earns for keeping his men fed and mobile out of their own purses,
+        // per point of spoils (one gold) his stacks lay out on food and luxuries off a settlement's
+        // market. A commander who has drilled his men to provision themselves is running a tidy camp,
+        // and it tells on his stewardship. Carousing does not count -- drinking pay away is not thrift.
+        // Zero stops the grant.
+        public static float stewardProvisioningXpPerSpoils = 0.05f;
+
+        // Stewardship a party leader earns each day for the depth of his food stores, one step per
+        // threshold of days his stores would last at the current rate (10, 20, 30, 40 and 50 days), and
+        // multiplied by his party's size per hundred men -- feeding a host for fifty days is a greater
+        // feat of supply than victualling a warband for the same span. Zero stops the grant.
+        public static float stewardFoodReserveXpPerTier = 3.0f;
+
+        // Stewardship a party leader earns each day for every spare mount his baggage train carries that
+        // one of his footmen can ride -- the horses that turn infantry into mounted infantry on the map,
+        // capped, as the speed bonus is, at how many men are on foot. Scales with the count itself, so a
+        // host horsing all its foot earns for the whole train. Zero stops the grant.
+        public static float stewardMountedFootmanXpPerHorse = 0.25f;
+
         // The purse the player opens a new campaign with, replacing whatever his backstory choices added
         // up to. RBM prices most of the campaign well above vanilla -- kit, trade goods, upgrades paid out
         // of a spoils purse -- so the few hundred denars character creation hands out leaves none of the
