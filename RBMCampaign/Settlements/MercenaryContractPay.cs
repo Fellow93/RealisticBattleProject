@@ -16,8 +16,8 @@ namespace RBMCampaign
     /// <summary>
     /// A mercenary company under a kingdom's pay is kept by its employer, not out of its own purse. While a
     /// clan holds a mercenary contract, its ruling clan pays it two ways each day, both through the clan
-    /// finance model so they land in the Daily Gold Change beside every other clan revenue: a stipend on the
-    /// company's standing (<c>3 gold per point of influence and renown</c>), and a full reimbursement of the
+    /// finance model so they land in the Daily Gold Change beside every other clan revenue: a stipend (a flat
+    /// <c>300</c> a day plus <c>2 gold per point of influence and renown</c>), and a full reimbursement of the
     /// day's troop wages -- at the DOUBLED mercenary rate the men now draw. The men themselves are the
     /// better-paid for it: a mercenary stack banks twice its wage into spoils (see <see cref="SpoilsPool"/>'s
     /// wage deposit), which is what the second wage the company lays out actually buys. Net to the company:
@@ -38,8 +38,11 @@ namespace RBMCampaign
     /// </remarks>
     public static class MercenaryContractPay
     {
-        // 300 per day at 0.01 per point of standing == 3 gold per point of (influence + renown).
-        private const float StipendPerStandingPoint = 3f;
+        // A guaranteed 300 a day for taking the contract at all, then 2 gold more per point of the
+        // company's standing (influence + renown) on top -- a small company still earns its keep, a
+        // storied one is paid for the name it brings.
+        private const float StipendBase = 300f;
+        private const float StipendPerStandingPoint = 2f;
 
         /// <summary>
         /// True while a clan is a hired sword in a kingdom's service -- sworn to a liege it does not rule,
@@ -114,12 +117,8 @@ namespace RBMCampaign
         /// <summary>The standing stipend the crown pays a mercenary company each day, on its influence and renown.</summary>
         private static int StipendFor(Clan clan)
         {
-            float standing = clan.Influence + clan.Renown;
-            if (standing <= 0f)
-            {
-                return 0;
-            }
-            return MathF.Round(StipendPerStandingPoint * standing);
+            float standing = MathF.Max(0f, clan.Influence + clan.Renown);
+            return MathF.Round(StipendBase + StipendPerStandingPoint * standing);
         }
 
         // These two patches touch DefaultClanFinanceModel, whose static initializer reads

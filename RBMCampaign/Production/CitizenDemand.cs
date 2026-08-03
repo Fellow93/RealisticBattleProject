@@ -98,6 +98,12 @@ namespace RBMCampaign
         /// chronic shortfall until charcoal supply grows to meet it. Salt is the same story on a
         /// smaller scale.
         ///
+        /// Whale oil is a lamp: a household's lighting bill, cheap and burned steadily. It is a Naval
+        /// DLC good, so with the DLC absent the id never resolves and the line is silently inert -- no
+        /// purchase, no shortfall (<see cref="BuyLine"/> returns before recording). With the DLC it is
+        /// coastal supply feeding universal demand, so inland towns read it as an honest shortfall until
+        /// a caravan carries a barrel their way -- the same shape as charcoal.
+        ///
         /// Clothing is handled apart from this table because it is not a trade good: it is whatever
         /// civilian garments happen to be on the shelf, across all five worn slots. See
         /// <see cref="BuyGarments"/>.
@@ -106,6 +112,7 @@ namespace RBMCampaign
         {
             new Line("charcoal", 0.6f),
             new Line("salt", 0.24f),
+            new Line("whale_oil", 0.05f),
             new Line("pottery", 0.005f),
             new Line("planks", 0.003f),
         };
@@ -129,6 +136,7 @@ namespace RBMCampaign
             new Line("jewelry", 0.0033f),
             new Line("felt", 0.002f),
             new Line("fur", 0.0015f),
+            new Line("walrus_tusk", 0.001f),
             new Line("date_fruit", 0.01f),
             new Line("oil", 0.01f),
             new Line("wine", 0.01f),
@@ -146,10 +154,15 @@ namespace RBMCampaign
         /// at this level buys twice the medium tier's jewelry. That is the reading the source figures
         /// support -- the large tier restates jewelry at the same rate rather than raising it, which
         /// only means anything if it stacks.
+        ///
+        /// Walrus tusk is ivory: a dense, high-value display good priced alongside jewelry. It too
+        /// restates its medium-tier rate here so the richest towns buy twice as much. Like whale oil it
+        /// is a Naval DLC good -- absent the DLC the id never resolves and the line is inert.
         /// </remarks>
         private static readonly Line[] LargeLuxuries =
         {
             new Line("jewelry", 0.0033f),
+            new Line("walrus_tusk", 0.001f),
             new Line("velvet", 0.001f),
         };
 
