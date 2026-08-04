@@ -96,6 +96,11 @@ namespace RBMCampaign
         // Rations the town wanted on its last tick but the market could not fill.
         private static readonly Dictionary<Town, int> _unmetRations = new Dictionary<Town, int>();
 
+        // Fraction of the town's rations that were actually filled on its last tick: 1 = everyone
+        // fed, 0 = nobody. Read by the prosperity equilibrium as the "base demand satisfied" signal
+        // that decides how hard a town is pulled down toward its countryside figure.
+        private static readonly Dictionary<Town, float> _rationSatisfaction = new Dictionary<Town, float>();
+
         // Per-roster-version memo for the food count. get_FoodStocks is read constantly (town UI,
         // tooltips, AI target scoring, siege checks) and the uncached form is a full roster scan.
         private static readonly Dictionary<Town, KeyValuePair<int, int>> _foodCountCache = new Dictionary<Town, KeyValuePair<int, int>>();
@@ -105,7 +110,22 @@ namespace RBMCampaign
             _foodAtLastTick.Clear();
             _measuredFoodChange.Clear();
             _unmetRations.Clear();
+            _rationSatisfaction.Clear();
             _foodCountCache.Clear();
+        }
+
+        /// <summary>
+        /// Share of the town's rations filled on its last daily tick, in 0..1 -- 1 when every mouth was
+        /// fed, falling toward 0 as the market ran short. Defaults to 1 for a town not yet ticked, so a
+        /// freshly loaded or seeded town reads as fed rather than starving.
+        ///
+        /// This is the town's BASE DEMAND satisfaction: whether the population is actually getting the
+        /// daily necessity it needs, as opposed to how large a reserve sits behind it. The prosperity
+        /// equilibrium reads it alongside the food-stock reserve to decide how fast a town declines.
+        /// </summary>
+        public static float RationSatisfaction(Town town)
+        {
+            return (town != null && _rationSatisfaction.TryGetValue(town, out float satisfaction)) ? satisfaction : 1f;
         }
 
         /// <summary>
@@ -353,6 +373,7 @@ namespace RBMCampaign
                 int wanted;
                 int unmet = FeedPopulation(town, saleLog, out wanted);
                 _unmetRations[town] = unmet;
+                _rationSatisfaction[town] = (wanted > 0) ? MathF.Clamp(1f - (float)unmet / wanted, 0f, 1f) : 1f;
 
                 // Unmet rations are subtracted rather than merely observed. A town whose market is
                 // empty buys nothing, so its roster does not move and the raw delta is 0 -- identical

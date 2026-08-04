@@ -5,6 +5,7 @@ using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Buildings;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
 namespace RBMCampaign
@@ -29,7 +30,8 @@ namespace RBMCampaign
     /// so a fief with a standing bonus -- a full granary paying Surplus Food, a good governor, strong
     /// loyalty -- rests above its countryside figure, and a famine or unrest holds it below. What the
     /// countryside sets is the level a fief returns to once those pressures pass, and how hard it is
-    /// pulled back; see <see cref="ConvergenceRate"/>, which is what decides that authority.
+    /// pulled back; see <see cref="ProsperityGrowthRate"/> and <see cref="DeclineUrgency"/>, which are
+    /// what decide that authority.
     /// </summary>
     public static class RBMProsperityEquilibrium
     {
@@ -100,11 +102,12 @@ namespace RBMCampaign
         public const float CastleProsperityHearthFactor = 1.5f;
 
         /// <summary>
-        /// Fraction of the gap to its resting figure a castle closes per day -- the castle counterpart
-        /// to the town's <see cref="ConvergenceRate"/> (0.1). Set lower so a castle still drifts toward
-        /// its countryside more deliberately than a town chases its own, over roughly three weeks
-        /// rather than ten days, but not so slow that a raided or recovering village takes a season to
-        /// register on the keep it feeds.
+        /// Fraction of the gap to its resting figure a castle closes per day, in both directions -- the
+        /// castle counterpart to the town's <see cref="ProsperityGrowthRate"/> and
+        /// <see cref="ProsperityDeclineRate"/>. A castle keeps a single flat rate rather than the town's
+        /// food-modulated asymmetry: it grows no food of its own to meter the pull with, so it simply
+        /// drifts toward its countryside over roughly three weeks -- deliberately, but not so slowly that
+        /// a raided or recovering village takes a season to register on the keep it feeds.
         /// </summary>
         private const float CastleConvergenceRate = 0.05f;
 
@@ -148,24 +151,84 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Fraction of the gap to the equilibrium closed per day, and with it the authority this term
-        /// carries against everything else pushing on prosperity.
-        ///
-        /// The rate is not really a speed setting, it is a weight. Prosperity rests where all terms
-        /// cancel, so any other term contributing a steady <c>x</c> per day parks the fief
-        /// <c>x / ConvergenceRate</c> away from its target. At the original 0.02 that was a
-        /// fifty-fold lever: vanilla's housing ladder alone (+6/day) would have held every town 300
-        /// above target, which is why it is cancelled below, and once markets began to fill, Surplus
-        /// Food at ~+11/day was displacing well-fed towns by ~550 -- several times the target itself,
-        /// leaving the countryside figure a rounding correction rather than an attractor.
-        ///
-        /// 0.1 makes the lever tenfold instead, so that same +11 displaces by ~110: enough that a
-        /// thriving town still outgrows its countryside noticeably, not so much that the countryside
-        /// stops meaning anything. The time constant comes down to about ten days, which is brisker
-        /// than the seasonal drift originally intended -- the deliberate trade for giving this term
-        /// enough weight to argue with its neighbours.
+        /// Fraction of the gap a town's prosperity closes per day while GROWING toward a countryside
+        /// that can carry more than it currently holds. Deliberately slow -- a time constant of a month
+        /// and a half rather than the ten days the single old rate gave -- so a town settles toward its
+        /// figure over a season rather than snapping to it. Growth is additionally gated on the town
+        /// actually being fed (see <see cref="ProsperityChangeRate"/>): a hungry town does not grow no
+        /// matter how much land stands behind it.
         /// </summary>
-        private const float ConvergenceRate = 0.1f;
+        private const float ProsperityGrowthRate = 0.02f;
+
+        /// <summary>
+        /// The fraction a town's prosperity closes per day while DECLINING toward a countryside that
+        /// can no longer carry it -- but only at full <see cref="DeclineUrgency"/>, i.e. an empty
+        /// granary with its people going hungry. A well-fed town in surplus barely moves down at all
+        /// (see <see cref="DeclineFloor"/>); this is the ceiling that famine builds up to, not the
+        /// speed a comfortable town falls at.
+        ///
+        /// A decline is a settlement shedding mouths it can no longer feed, so its pace is set by how
+        /// badly it is failing to feed them, not by the raw distance to target. That is what keeps a
+        /// prosperous town from being dragged down simply for standing above its countryside figure:
+        /// while the food holds, it stays.
+        /// </summary>
+        private const float ProsperityDeclineRate = 0.08f;
+
+        /// <summary>
+        /// The floor on <see cref="DeclineUrgency"/> -- the share of <see cref="ProsperityDeclineRate"/>
+        /// that still applies to a town with a full granary whose every need is met. Small but not zero:
+        /// a town resting above its countryside figure should drift down almost imperceptibly rather than
+        /// being pinned there forever, so a lasting surplus still slowly gives way once its cause passes.
+        /// At 0.05 a well-fed town over target has a decline time constant of roughly two hundred days --
+        /// effectively frozen against week-to-week pressures, but not permanent.
+        /// </summary>
+        private const float DeclineFloor = 0.05f;
+
+        /// <summary>
+        /// How much an empty food reserve opens the decline throttle. Weighted above
+        /// <see cref="RationDeficitWeight"/> so that running out of food stock -- "no food or too
+        /// little" -- drives a town down faster than merely failing to meet the day's demand does, and
+        /// so that the two together saturate the urgency. This is the dominant term: a town whose
+        /// granary is emptying sheds population hardest.
+        /// </summary>
+        private const float FoodDeficitWeight = 0.7f;
+
+        /// <summary>
+        /// How much unmet daily demand -- the town's population not actually getting fed today, its
+        /// BASE DEMAND going unsatisfied -- opens the decline throttle. Weighted below
+        /// <see cref="FoodDeficitWeight"/> so an unmet ration accelerates the decline but an empty
+        /// reserve accelerates it more.
+        /// </summary>
+        private const float RationDeficitWeight = 0.45f;
+
+        /// <summary>
+        /// The share of <see cref="ProsperityDeclineRate"/> a town actually declines at, in
+        /// <see cref="DeclineFloor"/>..1, set by how well the town is provisioned. Two signals open the
+        /// throttle, both read fresh off the food system:
+        ///
+        /// <list type="bullet">
+        /// <item>The food-stock RESERVE, as a fraction of the granary's cap -- "amount of food stock".
+        /// An empty granary contributes its full <see cref="FoodDeficitWeight"/>.</item>
+        /// <item>The town's RATION satisfaction -- whether its people are actually being fed today,
+        /// "base demand satisfied". A day where nobody was fed contributes its full
+        /// <see cref="RationDeficitWeight"/>. See <see cref="RBMTownFoodSupply.RationSatisfaction"/>.</item>
+        /// </list>
+        ///
+        /// Both satisfied -> the floor, and the town holds its prosperity. Base demand unmet -> the
+        /// throttle opens partway and it declines faster. Food stock gone as well -> the throttle
+        /// saturates and it declines fastest. The two add and clamp to 1, so a town short on both falls
+        /// at the full <see cref="ProsperityDeclineRate"/>.
+        /// </summary>
+        private static float DeclineUrgency(Town town)
+        {
+            float cap = town.FoodStocksUpperLimit();
+            float foodFraction = (cap > 0f) ? MathF.Clamp(town.FoodStocks / cap, 0f, 1f) : 0f;
+            float foodDeficit = 1f - foodFraction;
+            float rationDeficit = 1f - RBMTownFoodSupply.RationSatisfaction(town);
+
+            float urgency = DeclineFloor + foodDeficit * FoodDeficitWeight + rationDeficit * RationDeficitWeight;
+            return MathF.Clamp(urgency, DeclineFloor, 1f);
+        }
 
         /// <summary>
         /// How much each point of a town's <see cref="InfrastructureScore"/> lifts its resting
@@ -377,10 +440,19 @@ namespace RBMCampaign
 
                 float gap = TargetProsperity(fortification.Settlement) - fortification.Prosperity;
 
+                // The pull is slow and asymmetric. Growing toward a countryside that can carry more is
+                // a steady seasonal drift, gated on the town being fed -- a hungry town does not grow.
+                // Falling toward a countryside that can carry less is braked hard while the granary is
+                // full and the people fed, and released as food runs short: an unmet ration speeds the
+                // fall, an empty reserve speeds it more. See DeclineUrgency.
+                float rate = (gap >= 0f)
+                    ? ProsperityGrowthRate * RBMTownFoodSupply.RationSatisfaction(fortification)
+                    : ProsperityDeclineRate * DeclineUrgency(fortification);
+
                 // One combined line: vanilla's ladder cancelled, the hearth pull applied. Folding
                 // them together keeps the town screen to a single readable entry rather than a
                 // correction and a counter-correction.
-                __result.Add(gap * ConvergenceRate - VanillaHousingCosts(fortification), CountrysideText);
+                __result.Add(gap * rate - VanillaHousingCosts(fortification), CountrysideText);
             }
         }
 
