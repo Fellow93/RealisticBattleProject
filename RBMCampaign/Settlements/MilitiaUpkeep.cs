@@ -1,10 +1,17 @@
 using System.Collections.Generic;
+using System.Linq;
+using Helpers;
 using HarmonyLib;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.GameComponents;
+using TaleWorlds.CampaignSystem.Issues;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem.Settlements.Buildings;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
 namespace RBMCampaign
@@ -105,6 +112,43 @@ namespace RBMCampaign
         /// <summary>What fraction of a day's growth a settlement keeps once it is over its soft cap.</summary>
         public const float MilitiaOverCapGrowthFactor = 0.10f;
 
+        // ------------------------------------------------------------------ base growth curve (RBM-owned)
+        //
+        // RBM now authors the whole militia change rather than shaving vanilla's: these are the base-curve
+        // knobs, seeded to vanilla's own values so nothing moves until they are turned. They replace the
+        // Base / Retired / From-Hearths / From-Prosperity lines vanilla used to add; the loyalty, market,
+        // policy, feat, building, perk and issue MODIFIERS are kept as vanilla computes them (see
+        // AddKeptModifiers), so only the growth/decline spine is RBM's to tune, not the flavour on top.
+
+        /// <summary>Flat daily muster a fortification (town or castle) raises before anything else -- vanilla's 2.</summary>
+        public const float BaseMilitiaFortification = 2f;
+
+        /// <summary>Flat daily muster a village raises before anything else -- vanilla's 0.5.</summary>
+        public const float BaseMilitiaVillage = 0.5f;
+
+        /// <summary>
+        /// Share of the standing militia that drifts home each day -- the decline spine. At vanilla's
+        /// 0.025 a settlement sheds one man per day per forty it holds, which is what balances the base
+        /// muster and the hearth/prosperity intake into a steady-state count.
+        /// </summary>
+        public const float MilitiaRetirementRate = 0.025f;
+
+        /// <summary>Militia a day per unit of a village's hearth -- vanilla's Hearth / 400.</summary>
+        public const float MilitiaPerHearth = 1f / 400f;
+
+        /// <summary>Militia a day per unit of a fortification's prosperity -- vanilla's Prosperity / 1000.</summary>
+        public const float MilitiaPerProsperity = 1f / 1000f;
+
+        // Vanilla's own line labels, reused verbatim so RBM's rebuilt breakdown reads exactly as the
+        // player is used to. These are TaleWorlds localization keys resolved by the game, not RBM strings.
+        private static readonly TextObject BaseText = new TextObject("{=militarybase}Base");
+        private static readonly TextObject RetiredText = new TextObject("{=gHnfFi1s}Retired");
+        private static readonly TextObject FromHearthsText = new TextObject("{=ecdZglky}From Hearths");
+        private static readonly TextObject FromProsperityText = new TextObject("{=cTmiNAlI}From Prosperity");
+        private static readonly TextObject LowLoyaltyText = new TextObject("{=SJ2qsRdF}Low Loyalty");
+        private static readonly TextObject MilitiaFromMarketText = new TextObject("{=7ve3bQxg}Weapons From Market");
+        private static readonly TextObject CultureText = GameTexts.FindText("str_culture");
+
         /// <summary>
         /// The share of its soft cap a settlement opens a new campaign holding in militia. A quarter:
         /// enough that a fresh map has watches on its walls and villages that can turn out a few men,
@@ -201,6 +245,46 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// Returns <paramref name="amount"/> to the settlement's militia funding pot, the inverse of arming
+        /// a man from it, routed by how that arming moved the money. Returns what was actually credited.
+        ///
+        ///   * TOWN -- its citizens armed their own watch out of market money that left for outside gear;
+        ///     the refund re-enters that same citizen wealth (the symmetric inverse of the spend).
+        ///
+        ///   * CASTLE -- the kit was sourced from beyond its walls and the coin left its wealth; the refund
+        ///     re-enters that wealth.
+        ///
+        ///   * VILLAGE -- it did not buy from the outside world but from its trade-bound town, paying that
+        ///     town's citizens. So the refund is a STRICT reversal, not a mint: the money is pulled back out
+        ///     of that town's citizen wealth and returned to the village, and the village recovers only what
+        ///     the town can actually give -- no denar is invented.
+        /// </summary>
+        private static int CreditFundingPot(Settlement settlement, int amount)
+        {
+            if (amount <= 0)
+            {
+                return 0;
+            }
+            if (settlement.IsTown)
+            {
+                return SettlementWealth.CreditCitizens(settlement, amount, SettlementWealth.Source.Militia);
+            }
+            if (settlement.IsVillage)
+            {
+                Settlement market = RecruitSupply.GetSupplyMarket(settlement);
+                if (market == null || market == settlement)
+                {
+                    return 0;
+                }
+                int fromTown = SettlementWealth.DebitCitizens(market, amount, SettlementWealth.Source.Militia);
+                return fromTown > 0
+                    ? SettlementWealth.Credit(settlement, fromTown, SettlementWealth.Source.Militia)
+                    : 0;
+            }
+            return SettlementWealth.Credit(settlement, amount, SettlementWealth.Source.Militia);
+        }
+
+        /// <summary>
         /// The town that mends a settlement's militia kit: the town itself, a village's trade-bound town,
         /// or the nearest friendly town to a castle. Where the day's maintenance coin lands, as a field
         /// troop's does at the town it rests by.
@@ -294,70 +378,197 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Holds a settlement's militia to what its manpower supports and what it can pay for.
+        /// Replaces vanilla's militia-change model outright: RBM authors the whole day's number, so the
+        /// settlement's growth, decline and cap are all RBM's, not vanilla's shaved at the edges.
         /// </summary>
         /// <remarks>
-        /// Vanilla grows militia out of prosperity, hearths and loyalty, and nothing anywhere asks
-        /// whether the place can support or afford them -- harmless while militia were free and both
-        /// uncapped, wrong the moment they are neither. Two rules stack here, both pushing the day's
-        /// change down rather than replacing it, so vanilla's own lines stay on the breakdown and the
-        /// player can read what the militia would have been:
+        /// A <c>Prefix</c> that returns <see langword="false"/> and hands back its own
+        /// <see cref="ExplainedNumber"/>, so vanilla's <c>CalculateMilitiaChangeInternal</c> never runs.
+        /// The number is built in three layers:
         ///
-        ///   * A SOFT CAP on manpower. Past a share of the settlement's hearths or prosperity, the day's
-        ///     growth is cut to a tenth -- a ceiling that yields to strong loyalty or a governor's
-        ///     perks rather than one the count cannot pass. Only positive growth is touched; a
-        ///     settlement already shedding is left to shed.
+        ///   * THE BASE CURVE (RBM-owned). The muster/retirement/hearth/prosperity spine, rebuilt from
+        ///     RBM's own constants (<see cref="BaseMilitiaFortification"/>, <see cref="MilitiaRetirementRate"/>,
+        ///     <see cref="MilitiaPerHearth"/>, <see cref="MilitiaPerProsperity"/>) seeded to vanilla's
+        ///     values -- this is the growth/decline RBM now dials.
         ///
-        ///   * AN AFFORDABILITY FLOOR. A settlement that cannot keep twenty days of its militia's
-        ///     maintenance in the funding pot sheds men, whatever its cap says -- and this wins, because
-        ///     a town too poor to arm its watch loses it even below the manpower ceiling. Applied to
-        ///     every settlement, towns included: a market spent dry SHOULD start losing its militia, and
-        ///     an exception would only hide that.
+        ///   * THE KEPT MODIFIERS (vanilla flavour). Loyalty, market weapons, kingdom policies, the
+        ///     Battanian feat, building effects, governor perks and settlement issues, reproduced from the
+        ///     same public API vanilla uses so a governor's perk or a serfdom policy still reads on the
+        ///     breakdown exactly as before (see <see cref="AddKeptModifiers"/>).
+        ///
+        ///   * RBM'S CEILING AND FLOOR. A SOFT CAP -- past a share of hearths or prosperity, positive
+        ///     growth is cut to <see cref="MilitiaOverCapGrowthFactor"/>, a ceiling that yields to strong
+        ///     loyalty or perks rather than one the count cannot pass; only positive growth is touched. And
+        ///     an AFFORDABILITY FLOOR -- a settlement that cannot arm a new man raises none, and one that
+        ///     cannot keep twenty days of its militia's maintenance in the pot sheds men whatever its cap
+        ///     says, because a market spent dry SHOULD start losing its watch.
         /// </remarks>
         [HarmonyPatch(typeof(DefaultSettlementMilitiaModel), "CalculateMilitiaChange")]
-        private static class AffordableMilitiaPatch
+        private static class MilitiaChangePatch
         {
-            private static void Postfix(Settlement settlement, ref ExplainedNumber __result)
+            private static bool Prefix(Settlement settlement, bool includeDescriptions, ref ExplainedNumber __result)
             {
                 if (!RBMConfig.RBMConfig.rbmCampaignEnabled || settlement == null)
                 {
-                    return;
+                    return true;
                 }
-
-                ApplySoftCap(settlement, ref __result);
-
-                // A settlement that cannot arm a new militiaman fields no new ones -- growth is held to
-                // zero, though the men it already has are left standing (the maintenance shed below is
-                // what thins those, when even their upkeep cannot be met).
-                if (__result.ResultNumber > 0f && !CanAffordSpawn(settlement))
-                {
-                    __result.Add(-__result.ResultNumber, CannotArmText);
-                }
-
-                if (!CanKeepMilitia(settlement) && __result.ResultNumber > -MilitiaShedPerDay)
-                {
-                    __result.Add(-MilitiaShedPerDay - __result.ResultNumber, UnaffordableText);
-                }
+                __result = ComputeMilitiaChange(settlement, includeDescriptions);
+                return false;
             }
+        }
 
-            /// <summary>
-            /// Cuts the day's growth to <see cref="MilitiaOverCapGrowthFactor"/> once the settlement is
-            /// at or over its soft cap. Leaves a settlement under its cap, or one already losing men,
-            /// untouched.
-            /// </summary>
-            private static void ApplySoftCap(Settlement settlement, ref ExplainedNumber __result)
+        /// <summary>
+        /// Builds a settlement's whole daily militia change: RBM's base curve, then the kept vanilla
+        /// modifiers, then RBM's soft cap and affordability floor.
+        /// </summary>
+        private static ExplainedNumber ComputeMilitiaChange(Settlement settlement, bool includeDescriptions)
+        {
+            ExplainedNumber result = new ExplainedNumber(0f, includeDescriptions);
+
+            // A raided or otherwise abnormal village musters nothing, as in vanilla.
+            if (settlement.IsVillage && settlement.Village.VillageState != Village.VillageStates.Normal)
             {
-                if (__result.ResultNumber <= 0f)
-                {
-                    return;
-                }
-                float cap = MilitiaCap(settlement);
-                if (cap <= 0f || settlement.Militia < cap)
-                {
-                    return;
-                }
-                __result.Add(-(1f - MilitiaOverCapGrowthFactor) * __result.ResultNumber, OverCapText);
+                return result;
             }
+
+            float militia = settlement.Militia;
+
+            // --- Base curve (RBM-owned): flat muster, retirement drag, manpower intake.
+            if (settlement.IsFortification)
+            {
+                result.Add(BaseMilitiaFortification, BaseText);
+            }
+            else if (settlement.IsVillage)
+            {
+                result.Add(BaseMilitiaVillage, BaseText);
+            }
+
+            result.Add(-militia * MilitiaRetirementRate, RetiredText);
+
+            if (settlement.IsVillage)
+            {
+                result.Add(settlement.Village.Hearth * MilitiaPerHearth, FromHearthsText);
+            }
+            else if (settlement.IsFortification)
+            {
+                float fromProsperity = settlement.Town.Prosperity * MilitiaPerProsperity;
+                result.Add(fromProsperity, FromProsperityText);
+
+                // Rebellious low loyalty boosts the watch, scaled off the prosperity intake, as in vanilla.
+                if (settlement.Town.InRebelliousState)
+                {
+                    SettlementLoyaltyModel loyaltyModel = Campaign.Current.Models.SettlementLoyaltyModel;
+                    float boostPct = MBMath.Map(settlement.Town.Loyalty, 0f,
+                        loyaltyModel.RebelliousStateStartLoyaltyThreshold, loyaltyModel.MilitiaBoostPercentage, 0f);
+                    result.Add(MathF.Abs(fromProsperity * (boostPct * 0.01f)), LowLoyaltyText);
+                }
+            }
+
+            // --- Kept modifiers (vanilla flavour, reproduced from public API).
+            AddKeptModifiers(settlement, ref result);
+
+            // --- RBM ceiling and floor.
+            ApplySoftCap(settlement, ref result);
+
+            // A settlement that cannot arm a new militiaman fields no new ones -- growth is held to zero,
+            // though the men it already has are left standing (the maintenance shed below thins those, when
+            // even their upkeep cannot be met).
+            if (result.ResultNumber > 0f && !CanAffordSpawn(settlement))
+            {
+                result.Add(-result.ResultNumber, CannotArmText);
+            }
+
+            if (!CanKeepMilitia(settlement) && result.ResultNumber > -MilitiaShedPerDay)
+            {
+                result.Add(-MilitiaShedPerDay - result.ResultNumber, UnaffordableText);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Adds the vanilla militia modifiers RBM keeps -- market weapons, kingdom policies, the Battanian
+        /// feat, building effects, governor perks and settlement issues -- from the same public API vanilla
+        /// uses, so they read on the breakdown exactly as before. The base muster/retirement/intake spine is
+        /// NOT here: that is RBM's, added in <see cref="ComputeMilitiaChange"/>.
+        /// </summary>
+        private static void AddKeptModifiers(Settlement settlement, ref ExplainedNumber result)
+        {
+            if (settlement.IsTown)
+            {
+                int soldToMilitia = settlement.Town.SoldItems.Sum(
+                    (Town.SellLog x) => (x.Category.Properties == ItemCategory.Property.BonusToMilitia) ? x.Number : 0);
+                if (soldToMilitia > 0)
+                {
+                    result.Add(0.2f * soldToMilitia, MilitiaFromMarketText);
+                }
+                Kingdom townKingdom = settlement.OwnerClan.Kingdom;
+                if (townKingdom != null)
+                {
+                    if (townKingdom.ActivePolicies.Contains(DefaultPolicies.Serfdom))
+                    {
+                        result.Add(-1f, DefaultPolicies.Serfdom.Name);
+                    }
+                    if (townKingdom.ActivePolicies.Contains(DefaultPolicies.Cantons))
+                    {
+                        result.Add(1f, DefaultPolicies.Cantons.Name);
+                    }
+                }
+                if (settlement.OwnerClan.Culture.HasFeat(DefaultCulturalFeats.BattanianMilitiaFeat))
+                {
+                    result.Add(DefaultCulturalFeats.BattanianMilitiaFeat.EffectBonus, CultureText);
+                }
+            }
+
+            if (settlement.IsCastle || settlement.IsTown)
+            {
+                settlement.Town.AddEffectOfBuildings(BuildingEffectEnum.Militia, ref result);
+                if (settlement.IsCastle && settlement.Town.InRebelliousState)
+                {
+                    settlement.Town.AddEffectOfBuildings(BuildingEffectEnum.MilitiaReduction, ref result);
+                }
+
+                Kingdom kingdom = settlement.OwnerClan.Kingdom;
+                if (kingdom != null && kingdom.ActivePolicies.Contains(DefaultPolicies.Citizenship))
+                {
+                    result.Add(1f, DefaultPolicies.Citizenship.Name);
+                }
+
+                if (settlement.Town.Governor != null)
+                {
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.OneHanded.SwiftStrike, settlement.Town, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Polearm.KeepAtBay, settlement.Town, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Bow.MerryMen, settlement.Town, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Crossbow.LongShots, settlement.Town, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Throwing.SlingingCompetitions, settlement.Town, ref result);
+                    if (settlement.IsUnderSiege)
+                    {
+                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Roguery.ArmsDealer, settlement.Town, ref result);
+                    }
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.SevenVeterans, settlement.Town, ref result);
+                }
+
+                Campaign.Current.Models.IssueModel.GetIssueEffectsOfSettlement(
+                    DefaultIssueEffects.SettlementMilitia, settlement, ref result);
+            }
+        }
+
+        /// <summary>
+        /// Cuts the day's growth to <see cref="MilitiaOverCapGrowthFactor"/> once the settlement is at or
+        /// over its soft cap. Leaves a settlement under its cap, or one already losing men, untouched.
+        /// </summary>
+        private static void ApplySoftCap(Settlement settlement, ref ExplainedNumber result)
+        {
+            if (result.ResultNumber <= 0f)
+            {
+                return;
+            }
+            float cap = MilitiaCap(settlement);
+            if (cap <= 0f || settlement.Militia < cap)
+            {
+                return;
+            }
+            result.Add(-(1f - MilitiaOverCapGrowthFactor) * result.ResultNumber, OverCapText);
         }
 
         /// <summary>
@@ -445,10 +656,21 @@ namespace RBMCampaign
         /// </summary>
         private static readonly Dictionary<Settlement, float> _pendingGrowth = new Dictionary<Settlement, float>();
 
+        /// <summary>
+        /// The mirror of <see cref="_pendingGrowth"/> for men lost to the affordability floor: a settlement
+        /// shedding militia it can no longer pay for banks each shed man here, so his kit's cost can be
+        /// returned to the funding pot later (see <see cref="RefundPendingDecline"/>) -- out of the same
+        /// village suppression window the arming charge is, and in whole men so a coin is refunded only once
+        /// a whole man has actually drifted home. Combat losses never touch this: they happen in battle, not
+        /// in a fief's DailyTick, so they are not measured here at all.
+        /// </summary>
+        private static readonly Dictionary<Settlement, float> _pendingRefund = new Dictionary<Settlement, float>();
+
         /// <summary>Drops the accumulators before a new campaign's settlements take their place.</summary>
         public static void ResetForNewSession()
         {
             _pendingGrowth.Clear();
+            _pendingRefund.Clear();
         }
 
         /// <summary>
@@ -527,26 +749,39 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Banks the day's militia GROWTH the moment it is applied, so it can be armed later out of the
-        /// village suppression window (see <see cref="ChargePendingSpawn"/>). Growth is the only militia
-        /// change that happens inside a fief's DailyTick -- an escort borrowing men (see
-        /// <c>VillagerEscort</c>) moves them on other events, so measuring the DailyTick delta catches
-        /// muster and nothing else.
+        /// Banks the day's militia change the moment it is applied, splitting it by sign. This is the only
+        /// militia change that happens inside a fief's DailyTick -- an escort borrowing men (see
+        /// <c>VillagerEscort</c>) moves them on other events, and combat losses happen in battle, so
+        /// measuring the DailyTick delta catches the model's own muster and shedding and nothing else.
+        ///
+        ///   * GROWTH accrues to <see cref="_pendingGrowth"/>, to be armed and paid for later out of the
+        ///     village suppression window (see <see cref="ChargePendingSpawn"/>).
+        ///
+        ///   * DECLINE accrues to <see cref="_pendingRefund"/> ONLY when the settlement cannot keep its
+        ///     militia (<see cref="CanKeepMilitia"/> is false) -- the affordability floor thinning a watch
+        ///     the pot can no longer pay for. Its kit cost is returned to the funding pot later (see
+        ///     <see cref="RefundPendingDecline"/>). Natural retirement on a settlement that CAN still pay is
+        ///     left alone: those men keep their kit, only a watch shed for want of money hands it back.
         /// </summary>
-        private static void RecordGrowth(Settlement settlement, float preMilitia)
+        private static void RecordMilitiaChange(Settlement settlement, float preMilitia)
         {
             if (!RBMConfig.RBMConfig.rbmCampaignEnabled || settlement == null)
             {
                 return;
             }
             float delta = settlement.Militia - preMilitia;
-            if (delta <= 0f)
+            if (delta > 0f)
             {
-                return;
+                float acc;
+                _pendingGrowth.TryGetValue(settlement, out acc);
+                _pendingGrowth[settlement] = acc + delta;
             }
-            float acc;
-            _pendingGrowth.TryGetValue(settlement, out acc);
-            _pendingGrowth[settlement] = acc + delta;
+            else if (delta < 0f && !CanKeepMilitia(settlement))
+            {
+                float acc;
+                _pendingRefund.TryGetValue(settlement, out acc);
+                _pendingRefund[settlement] = acc - delta; // -delta is the positive count shed
+            }
         }
 
         [HarmonyPatch(typeof(Town), "DailyTick")]
@@ -561,7 +796,7 @@ namespace RBMCampaign
             {
                 if (__instance != null)
                 {
-                    RecordGrowth(__instance.Settlement, __state);
+                    RecordMilitiaChange(__instance.Settlement, __state);
                 }
             }
         }
@@ -578,7 +813,7 @@ namespace RBMCampaign
             {
                 if (__instance != null)
                 {
-                    RecordGrowth(__instance.Settlement, __state);
+                    RecordMilitiaChange(__instance.Settlement, __state);
                 }
             }
         }
@@ -626,6 +861,56 @@ namespace RBMCampaign
             {
                 SpoilsLog.Log("MILITIA", (settlement.Name != null ? settlement.Name.ToString() : settlement.StringId)
                     + " armed " + armed + " new militia at " + SpawnCostPerMan(settlement) + "d each");
+            }
+        }
+
+        /// <summary>
+        /// Returns the kit cost of every whole militiaman a settlement has shed to the affordability floor
+        /// since it last paid, back into its funding pot. Called from the daily settlement pass beside
+        /// <see cref="ChargePendingSpawn"/> -- out here rather than in the DailyTick that shed them, so a
+        /// village purse write is not caught inside <c>VillageGoldStock</c>'s suppression, exactly as the
+        /// arming charge is deferred.
+        /// </summary>
+        /// <remarks>
+        /// The refund per man is <see cref="SpawnCostPerMan"/>, which already carries the village's
+        /// <see cref="MilitiaVillageGearShare"/> fraction, so a village recovers only the fraction of a kit
+        /// it paid to arm one -- the same coin that left its wealth, returning to it. Only whole men are
+        /// refunded; the sub-man remainder waits in the accumulator, the mirror of the arming path. Combat
+        /// losses are never in this accumulator (they are not measured in DailyTick), so a militia butchered
+        /// on the walls hands nothing back -- only a watch quietly disbanded for want of pay does.
+        /// </remarks>
+        public static void RefundPendingDecline(Settlement settlement)
+        {
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled || settlement == null)
+            {
+                return;
+            }
+            float acc;
+            if (!_pendingRefund.TryGetValue(settlement, out acc) || acc < 1f)
+            {
+                return;
+            }
+            int perMan = SpawnCostPerMan(settlement);
+            if (perMan <= 0)
+            {
+                _pendingRefund[settlement] = 0f;
+                return;
+            }
+
+            int refundedMen = 0;
+            while (acc >= 1f)
+            {
+                acc -= 1f;
+                refundedMen++;
+            }
+            _pendingRefund[settlement] = acc;
+
+            int credited = CreditFundingPot(settlement, perMan * refundedMen);
+
+            if (SpoilsLog.IsEnabled && refundedMen > 0)
+            {
+                SpoilsLog.Log("MILITIA", (settlement.Name != null ? settlement.Name.ToString() : settlement.StringId)
+                    + " refunded " + refundedMen + " shed militia (" + credited + "d to funding pot)");
             }
         }
 

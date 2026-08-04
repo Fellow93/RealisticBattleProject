@@ -51,8 +51,11 @@ namespace RBMCampaign
             // on the post-income treasury with the day's other upkeep.
             GarrisonUpkeep.ChargeMaintenance(settlement);
             // Arm the day's new militia, out here rather than in the DailyTick that grew them so a
-            // village purse write is not caught inside VillageGoldStock's suppression window.
+            // village purse write is not caught inside VillageGoldStock's suppression window. The refund
+            // for a watch shed to the affordability floor rides alongside, out of the same window, returning
+            // its recovered kit value to the funding pot.
             MilitiaUpkeep.ChargePendingSpawn(settlement);
+            MilitiaUpkeep.RefundPendingDecline(settlement);
             WealthTax.OnDailyTick(settlement);
             // After the day's charges, so these report against the purse they left behind.
             TradeTariff.FlushDaily(settlement);
