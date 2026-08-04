@@ -21,6 +21,9 @@ namespace RBMCampaign
             CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
             CampaignEvents.MapEventEnded.AddNonSerializedListener(this, SpoilsPool.OnMapEventEnded);
             CampaignEvents.RaidCompletedEvent.AddNonSerializedListener(this, SpoilsPool.OnRaidCompleted);
+            // Snapshots the besieging parties of every besieged fief (so the sack at capture can pay them
+            // all after the camp is gone) and bleeds a besieged castle's treasury a little each day.
+            CampaignEvents.DailyTickSettlementEvent.AddNonSerializedListener(this, SpoilsPool.OnBesiegedFortificationDailyTick);
             CampaignEvents.OnSettlementOwnerChangedEvent.AddNonSerializedListener(this, SpoilsPool.OnSettlementCaptured);
             CampaignEvents.DailyTickPartyEvent.AddNonSerializedListener(this, SpoilsPool.OnDailyTickParty);
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, SpoilsPool.OnMobilePartyDestroyed);

@@ -369,6 +369,25 @@ namespace RBMCampaign
         private static readonly Dictionary<string, int> _shortfall = new Dictionary<string, int>();
         private static int _spentToday;
 
+        // Per-tier demand satisfaction, 0..1, from the town's last basket: the fraction of each tier's
+        // wanted units the market could actually fill. Read by the prosperity equilibrium as the growth
+        // modifier -- a fed town grows toward its countryside figure only as fast as it supplies its
+        // people's base wants, with met medium and luxury demand adding to that. Base defaults to 1 (an
+        // unticked town is not throttled); the luxury tiers default to 0 (a tier with no demand grants no
+        // bonus, rather than a free full one). Garments are deliberately excluded -- nothing produces them,
+        // so counting their permanent shortfall would peg every town's growth low. Food ration is excluded
+        // too: it is the prosperity model's separate hard GATE on growth, not part of this goods modifier.
+        private static readonly Dictionary<Town, float> _baseSatisfaction = new Dictionary<Town, float>();
+        private static readonly Dictionary<Town, float> _mediumSatisfaction = new Dictionary<Town, float>();
+        private static readonly Dictionary<Town, float> _luxurySatisfaction = new Dictionary<Town, float>();
+
+        // The current town's per-tier tally, summed across its basket purchases this tick and folded into
+        // the dicts above by ReportAndClear. Static because one town's buys run start to finish before the
+        // next town's -- the same single-town-at-a-time assumption _shortfall and _spentToday already make.
+        private static int _baseWanted, _baseFilled;
+        private static int _mediumWanted, _mediumFilled;
+        private static int _luxuryWanted, _luxuryFilled;
+
         /// <summary>
         /// Buys the households' ration as a basket rather than cheapest-first, and reports the units it
         /// could not fill by preference.
@@ -418,33 +437,39 @@ namespace RBMCampaign
             }
 
             int spend = 0;
-            BuyTable(town, Staples, prosperity, saleLog, ref spend);
+            // Staples and small luxuries are the base backbone; the medium and large luxury tiers are the
+            // higher demand that lifts growth further. Each tier's wanted-vs-filled is tallied so the
+            // prosperity model can read how well the town supplies it (see the per-tier dicts above).
+            BuyTable(town, Staples, prosperity, saleLog, ref spend, ref _baseWanted, ref _baseFilled);
             int garments = MBRandom.RoundRandomized(prosperity * StapleGarments);
 
             float savings = SavingsInDaysOfIncome(town);
             if (savings >= SmallLuxuryDays)
             {
-                BuyTable(town, SmallLuxuries, prosperity, saleLog, ref spend);
+                BuyTable(town, SmallLuxuries, prosperity, saleLog, ref spend, ref _baseWanted, ref _baseFilled);
             }
             if (savings >= MediumLuxuryDays)
             {
-                BuyTable(town, MediumLuxuries, prosperity, saleLog, ref spend);
+                BuyTable(town, MediumLuxuries, prosperity, saleLog, ref spend, ref _mediumWanted, ref _mediumFilled);
                 garments += MBRandom.RoundRandomized(prosperity * MediumLuxuryGarments);
             }
             if (savings >= LargeLuxuryDays)
             {
-                BuyTable(town, LargeLuxuries, prosperity, saleLog, ref spend);
+                BuyTable(town, LargeLuxuries, prosperity, saleLog, ref spend, ref _luxuryWanted, ref _luxuryFilled);
             }
 
             BuyGarments(town, garments, saleLog, ref spend);
             Levy(town, spend);
         }
 
-        private static void BuyTable(Town town, Line[] table, float prosperity, Dictionary<ItemCategory, int> saleLog, ref int spend)
+        private static void BuyTable(Town town, Line[] table, float prosperity, Dictionary<ItemCategory, int> saleLog, ref int spend, ref int wantedAccum, ref int filledAccum)
         {
             foreach (Line line in table)
             {
-                BuyLine(town, line.ItemId, MBRandom.RoundRandomized(prosperity * line.Rate), saleLog, ref spend);
+                int wanted = MBRandom.RoundRandomized(prosperity * line.Rate);
+                int filled = BuyLine(town, line.ItemId, wanted, saleLog, ref spend);
+                wantedAccum += wanted;
+                filledAccum += filled;
             }
         }
 
@@ -625,6 +650,17 @@ namespace RBMCampaign
         /// </remarks>
         public static void ReportAndClear(Town town)
         {
+            // Fold the day's per-tier tally into the persisted satisfaction figures the prosperity model
+            // reads. Not log-gated -- this is live economy state, not diagnostics. A tier with no demand
+            // (savings below its threshold, or prosperity zero) leaves base at 1 (no throttle) but the
+            // luxury tiers at 0 (no bonus earned).
+            _baseSatisfaction[town] = (_baseWanted > 0) ? MathF.Clamp((float)_baseFilled / _baseWanted, 0f, 1f) : 1f;
+            _mediumSatisfaction[town] = (_mediumWanted > 0) ? MathF.Clamp((float)_mediumFilled / _mediumWanted, 0f, 1f) : 0f;
+            _luxurySatisfaction[town] = (_luxuryWanted > 0) ? MathF.Clamp((float)_luxuryFilled / _luxuryWanted, 0f, 1f) : 0f;
+            _baseWanted = _baseFilled = 0;
+            _mediumWanted = _mediumFilled = 0;
+            _luxuryWanted = _luxuryFilled = 0;
+
             if (EconomyLog.IsEnabled)
             {
                 float savings = SavingsInDaysOfIncome(town);
@@ -649,6 +685,51 @@ namespace RBMCampaign
                     + (missing.Length > 0 ? ("  ·  UNMET: " + missing) : ""));
             }
 
+            _shortfall.Clear();
+            _spentToday = 0;
+        }
+
+        /// <summary>
+        /// Fraction of the town's BASE goods demand -- staples and small luxuries -- the market filled on
+        /// its last tick, 0..1. The backbone of the prosperity growth modifier: a town grows toward its
+        /// countryside figure only as fast as it supplies its people's everyday wants. Defaults to 1 for a
+        /// town not yet ticked, so a fresh or seeded town is not throttled. Food ration is NOT part of this
+        /// -- it is the prosperity model's separate hard gate on growth.
+        /// </summary>
+        public static float BaseDemandSatisfaction(Town town)
+        {
+            return (town != null && _baseSatisfaction.TryGetValue(town, out float satisfaction)) ? satisfaction : 1f;
+        }
+
+        /// <summary>
+        /// Fraction of the town's MEDIUM luxury demand the market filled on its last tick, 0..1, or 0 when
+        /// the town was not wealthy enough to demand the tier at all. A bonus on top of base growth, so a
+        /// town whose citizens can actually buy the middling luxuries they want grows faster.
+        /// </summary>
+        public static float MediumDemandSatisfaction(Town town)
+        {
+            return (town != null && _mediumSatisfaction.TryGetValue(town, out float satisfaction)) ? satisfaction : 0f;
+        }
+
+        /// <summary>
+        /// Fraction of the town's LARGE (top-tier) luxury demand the market filled on its last tick, 0..1,
+        /// or 0 when the town was not wealthy enough to demand the tier. The richest growth bonus, earned
+        /// only by a genuinely prosperous town whose market can supply what the rich buy.
+        /// </summary>
+        public static float LuxuryDemandSatisfaction(Town town)
+        {
+            return (town != null && _luxurySatisfaction.TryGetValue(town, out float satisfaction)) ? satisfaction : 0f;
+        }
+
+        /// <summary>Drops the previous campaign's per-town demand-satisfaction state and tick tallies.</summary>
+        public static void ResetForNewSession()
+        {
+            _baseSatisfaction.Clear();
+            _mediumSatisfaction.Clear();
+            _luxurySatisfaction.Clear();
+            _baseWanted = _baseFilled = 0;
+            _mediumWanted = _mediumFilled = 0;
+            _luxuryWanted = _luxuryFilled = 0;
             _shortfall.Clear();
             _spentToday = 0;
         }

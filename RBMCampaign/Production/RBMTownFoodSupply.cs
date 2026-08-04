@@ -101,6 +101,13 @@ namespace RBMCampaign
         // that decides how hard a town is pulled down toward its countryside figure.
         private static readonly Dictionary<Town, float> _rationSatisfaction = new Dictionary<Town, float>();
 
+        // A town's accumulated hunger, 0..1: how long and how badly it has gone short of food. Ramps up
+        // while the town cannot feed its people and decays once it can again, so a fresh shortage barely
+        // moves prosperity while a sustained famine drives it down hard. Read by the prosperity
+        // equilibrium as the starvation-decline throttle. Defaults to 0 -- a town not yet ticked, freshly
+        // loaded or seeded is not starving.
+        private static readonly Dictionary<Town, float> _hungerPressure = new Dictionary<Town, float>();
+
         // Per-roster-version memo for the food count. get_FoodStocks is read constantly (town UI,
         // tooltips, AI target scoring, siege checks) and the uncached form is a full roster scan.
         private static readonly Dictionary<Town, KeyValuePair<int, int>> _foodCountCache = new Dictionary<Town, KeyValuePair<int, int>>();
@@ -111,6 +118,7 @@ namespace RBMCampaign
             _measuredFoodChange.Clear();
             _unmetRations.Clear();
             _rationSatisfaction.Clear();
+            _hungerPressure.Clear();
             _foodCountCache.Clear();
         }
 
@@ -126,6 +134,49 @@ namespace RBMCampaign
         public static float RationSatisfaction(Town town)
         {
             return (town != null && _rationSatisfaction.TryGetValue(town, out float satisfaction)) ? satisfaction : 1f;
+        }
+
+        // Days of unbroken famine for hunger pressure to ramp from nothing to full -- the point at which a
+        // starving town declines at the full prosperity decline rate. A month: a shortage has to persist,
+        // not merely flicker, to collapse a town.
+        private const float HungerRampDays = 30f;
+
+        // Days of steady feeding for hunger pressure to fall back from full to nothing once food returns.
+        // Faster than it built, so a town that is resupplied stops shedding people within a couple of weeks.
+        private const float HungerRecoveryDays = 10f;
+
+        /// <summary>
+        /// A town's accumulated hunger on its last tick, 0..1 -- how long and how badly it has failed to
+        /// feed its people. 0 for a well-fed town or one not yet ticked; climbs toward 1 the longer a
+        /// famine lasts. The prosperity equilibrium reads it as the throttle on starvation decline, so the
+        /// same fall starts slow and steepens the longer the food stays gone.
+        /// </summary>
+        public static float HungerPressure(Town town)
+        {
+            return (town != null && _hungerPressure.TryGetValue(town, out float pressure)) ? pressure : 0f;
+        }
+
+        /// <summary>
+        /// Advances a town's hunger pressure by one day from how short of food it was today. Called once
+        /// per daily food tick, after the ration satisfaction for the day is known.
+        ///
+        /// Today's hunger is driven by whether the town's people were actually fed -- an unmet ration is
+        /// the trigger -- and amplified when the granary reserve behind them is also empty. A fully fed
+        /// town (ration satisfied) reads zero hunger whatever its reserve, so a merely low granary never
+        /// ramps a town that is still eating. Hunger accumulates toward 1 over <see cref="HungerRampDays"/>
+        /// of total famine and decays over <see cref="HungerRecoveryDays"/> once the town eats again.
+        /// </summary>
+        private static void AdvanceHungerPressure(Town town)
+        {
+            float cap = town.FoodStocksUpperLimit();
+            float foodFraction = (cap > 0f) ? MathF.Clamp(town.FoodStocks / cap, 0f, 1f) : 0f;
+            float rationShort = 1f - RationSatisfaction(town);
+            float reserveShort = 1f - foodFraction;
+            float hungerToday = MathF.Clamp(rationShort * (1f + reserveShort), 0f, 1f);
+
+            _hungerPressure.TryGetValue(town, out float pressure);
+            pressure += (hungerToday > 0f) ? hungerToday / HungerRampDays : -1f / HungerRecoveryDays;
+            _hungerPressure[town] = MathF.Clamp(pressure, 0f, 1f);
         }
 
         /// <summary>
@@ -374,6 +425,9 @@ namespace RBMCampaign
                 int unmet = FeedPopulation(town, saleLog, out wanted);
                 _unmetRations[town] = unmet;
                 _rationSatisfaction[town] = (wanted > 0) ? MathF.Clamp(1f - (float)unmet / wanted, 0f, 1f) : 1f;
+                // Roll the day's food shortfall into the town's accumulated hunger, now that this tick's
+                // ration satisfaction is known. Drives the prosperity model's slow-start starvation decline.
+                AdvanceHungerPressure(town);
 
                 // Unmet rations are subtracted rather than merely observed. A town whose market is
                 // empty buys nothing, so its roster does not move and the raw delta is 0 -- identical

@@ -360,6 +360,32 @@ namespace RBMCampaign
             /// of its own purse. See <see cref="RecruitSupply.DrawKitFromMarket"/>.
             /// </summary>
             public const string VillageArms = "village-arms";
+
+            /// <summary>
+            /// A village purse stripped by a raid. The whole draw leaves the settlement; part is carried
+            /// off as the raiders' spoils and the rest is burned, spoiled or hidden and gone from the
+            /// economy. The drawn coin never re-enters a settlement purse -- the spoils leg lands in the
+            /// raiding stacks' own purses, not another fief -- so this is a pure outflow on the ledger.
+            /// See <see cref="SpoilsPool.OnRaidCompleted"/>.
+            /// </summary>
+            public const string Raid = "raid";
+
+            /// <summary>
+            /// A besieged fief bled day by day while the siege holds: the besiegers strip its hinterland
+            /// and it spends down its reserves behind the wall. Drawn from a castle's treasury or a town's
+            /// market (citizen) wealth -- the same pot each is sacked from at capture, a town's treasury
+            /// being spared to pass to the new owner. Part of each day's draw is carried off as the
+            /// besiegers' spoils, the rest destroyed. A pure outflow, like <see cref="Raid"/>. See
+            /// <see cref="SpoilsPool.OnBesiegedFortificationDailyTick"/>.
+            /// </summary>
+            public const string Siege = "siege";
+
+            /// <summary>
+            /// A castle's remaining treasury when it falls by storm. What is not retained for the new
+            /// owner is removed here -- half carried off as the besiegers' spoils, half destroyed. A pure
+            /// outflow, like <see cref="Raid"/>. See <see cref="SpoilsPool.OnSettlementCaptured"/>.
+            /// </summary>
+            public const string Sack = "sack";
         }
 
         // Depth of a funnel write in progress. The ChangeGold guard uses it to tell OUR write to the

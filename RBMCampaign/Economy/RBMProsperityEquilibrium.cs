@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using HarmonyLib;
+using Helpers;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Buildings;
@@ -185,50 +187,20 @@ namespace RBMCampaign
         private const float DeclineFloor = 0.05f;
 
         /// <summary>
-        /// How much an empty food reserve opens the decline throttle. Weighted above
-        /// <see cref="RationDeficitWeight"/> so that running out of food stock -- "no food or too
-        /// little" -- drives a town down faster than merely failing to meet the day's demand does, and
-        /// so that the two together saturate the urgency. This is the dominant term: a town whose
-        /// granary is emptying sheds population hardest.
+        /// The extra growth a town earns for fully meeting its citizens' MEDIUM luxury demand, as a
+        /// fraction added on top of base-demand-driven growth. A town whose middling luxuries are actually
+        /// on the shelf grows a quarter faster than one supplying only the necessities.
+        /// See <see cref="CitizenDemand.MediumDemandSatisfaction"/>.
         /// </summary>
-        private const float FoodDeficitWeight = 0.7f;
+        private const float MediumDemandGrowthBonus = 0.25f;
 
         /// <summary>
-        /// How much unmet daily demand -- the town's population not actually getting fed today, its
-        /// BASE DEMAND going unsatisfied -- opens the decline throttle. Weighted below
-        /// <see cref="FoodDeficitWeight"/> so an unmet ration accelerates the decline but an empty
-        /// reserve accelerates it more.
+        /// The extra growth a town earns for fully meeting its citizens' LARGE (top-tier) luxury demand,
+        /// added on top of base and medium growth. The richest bonus, so a genuinely prosperous town whose
+        /// market can supply what the rich buy pulls toward its ceiling half again as fast.
+        /// See <see cref="CitizenDemand.LuxuryDemandSatisfaction"/>.
         /// </summary>
-        private const float RationDeficitWeight = 0.45f;
-
-        /// <summary>
-        /// The share of <see cref="ProsperityDeclineRate"/> a town actually declines at, in
-        /// <see cref="DeclineFloor"/>..1, set by how well the town is provisioned. Two signals open the
-        /// throttle, both read fresh off the food system:
-        ///
-        /// <list type="bullet">
-        /// <item>The food-stock RESERVE, as a fraction of the granary's cap -- "amount of food stock".
-        /// An empty granary contributes its full <see cref="FoodDeficitWeight"/>.</item>
-        /// <item>The town's RATION satisfaction -- whether its people are actually being fed today,
-        /// "base demand satisfied". A day where nobody was fed contributes its full
-        /// <see cref="RationDeficitWeight"/>. See <see cref="RBMTownFoodSupply.RationSatisfaction"/>.</item>
-        /// </list>
-        ///
-        /// Both satisfied -> the floor, and the town holds its prosperity. Base demand unmet -> the
-        /// throttle opens partway and it declines faster. Food stock gone as well -> the throttle
-        /// saturates and it declines fastest. The two add and clamp to 1, so a town short on both falls
-        /// at the full <see cref="ProsperityDeclineRate"/>.
-        /// </summary>
-        private static float DeclineUrgency(Town town)
-        {
-            float cap = town.FoodStocksUpperLimit();
-            float foodFraction = (cap > 0f) ? MathF.Clamp(town.FoodStocks / cap, 0f, 1f) : 0f;
-            float foodDeficit = 1f - foodFraction;
-            float rationDeficit = 1f - RBMTownFoodSupply.RationSatisfaction(town);
-
-            float urgency = DeclineFloor + foodDeficit * FoodDeficitWeight + rationDeficit * RationDeficitWeight;
-            return MathF.Clamp(urgency, DeclineFloor, 1f);
-        }
+        private const float LuxuryDemandGrowthBonus = 0.5f;
 
         /// <summary>
         /// How much each point of a town's <see cref="InfrastructureScore"/> lifts its resting
@@ -428,7 +400,12 @@ namespace RBMCampaign
                     float castleTarget = CastleTargetProsperity(fortification.Settlement);
                     if (castleTarget > 0f)
                     {
-                        __result.Add((castleTarget - fortification.Prosperity) * CastleConvergenceRate, CountrysideText);
+                        // Ride the hearth equilibrium, and cancel vanilla's food-shortage and surplus-food
+                        // pulls (a castle has no market, so no goods term to cancel) so it mostly drifts to
+                        // its figure rather than swinging on its garrison's larder. Perks, policies, loyalty
+                        // and building effects are left in place.
+                        float drift = (castleTarget - fortification.Prosperity) * CastleConvergenceRate;
+                        __result.Add(drift - VanillaFoodAndMarketProsperity(fortification), CountrysideText);
                     }
                     return;
                 }
@@ -440,19 +417,37 @@ namespace RBMCampaign
 
                 float gap = TargetProsperity(fortification.Settlement) - fortification.Prosperity;
 
-                // The pull is slow and asymmetric. Growing toward a countryside that can carry more is
-                // a steady seasonal drift, gated on the town being fed -- a hungry town does not grow.
-                // Falling toward a countryside that can carry less is braked hard while the granary is
-                // full and the people fed, and released as food runs short: an unmet ration speeds the
-                // fall, an empty reserve speeds it more. See DeclineUrgency.
-                float rate = (gap >= 0f)
-                    ? ProsperityGrowthRate * RBMTownFoodSupply.RationSatisfaction(fortification)
-                    : ProsperityDeclineRate * DeclineUrgency(fortification);
+                float change;
+                if (gap >= 0f)
+                {
+                    // Below what the countryside can carry: grow toward it -- but food is a hard gate
+                    // (a hungry town does not grow at all), and the pace is then set by how well the
+                    // town supplies its people's wants. Base demand is the backbone; met medium and
+                    // luxury demand add to it, so a town whose citizens can actually buy what they want
+                    // climbs faster than one that only just feeds itself.
+                    float foodGate = RBMTownFoodSupply.RationSatisfaction(fortification);
+                    float demandModifier = CitizenDemand.BaseDemandSatisfaction(fortification)
+                        * (1f + MediumDemandGrowthBonus * CitizenDemand.MediumDemandSatisfaction(fortification)
+                              + LuxuryDemandGrowthBonus * CitizenDemand.LuxuryDemandSatisfaction(fortification));
+                    change = gap * ProsperityGrowthRate * foodGate * demandModifier;
+                }
+                else
+                {
+                    // Above what the countryside can carry: give way gently even while fed, so a surplus
+                    // does not stand forever once its cause has passed.
+                    change = gap * ProsperityDeclineRate * DeclineFloor;
+                }
 
-                // One combined line: vanilla's ladder cancelled, the hearth pull applied. Folding
-                // them together keeps the town screen to a single readable entry rather than a
-                // correction and a counter-correction.
-                __result.Add(gap * rate - VanillaHousingCosts(fortification), CountrysideText);
+                // Starvation drags prosperity down on top of the drift, and unlike the countryside pull it
+                // fires even below target -- a town that cannot feed itself sheds people wherever it sits.
+                // The fall starts slow and steepens with the town's accumulated hunger, so a passing
+                // shortage barely registers while a lasting famine collapses it. See HungerPressure.
+                change -= ProsperityDeclineRate * RBMTownFoodSupply.HungerPressure(fortification) * fortification.Prosperity;
+
+                // One combined line: vanilla's food/market/housing pulls cancelled, RBM's food-and-demand
+                // drift applied. Folding them together keeps the town screen to a single readable entry
+                // rather than a correction and a counter-correction.
+                __result.Add(change - VanillaHousingCosts(fortification) - VanillaFoodAndMarketProsperity(fortification), CountrysideText);
             }
         }
 
@@ -486,6 +481,65 @@ namespace RBMCampaign
             if (prosperity > 9000f) return -2f;
             if (prosperity > 6000f) return -1f;
             return 0f;
+        }
+
+        /// <summary>
+        /// Reproduces the vanilla prosperity terms RBM's own model OWNS -- the starvation food-shortage
+        /// penalty, the surplus-food bonus and the goods-from-market bonus -- so they can be subtracted
+        /// back out and RBM's drift is the sole authority on food- and trade-driven fief prosperity. A
+        /// literal transcription of the vanilla lines (same getters, same perk call, same order) rather
+        /// than a formula, for the same reason <see cref="VanillaHousingCosts"/> is: a game update that
+        /// retunes them then shows up as a mismatch easy to diff against the decompiled source.
+        ///
+        /// Applies to both towns and castles: vanilla gives food-shortage and surplus-food to either, so
+        /// this cancels them for either. Goods-from-market is vanilla's town-only term (a castle has no
+        /// market and never receives it), so the cancellation adds it only for a town.
+        ///
+        /// Same small imprecision as the housing cancellation: vanilla folds these into the running total
+        /// BEFORE the multiplicative Apprenticeship perk factor, so subtracting them afterwards does not
+        /// unwind their tiny contribution to that factor. Negligible, and accepted for housing already.
+        /// </summary>
+        private static float VanillaFoodAndMarketProsperity(Town fortification)
+        {
+            float total = 0f;
+            float foodChange = fortification.FoodChange;
+
+            // Food shortage: vanilla docks half the negative food change when the OWNING CLAN is starving,
+            // town or castle alike, softened by the Helping Hands perk. Reproduce the perk-modified figure.
+            if (fortification.Owner != null && fortification.Owner.IsStarving)
+            {
+                ExplainedNumber bonuses = new ExplainedNumber((foodChange < 0f) ? ((int)foodChange) : 0);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Medicine.HelpingHands, fortification, ref bonuses);
+                total += bonuses.ResultNumber * 0.5f;
+            }
+
+            // Surplus food: vanilla pays 0.1 per unit of food projected over the granary cap, town or castle.
+            int cap = fortification.FoodStocksUpperLimit();
+            int surplus = (int)(fortification.FoodStocks + foodChange) - cap;
+            if (surplus > 0)
+            {
+                total += surplus * 0.1f;
+            }
+
+            // Goods from market: vanilla pays 0.1 per prosperity-good sold -- but only for a TOWN. A castle
+            // has no market and vanilla never gives it this term, so neither does the cancellation.
+            if (fortification.IsTown)
+            {
+                int prosperityGoods = 0;
+                foreach (Town.SellLog log in fortification.SoldItems)
+                {
+                    if (log.Category != null && log.Category.Properties == ItemCategory.Property.BonusToProsperity)
+                    {
+                        prosperityGoods += log.Number;
+                    }
+                }
+                if (prosperityGoods > 0)
+                {
+                    total += prosperityGoods * 0.1f;
+                }
+            }
+
+            return total;
         }
 
         private static readonly TextObject CountrysideText = new TextObject("{=RBM_PROSPERITY_HEARTH}Countryside support");

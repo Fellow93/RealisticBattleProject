@@ -77,6 +77,9 @@ namespace RBMCampaign
             _mountedEquipmentValueCache.Clear();
             _battleEquipmentCache.Clear();
             _nobleLineByCulture.Clear();
+            // The besieger snapshots the siege drain keeps are transient and settlement-keyed; a finished
+            // campaign's entries would otherwise hold its settlements alive into the next.
+            _siegeBesiegers.Clear();
         }
 
         public static void SyncData(IDataStore dataStore)

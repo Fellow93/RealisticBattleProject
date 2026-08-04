@@ -62,6 +62,7 @@ namespace RBMCampaign
             // Same reasoning, smaller stakes: the town food caches are keyed by Town and would
             // otherwise hold a departed campaign's settlements for the life of the process.
             RBMTownFoodSupply.ResetForNewSession();
+            CitizenDemand.ResetForNewSession();
             TownFoodReserve.ResetForNewSession();
             HiddenMarketStock.ResetForNewSession();
             RBMProsperityEquilibrium.ResetForNewSession();
