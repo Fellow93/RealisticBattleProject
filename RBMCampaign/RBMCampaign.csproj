@@ -278,12 +278,14 @@
     <Compile Include="Diagnostics\SpoilsLog.cs" />
     <Compile Include="Diagnostics\EconomyLog.cs" />
     <Compile Include="Diagnostics\CaravanLog.cs" />
+    <Compile Include="Diagnostics\GarrisonRefillLog.cs" />
     <Compile Include="Diagnostics\LogRetention.cs" />
     <Compile Include="Caravans\RBMCaravanRegister.cs" />
     <Compile Include="Caravans\RBMCaravanDispatch.cs" />
     <Compile Include="Caravans\RBMCaravanArrival.cs" />
     <Compile Include="Caravans\RBMCaravanInvestment.cs" />
     <Compile Include="Caravans\RBMCaravanBehavior.cs" />
+    <Compile Include="AI\RBMGarrisonRefillBehavior.cs" />
     <Compile Include="AI\RBMLordSpawnSettlementBehavior.cs" />
     <Compile Include="Spoils\SpoilsPool.cs" />
     <Compile Include="Spoils\SpoilsPool.Equipment.cs" />
