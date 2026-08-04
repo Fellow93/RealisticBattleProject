@@ -284,6 +284,7 @@
     <Compile Include="Caravans\RBMCaravanArrival.cs" />
     <Compile Include="Caravans\RBMCaravanInvestment.cs" />
     <Compile Include="Caravans\RBMCaravanBehavior.cs" />
+    <Compile Include="AI\RBMLordSpawnSettlementBehavior.cs" />
     <Compile Include="Spoils\SpoilsPool.cs" />
     <Compile Include="Spoils\SpoilsPool.Equipment.cs" />
     <Compile Include="Spoils\SpoilsPool.UpgradeMath.cs" />
