@@ -58,9 +58,23 @@ namespace RBMCampaign
         /// <summary>Days of town income in savings before households buy anything beyond necessities.</summary>
         public const float SmallLuxuryDays = 5f;
         /// <summary>Days of town income in savings before households buy clothes, trinkets and soft furnishings.</summary>
-        public const float MediumLuxuryDays = 15f;
+        /// <remarks>
+        /// At 15 days this tier was near-vestigial: measured over a 23-day campaign only 3 of 57 towns
+        /// ever reached it, because 15 days of savings needs gold of roughly 2.5x a town's vanilla
+        /// wealth target and the economy's mean drift is mildly NEGATIVE -- most towns sit below target,
+        /// not 2.5x above it. Lowered to 9 (~1.5x target) so a strong-but-not-booming town reaches it,
+        /// giving jewelry, felt and furs an actual buyer rather than a threshold nothing crosses. The
+        /// small tier's 0.83x-target anchor is untouched, so the baseline "a solvent town buys a few
+        /// small luxuries" reading still holds.
+        /// </remarks>
+        public const float MediumLuxuryDays = 9f;
         /// <summary>Days of town income in savings before households buy what only the rich buy.</summary>
-        public const float LargeLuxuryDays = 30f;
+        /// <remarks>
+        /// Lowered from 30 (~5x target, one town in 57) to 18 (~3x target) in step with the medium tier
+        /// above, keeping the same 2:1 spacing between them so velvet and the doubled jewelry/tusk rates
+        /// remain the preserve of genuinely rich hubs without being a threshold that never fires.
+        /// </remarks>
+        public const float LargeLuxuryDays = 18f;
 
         /// <summary>
         /// What the day's ration is made of, as shares summing to 1. Grain is half of it and beer
