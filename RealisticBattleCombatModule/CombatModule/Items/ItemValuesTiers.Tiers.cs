@@ -194,11 +194,11 @@ namespace RBMCombat
                 switch (weaponComponent.Item?.ItemType ?? ItemObject.ItemTypeEnum.Invalid)
                 {
                     default:
-                        RangedTier = (DrawWeight - 60f) * 0.049f;
+                        RangedTier = (DrawWeight - 50f) * 0.049f;
                         break;
 
                     case ItemObject.ItemTypeEnum.Crossbow:
-                        RangedTier = (DrawWeight - 250f) * 0.021f;
+                        RangedTier = (DrawWeight - 110f) * 0.031f;
                         break;
                 }
                 //num = RangedTier;

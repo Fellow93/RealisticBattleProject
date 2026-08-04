@@ -113,8 +113,9 @@ namespace RBMCampaign
             new Line("charcoal", 0.6f),
             new Line("salt", 0.24f),
             new Line("whale_oil", 0.05f),
-            new Line("pottery", 0.005f),
-            new Line("planks", 0.003f),
+            new Line("pottery", 0.008f),
+            new Line("planks", 0.005f),
+            new Line("tools", 0.0027f),
         };
 
         /// <summary>Garments bought per Prosperity per day as a necessity -- replacing what wears out.</summary>
@@ -127,20 +128,23 @@ namespace RBMCampaign
             new Line("wine", 0.01f),
             new Line("oil", 0.01f),
             new Line("olives", 0.01f),
-            new Line("pottery", 0.002f),
+            new Line("pottery", 0.004f),
+            new Line("tools", 0.0007f),
         };
 
         /// <summary>The second: dressing well, and a little display.</summary>
         private static readonly Line[] MediumLuxuries =
         {
-            new Line("jewelry", 0.0033f),
+            new Line("jewelry", 0.0043f),
             new Line("felt", 0.002f),
             new Line("fur", 0.0015f),
-            new Line("walrus_tusk", 0.001f),
+            new Line("walrus_tusk", 0.003f),
             new Line("date_fruit", 0.01f),
             new Line("oil", 0.01f),
             new Line("wine", 0.01f),
-            new Line("pottery", 0.003f),
+            new Line("pottery", 0.006f),
+            new Line("planks", 0.004f),
+            new Line("tools", 0.0007f),
         };
 
         /// <summary>Garments bought per Prosperity per day on top of the staple replacement, once comfortable.</summary>
@@ -161,9 +165,12 @@ namespace RBMCampaign
         /// </remarks>
         private static readonly Line[] LargeLuxuries =
         {
-            new Line("jewelry", 0.0033f),
-            new Line("walrus_tusk", 0.001f),
+            new Line("jewelry", 0.0066f),
+            new Line("walrus_tusk", 0.003f),
             new Line("velvet", 0.001f),
+            new Line("planks", 0.008f),
+            new Line("pottery", 0.008f),
+            new Line("fur", 0.0015f),
         };
 
         /// <summary>A demanded good and how much of it a household wants, per day.</summary>

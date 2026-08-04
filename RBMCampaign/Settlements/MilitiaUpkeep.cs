@@ -51,7 +51,7 @@ namespace RBMCampaign
         /// </summary>
         public const float MilitiaWageFactorTown = 0.25f;
         public const float MilitiaWageFactorCastle = 0.10f;
-        public const float MilitiaWageFactorVillage = 0.10f;
+        public const float MilitiaWageFactorVillage = 0.0f;
 
         /// <summary>
         /// Share of a field troop's kit-value maintenance a militiaman actually costs to keep, by
@@ -138,7 +138,7 @@ namespace RBMCampaign
         /// spawn reserve (~89k) out of every village purse's reach, so no village ever fielded a growing
         /// militia at all.
         /// </summary>
-        public const float MilitiaVillageGearShare = 0.25f;
+        public const float MilitiaVillageGearShare = 0.1f;
 
         private static readonly TextObject UnaffordableText = new TextObject("{=RBM_militia_unpaid}Cannot be paid");
         private static readonly TextObject OverCapText = new TextObject("{=RBM_militia_overcap}Over muster");
