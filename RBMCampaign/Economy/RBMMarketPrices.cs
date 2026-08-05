@@ -382,6 +382,35 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// Days of supply the town would have AFTER taking one more unit -- the clearing price of the
+        /// MARGINAL unit a party is selling in. Used only on the sell (bid) side; a negative return marks
+        /// a good RBM does not model.
+        /// </summary>
+        /// <remarks>
+        /// The price a seller is PAID must be the price of the stock the sale creates, not of the void it
+        /// fills. A good the town gets through by the trickle -- a high-value luxury like velvet, whose
+        /// 26,500 base value meets barely a unit a fortnight of demand -- is famine-priced at zero stock
+        /// and abundant at one. Paying the zero-stock 8x ceiling for the very unit that ends the shortage
+        /// let it be sold in high and bought straight back low, an unbounded round trip. Pricing against
+        /// the post-sale stock closes it: a thin good clears at its floor once the town holds a single
+        /// unit, while a real bulk shortage still pays near the ceiling -- 200 grain is under a day for a
+        /// town eating 500, so relief still rewards whoever hauls it in.
+        ///
+        /// Folds in the uncommitted trade-session movement exactly as <see cref="DaysOfSupply"/> does, so
+        /// each successive unit of a multi-unit sale is priced against the supply the units before it
+        /// added, and the +1 is always the unit currently being quoted.
+        /// </remarks>
+        internal static float DaysOfSupplyMarginalSellIn(Town town, ItemObject item)
+        {
+            if (town == null || item == null || !town.IsTown)
+            {
+                return -1f;
+            }
+            int delta = HiddenMarketStock.SessionDelta(town.Owner.ItemRoster, item);
+            return DaysCore(town, item, delta + 1);
+        }
+
+        /// <summary>
         /// How many days the town's stock of a whole category would last, and the tier ceiling that goes
         /// with it, or a negative number for a category RBM does not model. This is the category-level
         /// reading the AI price signal is built on -- see <see cref="SupplySignalPatch"/>.
@@ -705,7 +734,26 @@ namespace RBMCampaign
                 // an internal valuation -- GetItemsToProduce values a workshop's output isSelling:true -- and
                 // keeps the flat wholesale figure it was tuned against; see WholesaleFactor.
                 bool wholesale = isSelling && (tradingParty == null || tradingParty.IsVillager);
-                float factor = wholesale ? WholesaleFactor : ScarcityFactor(days, MarkupCap(item));
+                float factor;
+                if (wholesale)
+                {
+                    factor = WholesaleFactor;
+                }
+                else if (isSelling)
+                {
+                    // A caravan, a lord, or the player selling in is paid the MARGINAL clearing price --
+                    // the days the town has once it has taken this unit -- not the pre-sale spot price of
+                    // a stock the sale itself relieves. Without this, one velvet sold into a bare shelf
+                    // pays the 8x famine ceiling (~200k on a 26,500 base), yet the town reads abundant the
+                    // instant it holds that unit and sells it straight back at 1x: an unbounded
+                    // sell-in-high/buy-back-low loop on any thin-demand luxury. A real bulk shortage is
+                    // untouched -- see DaysOfSupplyMarginalSellIn.
+                    factor = ScarcityFactor(DaysOfSupplyMarginalSellIn(____town, item), MarkupCap(item));
+                }
+                else
+                {
+                    factor = ScarcityFactor(days, MarkupCap(item));
+                }
 
                 // The one thing kept from vanilla: the party's own trade spread -- their Trade skill and
                 // the goods' trade perks. Passing a null merchant is what strips everything else, because
