@@ -301,11 +301,11 @@ namespace RBMCampaign
                 SpoilsPool.ClearSpoilsIfStackGone(party, option.Target);
                 if (option.Count > 0)
                 {
-                    ApplyEffects(party, option, spoilsSpend);
+                    ApplyEffects(party, option);
                 }
             }
 
-            private static void ApplyEffects(PartyBase party, UpgradeOption option, int spoilsSpend)
+            private static void ApplyEffects(PartyBase party, UpgradeOption option)
             {
                 Hero payer = (party.Owner != null && party.Owner.IsAlive) ? party.Owner : party.LeaderHero;
                 // What was actually billed to a hero, which is nothing at all for a party that has none.
@@ -343,21 +343,21 @@ namespace RBMCampaign
                     }
                 }
 
-                // What the promotion cost goes over to the town that armed the men -- both halves of it:
-                // the gold destroyed by the null-recipient call above, and the spoils drawn from the
-                // men's own purse in UpgradeTroop. With the SupplyTown gate on, value-appropriate kit
-                // leaves that town's market too; with it off the money still lands, which is why the
+                // The GOLD leg of the promotion goes over to the town that armed the gold-buyers -- the gold
+                // destroyed by the null-recipient call above. The spoils leg drawn from the men's own purse
+                // in UpgradeTroop is deliberately NOT handed over: men the stockpile covered re-armed from
+                // their own loot, so their promotion takes nothing off the town's shelves and adds nothing
+                // to its citizens' wealth. With the SupplyTown gate on, value-appropriate kit leaves the
+                // town's market for the gold-buyers only; with it off the gold still lands, which is why the
                 // town is resolved here rather than taken from the gate's own _supplyTown alone.
                 //
-                // OUTSIDE the payer check, deliberately. UpgradeTroop draws the men's spoils whether or not
-                // the party has a hero to bill, so a looter band or an ownerless garrison stack paid for its
-                // promotion out of its own purse and, while this sat inside the branch above, had that
-                // payment destroyed. A party with no payer simply hands over the spoils leg alone.
+                // Still OUTSIDE the payer check: a party with no hero to bill has goldCharged == 0 and so
+                // hands over nothing, but the call keeps the item draw and logging paths uniform.
                 if (UpgradeSupply.PaymentEnabled)
                 {
                     Town market = (_supplyTown != null) ? _supplyTown : UpgradeSupply.ResolveMarketTown(party.MobileParty);
                     UpgradeSupply.SupplyUpgradeFromTown(market, party, option.Target, option.UpgradeTarget,
-                        option.Count, goldCharged + spoilsSpend);
+                        option.Count, goldCharged);
                 }
             }
         }

@@ -192,9 +192,15 @@ namespace RBMCampaign
 
         /// <summary>
         /// Buys the new kit for an upgrade off the supply town: value-appropriate stock leaves the
-        /// market, and what the promotion cost -- <paramref name="goldPaid"/>, the men's own spoils and
-        /// their lord's gold together -- goes over to the townspeople who armed them. Soft on stock: it
-        /// takes what the market has and never holds an upgrade up for want of it.
+        /// market, and what the promotion cost their lord in GOLD -- <paramref name="goldPaid"/> -- goes
+        /// over to the townspeople who armed them. Soft on stock: it takes what the market has and never
+        /// holds an upgrade up for want of it.
+        ///
+        /// Only the men bought with gold are supplied here. Men the stockpile covered armed themselves
+        /// from their own spoils -- the loot and pay already in their purse -- so their promotion takes
+        /// nothing off the town's shelves and puts nothing into its citizens' pockets: a spoils upgrade is
+        /// the men re-arming from what they already carry, not a trade over the counter. The draw is scaled
+        /// to the gold-buyer count for that reason.
         ///
         /// The stock pulled matches the slots the promotion actually improves: a mounted upgrade takes a
         /// horse, a barding upgrade takes horse armour, a body upgrade takes body armour, a new sidearm
@@ -202,9 +208,10 @@ namespace RBMCampaign
         /// slot reads as improved does it fall back to pulling one generic in-band item per man.
         /// </summary>
         /// <param name="goldPaid">
-        /// What the promotion actually cost the party -- spoils drawn from the men's purses plus the gold
-        /// billed to their lord. Both were charged by the caller before this runs, and both were destroyed
-        /// where they were charged, so handing the whole sum over here neither mints nor burns.
+        /// What the promotion cost the party's lord in GOLD alone -- the spoils drawn from the men's own
+        /// purses are deliberately NOT included, so no part of a spoils-covered upgrade reaches the town.
+        /// The gold was billed by the caller before this runs and destroyed where it was charged, so
+        /// handing it over here neither mints nor burns.
         /// </param>
         /// <remarks>
         /// NOTHING IS CHARGED HERE, as on the recruit side -- see <see cref="RecruitSupply"/>, which this
@@ -242,6 +249,14 @@ namespace RBMCampaign
             // anything the promotion still cost is paid over all the same.
             int perManValue = SpoilsPool.GetSpoilsCostForUpgrade(buyer, character, upgradeTarget);
 
+            // How many of the batch were bought with gold rather than covered by spoils -- only they are
+            // supplied off the town. goldPaid is the gold leg alone (perManValue per man at full price), so
+            // its ratio to perManValue recovers the gold-buyer count; capped at the batch and floored at
+            // zero. A wholly spoils-covered upgrade (goldPaid == 0) buys nothing here and pays nothing over.
+            int goldBuyers = (perManValue > 0)
+                ? MathF.Max(0, MathF.Min(count, MathF.Round((float)goldPaid / perManValue)))
+                : count;
+
             ItemRoster market = (town != null) ? town.Settlement.ItemRoster : null;
             int bought = 0;
             int wanted = 0;
@@ -249,17 +264,17 @@ namespace RBMCampaign
             // The DRAW is the gated half: switch the supply-town feature off and a promotion takes nothing
             // off anyone's shelves, as it did before the feature existed. The payment below runs either
             // way -- see PaymentEnabled for why the two are not one switch.
-            if (market != null && perManValue > 0 && IsEnabled)
+            if (market != null && perManValue > 0 && goldBuyers > 0 && IsEnabled)
             {
                 List<SpoilsPool.SlotPurchase> slots = SpoilsPool.GetUpgradedSlots(character, upgradeTarget);
                 if (slots.Count > 0)
                 {
                     // Buy the actual gear the promotion adds: for each slot it improves, pull one item of
-                    // that class and tier per upgraded man -- best effort against what the market holds.
-                    wanted = slots.Count * count;
+                    // that class and tier per gold-buyer man -- best effort against what the market holds.
+                    wanted = slots.Count * goldBuyers;
                     foreach (SpoilsPool.SlotPurchase slot in slots)
                     {
-                        for (int man = 0; man < count; man++)
+                        for (int man = 0; man < goldBuyers; man++)
                         {
                             // The right class and tier first, then any war gear at that value: a town short
                             // of the exact piece still arms the man from what it has. See FindKitOrAnyWarGear.
@@ -279,9 +294,9 @@ namespace RBMCampaign
                 else
                 {
                     // No slot read as improved (the troops' first sets differ from the averaged price):
-                    // fall back to pulling one generic in-band item per man, as this did before slot-aware.
-                    wanted = count;
-                    for (int man = 0; man < count; man++)
+                    // fall back to pulling one generic in-band item per gold-buyer man, as before.
+                    wanted = goldBuyers;
+                    for (int man = 0; man < goldBuyers; man++)
                     {
                         int index = FindKitInStock(market, perManValue);
                         if (index < 0)
@@ -297,10 +312,11 @@ namespace RBMCampaign
                 }
             }
 
-            // The whole cost of the promotion, into the town's market purse. Independent of what the draw
-            // above managed to find, exactly as the recruit price is: a picked-clean market still armed
-            // the men as best it could and the party still paid for the promotion. The market fee rides
-            // along inside RegisterPurchase.
+            // The gold leg of the promotion, into the town's market purse -- the spoils leg never reaches
+            // it, so a wholly spoils-covered upgrade (goldPaid == 0) pays nothing here. Independent of what
+            // the draw above managed to find, exactly as the recruit price is: a picked-clean market still
+            // armed the gold-buyers as best it could and the party still paid for them. The market fee
+            // rides along inside RegisterPurchase.
             if (goldPaid > 0 && payee != null)
             {
                 TroopMarketFeedback.RegisterPurchase(payee.Settlement, null, goldPaid, SettlementWealth.Source.Upgrade);
@@ -326,9 +342,9 @@ namespace RBMCampaign
                     ? town.Settlement.Name.ToString()
                     : (payee != null ? payee.Settlement.Name + " (fence)" : "nowhere — cost burnt");
                 SpoilsLog.Log("UPGRADE", buyer, SpoilsLog.Describe(buyer) + " supplied " + bought + "/" + wanted
-                    + " item(s) worth " + drawnValue + "d for " + count + "x " + SpoilsLog.Describe(upgradeTarget)
-                    + " kit from " + marketName + " (~" + perManValue + " each man)"
-                    + "; paid " + goldPaid + "d"
+                    + " item(s) worth " + drawnValue + "d for " + goldBuyers + "/" + count + "x "
+                    + SpoilsLog.Describe(upgradeTarget) + " kit (gold-buyers) from " + marketName
+                    + " (~" + perManValue + " each man); paid " + goldPaid + "d"
                     + (untaxed > 0 && town != null ? " (fee also charged on " + untaxed + "d of kit beyond the coin)" : "")
                     + (bought < wanted ? " — market short " + (wanted - bought) : ""));
             }

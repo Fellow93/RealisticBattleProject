@@ -184,15 +184,17 @@ namespace RBMCampaign
             }
             ClearSpoilsIfStackGone(party, character);
 
-            // Hands the town that armed the men what the promotion cost -- the gold the screen took from
-            // the player (staged at the time it was charged, since it cannot be recomputed once the
-            // stockpile has moved) and the spoils drawn from the men's purse above. With the SupplyTown
-            // gate on, value-appropriate kit leaves that town's market too; with it off only the money
-            // moves. ResolveMarketTown covers both cases.
+            // Hands the town that armed the gold-buyers the GOLD leg of the promotion -- what the screen took
+            // from the player (staged at the time it was charged, since it cannot be recomputed once the
+            // stockpile has moved). The spoils drawn from the men's purse above are deliberately NOT handed
+            // over: men the stockpile covered re-armed from their own loot, so their promotion takes nothing
+            // off the town's shelves and adds nothing to its citizens' wealth. With the SupplyTown gate on,
+            // value-appropriate kit leaves that town's market for the gold-buyers only; with it off only the
+            // gold moves. ResolveMarketTown covers both cases.
             if (UpgradeSupply.PaymentEnabled)
             {
                 UpgradeSupply.SupplyUpgradeFromTown(UpgradeSupply.ResolveMarketTown(MobileParty.MainParty),
-                    party, character, upgradeTarget, count, goldPaid + spend);
+                    party, character, upgradeTarget, count, goldPaid);
             }
         }
     }
