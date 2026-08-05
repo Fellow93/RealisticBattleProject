@@ -324,6 +324,19 @@ namespace RBMCampaign
                 return -1f;
             }
 
+            // What the player has already sold into (or bought out of) the town this trade visit. The
+            // trade screen mutates a shadow roster, not the real one (see HiddenMarketStock), so without
+            // this the price a shopper is quoted would not move however much they dump until they closed
+            // the screen -- a bare shelf and a flooded one would read the same mid-sale. Folding the
+            // uncommitted delta into the stock makes each successive unit priced against the supply the
+            // last one just shifted, matching vanilla's within-sale slide. Zero outside a trade session,
+            // and the clock is paused while one is open, so no tick-driven caller ever sees it.
+            int delta = HiddenMarketStock.SessionDelta(town.Owner.ItemRoster, item);
+            if (delta != 0)
+            {
+                return DaysCore(town, item, delta);
+            }
+
             ItemRoster roster = town.Owner.ItemRoster;
             string key = town.Settlement.StringId + "#" + item.StringId;
             int version = roster.VersionNo;
@@ -334,26 +347,38 @@ namespace RBMCampaign
                 return cached.Value;
             }
 
+            float days = DaysCore(town, item, 0);
+            _daysCache[key] = new KeyValuePair<int, float>(version, days);
+            return days;
+        }
+
+        /// <summary>
+        /// Days of stock the town's own people would get through, computed from an effective unit count of
+        /// the real stock plus <paramref name="stockDelta"/> (uncommitted trade-screen movement). A
+        /// negative return marks a good whose consumption RBM does not model.
+        /// </summary>
+        private static float DaysCore(Town town, ItemObject item, int stockDelta)
+        {
             // A workshop input is measured across its whole category, because that is how a recipe
             // consumes it -- see WorkshopDemand. Where the households buy the same good the two
             // appetites are already added together, so this supersedes the per-item reading rather
             // than competing with it.
             ItemCategory category = item.GetItemCategory();
             float industrial = WorkshopDemand.DailyUnits(town, category);
-
-            float days;
             if (industrial > 0f)
             {
-                days = WorkshopDemand.UnitsInStore(town, category) / industrial;
-            }
-            else
-            {
-                float daily = CitizenDemand.DailyUnits(town, item.StringId);
-                days = (daily > 0f) ? (roster.GetItemNumber(item) / daily) : -1f;
+                float units = WorkshopDemand.UnitsInStore(town, category) + stockDelta;
+                return ((units > 0f) ? units : 0f) / industrial;
             }
 
-            _daysCache[key] = new KeyValuePair<int, float>(version, days);
-            return days;
+            float daily = CitizenDemand.DailyUnits(town, item.StringId);
+            if (daily > 0f)
+            {
+                float units = town.Owner.ItemRoster.GetItemNumber(item) + stockDelta;
+                return ((units > 0f) ? units : 0f) / daily;
+            }
+
+            return -1f;
         }
 
         /// <summary>

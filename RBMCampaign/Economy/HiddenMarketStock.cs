@@ -54,6 +54,37 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// Net units of <paramref name="item"/> the player has moved so far in the open trade session
+        /// against <paramref name="realRoster"/>, or 0 when no session is open against it. Positive means
+        /// sold in, negative means bought out.
+        /// </summary>
+        /// <remarks>
+        /// The player trades against a shadow (see the class summary), so the real market roster does not
+        /// change until <see cref="InventoryLogic.DoneLogic"/>. Yet the price a shopper is quoted must
+        /// reflect what they have already sold or bought THIS visit -- flooding a town's shelves has to
+        /// make the next unit cheaper before the sale is confirmed, not only on the next visit. This
+        /// returns exactly that uncommitted change, so <see cref="RBMMarketPrices.DaysOfSupply"/> can add
+        /// it to the frozen real stock and price against the live effective supply. The campaign clock is
+        /// paused while the screen is open, so no tick-driven caller ever sees this transient delta.
+        /// </remarks>
+        public static int SessionDelta(ItemRoster realRoster, ItemObject item)
+        {
+            if (realRoster == null || item == null || _pending.Count == 0)
+            {
+                return 0;
+            }
+
+            foreach (KeyValuePair<ItemRoster, Pending> entry in _pending)
+            {
+                if (ReferenceEquals(entry.Value.RealRoster, realRoster))
+                {
+                    return entry.Key.GetItemNumber(item) - entry.Value.OpeningShadow.GetItemNumber(item);
+                }
+            }
+            return 0;
+        }
+
+        /// <summary>
         /// Intercepts the settlement trade screen and swaps the real market roster for a visible-share
         /// shadow. Only the genuine town/village market is touched -- the guard on the roster identity
         /// leaves the tutorial's substitute shopping roster (and any other caller passing a roster that
