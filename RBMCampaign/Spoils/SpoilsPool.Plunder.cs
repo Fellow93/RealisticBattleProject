@@ -144,10 +144,13 @@ namespace RBMCampaign
                 long divisor = (totalContribution > 0L) ? totalContribution : attackers.Parties.Count;
                 int share = MathF.Round(pot * ((float)weight / divisor));
                 int granted = GrantSpoilsWeightedByTier(raider.Party, share, "RAID");
-                int leaderCut = ApplyLeaderCut(raider.Party, granted);
-                if (raider.Party == PartyBase.MainParty && granted > 0)
+                int leaderCut = (granted > 0) ? ApplyLeaderCut(raider.Party, granted) : ApplyLeaderCutSolo(raider.Party, share);
+                if (raider.Party == PartyBase.MainParty)
                 {
-                    AnnounceRaidSpoilsToPlayer(settlement, granted);
+                    if (granted > 0)
+                    {
+                        AnnounceRaidSpoilsToPlayer(settlement, granted);
+                    }
                     AnnounceLeaderCutToPlayer(leaderCut);
                 }
             }
@@ -384,10 +387,13 @@ namespace RBMCampaign
                 long divisor = (totalMen > 0L) ? totalMen : parties.Count;
                 int share = MathF.Round(pot * ((float)weight / divisor));
                 int granted = GrantSpoilsWeightedByTier(p.Party, share, logCategory);
-                int leaderCut = ApplyLeaderCut(p.Party, granted);
-                if (announceSack && p.Party == PartyBase.MainParty && granted > 0)
+                int leaderCut = (granted > 0) ? ApplyLeaderCut(p.Party, granted) : ApplyLeaderCutSolo(p.Party, share);
+                if (announceSack && p.Party == PartyBase.MainParty)
                 {
-                    AnnounceSackSpoilsToPlayer(settlement, granted);
+                    if (granted > 0)
+                    {
+                        AnnounceSackSpoilsToPlayer(settlement, granted);
+                    }
                     AnnounceLeaderCutToPlayer(leaderCut);
                 }
             }

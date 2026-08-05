@@ -293,6 +293,7 @@
     <Compile Include="Spoils\SpoilsPool.BattleLoot.cs" />
     <Compile Include="Spoils\SpoilsPool.Casualties.cs" />
     <Compile Include="Spoils\RansomMenuTooltip.cs" />
+    <Compile Include="Spoils\RansomScreenSpoilsLabel.cs" />
     <Compile Include="Spoils\SpoilsPool.PrisonerStrip.cs" />
     <Compile Include="Spoils\SpoilsPool.Ransom.cs" />
     <Compile Include="Spoils\SpoilsPool.Plunder.cs" />

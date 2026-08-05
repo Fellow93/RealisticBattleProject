@@ -116,6 +116,77 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// True when a party has at least one non-hero stack that can hold spoils. A party of only heroes --
+        /// a lone wandering commander at its extreme -- has none, so an ordinary gather grants it nothing and
+        /// the conserving <see cref="ApplyLeaderCut"/> has no purse to draw a cut from; that is the case
+        /// <see cref="ApplyLeaderCutSolo"/> covers.
+        /// </summary>
+        private static bool HasSpoilsBearingStacks(PartyBase party)
+        {
+            TroopRoster roster = party?.MemberRoster;
+            if (roster == null)
+            {
+                return false;
+            }
+            for (int i = 0; i < roster.Count; i++)
+            {
+                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+                if (!element.Character.IsHero && element.Number > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// The commander's cut for a party with no men to share the rest. When a gather found
+        /// <paramref name="pot"/> worth of spoils but the party holds no non-hero stack to take the soldiers'
+        /// share -- a lone hero, or a band of nothing but heroes -- its leader still strips the field himself
+        /// and keeps his usual cut as gold, figured off the whole pot and minted to him the way an ordinary
+        /// cut's gold is. The men's remainder has no one to fall to and is lost, as spoils always are without
+        /// men to carry them. Does nothing once the party holds even one soldier: that party runs the
+        /// conserving <see cref="ApplyLeaderCut"/> instead, drawing its leader's cut back out of the spoils it
+        /// was just granted rather than minting a fresh one.
+        /// </summary>
+        /// <returns>The gold the leader pocketed, for the gather's own announcement to note.</returns>
+        public static int ApplyLeaderCutSolo(PartyBase party, int pot)
+        {
+            if (party == null || pot <= 0 || HasSpoilsBearingStacks(party))
+            {
+                return 0;
+            }
+            Hero payee = GetPartyPayee(party);
+            if (payee == null || !payee.IsAlive)
+            {
+                return 0;
+            }
+            float fraction = GetLeaderCutFraction(party);
+            if (fraction <= 0f)
+            {
+                return 0;
+            }
+            int cut = MathF.Round(pot * fraction);
+            if (cut <= 0)
+            {
+                return 0;
+            }
+            int clanTier = (payee.Clan != null) ? payee.Clan.Tier : 0;
+            // Nothing was minted into the (absent) stacks to draw the cut back out of, so mint it straight to
+            // the leader -- the same null-giver mint ApplyLeaderCut ends on, just without the purse round-trip.
+            GiveGoldAction.ApplyBetweenCharacters(null, payee, cut, true);
+            if (SpoilsLog.IsEnabled)
+            {
+                SpoilsLog.Log("LEADER", party, SpoilsLog.Describe(party) + " leader " + payee.Name
+                    + " took a " + cut + " gold solo cut (" + fraction.ToString("0.00") + " = base x (clan tier "
+                    + clanTier + " + 1)"
+                    + (MercenaryContractPay.IsMercenaryClan(payee.Clan) ? " x " + MercenaryLeaderCutMultiplier.ToString("0.0") + " mercenary" : "")
+                    + ") of " + pot + " stripped, no men to share the rest");
+            }
+            return cut;
+        }
+
+        /// <summary>
         /// Draws <paramref name="amount"/> of spoils out of a party's stacks, spread across them in
         /// proportion to what each already holds, and clamped so no stack is taken below empty. A second
         /// pass mops up any rounding shortfall from whatever purse is left. Returns how much came out --

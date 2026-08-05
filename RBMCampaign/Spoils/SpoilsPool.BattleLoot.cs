@@ -207,6 +207,15 @@ namespace RBMCampaign
                 }
             }
 
+            // The whole field's salvaged worth, so a party with no men to hold any of it can still figure its
+            // leader's solo cut off the fraction of the field it earned (GrantToParty grants such a party
+            // nothing, its stacks being where spoils land).
+            long fieldWorth = 0L;
+            for (int tier = 0; tier < spoilsByTier.Length; tier++)
+            {
+                fieldWorth += spoilsByTier[tier];
+            }
+
             foreach (MapEventParty victor in winner.Parties)
             {
                 // Simulated battles can leave every contribution at zero; fall back to an even split
@@ -217,7 +226,9 @@ namespace RBMCampaign
                 SpoilsLog.Log("LOOT", victor.Party, SpoilsLog.Describe(victor.Party) + ": contribution " + victor.ContributionToBattle
                     + "/" + totalContribution + ", share " + share.ToString("0.000"));
                 int granted = GrantToParty(victor.Party, spoilsByTier, piecesByTier, share);
-                int leaderCut = ApplyLeaderCut(victor.Party, granted);
+                int leaderCut = (granted > 0)
+                    ? ApplyLeaderCut(victor.Party, granted)
+                    : ApplyLeaderCutSolo(victor.Party, (int)MathF.Min(fieldWorth * share, (float)int.MaxValue));
                 if (victor.Party == PartyBase.MainParty)
                 {
                     AnnounceSpoilsToPlayer(granted, leaderCut);
@@ -235,11 +246,16 @@ namespace RBMCampaign
         /// </remarks>
         private static void AnnounceSpoilsToPlayer(int granted, int leaderCut)
         {
-            TextObject message = new TextObject((granted > 0)
-                ? "{=RBM_SPOILS_009}Your men strip the fallen and recover {AMOUNT} in spoils."
-                : "{=RBM_SPOILS_010}Your men find nothing on the fallen they can use.");
-            message.SetTextVariable("AMOUNT", granted);
-            InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+            // Skip the "found nothing" line when a lone leader still took a solo cut off the field -- the cut
+            // line alone tells that story, and "your men found nothing" reads false when there were no men.
+            if (granted > 0 || leaderCut <= 0)
+            {
+                TextObject message = new TextObject((granted > 0)
+                    ? "{=RBM_SPOILS_009}Your men strip the fallen and recover {AMOUNT} in spoils."
+                    : "{=RBM_SPOILS_010}Your men find nothing on the fallen they can use.");
+                message.SetTextVariable("AMOUNT", granted);
+                InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+            }
             AnnounceLeaderCutToPlayer(leaderCut);
         }
 

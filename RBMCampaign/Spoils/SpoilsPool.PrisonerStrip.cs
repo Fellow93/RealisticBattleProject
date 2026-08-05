@@ -81,7 +81,7 @@ namespace RBMCampaign
                 SpoilsLog.Log("STRIP", party, "left " + men + " prisoners on the field; their kit worth " + gross
                     + " stripped for " + stripped + " (half), " + granted + " split to the stacks by tier weight");
             }
-            int leaderCut = ApplyLeaderCut(party, granted);
+            int leaderCut = (granted > 0) ? ApplyLeaderCut(party, granted) : ApplyLeaderCutSolo(party, stripped);
             AnnounceStrippedPrisonersToPlayer(granted, leaderCut, men);
             return granted;
         }
@@ -92,14 +92,18 @@ namespace RBMCampaign
         /// </summary>
         private static void AnnounceStrippedPrisonersToPlayer(int granted, int leaderCut, int men)
         {
-            if (granted <= 0 || men <= 0)
+            if (men <= 0)
             {
                 return;
             }
-            TextObject message = new TextObject("{=RBM_SPOILS_024}Your men strip the {COUNT} prisoners you left behind and recover {AMOUNT} in spoils.");
-            message.SetTextVariable("COUNT", men);
-            message.SetTextVariable("AMOUNT", granted);
-            InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+            if (granted > 0)
+            {
+                TextObject message = new TextObject("{=RBM_SPOILS_024}Your men strip the {COUNT} prisoners you left behind and recover {AMOUNT} in spoils.");
+                message.SetTextVariable("COUNT", men);
+                message.SetTextVariable("AMOUNT", granted);
+                InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+            }
+            // Even with no men to share the kit, a lone captor still keeps his commander's cut -- announce it.
             AnnounceLeaderCutToPlayer(leaderCut);
         }
     }

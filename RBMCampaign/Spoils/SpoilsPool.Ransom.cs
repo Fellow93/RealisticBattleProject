@@ -56,7 +56,7 @@ namespace RBMCampaign
                     + " ransomed prisoners; their kit worth " + pot + " split to the stacks by tier weight ("
                     + granted + ")");
             }
-            int leaderCut = ApplyLeaderCut(sellerParty, granted);
+            int leaderCut = (granted > 0) ? ApplyLeaderCut(sellerParty, granted) : ApplyLeaderCutSolo(sellerParty, pot);
             if (sellerParty == PartyBase.MainParty)
             {
                 AnnounceRansomSpoilsToPlayer(granted, leaderCut);
@@ -99,13 +99,13 @@ namespace RBMCampaign
         /// </summary>
         private static void AnnounceRansomSpoilsToPlayer(int granted, int leaderCut)
         {
-            if (granted <= 0)
+            if (granted > 0)
             {
-                return;
+                TextObject message = new TextObject("{=RBM_SPOILS_025}Your men strip the ransomed prisoners' kit and split {AMOUNT} in spoils.");
+                message.SetTextVariable("AMOUNT", granted);
+                InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
             }
-            TextObject message = new TextObject("{=RBM_SPOILS_025}Your men strip the ransomed prisoners' kit and split {AMOUNT} in spoils.");
-            message.SetTextVariable("AMOUNT", granted);
-            InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+            // Even with no men to share the kit, a lone captor still keeps his commander's cut -- announce it.
             AnnounceLeaderCutToPlayer(leaderCut);
         }
     }
