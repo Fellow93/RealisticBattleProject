@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Extensions;
+using TaleWorlds.CampaignSystem.Naval;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Roster;
@@ -324,6 +326,14 @@ namespace RBMCampaign
                 return false;
             }
 
+            // Don't put a caravan on a route it can never finish: if there is no road between the two towns
+            // (an island town, say) and no workable sea crossing either, skip this pairing entirely rather
+            // than strand a party. When a land route exists this is a cheap true and we spawn as normal.
+            if (!CanDeliver(src.Settlement, dst.Settlement, culture))
+            {
+                return false;
+            }
+
             // The cargo the caravan is created carrying: every good in the bundle, plus pack animals enough
             // to move the lot. A relief caravan travels empty -- its errand is the injection, not trade.
             ItemRoster cargo = new ItemRoster();
@@ -397,13 +407,81 @@ namespace RBMCampaign
             StockFood(caravan, goods);
 
             RBMCaravanRegister.SetState(caravan.StringId, RBMCaravanRegister.StateEnRoute);
-            caravan.SetMoveGoToSettlement(dst.Settlement, MobileParty.NavigationType.Default, false);
+            RouteBetween(caravan, src.Settlement, dst.Settlement, culture);
 
             CaravanLog.Log("DISPATCH", CaravanLog.Name(src.Settlement),
                 "→ " + CaravanLog.Name(dst.Settlement)
                 + (relief ? "  ·  relief (investment only)" : "  ·  took " + RBMCaravanRegister.DescribeGoods(goods)));
 
             return true;
+        }
+
+        /// <summary>
+        /// Whether a caravan from <paramref name="from"/> could actually reach <paramref name="to"/>. Land
+        /// is the default and the fallback: any road route makes this true. Only when there is no road at
+        /// all does water come into play, and then only if this culture fields ships and the destination
+        /// has a port to land at and a combined land+sea route exists. Without the Naval DLC no culture has
+        /// ship hulls and no town has a port, so this is purely the land test -- the feature stays dormant.
+        /// </summary>
+        private static bool CanDeliver(Settlement from, Settlement to, CultureObject culture)
+        {
+            var dist = Campaign.Current.Models.MapDistanceModel;
+            if (dist.PathExistBetweenPoints(from.GatePosition, to.GatePosition, MobileParty.NavigationType.Default))
+            {
+                return true; // a road exists -- always preferred
+            }
+            return to.HasPort
+                && culture != null && culture.AvailableShipHulls != null && culture.AvailableShipHulls.Count > 0
+                && dist.PathExistBetweenPoints(from.GatePosition, to.PortPosition, MobileParty.NavigationType.All);
+        }
+
+        /// <summary>
+        /// Points a caravan at a settlement, over land when it can and over water when it must. If there is
+        /// a road it moves by road (the land fallback). Otherwise -- an island crossing -- it is given a
+        /// ship (keeping its land access, so it is a hybrid that still walks the land legs) and moved with
+        /// <see cref="MobileParty.NavigationType.All"/>, targeting the port. If it cannot be made naval it
+        /// falls back to a plain land order; <see cref="CanDeliver"/> is expected to have already screened
+        /// out the truly unreachable pairings at dispatch.
+        /// </summary>
+        internal static void RouteBetween(MobileParty caravan, Settlement from, Settlement to, CultureObject culture)
+        {
+            var dist = Campaign.Current.Models.MapDistanceModel;
+            bool landRoute = dist.PathExistBetweenPoints(from.GatePosition, to.GatePosition, MobileParty.NavigationType.Default);
+            if (!landRoute && to.HasPort && EnsureNaval(caravan, culture)
+                && dist.PathExistBetweenPoints(from.GatePosition, to.PortPosition, MobileParty.NavigationType.All))
+            {
+                caravan.SetMoveGoToSettlement(to, MobileParty.NavigationType.All, true);
+                CaravanLog.Log("SEA", CaravanLog.Name(to), "by ship from " + CaravanLog.Name(from));
+                return;
+            }
+            caravan.SetMoveGoToSettlement(to, MobileParty.NavigationType.Default, false);
+        }
+
+        /// <summary>
+        /// Ensures a caravan can cross water: if it has no ship yet it is given one from the culture's hulls
+        /// and its land access is (re)confirmed, so it becomes a hybrid that sails the crossings and walks
+        /// the rest. Returns whether the party ended up naval-capable. The ship is transferred for free --
+        /// no gold moves -- and dies with the caravan when it dissolves.
+        /// </summary>
+        private static bool EnsureNaval(MobileParty caravan, CultureObject culture)
+        {
+            if (caravan == null)
+            {
+                return false;
+            }
+            if (caravan.HasNavalNavigationCapability)
+            {
+                return true; // already carries a ship (e.g. granted on the outbound leg)
+            }
+            ShipHull hull = (culture != null && culture.AvailableShipHulls != null && culture.AvailableShipHulls.Count > 0)
+                ? culture.AvailableShipHulls[0] : null;
+            if (hull == null)
+            {
+                return false;
+            }
+            ChangeShipOwnerAction.ApplyByTransferring(caravan.Party, new Ship(hull));
+            caravan.SetLandNavigationAccess(true); // keep the land fallback -- a hybrid, not a water-only party
+            return caravan.HasNavalNavigationCapability;
         }
 
         /// <summary>Units a town can spare of a good while keeping <see cref="KeepDays"/> for itself.</summary>

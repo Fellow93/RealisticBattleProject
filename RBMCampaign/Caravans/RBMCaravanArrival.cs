@@ -97,7 +97,10 @@ namespace RBMCampaign
             Settlement source = RBMCaravanRegister.FindSettlement(order.SourceId);
             if (source != null)
             {
-                caravan.SetMoveGoToSettlement(source, MobileParty.NavigationType.Default, false);
+                // Home the same way it came: over land where there is a road, and by ship (keeping the
+                // land legs) where the crossing needs one. A caravan that sailed out already carries its
+                // ship, so the return simply reuses it.
+                RBMCaravanDispatch.RouteBetween(caravan, dst, source, source.Culture);
             }
             else
             {
