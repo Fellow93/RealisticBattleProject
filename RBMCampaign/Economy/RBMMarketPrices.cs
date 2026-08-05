@@ -108,6 +108,31 @@ namespace RBMCampaign
         public const float FloorDays = 0.1f;
 
         /// <summary>
+        /// Floor on the daily consumption the days-of-supply price divides by -- a MINIMUM turnover the
+        /// pricing model assumes for any good a town consumes at all, so a single unit can never satisfy
+        /// a market.
+        ///
+        /// Days of supply is an honest measure only where the daily draw is a real number of units. For a
+        /// good a town gets through by the trickle -- a high-value luxury like velvet, whose citizen
+        /// appetite in a modest or impoverished town can fall to a few hundredths of a unit a day -- one
+        /// unit reads as YEARS of stock, and the price collapses from the famine ceiling to the floor the
+        /// instant the shelf holds a single item. That let a party sell one velvet into a bare town at the
+        /// 8x ceiling (~200k on a 26,500 base) and buy the very same unit straight back at 1x, an unbounded
+        /// loop: the town still wanted velvet exactly as much, but the metric had declared it sated.
+        ///
+        /// Flooring the divisor closes it at the root without any price memory. At 2 units a day a good
+        /// prices as bare (its tier ceiling) until the town holds more than one unit and does not reach the
+        /// floor until it holds a genuine stock (<see cref="AbundantDays"/> x 2 = 30 units), so selling in
+        /// still pays the shortage while buying back costs the same shortage price -- the round trip only
+        /// ever loses the trade spread. It bites only where the metric was already lying: a good with
+        /// real turnover (every staple, and any luxury in a town prosperous enough to want it in quantity)
+        /// draws far more than two units a day and is untouched. Consumption itself is NOT floored -- only
+        /// the price divisor -- so <see cref="TownStorage"/> and <see cref="CitizenDemand"/> still count the
+        /// true trickle; this is a statement about what a price may read, not about what a town eats.
+        /// </summary>
+        public const float MinPricingDaily = 2f;
+
+        /// <summary>
         /// Days of stock at which a good reaches its tier ceiling -- the near-empty point every curve is
         /// anchored to. The scarcity exponent is DERIVED from this and the good's cap
         /// (<c>ln(cap) / ln(AbundantDays / CeilingDays)</c>) so that, whatever the cap, the curve reads
@@ -368,14 +393,14 @@ namespace RBMCampaign
             if (industrial > 0f)
             {
                 float units = WorkshopDemand.UnitsInStore(town, category) + stockDelta;
-                return ((units > 0f) ? units : 0f) / industrial;
+                return ((units > 0f) ? units : 0f) / MathF.Max(industrial, MinPricingDaily);
             }
 
             float daily = CitizenDemand.DailyUnits(town, item.StringId);
             if (daily > 0f)
             {
                 float units = town.Owner.ItemRoster.GetItemNumber(item) + stockDelta;
-                return ((units > 0f) ? units : 0f) / daily;
+                return ((units > 0f) ? units : 0f) / MathF.Max(daily, MinPricingDaily);
             }
 
             return -1f;
@@ -418,7 +443,7 @@ namespace RBMCampaign
             if (industrial > 0f)
             {
                 cap = MarkupCap(category.StringId);
-                days = WorkshopDemand.UnitsInStore(town, category) / industrial;
+                days = WorkshopDemand.UnitsInStore(town, category) / MathF.Max(industrial, MinPricingDaily);
             }
             else
             {
@@ -429,7 +454,7 @@ namespace RBMCampaign
                     if (daily > 0f)
                     {
                         cap = MarkupCap(item);
-                        days = roster.GetItemNumber(item) / daily;
+                        days = roster.GetItemNumber(item) / MathF.Max(daily, MinPricingDaily);
                     }
                     else
                     {
