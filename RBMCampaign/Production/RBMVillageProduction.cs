@@ -123,6 +123,73 @@ namespace RBMCampaign
                 { "whaler", new (string, float)[] { ("whale_oil", 0.29f) } },           // Naval DLC
             };
 
+        // Culture "flavour": a light trickle of a signature good produced by EVERY village of a
+        // given culture, on top of its base+speciality set, at roughly a tenth of the corresponding
+        // specialist village's rate. Keyed by the village's OWN culture (Settlement.Culture, a fixed
+        // XML field that never tracks the current owner), so a captured Battanian village keeps making
+        // its charcoal no matter who holds it. Items that don't resolve (e.g. walrus_tusk without the
+        // Naval DLC) are skipped, exactly like the speciality table.
+        //
+        // The Empire is a single culture but three regions with distinct signatures, so its key is
+        // refined to empire_north/south/west by FlavourKey(); every other culture keys straight off
+        // its StringId. Cultures with no entry here (bandits, minor factions) simply get no flavour.
+        private static readonly Dictionary<string, (string id, float rate)[]> FlavourByCulture =
+            new Dictionary<string, (string, float)[]>
+            {
+                { "aserai",       new (string, float)[] { ("date_fruit", 0.0547f) } },
+                { "empire_south", new (string, float)[] { ("olives", 0.0089f) } },
+                { "empire_west",  new (string, float)[] { ("olives", 0.00445f), ("grape", 0.0019f) } },
+                { "empire_north", new (string, float)[] { ("fur", 0.0055f) } },
+                { "battania",     new (string, float)[] { ("charcoal", 1.027f*0.15f), ("planks", 1.027f*0.05f) } },
+                { "vlandia",      new (string, float)[] { ("grape", 0.0038f) } },
+                { "khuzait",      ScaleRates(HorseRanch("khuzait_horse"), 0.1f) },
+                { "sturgia",      new (string, float)[] { ("fur", 0.0055f) } },
+                { "nord",         new (string, float)[] { ("walrus_tusk", 0.0008f) } }, // Naval DLC culture
+            };
+
+        private static (string, float)[] ScaleRates((string id, float rate)[] rates, float factor)
+        {
+            var scaled = new (string, float)[rates.Length];
+            for (int i = 0; i < rates.Length; i++)
+            {
+                scaled[i] = (rates[i].id, rates[i].rate * factor);
+            }
+            return scaled;
+        }
+
+        /// <summary>
+        /// The <see cref="FlavourByCulture"/> key for a village, or null for no flavour. Reads the
+        /// village's fixed <see cref="CultureObject.StringId"/> (never the owner's). Empire is one
+        /// culture spanning three regions, so it is split by the village's bound fortification
+        /// StringId -- <c>town_E?*</c>/<c>castle_E?*</c>, where the letter after <c>_E</c> is
+        /// N/S/W. That binding is set in the settlement data and does not change with conquest, so
+        /// the region is as stable as the culture is. Unknown empire fortifications get no flavour
+        /// (better than a wrong one).
+        /// </summary>
+        private static string FlavourKey(Village village)
+        {
+            string culture = village?.Settlement?.Culture?.StringId;
+            if (string.IsNullOrEmpty(culture))
+            {
+                return null;
+            }
+
+            if (culture != "empire")
+            {
+                return culture;
+            }
+
+            string bound = village.Bound?.StringId;
+            if (bound == null)
+            {
+                return null;
+            }
+            if (bound.Contains("_EN")) return "empire_north";
+            if (bound.Contains("_ES")) return "empire_south";
+            if (bound.Contains("_EW")) return "empire_west";
+            return null;
+        }
+
         // Village types whose "primary production" icon should be pinned to a specific good rather
         // than the automatic rate*Value pick. Desert ranches are chiefly known for their camels even
         // though horses out-weight them on rate*Value, so they show a camel on the map. Keyed by
@@ -144,6 +211,10 @@ namespace RBMCampaign
         // Same per-campaign lifetime as _cache -- dropped together when the campaign changes.
         private static readonly Dictionary<VillageType, ItemObject> _primaryCache =
             new Dictionary<VillageType, ItemObject>();
+        // Per-village-flavour resolved tables (base+spec+flavour), keyed by
+        // "villageTypeStringId|flavourKey". Same per-campaign lifetime as _cache.
+        private static readonly Dictionary<string, Dictionary<ItemObject, float>> _flavourCache =
+            new Dictionary<string, Dictionary<ItemObject, float>>();
         private static Campaign _cachedCampaign;
 
         /// <summary>
@@ -157,6 +228,7 @@ namespace RBMCampaign
             {
                 _cache.Clear();
                 _primaryCache.Clear();
+                _flavourCache.Clear();
                 _cachedCampaign = Campaign.Current;
             }
 
@@ -233,6 +305,66 @@ namespace RBMCampaign
         {
             float sum = 0f;
             foreach (var kv in GetRates(villageType))
+            {
+                sum += kv.Value;
+            }
+            return sum;
+        }
+
+        /// <summary>
+        /// The per-Hearth production rate table for a specific village: its type's base+speciality
+        /// set (<see cref="GetRates(VillageType)"/>) with the village's culture flavour layered on
+        /// top (overlapping goods add). Falls back to the plain type table when the culture has no
+        /// flavour entry. Cached per (type, flavour key) for the campaign's lifetime.
+        /// </summary>
+        public static Dictionary<ItemObject, float> GetRates(Village village)
+        {
+            if (village == null || village.VillageType == null)
+            {
+                return Empty;
+            }
+
+            // Resolve the base+speciality table first -- this also runs the per-campaign cache
+            // invalidation (which clears _flavourCache), so it must precede any _flavourCache read.
+            Dictionary<ItemObject, float> baseSpec = GetRates(village.VillageType);
+
+            string flavourKey = FlavourKey(village);
+            (string id, float rate)[] flavour;
+            if (flavourKey == null || !FlavourByCulture.TryGetValue(flavourKey, out flavour))
+            {
+                return baseSpec;
+            }
+
+            string key = village.VillageType.StringId + "|" + flavourKey;
+            Dictionary<ItemObject, float> cached;
+            if (_flavourCache.TryGetValue(key, out cached))
+            {
+                return cached;
+            }
+
+            Dictionary<ItemObject, float> result = new Dictionary<ItemObject, float>(baseSpec);
+            foreach (var s in flavour)
+            {
+                ItemObject item = Game.Current.ObjectManager.GetObject<ItemObject>(s.id);
+                if (item != null && !item.NotMerchandise)
+                {
+                    float current;
+                    result[item] = result.TryGetValue(item, out current) ? current + s.rate : s.rate;
+                }
+            }
+
+            _flavourCache[key] = result;
+            return result;
+        }
+
+        /// <summary>
+        /// Sum of all per-Hearth rates for a specific village, including its culture flavour.
+        /// The village-aware counterpart of <see cref="GetTotalRate(VillageType)"/>.
+        /// </summary>
+        public static float GetTotalRate(Village village)
+        {
+            float sum = 0f;
+            foreach (var kv in GetRates(village))
             {
                 sum += kv.Value;
             }
@@ -392,7 +524,7 @@ namespace RBMCampaign
                 System.Text.StringBuilder produced = logging ? new System.Text.StringBuilder() : null;
                 int totalUnits = 0;
 
-                foreach (var kv in GetRates(village.VillageType))
+                foreach (var kv in GetRates(village))
                 {
                     int num = MBRandom.RoundRandomized(kv.Value * village.Hearth);
                     if (num <= 0)
@@ -486,7 +618,7 @@ namespace RBMCampaign
                     return true;
                 }
 
-                __result = GetGoodCapacity(GetTotalRate(__instance.VillageType), __instance.Hearth);
+                __result = GetGoodCapacity(GetTotalRate(__instance), __instance.Hearth);
                 return false;
             }
         }
@@ -510,7 +642,7 @@ namespace RBMCampaign
                 if (village != null && item != null && village.VillageState == Village.VillageStates.Normal)
                 {
                     float rate;
-                    if (GetRates(village.VillageType).TryGetValue(item, out rate))
+                    if (GetRates(village).TryGetValue(item, out rate))
                     {
                         amount = rate * village.Hearth;
                     }
@@ -550,7 +682,7 @@ namespace RBMCampaign
                     return true;
                 }
 
-                float busyness = MathF.Clamp((GetTotalRate(village.VillageType) - QuietRate) / (BusyRate - QuietRate), 0f, 1f);
+                float busyness = MathF.Clamp((GetTotalRate(village) - QuietRate) / (BusyRate - QuietRate), 0f, 1f);
                 float divisor = MathF.Lerp(40f, 20f, busyness);
                 __result = __instance.MinimumNumberOfVillagersAtVillagerParty + (int)(village.Hearth / divisor);
                 return false;
@@ -601,7 +733,7 @@ namespace RBMCampaign
                 list.Add(new TooltipProperty("", string.Empty, 0, false, TooltipProperty.TooltipPropertyFlags.RundownSeperator));
 
                 // Order by daily quantity, most-produced first, so the staple leads the list.
-                List<KeyValuePair<ItemObject, float>> ordered = new List<KeyValuePair<ItemObject, float>>(GetRates(village.VillageType));
+                List<KeyValuePair<ItemObject, float>> ordered = new List<KeyValuePair<ItemObject, float>>(GetRates(village));
                 ordered.Sort((a, b) => b.Value.CompareTo(a.Value));
 
                 // Per-good daily output, then the one warehouse figure the game actually tracks --

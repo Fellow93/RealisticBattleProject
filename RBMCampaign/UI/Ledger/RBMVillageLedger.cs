@@ -96,7 +96,7 @@ namespace RBMCampaign
             {
                 return 0;
             }
-            return (int)MathF.Round(RBMVillageProduction.GetTotalRate(village.VillageType) * village.Hearth);
+            return (int)MathF.Round(RBMVillageProduction.GetTotalRate(village) * village.Hearth);
         }
 
         // Log a discrete event against the day it happened.

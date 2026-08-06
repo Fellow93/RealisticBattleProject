@@ -156,7 +156,7 @@ namespace RBMCampaign
                 // No per-day item detail is stored; reconstruct from that day's hearth. A stored 0
                 // with a live hearth means the village wasn't producing that day (raided/looted).
                 bool halted = prodDay <= 0 && hearthDay > 0;
-                string dayText = BuildBreakdown(village.VillageType, hearthDay, halted, prodDay);
+                string dayText = BuildBreakdown(village, hearthDay, halted, prodDay);
                 var dayHint = new BasicTooltipViewModel(() => dayText);
                 history.Add(new RBMLedgerVillageDayVM(label, prodDay, At(wealth, i), hearthDay, At(militia, i), evCount, evHint, dayHint));
             }
@@ -176,14 +176,14 @@ namespace RBMCampaign
         {
             bool halted = village.VillageState != Village.VillageStates.Normal;
             int hearth = (int)MathF.Round(village.Hearth);
-            int total = halted ? 0 : (int)MathF.Round(RBMVillageProduction.GetTotalRate(village.VillageType) * village.Hearth);
-            string text = BuildBreakdown(village.VillageType, hearth, halted, total);
+            int total = halted ? 0 : (int)MathF.Round(RBMVillageProduction.GetTotalRate(village) * village.Hearth);
+            string text = BuildBreakdown(village, hearth, halted, total);
             return new BasicTooltipViewModel(() => text);
         }
 
         // Shared breakdown formatter. Reconstructs the per-item split from rate*hearth (rates are
         // deterministic per village type); `total` is shown verbatim so it matches the displayed value.
-        private static string BuildBreakdown(VillageType type, int hearth, bool halted, int total)
+        private static string BuildBreakdown(Village village, int hearth, bool halted, int total)
         {
             var sb = new System.Text.StringBuilder();
             sb.Append(new TextObject("{=RBM_LEDGER_PROD_HINT_HDR}Daily production").ToString());
@@ -196,7 +196,7 @@ namespace RBMCampaign
             else
             {
                 var lines = new List<KeyValuePair<string, int>>();
-                foreach (var kv in RBMVillageProduction.GetRates(type))
+                foreach (var kv in RBMVillageProduction.GetRates(village))
                 {
                     int perDay = (int)MathF.Round(kv.Value * hearth);
                     if (perDay <= 0)
