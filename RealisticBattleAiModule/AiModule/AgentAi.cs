@@ -575,7 +575,7 @@ namespace RBMAI
                     bannerNearbyEnemies.RemoveAll((Agent a) => a.IsRunningAway);
                     if (!bannerNearbyEnemies.Any())
                     {
-                        Agent firstUnit = ___Agent.Formation.GetFirstUnit();
+                        Agent firstUnit = ___Agent.Formation?.GetFirstUnit();
 
                         ___Agent.SetAutomaticTargetSelection(false);
 
