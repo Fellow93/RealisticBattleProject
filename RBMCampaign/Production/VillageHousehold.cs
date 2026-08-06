@@ -28,7 +28,7 @@ namespace RBMCampaign
         /// economy out of. Anything it holds has to come out of that, so this is a real cut to every
         /// lord's village income, the player's included. All of it goes to the village's one purse.
         /// </summary>
-        public const float VillageShare = 0.2f;
+        public const float VillageShare = 0.5f;
 
         /// <summary>Carried from prefix to postfix across vanilla's homecoming bookkeeping.</summary>
         private class Homecoming

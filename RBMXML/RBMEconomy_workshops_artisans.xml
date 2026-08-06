@@ -130,6 +130,9 @@
 				<Input
 					input_item="grape"
 					input_count="6" />
+				<Input
+					input_item="pottery" 
+					input_count="5"/>
 			</Inputs>
 			<Outputs>
 				<Output
@@ -161,6 +164,9 @@
 				<Input
 					input_item="olives" 
 					input_count="8"/>
+				<Input
+					input_item="pottery" 
+					input_count="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
@@ -173,7 +179,7 @@
 		</Production>
 
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="wool" />
@@ -184,9 +190,63 @@
 					output_count="1" />
 			</Outputs>
 		</Production>
+
+		<Production
+			conversion_speed="1.5">
+			<Inputs>
+				<Input
+					input_item="leather" 
+					input_count="2"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="6" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1.5">
+			<Inputs>
+				<Input
+					input_item="leather" 
+					input_count="2"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="6" />
+			</Outputs>
+		</Production>
 		
 		<Production
 			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="hides" 
+					input_count="2"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="3" />
+			</Outputs>
+		</Production>		
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="hides" 
+					input_count="2"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="3" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="linen" 
@@ -199,7 +259,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="linen" 
@@ -213,7 +273,7 @@
 		</Production>
 		
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="felt" 
@@ -226,7 +286,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="felt" 
@@ -240,7 +300,7 @@
 		</Production>
 
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="linen" 
@@ -256,7 +316,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="linen" 
@@ -804,7 +864,7 @@
 		</Production>		
 		
 		<Production
-			conversion_speed="0.4">
+			conversion_speed="0.6">
 			<Inputs>
 				<Input
 					input_item="flax" />
@@ -829,7 +889,7 @@
 		</Production>
 		
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="hides" />
@@ -841,7 +901,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="hides" />
@@ -859,6 +919,9 @@
 				<Input
 					input_item="grain" 
 					input_count="2"/>
+				<Input
+					input_item="planks" 
+					input_count="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
@@ -942,6 +1005,9 @@
 				<Input
 					input_item="grain" 
 					input_count="2"/>
+				<Input
+					input_item="planks" 
+					input_count="1"/>
 			</Inputs>
 			<Outputs>
 				<Output
@@ -996,7 +1062,7 @@
 			shop_prop_mesh_name_5="shop_prop_merchantweavery_linen_e"
 			shop_prop_mesh_name_6="shop_prop_merchantweavery_linen_f" />
 		<Production
-			conversion_speed="1.2">
+			conversion_speed="1.8">
 			<Inputs>
 				<Input
 					input_item="flax" />
@@ -1008,7 +1074,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="3">
+			conversion_speed="4.5">
 			<Inputs>
 				<Input
 					input_item="linen" 
@@ -1020,11 +1086,27 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="2" />
+					output_count="4" />
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="3">
+			conversion_speed="4.5">
+			<Inputs>
+				<Input
+					input_item="linen" 
+					input_count="1"/>
+				<Input
+					input_item="wool" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="4" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="4.5">
 			<Inputs>
 				<Input
 					input_item="linen" 
@@ -1033,7 +1115,20 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="3" />
+					output_count="6" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="4.5">
+			<Inputs>
+				<Input
+					input_item="linen" 
+					input_count="2"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="6" />
 			</Outputs>
 		</Production>
 		
@@ -1117,6 +1212,9 @@
 				<Input
 					input_item="grape"
 					input_count="6" />
+				<Input
+					input_item="pottery" 
+					input_count="6"/>
 			</Inputs>
 			<Outputs>
 				<Output
@@ -1176,6 +1274,9 @@
 				<Input
 					input_item="olives" 
 					input_count="16"/>
+				<Input
+					input_item="pottery" 
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
 				<Output
@@ -1204,7 +1305,7 @@
 			shop_prop_mesh_name_5="shop_prop_merchantweavery_wool_e"
 			shop_prop_mesh_name_6="shop_prop_merchantweavery_wool_f" />
 		<Production
-			conversion_speed="2">
+			conversion_speed="4.5">
 			<Inputs>
 				<Input
 					input_item="felt" 
@@ -1217,7 +1318,20 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="2">
+			conversion_speed="4.5">
+			<Inputs>
+				<Input
+					input_item="felt" 
+					input_count="3"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="8" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="4.5">
 			<Inputs>
 				<Input
 					input_item="wool" />
@@ -1229,7 +1343,23 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="2">
+			conversion_speed="4.5">
+			<Inputs>
+				<Input
+					input_item="linen" 
+					input_count="1"/>
+				<Input
+					input_item="wool" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="4" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="4.5">
 			<Inputs>
 				<Input
 					input_item="linen" 
@@ -1246,7 +1376,7 @@
 		</Production>
 		
 		<Production
-			conversion_speed="1">
+			conversion_speed="3">
 			<Inputs>
 				<Input
 					input_item="felt" 
@@ -1262,7 +1392,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="1">
+			conversion_speed="3">
 			<Inputs>
 				<Input
 					input_item="felt" 
@@ -1344,7 +1474,7 @@
 			shop_prop_mesh_name_5="shop_prop_merchantleather_e"
 			shop_prop_mesh_name_6="shop_prop_merchantleather_f" />
 		<Production
-			conversion_speed="3">
+			conversion_speed="4.5">
 			<Inputs>
 				<Input
 					input_item="hides" />
@@ -1354,7 +1484,22 @@
 					output="ItemCategory.leather"
 					output_count="1" />
 			</Outputs>
-		</Production>		
+		</Production>
+		
+		<Production
+			conversion_speed="4.5">
+			<Inputs>
+				<Input
+					input_item="leather" 
+					input_count="2"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.garment"
+					output_count="6" />
+			</Outputs>
+		</Production>
+		
 		<Production
 			conversion_speed="3.0">
 			<Inputs>

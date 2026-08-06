@@ -93,10 +93,10 @@ namespace RBMCampaign
         {
             new Line("grain", 0.518f),
             new Line("beer", 0.176f),
-            new Line("meat", 0.124f),
+            new Line("meat", 0.0975f),
             new Line("cheese", 0.053f),
             new Line("butter", 0.05f),
-            new Line("fish", 0.031f),
+            new Line("fish", 0.0575f),
             new Line("wine", 0.02f),
             new Line("date_fruit", 0.018f),
             new Line("oil", 0.01f),
@@ -130,6 +130,7 @@ namespace RBMCampaign
             new Line("pottery", 0.008f),
             new Line("planks", 0.005f),
             new Line("tools", 0.0027f),
+            new Line("hides", 0.003f),
         };
 
         /// <summary>Garments bought per Prosperity per day as a necessity -- replacing what wears out.</summary>
@@ -144,6 +145,7 @@ namespace RBMCampaign
             new Line("olives", 0.01f),
             new Line("pottery", 0.004f),
             new Line("tools", 0.0007f),
+            new Line("meat", 0.001f),
         };
 
         /// <summary>The second: dressing well, and a little display.</summary>
@@ -157,8 +159,9 @@ namespace RBMCampaign
             new Line("oil", 0.01f),
             new Line("wine", 0.01f),
             new Line("pottery", 0.006f),
-            new Line("planks", 0.004f),
+            new Line("planks", 0.002f),
             new Line("tools", 0.0007f),
+            new Line("meat", 0.002f),
         };
 
         /// <summary>Garments bought per Prosperity per day on top of the staple replacement, once comfortable.</summary>
@@ -182,9 +185,13 @@ namespace RBMCampaign
             new Line("jewelry", 0.0066f),
             new Line("walrus_tusk", 0.003f),
             new Line("velvet", 0.001f),
-            new Line("planks", 0.008f),
+            new Line("planks", 0.004f),
             new Line("pottery", 0.008f),
             new Line("fur", 0.0015f),
+            new Line("meat", 0.005f),
+            new Line("date_fruit", 0.01f),
+            new Line("oil", 0.01f),
+            new Line("wine", 0.01f),
         };
 
         /// <summary>A demanded good and how much of it a household wants, per day.</summary>

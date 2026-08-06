@@ -53,7 +53,7 @@ namespace RBMCampaign
                 { "velvet",      (26500,  0.5f) },
                 { "cheese",      (166,    15f) },
                 { "butter",      (230,    8.4f) },
-                { "fish",        (1140,   20f) },
+                { "fish",        (125,    20f) },
                 { "grape",       (275,    89f) },
                 { "date_fruit",  (333,    20f) },
                 { "olives",      (45,     46f) },

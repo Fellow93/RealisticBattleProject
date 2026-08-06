@@ -44,10 +44,10 @@ namespace RBMCampaign
             ("wool", 0.02f),
             ("sheep", 0.006f),
             //basic village "industrial" production so cities can function
-            ("charcoal", 0.08f),
-            ("planks", 0.02f),
-            ("clay", 0.01f),
-            ("ironIngot1", 0.01f),
+            ("charcoal", 0.06f),
+            ("planks", 0.04f),
+            ("clay", 0.005f),
+            ("ironIngot1", 0.015f),
             ("flax", 0.017f),
         };
 
@@ -87,7 +87,7 @@ namespace RBMCampaign
                 { "cattle_farm", new (string, float)[] { ("cheese", 0.035f), ("butter", 0.028f), ("cow", 0.008f) } },
                 { "sheep_farm", new (string, float)[] { ("sheep", 0.0031f), ("cheese", 0.02f), ("butter", 0.015f), ("wool", 0.08f) } },
                 { "swine_farm", new (string, float)[] { ("hog", 0.019f) } },
-                { "lumberjack", new (string, float)[] { ("charcoal", 1.027f*1.8f), ("planks", 1.027f*0.2f) } },
+                { "lumberjack", new (string, float)[] { ("charcoal", 1.027f*1.5f), ("planks", 1.027f*0.5f) } },
                 { "clay_mine", new (string, float)[] { ("clay", 7.5f) } },
                 { "salt_mine", new (string, float)[] { ("salt", 0.178f) } },
                 { "iron_mine", new (string, float)[] { ("ironIngot1", 2f) } },
