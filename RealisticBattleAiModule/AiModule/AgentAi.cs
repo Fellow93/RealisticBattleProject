@@ -573,9 +573,24 @@ namespace RBMAI
                     // Fleeing routers run through our lines and end up within 5m; a banner bearer shouldn't chase-swing
                     // at them (it can't catch them = "attacking air"), so treat only non-routing enemies as a reason to fight.
                     bannerNearbyEnemies.RemoveAll((Agent a) => a.IsRunningAway);
-                    if (bannerNearbyEnemies.Count == 0)
+                    if (!bannerNearbyEnemies.Any())
                     {
-                        ___Agent.InvalidateTargetAgent();
+                        Agent firstUnit = ___Agent.Formation?.GetFirstUnit();
+
+                        ___Agent.SetAutomaticTargetSelection(false);
+
+                        if (___Agent.GetDistanceTo(firstUnit) > 5f)
+                        {
+                            ___Agent.SetTargetAgent(firstUnit);
+                        }
+                        else
+                        {
+                            ___Agent.InvalidateTargetAgent();
+                        }
+                    }
+                    else
+                    {
+                        ___Agent.SetAutomaticTargetSelection(true);
                     }
                 }
                 //___Agent.MovementInputVector = new Vec2(30f, 30f);
