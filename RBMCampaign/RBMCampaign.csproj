@@ -412,6 +412,7 @@
     <Compile Include="Settlements\TradeTariff.cs" />
     <Compile Include="Settlements\WealthTax.cs" />
     <Compile Include="Settlements\MilitiaUpkeep.cs" />
+    <Compile Include="Settlements\SettlementDefenseMuster.cs" />
     <Compile Include="Settlements\VillageGoldStock.cs" />
     <Compile Include="Settlements\RBMSettlementWealthCampaignBehavior.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
