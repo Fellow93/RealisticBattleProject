@@ -14,7 +14,7 @@ namespace RBMCampaign
     /// inside the game. This writes the whole chain down, under logs/economy, apart from the spoils and
     /// simulation logs because it is about a different subject entirely.
     ///
-    /// Six kinds of line, one category each:
+    /// Seven kinds of line, one category each:
     /// <list type="bullet">
     /// <item>PRODUCE  -- a village's daily output, good by good (<see cref="RBMVillageProduction"/>).</item>
     /// <item>DISPATCH -- a villager party setting out: its size, composition, cargo and escort.</item>
@@ -26,6 +26,8 @@ namespace RBMCampaign
     /// equilibrium, hearth, food stock and measured food change.</item>
     /// <item>PROSPER  -- a fief against that equilibrium, broken down: the gap, the rate closing it,
     /// and every term pushing on prosperity (<see cref="RBMProsperityEquilibrium"/>).</item>
+    /// <item>WORKSHOP -- a town's initial or re-rolled workshop pick and the bound-village types that
+    /// biased it (<see cref="WorkshopVillageBias"/>).</item>
     /// </list>
     ///
     /// Enabled by the EconomyLogging config flag. One file per play session, opened lazily on the first
@@ -109,6 +111,7 @@ namespace RBMCampaign
                     header.Append("  FOOD      a town's daily rations: delivered, eaten, unmet").Append(Environment.NewLine);
                     header.Append("  DAILY     end-of-day settlement state: prosperity, hearth, food").Append(Environment.NewLine);
                     header.Append("  PROSPER   a fief against its countryside equilibrium: gap, rate, and every term moving it").Append(Environment.NewLine);
+                    header.Append("  WORKSHOP  a town's initial/re-rolled workshop pick and the bound-village types biasing it").Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
                     header.Append("Settings:").Append(Environment.NewLine);
                     header.Append("  rbmCampaignEnabled          = ").Append(RC.rbmCampaignEnabled).Append(Environment.NewLine);

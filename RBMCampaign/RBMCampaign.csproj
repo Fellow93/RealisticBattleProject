@@ -372,6 +372,7 @@
     <Compile Include="Production\TownStorage.cs" />
     <Compile Include="Economy\TradeGoodCategories.cs" />
     <Compile Include="Production\ArtisanOutput.cs" />
+    <Compile Include="Production\WorkshopVillageBias.cs" />
     <Compile Include="Production\WorkshopDemand.cs" />
     <Compile Include="Production\WorkshopHeadroomGate.cs" />
     <Compile Include="Production\TownFoodReserve.cs" />

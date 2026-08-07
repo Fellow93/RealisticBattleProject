@@ -41,7 +41,12 @@ namespace RBMCampaign
         {
             EconomyLog.StartCampaignLog();
 
+            // The log file has just rolled over; land the world-gen workshop rolls in it before
+            // anything clears their buffer.
+            WorkshopVillageBias.FlushPendingStartRolls();
+
             ArtisanOutput.ResetForNewSession();
+            WorkshopVillageBias.ResetForNewSession();
             PartyTradeFlow.Reset();
             TradeTariff.Reset();
             WorkshopPurse.Reset();
