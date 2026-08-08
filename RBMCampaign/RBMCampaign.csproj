@@ -383,7 +383,6 @@
     <Compile Include="Production\VillageHousehold.cs" />
     <Compile Include="Production\VillageShopping.cs" />
     <Compile Include="Economy\RBMEconomyCampaignBehavior.cs" />
-    <Compile Include="Economy\RBMFaminePenalty.cs" />
     <Compile Include="Economy\PartyTradeFlow.cs" />
     <Compile Include="Economy\HiddenMarketStock.cs" />
     <Compile Include="Economy\RBMMarketLiquidity.cs" />
