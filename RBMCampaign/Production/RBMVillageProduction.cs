@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using Helpers;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -689,11 +691,23 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>RBM's prosperity-to-food divisor: a settlement eats one food per this many points of
+        /// prosperity per day. Lowered from vanilla's <see cref="VanillaProsperityToEatOneFood"/> so a
+        /// town eats ~10x as much, making food an actual constraint on growth. The divisor is a
+        /// context-free property applied to every settlement; castles are exempted back to vanilla in
+        /// <see cref="CastleConsumptionExemptionPatch"/>, since they never received RBM's compensating
+        /// production rework (that is towns-only) and would otherwise starve perpetually.</summary>
+        public const int RBMProsperityToEatOneFood = 4;
+
+        /// <summary>Vanilla's prosperity-to-food divisor, kept for the castle consumption exemption.</summary>
+        private const int VanillaProsperityToEatOneFood = 40;
+
         /// <summary>
         /// Lowers the divisor that converts a settlement's prosperity into daily food consumption
-        /// (<c>consumption = Prosperity / NumberOfProsperityToEatOneFood</c>) from vanilla's 40 to 4,
-        /// so a given prosperity eats roughly 10x more food. Paired with the reworked production above
-        /// to make food supply an actual constraint on settlement growth.
+        /// (<c>consumption = Prosperity / NumberOfProsperityToEatOneFood</c>) from vanilla's 40 to
+        /// <see cref="RBMProsperityToEatOneFood"/>, so a given prosperity eats roughly 10x more food.
+        /// Paired with the reworked production above to make food supply an actual constraint on
+        /// settlement growth.
         /// </summary>
         [HarmonyPatch(typeof(DefaultSettlementFoodModel), "NumberOfProsperityToEatOneFood", MethodType.Getter)]
         private static class ProsperityToEatOneFoodPatch
@@ -705,10 +719,49 @@ namespace RBMCampaign
                     return true;
                 }
 
-                __result = 4;
+                __result = RBMProsperityToEatOneFood;
                 return false;
             }
         }
+
+        /// <summary>
+        /// Exempts CASTLES from the ~10x food consumption <see cref="ProsperityToEatOneFoodPatch"/>
+        /// imposes. That divisor is a context-free property -- it cannot tell a castle from a town, and
+        /// three town-side callers depend on it reading <see cref="RBMProsperityToEatOneFood"/> -- so the
+        /// exemption is applied here, in the food-change model, where the settlement is known.
+        ///
+        /// A castle is a big self-sustaining village: it grows its own food and was never given RBM's
+        /// town production rework, so charging it town-scale consumption starved it perpetually. This
+        /// postfix adds back the difference between the RBM and the vanilla prosperity-consumption for a
+        /// castle, restoring vanilla's food balance there while leaving towns on the heavier diet. The
+        /// garrison term is unpatched and needs no correction; only the prosperity term is rebuilt,
+        /// including the Master of Warcraft governor perk exactly as vanilla applies it (an AddFactor),
+        /// so the delta cancels the perk out and stays faithful whether or not the castle has it.
+        /// </summary>
+        [HarmonyPatch(typeof(DefaultSettlementFoodModel), "CalculateTownFoodStocksChange")]
+        private static class CastleConsumptionExemptionPatch
+        {
+            private static void Postfix(Town town, ref ExplainedNumber __result)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || town == null || !town.IsCastle)
+                {
+                    return;
+                }
+
+                // The model SUBTRACTS the prosperity-consumption term, so the heavier RBM divisor made
+                // the food change more negative by (charged@RBM - charged@vanilla). Rebuild both at the
+                // two divisors identically -- same Master of Warcraft factor on each -- and add the
+                // difference back, putting the castle on vanilla's divisor.
+                ExplainedNumber chargedRBM = new ExplainedNumber(town.Prosperity / (float)RBMProsperityToEatOneFood);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, ref chargedRBM);
+                ExplainedNumber chargedVanilla = new ExplainedNumber(town.Prosperity / (float)VanillaProsperityToEatOneFood);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, ref chargedVanilla);
+
+                __result.Add(chargedRBM.ResultNumber - chargedVanilla.ResultNumber, CastleSelfSufficiencyText);
+            }
+        }
+
+        private static readonly TextObject CastleSelfSufficiencyText = new TextObject("{=RBM_CASTLE_SELF_SUFFICIENCY}Castle self-sufficiency");
 
         /// <summary>
         /// Replaces the VILLAGE branch of the settlement production tooltip (the trade/inventory
