@@ -28,10 +28,10 @@ namespace RBMCampaign
     public static class GarrisonRecruitCost
     {
         /// <summary>Days of the garrison's wage a fief must hold to keep recruiting at all.</summary>
-        public const int GarrisonReserveDays = 30;
+        public const int GarrisonReserveDays = 15;
 
         /// <summary>Times a man's equipment cost the treasury must hold to arm him.</summary>
-        public const int GarrisonSpawnReserveMult = 10;
+        public const int GarrisonSpawnReserveMult = 5;
 
         public static bool IsEnabled
         {

@@ -19,7 +19,7 @@
 			shop_prop_mesh_name_6="Shop_prop_merchantbakery_f" />
 			
 		<Production
-			conversion_speed="4">
+			conversion_speed="0.57">
 			<Inputs>
 				<Input
 					input_item="clay" />
@@ -131,7 +131,7 @@
 					input_item="grape"
 					input_count="6" />
 				<Input
-					input_item="pottery" 
+					input_item="clay" 
 					input_count="5"/>
 			</Inputs>
 			<Outputs>
@@ -165,7 +165,7 @@
 					input_item="olives" 
 					input_count="8"/>
 				<Input
-					input_item="pottery" 
+					input_item="clay" 
 					input_count="1"/>
 			</Inputs>
 			<Outputs>
@@ -1213,7 +1213,7 @@
 					input_item="grape"
 					input_count="6" />
 				<Input
-					input_item="pottery" 
+					input_item="clay" 
 					input_count="6"/>
 			</Inputs>
 			<Outputs>
@@ -1240,7 +1240,7 @@
 			shop_prop_mesh_name_5="shop_prop_merchantpottery_e"
 			shop_prop_mesh_name_6="shop_prop_merchantpottery_f" />
 		<Production
-			conversion_speed="12">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="clay" />
@@ -1275,7 +1275,7 @@
 					input_item="olives" 
 					input_count="16"/>
 				<Input
-					input_item="pottery" 
+					input_item="clay" 
 					input_count="2"/>
 			</Inputs>
 			<Outputs>

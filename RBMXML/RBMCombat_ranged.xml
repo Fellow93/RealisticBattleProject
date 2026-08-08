@@ -394,7 +394,7 @@
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true" Stealth="true"/>
 	</Item>
-	<Item id="composite_bow" name="{=RBM_RAN_023}100 Pound Composite War Bow" body_name="bo_shortbow_c" mesh="shortbow_c" holster_mesh="shortbow_c_holster"	holster_mesh_with_weapon="shortbow_c_holster_weapon" weight="0.3" difficulty="40" appearance="1" Type="Bow" value="800" item_holsters="bow_hip:bow_hip_2">
+	<Item id="composite_bow" name="{=RBM_RAN_023}100 Pound Composite War Bow" body_name="bo_shortbow_c" mesh="shortbow_c" holster_mesh="shortbow_c_holster"	holster_mesh_with_weapon="shortbow_c_holster_weapon" weight="0.3" difficulty="40" appearance="1" Type="Bow" value="800" item_holsters="bow_hip:bow_hip_2" culture="Culture.empire">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="130" speed_rating="85" missile_speed="100" weapon_length="110" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="3" accuracy="70" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" CanBeUsedWhileCrouched="true" />
@@ -426,7 +426,7 @@
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true" Stealth="true"/>
 	</Item>
-	<Item id="mountain_hunting_bow" name="{=RBM_RAN_027}70 Pound Composite Bow" body_name="bo_shortbow_i" mesh="shortbow_i" holster_mesh="shortbow_i_holster" holster_mesh_with_weapon="shortbow_i_holster_weapon" weight="0.3" difficulty="10" appearance="1" Type="Bow" value="700" item_holsters="bow_hip:bow_hip_2" >
+	<Item id="mountain_hunting_bow" name="{=RBM_RAN_027}70 Pound Composite Bow" body_name="bo_shortbow_i" mesh="shortbow_i" holster_mesh="shortbow_i_holster" holster_mesh_with_weapon="shortbow_i_holster_weapon" weight="0.3" difficulty="10" appearance="1" Type="Bow" value="700" item_holsters="bow_hip:bow_hip_2" culture="Culture.sturgia">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="160" speed_rating="95" missile_speed="70" weapon_length="108" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="3" accuracy="75" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" CanBeUsedWhileCrouched="true" />
@@ -434,7 +434,7 @@
 		</ItemComponent>
 		<Flags ForceAttachOffHandPrimaryItemBone="true" Civilian="true" Stealth="true"/>
 	</Item>
-	<Item id="hunting_bow" name="{=RBM_RAN_028}60 Pound Composite Bow" body_name="bo_shortbow_h" mesh="shortbow_h" holster_mesh="shortbow_h_holster" holster_mesh_with_weapon="shortbow_h_holster_weapon" weight="0.3" difficulty="0" appearance="1" Type="Bow" value="600" item_holsters="bow_hip:bow_hip_2" >
+	<Item id="hunting_bow" name="{=RBM_RAN_028}60 Pound Composite Bow" body_name="bo_shortbow_h" mesh="shortbow_h" holster_mesh="shortbow_h_holster" holster_mesh_with_weapon="shortbow_h_holster_weapon" weight="0.3" difficulty="0" appearance="1" Type="Bow" value="600" item_holsters="bow_hip:bow_hip_2" culture="Culture.empire">
 		<ItemComponent>
 			<Weapon weapon_class="Bow" ammo_class="Arrow" thrust_speed="170" speed_rating="100" missile_speed="60" weapon_length="110" thrust_damage="100" item_usage="bow" physics_material="wood_weapon" center_of_mass="0.1,0,-0.15" ammo_limit="3" accuracy="75" thrust_damage_type="Pierce" modifier_group="bow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true" StringHeldByHand="true" AutoReload="true" CanBeUsedWhileCrouched="true" />

@@ -216,7 +216,7 @@ namespace RBMCampaign
         private static readonly Dictionary<string, float> MarkupCaps = new Dictionary<string, float>
         {
             // Basic (2x) -- staples every region produces; a shortage cannot spike them far.
-            { "flax", BasicCap }, { "clay", BasicCap }, { "pottery", BasicCap }, { "cheese", BasicCap },
+            { "flax", BasicCap }, { "clay", BasicCap }, { "cheese", BasicCap },
             { "butter", BasicCap }, { "olives", BasicCap }, { "grape", BasicCap }, { "wool", BasicCap },
             { "grain", BasicCap }, { "hides", BasicCap }, { "meat", BasicCap }, { "planks", BasicCap },
             { "silver", BasicCap }, { "iron", BasicCap }, { "hardwood", BasicCap }, { "charcoal", BasicCap },
@@ -227,7 +227,7 @@ namespace RBMCampaign
             { "leather", MediumCap }, { "fish", MediumCap }, { "salt", MediumCap }, { "cotton", MediumCap },
             { "beer", MediumCap }, { "date_fruit", MediumCap }, { "tools", MediumCap }, { "wine", MediumCap },
             { "oil", MediumCap }, { "ironIngot4", MediumCap }, { "ironIngot5", MediumCap },
-            { "whale_oil", MediumCap },
+            { "whale_oil", MediumCap }, { "pottery", MediumCap },
 
             // Luxury (8x) -- status goods a shortage carries as far as the shelf is bare.
             { "jewelry", MaxFactor }, { "spice", MaxFactor }, { "velvet", MaxFactor }, { "fur", MaxFactor },
