@@ -116,10 +116,10 @@
 																													<Children>
 																														<TextWidget Text="@VillageName" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
 
-																														<!-- Production cell: value (right-aligned) + hover tooltip with the item breakdown. -->
+																														<!-- Production cell: primary-good icon (left) + value (right-aligned) + hover tooltip with the item breakdown. -->
 																														<Widget WidthSizePolicy="Fixed" SuggestedWidth="!RBML.Prod" HeightSizePolicy="StretchToParent">
 																															<Children>
-																																<TextWidget Text="@Production" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																<SettlementNameplateEventVisualBrushWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="24" HorizontalAlignment="Left" VerticalAlignment="Center" DoNotAcceptEvents="true" Brush="Settlement.Event.Type.Image" Type="6" AdditionalParameters="@ProductionIcon" /><TextWidget Text="@Production" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																<HintWidget DataSource="{ProductionHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
 																															</Children>
 																														</Widget>

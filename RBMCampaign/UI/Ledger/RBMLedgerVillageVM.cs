@@ -39,11 +39,12 @@ namespace RBMCampaign
     {
         private bool _isExpanded;
 
-        public RBMLedgerVillageVM(string villageName, string production, string wealth, string hearth,
-            string militia, MBBindingList<RBMLedgerVillageDayVM> history, BasicTooltipViewModel productionHint)
+        public RBMLedgerVillageVM(string villageName, string production, string productionIcon, string wealth,
+            string hearth, string militia, MBBindingList<RBMLedgerVillageDayVM> history, BasicTooltipViewModel productionHint)
         {
             VillageName = villageName;
             Production = production;
+            ProductionIcon = productionIcon;
             Wealth = wealth;
             Hearth = hearth;
             Militia = militia;
@@ -53,6 +54,10 @@ namespace RBMCampaign
 
         [DataSourceProperty] public string VillageName { get; }
         [DataSourceProperty] public string Production { get; }
+
+        // Nameplate production-icon style id for this village's primary good (planks -> hardwood,
+        // crude iron -> iron). Bound as AdditionalParameters on the production-icon brush widget.
+        [DataSourceProperty] public string ProductionIcon { get; }
         [DataSourceProperty] public string Wealth { get; }
         [DataSourceProperty] public string Hearth { get; }
         [DataSourceProperty] public string Militia { get; }

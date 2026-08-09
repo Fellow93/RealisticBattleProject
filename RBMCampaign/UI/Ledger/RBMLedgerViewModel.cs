@@ -164,6 +164,7 @@ namespace RBMCampaign
             return new RBMLedgerVillageVM(
                 village.Settlement.Name.ToString(),
                 Latest(prod),
+                VillageProductionIcon.StyleId(village),
                 Latest(wealth),
                 Latest(hearth),
                 Latest(militia),
