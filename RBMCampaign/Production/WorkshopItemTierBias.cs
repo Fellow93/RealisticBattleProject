@@ -31,8 +31,8 @@ namespace RBMCampaign
     /// weight still decreases monotonically in Value, just less steeply -- the 100g-vs-3000g odds gap
     /// flattens from ~15x to ~4x, and 100g-vs-1000g from ~5.5x to ~2.4x. Cheap still wins most rolls;</item>
     /// <item>the culture bias: instead of excluding foreign-culture items, they are kept at
-    /// <see cref="ForeignCultureFactor"/> (0.1x) of their weight -- local/neutral/untagged items keep full
-    /// weight, so the town's own culture still dominates, but an imported piece shows up now and then.
+    /// <see cref="ForeignCultureFactor"/> (0.01x) of their weight -- local/neutral/untagged items keep full
+    /// weight, so the town's own culture overwhelmingly dominates, but an imported piece shows up rarely.
     /// This also removes vanilla's "empty local list -> fall back to fully unfiltered" cliff: the single
     /// weighted draw already spans both sets, so the outer <c>GetRandomItem</c>'s second pass, which only
     /// fires on an empty result, is now effectively dead;</item>
@@ -54,10 +54,11 @@ namespace RBMCampaign
 
         /// <summary>
         /// Weight multiplier for an item whose specific culture is neither the town's nor neutral. 1.0 ==
-        /// no culture bias; 0.0 == vanilla's hard exclusion. At 0.1 a foreign piece is ten times rarer
-        /// than an equivalent local one, so the home culture stays firmly dominant but imports appear.
+        /// no culture bias; 0.0 == vanilla's hard exclusion. At 0.01 a foreign piece is a hundred times
+        /// rarer than an equivalent local one, so the home culture overwhelmingly dominates but a rare
+        /// import is still possible.
         /// </summary>
-        private const float ForeignCultureFactor = 0.1f;
+        private const float ForeignCultureFactor = 0.01f;
 
         // Local copy of the private WorkshopsCampaignBehavior.IsItemPreferredForTown, so the culture
         // test is reproduced exactly rather than reached for by reflection on a hot path. Now read as a
