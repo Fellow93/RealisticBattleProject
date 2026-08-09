@@ -149,14 +149,13 @@ namespace RBMCampaign
         private static readonly TextObject MilitiaFromMarketText = new TextObject("{=7ve3bQxg}Weapons From Market");
         private static readonly TextObject CultureText = GameTexts.FindText("str_culture");
 
-        /// <summary>
-        /// The share of its soft cap a settlement opens a new campaign holding in militia. A quarter:
-        /// enough that a fresh map has watches on its walls and villages that can turn out a few men,
-        /// but well short of the cap, so growth still has room to run and the affordability floor thins
-        /// any place that cannot keep even this many. Applied on the new-game path only, replacing
-        /// vanilla's cap-blind <c>MilitiaChange * 45</c> seed.
-        /// </summary>
-        public const float MilitiaSeedCapFraction = 0.25f;
+        // A new campaign opens every settlement on the STEADY STATE of RBM's base growth curve -- the
+        // count at which its flat muster and manpower intake exactly balance its retirement drag, so the
+        // watch neither swells nor bleeds from turn one. See EquilibriumMilitia. This replaces both
+        // vanilla's cap-blind MilitiaChange*45 seed and RBM's earlier "quarter of the soft cap" seed: the
+        // soft cap sits far above what the curve sustains (a town's cap is ~0.70 of prosperity, its
+        // equilibrium only ~Prosperity/25), so seeding off the cap opened large towns with several times
+        // the militia they could hold, which then shed for weeks -- reading as the watch collapsing.
 
         /// <summary>Times a militiaman's kit cost the funding pot must hold before it may arm a new one.</summary>
         public const int MilitiaSpawnReserveMult = 5;
@@ -375,6 +374,38 @@ namespace RBMCampaign
                 return Prosperity(settlement) * MilitiaCapCity;
             }
             return 0f;
+        }
+
+        /// <summary>
+        /// The steady-state militia count of RBM's base growth curve -- the number at which the flat
+        /// muster and manpower intake exactly cancel the retirement drag, so the watch holds. This is the
+        /// count a settlement naturally settles at, well below its soft cap: a town on ~Prosperity/25, a
+        /// village on ~Hearth/10. Used to seed a new campaign so every place opens at the strength it will
+        /// actually keep, rather than above it. Clamped to the soft cap for safety, though the curve's
+        /// equilibrium sits far under it. The kept vanilla modifiers (loyalty, policies, perks, market
+        /// weapons) are not folded in -- at campaign start they are near-zero, and the base spine is what
+        /// determines the standing level.
+        /// </summary>
+        public static float EquilibriumMilitia(Settlement settlement)
+        {
+            // MilitiaRetirementRate is a positive const, so the intake/rate division is always safe.
+            float intake;
+            if (settlement.IsVillage)
+            {
+                float hearth = settlement.Village != null ? settlement.Village.Hearth : 0f;
+                intake = BaseMilitiaVillage + hearth * MilitiaPerHearth;
+            }
+            else if (settlement.IsFortification)
+            {
+                intake = BaseMilitiaFortification + Prosperity(settlement) * MilitiaPerProsperity;
+            }
+            else
+            {
+                return 0f;
+            }
+            float eq = intake / MilitiaRetirementRate;
+            float cap = MilitiaCap(settlement);
+            return (cap > 0f && eq > cap) ? cap : eq;
         }
 
         /// <summary>
@@ -674,10 +705,11 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Opens a new campaign with every settlement holding a quarter of its militia soft cap
-        /// (<see cref="MilitiaSeedCapFraction"/>), in place of vanilla's cap-blind <c>MilitiaChange * 45</c>.
-        /// New-game path only -- it overwrites the live militia count, which a loaded save must keep --
-        /// and after hearths and prosperity are built, so <see cref="MilitiaCap"/> reads a real ceiling.
+        /// Opens a new campaign with every settlement holding the steady state of RBM's base growth curve
+        /// (<see cref="EquilibriumMilitia"/>), in place of vanilla's cap-blind <c>MilitiaChange * 45</c>.
+        /// So each place starts on the strength it will actually keep and neither swells nor bleeds from
+        /// turn one. New-game path only -- it overwrites the live militia count, which a loaded save must
+        /// keep -- and after hearths and prosperity are built, so the equilibrium reads real numbers.
         /// </summary>
         public static void SeedInitialMilitia()
         {
@@ -691,12 +723,12 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                float cap = MilitiaCap(settlement);
-                if (cap <= 0f)
+                float eq = EquilibriumMilitia(settlement);
+                if (eq <= 0f)
                 {
                     continue;
                 }
-                settlement.Militia = cap * MilitiaSeedCapFraction;
+                settlement.Militia = eq;
             }
         }
 

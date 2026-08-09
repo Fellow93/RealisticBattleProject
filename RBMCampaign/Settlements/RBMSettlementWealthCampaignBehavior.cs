@@ -84,25 +84,28 @@ namespace RBMCampaign
             _newCampaign = true;
             _campaignSeeded = true;
             SettlementWealth.SeedVillagePurses();
-            // Fires after vanilla's MilitiasCampaignBehavior seed (the "...End" event runs once the
-            // partial follow-up is done), so this overwrites its cap-blind MilitiaChange*45 with a
-            // quarter of each settlement's soft cap.
-            MilitiaUpkeep.SeedInitialMilitia();
         }
 
         private void OnSessionLaunched(CampaignGameStarter starter)
         {
             SettlementWealth.InitializeAll();
 
-            // Deliberately NOT on the new-game hook beside the village purses, even though it is just as
-            // much a new-game-only step. RBMEconomyCampaignBehavior re-seeds every town's prosperity on
-            // that same event, and two listeners on one event run in behaviour registration order --
-            // which would leave this reading prosperity on whichever scale happened to win. Here it is
-            // unambiguously after the whole of OnNewGameCreated. Villages are safe where they are: their
-            // seed reads Hearth, which nothing rewrites.
+            // Deliberately NOT on the new-game hook beside the village purses, even though both are just as
+            // much new-game-only steps. RBMEconomyCampaignBehavior re-seeds every town's prosperity on that
+            // same event, and two listeners on one event run in behaviour registration order -- which would
+            // leave these reading prosperity on whichever scale happened to win. Here they are unambiguously
+            // after the whole of OnNewGameCreated, so prosperity is final before either is read.
+            //
+            //   * CITIZEN WEALTH reads prosperity directly.
+            //   * INITIAL MILITIA is seeded at each fortification's growth-curve equilibrium (see
+            //     MilitiaUpkeep.EquilibriumMilitia), which reads prosperity for its intake -- so it carries
+            //     the same ordering dependency and must run here, after the prosperity re-seed, not on the
+            //     new-game hook where it would race it. Villages are safe either way (their seed reads
+            //     Hearth, which nothing rewrites), but the whole seed is kept together here for clarity.
             if (_newCampaign)
             {
                 SettlementWealth.SeedCitizenWealth();
+                MilitiaUpkeep.SeedInitialMilitia();
             }
             // Installed here, once the session is up: the game registers the settlement tooltip refresher
             // at startup, so re-registering now sticks for the whole process. See SettlementWealthTooltip
