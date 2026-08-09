@@ -375,6 +375,7 @@
     <Compile Include="Production\WorkshopVillageBias.cs" />
     <Compile Include="Production\WorkshopDemand.cs" />
     <Compile Include="Production\WorkshopHeadroomGate.cs" />
+    <Compile Include="Production\WorkshopItemTierBias.cs" />
     <Compile Include="Production\TownFoodReserve.cs" />
     <Compile Include="Production\VillagerConvoys.cs" />
     <Compile Include="Production\VillagerDispatch.cs" />
