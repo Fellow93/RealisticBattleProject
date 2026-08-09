@@ -17734,7 +17734,7 @@
       <equipment slot="Item2"
                  id="Item.crossbow_repeating_heavy_RBM" />
       <equipment slot="Item3"
-                 id="Item.repeater_heavy_bolts_bolts" />
+                 id="Item.repeater_heavy_bolts" />
         <equipment slot="Cape"
                    id="Item.brass_lamellar_shoulder_white" />
         <equipment slot="Body"
@@ -17754,7 +17754,7 @@
       <equipment slot="Item2"
                  id="Item.crossbow_repeating_heavy_RBM" />
       <equipment slot="Item3"
-                 id="Item.repeater_heavy_bolts_bolts" />
+                 id="Item.repeater_heavy_bolts" />
         <equipment slot="Cape"
                    id="Item.imperial_studded_strip_shoulders" />
         <equipment slot="Body"
