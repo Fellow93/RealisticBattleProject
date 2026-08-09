@@ -517,8 +517,9 @@ namespace RBMCampaign
                     bool exhausted = false;
                     for (int man = 0; man < count; man++)
                     {
-                        // The right class and tier first, then any war gear at that value: a picked-over
-                        // market still arms the man from what it has. See UpgradeSupply.FindKitOrAnyWarGear.
+                        // The exact class first, then any gear of the same role, then a value-matched
+                        // fallback that stays in category: a picked-over market still arms the man in kind
+                        // from what it has. See UpgradeSupply.FindKitOrAnyWarGear.
                         int index = UpgradeSupply.FindKitOrAnyWarGear(stock, slot.ItemType, slot.Value);
                         if (index < 0)
                         {

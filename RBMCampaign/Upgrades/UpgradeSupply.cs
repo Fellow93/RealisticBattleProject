@@ -276,8 +276,9 @@ namespace RBMCampaign
                     {
                         for (int man = 0; man < goldBuyers; man++)
                         {
-                            // The right class and tier first, then any war gear at that value: a town short
-                            // of the exact piece still arms the man from what it has. See FindKitOrAnyWarGear.
+                            // The exact class first, then any gear of the same role, then a value-matched
+                            // fallback that stays in category: a town short of the exact piece still arms
+                            // the man in kind from what it has. See FindKitOrAnyWarGear.
                             int index = FindKitOrAnyWarGear(market, slot.ItemType, slot.Value);
                             if (index < 0)
                             {
@@ -441,26 +442,167 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The in-stock market item of the right class and tier if the market has one, and otherwise ANY
-        /// war gear of about that worth. -1 only when the market holds no war gear at all in band.
+        /// The in-stock market item to arm one kit slot with, chosen by a three-tier search that keeps a
+        /// man in gear of his own kind before it broadens. -1 only when the market holds nothing the slot
+        /// can use in band.
         /// </summary>
         /// <remarks>
-        /// This is the two-stage search both the recruit and the upgrade draws walk each kit slot with:
-        /// find the nearest part of the same class first -- a body upgrade pulling body armour, a horse
-        /// upgrade a horse -- and, when that class is out of stock, broaden to whatever war gear the town
-        /// does hold at that value rather than leaving the slot bare and outfitting the man off-screen. A
-        /// picked-over frontier market still arms its men from what it has, spending the kit's worth on
-        /// spare shields or helmets when the exact piece is gone. Trade goods and food are never kit --
-        /// see <see cref="IsWarGear"/>.
+        /// The search both the recruit and the upgrade draws walk each kit slot with. It prefers, in order:
+        /// (1) the exact item class and nearest tier -- a helmet slot pulls a helmet, a bow slot a bow;
+        /// (2) failing that, any item of the same FUNCTIONAL GROUP at that value -- a bow slot takes a
+        /// crossbow, an arrows slot any ammunition, a sword slot any melee weapon -- so an archer whose
+        /// exact bow is sold out is still armed with a launcher rather than a stray breastplate; and
+        /// (3) failing that, a value-appropriate fallback that stays in the slot's broad category: an
+        /// ARMOUR slot broadens only to other armour (never a spare weapon), every other slot to any war
+        /// gear the town holds. A picked-over frontier market still arms its men from what it has, but a
+        /// body-armour upgrade never walks off with a sidearm because the cuirasses ran out. Trade goods,
+        /// livestock and food are never kit -- see <see cref="IsWarGear"/>.
+        ///
+        /// One O(n) pass over the stall tracks the best candidate for each tier at once and returns the
+        /// highest tier that found anything, so the broadening costs no extra scans over the old two-stage
+        /// search it replaces. The half-to-double value band of <see cref="FindKitInStock(ItemRoster,int)"/>
+        /// is applied at every tier, so no tier ever spends the slot's coin on something wildly off tier.
         /// </remarks>
         internal static int FindKitOrAnyWarGear(ItemRoster market, ItemObject.ItemTypeEnum itemType, int targetValue)
         {
-            int index = FindKitInStock(market, itemType, targetValue);
-            if (index < 0)
+            int low = targetValue / 2;
+            int high = targetValue * 2;
+            bool armorSlot = IsArmorType(itemType);
+
+            int bestExact = -1, bestExactDelta = int.MaxValue;
+            int bestGroup = -1, bestGroupDelta = int.MaxValue;
+            int bestFallback = -1, bestFallbackDelta = int.MaxValue;
+
+            for (int i = 0; i < market.Count; i++)
             {
-                index = FindKitInStock(market, targetValue);
+                if (market.GetElementNumber(i) <= 0)
+                {
+                    continue;
+                }
+                ItemObject item = market.GetItemAtIndex(i);
+                if (item == null)
+                {
+                    continue;
+                }
+                ItemObject.ItemTypeEnum candidate = item.ItemType;
+
+                // What this candidate could serve as, cheapest tier of usefulness first. An armour slot
+                // broadens only to armour; every other slot to any war gear. A candidate that is neither
+                // in the slot's group nor a legal fallback (a trade good, a book, an off-category piece)
+                // cannot arm the slot at all and is passed over.
+                bool sameGroup = SameKitGroup(candidate, itemType);
+                bool fallbackEligible = armorSlot ? IsArmorType(candidate) : IsWarGear(item);
+                if (!sameGroup && !fallbackEligible)
+                {
+                    continue;
+                }
+
+                int value = item.Value;
+                if (value < low || value > high)
+                {
+                    continue;
+                }
+                int delta = MathF.Abs(value - targetValue);
+
+                if (candidate == itemType && delta < bestExactDelta)
+                {
+                    bestExactDelta = delta;
+                    bestExact = i;
+                }
+                if (sameGroup && delta < bestGroupDelta)
+                {
+                    bestGroupDelta = delta;
+                    bestGroup = i;
+                }
+                if (fallbackEligible && delta < bestFallbackDelta)
+                {
+                    bestFallbackDelta = delta;
+                    bestFallback = i;
+                }
             }
-            return index;
+
+            if (bestExact >= 0)
+            {
+                return bestExact;
+            }
+            if (bestGroup >= 0)
+            {
+                return bestGroup;
+            }
+            return bestFallback;
+        }
+
+        /// <summary>
+        /// The functional group two equipment classes share, or -1 for classes that group with nothing a
+        /// draw should broaden across (trade goods, books, banners). Two classes in the same group are
+        /// interchangeable enough that a man missing one is still armed in role by the other: a crossbow
+        /// stands in for a bow, bolts for arrows, an axe for a sword. Armour groups by wearer (all human
+        /// armour together) rather than by body part, so the broadened tier of <see cref="FindKitOrAnyWarGear"/>
+        /// can dress a bare slot in any spare piece; the exact-part preference lives in that search's first tier.
+        /// </summary>
+        private enum KitGroup
+        {
+            None,
+            Melee,
+            Thrown,
+            Launcher,
+            Ammunition,
+            Shield,
+            Armor,
+            Mount,
+            Barding,
+        }
+
+        private static KitGroup KitGroupOf(ItemObject.ItemTypeEnum itemType)
+        {
+            switch (itemType)
+            {
+                case ItemObject.ItemTypeEnum.OneHandedWeapon:
+                case ItemObject.ItemTypeEnum.TwoHandedWeapon:
+                case ItemObject.ItemTypeEnum.Polearm:
+                    return KitGroup.Melee;
+                case ItemObject.ItemTypeEnum.Thrown:
+                    return KitGroup.Thrown;
+                case ItemObject.ItemTypeEnum.Bow:
+                case ItemObject.ItemTypeEnum.Crossbow:
+                case ItemObject.ItemTypeEnum.Sling:
+                case ItemObject.ItemTypeEnum.Pistol:
+                case ItemObject.ItemTypeEnum.Musket:
+                    return KitGroup.Launcher;
+                case ItemObject.ItemTypeEnum.Arrows:
+                case ItemObject.ItemTypeEnum.Bolts:
+                case ItemObject.ItemTypeEnum.SlingStones:
+                case ItemObject.ItemTypeEnum.Bullets:
+                    return KitGroup.Ammunition;
+                case ItemObject.ItemTypeEnum.Shield:
+                    return KitGroup.Shield;
+                case ItemObject.ItemTypeEnum.HeadArmor:
+                case ItemObject.ItemTypeEnum.BodyArmor:
+                case ItemObject.ItemTypeEnum.LegArmor:
+                case ItemObject.ItemTypeEnum.HandArmor:
+                case ItemObject.ItemTypeEnum.ChestArmor:
+                case ItemObject.ItemTypeEnum.Cape:
+                    return KitGroup.Armor;
+                case ItemObject.ItemTypeEnum.Horse:
+                    return KitGroup.Mount;
+                case ItemObject.ItemTypeEnum.HorseHarness:
+                    return KitGroup.Barding;
+                default:
+                    return KitGroup.None;
+            }
+        }
+
+        /// <summary>Whether two equipment classes are interchangeable in role (see <see cref="KitGroupOf"/>).</summary>
+        private static bool SameKitGroup(ItemObject.ItemTypeEnum a, ItemObject.ItemTypeEnum b)
+        {
+            KitGroup group = KitGroupOf(a);
+            return group != KitGroup.None && group == KitGroupOf(b);
+        }
+
+        /// <summary>Human body armour of any part -- what an armour slot's fallback is allowed to broaden to.</summary>
+        private static bool IsArmorType(ItemObject.ItemTypeEnum itemType)
+        {
+            return KitGroupOf(itemType) == KitGroup.Armor;
         }
 
         /// <summary>
@@ -503,45 +645,6 @@ namespace RBMCampaign
                 default:
                     return false;
             }
-        }
-
-        /// <summary>
-        /// The in-stock market item of class <paramref name="itemType"/> closest in worth to
-        /// <paramref name="targetValue"/>, kept inside a half-to-double band so a promotion never spends
-        /// its coin on something wildly off tier. -1 when the market holds nothing of that class in band.
-        /// Matching the class is what makes a horse upgrade pull a horse and a body upgrade pull body armour.
-        /// </summary>
-        /// <remarks>Shared with <see cref="RecruitSupply"/>, which draws a recruit's kit the same way.</remarks>
-        internal static int FindKitInStock(ItemRoster market, ItemObject.ItemTypeEnum itemType, int targetValue)
-        {
-            int best = -1;
-            int bestDelta = int.MaxValue;
-            int low = targetValue / 2;
-            int high = targetValue * 2;
-            for (int i = 0; i < market.Count; i++)
-            {
-                if (market.GetElementNumber(i) <= 0)
-                {
-                    continue;
-                }
-                ItemObject item = market.GetItemAtIndex(i);
-                if (item == null || item.ItemType != itemType)
-                {
-                    continue;
-                }
-                int value = item.Value;
-                if (value < low || value > high)
-                {
-                    continue;
-                }
-                int delta = MathF.Abs(value - targetValue);
-                if (delta < bestDelta)
-                {
-                    bestDelta = delta;
-                    best = i;
-                }
-            }
-            return best;
         }
 
         /// <summary>
