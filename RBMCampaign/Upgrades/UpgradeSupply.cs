@@ -452,11 +452,12 @@ namespace RBMCampaign
         /// (2) failing that, any item of the same FUNCTIONAL GROUP at that value -- a bow slot takes a
         /// crossbow, an arrows slot any ammunition, a sword slot any melee weapon -- so an archer whose
         /// exact bow is sold out is still armed with a launcher rather than a stray breastplate; and
-        /// (3) failing that, a value-appropriate fallback that stays in the slot's broad category: an
-        /// ARMOUR slot broadens only to other armour (never a spare weapon), every other slot to any war
-        /// gear the town holds. A picked-over frontier market still arms its men from what it has, but a
-        /// body-armour upgrade never walks off with a sidearm because the cuirasses ran out. Trade goods,
-        /// livestock and food are never kit -- see <see cref="IsWarGear"/>.
+        /// (3) failing that, a value-appropriate fallback that stays in the slot's BROAD CATEGORY -- a
+        /// weapon broadens only to other weapons, armour only to other armour, a mount only to another
+        /// mount, barding only to other barding (see <see cref="SameKitCategory"/>). A picked-over frontier
+        /// market still arms its men from what it has, but a body-armour upgrade never walks off with a
+        /// sidearm, nor a sword slot with a cuirass, because the exact piece ran out. Trade goods, livestock,
+        /// books and food are never kit and so match no category.
         ///
         /// One O(n) pass over the stall tracks the best candidate for each tier at once and returns the
         /// highest tier that found anything, so the broadening costs no extra scans over the old two-stage
@@ -467,7 +468,6 @@ namespace RBMCampaign
         {
             int low = targetValue / 2;
             int high = targetValue * 2;
-            bool armorSlot = IsArmorType(itemType);
 
             int bestExact = -1, bestExactDelta = int.MaxValue;
             int bestGroup = -1, bestGroupDelta = int.MaxValue;
@@ -486,16 +486,17 @@ namespace RBMCampaign
                 }
                 ItemObject.ItemTypeEnum candidate = item.ItemType;
 
-                // What this candidate could serve as, cheapest tier of usefulness first. An armour slot
-                // broadens only to armour; every other slot to any war gear. A candidate that is neither
-                // in the slot's group nor a legal fallback (a trade good, a book, an off-category piece)
-                // cannot arm the slot at all and is passed over.
-                bool sameGroup = SameKitGroup(candidate, itemType);
-                bool fallbackEligible = armorSlot ? IsArmorType(candidate) : IsWarGear(item);
-                if (!sameGroup && !fallbackEligible)
+                // What this candidate could serve as. The fallback tier is bounded to the slot's broad
+                // category -- a weapon slot to any weapon, an armour slot to any armour, a mount to any
+                // mount, barding to any barding -- so a candidate outside the category (a trade good, or a
+                // cuirass for a sword slot) cannot arm the slot at all and is passed over. Same-group is a
+                // strict subset of same-category, so category eligibility gates the whole candidate.
+                bool fallbackEligible = SameKitCategory(candidate, itemType);
+                if (!fallbackEligible)
                 {
                     continue;
                 }
+                bool sameGroup = SameKitGroup(candidate, itemType);
 
                 int value = item.Value;
                 if (value < low || value > high)
@@ -599,10 +600,48 @@ namespace RBMCampaign
             return group != KitGroup.None && group == KitGroupOf(b);
         }
 
-        /// <summary>Human body armour of any part -- what an armour slot's fallback is allowed to broaden to.</summary>
-        private static bool IsArmorType(ItemObject.ItemTypeEnum itemType)
+        /// <summary>
+        /// The broad category a slot's LAST-RESORT fallback is confined to: every weapon-slot class
+        /// (melee, thrown, launcher, ammunition, shield) is one Weapon category, all human armour is Armor,
+        /// the mount and its barding are each their own. Wider than a <see cref="KitGroup"/> -- a launcher
+        /// and a sword share no group but both count as weapons -- and it is what stops an out-of-stock slot
+        /// from being filled across category lines (a weapon for an armour slot, or the reverse).
+        /// </summary>
+        private enum KitCategory
         {
-            return KitGroupOf(itemType) == KitGroup.Armor;
+            None,
+            Weapon,
+            Armor,
+            Mount,
+            Barding,
+        }
+
+        private static KitCategory KitCategoryOf(ItemObject.ItemTypeEnum itemType)
+        {
+            switch (KitGroupOf(itemType))
+            {
+                case KitGroup.Melee:
+                case KitGroup.Thrown:
+                case KitGroup.Launcher:
+                case KitGroup.Ammunition:
+                case KitGroup.Shield:
+                    return KitCategory.Weapon;
+                case KitGroup.Armor:
+                    return KitCategory.Armor;
+                case KitGroup.Mount:
+                    return KitCategory.Mount;
+                case KitGroup.Barding:
+                    return KitCategory.Barding;
+                default:
+                    return KitCategory.None;
+            }
+        }
+
+        /// <summary>Whether two equipment classes share a broad category (see <see cref="KitCategoryOf"/>).</summary>
+        private static bool SameKitCategory(ItemObject.ItemTypeEnum a, ItemObject.ItemTypeEnum b)
+        {
+            KitCategory category = KitCategoryOf(a);
+            return category != KitCategory.None && category == KitCategoryOf(b);
         }
 
         /// <summary>
