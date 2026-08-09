@@ -107,6 +107,7 @@ namespace RBM
                 var isRbmXml = false;
                 var isRbmCombatXml = false;
                 var isRbmUnitOverhaulXml = false;
+                var isRbmCampaignXml = false;
                 foreach (XComment comment in comments)
                 {
                     if (comment.Value.Contains("RBM_XML_TAG"))
@@ -117,7 +118,11 @@ namespace RBM
                     {
                         isRbmUnitOverhaulXml = true;
                     }
-                    if (comment.Value.Contains("RBM_COMBAT_XML_TAG"))
+                    if (comment.Value.Contains("RBM_CAMPAIGN_XML_TAG"))
+                    {
+                        isRbmCampaignXml = true;
+                    }
+                    else if (comment.Value.Contains("RBM_COMBAT_XML_TAG"))
                     {
                         isRbmCombatXml = true;
                     }
@@ -131,13 +136,18 @@ namespace RBM
                     __result = MBObjectManager.ToXmlDocument(originalXml);
                     return false;
                 }
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled && isRbmCampaignXml)
+                {
+                    __result = MBObjectManager.ToXmlDocument(originalXml);
+                    return false;
+                }
                 if ((!RBMConfig.RBMConfig.rbmCombatEnabled || !RBMConfig.RBMConfig.troopOverhaulActive) && isRbmUnitOverhaulXml)
                 {
                     __result = MBObjectManager.ToXmlDocument(originalXml);
                     return false;
                 }
 
-                if (RBMConfig.RBMConfig.rbmCombatEnabled)
+                if (RBMConfig.RBMConfig.rbmCombatEnabled || (RBMConfig.RBMConfig.rbmCampaignEnabled && isRbmCampaignXml))
                 {
                     if (isRbmXml)
                     {

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Items>
 <!--RBM_XML_TAG-->
-<!--RBM_COMBAT_XML_TAG-->
+<!--RBM_CAMPAIGN_XML_TAG-->
 	<!-- #region Trade -->
 	<Item
 		id="wool"
