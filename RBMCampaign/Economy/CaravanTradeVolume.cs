@@ -39,12 +39,12 @@ namespace RBMCampaign
         /// <summary>
         /// Ten times vanilla's 1,500, the same factor <see cref="TradeGoodValues"/> moved the price list by.
         /// </summary>
-        private const int LandCategoryBudget = 15000;
+        private const int LandCategoryBudget = 60000;
 
         /// <summary>
         /// Ten times the 3,000 War Sails gives a convoy, keeping the DLC's own doubling of the land figure.
         /// </summary>
-        private const int NavalCategoryBudget = 30000;
+        private const int NavalCategoryBudget = 120000;
 
         /// <summary>
         /// Stands in for "no ceiling". A real number rather than <c>int.MaxValue</c> because

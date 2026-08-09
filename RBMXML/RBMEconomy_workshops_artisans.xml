@@ -415,122 +415,7 @@
 					output_count="2"/>
 			</Outputs>
 		</Production>
-		
-	<!--< spears >-->			
-		<Production
-			conversion_speed="1">
-			<Inputs>
-				<Input
-					input_item="ironIngot2"
-					input_count="3"/>
-				<Input
-					input_item="planks" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.melee_weapons" 
-					output_count="12" />
-			</Outputs>
-		</Production>
-	<!--< basic swords >-->		
-		<Production
-			conversion_speed="1">
-			<Inputs>
-				<Input
-					input_item="ironIngot3" 
-					input_count="3"/>
-				<Input
-					input_item="planks" 
-					input_count="1"/>
-				<Input
-					input_item="hides" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.melee_weapons_2" 
-					output_count="4" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="1">
-			<Inputs>
-				<Input
-					input_item="ironIngot3" 
-					input_count="3"/>
-				<Input
-					input_item="planks" 
-					input_count="1"/>
-				<Input
-					input_item="hides" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.melee_weapons_2" 
-					output_count="4" />
-			</Outputs>
-		</Production>
-	<!--< basic axes and maces >-->				
-		<Production
-			conversion_speed="1">
-			<Inputs>
-				<Input
-					input_item="ironIngot3" 
-					input_count="3"/>
-				<Input
-					input_item="planks" 
-					input_count="1"/>
-				<Input
-					input_item="hides" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.melee_weapons_3" 
-					output_count="3" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="1">
-			<Inputs>
-				<Input
-					input_item="ironIngot3" 
-					input_count="3"/>
-				<Input
-					input_item="planks" 
-					input_count="1"/>
-				<Input
-					input_item="hides" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.melee_weapons_3" 
-					output_count="3" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="1">
-			<Inputs>
-				<Input
-					input_item="ironIngot3" 
-					input_count="3"/>
-				<Input
-					input_item="planks" 
-					input_count="1"/>
-				<Input
-					input_item="hides" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.melee_weapons_3" 
-					output_count="3" />
-			</Outputs>
-		</Production>
-		
+
 		<Production
 			conversion_speed="1">
 			<Inputs>
@@ -546,98 +431,61 @@
 					output_count="6" />
 			</Outputs>
 		</Production>
-
-<!--<		
-
+		
 		<Production
-			conversion_speed="0.7">
+			conversion_speed="0.34">
 			<Inputs>
 				<Input
+					input_item="ironIngot2"
+					input_count="3"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count="6"/>
+				<Input
 					input_item="planks" 
-					input_count ="1"/>
+					input_count="1"/>
 				<Input
 					input_item="hides" 
-					input_count ="1"/>
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.ranged_weapons"
-					output_count="4" />
-			</Outputs>
-		</Production>
-	
-		<Production
-			conversion_speed="0.5">
-			<Inputs>
-				<Input
-					input_item="planks" 
-					input_count ="1"/>
-				<Input
-					input_item="leather" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
+					output="ItemCategory.melee_weapons" 
+					output_count="9" />
 				<Output
-					output="ItemCategory.ranged_weapons_2" 
-					output_count="2"/>
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.5">
-			<Inputs>
-				<Input
-					input_item="planks" 
-					input_count ="1"/>
-				<Input
-					input_item="leather" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
+					output="ItemCategory.melee_weapons_2" 
+					output_count="6" />
 				<Output
-					output="ItemCategory.ranged_weapons_2" 
-					output_count="2"/>
+					output="ItemCategory.melee_weapons_3" 
+					output_count="3" />
 			</Outputs>
 		</Production>
-			
 		<Production
-			conversion_speed="0.12">
+			conversion_speed="0.34">
 			<Inputs>
-				<Input
-					input_item="planks" 
-					input_count ="1"/>
-				<Input
-					input_item="leather" 
-					input_count ="2"/>
 				<Input
 					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_3" 
-					output_count="2" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.12">
-			<Inputs>
+					input_count="8"/>
 				<Input
 					input_item="planks" 
-					input_count ="1"/>
+					input_count="1"/>
 				<Input
-					input_item="leather" 
-					input_count ="2"/>
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
+					input_item="hides" 
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.ranged_weapons_3" 
-					output_count="2" />
+					output="ItemCategory.melee_weapons" 
+					output_count="9" />
+				<Output
+					output="ItemCategory.melee_weapons_2" 
+					output_count="6" />
+				<Output
+					output="ItemCategory.melee_weapons_3" 
+					output_count="3" />
 			</Outputs>
 		</Production>
->-->		
+
 		<Production
 			conversion_speed="0.5">
 			<Inputs>
@@ -982,10 +830,10 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ironIngot2"
-					output_count="6" />
+					output_count="5" />
 				<Output
 					output="ItemCategory.ironIngot3"
-					output_count="4" />
+					output_count="5" />
 			</Outputs>
 		</Production>
 	<!--< Steel >-->
@@ -1738,7 +1586,7 @@
 					output_count="6" />
 			</Outputs>
 		</Production>
-	<!--< spears >-->			
+		
 		<Production
 			conversion_speed="1">
 			<Inputs>
@@ -1746,33 +1594,25 @@
 					input_item="ironIngot2"
 					input_count="3"/>
 				<Input
+					input_item="ironIngot3" 
+					input_count="6"/>
+				<Input
 					input_item="planks" 
 					input_count="1"/>
+				<Input
+					input_item="hides" 
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.melee_weapons" 
-					output_count="12" />
-			</Outputs>
-		</Production>
-	<!--< basic swords >-->		
-		<Production
-			conversion_speed="1">
-			<Inputs>
-				<Input
-					input_item="ironIngot3" 
-					input_count="3"/>
-				<Input
-					input_item="planks" 
-					input_count="1"/>
-				<Input
-					input_item="hides" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
+					output_count="9" />
 				<Output
 					output="ItemCategory.melee_weapons_2" 
-					output_count="4" />
+					output_count="6" />
+				<Output
+					output="ItemCategory.melee_weapons_3" 
+					output_count="3" />
 			</Outputs>
 		</Production>
 		<Production
@@ -1780,108 +1620,27 @@
 			<Inputs>
 				<Input
 					input_item="ironIngot3" 
-					input_count="3"/>
+					input_count="8"/>
 				<Input
 					input_item="planks" 
 					input_count="1"/>
 				<Input
 					input_item="hides" 
-					input_count="1"/>
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons" 
+					output_count="9" />
 				<Output
 					output="ItemCategory.melee_weapons_2" 
-					output_count="4" />
-			</Outputs>
-		</Production>		
-	<!--< 
-		<Production
-			conversion_speed="2">
-			<Inputs>
-				<Input
-					input_item="planks" 
-					input_count ="1"/>
-				<Input
-					input_item="hides" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
+					output_count="6" />
 				<Output
-					output="ItemCategory.ranged_weapons"
-					output_count="2" />
+					output="ItemCategory.melee_weapons_3" 
+					output_count="3" />
 			</Outputs>
 		</Production>
-	
-		<Production
-			conversion_speed="1.5">
-			<Inputs>
-				<Input
-					input_item="planks" 
-					input_count ="1"/>
-				<Input
-					input_item="leather" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_2" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="1.5">
-			<Inputs>
-				<Input
-					input_item="planks" 
-					input_count ="1"/>
-				<Input
-					input_item="leather" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_2" />
-			</Outputs>
-		</Production>
-			
-		<Production
-			conversion_speed="0.36">
-			<Inputs>
-				<Input
-					input_item="planks" 
-					input_count ="1"/>
-				<Input
-					input_item="leather" 
-					input_count ="2"/>
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_3" 
-					output_count="2" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.36">
-			<Inputs>
-				<Input
-					input_item="planks" 
-					input_count ="1"/>
-				<Input
-					input_item="leather" 
-					input_count ="2"/>
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_3" 
-					output_count="2" />
-			</Outputs>
-		</Production>
->-->
+
 		<Production
 			conversion_speed="1.5">
 			<Inputs>
@@ -1910,128 +1669,7 @@
 					output_count="2" />
 			</Outputs>
 		</Production>
-	<!--< 
-		<Production
-			conversion_speed="0.5">
-			<Inputs>
-				<Input
-					input_item="planks" 
-					input_count ="1"/>
-				<Input
-					input_item="leather" 
-					input_count ="3"/>
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_4" 
-					output_count="6"/>
-				<Output
-					output="ItemCategory.ranged_weapons_5" 
-					output_count="3" />
-			</Outputs>
-		</Production>
 		
-		<Production
-			conversion_speed="0.15">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_4" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.15">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_4" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.15">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_4" />
-			</Outputs>
-		</Production>
-		
-		<Production
-			conversion_speed="0.06">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_5" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.06">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_5" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.06">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_5" />
-			</Outputs>
-		</Production>
->-->		
 		<Production
 			conversion_speed="0.6">
 			<Inputs>
@@ -2558,66 +2196,61 @@
 					output_count="5" />
 			</Outputs>
 		</Production>
-			
-	<!--< basic axes and maces >-->				
+	
 		<Production
-			conversion_speed="3">
+			conversion_speed="1">
 			<Inputs>
 				<Input
-					input_item="ironIngot3" 
+					input_item="ironIngot2"
 					input_count="3"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count="6"/>
 				<Input
 					input_item="planks" 
 					input_count="1"/>
 				<Input
 					input_item="hides" 
-					input_count="1"/>
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons" 
+					output_count="9" />
+				<Output
+					output="ItemCategory.melee_weapons_2" 
+					output_count="6" />
 				<Output
 					output="ItemCategory.melee_weapons_3" 
 					output_count="3" />
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="3">
+			conversion_speed="1">
 			<Inputs>
 				<Input
 					input_item="ironIngot3" 
-					input_count="3"/>
+					input_count="8"/>
 				<Input
 					input_item="planks" 
 					input_count="1"/>
 				<Input
 					input_item="hides" 
-					input_count="1"/>
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
+				<Output
+					output="ItemCategory.melee_weapons" 
+					output_count="9" />
+				<Output
+					output="ItemCategory.melee_weapons_2" 
+					output_count="6" />
 				<Output
 					output="ItemCategory.melee_weapons_3" 
 					output_count="3" />
 			</Outputs>
 		</Production>
-		<Production
-			conversion_speed="3">
-			<Inputs>
-				<Input
-					input_item="ironIngot3" 
-					input_count="3"/>
-				<Input
-					input_item="planks" 
-					input_count="1"/>
-				<Input
-					input_item="hides" 
-					input_count="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.melee_weapons_3" 
-					output_count="3" />
-			</Outputs>
-		</Production>
-	<!--< 2H axes, maces and polearms >-->			
+	
 		<Production
 			conversion_speed="1.5">
 			<Inputs>

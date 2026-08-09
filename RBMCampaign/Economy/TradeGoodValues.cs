@@ -81,7 +81,7 @@ namespace RBMCampaign
                 { "ironIngot3",  (22,     1f) },    // iron
                 { "ironIngot4",  (40,     1f) },    // steel
                 { "ironIngot5",  (69,     1f) },    // fine steel
-                { "ironIngot6",  (120,    1f) },    // thamaskene steel
+                { "ironIngot6",  (180,    1f) },    // thamaskene steel
             };
 
         // ItemObject.Value and ItemObject.Weight are public getters with private setters, so the

@@ -41,7 +41,7 @@ namespace RBMCampaign
     /// </remarks>
     public static class ArtisanOutput
     {
-        private const float OwnedWorkshopProsperityShare = 0.10f;
+        private const float OwnedWorkshopProsperityShare = 0.20f;
 
         private struct Bench
         {

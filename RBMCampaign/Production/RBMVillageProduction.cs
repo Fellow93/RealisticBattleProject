@@ -61,10 +61,10 @@ namespace RBMCampaign
         // pack items so the per-ranch pack total equals HorsePackBucket regardless of item count.
         // Deliberately NOT used: `saddle_horse` (a PackAnimal redundant with mule/sumpter) and the
         // shared `war_horse` item (flagged is_merchandise="false", so it is not a tradeable good).
-        private const float HorseNormalRate = 0.007f;
+        private const float HorseNormalRate = 0.015f;
         private const float HorseWarRate = 0.0020f;
         private const float HorseNobleRate = 0.0005f;
-        private const float HorsePackBucket = 0.003f; // total pack animals per Hearth per day, split across pack items
+        private const float HorsePackBucket = 0.01f; // total pack animals per Hearth per day, split across pack items
 
         private static (string, float)[] HorseRanch(string cultureHorse)
         {

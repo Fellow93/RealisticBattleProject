@@ -87,7 +87,7 @@ namespace RBMCombat
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Thrown)
                     {
-                        price *= 0.25f;
+                        price *= 0.5f;
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Sling)
                     {
@@ -99,7 +99,7 @@ namespace RBMCombat
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Shield)
                     {
-                        price = (120f + (tier * 120f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
+                        price = (20f + (tier * 140f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Arrows || item.ItemType == ItemObject.ItemTypeEnum.Bolts || item.ItemType == ItemObject.ItemTypeEnum.SlingStones)
                     {
