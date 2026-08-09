@@ -369,20 +369,21 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// What a lord pays to muster a man, into the TOWN'S OWN TREASURY rather than its market. Raising
-        /// soldiers is something the fief does as a body -- its notables find the men and answer for them
-        /// -- so the fee for it belongs to the settlement, not to the shopkeepers. Vanilla destroyed the
-        /// whole recruit price; this is where it goes instead.
+        /// What a lord pays to muster a man. In a town it reaches the CITIZENS who armed him, reimbursing
+        /// the wealth they fronted for his kit when he first stepped forward (the gear leg debits them; see
+        /// <see cref="RecruitSupply.DrawKitFromMarket"/>) -- their profit on the man is the bounty over his
+        /// gear. In a village, which keeps a single purse, it lands there, reimbursing what the village paid
+        /// its trade town for the kit. Vanilla destroyed the whole recruit price; this is where it goes.
         /// </summary>
         /// <remarks>
-        /// Deliberately NOT through <see cref="CreditLocalPurse"/>, and deliberately untariffed. A tariff
-        /// is a market fee: <see cref="TradeTariff.Levy"/> takes its cut OUT of citizen wealth and moves
-        /// it to the treasury, which only makes sense for money that reached the citizens first. Levying
-        /// on a payment that went straight to the treasury would debit the townspeople for a sale they
-        /// were never part of -- taking money off them rather than taxing money they had just been given.
+        /// Deliberately untariffed. A tariff is a market fee: <see cref="TradeTariff.Levy"/> takes its cut
+        /// OUT of citizen wealth and moves it to the treasury. The recruit price is the citizens' own
+        /// reimbursement for gear they already paid for -- levying it would tax them on the recovery of
+        /// their own outlay, which is why this credits them directly rather than through
+        /// <see cref="CreditLocalPurse"/>.
         ///
-        /// The goods a recruit walks off with are handled where they leave, when he is first raised, and
-        /// are not paid for at all -- so nothing is registered as demand here either.
+        /// The goods a recruit walks off with are handled where they leave, when he is first raised -- and
+        /// in a town his citizens are debited their value there -- so nothing is registered as demand here.
         /// </remarks>
         public static void RegisterRecruitPay(Settlement settlement, int goldSpent)
         {
@@ -390,7 +391,16 @@ namespace RBMCampaign
             {
                 return;
             }
-            SettlementWealth.Credit(settlement, goldSpent, SettlementWealth.Source.Recruit);
+            // A town credits the citizens who armed him; a village its single purse. Castles never reach
+            // here (PayRecruitPrice gates on town/village), so the split is exactly these two.
+            if (SettlementWealth.HasCitizenPurse(settlement))
+            {
+                SettlementWealth.CreditCitizens(settlement, goldSpent, SettlementWealth.Source.Recruit);
+            }
+            else
+            {
+                SettlementWealth.Credit(settlement, goldSpent, SettlementWealth.Source.Recruit);
+            }
 
             Town town = Receiver(settlement, goldSpent);
             if (town != null)

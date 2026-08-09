@@ -926,6 +926,20 @@ namespace RBMCampaign
                     MilitiaVillageGearShare);
                 return;
             }
+            // A castle keeps no market of its own, so it buys a full kit off its nearest friendly town,
+            // paying that town's merchants the full kit value out of its own wealth whatever they had in
+            // stock -- the same remote-buyer draw a village uses, and real, typed stock leaves that town's
+            // shelves for it. Only when the draw feature is on and a supply town can be reached; otherwise
+            // it falls through to the abstract debit below, so a castle's watch is never armed for free.
+            if (settlement.IsCastle)
+            {
+                Settlement castleMarket = RecruitSupply.IsEnabled ? ResolveCastleSupplyMarket(settlement) : null;
+                if (castleMarket != null)
+                {
+                    RecruitSupply.DrawKitFromMarket(castleMarket, settlement, troop, 1);
+                    return;
+                }
+            }
             int cost = SpoilsPool.GetEquipmentValue(troop);
             if (cost <= 0)
             {
@@ -938,9 +952,28 @@ namespace RBMCampaign
             }
             else
             {
-                // A castle has no market; the kit is sourced from outside and the coin leaves its wealth.
+                // A castle with no town left to supply it (or with the draw feature off): the kit is sourced
+                // off-screen and the coin simply leaves its wealth, unmatched by any town's gain.
                 SettlementWealth.Debit(settlement, cost, SettlementWealth.Source.Militia);
             }
+        }
+
+        /// <summary>
+        /// The town a castle buys its militia kit from: the nearest town its faction is not at war with.
+        /// Null when the castle can reach no such town -- a faction reduced to that castle alone -- in which
+        /// case the caller arms the man off-screen and debits the castle's own wealth instead.
+        /// </summary>
+        private static Settlement ResolveCastleSupplyMarket(Settlement castle)
+        {
+            if (castle == null)
+            {
+                return null;
+            }
+            IFaction faction = castle.MapFaction;
+            Town town = SettlementHelper.FindNearestTownToSettlement(castle, MobileParty.NavigationType.Default,
+                s => s.MapFaction != null && faction != null
+                    && (s.MapFaction == faction || !faction.IsAtWarWith(s.MapFaction)));
+            return (town != null) ? town.Settlement : null;
         }
     }
 }

@@ -362,6 +362,22 @@ namespace RBMCampaign
             public const string VillageArms = "village-arms";
 
             /// <summary>
+            /// A castle paying its nearest friendly town for the gear its militia take off that town's
+            /// shelves. A castle keeps no market of its own, so where a town arms its watch straight out of
+            /// its citizens' wealth, a castle buys the kit off a town's stalls and pays that town's
+            /// merchants for it out of its own wealth. See <see cref="MilitiaUpkeep"/>.
+            /// </summary>
+            public const string CastleArms = "castle-arms";
+
+            /// <summary>
+            /// A town's citizens fronting the cost of arming their own new volunteers -- the kit that leaves
+            /// their shelves when a man first steps forward, before any lord has come for him. Recovered
+            /// under <see cref="Recruit"/> when one is mustered; carried as a loss on the men who never are.
+            /// See <see cref="RecruitSupply.DrawKitFromMarket"/>.
+            /// </summary>
+            public const string TownArms = "town-arms";
+
+            /// <summary>
             /// A village purse stripped by a raid. The whole draw leaves the settlement; part is carried
             /// off as the raiders' spoils and the rest is burned, spoiled or hidden and gone from the
             /// economy. The drawn coin never re-enters a settlement purse -- the spoils leg lands in the

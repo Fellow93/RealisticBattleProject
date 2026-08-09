@@ -481,11 +481,16 @@ namespace RBMCampaign
                 return;
             }
 
-            // A village buys its recruits' gear off its market town and pays for it; a town serving its
-            // own recruits does not. The village can only arm what its purse covers, so the kit budget is
-            // capped at what it holds -- a broke village simply arms fewer men, or none.
-            bool villagePays = raisedAt != null && raisedAt.IsVillage && market != raisedAt
-                && SettlementWealth.HasCitizenPurse(market);
+            // A settlement that draws its gear off ANOTHER settlement's market pays that town's merchants
+            // the full kit it set out to buy, out of its own purse -- a village from its trade-bound town, a
+            // castle from its nearest friendly town. A town serving its own recruits does not (market ==
+            // raisedAt). The buyer can only spend what its purse holds, so the kit budget is capped at its
+            // wealth -- a broke fief arms its men cheaper, not free of charge.
+            bool remoteBuyerPays = raisedAt != null && (raisedAt.IsVillage || raisedAt.IsCastle)
+                && market != raisedAt && SettlementWealth.HasCitizenPurse(market);
+            string armsSource = (raisedAt != null && raisedAt.IsCastle)
+                ? SettlementWealth.Source.CastleArms
+                : SettlementWealth.Source.VillageArms;
 
             ItemRoster stock = market.ItemRoster;
             int budget = (int)(perManValue * count * valueShare);
@@ -493,7 +498,7 @@ namespace RBMCampaign
             {
                 return;
             }
-            if (villagePays)
+            if (remoteBuyerPays)
             {
                 int purse = SettlementWealth.GetSettlementWealth(raisedAt);
                 if (purse < budget)
@@ -556,18 +561,29 @@ namespace RBMCampaign
                 }
             }
 
-            // The village pays the town's merchants for the gear its recruits walked off with. The kit
-            // budget was capped at the purse above, so drawn ≤ budget ≤ purse and the debit is exact --
-            // no gear is taken that the village did not pay for. Money village → town market, mirroring
-            // the goods that went town → village. A town arming its own sons falls through and pays none.
+            // The buying fief pays the town's merchants the FULL kit value it set out to spend, whatever the
+            // market could actually supply -- the payment is the budget (already capped at the purse), not
+            // the lesser sum the draw happened to find. A picked-clean market still costs the fief the full
+            // arming: the coin goes to the town that brokered it and any stock it lacked is sourced
+            // off-screen. Money fief → town citizens, near-mirroring the goods that went town → fief. A town
+            // arming its own sons falls through and pays none here.
             int paid = 0;
-            if (villagePays && drawn > 0)
+            if (remoteBuyerPays && budget > 0)
             {
-                paid = SettlementWealth.Debit(raisedAt, drawn, SettlementWealth.Source.VillageArms);
+                paid = SettlementWealth.Debit(raisedAt, budget, armsSource);
                 if (paid > 0)
                 {
-                    SettlementWealth.CreditCitizens(market, paid, SettlementWealth.Source.VillageArms);
+                    SettlementWealth.CreditCitizens(market, paid, armsSource);
                 }
+            }
+            else if (raisedAt == market && drawn > 0 && SettlementWealth.HasCitizenPurse(market))
+            {
+                // A town arming its own volunteers off its own shelves: its citizens front the value of the
+                // kit that left, recovered when a lord musters the man -- RegisterRecruitPay credits the
+                // recruit price back to those same citizens. Decoupled like the two legs it sits between:
+                // gear now, coin if and when someone comes for him, so a town that arms more men than its
+                // lords collect carries the cost of the difference, as it should.
+                SettlementWealth.DebitCitizens(market, drawn, SettlementWealth.Source.TownArms);
             }
 
             if (SpoilsLog.IsEnabled && taken > 0)
@@ -575,7 +591,7 @@ namespace RBMCampaign
                 SpoilsLog.Log("RECRUIT", (raisedAt != null ? raisedAt.Name.ToString() : "?") + " raised "
                     + count + "x " + SpoilsLog.Describe(character) + "; armed from " + market.Name
                     + " with " + taken + "/" + wanted + " item(s) worth " + drawn + "d of " + budget
-                    + "d kit" + (villagePays ? ", paid " + paid + "d" : "")
+                    + "d kit" + (remoteBuyerPays ? ", paid " + paid + "d" : "")
                     + (taken < wanted ? " — market short " + (wanted - taken) : ""));
             }
         }
