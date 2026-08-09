@@ -536,7 +536,7 @@
 			<Inputs>
 				<Input
 					input_item="ironIngot2"
-					input_count ="6"/>
+					input_count ="1"/>
 				<Input
 					input_item="planks" />
 			</Inputs>
@@ -546,8 +546,9 @@
 					output_count="6" />
 			</Outputs>
 		</Production>
-		
-	<!--< Longbows >-->
+
+<!--<		
+
 		<Production
 			conversion_speed="0.7">
 			<Inputs>
@@ -561,10 +562,10 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ranged_weapons"
-					output_count="2" />
+					output_count="4" />
 			</Outputs>
 		</Production>
-	<!--< Horsebows >-->		
+	
 		<Production
 			conversion_speed="0.5">
 			<Inputs>
@@ -577,7 +578,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.ranged_weapons_2" />
+					output="ItemCategory.ranged_weapons_2" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -592,10 +594,11 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.ranged_weapons_2" />
+					output="ItemCategory.ranged_weapons_2" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
-	<!--< Crossbows >-->			
+			
 		<Production
 			conversion_speed="0.12">
 			<Inputs>
@@ -629,6 +632,35 @@
 					input_count ="1"/>
 			</Inputs>
 			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_3" 
+					output_count="2" />
+			</Outputs>
+		</Production>
+>-->		
+		<Production
+			conversion_speed="0.5">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="2"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons"
+					output_count="6" />
+				<Output
+					output="ItemCategory.ranged_weapons_2" 
+					output_count="4"/>
 				<Output
 					output="ItemCategory.ranged_weapons_3" 
 					output_count="2" />
@@ -636,88 +668,95 @@
 		</Production>
 		
 		<Production
-			conversion_speed="1">
+			conversion_speed="0.2">
 			<Inputs>
 				<Input
 					input_item="planks" 
-					input_count ="1"/>
+					input_count="1"/>
+				<Input
+					input_item="hides" />
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.shield" 
-					output_count="2" />
+					output_count="10" />
 			</Outputs>
 		</Production>
 		
 		<Production
-			conversion_speed="0.7">
+			conversion_speed="0.3">
 			<Inputs>
 				<Input
 					input_item="planks" />
 				<Input
-					input_item="hides" />
+					input_item="hides" 
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_2" 
-					output_count="2" />
+					output_count="5" />
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="0.7">
+			conversion_speed="0.3">
 			<Inputs>
 				<Input
 					input_item="planks" />
 				<Input
-					input_item="hides" />
+					input_item="hides" 
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_2" 
-					output_count="2" />
+					output_count="5" />
 			</Outputs>
 		</Production>
 		
 		<Production
-			conversion_speed="0.5">
+			conversion_speed="0.2">
 			<Inputs>
 				<Input
 					input_item="planks" />
 				<Input
-					input_item="leather" />
+					input_item="leather" 
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_3" 
-					output_count="2" />
+					output_count="5" />
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="0.5">
+			conversion_speed="0.2">
 			<Inputs>
 				<Input
 					input_item="planks" />
 				<Input
-					input_item="leather" />
+					input_item="leather" 
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_3" 
-					output_count="2" />
+					output_count="5" />
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="0.5">
+			conversion_speed="0.2">
 			<Inputs>
 				<Input
 					input_item="planks" />
 				<Input
-					input_item="leather" />
+					input_item="leather" 
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_3" 
-					output_count="2" />
+					output_count="5" />
 			</Outputs>
 		</Production>
 	<!--< saddle (T1) >-->			
@@ -918,7 +957,7 @@
 			<Inputs>
 				<Input
 					input_item="grain" 
-					input_count="2"/>
+					input_count="1"/>
 				<Input
 					input_item="planks" 
 					input_count="1"/>
@@ -1004,7 +1043,7 @@
 			<Inputs>
 				<Input
 					input_item="grain" 
-					input_count="2"/>
+					input_count="1"/>
 				<Input
 					input_item="planks" 
 					input_count="1"/>
@@ -1020,7 +1059,7 @@
 		_replaceWhileMerging="true"
 		id="velvet_weavery"
 		name="{=EBCKXbTa}Velvet Weavery"
-		frequency="2"
+		frequency="1"
 		equipment_cost="240000"
 		jobname="{=HXuAkbcU}Velvet Weaver"
 		description="{=oFKrLaBy}We weave raw silk into even finer velvet to make the most luxurious garments in Calradia.">
@@ -1049,7 +1088,7 @@
 		_replaceWhileMerging="true"
 		id="linen_weavery"
 		name="{=tK4IiP3J}Linen Weavery"
-		frequency="2"
+		frequency="1"
 		equipment_cost="144000"
 		jobname="{=RLz2b53X}Clothier"
 		description="{=vDwDPFua}We subject flax stalks to a lengthy process to separate the fibers, then weave them into linen. The fabric is lighter than wool and popular in summers and in hotter regions.">
@@ -1194,7 +1233,7 @@
 		_replaceWhileMerging="true"
 		id="wine_press"
 		name="{=uy2mSmw3}Wine Press"
-		frequency="2"
+		frequency="1"
 		equipment_cost="144000"
 		jobname="{=PdvjpThP}Vintner"
 		description="{=llI5116T}We press grapes and ferment the juice. Wine is always in high demand throughout Calradia.">
@@ -1227,7 +1266,7 @@
 		_replaceWhileMerging="true"
 		id="pottery_shop"
 		name="{=Tj7ErPfn}Pottery Shop"
-		frequency="2"
+		frequency="1"
 		equipment_cost="48000"
 		jobname="{=wLTQpbIM}Potter"
 		description="{=yI0RHP6R}We fashion pots out of clay then bake them in kilns. People store most everything in pots and they're always in high demand.">
@@ -1256,7 +1295,7 @@
 		_replaceWhileMerging="true"
 		id="olive_press"
 		name="{=boupIGPX}Olive Press"
-		frequency="2"
+		frequency="1"
 		equipment_cost="240000"
 		jobname="{=wCuAxt4m}Oilpresser"
 		description="{=qF9UGd2S}We crush olives and then drain the oil to be used for cooking, to light lamps, for soap, and for many other purposes.">
@@ -1292,7 +1331,7 @@
 		_replaceWhileMerging="true"
 		id="wool_weavery"
 		name="{=bZeZCHoa}Wool Weavery"
-		frequency="2"
+		frequency="1"
 		equipment_cost="48000"
 		jobname="{=eS6nGak1}Wool Weaver"
 		description="{=w94Fl25I}We take wool from sheep and first clean and card it. Then, we wet and press the wool fibers together, creating a thick, warm felt. It keeps out the cold and wet.">
@@ -1473,6 +1512,53 @@
 			shop_prop_mesh_name_4="shop_prop_merchantleather_d"
 			shop_prop_mesh_name_5="shop_prop_merchantleather_e"
 			shop_prop_mesh_name_6="shop_prop_merchantleather_f" />
+			
+		<Production
+			conversion_speed="24">
+			<Inputs>
+				<Input
+					input_item="cow" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.meat"
+					output_count="2" />
+				<Output
+					output="ItemCategory.hides"
+					output_count="4" />
+			</Outputs>
+		</Production>				
+		<Production
+			conversion_speed="48">
+			<Inputs>
+				<Input
+					input_item="sheep" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.meat"
+					output_count="1" />
+				<Output
+					output="ItemCategory.hides"
+					output_count="3" />
+			</Outputs>
+		</Production>			
+		<Production
+			conversion_speed="60">
+			<Inputs>
+				<Input
+					input_item="hog" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.meat"
+					output_count="1" />
+				<Output
+					output="ItemCategory.hides"
+					output_count="2" />
+			</Outputs>
+		</Production>
+			
 		<Production
 			conversion_speed="4.5">
 			<Inputs>
@@ -1607,7 +1693,7 @@
 		_replaceWhileMerging="true"
 		id="wood_WorkshopType"
 		name="{=UiSes6XY}Wood Workshop"
-		frequency="2"
+		frequency="1"
 		equipment_cost="48000"
 		jobname="{=IO7Jgato}Carpenter"
 		description="{=wUwYYcjM}Well, we take hardwood logs and split them into rough boards. Then, we smooth and shape them with planes and saws to make sturdy planks. Folk use them for all kinds of building, or to make ships.">
@@ -1642,7 +1728,7 @@
 			<Inputs>
 				<Input
 					input_item="ironIngot2"
-					input_count ="6"/>
+					input_count ="1"/>
 				<Input
 					input_item="planks" />
 			</Inputs>
@@ -1708,7 +1794,7 @@
 					output_count="4" />
 			</Outputs>
 		</Production>		
-	<!--< Longbows >-->
+	<!--< 
 		<Production
 			conversion_speed="2">
 			<Inputs>
@@ -1725,7 +1811,7 @@
 					output_count="2" />
 			</Outputs>
 		</Production>
-	<!--< Horsebows >-->		
+	
 		<Production
 			conversion_speed="1.5">
 			<Inputs>
@@ -1756,7 +1842,7 @@
 					output="ItemCategory.ranged_weapons_2" />
 			</Outputs>
 		</Production>
-	<!--< Crossbows >-->			
+			
 		<Production
 			conversion_speed="0.36">
 			<Inputs>
@@ -1795,253 +1881,201 @@
 					output_count="2" />
 			</Outputs>
 		</Production>
-		
+>-->
 		<Production
-			conversion_speed="0.15">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_4" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.15">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_4" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.15">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_4" />
-			</Outputs>
-		</Production>
-		
-		<Production
-			conversion_speed="0.06">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_5" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.06">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_5" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.06">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" 
-					input_count ="1"/>
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.ranged_weapons_5" />
-			</Outputs>
-		</Production>
-		
-		<Production
-			conversion_speed="3">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="planks" 
 					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="2"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons"
+					output_count="6" />
+				<Output
+					output="ItemCategory.ranged_weapons_2" 
+					output_count="4"/>
+				<Output
+					output="ItemCategory.ranged_weapons_3" 
+					output_count="2" />
+			</Outputs>
+		</Production>
+	<!--< 
+		<Production
+			conversion_speed="0.5">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="3"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_4" 
+					output_count="6"/>
+				<Output
+					output="ItemCategory.ranged_weapons_5" 
+					output_count="3" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.15">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
+				<Input
+					input_item="ironIngot3" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_4" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.15">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
+				<Input
+					input_item="ironIngot3" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_4" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.15">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
+				<Input
+					input_item="ironIngot3" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_4" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.06">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
+				<Input
+					input_item="ironIngot3" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_5" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.06">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
+				<Input
+					input_item="ironIngot3" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_5" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.06">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" />
+				<Input
+					input_item="ironIngot3" 
+					input_count ="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ranged_weapons_5" />
+			</Outputs>
+		</Production>
+>-->		
+		<Production
+			conversion_speed="0.6">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count="1"/>
+				<Input
+					input_item="hides" />
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.shield" 
-					output_count="2" />
+					output_count="10" />
 			</Outputs>
 		</Production>
 		
 		<Production
-			conversion_speed="2.1">
+			conversion_speed="0.9">
 			<Inputs>
 				<Input
 					input_item="planks" />
 				<Input
-					input_item="hides" />
+					input_item="hides" 
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_2" 
-					output_count="2" />
+					output_count="5" />
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="2.1">
+			conversion_speed="0.9">
 			<Inputs>
 				<Input
 					input_item="planks" />
 				<Input
-					input_item="hides" />
+					input_item="hides" 
+					input_count="2"/>
 			</Inputs>
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_2" 
-					output_count="2" />
-			</Outputs>
-		</Production>
-		
-		<Production
-			conversion_speed="1.5">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.shield_3" 
-					output_count="2" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="1.5">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.shield_3" 
-					output_count="2" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="1.5">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.shield_3" 
-					output_count="2" />
-			</Outputs>
-		</Production>
-		
-		<Production
-			conversion_speed="0.9">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.shield_4"
-					output_count="2" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.9">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.shield_4"
-					output_count="2" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.9">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.shield_4"
-					output_count="2" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="0.9">
-			<Inputs>
-				<Input
-					input_item="planks" />
-				<Input
-					input_item="leather" />
-				<Input
-					input_item="ironIngot3" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.shield_4"
-					output_count="2" />
+					output_count="5" />
 			</Outputs>
 		</Production>
 		
@@ -2051,6 +2085,121 @@
 				<Input
 					input_item="planks" />
 				<Input
+					input_item="leather" 
+					input_count="2"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_3" 
+					output_count="5" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.6">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" 
+					input_count="2"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_3" 
+					output_count="5" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.6">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" 
+					input_count="2"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_3" 
+					output_count="5" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.6">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" 
+					input_count="2"/>
+				<Input
+					input_item="ironIngot3" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_4"
+					output_count="4" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.6">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" 
+					input_count="2"/>
+				<Input
+					input_item="ironIngot3" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_4"
+					output_count="4" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.6">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" 
+					input_count="2"/>
+				<Input
+					input_item="ironIngot3" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_4"
+					output_count="4" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.6">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
+					input_item="leather" 
+					input_count="2"/>
+				<Input
+					input_item="ironIngot3" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.shield_4"
+					output_count="4" />
+			</Outputs>
+		</Production>
+		
+		<Production
+			conversion_speed="0.6">
+			<Inputs>
+				<Input
+					input_item="planks" />
+				<Input
 					input_item="leather" />
 				<Input
 					input_item="ironIngot4" />
@@ -2058,7 +2207,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_5"
-					output_count="2" />
+					output_count="3" />
 			</Outputs>
 		</Production>
 		<Production
@@ -2074,7 +2223,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_5"
-					output_count="2" />
+					output_count="3" />
 			</Outputs>
 		</Production>
 		<Production
@@ -2090,7 +2239,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_5"
-					output_count="2" />
+					output_count="3" />
 			</Outputs>
 		</Production>
 		<Production
@@ -2106,7 +2255,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_5"
-					output_count="2" />
+					output_count="3" />
 			</Outputs>
 		</Production>
 		<Production
@@ -2122,7 +2271,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.shield_5"
-					output_count="2" />
+					output_count="3" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -2130,7 +2279,7 @@
 		_replaceWhileMerging="true"
 		id="smithy"
 		name="{=Kqt8RHh7}Smithy"
-		frequency="2"
+		frequency="1"
 		equipment_cost="240000"
 		jobname="{=8MwqyFfS}Ironmonger"
 		description="{=J2Ioper5}Iron ore is smelted into ingots then forged into tools, nails, weapons and armor in a smithy.">
@@ -3005,7 +3154,7 @@
 		_replaceWhileMerging="true"
 		id="silversmithy"
 		name="{=silversmithworkshop}Silversmith"
-		frequency="2"
+		frequency="1"
 		equipment_cost="240000"
 		jobname="{=silversmithworker}Silversmith"
 		description="{=cxrsASao}Rare silver ore is turned into jewelry, the finest of all trade goods, in a Silversmith.">

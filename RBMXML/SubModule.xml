@@ -244,6 +244,14 @@
 		</IncludedGameTypes>
 	</XmlNode>
 	
+	<XmlNode>
+		<XmlName id="Items" path="RBMEconomy_trade_goods"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	
 	<XmlNode>                
 		<XmlName id="SkillSets" path="RBM_custom_battle_skill_sets" />
 		<IncludedGameTypes>

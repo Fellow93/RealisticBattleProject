@@ -216,12 +216,12 @@ namespace RBMCampaign
         private static readonly Dictionary<string, float> MarkupCaps = new Dictionary<string, float>
         {
             // Basic (2x) -- staples every region produces; a shortage cannot spike them far.
-            { "flax", BasicCap }, { "clay", BasicCap }, { "cheese", BasicCap },
+            { "flax", BasicCap }, { "clay", BasicCap }, { "cheese", BasicCap }, { "cow", BasicCap },
             { "butter", BasicCap }, { "olives", BasicCap }, { "grape", BasicCap }, { "wool", BasicCap },
             { "grain", BasicCap }, { "hides", BasicCap }, { "meat", BasicCap }, { "planks", BasicCap },
             { "silver", BasicCap }, { "iron", BasicCap }, { "hardwood", BasicCap }, { "charcoal", BasicCap },
             { "ironIngot1", BasicCap }, { "ironIngot2", BasicCap }, { "ironIngot3", BasicCap },
-            { "linen", BasicCap }, { "felt", BasicCap },
+            { "linen", BasicCap }, { "felt", BasicCap }, { "hog", BasicCap }, { "sheep", BasicCap },
 
             // Medium (4x) -- semi-processed or regional goods that answer scarcity harder.
             { "leather", MediumCap }, { "fish", MediumCap }, { "salt", MediumCap }, { "cotton", MediumCap },

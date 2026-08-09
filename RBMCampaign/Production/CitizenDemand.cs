@@ -182,7 +182,7 @@ namespace RBMCampaign
         /// </remarks>
         private static readonly Line[] LargeLuxuries =
         {
-            new Line("jewelry", 0.0066f),
+            new Line("jewelry", 0.01f),
             new Line("walrus_tusk", 0.003f),
             new Line("velvet", 0.001f),
             new Line("planks", 0.003f),

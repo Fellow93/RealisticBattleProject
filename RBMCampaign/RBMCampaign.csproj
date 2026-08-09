@@ -22,7 +22,7 @@
     <OutputPath>..\..\RBM\bin\Win64_Shipping_Client\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>5</WarningLevel>
   </PropertyGroup>
   <!-- Release Configuration Properties -->
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -430,7 +430,8 @@
   <!-- Post-Build -->
   <PropertyGroup>
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_workshops_artisans.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_module_strings.xml" "$(SolutionDir)..\RBM\ModuleData\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_module_strings.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_trade_goods.xml" "$(SolutionDir)..\RBM\ModuleData\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

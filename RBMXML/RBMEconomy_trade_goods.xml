@@ -1,0 +1,354 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Items>
+<!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
+	<!-- #region Trade -->
+	<Item
+		id="wool"
+		name="{=WVqaRKUm}Wool{@Plural}loads of wool{\@}"
+		mesh="merchandise_wool"
+		item_category="wool"
+		value="160"
+		weight="2"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="silver"
+		name="{=9X2l53vY}Silver Ore{@Plural}loads of silver ore{\@}"
+		mesh="silver_ore"
+		item_category="silver"
+		value="85"
+		weight="0.85"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="jewelry"
+		name="{=yQTBY9ie}Jewelry{@Plural}items of jewelry{\@}"
+		mesh="bd_sturgia_statue"
+		item_category="jewelry"
+		value="420"
+		weight="0.025"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="salt"
+		name="{=IK2IPJi1}Salt{@Plural}sacks of salt{\@}"
+		mesh="merchandise_salt"
+		item_category="salt"
+		value="30"
+		weight="1"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="spice"
+		name="{=1jqxlEkT}Spice{@Plural}sacks of spice{\@}"
+		mesh="spice_sack"
+		value="60"
+		weight="1"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="cotton"
+		name="{=Vqu67a3b}Raw Silk{@Plural}bolts of silk{\@}"
+		mesh="merchandise_raw_silk"
+		item_category="cotton"
+		value="1925"
+		weight="1"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="flax"
+		name="{=xsu6bPTv}Flax{@Plural}sacks of flax{\@}"
+		mesh="merchandise_flax"
+		item_category="flax"
+		value="34"
+		weight="1"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="clay"
+		name="{=Zwb65ufG}Plain Ceramic{@Plural}plain ceramics{\@}"
+		mesh="merchandise_clay"
+		item_category="clay"
+		value="130"
+		weight="10"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="pottery"
+		name="{=awQrcrt2}Decorated Pottery{@Plural}crates of decorated pottery{\@}"
+		mesh="merchandise_pottery"
+		item_category="pottery"
+		value="900"
+		weight="10"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="linen"
+		name="{=DvGueBrU}Linen{@Plural}rolls of linen{\@}"
+		mesh="merchandise_linen"
+		item_category="linen"
+		value="170"
+		weight="0.76"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="leather"
+		name="{=ufnnUxKb}Leather{@Plural}crates of leather{\@}"
+		mesh="merchandise_leather_a"
+		item_category="leather"
+		value="176"
+		weight="0.8"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="velvet"
+		name="{=O8TpGSDA}Velvet{@Plural}rolls of velvet{\@}"
+		mesh="merchandise_velvet"
+		item_category="velvet"
+		value="26500"
+		weight="0.5"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="cheese"
+		name="{=WSk5Sibs}Cheese{@Plural}barrels of cheese{\@}"
+		mesh="merchandise_cheese_b"
+		item_category="cheese"
+		IsFood="true"
+		value="166"
+		weight="15"
+		Type="Goods">
+		<ItemComponent>
+			<Trade
+				morale_bonus="1" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="butter"
+		name="{=VbL6GFmy}Butter{@Plural}casks of butter{\@}"
+		mesh="merchandise_cheese_b"
+		item_category="butter"
+		IsFood="true"
+		value="230"
+		weight="8.4"
+		Type="Goods">
+		<ItemComponent>
+			<Trade
+				morale_bonus="1" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="fish"
+		name="{=QGaIYQpg}Fish{@Plural}barrels of fish{\@}"
+		mesh="merchandise_fish_a"
+		item_category="fish"
+		IsFood="true"
+		value="125"
+		weight="20"
+		Type="Goods">
+		<ItemComponent>
+			<Trade
+				morale_bonus="1" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="grape"
+		name="{=ZgVVPGTb}Grapes{@Plural}sacks of grapes{\@}"
+		mesh="kitchen_basket_grape_b"
+		item_category="grape"
+		IsFood="true"
+		value="275"
+		weight="89"
+		Type="Goods">
+		<ItemComponent>
+			<Trade
+				morale_bonus="1" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="date_fruit"
+		name="{=NtsdmmW9}Date Fruit{@Plural}sacks of date fruit{\@}"
+		mesh="bd_barrel_a"
+		item_category="date_fruit"
+		IsFood="true"
+		value="333"
+		weight="20"
+		Type="Goods">
+		<ItemComponent>
+			<Trade
+				morale_bonus="2" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="olives"
+		name="{=45kZUyjh}Olives{@Plural}barrels of olives{\@}"
+		mesh="bd_barrel_a"
+		item_category="olives"
+		IsFood="true"
+		value="45"
+		weight="46"
+		Type="Goods">
+		<ItemComponent>
+			<Trade
+				morale_bonus="2" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="beer"
+		name="{=HiSzYWeh}Ale{@Plural}casks of ale{\@}"
+		mesh="bd_barrel_a"
+		item_category="beer"
+		IsFood="true"
+		value="180"
+		weight="72"
+		Type="Goods">
+		<ItemComponent>
+			<Trade
+				morale_bonus="2" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="wine"
+		name="{=ELsDFwAD}Wine{@Plural}amphorae of wine{\@}"
+		mesh="amphora_slim"
+		item_category="wine"
+		IsFood="false"
+		value="1330"
+		weight="85"
+		Type="Goods">
+		<ItemComponent>
+			<Trade
+				morale_bonus="3" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="oil"
+		name="{=lULBZ714}Oil{@Plural}amphorae of oil{\@}"
+		mesh="amphora_slim"
+		item_category="oil"
+		IsFood="false"
+		value="270"
+		weight="6.23"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="fur"
+		name="{=ADJBbfbQ}Fur{@Plural}packs of fur{\@}"
+		mesh="hung_fur_b"
+		item_category="fur"
+		value="833"
+		weight="0.75"
+		Type="Goods">
+		<Flags
+			Civilian="true" />
+	</Item>
+	<!-- #endregion -->
+	<Item
+		id="sheep"
+		name="{=GD4aQgl7}Herd of Sheep{@Plural}herds of sheep{\@}"
+		mesh="sheep_mesh_new"
+		item_category="sheep"
+		value="220"
+		weight="60"
+		Type="Animal">
+		<ItemComponent>
+			<Horse
+				monster="Monster.sheep"
+				maneuver="40"
+				speed="12"
+				charge_damage="0"
+				body_length="104" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="cow"
+		name="{=QWqvGa1P}Cow{@Plural}head of cattle{\@}"
+		mesh="cow"
+		item_category="cow"
+		value="480"
+		weight="175"
+		Type="Animal">
+		<ItemComponent>
+			<Horse
+				monster="Monster.cow"
+				maneuver="30"
+				speed="22"
+				charge_damage="5"
+				body_length="104">
+				<Materials>
+					<Material
+						name="cow_skinned" />
+					<Material
+						name="cow_skinned_2" />
+				</Materials>
+			</Horse>
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<Item
+		id="hog"
+		name="{=ZbsGBv10}Hog"
+		mesh="hog_mesh"
+		item_category="hog"
+		value="130"
+		weight="60"
+		Type="Animal">
+		<ItemComponent>
+			<Horse
+				monster="Monster.hog"
+				maneuver="40"
+				speed="10"
+				charge_damage="5"
+				body_length="104" />
+		</ItemComponent>
+		<Flags
+			Civilian="true" />
+	</Item>
+	<!-- #endregion -->
+</Items>

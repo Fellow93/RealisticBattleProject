@@ -57,10 +57,13 @@ namespace RBMCampaign
                 { "grape",       (275,    89f) },
                 { "date_fruit",  (333,    20f) },
                 { "olives",      (45,     46f) },
-                { "beer",        (220,    110f) },
+                { "beer",        (180,    72f) },
                 { "wine",        (1330,   85f) },
                 { "oil",         (270,    6.23f) },
                 { "fur",         (833,    0.75f) },
+                { "sheep",       (220,    60f) },    //should be 2x but it does not work economically
+                { "cow",         (480,    175f) },   //should be 2x but it does not work economically
+                { "hog",         (130,    60f) },    //should be 2x but it does not work economically
 
                 // --- Goods built in code by DefaultItems.InitializeTradeGood ---
                 // StringIds taken from DefaultItems.RegisterAll, not from the mesh names.

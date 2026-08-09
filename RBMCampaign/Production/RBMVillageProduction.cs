@@ -36,15 +36,15 @@ namespace RBMCampaign
         // Subsistence floor produced by EVERY village, per point of Hearth per day.
         private static readonly (string id, float rate)[] BaseProduction = new (string, float)[]
         {
-            ("hog", 0.022f),
-            ("meat", 0.011f),
+            ("hog", 0.002f),
+            ("meat", 0.001f),
             ("hides", 0.01f),
-            ("cow", 0.003f),
+            ("cow", 0.001f),
             ("cheese", 0.038f),
             ("butter", 0.03f),
-            ("grain", 0.05f),
+            ("grain", 0.07f),
             ("wool", 0.02f),
-            ("sheep", 0.006f),
+            ("sheep", 0.002f),
             //basic village "industrial" production so cities can function
             ("charcoal", 0.06f),
             ("planks", 0.04f),
@@ -85,16 +85,16 @@ namespace RBMCampaign
         private static readonly Dictionary<string, (string id, float rate)[]> SpecByType =
             new Dictionary<string, (string, float)[]>
             {
-                { "wheat_farm", new (string, float)[] { ("grain", 0.118f) } },
+                { "wheat_farm", new (string, float)[] { ("grain", 0.3f) } },
                 { "cattle_farm", new (string, float)[] { ("cheese", 0.035f), ("butter", 0.028f), ("cow", 0.008f) } },
                 { "sheep_farm", new (string, float)[] { ("sheep", 0.0031f), ("cheese", 0.02f), ("butter", 0.015f), ("wool", 0.08f) } },
                 { "swine_farm", new (string, float)[] { ("hog", 0.019f) } },
-                { "lumberjack", new (string, float)[] { ("charcoal", 1.027f*1.5f), ("planks", 1.027f*0.5f) } },
+                { "lumberjack", new (string, float)[] { ("charcoal", 1.027f*1f), ("planks", 1.027f*1f) } },
                 { "clay_mine", new (string, float)[] { ("clay", 2.6f) } },
                 { "salt_mine", new (string, float)[] { ("salt", 0.178f) } },
                 { "iron_mine", new (string, float)[] { ("ironIngot1", 2f) } },
                 { "silver_mine", new (string, float)[] { ("silver", 0.85f) } },
-                { "fisherman", new (string, float)[] { ("fish", 0.055f) } },
+                { "fisherman", new (string, float)[] { ("fish", 0.2f) } },
                 { "vineyard", new (string, float)[] { ("grape", 0.038f) } },
                 { "flax_plant", new (string, float)[] { ("flax", 0.170f) } },
                 { "date_farm", new (string, float)[] { ("date_fruit", 0.547f) } },
