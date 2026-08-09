@@ -399,6 +399,7 @@
     <Compile Include="Settlements\NativeTradeConservation.cs" />
     <Compile Include="Settlements\RansomFunding.cs" />
     <Compile Include="Settlements\SettlementGoldFunnel.cs" />
+    <Compile Include="Settlements\ShipTradeFunnel.cs" />
     <Compile Include="Settlements\SettlementWealth.cs" />
     <Compile Include="Settlements\WorkshopDiagnostics.cs" />
     <Compile Include="Settlements\WorkshopPurse.cs" />
