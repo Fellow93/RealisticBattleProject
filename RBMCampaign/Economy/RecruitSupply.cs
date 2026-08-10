@@ -411,7 +411,7 @@ namespace RBMCampaign
                     int raised = after.Value - before;
                     if (raised > 0)
                     {
-                        DrawKitFromMarket(market, settlement, after.Key, raised);
+                        DrawKitFromMarket(market, settlement, after.Key, raised, includeMount: true);
                     }
                 }
             }
@@ -467,15 +467,23 @@ namespace RBMCampaign
         /// <see cref="MilitiaUpkeep.MilitiaVillageGearShare"/>). Scales the kit budget, so the man draws
         /// the cheap end of his kit up to that share and the village pays only for what it drew.
         /// </param>
+        /// <param name="includeMount">
+        /// Whether a mounted man's horse is drawn as a real riding horse off the market and paid for as
+        /// part of his kit. True for the recruit draw, whose price already charges the mount value
+        /// (<see cref="RecruitPrice"/> via <see cref="SpoilsPool.GetEquipmentValueWithMount"/>), so sourcing
+        /// the horse here completes that leg instead of charging for a mount no market ever supplied. False
+        /// for the militia levy, which stays mount-less. Never draws a pack animal or livestock even when
+        /// true -- see <see cref="UpgradeSupply.IsCargoAnimal"/>.
+        /// </param>
         public static void DrawKitFromMarket(Settlement market, Settlement raisedAt, CharacterObject character, int count,
-            float valueShare = 1f)
+            float valueShare = 1f, bool includeMount = false)
         {
             if (!IsEnabled || market == null || market.ItemRoster == null
                 || character == null || character.IsHero || count <= 0)
             {
                 return;
             }
-            int perManValue = KitValue(character);
+            int perManValue = includeMount ? SpoilsPool.GetEquipmentValueWithMount(character) : KitValue(character);
             if (perManValue <= 0)
             {
                 return;
@@ -513,7 +521,7 @@ namespace RBMCampaign
             int drawn = 0;
             int taken = 0;
             int wanted = 0;
-            List<SpoilsPool.SlotPurchase> slots = SpoilsPool.GetKitSlots(character);
+            List<SpoilsPool.SlotPurchase> slots = SpoilsPool.GetKitSlots(character, includeMount);
             if (slots.Count > 0)
             {
                 wanted = slots.Count * count;

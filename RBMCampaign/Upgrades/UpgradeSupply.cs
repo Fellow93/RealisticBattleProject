@@ -484,6 +484,10 @@ namespace RBMCampaign
                 {
                     continue;
                 }
+                if (IsCargoAnimal(item))
+                {
+                    continue;
+                }
                 ItemObject.ItemTypeEnum candidate = item.ItemType;
 
                 // What this candidate could serve as. The fallback tier is bounded to the slot's broad
@@ -645,14 +649,31 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// A cargo animal -- a pack animal (mule / sumpter horse / pack camel) or livestock (cattle, sheep).
+        /// All of these share <see cref="ItemObject.ItemTypeEnum.Horse"/> with real riding, war and noble
+        /// horses, but no soldier is ever mounted on one, so a promotion's mount slot must never be filled
+        /// from the baggage train's cargo animals. A real ridden mount (<see cref="HorseComponent.IsMount"/>)
+        /// returns false, as does any non-horse item -- only cargo animals are excluded here.
+        /// </summary>
+        internal static bool IsCargoAnimal(ItemObject item)
+        {
+            return item != null && item.HasHorseComponent && !item.HorseComponent.IsMount;
+        }
+
+        /// <summary>
         /// Actual equipment a soldier can be armed with -- weapons, ammunition, shields, armour, mounts and
         /// barding -- as opposed to the trade goods, livestock, books and food a market also stocks. What
         /// the broadened kit search is allowed to buy: a man's kit money spent on any war gear in band, but
-        /// never on a bale of wool or a cask of wine because the helmets ran out.
+        /// never on a bale of wool or a cask of wine because the helmets ran out. Cargo animals (pack animals
+        /// and livestock, both <see cref="ItemObject.ItemTypeEnum.Horse"/>) are excluded via <see cref="IsCargoAnimal"/>.
         /// </summary>
         internal static bool IsWarGear(ItemObject item)
         {
             if (item == null)
+            {
+                return false;
+            }
+            if (IsCargoAnimal(item))
             {
                 return false;
             }

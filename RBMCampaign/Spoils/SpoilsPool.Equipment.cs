@@ -182,9 +182,11 @@ namespace RBMCampaign
         /// leaving the caller to a generic buy.
         /// </summary>
         /// <param name="includeMount">
-        /// Whether the horse and its harness count as slots to be bought. False for the recruit draw,
-        /// which leaves the mount to vanilla's own horse surcharge on the recruit price rather than
-        /// charging for it twice -- see <see cref="RecruitSupply"/>.
+        /// Whether the horse and its harness count as slots to be bought. True for the recruit draw, whose
+        /// price already charges the mount (<see cref="RecruitSupply.RecruitPrice"/>), so a mounted man's
+        /// horse is sourced as a real riding horse off the market rather than left abstract; false for the
+        /// militia levy, which stays mount-less. A drawn mount is never a pack animal or livestock -- see
+        /// <see cref="UpgradeSupply.IsCargoAnimal"/>.
         /// </param>
         public static List<SlotPurchase> GetKitSlots(CharacterObject character, bool includeMount = false)
         {
