@@ -9,6 +9,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 
 namespace RBMCampaign
 {
@@ -51,43 +52,109 @@ namespace RBMCampaign
     }
 
     /// <summary>
-    /// Raises the share of a village warehouse a single convoy loads when it sets out. Vanilla
-    /// <c>VillagerCampaignBehavior.MoveItemsToVillagerParty</c> walks the store four times taking
-    /// <c>0.2</c> of each remaining stack per pass -- <c>1 - 0.8^4 ≈ 59%</c> of the warehouse per trip.
-    /// With one convoy per village instead of two (see <see cref="VillagerConvoys.MaxConvoysPerVillage"/>)
-    /// that leaves too much behind: the store backs up while the lone convoy is away and production
-    /// halts against the warehouse cap. This transpiler rewrites the single per-pass fraction to
-    /// <see cref="PerPassLoadFraction"/>, so a departing convoy nearly empties the store.
+    /// Replaces how a convoy loads its cargo from the village warehouse when it sets out.
     ///
-    /// The share is still capped by the party's weight budget in the same method
-    /// (<c>InventoryCapacity - TotalWeightCarried</c>, itself doubled for villager parties by
-    /// <see cref="VillagerConvoys.VillagerCarryCapacityPatch"/>): the fraction sets how much the convoy
-    /// TRIES to take, capacity sets how much it CAN. Compounds over the four passes as
-    /// <c>1 - (1-f)^4</c> -- 0.5 ≈ 94%, 0.4 ≈ 87%, 0.34 ≈ 81%.
+    /// Vanilla <c>VillagerCampaignBehavior.MoveItemsToVillagerParty</c> walks the store four times
+    /// taking <c>0.2</c> of each remaining stack per pass (<c>1 - 0.8^4 ≈ 59%</c> of the warehouse),
+    /// but it fills the party's weight budget in ROSTER ORDER: once the budget runs out, whatever
+    /// sits late in the roster is left behind wholesale. With RBM's goods spanning four orders of
+    /// magnitude of mass, that skews every load toward whichever goods happen to be listed first and
+    /// backs the store up with the rest.
     ///
-    /// Surgical by design: <c>0.2f</c> is the method's only float literal, so the anchor is
-    /// unambiguous. If it ever stops matching, the transpiler no-ops and vanilla's 59% remains.
-    /// Applied only under rbmCampaignEnabled (PatchAll runs only then).
+    /// This prefix instead takes the WHOLE store (<see cref="TargetLoadFraction"/> = all of every
+    /// good) and, when that will not fit the weight budget, scales EVERY good down by the same
+    /// factor -- so the load stays proportional to what the village holds, which (since the store
+    /// accrues from the per-Hearth production tick and is drained proportionally each dispatch)
+    /// tracks each good's production rate. No good type is starved to make room for another. Horse-
+    /// component items ride under their own power and never count against the budget, exactly as in
+    /// vanilla.
+    ///
+    /// The weight budget is <c>InventoryCapacity - TotalWeightCarried</c>, itself enlarged for
+    /// villager parties by <see cref="VillagerConvoys.VillagerCarryCapacityPatch"/>: a bigger budget
+    /// means fewer loads need scaling down at all. Gated on rbmCampaignEnabled; if the module is off
+    /// the prefix defers to vanilla.
     /// </summary>
     [HarmonyPatch(typeof(VillagerCampaignBehavior), "MoveItemsToVillagerParty")]
     internal static class VillagerLoadSharePatch
     {
-        internal const float PerPassLoadFraction = 0.5f;
+        /// <summary>
+        /// Share of each good the convoy tries to carry. 1.0 = take all the village holds; it
+        /// restocks from the next production tick. Lower this to leave a standing buffer in the
+        /// village store.
+        /// </summary>
+        internal const float TargetLoadFraction = 1.0f;
 
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        private static bool Prefix(Village village, MobileParty villagerParty)
         {
-            foreach (CodeInstruction instruction in instructions)
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled || village == null || villagerParty == null
+                || village.Settlement == null)
             {
-                if (instruction.opcode == OpCodes.Ldc_R4 && instruction.operand is float value
-                    && System.Math.Abs(value - 0.2f) < 1e-6f)
+                return true; // fall back to vanilla loading
+            }
+
+            ItemRoster store = village.Settlement.ItemRoster;
+
+            // First pass: how much of each good we want, and the weight of the weight-bearing part.
+            // Snapshot the plan by EquipmentElement so taking a full stack (which compacts the
+            // roster) cannot disturb the indices we iterate. AddToCounts keys by item identity, so
+            // applying the plan afterwards is index-independent.
+            List<KeyValuePair<EquipmentElement, int>> plan = new List<KeyValuePair<EquipmentElement, int>>();
+            float desiredWeight = 0f;
+            for (int j = 0; j < store.Count; j++)
+            {
+                ItemRosterElement element = store[j];
+                ItemObject item = element.EquipmentElement.Item;
+                if (item == null || element.Amount <= 0)
                 {
-                    yield return new CodeInstruction(OpCodes.Ldc_R4, PerPassLoadFraction);
+                    continue;
                 }
-                else
+
+                int want = MBRandom.RoundRandomized((float)element.Amount * TargetLoadFraction);
+                if (want > element.Amount)
                 {
-                    yield return instruction;
+                    want = element.Amount;
+                }
+                if (want <= 0)
+                {
+                    continue;
+                }
+
+                plan.Add(new KeyValuePair<EquipmentElement, int>(element.EquipmentElement, want));
+                if (!item.HasHorseComponent)
+                {
+                    desiredWeight += item.Weight * (float)want;
                 }
             }
+
+            float budget = (float)villagerParty.InventoryCapacity - villagerParty.TotalWeightCarried;
+            if (budget < 0f)
+            {
+                budget = 0f;
+            }
+
+            // If the weight-bearing desire overruns the budget, scale everything by the same factor
+            // so proportions are preserved rather than filling the cart front-to-back.
+            float scale = (desiredWeight > budget && desiredWeight > 0f) ? budget / desiredWeight : 1f;
+
+            for (int k = 0; k < plan.Count; k++)
+            {
+                EquipmentElement equipmentElement = plan[k].Key;
+                ItemObject item = equipmentElement.Item;
+                int take = plan[k].Value;
+                if (scale < 1f && !item.HasHorseComponent)
+                {
+                    take = (int)((float)take * scale);
+                }
+                if (take <= 0)
+                {
+                    continue;
+                }
+
+                villagerParty.Party.ItemRoster.AddToCounts(equipmentElement, take);
+                store.AddToCounts(equipmentElement, -take);
+            }
+
+            return false;
         }
     }
 

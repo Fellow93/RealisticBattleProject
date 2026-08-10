@@ -331,12 +331,14 @@ namespace RBMCampaign
 
         /// <summary>
         /// How much more a single villager convoy can haul than its troops and animals would otherwise
-        /// allow. With one convoy per village instead of two, each trip has to move roughly twice the
-        /// cargo to keep the same goods reaching town, so the factor pairs with
-        /// <see cref="MaxConvoysPerVillage"/> above -- raise the convoy count and you would lower this,
-        /// and vice versa.
+        /// allow. With one convoy per village instead of two, each trip has to move all of the village's
+        /// accumulated store in one go, so the budget is set well above vanilla. This is the weight
+        /// budget <see cref="VillagerLoadSharePatch"/> loads the store into: the bigger it is, the more
+        /// of a productive village's output rides out on a single convoy without the load having to be
+        /// scaled down to fit. Pairs with <see cref="MaxConvoysPerVillage"/> -- raise the convoy count
+        /// and you would lower this, and vice versa.
         /// </summary>
-        private const float VillagerCarryMultiplier = 2f;
+        private const float VillagerCarryMultiplier = 8f;
 
         private static readonly TextObject CarryText = new TextObject("{=rbm_villager_convoy_carry}Trade convoy");
 
