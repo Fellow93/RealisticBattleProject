@@ -42,6 +42,42 @@
     </Styles>
   </Brush>
 
+  <!-- Metric-selector button label. Same states as TabText but smaller, for the compact toggles. -->
+  <Brush Name="RBMLedger.MetricText" Font="Galahad">
+    <Layers>
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#C8B48CFF" FontSize="18" TextHorizontalAlignment="Center" TextVerticalAlignment="Center" TextGlowColor="#000000FF" />
+      <Style Name="Hovered" FontColor="#FAF4DEFF" FontSize="18" TextHorizontalAlignment="Center" TextVerticalAlignment="Center" TextGlowColor="#000000FF" />
+      <Style Name="Pressed" FontColor="#FAF4DEFF" FontSize="18" TextHorizontalAlignment="Center" TextVerticalAlignment="Center" TextGlowColor="#000000FF" />
+      <Style Name="Selected" FontColor="#160F06FF" FontSize="18" TextHorizontalAlignment="Center" TextVerticalAlignment="Center" TextGlowColor="#00000000" />
+    </Styles>
+  </Brush>
+
+  <!-- Chart bar (normal day): solid amber. -->
+  <Brush Name="RBMLedger.Bar">
+    <Layers>
+      <BrushLayer Name="Fill" Sprite="BlankWhiteSquare" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Fill" Color="#C8963CFF" AlphaFactor="0.92" />
+      </Style>
+    </Styles>
+  </Brush>
+
+  <!-- Chart bar (raided/looted day): solid red so raid days stand out on the graph. -->
+  <Brush Name="RBMLedger.BarRaid">
+    <Layers>
+      <BrushLayer Name="Fill" Sprite="BlankWhiteSquare" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Fill" Color="#A83228FF" AlphaFactor="0.92" />
+      </Style>
+    </Styles>
+  </Brush>
+
   <!-- Left tab-strip label. Light on the dark/hover fills, dark on the amber selected fill. -->
   <Brush Name="RBMLedger.TabText" Font="Galahad">
     <Layers>

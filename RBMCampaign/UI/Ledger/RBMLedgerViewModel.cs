@@ -133,6 +133,19 @@ namespace RBMCampaign
             n = System.Math.Max(n, hearth.Length);
             n = System.Math.Max(n, militia.Length);
 
+            // Chart x-axis metadata, oldest->newest (bars read left-to-right, unlike the newest-first table).
+            var barLabels = new string[n];
+            var barRaided = new bool[n];
+            int lastDayForBars = RBMVillageLedger.LastDay;
+            for (int i = 0; i < n; i++)
+            {
+                int barOffset = (n - 1) - i;
+                int barDay = lastDayForBars - barOffset;
+                barLabels[i] = barOffset == 0 ? "T" : "-" + barOffset;
+                List<string> barEvents = RBMVillageLedger.GetEventsForDay(id, barDay);
+                barRaided[i] = barEvents.Contains(RBMVillageLedger.EvRaidStart) || barEvents.Contains(RBMVillageLedger.EvLooted);
+            }
+
             var history = new MBBindingList<RBMLedgerVillageDayVM>();
             int lastDay = RBMVillageLedger.LastDay;
             // Newest day first.
@@ -169,7 +182,8 @@ namespace RBMCampaign
                 Latest(hearth),
                 Latest(militia),
                 history,
-                BuildProductionHint(village));
+                BuildProductionHint(village),
+                prod, wealth, hearth, militia, barLabels, barRaided);
         }
 
         // Item-by-item production breakdown for the hover tooltip on the current (summary) production value.

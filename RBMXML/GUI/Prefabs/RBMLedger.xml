@@ -138,6 +138,42 @@
 																												<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left"
 																														   StackLayout.LayoutMethod="VerticalTopToBottom" MarginLeft="24" MarginTop="4" MarginBottom="10">
 																													<Children>
+																														<!-- Switchable-metric bar chart. Selector row + plot; bars scaled to the selected metric's own max. -->
+																														<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" MarginBottom="12">
+																															<Children>
+																																<!-- Metric selector -->
+																																<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="32" StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="8">
+																																	<Children>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" MarginRight="4" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricProd" IsSelected="@IsProdSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@ProdButtonText" /></Children>
+																																		</ButtonWidget>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" MarginRight="4" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricWealth" IsSelected="@IsWealthSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@WealthButtonText" /></Children>
+																																		</ButtonWidget>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" MarginRight="4" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricHearth" IsSelected="@IsHearthSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@HearthButtonText" /></Children>
+																																		</ButtonWidget>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricMilitia" IsSelected="@IsMilitiaSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@MilitiaButtonText" /></Children>
+																																		</ButtonWidget>
+																																	</Children>
+																																</ListPanel>
+																																<!-- Plot: one column per day, oldest at left. Bars bottom-anchored; day label beneath. -->
+																																<ListPanel DataSource="{Bars}" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="134" StackLayout.LayoutMethod="HorizontalLeftToRight">
+																																	<ItemTemplate>
+																																		<Widget WidthSizePolicy="Fixed" SuggestedWidth="26" HeightSizePolicy="StretchToParent">
+																																			<Children>
+																																				<BrushWidget WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="@BarHeight" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="22" IsVisible="@IsNormalBar" DoNotAcceptEvents="true" Brush="RBMLedger.Bar" />
+																																				<BrushWidget WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="@BarHeight" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="22" IsVisible="@IsRaided" DoNotAcceptEvents="true" Brush="RBMLedger.BarRaid" />
+																																				<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Bottom" HorizontalAlignment="Center" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Center" Brush.FontSize="14" Text="@DayLabel" />
+																																				<HintWidget DataSource="{ValueHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																			</Children>
+																																		</Widget>
+																																	</ItemTemplate>
+																																</ListPanel>
+																															</Children>
+																														</ListPanel>
+
 																														<!-- History header (day/events left, numbers right) -->
 																														<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBML.RowH"
 																																   StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="2">
