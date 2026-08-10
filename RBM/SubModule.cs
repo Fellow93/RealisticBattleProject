@@ -185,6 +185,7 @@ namespace RBM
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMCaravanBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMVillageLedgerCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMGarrisonRefillBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMRecruitBiasBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSettlementDefenseBehavior());
             }
             base.OnGameStart(game, gameStarterObject);
