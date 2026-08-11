@@ -69,6 +69,11 @@ namespace RBMCampaign
             RBMMarketPrices.ResetForNewSession();
             WorkshopDemand.ResetForNewSession();
             RBMItemWeightTextWidget.ResetForNewSession();
+
+            // The upgrade supply-town resolver caches a payee town per party, keyed by MobileParty
+            // identity; clear it so a departed campaign's parties and towns are not held for the life
+            // of the process.
+            UpgradeSupply.ResetForNewSession();
         }
 
         /// <summary>

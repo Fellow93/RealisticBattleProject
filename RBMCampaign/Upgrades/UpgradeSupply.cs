@@ -158,6 +158,45 @@ namespace RBMCampaign
             return FindNearestFriendlyTown(party);
         }
 
+        // --- Payee-town cache ------------------------------------------------
+        //
+        // FindNearestFriendlyTown and FindFenceTown both sweep every town on the map by straight-line
+        // distance, and each runs once per party, garrison and militia every day on the maintenance path
+        // (see the remarks on FindNearestFriendlyTown). The answer only ever names a payee for a
+        // promotion's coin -- a town the code already treats as crow-flies-approximate -- and it changes no
+        // faster than the party moves; garrisons and militia never move at all. So the result is cached per
+        // party and reused until the party has drifted PayeeRecomputeDistance from where it was taken, a
+        // few days have passed (so a stationary party still notices a captured or newly-at-peace town), or
+        // the cached town itself has gone invalid. A daily O(all-towns) sweep per party becomes an
+        // occasional one -- and almost never for the stationary garrison/militia parties.
+
+        // How far a party may drift from where its payee was resolved before the nearest town is re-swept.
+        private const float PayeeRecomputeDistance = 10f;
+
+        // A hard ceiling on cache age, so even a never-moving garrison re-checks its payee for war/peace
+        // and capture changes every few days rather than holding one forever.
+        private const double PayeeMaxCacheDays = 4.0;
+
+        private struct PayeeCache
+        {
+            public Town FriendlyTown;
+            public Vec2 FriendlyPos;
+            public double FriendlyExpiryDay;
+            public Town FenceTown;
+            public Vec2 FencePos;
+            public double FenceExpiryDay;
+        }
+        private static readonly Dictionary<MobileParty, PayeeCache> _payeeCache = new Dictionary<MobileParty, PayeeCache>();
+
+        /// <summary>
+        /// Drops the per-party payee cache. Called on every session launch (new game or load) so a departed
+        /// campaign's parties and towns are not held, keyed by dead instances, for the life of the process.
+        /// </summary>
+        internal static void ResetForNewSession()
+        {
+            _payeeCache.Clear();
+        }
+
         /// <summary>
         /// The nearest town of a faction the party is not at war with, however far off it lies.
         /// </summary>
@@ -167,9 +206,35 @@ namespace RBMCampaign
         /// from paths that run for every party on the map -- the daily maintenance charge above all. The
         /// two want different things besides: the gate has to know whether a town is genuinely in reach,
         /// while this only has to name a payee, and a payee picked as the crow flies is close enough even
-        /// where the crow would have to cross a sea.
+        /// where the crow would have to cross a sea. The full sweep is cached per party -- see the payee
+        /// cache above -- since a payee that moves only with the party need not be re-found every day.
         /// </remarks>
         internal static Town FindNearestFriendlyTown(MobileParty party)
+        {
+            if (party == null)
+            {
+                return null;
+            }
+            Vec2 pos = party.GetPosition2D;
+            double now = CampaignTime.Now.ToDays;
+            if (_payeeCache.TryGetValue(party, out PayeeCache cache)
+                && now < cache.FriendlyExpiryDay
+                && pos.Distance(cache.FriendlyPos) <= PayeeRecomputeDistance
+                && (cache.FriendlyTown == null
+                    || (cache.FriendlyTown.Settlement != null && IsFriendlyOrNeutral(party, cache.FriendlyTown.Settlement))))
+            {
+                return cache.FriendlyTown;
+            }
+
+            Town best = ComputeNearestFriendlyTown(party, pos);
+            cache.FriendlyTown = best;
+            cache.FriendlyPos = pos;
+            cache.FriendlyExpiryDay = now + PayeeMaxCacheDays;
+            _payeeCache[party] = cache;
+            return best;
+        }
+
+        private static Town ComputeNearestFriendlyTown(MobileParty party, Vec2 pos)
         {
             Town best = null;
             float bestDistance = float.MaxValue;
@@ -180,7 +245,7 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                float distance = party.GetPosition2D.Distance(settlement.GetPosition2D);
+                float distance = pos.Distance(settlement.GetPosition2D);
                 if (distance < bestDistance)
                 {
                     bestDistance = distance;
@@ -373,6 +438,28 @@ namespace RBMCampaign
             {
                 return null;
             }
+            Vec2 pos = party.GetPosition2D;
+            double now = CampaignTime.Now.ToDays;
+            // A fence is the nearest town of ANY faction, so it never goes invalid by war -- only if the
+            // settlement itself vanished. Existence plus the drift/age gates are all it takes to reuse.
+            if (_payeeCache.TryGetValue(party, out PayeeCache cache)
+                && now < cache.FenceExpiryDay
+                && pos.Distance(cache.FencePos) <= PayeeRecomputeDistance
+                && (cache.FenceTown == null || cache.FenceTown.Settlement != null))
+            {
+                return cache.FenceTown;
+            }
+
+            Town best = ComputeNearestFenceTown(pos);
+            cache.FenceTown = best;
+            cache.FencePos = pos;
+            cache.FenceExpiryDay = now + PayeeMaxCacheDays;
+            _payeeCache[party] = cache;
+            return best;
+        }
+
+        private static Town ComputeNearestFenceTown(Vec2 pos)
+        {
             Town best = null;
             float bestDistance = float.MaxValue;
             foreach (Town town in Town.AllTowns)
@@ -382,7 +469,7 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                float distance = party.GetPosition2D.Distance(settlement.GetPosition2D);
+                float distance = pos.Distance(settlement.GetPosition2D);
                 if (distance < bestDistance)
                 {
                     bestDistance = distance;

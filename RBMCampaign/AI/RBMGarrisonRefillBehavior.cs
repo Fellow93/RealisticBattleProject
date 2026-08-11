@@ -52,6 +52,28 @@ namespace RBMCampaign
         // an empty map after load just means the next tick's decisions re-log once, which is harmless.
         private readonly Dictionary<MobileParty, Settlement> _lastDivertTarget = new Dictionary<MobileParty, Settlement>();
 
+        // How often the expensive part -- the clan-fief sweep with per-candidate map pathfinding -- may
+        // run per party. Between scans we re-apply the cached target's score every hour (PartyThinkParams
+        // is rebuilt each tick, so a skipped hour would drop the bias entirely) without touching the
+        // navmesh again. The injected score is purely deficit-scaled, so it stays accurate hourly even
+        // while a cached target is reused.
+        private const float RescanIntervalHours = 6f;
+
+        // Per-session cache of the last full scan's result per party: the chosen fortification plus the
+        // nav data needed to re-add its score, the surplus/distance figures for the log, and the campaign
+        // hour at which the scan may run again. Not saved -- an empty map after load just rescans once.
+        private struct CachedTarget
+        {
+            public Settlement Settlement;
+            public MobileParty.NavigationType NavType;
+            public bool IsFromPort;
+            public bool IsTargetingPort;
+            public int Surplus;
+            public float DistanceDays;
+            public double NextScanHour;
+        }
+        private readonly Dictionary<MobileParty, CachedTarget> _cache = new Dictionary<MobileParty, CachedTarget>();
+
         public override void RegisterEvents()
         {
             CampaignEvents.AiHourlyTickEvent.AddNonSerializedListener(this, AiHourlyTick);
@@ -83,13 +105,84 @@ namespace RBMCampaign
                 return;
             }
 
-            Settlement best = null;
+            // Throttle the expensive work. The full sweep pathfinds to every clan fortification, so run it
+            // only every RescanIntervalHours, or when the previously chosen target has gone invalid (under
+            // attack, captured, garrison drained below its surplus floor). Between scans we still re-add
+            // the cached score each hour -- p is rebuilt every tick, so a missed hour would drop the bias.
+            double nowHours = CampaignTime.Now.ToHours;
+            if (!_cache.TryGetValue(mobileParty, out CachedTarget cached)
+                || nowHours >= cached.NextScanHour
+                || !IsCachedTargetStillValid(cached.Settlement))
+            {
+                cached = ScanForBestTarget(mobileParty, leader);
+                cached.NextScanHour = nowHours + RescanIntervalHours;
+                _cache[mobileParty] = cached;
+            }
+
+            if (cached.Settlement == null)
+            {
+                _lastDivertTarget.Remove(mobileParty);
+                return;
+            }
+
+            // Moderate, deficit-scaled score (~2..5): beats idle wandering, but stays under urgent
+            // siege/defense and the 8f terminal cutoff so threats always override the refill trip.
+            // Distance-independent, so it stays accurate every hour even while a cached target is reused.
+            float depletion = MBMath.ClampFloat(1f - mobileParty.PartySizeRatio / affordableLimit, 0f, 1f);
+            float score = 2f + 3f * depletion;
+
+            AddGoToSettlementScore(p, cached.Settlement, score, cached.NavType, cached.IsFromPort, cached.IsTargetingPort);
+
+            // One DIVERT line per new decision, not one per hourly re-score of the same trip.
+            if (GarrisonRefillLog.IsEnabled
+                && (!_lastDivertTarget.TryGetValue(mobileParty, out Settlement previous) || previous != cached.Settlement))
+            {
+                _lastDivertTarget[mobileParty] = cached.Settlement;
+                GarrisonRefillLog.Log("DIVERT", PartyName(mobileParty),
+                    "-> " + GarrisonRefillLog.Name(cached.Settlement)
+                    + "  ·  party " + mobileParty.Party.NumberOfRegularMembers + "/" + mobileParty.Party.PartySizeLimit
+                    + " (ratio " + mobileParty.PartySizeRatio.ToString("0.00")
+                    + " of affordable " + affordableLimit.ToString("0.00") + ")"
+                    + "  ·  garrison surplus " + cached.Surplus
+                    + "  ·  " + cached.DistanceDays.ToString("0.0") + "d out"
+                    + "  ·  score " + score.ToString("0.0"));
+            }
+        }
+
+        /// <summary>
+        /// Cheap single-settlement re-check of a cached target between full scans, so a party is never left
+        /// heading for a fortification that has since been besieged, captured, or drained below its surplus
+        /// floor. A null target (the last scan found nothing worth the trip) counts as still valid -- it
+        /// just means "keep doing nothing until the next scheduled scan" rather than rescanning every hour.
+        /// </summary>
+        private static bool IsCachedTargetStillValid(Settlement settlement)
+        {
+            if (settlement == null)
+            {
+                return true;
+            }
+            if (!settlement.IsFortification || settlement.Town == null)
+            {
+                return false;
+            }
+            if (settlement.Party.MapEvent != null || settlement.SiegeEvent != null)
+            {
+                return false;
+            }
+            int garrison = settlement.Town.GarrisonParty?.Party.NumberOfRegularMembers ?? 0;
+            int floor = settlement.IsTown ? MinGarrisonForTown : MinGarrisonForCastle;
+            return garrison - floor >= MinGarrisonSurplus;
+        }
+
+        /// <summary>
+        /// The expensive part: sweep the lord's own clan fortifications, measure each garrison's surplus,
+        /// pathfind the travel distance, and pick the best. Returns the chosen target and the nav data
+        /// needed to re-apply its score; Settlement stays null when nothing qualifies.
+        /// </summary>
+        private static CachedTarget ScanForBestTarget(MobileParty mobileParty, Hero leader)
+        {
+            CachedTarget result = default(CachedTarget);
             float bestCandidateScore = float.MinValue;
-            int bestSurplus = 0;
-            float bestDistanceDays = 0f;
-            MobileParty.NavigationType bestNavType = MobileParty.NavigationType.None;
-            bool bestIsFromPort = false;
-            bool bestIsTargetingPort = false;
 
             // Own clan only -- vanilla's take-from-garrison gate is LeaderHero.Clan == OwnerClan, so a
             // same-kingdom fief owned by another clan would path the lord there for nothing.
@@ -125,42 +218,16 @@ namespace RBMCampaign
                 if (candidateScore > bestCandidateScore)
                 {
                     bestCandidateScore = candidateScore;
-                    best = settlement;
-                    bestSurplus = surplus;
-                    bestDistanceDays = distanceAsDays;
-                    bestNavType = navType;
-                    bestIsFromPort = isFromPort;
-                    bestIsTargetingPort = isTargetingPort;
+                    result.Settlement = settlement;
+                    result.Surplus = surplus;
+                    result.DistanceDays = distanceAsDays;
+                    result.NavType = navType;
+                    result.IsFromPort = isFromPort;
+                    result.IsTargetingPort = isTargetingPort;
                 }
             }
 
-            if (best == null)
-            {
-                _lastDivertTarget.Remove(mobileParty);
-                return;
-            }
-
-            // Moderate, deficit-scaled score (~2..5): beats idle wandering, but stays under urgent
-            // siege/defense and the 8f terminal cutoff so threats always override the refill trip.
-            float depletion = MBMath.ClampFloat(1f - mobileParty.PartySizeRatio / affordableLimit, 0f, 1f);
-            float score = 2f + 3f * depletion;
-
-            AddGoToSettlementScore(p, best, score, bestNavType, bestIsFromPort, bestIsTargetingPort);
-
-            // One DIVERT line per new decision, not one per hourly re-score of the same trip.
-            if (GarrisonRefillLog.IsEnabled
-                && (!_lastDivertTarget.TryGetValue(mobileParty, out Settlement previous) || previous != best))
-            {
-                _lastDivertTarget[mobileParty] = best;
-                GarrisonRefillLog.Log("DIVERT", PartyName(mobileParty),
-                    "-> " + GarrisonRefillLog.Name(best)
-                    + "  ·  party " + mobileParty.Party.NumberOfRegularMembers + "/" + mobileParty.Party.PartySizeLimit
-                    + " (ratio " + mobileParty.PartySizeRatio.ToString("0.00")
-                    + " of affordable " + affordableLimit.ToString("0.00") + ")"
-                    + "  ·  garrison surplus " + bestSurplus
-                    + "  ·  " + bestDistanceDays.ToString("0.0") + "d out"
-                    + "  ·  score " + score.ToString("0.0"));
-            }
+            return result;
         }
 
         private static string PartyName(MobileParty mobileParty)

@@ -53,6 +53,28 @@ namespace RBMCampaign
         // new decision instead of one every hour a party is still en route. Not saved.
         private readonly Dictionary<MobileParty, Settlement> _lastTarget = new Dictionary<MobileParty, Settlement>();
 
+        // How often the expensive part -- the settlement sweep with per-candidate map pathfinding -- may
+        // run per party. Between scans we re-apply the cached target's score every hour (PartyThinkParams
+        // is rebuilt each tick, so a skipped hour would drop the bias entirely) without touching the
+        // navmesh again. Cuts the hot path from ~24 full scans/day to 4 per eligible party, while the
+        // injected score -- being purely deficit-scaled -- still tracks the party's real strength hourly.
+        private const float RescanIntervalHours = 6f;
+
+        // Per-session cache of the last full scan's result per party: the chosen target plus the nav data
+        // needed to re-add its score, the volunteer/distance figures for the log, and the campaign hour at
+        // which the scan may run again. Not saved -- an empty map after load just rescans once per party.
+        private struct CachedTarget
+        {
+            public Settlement Settlement;
+            public MobileParty.NavigationType NavType;
+            public bool IsFromPort;
+            public bool IsTargetingPort;
+            public int Volunteers;
+            public float DistanceDays;
+            public double NextScanHour;
+        }
+        private readonly Dictionary<MobileParty, CachedTarget> _cache = new Dictionary<MobileParty, CachedTarget>();
+
         public override void RegisterEvents()
         {
             CampaignEvents.AiHourlyTickEvent.AddNonSerializedListener(this, AiHourlyTick);
@@ -91,13 +113,83 @@ namespace RBMCampaign
                 return;
             }
 
-            Settlement best = null;
+            // Throttle the expensive work. The full sweep pathfinds to every free-recruit settlement, so
+            // run it only every RescanIntervalHours, or when the previously chosen target has gone invalid
+            // (besieged, captured, no longer free). Between scans we still re-add the cached score each
+            // hour -- p is rebuilt every tick, so a missed hour would drop the bias entirely.
+            double nowHours = CampaignTime.Now.ToHours;
+            if (!_cache.TryGetValue(mobileParty, out CachedTarget cached)
+                || nowHours >= cached.NextScanHour
+                || !IsCachedTargetStillValid(cached.Settlement, leader))
+            {
+                cached = ScanForBestTarget(mobileParty, leader);
+                cached.NextScanHour = nowHours + RescanIntervalHours;
+                _cache[mobileParty] = cached;
+            }
+
+            if (cached.Settlement == null)
+            {
+                _lastTarget.Remove(mobileParty);
+                return;
+            }
+
+            // Gentle, deficit-scaled score (~1.5..3.5): tips a lord toward his own free fief when he's
+            // topping up anyway, but stays under the garrison-refill trip, urgent siege/defense and the
+            // 8f terminal cutoff so any real threat still overrides it. Distance-independent, so it stays
+            // accurate every hour even while a cached target is reused between scans.
+            float depletion = MBMath.ClampFloat(1f - mobileParty.PartySizeRatio / affordableLimit, 0f, 1f);
+            float score = 1.5f + 2f * depletion;
+
+            AddGoToSettlementScore(p, cached.Settlement, score, cached.NavType, cached.IsFromPort, cached.IsTargetingPort);
+
+            if (SpoilsLog.IsEnabled
+                && (!_lastTarget.TryGetValue(mobileParty, out Settlement previous) || previous != cached.Settlement))
+            {
+                _lastTarget[mobileParty] = cached.Settlement;
+                SpoilsLog.Log("RECRUITAI", mobileParty.Party,
+                    PartyName(mobileParty) + " -> " + cached.Settlement.Name
+                    + "  ·  party " + mobileParty.Party.NumberOfRegularMembers + "/" + mobileParty.Party.PartySizeLimit
+                    + " (ratio " + mobileParty.PartySizeRatio.ToString("0.00")
+                    + " of affordable " + affordableLimit.ToString("0.00") + ")"
+                    + "  ·  free volunteers " + cached.Volunteers
+                    + "  ·  " + cached.DistanceDays.ToString("0.0") + "d out"
+                    + "  ·  score " + score.ToString("0.0"));
+            }
+        }
+
+        /// <summary>
+        /// Cheap single-settlement re-check of a cached target between full scans, so a party is never left
+        /// steering toward a fief that has since been besieged, captured, or lost its free-recruit status.
+        /// A null target (the last scan found nowhere worth going) counts as still valid -- it just means
+        /// "keep doing nothing until the next scheduled scan" rather than rescanning every hour.
+        /// </summary>
+        private static bool IsCachedTargetStillValid(Settlement settlement, Hero leader)
+        {
+            if (settlement == null)
+            {
+                return true;
+            }
+            if (!(settlement.IsTown || settlement.IsVillage))
+            {
+                return false;
+            }
+            if (settlement.Party.MapEvent != null || settlement.SiegeEvent != null)
+            {
+                return false;
+            }
+            return RecruitSupply.RecruitsFree(settlement, leader);
+        }
+
+        /// <summary>
+        /// The expensive part: sweep the lord's free-recruit settlements (his own clan's fiefs, or his
+        /// whole realm if he's the ruler), count volunteers, pathfind the travel distance, and pick the
+        /// best. Returns the chosen target and the nav data needed to re-apply its score; Settlement stays
+        /// null when nothing qualifies.
+        /// </summary>
+        private static CachedTarget ScanForBestTarget(MobileParty mobileParty, Hero leader)
+        {
+            CachedTarget result = default(CachedTarget);
             float bestCandidateScore = float.MinValue;
-            int bestVolunteers = 0;
-            float bestDistanceDays = 0f;
-            MobileParty.NavigationType bestNavType = MobileParty.NavigationType.None;
-            bool bestIsFromPort = false;
-            bool bestIsTargetingPort = false;
 
             // A ruler recruits free across his whole realm; everyone else only in his own clan's fiefs.
             // Iterate the tighter set per role, but still gate each on RecruitsFree as the authority so
@@ -139,42 +231,16 @@ namespace RBMCampaign
                 if (candidateScore > bestCandidateScore)
                 {
                     bestCandidateScore = candidateScore;
-                    best = settlement;
-                    bestVolunteers = volunteers;
-                    bestDistanceDays = distanceAsDays;
-                    bestNavType = navType;
-                    bestIsFromPort = isFromPort;
-                    bestIsTargetingPort = isTargetingPort;
+                    result.Settlement = settlement;
+                    result.Volunteers = volunteers;
+                    result.DistanceDays = distanceAsDays;
+                    result.NavType = navType;
+                    result.IsFromPort = isFromPort;
+                    result.IsTargetingPort = isTargetingPort;
                 }
             }
 
-            if (best == null)
-            {
-                _lastTarget.Remove(mobileParty);
-                return;
-            }
-
-            // Gentle, deficit-scaled score (~1.5..3.5): tips a lord toward his own free fief when he's
-            // topping up anyway, but stays under the garrison-refill trip, urgent siege/defense and the
-            // 8f terminal cutoff so any real threat still overrides it.
-            float depletion = MBMath.ClampFloat(1f - mobileParty.PartySizeRatio / affordableLimit, 0f, 1f);
-            float score = 1.5f + 2f * depletion;
-
-            AddGoToSettlementScore(p, best, score, bestNavType, bestIsFromPort, bestIsTargetingPort);
-
-            if (SpoilsLog.IsEnabled
-                && (!_lastTarget.TryGetValue(mobileParty, out Settlement previous) || previous != best))
-            {
-                _lastTarget[mobileParty] = best;
-                SpoilsLog.Log("RECRUITAI", mobileParty.Party,
-                    PartyName(mobileParty) + " -> " + best.Name
-                    + "  ·  party " + mobileParty.Party.NumberOfRegularMembers + "/" + mobileParty.Party.PartySizeLimit
-                    + " (ratio " + mobileParty.PartySizeRatio.ToString("0.00")
-                    + " of affordable " + affordableLimit.ToString("0.00") + ")"
-                    + "  ·  free volunteers " + bestVolunteers
-                    + "  ·  " + bestDistanceDays.ToString("0.0") + "d out"
-                    + "  ·  score " + score.ToString("0.0"));
-            }
+            return result;
         }
 
         /// <summary>
