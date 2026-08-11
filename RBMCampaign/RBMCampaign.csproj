@@ -320,6 +320,7 @@
     <Compile Include="Upgrades\RBMCampaignPatches.cs" />
     <Compile Include="Wages\TierBasedWageModel.cs" />
     <Compile Include="Upgrades\SpoilsUpgradePatches.cs" />
+    <Compile Include="Upgrades\UpgradeFormationWeights.cs" />
     <Compile Include="Upgrades\PartyUpgradeBudget.cs" />
     <Compile Include="Upgrades\PartyScreenStagedUpgrades.cs" />
     <Compile Include="Upgrades\UpgradeSupply.cs" />

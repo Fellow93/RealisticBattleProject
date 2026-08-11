@@ -43,6 +43,12 @@ namespace RBMCampaign
             // single-threaded so this scratch field is safe.
             private static Town _supplyTown;
 
+            // Whether this party may buy the GOLD leg of its upgrades today: false when the SupplyTown gate
+            // is on and no town supplies the party. Spoils-covered men -- who re-arm from the loot in their
+            // own purse, off no town's shelves -- promote regardless, so the gate closes only the gold leg.
+            // Resolved with _supplyTown at the top of each pass; single-threaded tick, so safe as scratch.
+            private static bool _supplyGoldAllowed;
+
             // The gold this party may still spend on upgrades today, resolved once at the top of each Prefix
             // pass and drawn down in ApplyEffects as each stack is billed. int.MaxValue means the party's cap
             // is unlimited (the default), in which case nothing below changes behaviour. Single-threaded tick,
@@ -66,21 +72,25 @@ namespace RBMCampaign
                     return false;
                 }
 
-                // SupplyTown gate: resolve the town that will outfit this party's upgrades and skip the
-                // party when the feature is on and nothing supplies it -- neither a friendly settlement it
-                // is stationed in nor a friendly city within reach. One call does the gate and the town.
+                // SupplyTown gate: resolve the town that will outfit this party's GOLD-bought upgrades. When
+                // the feature is on and nothing supplies the party -- neither a friendly settlement it is
+                // stationed in nor a friendly city within reach -- the gold leg is closed for the day, but the
+                // party is NOT skipped: men the spoils stockpile makes free still promote, re-arming from the
+                // loot in their own purse rather than off a town's shelves, so distance never gates them. Only
+                // gold-bought promotions need a supplier. One call does the gate and the town.
                 _supplyTown = null;
+                _supplyGoldAllowed = true;
                 if (UpgradeSupply.IsEnabled && !UpgradeSupply.CanUpgradeNear(party.MobileParty, out _supplyTown))
                 {
-                    // Once per party per day, and only when it actually has troops that could promote, so
-                    // the reason an AI army is stuck at low tiers is visible without flooding the log.
+                    _supplyGoldAllowed = false;
+                    // Once per party per day, and only when it actually has troops that could promote, so the
+                    // reason an AI army's GOLD upgrades are stalled is visible without flooding the log.
                     if (SpoilsLog.IsEnabled && HasUpgradeableTroop(party.MemberRoster))
                     {
                         SpoilsLog.LogOnce("nosupply-" + party.Id + "-" + (int)(CampaignTime.Now.ToHours / 24),
-                            "UPGRADE", party, SpoilsLog.Describe(party) + " held off upgrading: no friendly town within "
-                            + RBMConfig.RBMConfig.troopUpgradeSupplyRadius + " units");
+                            "UPGRADE", party, SpoilsLog.Describe(party) + " held off gold upgrades: no friendly town within "
+                            + RBMConfig.RBMConfig.troopUpgradeSupplyRadius + " units (spoils-covered promotions still allowed)");
                     }
-                    return false;
                 }
 
                 // How much gold this party is still allowed to spend on upgrades today. Drawn down per
@@ -182,18 +192,29 @@ namespace RBMCampaign
                     if (party.LeaderHero != null && fullGold > 0)
                     {
                         float coveredMen = SpoilsPool.GetCoveredMen(party, character, upgradeTarget);
-                        // The gold leg is limited by the smaller of the purse and the party's remaining daily
-                        // upgrade budget: the player's clan-screen cap on gold spent, spoils-covered men aside.
-                        // With no cap the remaining budget is int.MaxValue, so this is just PartyTradeGold.
-                        int tradeGold = party.MobileParty.PartyTradeGold;
-                        float goldPool = MathF.Min(tradeGold, _upgradeGoldBudgetRemaining);
-                        int affordable = (int)(coveredMen + goldPool / (float)fullGold);
-                        // The budget bit here iff a finite cap left less room than the purse held AND that
-                        // trimmed the batch -- i.e. the party had the gold to promote more men but its cap
-                        // stopped it. Flagged for a single per-party line after the pass, not logged per stack.
-                        if (_upgradeGoldBudgetRemaining != int.MaxValue && _upgradeGoldBudgetRemaining < tradeGold && affordable < count)
+                        int affordable;
+                        if (_supplyGoldAllowed)
                         {
-                            _budgetBitThisPass = true;
+                            // The gold leg is limited by the smaller of the purse and the party's remaining daily
+                            // upgrade budget: the player's clan-screen cap on gold spent, spoils-covered men aside.
+                            // With no cap the remaining budget is int.MaxValue, so this is just PartyTradeGold.
+                            int tradeGold = party.MobileParty.PartyTradeGold;
+                            float goldPool = MathF.Min(tradeGold, _upgradeGoldBudgetRemaining);
+                            affordable = (int)(coveredMen + goldPool / (float)fullGold);
+                            // The budget bit here iff a finite cap left less room than the purse held AND that
+                            // trimmed the batch -- i.e. the party had the gold to promote more men but its cap
+                            // stopped it. Flagged for a single per-party line after the pass, not logged per stack.
+                            if (_upgradeGoldBudgetRemaining != int.MaxValue && _upgradeGoldBudgetRemaining < tradeGold && affordable < count)
+                            {
+                                _budgetBitThisPass = true;
+                            }
+                        }
+                        else
+                        {
+                            // No supply town: the gold leg is closed. Only the men the spoils stockpile makes
+                            // free may promote -- they re-arm from their own purse, off no town's shelves, so
+                            // the location gate does not touch them. The gold-buyers wait for a town.
+                            affordable = (int)coveredMen;
                         }
                         count = MathF.Min(count, affordable);
                         if (count <= 0)
@@ -202,11 +223,17 @@ namespace RBMCampaign
                         }
                     }
                     // A garrison has neither an owner to bill nor -- now it is out of the spoils economy --
-                    // a purse of its own: its promotions come out of the fief's treasury. Clamp the batch
-                    // to what the treasury can spare above the reserve it keeps to go on paying the
-                    // garrison's wages, and require it to hold ten times a man's promotion before arming any.
+                    // a purse of its own: its promotions come out of the fief's treasury. That is a GOLD
+                    // leg, so it is gated by supply exactly as a lord's gold-buyers are (a stationed garrison
+                    // is supplied by its own settlement, so this only bites the pathological unsupplied case).
+                    // Clamp the batch to what the treasury can spare above the reserve it keeps to go on
+                    // paying the garrison's wages, and require it to hold ten times a man's promotion first.
                     else if (party.MobileParty.IsGarrison && fullGold > 0)
                     {
+                        if (!_supplyGoldAllowed)
+                        {
+                            continue;
+                        }
                         Settlement fief = GarrisonFiefOf(party);
                         int wealth = (fief != null) ? SettlementWealth.GetSettlementWealth(fief) : 0;
                         int reserve = party.MobileParty.TotalWage * GarrisonRecruitCost.GarrisonReserveDays;
