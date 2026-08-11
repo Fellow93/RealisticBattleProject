@@ -420,6 +420,8 @@
     <Compile Include="Settlements\AdministrativeUpkeep.cs" />
     <Compile Include="Settlements\CastleEconomy.cs" />
     <Compile Include="Settlements\ConstructionLabour.cs" />
+    <Compile Include="Settlements\GarrisonMorale.cs" />
+    <Compile Include="Settlements\GarrisonPartySize.cs" />
     <Compile Include="Settlements\GarrisonUpkeep.cs" />
     <Compile Include="Settlements\GarrisonWageLimit.cs" />
     <Compile Include="Settlements\GarrisonRecruitCost.cs" />
