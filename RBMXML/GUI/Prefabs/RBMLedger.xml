@@ -10,6 +10,23 @@
 		<Constant Name="RBML.H.Num" Value="90" />
 		<Constant Name="RBML.H.Events" Value="110" />
 		<Constant Name="RBML.RowH" Value="28" />
+		<!-- Towns tab column widths. -->
+		<Constant Name="RBMT.Prosp" Value="130" />
+		<Constant Name="RBMT.Citizen" Value="150" />
+		<Constant Name="RBMT.Treasury" Value="150" />
+		<Constant Name="RBMT.Food" Value="120" />
+		<Constant Name="RBMT.Garrison" Value="110" />
+		<Constant Name="RBMT.Militia" Value="110" />
+		<Constant Name="RBMT.H.Day" Value="64" />
+		<Constant Name="RBMT.H.Num" Value="74" />
+		<Constant Name="RBMT.H.Events" Value="84" />
+		<Constant Name="RBMT.RowH" Value="26" />
+		<Constant Name="RBMT.D.Tier" Value="130" />
+		<Constant Name="RBMT.D.Num" Value="90" />
+		<Constant Name="RBMT.W.Name" Value="190" />
+		<Constant Name="RBMT.W.Rate" Value="120" />
+		<Constant Name="RBMT.G.Name" Value="180" />
+		<Constant Name="RBMT.G.Num" Value="96" />
 	</Constants>
 	<Window>
 		<Widget Id="LedgerRoot" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
@@ -159,17 +176,28 @@
 																																	</Children>
 																																</ListPanel>
 																																<!-- Plot: one column per day, oldest at left. Bars bottom-anchored; day label beneath. -->
-																																<ListPanel DataSource="{Bars}" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="134" StackLayout.LayoutMethod="HorizontalLeftToRight">
-																																	<ItemTemplate>
-																																		<Widget WidthSizePolicy="Fixed" SuggestedWidth="26" HeightSizePolicy="StretchToParent">
+																																<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="168" StackLayout.LayoutMethod="HorizontalLeftToRight">
+																																	<Children>
+																																		<Widget WidthSizePolicy="Fixed" SuggestedWidth="48" HeightSizePolicy="Fixed" SuggestedHeight="168">
 																																			<Children>
-																																				<BrushWidget WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="@BarHeight" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="22" IsVisible="@IsNormalBar" DoNotAcceptEvents="true" Brush="RBMLedger.Bar" />
-																																				<BrushWidget WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="@BarHeight" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="22" IsVisible="@IsRaided" DoNotAcceptEvents="true" Brush="RBMLedger.BarRaid" />
-																																				<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="20" VerticalAlignment="Bottom" HorizontalAlignment="Center" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Center" Brush.FontSize="14" Text="@DayLabel" />
-																																				<HintWidget DataSource="{ValueHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																				<TextWidget Text="@AxisMax" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Bottom" MarginBottom="149" MarginRight="6" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.FontSize="13" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="@AxisMid" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Bottom" MarginBottom="99" MarginRight="6" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.FontSize="13" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="0" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Bottom" MarginBottom="49" MarginRight="6" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.FontSize="13" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																			</Children>
 																																		</Widget>
-																																	</ItemTemplate>
+																																		<ListPanel DataSource="{Bars}" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="168" StackLayout.LayoutMethod="HorizontalLeftToRight">
+																																			<ItemTemplate>
+																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="26" HeightSizePolicy="StretchToParent">
+																																					<Children>
+																																						<FillBar WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="58" IsVertical="true" MaxAmount="100" InitialAmount="@BarFill" IsVisible="@IsNormalBar" DoNotAcceptEvents="true" Brush="RBMLedger.Bar" />
+																																						<FillBar WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="58" IsVertical="true" MaxAmount="100" InitialAmount="@BarFill" IsVisible="@IsRaided" DoNotAcceptEvents="true" Brush="RBMLedger.BarRaid" />
+																																						<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="4" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.FontSize="14" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@DayLabel" />
+																																						<HintWidget DataSource="{ValueHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																					</Children>
+																																				</Widget>
+																																			</ItemTemplate>
+																																		</ListPanel>
+																																	</Children>
 																																</ListPanel>
 																															</Children>
 																														</ListPanel>
@@ -244,6 +272,279 @@
 											</Children>
 										</Widget>
 
+									</Children>
+								</Widget>
+
+								<!-- Towns panel: towns grouped by current faction; each row expands to a metric chart, 30-day history, demand tiers and workshop totals. -->
+								<Widget IsVisible="@ShowTowns" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+									<Children>
+										<!-- Column header row. -->
+										<ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" VerticalAlignment="Top" MarginLeft="12" MarginRight="42" StackLayout.LayoutMethod="HorizontalLeftToRight">
+											<Children>
+												<TextWidget Text="Town" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="Prosperity" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Prosp" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="Citizen" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Citizen" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="Treasury" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Treasury" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="Food" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Food" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="Garrison" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Garrison" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="Militia" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Militia" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+											</Children>
+										</ListPanel>
+										<!-- Scrollable faction -> town -> detail tree. -->
+										<Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="40">
+											<Children>
+												<ScrollablePanel Id="TownsScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginRight="30" ClipRect="TownsClip" InnerPanel="TownsClip\TownsInner" VerticalScrollbar="..\TownsScrollbar\Scrollbar" MouseScrollAxis="Vertical" AutoHideScrollBars="false">
+													<Children>
+														<Widget Id="TownsClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+															<Children>
+																<Widget Id="TownsInner" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top">
+																	<Children>
+																		<ListPanel DataSource="{FactionGroups}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" StackLayout.LayoutMethod="VerticalTopToBottom">
+																			<ItemTemplate>
+																				<ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" MarginBottom="18">
+																					<Children>
+																						<TextWidget Text="@FactionName" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" Brush="SPOptions.GameKeysGroup.Title.Text" Brush.TextHorizontalAlignment="Left" MarginTop="10" MarginBottom="6" MarginLeft="12" />
+																						<ListPanel DataSource="{Towns}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+																							<ItemTemplate>
+																								<ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" MarginBottom="4">
+																									<Children>
+																										<!-- Summary row: click to expand. -->
+																										<ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" Brush="RBMLedger.Row" Command.Click="ExecuteToggle" UpdateChildrenStates="true">
+																											<Children>
+																												<ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" MarginLeft="12" MarginRight="12" StackLayout.LayoutMethod="HorizontalLeftToRight">
+																													<Children>
+																														<TextWidget Text="@TownName" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																														<TextWidget Text="@Prosperity" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Prosp" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																														<TextWidget Text="@Citizen" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Citizen" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																														<TextWidget Text="@SettlementWealthText" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Treasury" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																														<Widget WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Food" HeightSizePolicy="StretchToParent">
+																															<Children>
+																																<TextWidget Text="@Food" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																<HintWidget DataSource="{FoodHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																															</Children>
+																														</Widget>
+																														<TextWidget Text="@Garrison" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Garrison" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																														<TextWidget Text="@Militia" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Militia" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																													</Children>
+																												</ListPanel>
+																											</Children>
+																										</ButtonWidget>
+																										<!-- Expanded detail. -->
+																										<Widget IsVisible="@IsExpanded" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top">
+																											<Children>
+																												<ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" StackLayout.LayoutMethod="VerticalTopToBottom" MarginLeft="24" MarginTop="4" MarginBottom="10">
+																													<Children>
+																														<!-- Switchable-metric bar chart. -->
+																														<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" MarginBottom="12">
+																															<Children>
+																																<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="32" StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="8">
+																																	<Children>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" MarginRight="4" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricProsperity" IsSelected="@IsProsperitySelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@ProsperityButtonText" /></Children>
+																																		</ButtonWidget>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" MarginRight="4" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricCitizen" IsSelected="@IsCitizenSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@CitizenButtonText" /></Children>
+																																		</ButtonWidget>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" MarginRight="4" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricSettlement" IsSelected="@IsSettlementSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@SettlementButtonText" /></Children>
+																																		</ButtonWidget>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" MarginRight="4" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricFood" IsSelected="@IsFoodSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@FoodButtonText" /></Children>
+																																		</ButtonWidget>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" MarginRight="4" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricGarrison" IsSelected="@IsGarrisonSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@GarrisonButtonText" /></Children>
+																																		</ButtonWidget>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" MarginRight="4" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricMilitia" IsSelected="@IsMilitiaSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@MilitiaButtonText" /></Children>
+																																		</ButtonWidget>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" MarginRight="4" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricVillager" IsSelected="@IsVillagerSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@VillagerButtonText" /></Children>
+																																		</ButtonWidget>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" MarginRight="4" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricParty" IsSelected="@IsPartySelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@PartyButtonText" /></Children>
+																																		</ButtonWidget>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricCaravan" IsSelected="@IsCaravanSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@CaravanButtonText" /></Children>
+																																		</ButtonWidget>
+																																	</Children>
+																																</ListPanel>
+																																<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="168" StackLayout.LayoutMethod="HorizontalLeftToRight">
+																																	<Children>
+																																		<Widget WidthSizePolicy="Fixed" SuggestedWidth="48" HeightSizePolicy="Fixed" SuggestedHeight="168">
+																																			<Children>
+																																				<TextWidget Text="@AxisMax" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Bottom" MarginBottom="149" MarginRight="6" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.FontSize="13" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="@AxisMid" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Bottom" MarginBottom="99" MarginRight="6" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.FontSize="13" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="0" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="18" VerticalAlignment="Bottom" MarginBottom="49" MarginRight="6" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.FontSize="13" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																			</Children>
+																																		</Widget>
+																																		<ListPanel DataSource="{Bars}" WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="168" StackLayout.LayoutMethod="HorizontalLeftToRight">
+																																			<ItemTemplate>
+																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="26" HeightSizePolicy="StretchToParent">
+																																					<Children>
+																																						<FillBar WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="58" IsVertical="true" MaxAmount="100" InitialAmount="@BarFill" IsVisible="@IsNormalBar" DoNotAcceptEvents="true" Brush="RBMLedger.Bar" />
+																																						<FillBar WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="58" IsVertical="true" MaxAmount="100" InitialAmount="@BarFill" IsVisible="@IsRaided" DoNotAcceptEvents="true" Brush="RBMLedger.BarRaid" />
+																																						<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="4" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.FontSize="14" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@DayLabel" />
+																																						<HintWidget DataSource="{ValueHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																					</Children>
+																																				</Widget>
+																																			</ItemTemplate>
+																																		</ListPanel>
+																																	</Children>
+																																</ListPanel>
+																															</Children>
+																														</ListPanel>
+																														<!-- 30-day history table. -->
+																														<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" StackLayout.LayoutMethod="VerticalTopToBottom" MarginBottom="10">
+																															<Children>
+																																<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH" StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="2">
+																																	<Children>
+																																		<TextWidget Text="Day" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Day" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Prosp" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Citizen" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Treas" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Food" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Garr" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Mil" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Deliv" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Party" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Carav" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Events" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Events" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+																																	</Children>
+																																</ListPanel>
+																																<ListPanel DataSource="{History}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+																																	<ItemTemplate>
+																																		<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH" StackLayout.LayoutMethod="HorizontalLeftToRight">
+																																			<Children>
+																																				<TextWidget Text="@DayLabel" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Day" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="@Prosperity" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="@Citizen" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="@Settlement" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="@Food" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="@Garrison" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="@Militia" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="@Villager" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="@Party" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="@Caravan" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Events" HeightSizePolicy="StretchToParent">
+																																					<Children>
+																																						<TextWidget Text="@Events" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+																																						<HintWidget DataSource="{EventsHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																					</Children>
+																																				</Widget>
+																																			</Children>
+																																		</ListPanel>
+																																	</ItemTemplate>
+																																</ListPanel>
+																															</Children>
+																														</ListPanel>
+																														<!-- Citizen demand by tier: units wanted vs fraction filled; hover for consumed/missing. -->
+																														<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH" StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="2">
+																															<Children>
+																																<TextWidget Text="Demand" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.D.Tier" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																<TextWidget Text="Wanted/day" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.D.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																<TextWidget Text="Filled" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.D.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																															</Children>
+																														</ListPanel>
+																														<ListPanel DataSource="{DemandTiers}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" MarginBottom="10">
+																															<ItemTemplate>
+																																<Widget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH">
+																																	<Children>
+																																		<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" StackLayout.LayoutMethod="HorizontalLeftToRight">
+																																			<Children>
+																																				<TextWidget Text="@TierName" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.D.Tier" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="@Demand" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.D.Num" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<TextWidget Text="@Filled" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.D.Num" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																			</Children>
+																																		</ListPanel>
+																																		<HintWidget DataSource="{Hint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																	</Children>
+																																</Widget>
+																															</ItemTemplate>
+																														</ListPanel>
+																														<!-- Per-workshop consumed (inputs) / produced (outputs) units/day; hover a column for its good breakdown. -->
+																														<ListPanel IsVisible="@HasWorkshops" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+																															<Children>
+																																<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH" StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="2">
+																																	<Children>
+																																		<TextWidget Text="Workshops" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.W.Name" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Consumed/day" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.W.Rate" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Produced/day" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.W.Rate" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																	</Children>
+																																</ListPanel>
+																																<ListPanel DataSource="{Workshops}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" MarginBottom="10">
+																																	<ItemTemplate>
+																																		<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH" StackLayout.LayoutMethod="HorizontalLeftToRight">
+																																			<Children>
+																																				<TextWidget Text="@WorkshopName" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.W.Name" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.W.Rate" HeightSizePolicy="StretchToParent">
+																																					<Children>
+																																						<TextWidget Text="@Consumed" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																						<HintWidget DataSource="{ConsumedHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																					</Children>
+																																				</Widget>
+																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.W.Rate" HeightSizePolicy="StretchToParent">
+																																					<Children>
+																																						<TextWidget Text="@Produced" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																						<HintWidget DataSource="{ProducedHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																					</Children>
+																																				</Widget>
+																																			</Children>
+																																		</ListPanel>
+																																	</ItemTemplate>
+																																</ListPanel>
+																															</Children>
+																														</ListPanel>
+																														<!-- Per-item demand vs market stock; hover a row for its 30-day history. -->
+																														<ListPanel IsVisible="@HasGoods" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+																															<Children>
+																																<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH" StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="2">
+																																	<Children>
+																																		<TextWidget Text="Goods (demand vs stock)" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Name" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Demand/day" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Stock" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Days" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																	</Children>
+																																</ListPanel>
+																																<ListPanel DataSource="{Goods}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" MarginBottom="10">
+																																	<ItemTemplate>
+																																		<Widget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH">
+																																			<Children>
+																																				<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" StackLayout.LayoutMethod="HorizontalLeftToRight">
+																																					<Children>
+																																						<TextWidget Text="@ItemName" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Name" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																						<TextWidget Text="@Demand" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																						<TextWidget Text="@Stock" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																						<TextWidget Text="@Days" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																					</Children>
+																																				</ListPanel>
+																																				<HintWidget DataSource="{Hint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																			</Children>
+																																		</Widget>
+																																	</ItemTemplate>
+																																</ListPanel>
+																															</Children>
+																														</ListPanel>
+																													</Children>
+																												</ListPanel>
+																											</Children>
+																										</Widget>
+																									</Children>
+																								</ListPanel>
+																							</ItemTemplate>
+																						</ListPanel>
+																					</Children>
+																				</ListPanel>
+																			</ItemTemplate>
+																		</ListPanel>
+																	</Children>
+																</Widget>
+															</Children>
+														</Widget>
+													</Children>
+												</ScrollablePanel>
+												<Standard.VerticalScrollbar Id="TownsScrollbar" HorizontalAlignment="Right" HeightSizePolicy="StretchToParent" WidthSizePolicy="CoverChildren" VerticalAlignment="Top" />
+											</Children>
+										</Widget>
 									</Children>
 								</Widget>
 

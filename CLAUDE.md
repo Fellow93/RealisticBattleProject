@@ -138,6 +138,24 @@ Two manifests **are** committed, and together they localise a game update:
   re-running the script, `git diff` on this file names the individual types that
   changed, i.e. exactly where RBM's Harmony patches may have broken.
 
+## Gauntlet UI work
+
+**Any task touching the UI — Gauntlet prefabs (`**/GUI/Prefabs/*.xml`), brushes
+(`**/GUI/Brushes/*.xml`), widgets, ViewModels (`[DataSourceProperty]` / `MBBindingList`),
+Gauntlet screens/layers/movies, or injecting into native prefabs — MUST first consult
+`docs/BannerlordGauntletUI.md`.** It is the authoritative reference: full widget catalog
++ inheritance tree, base `Widget` attributes, the prefab XML grammar (the five value
+sigils `literal`/`@binding`/`{path}`/`!Constant`/`*Parameter`, `<ItemTemplate>`, `Command.*`),
+the Brush/Sprite system, the ViewModel binding pipeline, the Screen/Layer architecture,
+GUI asset discovery, and RBM's `WidgetPrefab.LoadFrom` native-prefab injection technique.
+Read it before grepping `decompiled/` from scratch; drop back to the decompiled sources
+only for details the doc doesn't cover (e.g. a specific game-side widget under
+`decompiled/TaleWorlds.MountAndBlade.GauntletUI.Widgets/`).
+
+**When delegating UI research/changes to a subagent, tell it to read
+`docs/BannerlordGauntletUI.md` first** and to update that doc if it discovers the
+reference is wrong or incomplete.
+
 ## Bannerlord documentation online
 - https://moddocs.bannerlord.com/
 - https://docs.bannerlordmodding.com/
@@ -150,3 +168,4 @@ Two manifests **are** committed, and together they localise a game update:
 - **Rule:** For tasks touching more than 3 files or requiring deep codebase exploration, you MUST delegate the research or modifications to a subagent.
 - **Built-in Agents:** Use `@agent-explore` for read-only audits and `@agent-plan` for research and context gathering. 
 - **Main Context:** Do not bloat the main session with intermediate file scans or read operations. The main session should only be used for high-level orchestration.
+- **UI tasks:** any delegation that involves Gauntlet UI (prefabs, brushes, widgets, ViewModels, screens/layers) MUST instruct the subagent to read `docs/BannerlordGauntletUI.md` first (see the "Gauntlet UI work" section above).

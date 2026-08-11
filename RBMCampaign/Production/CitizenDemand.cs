@@ -388,6 +388,16 @@ namespace RBMCampaign
         private static readonly Dictionary<Town, float> _mediumSatisfaction = new Dictionary<Town, float>();
         private static readonly Dictionary<Town, float> _luxurySatisfaction = new Dictionary<Town, float>();
 
+        // Last tick's per-tier wanted/filled UNITS per town, kept so the Ledger's Towns tab can show
+        // demand vs consumed vs missing in whole units (the satisfaction dicts above keep only the ratio).
+        // Not persisted -- refreshed every daily consumption tick, same as the satisfaction dicts.
+        private static readonly Dictionary<Town, int> _baseWantedByTown = new Dictionary<Town, int>();
+        private static readonly Dictionary<Town, int> _baseFilledByTown = new Dictionary<Town, int>();
+        private static readonly Dictionary<Town, int> _mediumWantedByTown = new Dictionary<Town, int>();
+        private static readonly Dictionary<Town, int> _mediumFilledByTown = new Dictionary<Town, int>();
+        private static readonly Dictionary<Town, int> _luxuryWantedByTown = new Dictionary<Town, int>();
+        private static readonly Dictionary<Town, int> _luxuryFilledByTown = new Dictionary<Town, int>();
+
         // The current town's per-tier tally, summed across its basket purchases this tick and folded into
         // the dicts above by ReportAndClear. Static because one town's buys run start to finish before the
         // next town's -- the same single-town-at-a-time assumption _shortfall and _spentToday already make.
@@ -664,6 +674,13 @@ namespace RBMCampaign
             _baseSatisfaction[town] = (_baseWanted > 0) ? MathF.Clamp((float)_baseFilled / _baseWanted, 0f, 1f) : 1f;
             _mediumSatisfaction[town] = (_mediumWanted > 0) ? MathF.Clamp((float)_mediumFilled / _mediumWanted, 0f, 1f) : 0f;
             _luxurySatisfaction[town] = (_luxuryWanted > 0) ? MathF.Clamp((float)_luxuryFilled / _luxuryWanted, 0f, 1f) : 0f;
+            // Keep the raw unit tallies too, for the ledger's demand/consumed/missing readout.
+            _baseWantedByTown[town] = _baseWanted;
+            _baseFilledByTown[town] = _baseFilled;
+            _mediumWantedByTown[town] = _mediumWanted;
+            _mediumFilledByTown[town] = _mediumFilled;
+            _luxuryWantedByTown[town] = _luxuryWanted;
+            _luxuryFilledByTown[town] = _luxuryFilled;
             _baseWanted = _baseFilled = 0;
             _mediumWanted = _mediumFilled = 0;
             _luxuryWanted = _luxuryFilled = 0;
@@ -728,12 +745,34 @@ namespace RBMCampaign
             return (town != null && _luxurySatisfaction.TryGetValue(town, out float satisfaction)) ? satisfaction : 0f;
         }
 
+        // Last tick's per-tier wanted / filled UNITS, for the Towns-tab demand readout. "Wanted" is the
+        // whole ration the tier asked for; "Filled" is what the market could supply; the difference is the
+        // shortfall. Tiers group as RBM's consumption model does: base = staples + small luxuries,
+        // medium = medium luxuries, luxury = large luxuries. Zero for a town not yet ticked.
+        public static int BaseWanted(Town town) => Get(_baseWantedByTown, town);
+        public static int BaseFilled(Town town) => Get(_baseFilledByTown, town);
+        public static int MediumWanted(Town town) => Get(_mediumWantedByTown, town);
+        public static int MediumFilled(Town town) => Get(_mediumFilledByTown, town);
+        public static int LuxuryWanted(Town town) => Get(_luxuryWantedByTown, town);
+        public static int LuxuryFilled(Town town) => Get(_luxuryFilledByTown, town);
+
+        private static int Get(Dictionary<Town, int> dict, Town town)
+        {
+            return (town != null && dict.TryGetValue(town, out int v)) ? v : 0;
+        }
+
         /// <summary>Drops the previous campaign's per-town demand-satisfaction state and tick tallies.</summary>
         public static void ResetForNewSession()
         {
             _baseSatisfaction.Clear();
             _mediumSatisfaction.Clear();
             _luxurySatisfaction.Clear();
+            _baseWantedByTown.Clear();
+            _baseFilledByTown.Clear();
+            _mediumWantedByTown.Clear();
+            _mediumFilledByTown.Clear();
+            _luxuryWantedByTown.Clear();
+            _luxuryFilledByTown.Clear();
             _baseWanted = _baseFilled = 0;
             _mediumWanted = _mediumFilled = 0;
             _luxuryWanted = _luxuryFilled = 0;

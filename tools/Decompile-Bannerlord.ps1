@@ -96,6 +96,7 @@ $coreAssemblies = @(
     'TaleWorlds.MountAndBlade',
     'TaleWorlds.MountAndBlade.CustomBattle',
     'TaleWorlds.MountAndBlade.GauntletUI',
+    'TaleWorlds.MountAndBlade.GauntletUI.Widgets',
     'TaleWorlds.MountAndBlade.Platform.PC',
     'TaleWorlds.MountAndBlade.View',
     'TaleWorlds.MountAndBlade.ViewModelCollection',

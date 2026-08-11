@@ -5,7 +5,7 @@ using TaleWorlds.Localization;
 
 namespace RBMCampaign
 {
-    // One day-column in a village's expandable 14-day history.
+    // One day-column in a village's expandable 30-day history.
     public class RBMLedgerVillageDayVM : ViewModel
     {
         public RBMLedgerVillageDayVM(string dayLabel, int production, int wealth, int hearth, int militia,
@@ -39,18 +39,20 @@ namespace RBMCampaign
     // selected metric's series max; the raw value lives in the hover tooltip.
     public class RBMLedgerBarVM : ViewModel
     {
-        public RBMLedgerBarVM(float barHeight, string dayLabel, bool raided, BasicTooltipViewModel valueHint)
+        public RBMLedgerBarVM(int barFill, string dayLabel, bool raided, BasicTooltipViewModel valueHint)
         {
-            BarHeight = barHeight;
+            BarFill = barFill;
             DayLabel = dayLabel;
             IsRaided = raided;
             IsNormalBar = !raided;
             ValueHint = valueHint;
         }
 
-        // Bar column height in pixels (0..BarMaxPx). Bound to the bar widget's SuggestedHeight,
-        // which is a float -- an int-typed binding resolves to 0 and the bar never shows.
-        [DataSourceProperty] public float BarHeight { get; }
+        // Bar fill amount, 0..100, bound to a vertical FillBar's InitialAmount (MaxAmount=100). NOTE:
+        // SuggestedHeight is NOT data-bindable in Gauntlet (no native prefab binds it) -- the earlier
+        // BrushWidget+SuggestedHeight approach silently left every bar at height 0. FillBar is how the
+        // engine does variable bars (see RBM's own CombatUI/UnitStatus health/posture/stamina bars).
+        [DataSourceProperty] public int BarFill { get; }
 
         // Short x-axis label ("T" for today, "-3" for three days ago).
         [DataSourceProperty] public string DayLabel { get; }
@@ -64,7 +66,7 @@ namespace RBMCampaign
     }
 
     // A single village row: current values, plus an expandable panel holding a switchable-metric
-    // bar chart and a 14-day history table.
+    // bar chart and a 30-day history table.
     public class RBMLedgerVillageVM : ViewModel
     {
         // Tallest bar in pixels; every series is scaled so its own max reaches this height.
@@ -84,6 +86,8 @@ namespace RBMCampaign
         private string _selectedMetric = "prod";
         private MBBindingList<RBMLedgerBarVM> _bars;
         private string _metricName;
+        private string _axisMax;
+        private string _axisMid;
         private bool _isProdSelected;
         private bool _isWealthSelected;
         private bool _isHearthSelected;
@@ -150,6 +154,21 @@ namespace RBMCampaign
         {
             get => _metricName;
             set { if (value != _metricName) { _metricName = value; OnPropertyChangedWithValue(value, "MetricName"); } }
+        }
+
+        // Y-axis scale labels for the chart: top = the selected series' max, plus its midpoint.
+        [DataSourceProperty]
+        public string AxisMax
+        {
+            get => _axisMax;
+            set { if (value != _axisMax) { _axisMax = value; OnPropertyChangedWithValue(value, "AxisMax"); } }
+        }
+
+        [DataSourceProperty]
+        public string AxisMid
+        {
+            get => _axisMid;
+            set { if (value != _axisMid) { _axisMid = value; OnPropertyChangedWithValue(value, "AxisMid"); } }
         }
 
         [DataSourceProperty]
@@ -252,16 +271,18 @@ namespace RBMCampaign
                     max = series[i];
                 }
             }
+            AxisMax = max.ToString();
+            AxisMid = (max / 2).ToString();
 
             string caption = MetricName;
             var bars = new MBBindingList<RBMLedgerBarVM>();
             for (int i = 0; i < series.Length; i++)
             {
                 int val = series[i];
-                int h = val <= 0 ? 0 : (int)MathF.Round((float)val / max * BarMaxPx);
-                if (val > 0 && h < 3)
+                int h = val <= 0 ? 0 : (int)MathF.Round((float)val / max * 100f);
+                if (val > 0 && h < 2)
                 {
-                    h = 3; // keep a tiny non-zero value visible
+                    h = 2; // keep a tiny non-zero value visible
                 }
                 string label = i < _barLabels.Length ? _barLabels[i] : string.Empty;
                 bool raided = i < _barRaided.Length && _barRaided[i];

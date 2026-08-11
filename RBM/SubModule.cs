@@ -101,6 +101,9 @@ namespace RBM
                 // The per-party upgrade-budget slider + checkbox beside the clan Parties panel's wage cap,
                 // injected the same way -- the clan screen's prefabs are likewise cached before OnGameStart.
                 UpgradeLimitPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // Grows the map Escape-menu panel so the added RBM Ledger row does not overflow it; same
+                // cached-before-OnGameStart reason as the injections above.
+                RBMEscapeMenuPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
             }
 
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate
@@ -184,6 +187,7 @@ namespace RBM
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSettlementWealthCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMCaravanBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMVillageLedgerCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMTownLedgerCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMGarrisonRefillBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMRecruitBiasBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSettlementDefenseBehavior());

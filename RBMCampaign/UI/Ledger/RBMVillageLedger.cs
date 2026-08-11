@@ -8,7 +8,7 @@ using TaleWorlds.SaveSystem;
 namespace RBMCampaign
 {
     // Persistent per-village history store for the Ledger's Villages tab. Keeps a rolling
-    // 14-day series of four metrics (production/wealth/hearth/militia) plus discrete day-stamped
+    // 30-day series of four metrics (production/wealth/hearth/militia) plus discrete day-stamped
     // events (raid, villager dispatch, ...), keyed by Settlement.StringId.
     //
     // Storage follows RBM's established CSV-in-Dictionary<string,string> save pattern (see
@@ -18,7 +18,7 @@ namespace RBMCampaign
     // metric arrays -- the VM maps them onto day columns by absolute campaign-day at display time.
     public static class RBMVillageLedger
     {
-        public const int HistoryDays = 14;
+        public const int HistoryDays = 30;
 
         private static Dictionary<string, string> _prod = new Dictionary<string, string>();
         private static Dictionary<string, string> _wealth = new Dictionary<string, string>();
@@ -119,14 +119,21 @@ namespace RBMCampaign
             }
         }
 
+        // Let a series grow to this many columns before trimming it back to HistoryDays. The trim -- Split
+        // into an array, copy the tail into a List, Join back -- is the one costly step here, and the old
+        // code ran it on EVERY append once a series was full: every day, for every metric of every village.
+        // Amortizing to a fixed headroom runs it once per (TrimWatermark - HistoryDays) days instead; the
+        // other days are a single concat.
+        private const int TrimWatermark = HistoryDays * 2;
+
         private static void AppendInt(Dictionary<string, string> dict, string id, int value)
         {
             if (dict.TryGetValue(id, out string csv) && !string.IsNullOrEmpty(csv))
             {
-                string[] parts = csv.Split(',');
-                if (parts.Length >= HistoryDays)
+                if (CountColumns(csv) >= TrimWatermark)
                 {
-                    // Drop the oldest, keep the last (HistoryDays-1), append today's.
+                    // Rebuild once we hit the watermark: keep the newest (HistoryDays - 1) plus today's.
+                    string[] parts = csv.Split(',');
                     int start = parts.Length - (HistoryDays - 1);
                     var kept = new List<string>(HistoryDays);
                     for (int i = start; i < parts.Length; i++)
@@ -145,6 +152,20 @@ namespace RBMCampaign
             {
                 dict[id] = value.ToString();
             }
+        }
+
+        // Column count without allocating: one comma-scan of the CSV (the values never contain commas).
+        private static int CountColumns(string csv)
+        {
+            int columns = 1;
+            for (int i = 0; i < csv.Length; i++)
+            {
+                if (csv[i] == ',')
+                {
+                    columns++;
+                }
+            }
+            return columns;
         }
 
         private static void PruneEvents(int oldestDayToKeep)
@@ -193,10 +214,14 @@ namespace RBMCampaign
                 return new int[0];
             }
             string[] parts = csv.Split(',');
-            var result = new int[parts.Length];
-            for (int i = 0; i < parts.Length; i++)
+            // The stored CSV may temporarily hold more than HistoryDays columns (see AppendInt's amortized
+            // trim); expose only the newest HistoryDays so the window the VM charts is unchanged.
+            int count = parts.Length < HistoryDays ? parts.Length : HistoryDays;
+            int startIdx = parts.Length - count;
+            var result = new int[count];
+            for (int i = 0; i < count; i++)
             {
-                int.TryParse(parts[i], out result[i]);
+                int.TryParse(parts[startIdx + i], out result[i]);
             }
             return result;
         }

@@ -179,6 +179,12 @@
                            "sha256":  "75B070E0B1347C3F6C7E4526EDC5370BBA18B4D4B4747C115669E23477AD44E2"
                        },
                        {
+                           "name":  "TaleWorlds.MountAndBlade.GauntletUI.Widgets",
+                           "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll",
+                           "size":  677336,
+                           "sha256":  "3828067E5BC61521D399BB237CAC6488C7C999B045C2436E86906E1232BD9DBE"
+                       },
+                       {
                            "name":  "TaleWorlds.MountAndBlade.Platform.PC",
                            "source":  "Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Platform.PC.dll",
                            "size":  17880,

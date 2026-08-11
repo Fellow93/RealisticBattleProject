@@ -54,27 +54,30 @@
     </Styles>
   </Brush>
 
-  <!-- Chart bar (normal day): solid amber. -->
+  <!-- Chart bar (normal day): amber. FillBar brush. The widget scales the "DefaultFill" layer to the
+       InitialAmount/MaxAmount fraction; "EmptyFill" is the faint unfilled track. Layer NAMES matter:
+       FillBarWidget looks up EmptyFill/DefaultFill/ChangeFill by name, so a single generic "Fill" renders
+       nothing in a FillBar. -->
   <Brush Name="RBMLedger.Bar">
     <Layers>
-      <BrushLayer Name="Fill" Sprite="BlankWhiteSquare" />
+      <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" Color="#C8B48CFF" AlphaFactor="0.10" />
+      <BrushLayer Name="DefaultFill" Sprite="BlankWhiteSquare" Color="#C8963CFF" AlphaFactor="0.95" />
+      <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" Color="#FFFFFFFF" AlphaFactor="0.0" />
     </Layers>
     <Styles>
-      <Style Name="Default">
-        <BrushLayer Name="Fill" Color="#C8963CFF" AlphaFactor="0.92" />
-      </Style>
+      <Style Name="Default" />
     </Styles>
   </Brush>
 
-  <!-- Chart bar (raided/looted day): solid red so raid days stand out on the graph. -->
+  <!-- Chart bar (raided/looted day): red so raid days stand out on the graph. -->
   <Brush Name="RBMLedger.BarRaid">
     <Layers>
-      <BrushLayer Name="Fill" Sprite="BlankWhiteSquare" />
+      <BrushLayer Name="EmptyFill" Sprite="BlankWhiteSquare" Color="#C8B48CFF" AlphaFactor="0.10" />
+      <BrushLayer Name="DefaultFill" Sprite="BlankWhiteSquare" Color="#A83228FF" AlphaFactor="0.95" />
+      <BrushLayer Name="ChangeFill" Sprite="BlankWhiteSquare" Color="#FFFFFFFF" AlphaFactor="0.0" />
     </Layers>
     <Styles>
-      <Style Name="Default">
-        <BrushLayer Name="Fill" Color="#A83228FF" AlphaFactor="0.92" />
-      </Style>
+      <Style Name="Default" />
     </Styles>
   </Brush>
 
