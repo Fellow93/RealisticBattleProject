@@ -6,12 +6,12 @@
   <ModuleCategory value="Singleplayer"/>
   <DependedModules>
 
-    <DependedModule Id="Native" DependentVersion="v1.4.6" Optional="false"/>
-    <DependedModule Id="SandBoxCore" DependentVersion="v1.4.6" Optional="false"/>
-    <DependedModule Id="Sandbox" DependentVersion="v1.4.6" Optional="false"/>
-    <DependedModule Id="StoryMode" DependentVersion="v1.4.6" Optional="false"/>
-	<DependedModule Id="CustomBattle" DependentVersion="v1.4.6" Optional="false"/>
-	<DependedModule Id="BirthAndDeath" DependentVersion="v1.4.6" Optional="true"/>
+    <DependedModule Id="Native" DependentVersion="v1.4.8" Optional="false"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="v1.4.8" Optional="false"/>
+    <DependedModule Id="Sandbox" DependentVersion="v1.4.8" Optional="false"/>
+    <DependedModule Id="StoryMode" DependentVersion="v1.4.8" Optional="false"/>
+	<DependedModule Id="CustomBattle" DependentVersion="v1.4.8" Optional="false"/>
+	<DependedModule Id="BirthAndDeath" DependentVersion="v1.4.8" Optional="true"/>
 	<DependedModule Id="RTSCamera" Optional="true"/>
 	<DependedModule Id="RTSCamera.CommandSystem" Optional="true"/>
 

@@ -6,14 +6,14 @@
   <ModuleCategory value="Singleplayer"/>
   <DependedModules>
   
-    <DependedModule Id="Native" DependentVersion="v1.4.6" Optional="false"/>
-    <DependedModule Id="SandBoxCore" DependentVersion="v1.4.6" Optional="false"/>
-    <DependedModule Id="Sandbox" DependentVersion="v1.4.6" Optional="false"/>
-    <DependedModule Id="StoryMode" DependentVersion="v1.4.6" Optional="false"/>
-	<DependedModule Id="CustomBattle" DependentVersion="v1.4.6" Optional="false"/>
-	<DependedModule Id="BirthAndDeath" DependentVersion="v1.4.6" Optional="true"/>
-    <DependedModule Id="NavalDLC" DependentVersion="v1.2.6" Optional="false"/>
-	<DependedModule Id="RBM" DependentVersion="v4.3.4" Optional="false"/>
+    <DependedModule Id="Native" DependentVersion="v1.4.8" Optional="false"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="v1.4.8" Optional="false"/>
+    <DependedModule Id="Sandbox" DependentVersion="v1.4.8" Optional="false"/>
+    <DependedModule Id="StoryMode" DependentVersion="v1.4.8" Optional="false"/>
+	<DependedModule Id="CustomBattle" DependentVersion="v1.4.8" Optional="false"/>
+	<DependedModule Id="BirthAndDeath" DependentVersion="v1.4.8" Optional="true"/>
+    <DependedModule Id="NavalDLC" DependentVersion="v1.2.8" Optional="false"/>
+	<DependedModule Id="RBM" DependentVersion="v4.4.4" Optional="false"/>
 	<DependedModule Id="RTSCamera" Optional="true"/>
 	<DependedModule Id="RTSCamera.CommandSystem" Optional="true"/>
 	
