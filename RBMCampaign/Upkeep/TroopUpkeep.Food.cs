@@ -39,6 +39,10 @@ namespace RBMCampaign
             List<FoodStall> stalls = null;
             int totalSpent = 0;
             int stacksFed = 0;
+            // Only the player's own party earns a floating word above the market naming what it bought,
+            // so the tally of items is gathered only for it. Every other party feeds itself silently.
+            List<(ItemObject Item, int Count)> playerPurchases = (mobileParty == MobileParty.MainParty)
+                ? new List<(ItemObject, int)>() : null;
             for (int i = 0; i < roster.Count; i++)
             {
                 TroopRosterElement element = roster.GetElementCopyAtIndex(i);
@@ -55,7 +59,7 @@ namespace RBMCampaign
                 // Snapshotted once and drawn down as the stacks buy, since taking the last of an item
                 // removes it from the roster and reindexes everything behind it.
                 stalls = stalls ?? SnapshotFoodStalls(settlement, market);
-                int spent = FeedStack(party, settlement, market, stalls, element, wanted, foodDays);
+                int spent = FeedStack(party, settlement, market, stalls, element, wanted, foodDays, playerPurchases);
                 if (spent > 0)
                 {
                     totalSpent += spent;
@@ -68,6 +72,12 @@ namespace RBMCampaign
             {
                 SpoilsLog.Log("FOOD", party, SpoilsLog.Describe(party) + " provisioned " + stacksFed
                     + (stacksFed == 1 ? " stack" : " stacks") + " in " + settlement.Name + " for " + totalSpent + " spoils");
+            }
+
+            // One bubble for the whole provisioning pass: which fare the men laid in, and what it cost.
+            if (playerPurchases != null && totalSpent > 0 && playerPurchases.Count > 0)
+            {
+                RBMMapNotifications.RaiseTroopsBoughtFood(settlement, mobileParty, playerPurchases, totalSpent);
             }
             return totalSpent;
         }
@@ -124,7 +134,7 @@ namespace RBMCampaign
         }
 
         /// <summary>Provisions one stack off the stalls; returns the spoils it spent, for the party tally.</summary>
-        private static int FeedStack(PartyBase party, Settlement settlement, ItemRoster market, List<FoodStall> stalls, TroopRosterElement element, int wanted, int foodDays)
+        private static int FeedStack(PartyBase party, Settlement settlement, ItemRoster market, List<FoodStall> stalls, TroopRosterElement element, int wanted, int foodDays, List<(ItemObject Item, int Count)> purchases = null)
         {
             int budget = SpoilsPool.GetSpoils(party, element.Character);
             int spent = 0;
@@ -133,8 +143,8 @@ namespace RBMCampaign
             // The best fare he will pay for, then anything at all rather than go hungry. Both passes
             // walk from dearest to cheapest, so within what he can afford he always eats the best of it.
             int ceiling = GetFoodPriceCeiling(element.Character);
-            BuyFromStalls(settlement, market, stalls, ceiling, budget, wanted, ref spent, ref bought);
-            BuyFromStalls(settlement, market, stalls, int.MaxValue, budget, wanted, ref spent, ref bought);
+            BuyFromStalls(settlement, market, stalls, ceiling, budget, wanted, ref spent, ref bought, purchases);
+            BuyFromStalls(settlement, market, stalls, int.MaxValue, budget, wanted, ref spent, ref bought, purchases);
 
             if (bought <= 0)
             {
@@ -166,7 +176,7 @@ namespace RBMCampaign
         /// reaches the settlement through <see cref="TroopMarketFeedback"/> rather than vanishing
         /// with the food.
         /// </summary>
-        private static void BuyFromStalls(Settlement settlement, ItemRoster market, List<FoodStall> stalls, int ceiling, int budget, int wanted, ref int spent, ref int bought)
+        private static void BuyFromStalls(Settlement settlement, ItemRoster market, List<FoodStall> stalls, int ceiling, int budget, int wanted, ref int spent, ref int bought, List<(ItemObject Item, int Count)> purchases = null)
         {
             for (int i = 0; i < stalls.Count && bought < wanted; i++)
             {
@@ -186,6 +196,7 @@ namespace RBMCampaign
                 bought += take;
                 spent += take * stall.UnitSpoils;
                 TroopMarketFeedback.RegisterPurchase(settlement, stall.Item.ItemCategory, take * stall.UnitSpoils);
+                purchases?.Add((stall.Item, take));
             }
         }
     }

@@ -36,6 +36,10 @@ namespace RBMCampaign
 
             int totalSpent = 0;
             TroopRoster roster = party.MemberRoster;
+            // As with food, only the player's own party earns a floating word above the market naming the
+            // bauble it bought; every other party indulges silently.
+            List<(ItemObject Item, int Count)> playerPurchases = (mobileParty == MobileParty.MainParty)
+                ? new List<(ItemObject, int)>() : null;
             for (int i = 0; i < roster.Count; i++)
             {
                 TroopRosterElement element = roster.GetElementCopyAtIndex(i);
@@ -58,7 +62,13 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                totalSpent += BuyLuxury(party, settlement, market, element, purse);
+                totalSpent += BuyLuxury(party, settlement, market, element, purse, playerPurchases);
+            }
+
+            // One bubble for the hour's indulgences: which keepsakes the men bought, and what they cost.
+            if (playerPurchases != null && totalSpent > 0 && playerPurchases.Count > 0)
+            {
+                RBMMapNotifications.RaiseSoldiersBoughtLuxury(settlement, mobileParty, playerPurchases, totalSpent);
             }
             return totalSpent;
         }
@@ -68,7 +78,7 @@ namespace RBMCampaign
         /// drawing the price from its purse and leaving it in the settlement. Sets the cooldown only if a
         /// purchase actually lands, so a stack that finds nothing to its taste rolls again next hour.
         /// </summary>
-        private static int BuyLuxury(PartyBase party, Settlement settlement, ItemRoster market, TroopRosterElement element, int purse)
+        private static int BuyLuxury(PartyBase party, Settlement settlement, ItemRoster market, TroopRosterElement element, int purse, List<(ItemObject Item, int Count)> purchases = null)
         {
             List<int> affordable = null;
             for (int i = 0; i < market.Count; i++)
@@ -107,6 +117,7 @@ namespace RBMCampaign
             SpoilsPool.AddSpoils(party, element.Character, -cost);
             TroopMarketFeedback.RegisterPurchase(settlement, chosen.ItemCategory, cost);
             SetLuxuryCooldown(party, element.Character);
+            purchases?.Add((chosen, 1));
 
             if (SpoilsLog.Verbose)
             {

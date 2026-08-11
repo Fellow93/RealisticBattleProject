@@ -292,6 +292,11 @@ namespace RBMCampaign
             // there is no good changing hands whose category the demand could belong to.
             TroopMarketFeedback.RegisterServiceSpend(settlement, spentTotal);
 
+            // A floating word above the settlement when the drink is worth remarking on -- who is
+            // carousing here and what it cost them. Only shows while the settlement is inspected; the
+            // event is otherwise a cheap no-op walk of the nearby nameplates.
+            RBMMapNotifications.RaiseSpoilsDrunk(settlement, mobileParty, spentTotal);
+
             if (spentTotal > 0 && SpoilsLog.IsEnabled)
             {
                 // Hourly, so once a day per party per settlement is enough to see the rate without

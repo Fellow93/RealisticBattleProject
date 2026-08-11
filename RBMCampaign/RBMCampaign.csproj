@@ -42,6 +42,7 @@
   </PropertyGroup>
   <!-- Bannerlord Native Assemblies -->
   <ItemGroup>
+    <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="0Harmony, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lib.Harmony.2.4.2\lib\net472\0Harmony.dll</HintPath>
@@ -325,6 +326,7 @@
     <Compile Include="Upgrades\PartyScreenStagedUpgrades.cs" />
     <Compile Include="Upgrades\UpgradeSupply.cs" />
     <Compile Include="Upgrades\MountValueUpgrade.cs" />
+    <Compile Include="UI\RBMMapNotifications.cs" />
     <Compile Include="UI\SpoilsBarWidget.cs" />
     <Compile Include="UI\SpoilsBarPrefabPatch.cs" />
     <Compile Include="UI\SpoilsPartyTooltip.cs" />
