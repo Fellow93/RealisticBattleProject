@@ -36,6 +36,15 @@ namespace RBMCampaign
                 return;
             }
 
+            // The main party never dies, so nothing else ever reclaims the purses of stacks that leave it
+            // by a path that doesn't route through an upgrade, a transfer, or destruction -- a dismissal or
+            // a donation. Sweep those orphans here, once a day, for the one immortal party; every other
+            // party's orphans are collected when it is eventually destroyed (OnMobilePartyDestroyed).
+            if (mobileParty == MobileParty.MainParty)
+            {
+                PruneOrphans(party);
+            }
+
             DepositWageSpoils(party, roster);
         }
 

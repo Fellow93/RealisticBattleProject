@@ -28,6 +28,9 @@ namespace RBMCampaign
             CampaignEvents.DailyTickPartyEvent.AddNonSerializedListener(this, SpoilsPool.OnDailyTickParty);
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, SpoilsPool.OnMobilePartyDestroyed);
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, PartyUpgradeBudget.OnMobilePartyDestroyed);
+            // Drop the destroyed party's cached supply-town payee too (keyed by MobileParty), so a long
+            // session does not retain a dead party per its last upgrade-maintenance charge.
+            CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, UpgradeSupply.OnMobilePartyDestroyed);
             CampaignEvents.PlayerUpgradedTroopsEvent.AddNonSerializedListener(this, SpoilsPool.OnPlayerUpgradedTroops);
             // A stack mustered from a village or town brings a few days' maintenance in its purse.
             // OnTroopRecruited is the AI/action path (carries the settlement); OnUnitRecruited is the

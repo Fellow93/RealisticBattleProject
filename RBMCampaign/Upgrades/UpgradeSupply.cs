@@ -198,6 +198,19 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// Drops a destroyed party's payee entry, so a long session does not accumulate a dead MobileParty
+        /// (and the two cached Town refs behind it) per departed party. Wired from the spoils behavior's
+        /// MobilePartyDestroyed handler, alongside the other party-keyed store prunes.
+        /// </summary>
+        internal static void OnMobilePartyDestroyed(MobileParty party, PartyBase destroyerParty)
+        {
+            if (party != null)
+            {
+                _payeeCache.Remove(party);
+            }
+        }
+
+        /// <summary>
         /// The nearest town of a faction the party is not at war with, however far off it lies.
         /// </summary>
         /// <remarks>

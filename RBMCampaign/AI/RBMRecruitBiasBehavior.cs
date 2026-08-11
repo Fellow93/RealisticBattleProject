@@ -78,10 +78,25 @@ namespace RBMCampaign
         public override void RegisterEvents()
         {
             CampaignEvents.AiHourlyTickEvent.AddNonSerializedListener(this, AiHourlyTick);
+            // Both maps are keyed by MobileParty and fed for a large fraction of parties, so drop a party's
+            // entries the moment it is destroyed -- otherwise a long session accumulates a dead MobileParty
+            // (and the object graph behind it) per departed lord, growing the managed heap for the life of
+            // the session.
+            CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, OnMobilePartyDestroyed);
         }
 
         public override void SyncData(IDataStore dataStore)
         {
+        }
+
+        private void OnMobilePartyDestroyed(MobileParty mobileParty, PartyBase destroyerParty)
+        {
+            if (mobileParty == null)
+            {
+                return;
+            }
+            _cache.Remove(mobileParty);
+            _lastTarget.Remove(mobileParty);
         }
 
         private void AiHourlyTick(MobileParty mobileParty, PartyThinkParams p)

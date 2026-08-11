@@ -51,36 +51,35 @@ namespace RBMCampaign
         {
             if (party == null || party.MemberRoster == null)
             {
+                TroopUpkeep.PruneOrphans(party);
                 return;
             }
-            string prefix = party.Id + "#";
-            List<string> orphans = null;
-            foreach (KeyValuePair<string, int> entry in _spoils)
+            // Index-driven: only this party's own keys can be orphaned, so walk them, not the whole pool.
+            if (_partyKeys.TryGetValue(party.Id, out HashSet<string> keys) && keys.Count > 0)
             {
-                if (!entry.Key.StartsWith(prefix))
+                string prefix = party.Id + "#";
+                List<string> orphans = null;
+                foreach (string key in keys)
                 {
-                    continue;
-                }
-                // The key is party.Id + "#" + character.StringId, so the tail past the separator is the id.
-                string charId = entry.Key.Substring(prefix.Length);
-                CharacterObject character = MBObjectManager.Instance.GetObject<CharacterObject>(charId);
-                if (character == null || party.MemberRoster.FindIndexOfTroop(character) < 0)
-                {
-                    if (orphans == null)
+                    // The key is party.Id + "#" + character.StringId, so the tail past the separator is the id.
+                    string charId = key.Substring(prefix.Length);
+                    CharacterObject character = MBObjectManager.Instance.GetObject<CharacterObject>(charId);
+                    if (character == null || party.MemberRoster.FindIndexOfTroop(character) < 0)
                     {
-                        orphans = new List<string>();
+                        (orphans ?? (orphans = new List<string>())).Add(key);
                     }
-                    orphans.Add(entry.Key);
                 }
-            }
-            if (orphans != null)
-            {
-                foreach (string key in orphans)
+                if (orphans != null)
                 {
-                    _spoils.Remove(key);
+                    // Remove after the walk above -- IndexRemove mutates the same set we were iterating.
+                    foreach (string key in orphans)
+                    {
+                        _spoils.Remove(key);
+                        IndexRemove(key);
+                    }
+                    SpoilsLog.Log("POOL", party, "pruned " + orphans.Count + " orphaned spoils entr"
+                        + (orphans.Count == 1 ? "y" : "ies") + " from " + SpoilsLog.Describe(party));
                 }
-                SpoilsLog.Log("POOL", party, "pruned " + orphans.Count + " orphaned spoils entr"
-                    + (orphans.Count == 1 ? "y" : "ies") + " from " + SpoilsLog.Describe(party));
             }
             TroopUpkeep.PruneOrphans(party);
         }

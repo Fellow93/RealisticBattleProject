@@ -30,6 +30,15 @@ namespace RBMCampaign
         // granularity: a TroopRoster holds at most one element per CharacterObject.
         private static Dictionary<string, int> _spoils = new Dictionary<string, int>();
 
+        // Reverse index: partyId (the token before '#' in a key) -> that party's live keys. _spoils is a
+        // flat party#char -> gold map, so pruning everything for one party (its death, the orphan sweep,
+        // the exempt sweep) would otherwise scan every key in the whole pool -- a cost that climbs with the
+        // pool as a campaign ages. This makes those prunes touch only the one party's stacks. It is derived
+        // entirely from _spoils, so it is NOT saved: it is rebuilt from the pool on load and cleared on
+        // reset, and kept in step with the pool only at the two single-key mutators (AddSpoils,
+        // ClearSpoilsIfStackGone) and the bulk prunes below.
+        private static Dictionary<string, HashSet<string>> _partyKeys = new Dictionary<string, HashSet<string>>();
+
         /// <summary>Identifies one stack. Shared with the stores that key state the same way.</summary>
         public static string Key(PartyBase party, CharacterObject character)
         {
@@ -40,6 +49,49 @@ namespace RBMCampaign
         public static bool KeyBelongsToParty(string key, PartyBase party)
         {
             return key.StartsWith(party.Id + "#");
+        }
+
+        // --- Reverse-index maintenance --------------------------------------
+
+        private static void IndexAdd(string key)
+        {
+            int hash = key.IndexOf('#');
+            if (hash <= 0)
+            {
+                return;
+            }
+            string partyId = key.Substring(0, hash);
+            if (!_partyKeys.TryGetValue(partyId, out HashSet<string> keys))
+            {
+                keys = new HashSet<string>();
+                _partyKeys[partyId] = keys;
+            }
+            keys.Add(key);
+        }
+
+        private static void IndexRemove(string key)
+        {
+            int hash = key.IndexOf('#');
+            if (hash <= 0)
+            {
+                return;
+            }
+            string partyId = key.Substring(0, hash);
+            if (_partyKeys.TryGetValue(partyId, out HashSet<string> keys) && keys.Remove(key) && keys.Count == 0)
+            {
+                _partyKeys.Remove(partyId);
+            }
+        }
+
+        // Rebuild the whole index from the pool. Cheap one-off (O(pool)) run on load, where the pool has
+        // just been repopulated by SyncData and the index is empty/stale.
+        private static void RebuildIndex()
+        {
+            _partyKeys.Clear();
+            foreach (string key in _spoils.Keys)
+            {
+                IndexAdd(key);
+            }
         }
 
         /// <summary>
@@ -70,6 +122,7 @@ namespace RBMCampaign
         public static void Reset()
         {
             _spoils.Clear();
+            _partyKeys.Clear();
             // Same partial class, so the per-character caches its other files own are reachable here.
             // All are keyed on campaign objects rebuilt for each game; entries from a finished one are
             // dead weight holding a whole campaign's characters alive.
@@ -92,6 +145,12 @@ namespace RBMCampaign
             if (_spoils == null)
             {
                 _spoils = new Dictionary<string, int>();
+            }
+            if (!dataStore.IsSaving)
+            {
+                // The pool was just replaced by the loaded data; the reverse index is derived, not saved,
+                // so rebuild it to match before anything reads or prunes.
+                RebuildIndex();
             }
             SpoilsLog.Log("SAVE", (dataStore.IsSaving ? "saved " : "loaded ") + _spoils.Count + " spoils pool entries");
             if (!dataStore.IsSaving)
@@ -152,16 +211,22 @@ namespace RBMCampaign
                 return;
             }
             string key = Key(party, character);
-            int spoils;
-            _spoils.TryGetValue(key, out spoils);
+            bool existed = _spoils.TryGetValue(key, out int spoils);
             spoils += amount;
             if (spoils <= 0)
             {
-                _spoils.Remove(key);
+                if (existed && _spoils.Remove(key))
+                {
+                    IndexRemove(key);
+                }
             }
             else
             {
                 _spoils[key] = spoils;
+                if (!existed)
+                {
+                    IndexAdd(key);
+                }
             }
         }
 
@@ -169,8 +234,10 @@ namespace RBMCampaign
         public static void ClearSpoilsIfStackGone(PartyBase party, CharacterObject character)
         {
             TroopUpkeep.ClearIfStackGone(party, character);
-            if (party.MemberRoster.FindIndexOfTroop(character) < 0 && _spoils.Remove(Key(party, character)))
+            string key = Key(party, character);
+            if (party.MemberRoster.FindIndexOfTroop(character) < 0 && _spoils.Remove(key))
             {
+                IndexRemove(key);
                 SpoilsLog.Log("POOL", party, "stack of " + SpoilsLog.Describe(character) + " gone from "
                     + SpoilsLog.Describe(party) + "; its remaining spoils are lost");
             }
@@ -200,6 +267,11 @@ namespace RBMCampaign
             int removed = RemoveEntriesForParties(_spoils, exempt);
             if (removed > 0)
             {
+                // Every key removed belonged to one of the exempt parties, so drop those buckets wholesale.
+                foreach (string id in exempt)
+                {
+                    _partyKeys.Remove(id);
+                }
                 SpoilsLog.Log("POOL", "pruned " + removed + " spoils pool entries from exempt (villager) parties");
             }
             TroopUpkeep.PruneExemptParties(exempt);
@@ -234,24 +306,19 @@ namespace RBMCampaign
 
         public static void OnMobilePartyDestroyed(MobileParty party, PartyBase destroyer)
         {
-            string prefix = party.Party.Id + "#";
-            List<string> stale = new List<string>();
-            foreach (string key in _spoils.Keys)
+            // Index-driven: touch only this party's own keys rather than scanning the whole pool.
+            if (!_partyKeys.TryGetValue(party.Party.Id, out HashSet<string> keys) || keys.Count == 0)
             {
-                if (key.StartsWith(prefix))
-                {
-                    stale.Add(key);
-                }
+                return;
             }
-            foreach (string key in stale)
+            int count = keys.Count;
+            foreach (string key in keys)
             {
                 _spoils.Remove(key);
             }
-            if (stale.Count > 0)
-            {
-                SpoilsLog.Log("POOL", party.Party, "party " + SpoilsLog.Describe(party.Party) + " destroyed; pruned "
-                    + stale.Count + " spoils pool entries");
-            }
+            _partyKeys.Remove(party.Party.Id);
+            SpoilsLog.Log("POOL", party.Party, "party " + SpoilsLog.Describe(party.Party) + " destroyed; pruned "
+                + count + " spoils pool entries");
         }
     }
 }
