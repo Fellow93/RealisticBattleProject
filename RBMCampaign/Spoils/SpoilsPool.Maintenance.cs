@@ -30,9 +30,11 @@ namespace RBMCampaign
     /// the march wore through and replacing what is past mending. The men pay it out of their own
     /// spoils first; whatever the purse cannot cover falls to the party leader, out of his gold.
     ///
-    /// That money is spent somewhere: it goes over to the town that supplies the party -- the one it
-    /// stands in, or the nearest not at war with it -- which pays the market fee on the way like any
-    /// other purchase struck there (<see cref="PayMaintenanceToMarket"/>).
+    /// The leader's gold leg is spent somewhere: it goes over to the town that supplies the party -- the
+    /// one it stands in, or the nearest not at war with it -- which pays the market fee on the way like
+    /// any other purchase struck there (<see cref="PayMaintenanceToMarket"/>). The spoils leg the men
+    /// met from their own purses credits the town nothing: it is money already inside the troop economy
+    /// being drained, not the leader's treasury changing hands, so only the gold leg reaches the market.
     ///
     /// It takes NOTHING off that town's shelves. Maintenance buys the armourer's and the farrier's
     /// labour, not stock: mending a strap, re-shoeing a horse, working a dent out of a helm. What an
@@ -321,11 +323,14 @@ namespace RBMCampaign
             // the finance number rather than a separate transfer.
             result.Shortfall = result.Total - result.Covered;
 
-            // Both halves were genuinely paid by the party's side -- the purses gave one, the leader's
-            // gold the other -- so the whole of it is handed over to the town whose tradesmen did the work.
-            if (market != null && result.Total > 0)
+            // Only the leader's gold leg reaches the town. That coin is drawn off his treasury -- folded
+            // into the clan's daily gold change -- and lands over the counter here, so crediting the town
+            // with it keeps the money conserved: the leader loses it, the town gains it. The spoils leg the
+            // men met from their own purses is money already inside the troop economy being spent down, not
+            // the leader's treasury moving out, so it mints the town nothing and is simply drained away.
+            if (market != null && result.Shortfall > 0)
             {
-                PayMaintenanceToMarket(market, result.Total);
+                PayMaintenanceToMarket(market, result.Shortfall);
             }
 
             if (apply && SpoilsLog.IsEnabled && party == PartyBase.MainParty && result.Total > 0)
@@ -347,17 +352,19 @@ namespace RBMCampaign
         /// Paid through <see cref="TroopMarketFeedback.RegisterPurchase"/>, which is what makes this a
         /// purchase rather than a gift: the coin lands in the town's market purse, the market fee is taken
         /// out of it on the way (see <see cref="TradeTariff"/>), and the sum joins the town's recent troop
-        /// trade. The whole day's bill goes over in ONE sum, so the town is paid what the army was
-        /// actually charged.
+        /// trade. Only the leader's gold leg goes over -- the shortfall the men's purses could not meet --
+        /// so the town is paid exactly the coin that left the leader's treasury for it. The spoils leg is
+        /// not credited here: it never came off the leader's gold, so passing it over would mint the town
+        /// money no one paid.
         ///
         /// No category is passed with it, and none should be: nothing came off the shelves, so there is no
         /// goods demand to register. What the army bought was labour, and the town's restocking should not
         /// be pushed at by it.
         ///
-        /// NOTHING IS CHARGED HERE. The men's purses were drained a few lines above and the shortfall is
-        /// on its way onto the leader's daily gold change; this only decides where that money lands
-        /// instead of vanishing. Charge and credit are the same number by construction, as on the recruit
-        /// side -- see <see cref="RecruitSupply"/>, built the same way for the same reason.
+        /// NOTHING IS CHARGED HERE. The shortfall is already on its way onto the leader's daily gold change;
+        /// this only decides where that money lands instead of vanishing. Charge and credit are the same
+        /// number by construction, as on the recruit side -- see <see cref="RecruitSupply"/>, built the same
+        /// way for the same reason.
         /// </remarks>
         private static void PayMaintenanceToMarket(Settlement market, int amount)
         {
