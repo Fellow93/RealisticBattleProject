@@ -219,8 +219,10 @@ namespace RBMCampaign
                 settlement.ItemRoster.AddToCounts(lot.Element, affordable);
                 roster.AddToCounts(lot.Element, -affordable);
                 sold += affordable * lot.Price;
-                // Ledger: gold value villagers delivered into this town today (incl. treasury-advanced food).
+                // Ledger: gold value villagers delivered into this town today (incl. treasury-advanced food),
+                // plus the per-good breakdown behind that gold for the Delivered column's hover.
                 RBMTownLedger.AddVillagerBrought(settlement, affordable * lot.Price);
+                RBMTownLedger.AddVillagerGood(settlement, lot.Element.Item, affordable, affordable * lot.Price);
             }
 
             // The market fee on the sale, the same one a caravan or the player pays -- a villager party

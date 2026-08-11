@@ -613,6 +613,15 @@ namespace RBMCampaign
                 bySource[source] = running + applied;
             }
 
+            // Always-on feed to the Ledger's per-day treasury income/expense breakdown (gated on IsTown
+            // inside), independent of the diagnostics log above. This is the non-village branch, so it is
+            // the settlement TREASURY pot; a village's purse is handled by the citizen-wealth feed only when
+            // it has a market, which a village does not, so a village posts to neither here.
+            if (source != null && !settlement.IsVillage)
+            {
+                RBMTownLedger.AddSettlementFlow(settlement, source, applied);
+            }
+
             return applied;
         }
 
@@ -699,6 +708,13 @@ namespace RBMCampaign
                 int running;
                 bySource.TryGetValue(source, out running);
                 bySource[source] = running + applied;
+            }
+
+            // Always-on feed to the Ledger's per-day citizen-wealth income/expense breakdown (gated on
+            // IsTown inside), independent of the diagnostics log above.
+            if (source != null)
+            {
+                RBMTownLedger.AddCitizenFlow(settlement, source, applied);
             }
 
             return applied;

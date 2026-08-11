@@ -250,6 +250,35 @@ namespace RBMCampaign
             return (i >= 0 && i < arr.Length) ? arr[i] : 0;
         }
 
+        // Copies a series into an array of length n with its NEWEST entry at index n-1, padding the front
+        // with zeros. Used for series added after others so their short early history still lines up with
+        // the shared "today at the right" day axis.
+        private static int[] RightAlign(int[] src, int n)
+        {
+            int[] dst = new int[n];
+            for (int j = 0; j < src.Length && j < n; j++)
+            {
+                dst[n - 1 - j] = src[src.Length - 1 - j];
+            }
+            return dst;
+        }
+
+        // String counterpart of RightAlign; empty columns fill with "-" so a missing day reads as "no
+        // delivery" rather than a null that BuildVillagerGoodsHint would have to special-case downstream.
+        private static string[] RightAlignStr(string[] src, int n)
+        {
+            var dst = new string[n];
+            for (int i = 0; i < n; i++)
+            {
+                dst[i] = "-";
+            }
+            for (int j = 0; j < src.Length && j < n; j++)
+            {
+                dst[n - 1 - j] = src[src.Length - 1 - j];
+            }
+            return dst;
+        }
+
         private static string Latest(int[] arr)
         {
             return arr.Length > 0 ? arr[arr.Length - 1].ToString() : "-";
@@ -333,6 +362,12 @@ namespace RBMCampaign
             int[] villager = RBMTownLedger.GetSeries("villager", id);
             int[] party = RBMTownLedger.GetSeries("party", id);
             int[] caravan = RBMTownLedger.GetSeries("caravan", id);
+            int[] foodCitizens = RBMTownLedger.GetSeries("foodCitizens", id);
+            int[] foodGarrison = RBMTownLedger.GetSeries("foodGarrison", id);
+            int[] foodMilitia = RBMTownLedger.GetSeries("foodMilitia", id);
+            string[] villagerGoods = RBMTownLedger.GetVillagerGoodsSeries(id);
+            string[] citizenFlow = RBMTownLedger.GetCitizenFlowSeries(id);
+            string[] settlementFlow = RBMTownLedger.GetSettlementFlowSeries(id);
 
             int n = prosperity.Length;
             n = System.Math.Max(n, citizen.Length);
@@ -343,6 +378,33 @@ namespace RBMCampaign
             n = System.Math.Max(n, villager.Length);
             n = System.Math.Max(n, party.Length);
             n = System.Math.Max(n, caravan.Length);
+            n = System.Math.Max(n, foodCitizens.Length);
+            n = System.Math.Max(n, villagerGoods.Length);
+            n = System.Math.Max(n, citizenFlow.Length);
+            n = System.Math.Max(n, settlementFlow.Length);
+
+            // The string breakdown series were added later than the numeric ones, so they right-align to
+            // today the same way, padded with "-" for the pre-feature days.
+            villagerGoods = RightAlignStr(villagerGoods, n);
+            citizenFlow = RightAlignStr(citizenFlow, n);
+            settlementFlow = RightAlignStr(settlementFlow, n);
+
+            // The food series were added later than the others, so on an existing save they are shorter
+            // than the full window for their first 30 days. The history table and chart index every series
+            // by the same day axis (i = n-1 is today), so a shorter series has to be right-aligned to today
+            // rather than left-aligned to the oldest column, or a town's recent food would read as zero and
+            // its old columns would show today's figures. Padded with leading zeros for the pre-feature days.
+            foodCitizens = RightAlign(foodCitizens, n);
+            foodGarrison = RightAlign(foodGarrison, n);
+            foodMilitia = RightAlign(foodMilitia, n);
+
+            // The eaten total the chart and history column show is the per-day sum of the three legs; the
+            // legs themselves stay around for the per-day breakdown hint.
+            int[] foodEaten = new int[n];
+            for (int i = 0; i < n; i++)
+            {
+                foodEaten[i] = foodCitizens[i] + foodGarrison[i] + foodMilitia[i];
+            }
 
             int lastDay = RBMTownLedger.LastDay;
             var barLabels = new string[n];
@@ -371,8 +433,15 @@ namespace RBMCampaign
                     string evText = string.Join("\n", evPretty);
                     evHint = new BasicTooltipViewModel(() => evText);
                 }
+                BasicTooltipViewModel eatenHint = BuildEatenHint(foodEaten[i], foodCitizens[i], foodGarrison[i], foodMilitia[i]);
+                BasicTooltipViewModel villagerHint = BuildVillagerGoodsHint(villagerGoods[i]);
+                FlowDay citFlow = BuildFlowDay(citizenFlow[i]);
+                FlowDay setFlow = BuildFlowDay(settlementFlow[i]);
                 history.Add(new RBMLedgerTownDayVM(label, At(prosperity, i), At(citizen, i), At(settlementW, i),
-                    At(food, i), At(garrison, i), At(militia, i), At(villager, i), At(party, i), At(caravan, i),
+                    At(food, i), At(garrison, i), At(militia, i), At(villager, i), villagerHint, At(party, i), At(caravan, i),
+                    foodEaten[i], eatenHint,
+                    citFlow.Income, citFlow.IncomeHint, citFlow.Expense, citFlow.ExpenseHint,
+                    setFlow.Income, setFlow.IncomeHint, setFlow.Expense, setFlow.ExpenseHint,
                     evCount, evHint));
             }
 
@@ -390,7 +459,7 @@ namespace RBMCampaign
                 ((int)MathF.Round(settlement.Militia)).ToString(),
                 Latest(villager), Latest(party), Latest(caravan),
                 history, BuildFoodHint(town), BuildDemandTiers(town), BuildGoods(town), BuildWorkshops(town),
-                prosperity, citizen, settlementW, food, garrison, militia, villager, party, caravan,
+                prosperity, citizen, settlementW, food, garrison, militia, villager, party, caravan, foodEaten,
                 barLabels, barEvent);
         }
 
@@ -430,8 +499,189 @@ namespace RBMCampaign
                     sb.Append('\n').Append(l.Key).Append(": ").Append(l.Value);
                 }
             }
+
+            // Today's ration, read live, broken down by who eats it -- the same figure the chart's Eaten
+            // metric and the history column carry, shown here against the stock it is drawn from.
+            RBMTownFoodSupply.FoodConsumptionBreakdown eaten = RBMTownFoodSupply.GetFoodConsumption(town);
+            sb.Append('\n').Append('\n');
+            AppendEatenLines(sb, eaten.Total, eaten.Citizens, eaten.Garrison, eaten.Militia);
+
             string text = sb.ToString();
             return new BasicTooltipViewModel(() => text);
+        }
+
+        // The food-eaten breakdown: the day's whole-town ration and the three mouths it feeds. Shared by the
+        // live Food tooltip and each history row's Eaten cell so the two never word it differently.
+        private static void AppendEatenLines(System.Text.StringBuilder sb, int total, int citizens, int garrison, int militia)
+        {
+            sb.Append(new TextObject("{=RBM_LEDGER_EATEN_HDR}Food eaten / day").ToString())
+              .Append(" (").Append(total).Append(')');
+            sb.Append('\n').Append(new TextObject("{=RBM_LEDGER_T_CITIZEN}Citizen").ToString()).Append(": ").Append(citizens);
+            sb.Append('\n').Append(new TextObject("{=RBM_LEDGER_T_GARRISON}Garrison").ToString()).Append(": ").Append(garrison);
+            sb.Append('\n').Append(new TextObject("{=RBM_LEDGER_T_MILITIA}Militia").ToString()).Append(": ").Append(militia);
+        }
+
+        private static BasicTooltipViewModel BuildEatenHint(int total, int citizens, int garrison, int militia)
+        {
+            var sb = new System.Text.StringBuilder();
+            AppendEatenLines(sb, total, citizens, garrison, militia);
+            string text = sb.ToString();
+            return new BasicTooltipViewModel(() => text);
+        }
+
+        // The goods behind a day's villager "Delivered" gold, parsed from the stored "itemId=units=gold;..."
+        // column into a name/units/gold list ordered by contribution. Null when the day saw no delivery, so
+        // the Delivered cell simply has no tooltip that day.
+        private static BasicTooltipViewModel BuildVillagerGoodsHint(string column)
+        {
+            if (string.IsNullOrEmpty(column) || column == "-")
+            {
+                return null;
+            }
+
+            var sb = new System.Text.StringBuilder();
+            sb.Append(new TextObject("{=RBM_LEDGER_DELIVERED_HDR}Delivered by villagers").ToString());
+            int totalGold = 0;
+            foreach (string entry in column.Split(';'))
+            {
+                string[] f = entry.Split('=');
+                if (f.Length != 3)
+                {
+                    continue;
+                }
+                int.TryParse(f[1], out int units);
+                int.TryParse(f[2], out int gold);
+                totalGold += gold;
+                ItemObject item = MBObjectManager.Instance.GetObject<ItemObject>(f[0]);
+                string name = (item != null && item.Name != null) ? item.Name.ToString() : f[0];
+                sb.Append('\n').Append(name).Append(": ")
+                  .Append(new TextObject("{=RBM_LEDGER_UNITS_GOLD}{UNITS} ({GOLD}g)")
+                      .SetTextVariable("UNITS", units).SetTextVariable("GOLD", gold).ToString());
+            }
+            sb.Append('\n').Append('\n')
+              .Append(new TextObject("{=RBM_LEDGER_TOTAL}Total").ToString()).Append(": ").Append(totalGold).Append('g');
+            string text = sb.ToString();
+            return new BasicTooltipViewModel(() => text);
+        }
+
+        // A day's income and expense for one wealth pool, parsed from its "source=net;..." column: the two
+        // totals for the columns, and a per-category hint for each (null when that side saw nothing).
+        private struct FlowDay
+        {
+            public int Income;
+            public int Expense;
+            public BasicTooltipViewModel IncomeHint;
+            public BasicTooltipViewModel ExpenseHint;
+        }
+
+        private static FlowDay BuildFlowDay(string column)
+        {
+            var day = default(FlowDay);
+            var income = new List<KeyValuePair<string, int>>();
+            var expense = new List<KeyValuePair<string, int>>();
+            if (!string.IsNullOrEmpty(column) && column != "-")
+            {
+                foreach (string entry in column.Split(';'))
+                {
+                    int eq = entry.IndexOf('=');
+                    if (eq <= 0 || !int.TryParse(entry.Substring(eq + 1), out int net) || net == 0)
+                    {
+                        continue;
+                    }
+                    string source = entry.Substring(0, eq);
+                    if (net > 0)
+                    {
+                        income.Add(new KeyValuePair<string, int>(source, net));
+                        day.Income += net;
+                    }
+                    else
+                    {
+                        expense.Add(new KeyValuePair<string, int>(source, -net));
+                        day.Expense += -net;
+                    }
+                }
+            }
+            day.IncomeHint = BuildFlowHint(new TextObject("{=RBM_LEDGER_INCOME}Income").ToString(), income, day.Income);
+            day.ExpenseHint = BuildFlowHint(new TextObject("{=RBM_LEDGER_EXPENSE}Expense").ToString(), expense, day.Expense);
+            return day;
+        }
+
+        // A titled, gold-descending list of one side's categories, or null when the side is empty so the
+        // cell simply has no tooltip that day. Source tokens are prettified for display ("garrison-wage" ->
+        // "Garrison wage").
+        private static BasicTooltipViewModel BuildFlowHint(string header, List<KeyValuePair<string, int>> lines, int total)
+        {
+            if (lines.Count == 0)
+            {
+                return null;
+            }
+            lines.Sort((a, b) => b.Value.CompareTo(a.Value));
+            var sb = new System.Text.StringBuilder();
+            sb.Append(header).Append(" (").Append(total).Append("g)");
+            foreach (var l in lines)
+            {
+                sb.Append('\n').Append(PrettifySource(l.Key)).Append(": ").Append(l.Value).Append('g');
+            }
+            string text = sb.ToString();
+            return new BasicTooltipViewModel(() => text);
+        }
+
+        // Precise display names for the ledger's income/expense categories, keyed off the SettlementWealth
+        // source tokens so the table cannot drift from the tokens it labels. A token with no entry falls
+        // back to its auto-prettified form (see PrettifySource), so a source added later still reads
+        // sensibly until it is named here.
+        private static readonly Dictionary<string, string> SourceNames = new Dictionary<string, string>
+        {
+            { SettlementWealth.Source.Tariff,         "Market tariff" },
+            { SettlementWealth.Source.Trade,          "Market trade" },
+            { SettlementWealth.Source.Commission,     "Stall commission" },
+            { SettlementWealth.Source.Delivery,       "Villager deliveries" },
+            { SettlementWealth.Source.Homecoming,     "Village earnings" },
+            { SettlementWealth.Source.VillageDemand,  "Village spending" },
+            { SettlementWealth.Source.Maintenance,    "Troop kit maintenance" },
+            { SettlementWealth.Source.Upgrade,        "Troop upgrades" },
+            { SettlementWealth.Source.TroopGoods,     "Troop provisions" },
+            { SettlementWealth.Source.Carousing,      "Soldiers carousing" },
+            { SettlementWealth.Source.Surgery,        "Field surgery" },
+            { SettlementWealth.Source.GarrisonWage,   "Garrison wages" },
+            { SettlementWealth.Source.GarrisonFood,   "Garrison food" },
+            { SettlementWealth.Source.GarrisonRecruit,"Garrison recruit kit" },
+            { SettlementWealth.Source.Militia,        "Militia upkeep" },
+            { SettlementWealth.Source.Admin,          "Administration" },
+            { SettlementWealth.Source.Construction,   "Construction" },
+            { SettlementWealth.Source.Boost,          "Construction labour" },
+            { SettlementWealth.Source.Recruit,        "Recruit fees" },
+            { SettlementWealth.Source.TownArms,       "Volunteer kit" },
+            { SettlementWealth.Source.VillageArms,    "Village recruit kit" },
+            { SettlementWealth.Source.CastleArms,     "Castle militia kit" },
+            { SettlementWealth.Source.Caravan,        "Supply caravan" },
+            { SettlementWealth.Source.CaravanInvest,  "Caravan investment" },
+            { SettlementWealth.Source.CaravanRepay,   "Caravan repayment" },
+            { SettlementWealth.Source.WealthTax,      "Wealth tax" },
+            { SettlementWealth.Source.Ransom,         "Prisoner ransom" },
+            { SettlementWealth.Source.WorkshopWages,  "Workshop wages" },
+            { SettlementWealth.Source.CastleIncome,   "Castle income" },
+            { SettlementWealth.Source.Dearth,         "Emergency food" },
+            { SettlementWealth.Source.Seed,           "World seeding" },
+            { SettlementWealth.Source.Raid,           "Raid losses" },
+            { SettlementWealth.Source.Siege,          "Siege losses" },
+            { SettlementWealth.Source.Sack,           "Sack losses" },
+        };
+
+        // The display label for a ledger source token: the precise name where one is defined, else the token
+        // auto-prettified ("garrison-wage" -> "Garrison wage").
+        private static string PrettifySource(string source)
+        {
+            if (string.IsNullOrEmpty(source))
+            {
+                return source;
+            }
+            if (SourceNames.TryGetValue(source, out string name))
+            {
+                return name;
+            }
+            string spaced = source.Replace('-', ' ');
+            return char.ToUpperInvariant(spaced[0]) + spaced.Substring(1);
         }
 
         // Per-tier household demand (Basic/Medium/Luxury, RBM's consumption grouping): the units the

@@ -8,8 +8,11 @@ namespace RBMCampaign
     public class RBMLedgerTownDayVM : ViewModel
     {
         public RBMLedgerTownDayVM(string dayLabel, int prosperity, int citizen, int settlement, int food,
-            int garrison, int militia, int villager, int party, int caravan, string eventCount,
-            BasicTooltipViewModel eventsHint)
+            int garrison, int militia, int villager, BasicTooltipViewModel villagerHint, int party, int caravan,
+            int eaten, BasicTooltipViewModel eatenHint,
+            int citIncome, BasicTooltipViewModel citIncomeHint, int citExpense, BasicTooltipViewModel citExpenseHint,
+            int setIncome, BasicTooltipViewModel setIncomeHint, int setExpense, BasicTooltipViewModel setExpenseHint,
+            string eventCount, BasicTooltipViewModel eventsHint)
         {
             DayLabel = dayLabel;
             Prosperity = prosperity.ToString();
@@ -19,8 +22,19 @@ namespace RBMCampaign
             Garrison = garrison.ToString();
             Militia = militia.ToString();
             Villager = villager.ToString();
+            VillagerHint = villagerHint;
             Party = party.ToString();
             Caravan = caravan.ToString();
+            Eaten = eaten.ToString();
+            EatenHint = eatenHint;
+            CitIncome = citIncome.ToString();
+            CitIncomeHint = citIncomeHint;
+            CitExpense = citExpense.ToString();
+            CitExpenseHint = citExpenseHint;
+            SetIncome = setIncome.ToString();
+            SetIncomeHint = setIncomeHint;
+            SetExpense = setExpense.ToString();
+            SetExpenseHint = setExpenseHint;
             Events = eventCount;
             EventsHint = eventsHint;
         }
@@ -33,8 +47,19 @@ namespace RBMCampaign
         [DataSourceProperty] public string Garrison { get; }
         [DataSourceProperty] public string Militia { get; }
         [DataSourceProperty] public string Villager { get; }
+        [DataSourceProperty] public BasicTooltipViewModel VillagerHint { get; }
         [DataSourceProperty] public string Party { get; }
         [DataSourceProperty] public string Caravan { get; }
+        [DataSourceProperty] public string Eaten { get; }
+        [DataSourceProperty] public BasicTooltipViewModel EatenHint { get; }
+        [DataSourceProperty] public string CitIncome { get; }
+        [DataSourceProperty] public BasicTooltipViewModel CitIncomeHint { get; }
+        [DataSourceProperty] public string CitExpense { get; }
+        [DataSourceProperty] public BasicTooltipViewModel CitExpenseHint { get; }
+        [DataSourceProperty] public string SetIncome { get; }
+        [DataSourceProperty] public BasicTooltipViewModel SetIncomeHint { get; }
+        [DataSourceProperty] public string SetExpense { get; }
+        [DataSourceProperty] public BasicTooltipViewModel SetExpenseHint { get; }
         [DataSourceProperty] public string Events { get; }
         [DataSourceProperty] public BasicTooltipViewModel EventsHint { get; }
     }
@@ -117,6 +142,7 @@ namespace RBMCampaign
         private readonly int[] _villagerSeries;
         private readonly int[] _partySeries;
         private readonly int[] _caravanSeries;
+        private readonly int[] _foodEatenSeries;
         private readonly string[] _barLabels;
         private readonly bool[] _barEvent;
 
@@ -134,6 +160,7 @@ namespace RBMCampaign
         private bool _isVillagerSelected;
         private bool _isPartySelected;
         private bool _isCaravanSelected;
+        private bool _isFoodEatenSelected;
 
         public RBMLedgerTownVM(string townName, string prosperity, string citizen, string settlement, string food,
             string garrison, string militia, string villager, string party, string caravan,
@@ -142,7 +169,7 @@ namespace RBMCampaign
             MBBindingList<RBMLedgerWorkshopVM> workshops,
             int[] prosperitySeries, int[] citizenSeries, int[] settlementSeries, int[] foodSeries,
             int[] garrisonSeries, int[] militiaSeries, int[] villagerSeries, int[] partySeries, int[] caravanSeries,
-            string[] barLabels, bool[] barEvent)
+            int[] foodEatenSeries, string[] barLabels, bool[] barEvent)
         {
             TownName = townName;
             Prosperity = prosperity;
@@ -171,6 +198,7 @@ namespace RBMCampaign
             _villagerSeries = villagerSeries ?? new int[0];
             _partySeries = partySeries ?? new int[0];
             _caravanSeries = caravanSeries ?? new int[0];
+            _foodEatenSeries = foodEatenSeries ?? new int[0];
             _barLabels = barLabels ?? new string[0];
             _barEvent = barEvent ?? new bool[0];
 
@@ -184,6 +212,7 @@ namespace RBMCampaign
             VillagerButtonText = new TextObject("{=RBM_LEDGER_T_VILLAGER}Delivered").ToString();
             PartyButtonText = new TextObject("{=RBM_LEDGER_T_PARTY}Party buys").ToString();
             CaravanButtonText = new TextObject("{=RBM_LEDGER_T_CARAVAN}Caravan buys").ToString();
+            FoodEatenButtonText = new TextObject("{=RBM_LEDGER_T_EATEN}Eaten").ToString();
             SelectMetric("prosperity");
         }
 
@@ -218,6 +247,7 @@ namespace RBMCampaign
         [DataSourceProperty] public string VillagerButtonText { get; }
         [DataSourceProperty] public string PartyButtonText { get; }
         [DataSourceProperty] public string CaravanButtonText { get; }
+        [DataSourceProperty] public string FoodEatenButtonText { get; }
 
         [DataSourceProperty]
         public MBBindingList<RBMLedgerBarVM> Bars
@@ -312,6 +342,13 @@ namespace RBMCampaign
         }
 
         [DataSourceProperty]
+        public bool IsFoodEatenSelected
+        {
+            get => _isFoodEatenSelected;
+            set { if (value != _isFoodEatenSelected) { _isFoodEatenSelected = value; OnPropertyChangedWithValue(value, "IsFoodEatenSelected"); } }
+        }
+
+        [DataSourceProperty]
         public bool IsExpanded
         {
             get => _isExpanded;
@@ -329,6 +366,7 @@ namespace RBMCampaign
         private void ExecuteMetricVillager() => SelectMetric("villager");
         private void ExecuteMetricParty() => SelectMetric("party");
         private void ExecuteMetricCaravan() => SelectMetric("caravan");
+        private void ExecuteMetricFoodEaten() => SelectMetric("foodEaten");
 
         private void SelectMetric(string metric)
         {
@@ -342,6 +380,7 @@ namespace RBMCampaign
             IsVillagerSelected = metric == "villager";
             IsPartySelected = metric == "party";
             IsCaravanSelected = metric == "caravan";
+            IsFoodEatenSelected = metric == "foodEaten";
             MetricName = MetricDisplayName(metric);
             RebuildBars();
         }
@@ -358,6 +397,7 @@ namespace RBMCampaign
                 case "villager": return _villagerSeries;
                 case "party": return _partySeries;
                 case "caravan": return _caravanSeries;
+                case "foodEaten": return _foodEatenSeries;
                 default: return _prosperitySeries;
             }
         }
@@ -374,6 +414,7 @@ namespace RBMCampaign
                 case "villager": return VillagerButtonText;
                 case "party": return PartyButtonText;
                 case "caravan": return CaravanButtonText;
+                case "foodEaten": return FoodEatenButtonText;
                 default: return ProsperityButtonText;
             }
         }

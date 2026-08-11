@@ -209,6 +209,52 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// The town's daily food ration split into the three mouths that eat it: the townspeople (priced
+        /// by household off prosperity), the garrison and the militia (both priced by head). This is the
+        /// same term-for-term math <see cref="FeedPopulation"/> spends on the market each day -- the model
+        /// divisors and the same perk order -- read out as a breakdown rather than a shopping list, for the
+        /// ledger's food-eaten column and its hover. The small fixed administration ration and any
+        /// building-effect modifier are deliberately left out so the three shown parts sum exactly to the
+        /// reported total.
+        /// </summary>
+        public struct FoodConsumptionBreakdown
+        {
+            public int Citizens;
+            public int Garrison;
+            public int Militia;
+            public int Total => Citizens + Garrison + Militia;
+        }
+
+        public static FoodConsumptionBreakdown GetFoodConsumption(Town town)
+        {
+            FoodConsumptionBreakdown breakdown = default(FoodConsumptionBreakdown);
+            if (town == null || !town.IsTown || Campaign.Current == null)
+            {
+                return breakdown;
+            }
+
+            SettlementFoodModel foodModel = Campaign.Current.Models.SettlementFoodModel;
+            ExplainedNumber households = new ExplainedNumber(town.Prosperity / foodModel.NumberOfProsperityToEatOneFood);
+            ExplainedNumber garrison = new ExplainedNumber((town.GarrisonParty?.Party.NumberOfAllMembers ?? 0) / (float)foodModel.NumberOfMenOnGarrisonToEatOneFood);
+            ExplainedNumber militia = new ExplainedNumber(town.Militia / (float)foodModel.NumberOfMenOnGarrisonToEatOneFood);
+
+            // Mirror FeedPopulation's perk order: Gourmet reduces the soldiers' ration under siege, Master
+            // of Warcraft the households'. Applied to the garrison and militia legs separately, which gives
+            // the same result as applying it to their sum because the perk is a proportional factor.
+            if (town.IsUnderSiege)
+            {
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, ref garrison);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, ref militia);
+            }
+            PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, ref households);
+
+            breakdown.Citizens = (int)MathF.Round(households.ResultNumber);
+            breakdown.Garrison = (int)MathF.Round(garrison.ResultNumber);
+            breakdown.Militia = (int)MathF.Round(militia.ResultNumber);
+            return breakdown;
+        }
+
+        /// <summary>
         /// Reports a town's food stock as the food in its market rather than the stored running
         /// total, so every reader -- the town screen, siege logic, AI target scoring,
         /// <c>Settlement.IsStarving</c> -- sees the real granary.

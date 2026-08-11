@@ -189,8 +189,8 @@
 																																			<ItemTemplate>
 																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="26" HeightSizePolicy="StretchToParent">
 																																					<Children>
-																																						<FillBar WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="58" IsVertical="true" MaxAmount="100" InitialAmount="@BarFill" IsVisible="@IsNormalBar" DoNotAcceptEvents="true" Brush="RBMLedger.Bar" />
-																																						<FillBar WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="58" IsVertical="true" MaxAmount="100" InitialAmount="@BarFill" IsVisible="@IsRaided" DoNotAcceptEvents="true" Brush="RBMLedger.BarRaid" />
+																																						<FillBarVerticalWidget WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="58" IsDirectionUpward="true" MaxAmount="100" InitialAmount="@BarFill" FillWidget="NormalFill" IsVisible="@IsNormalBar" DoNotAcceptEvents="true" Sprite="BlankWhiteSquare" Color="#C8B48CFF" AlphaFactor="0.10"><Children><Widget Id="NormalFill" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" Sprite="BlankWhiteSquare" Color="#C8963CFF" AlphaFactor="0.95" DoNotAcceptEvents="true" /></Children></FillBarVerticalWidget>
+																																						<FillBarVerticalWidget WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="58" IsDirectionUpward="true" MaxAmount="100" InitialAmount="@BarFill" FillWidget="RaidFill" IsVisible="@IsRaided" DoNotAcceptEvents="true" Sprite="BlankWhiteSquare" Color="#C8B48CFF" AlphaFactor="0.10"><Children><Widget Id="RaidFill" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" Sprite="BlankWhiteSquare" Color="#A83228FF" AlphaFactor="0.95" DoNotAcceptEvents="true" /></Children></FillBarVerticalWidget>
 																																						<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="4" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.FontSize="14" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@DayLabel" />
 																																						<HintWidget DataSource="{ValueHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
 																																					</Children>
@@ -363,8 +363,11 @@
 																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" MarginRight="4" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricParty" IsSelected="@IsPartySelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
 																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@PartyButtonText" /></Children>
 																																		</ButtonWidget>
-																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricCaravan" IsSelected="@IsCaravanSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" MarginRight="4" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricCaravan" IsSelected="@IsCaravanSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
 																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@CaravanButtonText" /></Children>
+																																		</ButtonWidget>
+																																		<ButtonWidget WidthSizePolicy="Fixed" SuggestedWidth="96" HeightSizePolicy="StretchToParent" Brush="RBMLedger.TabButton" Command.Click="ExecuteMetricFoodEaten" IsSelected="@IsFoodEatenSelected" DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																																			<Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="RBMLedger.MetricText" Text="@FoodEatenButtonText" /></Children>
 																																		</ButtonWidget>
 																																	</Children>
 																																</ListPanel>
@@ -381,8 +384,8 @@
 																																			<ItemTemplate>
 																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="26" HeightSizePolicy="StretchToParent">
 																																					<Children>
-																																						<FillBar WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="58" IsVertical="true" MaxAmount="100" InitialAmount="@BarFill" IsVisible="@IsNormalBar" DoNotAcceptEvents="true" Brush="RBMLedger.Bar" />
-																																						<FillBar WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="58" IsVertical="true" MaxAmount="100" InitialAmount="@BarFill" IsVisible="@IsRaided" DoNotAcceptEvents="true" Brush="RBMLedger.BarRaid" />
+																																						<FillBarVerticalWidget WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="58" IsDirectionUpward="true" MaxAmount="100" InitialAmount="@BarFill" FillWidget="NormalFill" IsVisible="@IsNormalBar" DoNotAcceptEvents="true" Sprite="BlankWhiteSquare" Color="#C8B48CFF" AlphaFactor="0.10"><Children><Widget Id="NormalFill" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" Sprite="BlankWhiteSquare" Color="#C8963CFF" AlphaFactor="0.95" DoNotAcceptEvents="true" /></Children></FillBarVerticalWidget>
+																																						<FillBarVerticalWidget WidthSizePolicy="Fixed" SuggestedWidth="16" HeightSizePolicy="Fixed" SuggestedHeight="100" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="58" IsDirectionUpward="true" MaxAmount="100" InitialAmount="@BarFill" FillWidget="RaidFill" IsVisible="@IsRaided" DoNotAcceptEvents="true" Sprite="BlankWhiteSquare" Color="#C8B48CFF" AlphaFactor="0.10"><Children><Widget Id="RaidFill" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" Sprite="BlankWhiteSquare" Color="#A83228FF" AlphaFactor="0.95" DoNotAcceptEvents="true" /></Children></FillBarVerticalWidget>
 																																						<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="22" VerticalAlignment="Bottom" HorizontalAlignment="Center" MarginBottom="4" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.FontSize="14" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@DayLabel" />
 																																						<HintWidget DataSource="{ValueHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
 																																					</Children>
@@ -401,8 +404,13 @@
 																																		<TextWidget Text="Day" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Day" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
 																																		<TextWidget Text="Prosp" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																		<TextWidget Text="Citizen" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Cit In" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Cit Out" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																		<TextWidget Text="Treas" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Trs In" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Trs Out" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																		<TextWidget Text="Food" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Eaten" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																		<TextWidget Text="Garr" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																		<TextWidget Text="Mil" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																		<TextWidget Text="Deliv" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
@@ -418,11 +426,46 @@
 																																				<TextWidget Text="@DayLabel" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Day" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
 																																				<TextWidget Text="@Prosperity" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																				<TextWidget Text="@Citizen" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent">
+																																					<Children>
+																																						<TextWidget Text="@CitIncome" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																						<HintWidget DataSource="{CitIncomeHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																					</Children>
+																																				</Widget>
+																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent">
+																																					<Children>
+																																						<TextWidget Text="@CitExpense" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																						<HintWidget DataSource="{CitExpenseHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																					</Children>
+																																				</Widget>
 																																				<TextWidget Text="@Settlement" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent">
+																																					<Children>
+																																						<TextWidget Text="@SetIncome" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																						<HintWidget DataSource="{SetIncomeHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																					</Children>
+																																				</Widget>
+																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent">
+																																					<Children>
+																																						<TextWidget Text="@SetExpense" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																						<HintWidget DataSource="{SetExpenseHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																					</Children>
+																																				</Widget>
 																																				<TextWidget Text="@Food" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent">
+																																					<Children>
+																																						<TextWidget Text="@Eaten" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																						<HintWidget DataSource="{EatenHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																					</Children>
+																																				</Widget>
 																																				<TextWidget Text="@Garrison" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																				<TextWidget Text="@Militia" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																				<TextWidget Text="@Villager" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent">
+																																					<Children>
+																																						<TextWidget Text="@Villager" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																						<HintWidget DataSource="{VillagerHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																					</Children>
+																																				</Widget>
 																																				<TextWidget Text="@Party" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																				<TextWidget Text="@Caravan" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																				<Widget WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Events" HeightSizePolicy="StretchToParent">
