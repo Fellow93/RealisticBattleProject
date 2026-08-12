@@ -103,6 +103,26 @@ namespace RBMCampaign
         [DataSourceProperty] public BasicTooltipViewModel Hint { get; }
     }
 
+    // One equipment/materials category the town's market carries that the citizen basket does NOT
+    // model -- armour, horses, melee/thrown/ranged weapons, ammo, raw materials and the like, bought
+    // by workshops and passing parties rather than households. Aggregates the category's total units
+    // and market value; hover for the per-item breakdown.
+    public class RBMLedgerOtherGoodVM : ViewModel
+    {
+        public RBMLedgerOtherGoodVM(string category, string stock, string value, BasicTooltipViewModel hint)
+        {
+            Category = category;
+            Stock = stock;
+            Value = value;
+            Hint = hint;
+        }
+
+        [DataSourceProperty] public string Category { get; }
+        [DataSourceProperty] public string Stock { get; }
+        [DataSourceProperty] public string Value { get; }
+        [DataSourceProperty] public BasicTooltipViewModel Hint { get; }
+    }
+
     // One workshop: its type name plus the daily units it consumes (all recipe inputs) and produces
     // (all outputs); hover for the per-good input/output breakdown.
     public class RBMLedgerWorkshopVM : ViewModel
@@ -166,7 +186,7 @@ namespace RBMCampaign
             string garrison, string militia, string villager, string party, string caravan,
             MBBindingList<RBMLedgerTownDayVM> history, BasicTooltipViewModel foodHint,
             MBBindingList<RBMLedgerDemandTierVM> demandTiers, MBBindingList<RBMLedgerGoodVM> goods,
-            MBBindingList<RBMLedgerWorkshopVM> workshops,
+            MBBindingList<RBMLedgerOtherGoodVM> otherGoods, MBBindingList<RBMLedgerWorkshopVM> workshops,
             int[] prosperitySeries, int[] citizenSeries, int[] settlementSeries, int[] foodSeries,
             int[] garrisonSeries, int[] militiaSeries, int[] villagerSeries, int[] partySeries, int[] caravanSeries,
             int[] foodEatenSeries, string[] barLabels, bool[] barEvent)
@@ -186,6 +206,8 @@ namespace RBMCampaign
             DemandTiers = demandTiers;
             Goods = goods;
             HasGoods = goods != null && goods.Count > 0;
+            OtherGoods = otherGoods;
+            HasOtherGoods = otherGoods != null && otherGoods.Count > 0;
             Workshops = workshops;
             HasWorkshops = workshops != null && workshops.Count > 0;
 
@@ -233,6 +255,11 @@ namespace RBMCampaign
         // Per-item demand vs stock table (each row hovers to its 30-day history).
         [DataSourceProperty] public bool HasGoods { get; }
         [DataSourceProperty] public MBBindingList<RBMLedgerGoodVM> Goods { get; }
+
+        // Goods on the market the citizen basket does not model (raw materials, gear, mounts): stock
+        // and total market value.
+        [DataSourceProperty] public bool HasOtherGoods { get; }
+        [DataSourceProperty] public MBBindingList<RBMLedgerOtherGoodVM> OtherGoods { get; }
 
         // One row per workshop: its consumed/produced units/day, with a per-good breakdown on hover.
         [DataSourceProperty] public bool HasWorkshops { get; }

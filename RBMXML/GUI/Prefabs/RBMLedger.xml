@@ -567,6 +567,33 @@
 																																</ListPanel>
 																															</Children>
 																														</ListPanel>
+																														<ListPanel IsVisible="@HasOtherGoods" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+																															<Children>
+																																<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH" StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="2">
+																																	<Children>
+																																		<TextWidget Text="Equipment &amp; materials" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Name" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Stock" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="Value" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																	</Children>
+																																</ListPanel>
+																																<ListPanel DataSource="{OtherGoods}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" MarginBottom="10">
+																																	<ItemTemplate>
+																																		<Widget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH">
+																																			<Children>
+																																				<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" StackLayout.LayoutMethod="HorizontalLeftToRight">
+																																					<Children>
+																																						<TextWidget Text="@Category" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Name" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																						<TextWidget Text="@Stock" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																						<TextWidget Text="@Value" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																					</Children>
+																																				</ListPanel>
+																																				<HintWidget DataSource="{Hint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																																			</Children>
+																																		</Widget>
+																																	</ItemTemplate>
+																																</ListPanel>
+																															</Children>
+																														</ListPanel>
 																													</Children>
 																												</ListPanel>
 																											</Children>

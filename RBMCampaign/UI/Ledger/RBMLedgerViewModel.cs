@@ -458,7 +458,7 @@ namespace RBMCampaign
                 garrisonNow.ToString(),
                 ((int)MathF.Round(settlement.Militia)).ToString(),
                 Latest(villager), Latest(party), Latest(caravan),
-                history, BuildFoodHint(town), BuildDemandTiers(town), BuildGoods(town), BuildWorkshops(town),
+                history, BuildFoodHint(town), BuildDemandTiers(town), BuildGoods(town), BuildOtherGoods(town), BuildWorkshops(town),
                 prosperity, citizen, settlementW, food, garrison, militia, villager, party, caravan, foodEaten,
                 barLabels, barEvent);
         }
@@ -786,6 +786,156 @@ namespace RBMCampaign
                 sb.Append(s[i]);
             }
             return sb.ToString();
+        }
+
+        // Goods physically on the town market that the citizen basket does NOT model -- war gear, mounts
+        // and raw materials, bought by workshops and passing parties rather than households, so they
+        // never appear in the demand table above. Split by equipment category (armour, horses, melee /
+        // thrown / ranged weapons, ammo, materials, ...): each row aggregates the category's stock and
+        // total market value, with the per-item breakdown on hover. Category order is fixed; sorted rows
+        // are dropped when empty.
+        private static readonly string[] OtherGoodCategoryOrder =
+        {
+            "armor", "shields", "harness", "horses", "packanimals", "livestock",
+            "melee", "thrown", "ranged", "ammo", "materials", "other"
+        };
+
+        private static MBBindingList<RBMLedgerOtherGoodVM> BuildOtherGoods(Town town)
+        {
+            var result = new MBBindingList<RBMLedgerOtherGoodVM>();
+            ItemRoster roster = town.Owner != null ? town.Owner.ItemRoster : null;
+            if (roster == null)
+            {
+                return result;
+            }
+
+            var groups = new Dictionary<string, OtherGoodGroup>();
+            for (int i = roster.Count - 1; i >= 0; i--)
+            {
+                ItemRosterElement e = roster.GetElementCopyAtIndex(i);
+                ItemObject item = e.EquipmentElement.Item;
+                if (item == null || e.Amount <= 0)
+                {
+                    continue;
+                }
+                if (CitizenDemand.CoversItem(item))
+                {
+                    continue; // modelled by the citizen basket -- already in the demand table above
+                }
+                string cat = ClassifyOtherGood(item);
+                if (!groups.TryGetValue(cat, out OtherGoodGroup g))
+                {
+                    g = new OtherGoodGroup { Items = new List<KeyValuePair<string, long>>() };
+                    groups[cat] = g;
+                }
+                long value = (long)e.Amount * town.GetItemPrice(item);
+                g.Stock += e.Amount;
+                g.Value += value;
+                string name = item.Name != null ? item.Name.ToString() : item.StringId;
+                g.Items.Add(new KeyValuePair<string, long>(name + " x" + e.Amount, value));
+            }
+
+            foreach (string cat in OtherGoodCategoryOrder)
+            {
+                if (!groups.TryGetValue(cat, out OtherGoodGroup g) || g.Stock <= 0)
+                {
+                    continue;
+                }
+                string label = OtherGoodCategoryName(cat);
+                g.Items.Sort((a, b) => b.Value.CompareTo(a.Value));
+                var sb = new System.Text.StringBuilder();
+                sb.Append(label).Append(" (").Append(g.Stock).Append(')');
+                foreach (KeyValuePair<string, long> it in g.Items)
+                {
+                    sb.Append('\n').Append(it.Key).Append(": ").Append(it.Value);
+                }
+                string hintText = sb.ToString();
+                result.Add(new RBMLedgerOtherGoodVM(label, g.Stock.ToString(), g.Value.ToString(),
+                    new BasicTooltipViewModel(() => hintText)));
+            }
+            return result;
+        }
+
+        private class OtherGoodGroup
+        {
+            public int Stock;
+            public long Value;
+            public List<KeyValuePair<string, long>> Items;
+        }
+
+        // Buckets a non-basket market item into one of the fixed equipment/materials categories.
+        private static string ClassifyOtherGood(ItemObject item)
+        {
+            switch (item.ItemType)
+            {
+                case ItemObject.ItemTypeEnum.HeadArmor:
+                case ItemObject.ItemTypeEnum.BodyArmor:
+                case ItemObject.ItemTypeEnum.LegArmor:
+                case ItemObject.ItemTypeEnum.HandArmor:
+                case ItemObject.ItemTypeEnum.ChestArmor:
+                case ItemObject.ItemTypeEnum.Cape:
+                    return "armor";
+                case ItemObject.ItemTypeEnum.Shield:
+                    return "shields";
+                case ItemObject.ItemTypeEnum.HorseHarness:
+                    return "harness"; // horse armour / saddles
+                case ItemObject.ItemTypeEnum.Horse:
+                case ItemObject.ItemTypeEnum.Animal:
+                {
+                    // Both mounts and beasts are typed Horse/Animal; the HorseComponent flags tell them
+                    // apart -- pack animals (mules, sumpters), livestock (cattle, sheep), else rideable mount.
+                    HorseComponent hc = item.HorseComponent;
+                    if (hc != null && hc.IsPackAnimal)
+                    {
+                        return "packanimals";
+                    }
+                    if (hc != null && hc.IsLiveStock)
+                    {
+                        return "livestock";
+                    }
+                    return "horses";
+                }
+                case ItemObject.ItemTypeEnum.OneHandedWeapon:
+                case ItemObject.ItemTypeEnum.TwoHandedWeapon:
+                case ItemObject.ItemTypeEnum.Polearm:
+                    return "melee";
+                case ItemObject.ItemTypeEnum.Thrown:
+                    return "thrown";
+                case ItemObject.ItemTypeEnum.Bow:
+                case ItemObject.ItemTypeEnum.Crossbow:
+                case ItemObject.ItemTypeEnum.Sling:
+                case ItemObject.ItemTypeEnum.Pistol:
+                case ItemObject.ItemTypeEnum.Musket:
+                    return "ranged";
+                case ItemObject.ItemTypeEnum.Arrows:
+                case ItemObject.ItemTypeEnum.Bolts:
+                case ItemObject.ItemTypeEnum.SlingStones:
+                case ItemObject.ItemTypeEnum.Bullets:
+                    return "ammo";
+                case ItemObject.ItemTypeEnum.Goods:
+                    return "materials";
+                default:
+                    return "other";
+            }
+        }
+
+        private static string OtherGoodCategoryName(string cat)
+        {
+            switch (cat)
+            {
+                case "armor": return new TextObject("{=RBM_LEDGER_OG_ARMOR}Armor").ToString();
+                case "shields": return new TextObject("{=RBM_LEDGER_OG_SHIELDS}Shields").ToString();
+                case "harness": return new TextObject("{=RBM_LEDGER_OG_HARNESS}Horse harness").ToString();
+                case "horses": return new TextObject("{=RBM_LEDGER_OG_HORSES}Horses").ToString();
+                case "packanimals": return new TextObject("{=RBM_LEDGER_OG_PACK}Pack animals").ToString();
+                case "melee": return new TextObject("{=RBM_LEDGER_OG_MELEE}Melee weapons").ToString();
+                case "thrown": return new TextObject("{=RBM_LEDGER_OG_THROWN}Thrown").ToString();
+                case "ranged": return new TextObject("{=RBM_LEDGER_OG_RANGED}Ranged weapons").ToString();
+                case "ammo": return new TextObject("{=RBM_LEDGER_OG_AMMO}Ammo").ToString();
+                case "livestock": return new TextObject("{=RBM_LEDGER_OG_LIVESTOCK}Livestock").ToString();
+                case "materials": return new TextObject("{=RBM_LEDGER_OG_MATERIALS}Materials").ToString();
+                default: return new TextObject("{=RBM_LEDGER_OG_OTHER}Other").ToString();
+            }
         }
 
         // One row per workshop: its consumed (all recipe inputs) and produced (all outputs) units/day,
