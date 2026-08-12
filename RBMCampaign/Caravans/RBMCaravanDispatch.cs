@@ -58,6 +58,22 @@ namespace RBMCampaign
         private const int MaxGoodsPerCaravan = 6;
         private const int MaxCaravanTotalUnits = 400;
 
+        // A sea route must beat the land route's travel TIME by at least this factor before a caravan is put
+        // to ship. The margin keeps caravans off the water for break-even crossings, so the embark/disembark
+        // transitions and the detour to a port are only paid when the sea genuinely saves time. There is no
+        // margin on the island case -- if there is no road at all, the sea is the only way and always wins.
+        private const float SeaRouteTimeMargin = 0.9f;
+
+        // Days added to a sea route's estimate for BOARDING, which the raw travel-time math ignores. From a
+        // PORT source the caravan's fleet is planted at the quay (RouteBetween sets the anchor on the ship it
+        // is standing beside), so embarking is instant and only the ~2h disembark at the far port remains --
+        // a rounding-error tenth of a day. From a NON-port source the party must first march to a coast and
+        // summon its fleet, which the transition model charges up to ~2 days; budgeting that stops a caravan
+        // from trekking inland-to-water for a crossing whose sailing saving is smaller than the summon costs.
+        // Per travelled leg.
+        private const float SeaRouteDockBoardingDays = 0.1f;
+        private const float SeaRouteOpenBoardingDays = 2f;
+
         /// <summary>
         /// A dispatch pass. Bins every town by its kingdom; within each kingdom it works DESTINATION-first:
         /// it takes each struggling town (neediest first) and fills a caravan with everything one source
@@ -436,25 +452,108 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Points a caravan at a settlement, over land when it can and over water when it must. If there is
-        /// a road it moves by road (the land fallback). Otherwise -- an island crossing -- it is given a
-        /// ship (keeping its land access, so it is a hybrid that still walks the land legs) and moved with
-        /// <see cref="MobileParty.NavigationType.All"/>, targeting the port. If it cannot be made naval it
-        /// falls back to a plain land order; <see cref="CanDeliver"/> is expected to have already screened
-        /// out the truly unreachable pairings at dispatch.
+        /// Points a caravan at a settlement, choosing sea over land when the crossing is genuinely faster.
+        /// The two routes are weighed in travel TIME, not raw distance: a caravan's ship is slower per unit
+        /// distance than its land march (vanilla seeds ~3.53 against ~4.2), so a sea route only wins when it
+        /// is enough shorter to beat the slower hull. When the sea wins -- or there is simply no road at all,
+        /// an island crossing -- the caravan is given a ship, keeps its land access so it is a hybrid that
+        /// still walks the land legs, and is moved with <see cref="MobileParty.NavigationType.All"/> targeting
+        /// the port. Otherwise it takes the road. If a ship cannot be granted it falls back to a plain land
+        /// order; <see cref="CanDeliver"/> is expected to have already screened out truly unreachable pairs.
         /// </summary>
         internal static void RouteBetween(MobileParty caravan, Settlement from, Settlement to, CultureObject culture)
         {
-            var dist = Campaign.Current.Models.MapDistanceModel;
-            bool landRoute = dist.PathExistBetweenPoints(from.GatePosition, to.GatePosition, MobileParty.NavigationType.Default);
-            if (!landRoute && to.HasPort && EnsureNaval(caravan, culture)
-                && dist.PathExistBetweenPoints(from.GatePosition, to.PortPosition, MobileParty.NavigationType.All))
+            if (PreferSeaRoute(from, to, culture) && EnsureNaval(caravan, culture))
             {
+                // Board at the source's own dock. A transferred ship starts with an INVALID anchor -- its
+                // fleet is "nowhere" -- which the transition model charges ~2 days to summon before the party
+                // can embark. The caravan is standing in its port source, so plant the anchor at that port:
+                // the fleet is already at the quay and embarking is instant (distance ~0 => zero transition).
+                if (from != null && from.HasPort && caravan.Anchor != null)
+                {
+                    caravan.Anchor.SetSettlement(from);
+                }
                 caravan.SetMoveGoToSettlement(to, MobileParty.NavigationType.All, true);
                 CaravanLog.Log("SEA", CaravanLog.Name(to), "by ship from " + CaravanLog.Name(from));
                 return;
             }
             caravan.SetMoveGoToSettlement(to, MobileParty.NavigationType.Default, false);
+        }
+
+        /// <summary>
+        /// Whether a caravan from <paramref name="from"/> should sail to <paramref name="to"/> rather than
+        /// march. True when the sea route's estimated travel TIME is meaningfully shorter than the land
+        /// route's (by <see cref="SeaRouteTimeMargin"/>), or when there is no land route at all -- an island
+        /// town -- in which case the sea is the only way in and wins outright. Requires the destination to
+        /// have a port to land at and the culture to field ships; without the Naval DLC no culture has hulls
+        /// and no town has a port, so this is always false and every caravan takes the road (the feature
+        /// stays dormant). Distances come straight from the <see cref="MapDistanceModel"/> -- party-agnostic,
+        /// so no ship need be granted just to measure -- and each is timed at the average caravan land/naval
+        /// speed the game seeds, splitting the sea route's own land and water legs by the model's landRatio,
+        /// plus a fixed boarding cost for the embark/disembark the travel math cannot see (cheap from a port
+        /// source, dear from an inland one -- see the SeaRoute*BoardingDays constants).
+        /// </summary>
+        private static bool PreferSeaRoute(Settlement from, Settlement to, CultureObject culture)
+        {
+            if (from == null || to == null || !to.HasPort
+                || culture == null || culture.AvailableShipHulls == null || culture.AvailableShipHulls.Count == 0)
+            {
+                return false; // no port to land at, or no ships to sail -- land only
+            }
+
+            var dist = Campaign.Current.Models.MapDistanceModel;
+            float unreachable = Campaign.MapDiagonal * 5f; // the model returns ~this when no path of that type exists
+
+            // Land: a plain road march, source gate to destination gate.
+            float landDist = dist.GetDistance(from, to, false, false, MobileParty.NavigationType.Default, out float _);
+            bool hasLand = landDist < unreachable;
+
+            // Sea: a hybrid land+sea route landing at the destination's port. Try leaving from the source's
+            // gate, and -- if the source itself has a port -- from that port too, keeping whichever is shorter
+            // (mirrors how the game weighs the same route for a real naval party).
+            float seaLandRatio;
+            float seaDist = dist.GetDistance(from, to, false, true, MobileParty.NavigationType.All, out seaLandRatio);
+            if (from.HasPort)
+            {
+                float fromPortDist = dist.GetDistance(from, to, true, true, MobileParty.NavigationType.All, out float fromPortRatio);
+                if (fromPortDist < seaDist)
+                {
+                    seaDist = fromPortDist;
+                    seaLandRatio = fromPortRatio;
+                }
+            }
+            bool hasSea = seaDist < unreachable;
+
+            if (!hasSea)
+            {
+                return false; // cannot reach by water -- march (CanDeliver blocked us if there is no land route either)
+            }
+            if (!hasLand)
+            {
+                return true; // an island crossing: the water is the only way in
+            }
+
+            // Time each route. The sea route's distance is split into its land leg and its water leg by
+            // landRatio, then each leg is timed at its own speed -- the water leg is genuinely slower, which
+            // is exactly what makes "shorter distance" and "shorter time" diverge and is the point of this.
+            float hoursPerDay = (float)CampaignTime.HoursInDay;
+            float landSpeed = Campaign.Current.EstimatedAverageCaravanPartySpeed;
+            float navalSpeed = Campaign.Current.EstimatedAverageCaravanPartyNavalSpeed;
+            if (landSpeed <= 0f || navalSpeed <= 0f)
+            {
+                return false; // speeds not seeded yet -- play it safe and march
+            }
+
+            float landDays = landDist / (landSpeed * hoursPerDay);
+            float seaLandLeg = seaDist * seaLandRatio;
+            float seaWaterLeg = seaDist - seaLandLeg;
+            // Sailing time plus the fixed boarding cost the travel math alone does not see. Boarding is cheap
+            // from a port source (the caravan embarks at its own quay) and dear from an inland one (walk to a
+            // coast, summon the fleet), so the crossing must clear a higher bar to be worth marching to.
+            float boardingDays = from.HasPort ? SeaRouteDockBoardingDays : SeaRouteOpenBoardingDays;
+            float seaDays = (seaLandLeg / landSpeed + seaWaterLeg / navalSpeed) / hoursPerDay + boardingDays;
+
+            return seaDays < landDays * SeaRouteTimeMargin;
         }
 
         /// <summary>
