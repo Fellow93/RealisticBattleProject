@@ -352,6 +352,7 @@
     <Compile Include="UI\Ledger\RBMTownLedger.cs" />
     <Compile Include="UI\Ledger\RBMTownLedgerCampaignBehavior.cs" />
     <Compile Include="UI\Ledger\RBMLedgerTownVM.cs" />
+    <Compile Include="Power\SiegeDecisionGate.cs" />
     <Compile Include="Power\StrategicPowerLog.cs" />
     <Compile Include="Power\StrategicPowerTooltip.cs" />
     <Compile Include="Power\StrategicPowerTooltipVM.cs" />
