@@ -51,11 +51,11 @@ namespace RBMCampaign
             ("clay", 0.002f),
             ("ironIngot1", 0.015f),
             ("flax", 0.017f),
-            // Every village occasionally raises a pack animal (PackAnimal). Deliberately tiny — far
-            // below the horse-ranch pack bucket and the Khuzait flavour trickle — so it reads as
-            // subsistence, not a production speciality. Does NOT affect the map primary-production
-            // icon (that draws only from SpecByType).
-            ("mule", 0.001f),
+            // Every village occasionally raises a pack animal (PackAnimal). Set to 10% of a horse
+            // ranch's per-item mule rate (HorsePackBucket/2), so it reads as subsistence, not a
+            // production speciality. Does NOT affect the map primary-production icon (that draws
+            // only from SpecByType).
+            ("mule", HorsePackBucket / 2f * 0.1f),
         };
 
         // Horse ranches produce culture-appropriate breeds, one item per tier at the rates below:

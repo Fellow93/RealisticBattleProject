@@ -108,6 +108,45 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>The garrison's daily wage bill -- what its men are paid, read off its own party like the militia's.</summary>
+        public static int WageBill(Settlement settlement)
+        {
+            MobileParty garrison = (settlement != null && settlement.Town != null) ? settlement.Town.GarrisonParty : null;
+            return (garrison != null && garrison.IsActive) ? garrison.TotalWage : 0;
+        }
+
+        /// <summary>
+        /// The garrison's daily maintenance bill -- the kit-value maintenance a field troop pays scaled to
+        /// <see cref="GarrisonMaintFactor"/>, summed over the roster. The pure-compute half of
+        /// <see cref="ChargeMaintenance"/>, shared with the reserve gates that size garrison recruiting.
+        /// </summary>
+        public static int MaintenanceBill(Settlement settlement)
+        {
+            MobileParty garrison = (settlement != null && settlement.Town != null) ? settlement.Town.GarrisonParty : null;
+            if (garrison == null || !garrison.IsActive || garrison.MemberRoster == null)
+            {
+                return 0;
+            }
+            TroopRoster roster = garrison.MemberRoster;
+            int bill = 0;
+            for (int i = 0; i < roster.Count; i++)
+            {
+                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+                if (element.Character.IsHero || element.Number <= 0)
+                {
+                    continue;
+                }
+                bill += (int)(SpoilsPool.GetDailyMaintenanceCost(element.Character, element.Number) * GarrisonMaintFactor);
+            }
+            return bill;
+        }
+
+        /// <summary>The garrison's full daily cost -- wage plus maintenance -- for the reserve gates that size recruiting.</summary>
+        public static int EstimateDailyBill(Settlement settlement)
+        {
+            return WageBill(settlement) + MaintenanceBill(settlement);
+        }
+
         /// <summary>
         /// Charges a settlement its garrison's daily maintenance -- the second leg of a garrison's upkeep,
         /// the kit-value maintenance a field troop pays scaled to <see cref="GarrisonMaintFactor"/> for a
@@ -133,17 +172,7 @@ namespace RBMCampaign
                 return;
             }
 
-            TroopRoster roster = garrison.MemberRoster;
-            int bill = 0;
-            for (int i = 0; i < roster.Count; i++)
-            {
-                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
-                if (element.Character.IsHero || element.Number <= 0)
-                {
-                    continue;
-                }
-                bill += (int)(SpoilsPool.GetDailyMaintenanceCost(element.Character, element.Number) * GarrisonMaintFactor);
-            }
+            int bill = MaintenanceBill(settlement);
             if (bill <= 0)
             {
                 return;

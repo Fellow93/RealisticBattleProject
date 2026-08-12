@@ -92,8 +92,7 @@ namespace RBMCampaign
                 return;
             }
             int wallLevel = settlement.Town.GetWallLevel();
-            int perTier = settlement.IsCastle ? CastleWallUpkeepPerTier : CityWallUpkeepPerTier;
-            int cost = wallLevel * perTier;
+            int cost = WallUpkeepCost(settlement);
             if (cost <= 0)
             {
                 return;
@@ -107,6 +106,48 @@ namespace RBMCampaign
                     + (paid < cost ? "  ·  purse short" : "")
                     + "  ·  purse now " + SettlementWealth.GetSettlementWealth(settlement) + "d");
             }
+        }
+
+        /// <summary>
+        /// The daily cost of keeping this settlement's walls sound -- <c>base-per-tier × wall level</c>,
+        /// dearer for a city than a castle. Zero for a village, which has no walls to keep. The
+        /// pure-compute half of <see cref="PayWallsUpkeep"/>, shared with the settlement's daily-bill estimate.
+        /// </summary>
+        public static int WallUpkeepCost(Settlement settlement)
+        {
+            if (settlement == null || settlement.Town == null)
+            {
+                return 0;
+            }
+            int wallLevel = settlement.Town.GetWallLevel();
+            int perTier = settlement.IsCastle ? CastleWallUpkeepPerTier : CityWallUpkeepPerTier;
+            return wallLevel * perTier;
+        }
+
+        /// <summary>
+        /// This settlement's standing administrative overhead a day -- the officials' wage, plus for a
+        /// fortification the upkeep of its walls. A side-effect-free estimate the garrison-recruit reserve
+        /// gates read as one leg of the settlement's full daily bill; it does not charge anything itself.
+        /// </summary>
+        public static int EstimateDailyBill(Settlement settlement)
+        {
+            if (settlement == null)
+            {
+                return 0;
+            }
+            if (settlement.IsTown)
+            {
+                return TownDailySalary + WallUpkeepCost(settlement);
+            }
+            if (settlement.IsCastle)
+            {
+                return CastleEconomy.AdminDailySalary + WallUpkeepCost(settlement);
+            }
+            if (settlement.IsVillage)
+            {
+                return VillageDailySalary;
+            }
+            return 0;
         }
 
         /// <summary>

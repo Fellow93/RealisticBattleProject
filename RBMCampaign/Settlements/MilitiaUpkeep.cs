@@ -491,13 +491,25 @@ namespace RBMCampaign
             float militia = settlement.Militia;
 
             // --- Base curve (RBM-owned): flat muster, retirement drag, manpower intake.
+            // Ride the soft cap in the base line's label -- the count past which muster throttles -- so the
+            // tooltip always shows what the watch is growing toward, the way the garrison names its cap.
+            TextObject baseLine = BaseText;
+            if (includeDescriptions)
+            {
+                float softCap = MilitiaCap(settlement);
+                if (softCap > 0f)
+                {
+                    baseLine = new TextObject("{=rbm_mil_base_cap}Base (soft cap {CAP})");
+                    baseLine.SetTextVariable("CAP", (int)softCap);
+                }
+            }
             if (settlement.IsFortification)
             {
-                result.Add(BaseMilitiaFortification, BaseText);
+                result.Add(BaseMilitiaFortification, baseLine);
             }
             else if (settlement.IsVillage)
             {
-                result.Add(BaseMilitiaVillage, BaseText);
+                result.Add(BaseMilitiaVillage, baseLine);
             }
 
             result.Add(-militia * MilitiaRetirementRate, RetiredText);

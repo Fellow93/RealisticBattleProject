@@ -56,6 +56,9 @@ namespace RBMCampaign
             // its recovered kit value to the funding pot.
             MilitiaUpkeep.ChargePendingSpawn(settlement);
             MilitiaUpkeep.RefundPendingDecline(settlement);
+            // Grow the garrison off the fief's wealth, after its upkeep and its militia are paid, so it
+            // recruits from genuine surplus and the base local defence (militia) is funded first.
+            GarrisonRecruitCost.GrowGarrison(settlement);
             WealthTax.OnDailyTick(settlement);
             // After the day's charges, so these report against the purse they left behind.
             TradeTariff.FlushDaily(settlement);
