@@ -46,14 +46,15 @@ namespace RBMCampaign
         public const int GarrisonSpawnDailyMax = 4;
 
         /// <summary>
-        /// Days of the garrison's OWN wage-and-maintenance bill the treasury must hold to keep it standing.
-        /// Below this the fief is too broke to pay its garrison and men start leaving. Kept well under the
-        /// recruit reserve (<see cref="GarrisonReserveDays"/>× the whole settlement's bill) so a dead band
-        /// sits between: below the recruit reserve a fief stops growing, only below THIS does it shed.
+        /// Days of the garrison's OWN wage-and-maintenance bill the treasury must hold to sustain it. Below
+        /// this the fief cannot carry a garrison this size and it is trimmed toward an affordable one (the
+        /// men are still paid -- the wage bill falls back on the owner clan). Kept well under the recruit
+        /// reserve (<see cref="GarrisonReserveDays"/>× the whole settlement's bill) so a dead band sits
+        /// between: below the recruit reserve a fief stops growing, only below THIS does it reduce.
         /// </summary>
         public const int GarrisonKeepDays = 7;
 
-        /// <summary>Men a fief too poor to pay its garrison loses a day -- a slow melt, not a collapse.</summary>
+        /// <summary>Men a fief trims from an over-strength garrison a day -- a slow reduction, not a collapse.</summary>
         public const int GarrisonShedPerDay = 2;
 
         public static bool IsEnabled
@@ -168,20 +169,22 @@ namespace RBMCampaign
                 return;
             }
 
-            // Final < 0: the treasury cannot even hold a week of the garrison's own wages, so men leave.
+            // Final < 0: the fief's treasury cannot sustain a garrison this size, so it is trimmed down.
+            // The men are still paid in full -- the wage bill falls back on the owner clan (see
+            // GarrisonUpkeep) -- there are simply too many of them for the fief's own wealth to carry.
             int shed = ShedGarrison(settlement, -c.Final);
             if (EconomyLog.IsEnabled && shed > 0)
             {
                 EconomyLog.Log("GARRISON", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
-                    "unpaid — " + shed + " left the garrison  ·  treasury " + FiefWealth(settlement) + "d");
+                    "over-strength — " + shed + " stood down  ·  treasury " + FiefWealth(settlement) + "d");
             }
         }
 
         /// <summary>
         /// Removes up to <paramref name="count"/> non-hero men from the garrison, rawest levies (lowest
-        /// tier) first -- a fief too poor to pay its garrison watches it melt away. No kit value is refunded:
-        /// the men simply go home, so nothing is minted back into a treasury that is already empty. Returns
-        /// how many actually left.
+        /// tier) first -- a garrison larger than its fief can sustain is trimmed toward an affordable size.
+        /// No kit value is refunded: the men stand down and go home, and nothing is minted back into a
+        /// treasury that is already drained. Returns how many actually left.
         /// </summary>
         private static int ShedGarrison(Settlement settlement, int count)
         {
@@ -312,7 +315,8 @@ namespace RBMCampaign
             }
             else if (garrisonBill > 0 && wealth < c.KeepThreshold && manCount > 0)
             {
-                // Too poor even to keep a week of the garrison's own wages: men leave. A dead band sits
+                // The garrison costs more than the fief's treasury can sustain (it cannot hold even a week
+                // of the garrison's own bill), so it is trimmed toward an affordable size. A dead band sits
                 // between here and the recruit reserve, where the garrison simply holds.
                 c.Shed = GarrisonShedPerDay < manCount ? GarrisonShedPerDay : manCount;
                 c.Final = -c.Shed;
@@ -365,8 +369,12 @@ namespace RBMCampaign
 
             if (c.Valid && c.Final < 0)
             {
-                // Too poor to keep the garrison: men leaving. Shown instead of any recruitment lines.
-                en.Add(c.Final, new TextObject("{=rbm_garr_shed}Garrison unpaid — men leaving"));
+                // The garrison is larger than the fief can sustain -- the men are paid, there are simply too
+                // many of them for the treasury -- so it is trimmed toward an affordable size. The upkeep
+                // reserve it is failing to hold is named so the player sees the figure that stops the trim.
+                TextObject shedText = new TextObject("{=rbm_garr_shed}Over-strength — reducing (upkeep reserve {KEEP})");
+                shedText.SetTextVariable("KEEP", c.KeepThreshold);
+                en.Add(c.Final, shedText);
             }
             else if (c.Valid && c.Capped > 0)
             {
