@@ -46,8 +46,8 @@ namespace RBMCampaign
             ("wool", 0.02f),
             ("sheep", 0.002f),
             //basic village "industrial" production so cities can function
-            ("charcoal", 0.06f),
-            ("planks", 0.04f),
+            ("charcoal", 0.07f),
+            ("planks", 0.03f),
             ("clay", 0.002f),
             ("ironIngot1", 0.015f),
             ("flax", 0.017f),
@@ -89,12 +89,12 @@ namespace RBMCampaign
                 { "cattle_farm", new (string, float)[] { ("cheese", 0.035f), ("butter", 0.028f), ("cow", 0.008f) } },
                 { "sheep_farm", new (string, float)[] { ("sheep", 0.0031f), ("cheese", 0.02f), ("butter", 0.015f), ("wool", 0.08f) } },
                 { "swine_farm", new (string, float)[] { ("hog", 0.019f) } },
-                { "lumberjack", new (string, float)[] { ("charcoal", 1.027f*1f), ("planks", 1.027f*1f) } },
+                { "lumberjack", new (string, float)[] { ("charcoal", 1.027f*1.5f), ("planks", 1.027f*0.5f) } },
                 { "clay_mine", new (string, float)[] { ("clay", 2.6f) } },
-                { "salt_mine", new (string, float)[] { ("salt", 0.356f) } },
+                { "salt_mine", new (string, float)[] { ("salt", 0.7f) } },
                 { "iron_mine", new (string, float)[] { ("ironIngot1", 2f) } },
                 { "silver_mine", new (string, float)[] { ("silver", 0.85f) } },
-                { "fisherman", new (string, float)[] { ("fish", 0.2f), ("salt", 0.0356f) } },
+                { "fisherman", new (string, float)[] { ("fish", 0.2f), ("salt", 0.07f) } },
                 { "vineyard", new (string, float)[] { ("grape", 0.038f) } },
                 { "flax_plant", new (string, float)[] { ("flax", 0.170f) } },
                 { "date_farm", new (string, float)[] { ("date_fruit", 0.547f) } },
@@ -121,8 +121,8 @@ namespace RBMCampaign
                         ("war_camel", 0.0005f),
                     }
                 },
-                { "walrus_hunter", new (string, float)[] { ("walrus_tusk", 0.008f), ("salt", 0.0356f) } }, // Naval DLC
-                { "whaler", new (string, float)[] { ("whale_oil", 0.29f), ("salt", 0.0356f) } },           // Naval DLC
+                { "walrus_hunter", new (string, float)[] { ("walrus_tusk", 0.008f), ("salt", 0.07f) } }, // Naval DLC
+                { "whaler", new (string, float)[] { ("whale_oil", 0.29f), ("salt", 0.07f) } },           // Naval DLC
             };
 
         // Culture "flavour": a light trickle of a signature good produced by EVERY village of a
@@ -138,7 +138,7 @@ namespace RBMCampaign
         private static readonly Dictionary<string, (string id, float rate)[]> FlavourByCulture =
             new Dictionary<string, (string, float)[]>
             {
-                { "aserai",       new (string, float)[] { ("date_fruit", 0.0547f) } },
+                { "aserai",       new (string, float)[] { ("date_fruit", 0.0547f), ("salt", 0.03f) } },
                 { "empire_south", new (string, float)[] { ("olives", 0.0089f) } },
                 { "empire_west",  new (string, float)[] { ("olives", 0.00445f), ("grape", 0.0019f) } },
                 { "empire_north", new (string, float)[] { ("fur", 0.0055f) } },

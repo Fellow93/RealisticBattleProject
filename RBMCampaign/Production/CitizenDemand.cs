@@ -93,9 +93,9 @@ namespace RBMCampaign
         {
             new Line("grain", 0.518f),
             new Line("beer", 0.176f),
-            new Line("meat", 0.0975f),
-            new Line("cheese", 0.053f),
-            new Line("butter", 0.05f),
+            new Line("meat", 0.0775f),
+            new Line("cheese", 0.063f),
+            new Line("butter", 0.06f),
             new Line("fish", 0.0575f),
             new Line("wine", 0.02f),
             new Line("date_fruit", 0.018f),
@@ -127,10 +127,12 @@ namespace RBMCampaign
             new Line("charcoal", 0.6f),
             new Line("salt", 0.24f),
             new Line("whale_oil", 0.05f),
-            new Line("clay", 0.004f),
+            new Line("clay", 0.005f),
             new Line("planks", 0.004f),
             new Line("tools", 0.0027f),
             new Line("hides", 0.003f),
+            new Line("cheese", 0.01f),
+            new Line("butter", 0.01f),
         };
 
         /// <summary>Garments bought per Prosperity per day as a necessity -- replacing what wears out.</summary>
@@ -143,25 +145,28 @@ namespace RBMCampaign
             new Line("wine", 0.01f),
             new Line("oil", 0.01f),
             new Line("olives", 0.01f),
-            new Line("clay", 0.001f),
+            new Line("clay", 0.002f),
             new Line("tools", 0.0007f),
             new Line("meat", 0.001f),
+            new Line("jewelry", 0.001f),
+            new Line("beer", 0.1f),
         };
 
         /// <summary>The second: dressing well, and a little display.</summary>
         private static readonly Line[] MediumLuxuries =
         {
-            new Line("jewelry", 0.0043f),
+            new Line("jewelry", 0.0053f),
             new Line("felt", 0.002f),
             new Line("fur", 0.0015f),
             new Line("walrus_tusk", 0.003f),
             new Line("date_fruit", 0.01f),
             new Line("oil", 0.01f),
             new Line("wine", 0.01f),
-            new Line("pottery", 0.001f),
+            new Line("pottery", 0.002f),
             new Line("planks", 0.002f),
             new Line("tools", 0.0007f),
             new Line("meat", 0.002f),
+            new Line("velvet", 0.0005f),
         };
 
         /// <summary>Garments bought per Prosperity per day on top of the staple replacement, once comfortable.</summary>
@@ -186,7 +191,7 @@ namespace RBMCampaign
             new Line("walrus_tusk", 0.003f),
             new Line("velvet", 0.001f),
             new Line("planks", 0.003f),
-            new Line("pottery", 0.002f),
+            new Line("pottery", 0.004f),
             new Line("fur", 0.0015f),
             new Line("meat", 0.005f),
             new Line("date_fruit", 0.01f),
