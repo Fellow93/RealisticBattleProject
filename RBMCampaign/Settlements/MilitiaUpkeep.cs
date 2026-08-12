@@ -139,6 +139,31 @@ namespace RBMCampaign
         /// <summary>Militia a day per unit of a fortification's prosperity -- vanilla's Prosperity / 1000.</summary>
         public const float MilitiaPerProsperity = 1f / 1000f;
 
+        // ------------------------------------------------------------------ understrength catch-up muster
+        //
+        // A settlement whose watch has been gutted -- stormed, routed, or run down below half of what it
+        // can hold -- musters far faster than the steady trickle would rebuild it: a place under real
+        // threat arms its own in a hurry. Below half the soft cap, a large extra intake is added on top
+        // of the base curve, sized on the same manpower the cap is (a fortification's prosperity, a
+        // village's hearths). It is ordinary positive growth: the soft cap still ceilings it (though at
+        // half-cap it is far under), and the affordability floor still gates it -- a settlement whose pot
+        // cannot arm a new man raises none of these either, so money is still needed to spawn.
+
+        /// <summary>
+        /// The share of the soft cap below which the understrength catch-up muster fires. A watch at or
+        /// above half its cap rebuilds on the base curve alone; one below it musters the extra intake.
+        /// </summary>
+        public const float MilitiaUnderstrengthThreshold = 0.5f;
+
+        /// <summary>Extra daily muster per unit of a city's prosperity while understrength -- Prosperity / 50.</summary>
+        public const float MilitiaCatchUpPerProsperityCity = 1f / 50f;
+
+        /// <summary>Extra daily muster per unit of a castle's prosperity while understrength -- Prosperity / 100.</summary>
+        public const float MilitiaCatchUpPerProsperityCastle = 1f / 100f;
+
+        /// <summary>Extra daily muster per unit of a village's hearth while understrength -- Hearth / 150.</summary>
+        public const float MilitiaCatchUpPerHearthVillage = 1f / 150f;
+
         // Vanilla's own line labels, reused verbatim so RBM's rebuilt breakdown reads exactly as the
         // player is used to. These are TaleWorlds localization keys resolved by the game, not RBM strings.
         private static readonly TextObject BaseText = new TextObject("{=militarybase}Base");
@@ -183,6 +208,7 @@ namespace RBMCampaign
         /// </summary>
         public const float MilitiaVillageGearShare = 0.1f;
 
+        private static readonly TextObject UnderstrengthText = new TextObject("{=RBM_militia_understrength}Mustering the levy");
         private static readonly TextObject UnaffordableText = new TextObject("{=RBM_militia_unpaid}Cannot be paid");
         private static readonly TextObject OverCapText = new TextObject("{=RBM_militia_overcap}Over muster");
         private static readonly TextObject CannotArmText = new TextObject("{=RBM_militia_unarmed}Cannot be armed");
@@ -495,6 +521,9 @@ namespace RBMCampaign
                 }
             }
 
+            // --- Understrength catch-up: a gutted watch (below half its soft cap) musters far faster.
+            AddUnderstrengthMuster(settlement, militia, ref result);
+
             // --- Kept modifiers (vanilla flavour, reproduced from public API).
             AddKeptModifiers(settlement, ref result);
 
@@ -581,6 +610,48 @@ namespace RBMCampaign
 
                 Campaign.Current.Models.IssueModel.GetIssueEffectsOfSettlement(
                     DefaultIssueEffects.SettlementMilitia, settlement, ref result);
+            }
+        }
+
+        /// <summary>
+        /// Adds the understrength catch-up muster: while a settlement's watch sits below
+        /// <see cref="MilitiaUnderstrengthThreshold"/> of its soft cap, a large extra intake is raised on
+        /// top of the base curve, sized on the same manpower the cap is -- a city's or castle's prosperity,
+        /// a village's hearths. Nothing is added at or above the threshold, or where there is no cap to
+        /// measure against. This is ordinary positive growth, so the soft cap still ceilings it and the
+        /// affordability floor (<see cref="CanAffordSpawn"/>) still gates it -- money is still needed to
+        /// arm the men it musters.
+        /// </summary>
+        private static void AddUnderstrengthMuster(Settlement settlement, float militia, ref ExplainedNumber result)
+        {
+            float cap = MilitiaCap(settlement);
+            if (cap <= 0f || militia >= cap * MilitiaUnderstrengthThreshold)
+            {
+                return;
+            }
+
+            float bonus;
+            if (settlement.IsVillage)
+            {
+                float hearth = settlement.Village != null ? settlement.Village.Hearth : 0f;
+                bonus = hearth * MilitiaCatchUpPerHearthVillage;
+            }
+            else if (settlement.IsCastle)
+            {
+                bonus = Prosperity(settlement) * MilitiaCatchUpPerProsperityCastle;
+            }
+            else if (settlement.IsTown)
+            {
+                bonus = Prosperity(settlement) * MilitiaCatchUpPerProsperityCity;
+            }
+            else
+            {
+                return;
+            }
+
+            if (bonus > 0f)
+            {
+                result.Add(bonus, UnderstrengthText);
             }
         }
 
