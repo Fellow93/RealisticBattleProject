@@ -15,14 +15,18 @@ namespace RBMCampaign
     ///   * The player's smithy reads them from code — <see cref="DefaultSmithingModel.GetRefiningFormulas"/>,
     ///     which yields one <see cref="Crafting.RefiningFormula"/> per refine action.
     ///
-    /// This postfix rewrites only the three steel-tier formulas the game yields so the smithy matches the
+    /// This postfix rewrites the iron- and steel-tier formulas the game yields so the smithy matches the
     /// workshop ratios (1:1 iron:charcoal, no Iron1 byproduct — vanilla smithing charged 2 ingots per output
-    /// and spat one back). Every other formula (charcoal, iron ore, iron1, iron2) and every perk gate
-    /// (SteelMaker / SteelMaker2 / SteelMaker3, which decide whether a steel formula is yielded at all) is
-    /// left exactly as vanilla produced it — we key off the formula's Output, so if a steel formula is absent
+    /// on the Iron3/steel tiers and spat one back). The charcoal and iron-ore formulas, and every perk gate
+    /// (SteelMaker / SteelMaker2 / SteelMaker3, which decide whether a steel formula is yielded at all), are
+    /// left exactly as vanilla produced it — we key off the formula's Output, so if a formula is absent
     /// (perk not unlocked) there is nothing to rewrite.
     ///
-    /// Workshop → smithy mapping (ratios, small counts):
+    /// Workshop → smithy mapping (ratios, small counts). The workshop forks Iron2+Iron3 out of Iron1 in one
+    /// combined step; we keep vanilla's stepwise chain instead and just strip the waste so each step is a
+    /// clean 1:1:
+    ///   Iron       (Iron2): 1 Iron1 + 1 Charcoal -> 1 Iron2      (already vanilla; kept explicit)
+    ///   Wrought    (Iron3): 1 Iron2 + 1 Charcoal -> 1 Iron3      (vanilla was 2 Iron2 -> Iron3 + Iron1 byproduct)
     ///   Steel      (Iron4): 1 Iron2 + 1 Charcoal -> 1 Iron4      (workshop: ironIngot2 + charcoal -> ironIngot4)
     ///   Fine steel (Iron5): 1 Iron3 + 1 Charcoal -> 1 Iron5      (workshop: ironIngot3 + charcoal -> ironIngot5)
     ///   Thamaskene (Iron6): 1 Iron1 + 2 Charcoal -> 1 Iron6      (workshop: ironIngot1 + 2*charcoal + silver -> ironIngot6)
@@ -45,6 +49,12 @@ namespace RBMCampaign
             {
                 switch (formula.Output)
                 {
+                    case CraftingMaterials.Iron2: // iron (kept 1:1 to match vanilla explicitly)
+                        yield return new Crafting.RefiningFormula(CraftingMaterials.Iron1, 1, CraftingMaterials.Charcoal, 1, CraftingMaterials.Iron2);
+                        break;
+                    case CraftingMaterials.Iron3: // wrought iron (vanilla 2:1 + Iron1 byproduct stripped)
+                        yield return new Crafting.RefiningFormula(CraftingMaterials.Iron2, 1, CraftingMaterials.Charcoal, 1, CraftingMaterials.Iron3);
+                        break;
                     case CraftingMaterials.Iron4: // steel
                         yield return new Crafting.RefiningFormula(CraftingMaterials.Iron2, 1, CraftingMaterials.Charcoal, 1, CraftingMaterials.Iron4);
                         break;
