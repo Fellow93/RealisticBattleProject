@@ -104,6 +104,9 @@ namespace RBM
                 // Grows the map Escape-menu panel so the added RBM Ledger row does not overflow it; same
                 // cached-before-OnGameStart reason as the injections above.
                 RBMEscapeMenuPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // Lets the smithy refine rows shrink-wrap and centre their material cluster so the added silver
+                // tile on the Thamaskene row does not overflow; same cached-before-OnGameStart reason.
+                RefineRowLayoutPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
             }
 
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate
