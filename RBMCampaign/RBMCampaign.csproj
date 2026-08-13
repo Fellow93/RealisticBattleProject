@@ -379,6 +379,7 @@
     <Compile Include="Spectate\RBMSpectateCampaignBehavior.cs" />
     <Compile Include="SwitchLord\LordSwitcher.cs" />
     <Compile Include="Production\RBMVillageProduction.cs" />
+    <Compile Include="Production\SteelRefining.cs" />
     <Compile Include="Production\VillageProductionIconPatch.cs" />
     <Compile Include="Production\CitizenDemand.cs" />
     <Compile Include="Production\RBMTownFoodSupply.cs" />
