@@ -21,10 +21,20 @@ namespace RBMCampaign
     /// day were refused for lack of gold. The whole map wants 2,400 units a day, which as grain costs
     /// 150,000: the gold was never short, it was buying wool at 800 a unit and warhorses at 10,000.
     ///
-    /// So the sale is reimplemented with an ordering rule and nothing else changed: food first,
-    /// cheapest per unit first, then everything else in vanilla's original order. Cheapest-first
-    /// matters as much as food-first, because a unit of food is a unit of food to the stock but not
-    /// to the purse -- fish runs about 1,140 denars against grain's 60 for the same +1.
+    /// So the sale is reimplemented with two rules and nothing else touched. First, an ordering:
+    /// food first, then everything cheapest-per-unit first, so a purse that empties mid-sale has
+    /// spent on grain before fish and staples before finery rather than on whatever the tail of the
+    /// cargo happened to hold. Cheapest-first matters as much as food-first, because a unit of food is
+    /// a unit of food to the stock but not to the purse -- fish runs about 1,140 denars against
+    /// grain's 60 for the same +1.
+    ///
+    /// Second, a reserve. Food may spend the market down to its last denar (and, when the granary has
+    /// run low, past it out of the treasury); everything else stops once the purse falls to a fraction
+    /// of what a town this size should hold. So a poor town takes cheap staples and leaves costly
+    /// imports on the cart, and a broke one buys nothing but food -- rather than spending its last
+    /// gold on wool it cannot resell and bleeding it into the countryside for good. This is the leg
+    /// that lets a low-traffic market hold what little it earns instead of drifting to zero every
+    /// convoy. See <see cref="NonFoodReserveShare"/>.
     ///
     /// Two vanilla details preserved deliberately:
     /// <list type="bullet">
@@ -43,6 +53,10 @@ namespace RBMCampaign
             public int TownFood;
             public int PartyUnits;
             public int PartyFood;
+            // Reserve accounting, filled by SellCargo: the floor the market kept in hand, and the
+            // non-food units it therefore left on the cart that it could otherwise have paid for.
+            public int ReserveFloor;
+            public int HeldNonFood;
         }
 
         [HarmonyPatch(typeof(SellGoodsForTradeAction), "ApplyByVillagerTrade")]
@@ -68,7 +82,7 @@ namespace RBMCampaign
                     };
                 }
 
-                SellCargo(settlement, villagerParty);
+                SellCargo(settlement, villagerParty, __state);
                 return false;
             }
 
@@ -93,6 +107,13 @@ namespace RBMCampaign
                 {
                     verdict = (goldAfter <= 0) ? "  ·  BROKE, " + foodAfter + " food unsold"
                                                : "  ·  " + foodAfter + " food unsold";
+                }
+
+                // Why a solvent market still bought little: the reserve held its purse above the floor
+                // and left non-food on the cart. Only shown when it actually bit, so a full sale stays clean.
+                if (__state.HeldNonFood > 0)
+                {
+                    verdict += "  ·  reserve " + __state.ReserveFloor + "d held " + __state.HeldNonFood + " non-food";
                 }
 
                 EconomyLog.Log("DELIVER", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
@@ -120,10 +141,22 @@ namespace RBMCampaign
             public int RosterOrder;
         }
 
-        private static void SellCargo(Settlement settlement, MobileParty villagerParty)
+        private static void SellCargo(Settlement settlement, MobileParty villagerParty, Snapshot state)
         {
             Town town = settlement.Town;
             ItemRoster roster = villagerParty.ItemRoster;
+
+            // The cash the market will not spend on anything but food. Sized off the same
+            // prosperity-implied worth the LIQUID line measures drift against -- the best yardstick
+            // there is for what a town this size should hold -- so it scales with the town and moves
+            // with it. See NonFoodReserveShare.
+            float countryside = RBMProsperityEquilibrium.TreasuryProsperity(town) * 12f;
+            float target = 10000f + countryside + TroopMarketFeedback.TreasuryBonus(town, countryside);
+            int reserveFloor = MathF.Max(0, MathF.Round(NonFoodReserveShare * target));
+            if (state != null)
+            {
+                state.ReserveFloor = reserveFloor;
+            }
 
             // Vanilla reserves the cheapest pack animal in the cargo, half a head per party member.
             ItemObject reservedPackAnimal = null;
@@ -169,15 +202,16 @@ namespace RBMCampaign
                 });
             }
 
-            // Food first, then cheapest per unit within it. Non-food keeps vanilla's reverse-roster
-            // order, so nothing about the rest of the trade changes.
+            // Food first; then cheapest per unit first, food and non-food alike. When the purse runs
+            // out mid-sale it has spent on the cheapest cargo -- grain before fish, staples before
+            // finery -- so the costly goods are the ones left unbought. Roster order only breaks ties.
             lots.Sort(delegate (Lot a, Lot b)
             {
                 if (a.IsFood != b.IsFood)
                 {
                     return a.IsFood ? -1 : 1;
                 }
-                if (a.IsFood && a.Price != b.Price)
+                if (a.Price != b.Price)
                 {
                     return a.Price.CompareTo(b.Price);
                 }
@@ -196,8 +230,26 @@ namespace RBMCampaign
                     continue;
                 }
 
-                int affordable = MathF.Min(wanted, town.Gold / lot.Price);
-                if (affordable <= 0)
+                // Food spends the market down to its last denar; everything else must leave the reserve
+                // untouched. A town at or under the reserve buys no imports at all -- which is what puts
+                // a broke market on food alone and lets it hold the little it has rather than bleed its
+                // last gold into the countryside for goods it cannot resell.
+                int spendable = lot.IsFood ? town.Gold : MathF.Max(0, town.Gold - reserveFloor);
+                int affordable = MathF.Min(wanted, spendable / lot.Price);
+
+                // Diagnostic: non-food this lot would have bought had the reserve not stood in the way.
+                // Room is already out of the picture -- a store-full lot never reaches here (wanted <= 0)
+                // -- so what is left is purely the reserve's doing, and its sum explains a small sale.
+                if (state != null && !lot.IsFood && lot.Price > 0)
+                {
+                    int withoutReserve = MathF.Min(wanted, town.Gold / lot.Price);
+                    if (withoutReserve > affordable)
+                    {
+                        state.HeldNonFood += withoutReserve - affordable;
+                    }
+                }
+
+                if (affordable <= 0 && lot.IsFood)
                 {
                     // The market cannot pay. In the ordinary case that is the end of it -- the fief does
                     // not buy the townspeople their groceries, and the cargo goes home on the cart. It
@@ -252,6 +304,28 @@ namespace RBMCampaign
         /// <c>RBMMarketPrices.MaxFactor</c>).
         /// </summary>
         private const float DearthStockShare = 0.25f;
+
+        /// <summary>
+        /// Fraction of a town's prosperity-implied worth that its market keeps in hand rather than spend
+        /// on anything but food. Below this line a convoy sells the town only food; above it the town
+        /// spends the surplus over the line on its cheapest cargo first, so a little slack buys staples
+        /// and a lot buys finery too.
+        ///
+        /// The worth is the figure the LIQUID drift line measures against -- <c>10000 + countryside +
+        /// treasury bonus</c> -- so the reserve is a tenth of what vanilla would have pinned the town to,
+        /// and scales with the town rather than being a flat denar count that would be a fortune to a
+        /// hamlet and pocket change to a capital.
+        ///
+        /// A tenth is deliberately a floor and not a target. It is not enough to starve a healthy town's
+        /// workshops of imported inputs -- a town holding several times its reserve buys the whole cargo
+        /// as before -- but it is enough that a market which has stopped being paid stops handing its
+        /// last gold to the countryside for wool and pottery it has no one to resell to. That trade was
+        /// the largest single drain on the poorest towns and the reason a low-traffic fief sat at zero
+        /// however much its villages delivered; the reserve is what lets such a town accumulate back
+        /// toward this line instead of bleeding to nothing every convoy. Raising it lifts where broke
+        /// towns settle and makes them fussier buyers; lowering it lets them spend closer to empty.
+        /// </summary>
+        private const float NonFoodReserveShare = 0.1f;
 
         /// <summary>
         /// The fief buying grain from public funds because its granary has run low and its market has
