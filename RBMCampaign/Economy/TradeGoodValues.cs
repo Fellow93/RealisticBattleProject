@@ -40,7 +40,7 @@ namespace RBMCampaign
             {
                 // --- Goods declared in SandBoxCore/ModuleData/items/horses_and_others.xml ---
                 { "wool",        (160,    2f) },
-                { "silver",      (85,     0.85f) },
+                { "silver",      (43,     0.85f) },
                 { "jewelry",     (420,    0.025f) },
                 { "salt",        (30,     1f) },
                 { "spice",       (13,     1f) },

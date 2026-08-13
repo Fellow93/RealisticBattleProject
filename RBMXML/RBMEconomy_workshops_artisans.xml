@@ -818,7 +818,7 @@
 		</Production>
 		
 		<Production
-			conversion_speed="1">
+			conversion_speed="2">
 			<Inputs>
 				<Input
 					input_item="ironIngot1"
@@ -867,6 +867,22 @@
 				<Output
 					output="ItemCategory.ironIngot4"
 					output_count="7" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="2">
+			<Inputs>
+				<Input
+					input_item="ironIngot1"
+					input_count="5" />
+				<Input
+					input_item="charcoal" 
+					input_count="10" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ironIngot4"
+					output_count="5" />
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -1948,7 +1964,7 @@
 			</Outputs>
 		</Production>			
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot1"
@@ -1967,7 +1983,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot1"
@@ -1986,7 +2002,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot1"
@@ -2006,7 +2022,7 @@
 		</Production>
 	<!--< Steel >-->
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot2"
@@ -2022,7 +2038,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot2"
@@ -2039,7 +2055,7 @@
 		</Production>
 
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot3"
@@ -2055,7 +2071,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot3"
@@ -2072,7 +2088,7 @@
 		</Production>
 	<!--< Fine steel >-->
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot3"
@@ -2088,7 +2104,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot3"
@@ -2104,7 +2120,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="1">
+			conversion_speed="1.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot3"
@@ -2121,7 +2137,7 @@
 		</Production>
 	<!--< Thamaskene steel >-->
 		<Production
-			conversion_speed="0.3">
+			conversion_speed="0.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot1"
@@ -2140,7 +2156,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="0.3">
+			conversion_speed="0.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot1"
@@ -2159,7 +2175,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="0.6">
+			conversion_speed="1">
 			<Inputs>
 				<Input
 					input_item="ironIngot3"
@@ -2178,7 +2194,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="0.6">
+			conversion_speed="1">
 			<Inputs>
 				<Input
 					input_item="ironIngot3"
@@ -2436,7 +2452,7 @@
 		
 		
 		<Production
-			conversion_speed="0.3">
+			conversion_speed="0.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot2"
@@ -2453,7 +2469,7 @@
 		</Production>
 		
 		<Production
-			conversion_speed="0.36">
+			conversion_speed="0.6">
 			<Inputs>
 				<Input
 					input_item="ironIngot3"
@@ -2470,7 +2486,7 @@
 		</Production>
 		
 		<Production
-			conversion_speed="0.75">
+			conversion_speed="1.1">
 			<Inputs>
 				<Input
 					input_item="ironIngot3"
@@ -2490,7 +2506,7 @@
 		</Production>
 		
 		<Production
-			conversion_speed="0.6">
+			conversion_speed="0.9">
 			<Inputs>
 				<Input
 					input_item="ironIngot2"
@@ -2510,7 +2526,7 @@
 		</Production>
 	<!--< mail and plate tier 5-6 >-->			
 		<Production
-			conversion_speed="0.2">
+			conversion_speed="0.3">
 			<Inputs>
 				<Input
 					input_item="ironIngot4"
@@ -2529,7 +2545,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="0.2">
+			conversion_speed="0.3">
 			<Inputs>
 				<Input
 					input_item="ironIngot4"
@@ -2549,7 +2565,7 @@
 		</Production>
 		
 		<Production
-			conversion_speed="0.24">
+			conversion_speed="0.4">
 			<Inputs>
 				<Input
 					input_item="ironIngot5"
@@ -2568,7 +2584,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="0.24">
+			conversion_speed="0.4">
 			<Inputs>
 				<Input
 					input_item="ironIngot5"
@@ -2588,7 +2604,7 @@
 		</Production>
 		
 		<Production
-			conversion_speed="0.27">
+			conversion_speed="0.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot5"
@@ -2610,7 +2626,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="0.27">
+			conversion_speed="0.5">
 			<Inputs>
 				<Input
 					input_item="ironIngot5"
@@ -2634,7 +2650,7 @@
 
 	<!--< Mail and Scale frontal horse armour (T4?) >-->			
 		<Production
-			conversion_speed="0.15">
+			conversion_speed="0.2">
 			<Inputs>
 				<Input
 					input_item="planks" 
@@ -2661,7 +2677,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="0.15">
+			conversion_speed="0.2">
 			<Inputs>
 				<Input
 					input_item="planks" 
@@ -2689,7 +2705,7 @@
 		</Production>
 	<!--< Full Mail and Scale horse armour (T5-6?) >-->			
 		<Production
-			conversion_speed="0.075">
+			conversion_speed="0.1">
 			<Inputs>
 				<Input
 					input_item="planks" 
@@ -2716,7 +2732,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="0.075">
+			conversion_speed="0.1">
 			<Inputs>
 				<Input
 					input_item="planks" 
@@ -2743,7 +2759,7 @@
 			</Outputs>
 		</Production>
 		<Production
-			conversion_speed="0.075">
+			conversion_speed="0.1">
 			<Inputs>
 				<Input
 					input_item="planks" 
