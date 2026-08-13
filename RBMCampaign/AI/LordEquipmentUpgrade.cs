@@ -32,8 +32,10 @@ namespace RBMCampaign
     /// worn gear answers does he reach for the market. This runs before the loot-sale behavior fires, so he
     /// grabs the good loot before it is sold off.
     ///
-    /// "Better" is <see cref="EquipmentElement.ItemValue"/> -- the same slot-by-slot metric the spoils upgrade
-    /// economy already ranks kit by (<c>SpoilsPool.GetUpgradedSlots</c>). "Can use" is vanilla's own
+    /// "Better" is the item's continuous TIER (<see cref="ItemObject.Tierf"/>: 2.1, 3.3, ... -- not the rounded
+    /// <see cref="ItemObject.Tier"/> enum, which would tie most same-bucket swaps), driven by RBM's own tier
+    /// model (<c>ItemValuesTiers</c>). Gold value is deliberately NOT the yardstick, so a lord chases combat
+    /// quality rather than a dear-but-weak trinket. "Can use" is vanilla's own
     /// <see cref="CharacterHelper.CanUseItem"/> (item difficulty vs the hero's relevant skill, plus gender and
     /// rideability), so a lord never buys a bow he can't draw or a warhorse he can't ride.
     ///
@@ -181,18 +183,21 @@ namespace RBMCampaign
             // A weapon slot is refreshed only with the SAME item type it already holds (sword->sword,
             // bow->bow, arrows->arrows); the slot-fit check alone would let any weapon class in.
             ItemObject.ItemTypeEnum requiredWeaponType = slotFilled ? current.Item.ItemType : ItemObject.ItemTypeEnum.Invalid;
-            int currentValue = slotFilled ? current.ItemValue : 0;
+            // Rank by continuous item TIER (Tierf: 2.1, 3.3, ...), not gold value -- so a lord chases combat
+            // quality, never a dear-but-weak trinket, and RBM's own tier model (ItemValuesTiers) drives it.
+            float currentTier = slotFilled ? current.Item.Tierf : 0f;
 
             // 1. The best strictly-better usable piece the lord already carries in his baggage -- free to wear.
             ItemRoster bag = party.Party.ItemRoster;
-            int ownedValue;
-            int ownedIndex = FindBestUsable(bag, slot, isWeapon, requiredWeaponType, lord, currentValue, out ownedValue);
+            float ownedTier;
+            int ownedIndex = FindBestUsable(bag, slot, isWeapon, requiredWeaponType, lord, currentTier, out ownedTier);
 
             // 2. The best affordable market piece -- but it must beat BOTH what he wears AND what he already
             //    owns, or there is no reason to spend gold when the baggage already answers.
-            int marketFloor = ownedIndex >= 0 ? ownedValue : currentValue;
-            int marketValue, marketPrice;
-            int marketIndex = FindBestAffordable(stock, slot, isWeapon, requiredWeaponType, lord, party, town, marketFloor, budget, out marketValue, out marketPrice);
+            float marketFloor = ownedIndex >= 0 ? ownedTier : currentTier;
+            float marketTier;
+            int marketPrice;
+            int marketIndex = FindBestAffordable(stock, slot, isWeapon, requiredWeaponType, lord, party, town, marketFloor, budget, out marketTier, out marketPrice);
 
             if (marketIndex >= 0)
             {
@@ -202,7 +207,7 @@ namespace RBMCampaign
                 SellItemsAction.Apply(town.Owner, party.Party, chosen, 1, town.Owner.Settlement);
                 bag.AddToCounts(chosen.EquipmentElement, -1);
                 EquipDisplacing(lord, bag, slot, current, slotFilled, chosen.EquipmentElement);
-                LogSlot(party, slot, slotFilled, current, currentValue, chosen.EquipmentElement, marketValue, marketPrice);
+                LogSlot(party, slot, slotFilled, current, currentTier, chosen.EquipmentElement, marketTier, marketPrice);
                 return marketPrice;
             }
 
@@ -211,7 +216,7 @@ namespace RBMCampaign
                 ItemRosterElement chosen = bag.GetElementCopyAtIndex(ownedIndex);
                 bag.AddToCounts(chosen.EquipmentElement, -1); // take the better piece out of the baggage
                 EquipDisplacing(lord, bag, slot, current, slotFilled, chosen.EquipmentElement);
-                LogSlot(party, slot, slotFilled, current, currentValue, chosen.EquipmentElement, ownedValue, 0);
+                LogSlot(party, slot, slotFilled, current, currentTier, chosen.EquipmentElement, ownedTier, 0);
                 return 0;
             }
 
@@ -219,13 +224,13 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Best strictly-better usable item for the slot in a roster, ignoring price -- used to scan the lord's
-        /// own baggage, where wearing what he already carries costs nothing. Returns the roster index, and the
-        /// item's value via <paramref name="bestValue"/>; -1 (and <paramref name="valueFloor"/>) when none beats it.
+        /// Best strictly-higher-tier usable item for the slot in a roster, ignoring price -- used to scan the
+        /// lord's own baggage, where wearing what he already carries costs nothing. Returns the roster index,
+        /// and the item's tier via <paramref name="bestTier"/>; -1 (and <paramref name="tierFloor"/>) when none beats it.
         /// </summary>
-        private static int FindBestUsable(ItemRoster roster, EquipmentIndex slot, bool isWeapon, ItemObject.ItemTypeEnum requiredWeaponType, Hero lord, int valueFloor, out int bestValue)
+        private static int FindBestUsable(ItemRoster roster, EquipmentIndex slot, bool isWeapon, ItemObject.ItemTypeEnum requiredWeaponType, Hero lord, float tierFloor, out float bestTier)
         {
-            bestValue = valueFloor;
+            bestTier = tierFloor;
             int bestIndex = -1;
             for (int j = 0; j < roster.Count; j++)
             {
@@ -239,29 +244,29 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                int value = element.EquipmentElement.ItemValue;
-                if (value <= bestValue)
+                float tier = item.Tierf;
+                if (tier <= bestTier)
                 {
-                    continue; // not strictly better than the current piece (or a rival candidate)
+                    continue; // not strictly higher tier than the current piece (or a rival candidate)
                 }
                 if (!CharacterHelper.CanUseItem(lord.CharacterObject, element.EquipmentElement))
                 {
                     continue; // skill / gender / rideability gate
                 }
-                bestValue = value;
+                bestTier = tier;
                 bestIndex = j;
             }
             return bestIndex;
         }
 
         /// <summary>
-        /// Best strictly-better usable item for the slot the lord can also afford at this town, above the given
-        /// value floor and within <paramref name="budget"/>. Returns the market index, plus the item's value
+        /// Best strictly-higher-tier usable item for the slot the lord can also afford at this town, above the
+        /// given tier floor and within <paramref name="budget"/>. Returns the market index, plus the item's tier
         /// and price; -1 when nothing qualifies (including a zero budget).
         /// </summary>
-        private static int FindBestAffordable(ItemRoster stock, EquipmentIndex slot, bool isWeapon, ItemObject.ItemTypeEnum requiredWeaponType, Hero lord, MobileParty party, Town town, int valueFloor, int budget, out int bestValue, out int bestPrice)
+        private static int FindBestAffordable(ItemRoster stock, EquipmentIndex slot, bool isWeapon, ItemObject.ItemTypeEnum requiredWeaponType, Hero lord, MobileParty party, Town town, float tierFloor, int budget, out float bestTier, out int bestPrice)
         {
-            bestValue = valueFloor;
+            bestTier = tierFloor;
             bestPrice = 0;
             int bestIndex = -1;
             if (budget <= 0)
@@ -280,8 +285,8 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                int value = element.EquipmentElement.ItemValue;
-                if (value <= bestValue)
+                float tier = item.Tierf;
+                if (tier <= bestTier)
                 {
                     continue;
                 }
@@ -294,7 +299,7 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                bestValue = value;
+                bestTier = tier;
                 bestPrice = price;
                 bestIndex = j;
             }
@@ -335,7 +340,7 @@ namespace RBMCampaign
             lord.BattleEquipment[slot] = incoming;
         }
 
-        private static void LogSlot(MobileParty party, EquipmentIndex slot, bool slotFilled, EquipmentElement current, int currentValue, EquipmentElement chosen, int newValue, int price)
+        private static void LogSlot(MobileParty party, EquipmentIndex slot, bool slotFilled, EquipmentElement current, float currentTier, EquipmentElement chosen, float newTier, int price)
         {
             if (!SpoilsLog.IsEnabled)
             {
@@ -343,8 +348,8 @@ namespace RBMCampaign
             }
             SpoilsLog.LogVerbose("HEROKIT", party.Party,
                 PartyLabel(party) + " " + slot + ": "
-                + (slotFilled ? current.Item.Name.ToString() + " (" + currentValue + ")" : "(empty)")
-                + " -> " + chosen.Item.Name + " (" + newValue + ") "
+                + (slotFilled ? current.Item.Name.ToString() + " (t" + currentTier.ToString("0.0") + ")" : "(empty)")
+                + " -> " + chosen.Item.Name + " (t" + newTier.ToString("0.0") + ") "
                 + (price > 0 ? "bought for " + price + "d" : "from baggage"));
         }
 
