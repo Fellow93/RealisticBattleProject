@@ -18,12 +18,12 @@ namespace RBMCampaign
     /// standing in. This walks a managed lord's slots on settlement entry and, wherever the town stocks a
     /// strictly better item he can actually use, buys it and puts it on.
     ///
-    /// EVERY item -- armour, weapons, mount and barding -- must be of the lord's OWN culture (or culture-neutral):
-    /// a lord never uses, nor buys, gear outside his culture. Beyond that:
-    ///   * ARMOUR (head/body/legs/gloves/cape): upgraded on value; empty armour slots may be filled.
-    ///   * WEAPONS upgrade in place only: a filled weapon slot is replaced solely by a better item of the SAME
-    ///     item type (a sword for a sword, a bow for a bow, arrows for arrows). Empty weapon slots are left alone
-    ///     so a coherent loadout (bow+arrows+sidearm+shield) is never broken.
+    /// EVERY item touched must be of the lord's OWN culture (or culture-neutral): a lord never uses, nor buys,
+    /// gear outside his culture. Beyond that:
+    ///   * ARMOUR (head/body/legs/gloves/cape): upgraded on tier; empty armour slots may be filled.
+    ///   * WEAPONS upgrade in place only, by EXACT weapon class: a two-handed sword is replaced solely by a
+    ///     higher-tier two-handed sword (never a two-handed axe), a bow by a bow, arrows by arrows. Empty weapon
+    ///     slots are never armed, so a coherent loadout (weapon + ammo + shield) is never reshaped.
     ///   * HORSE + HARNESS: a mounted lord trades up to a better warhorse and barding. A lord with no horse is
     ///     left on foot (his troop role is not changed); harness is only bought for a horsed lord.
     ///
@@ -65,7 +65,7 @@ namespace RBMCampaign
         private const bool AllowNeutralCulture = true;
 
         // The slots we try to improve, in priority order: survivability first (body, head, mount), then the
-        // rest of the armour, the barding, and finally weapons. Budget is spent top-down, so the pieces that
+        // rest of the armour and the barding, and finally weapons. Budget is spent top-down, so the pieces that
         // keep a lord alive are bought before his sidearm.
         private static readonly EquipmentIndex[] SlotOrder =
         {
@@ -170,7 +170,7 @@ namespace RBMCampaign
             bool isHarness = slot == EquipmentIndex.HorseHarness;
 
             // Weapons and the ridden warhorse are upgraded in place only -- we never arm an empty weapon slot
-            // (loadout coherence) or mount a lord who fights on foot (troop role).
+            // (loadout coherence) or mount a lord who fights on foot (his troop role is not changed).
             if ((isWeapon || isMount) && !slotFilled)
             {
                 return -1;
@@ -180,24 +180,37 @@ namespace RBMCampaign
             {
                 return -1;
             }
-            // A weapon slot is refreshed only with the SAME item type it already holds (sword->sword,
-            // bow->bow, arrows->arrows); the slot-fit check alone would let any weapon class in.
-            ItemObject.ItemTypeEnum requiredWeaponType = slotFilled ? current.Item.ItemType : ItemObject.ItemTypeEnum.Invalid;
+            // A weapon slot is refreshed only by the EXACT weapon class it already holds (two-handed sword ->
+            // two-handed sword, bow -> bow, arrows -> arrows), so a loadout's shape never shifts. A weapon with
+            // no primary usage we can't classify, so leave it be.
+            WeaponClass? requiredWeaponClass = null;
+            if (isWeapon)
+            {
+                WeaponComponentData primary = current.Item.PrimaryWeapon;
+                if (primary == null)
+                {
+                    return -1;
+                }
+                requiredWeaponClass = primary.WeaponClass;
+            }
             // Rank by continuous item TIER (Tierf: 2.1, 3.3, ...), not gold value -- so a lord chases combat
             // quality, never a dear-but-weak trinket, and RBM's own tier model (ItemValuesTiers) drives it.
+            // NOTE the currently-worn piece is NEVER culture-checked -- only its tier matters here. The culture
+            // gate applies solely to candidates, so a higher-tier FOREIGN piece the lord already wears is kept:
+            // it is displaced only by a same-culture item of strictly higher tier (ties keep the incumbent).
             float currentTier = slotFilled ? current.Item.Tierf : 0f;
 
             // 1. The best strictly-better usable piece the lord already carries in his baggage -- free to wear.
             ItemRoster bag = party.Party.ItemRoster;
             float ownedTier;
-            int ownedIndex = FindBestUsable(bag, slot, isWeapon, requiredWeaponType, lord, currentTier, out ownedTier);
+            int ownedIndex = FindBestUsable(bag, slot, requiredWeaponClass, lord, currentTier, out ownedTier);
 
             // 2. The best affordable market piece -- but it must beat BOTH what he wears AND what he already
             //    owns, or there is no reason to spend gold when the baggage already answers.
             float marketFloor = ownedIndex >= 0 ? ownedTier : currentTier;
             float marketTier;
             int marketPrice;
-            int marketIndex = FindBestAffordable(stock, slot, isWeapon, requiredWeaponType, lord, party, town, marketFloor, budget, out marketTier, out marketPrice);
+            int marketIndex = FindBestAffordable(stock, slot, requiredWeaponClass, lord, party, town, marketFloor, budget, out marketTier, out marketPrice);
 
             if (marketIndex >= 0)
             {
@@ -228,14 +241,14 @@ namespace RBMCampaign
         /// lord's own baggage, where wearing what he already carries costs nothing. Returns the roster index,
         /// and the item's tier via <paramref name="bestTier"/>; -1 (and <paramref name="tierFloor"/>) when none beats it.
         /// </summary>
-        private static int FindBestUsable(ItemRoster roster, EquipmentIndex slot, bool isWeapon, ItemObject.ItemTypeEnum requiredWeaponType, Hero lord, float tierFloor, out float bestTier)
+        private static int FindBestUsable(ItemRoster roster, EquipmentIndex slot, WeaponClass? requiredWeaponClass, Hero lord, float tierFloor, out float bestTier)
         {
             bestTier = tierFloor;
             int bestIndex = -1;
             for (int j = 0; j < roster.Count; j++)
             {
                 ItemObject item = roster.GetItemAtIndex(j);
-                if (!ItemFitsRules(item, slot, isWeapon, requiredWeaponType, lord))
+                if (!ItemFitsRules(item, slot, requiredWeaponClass, lord))
                 {
                     continue;
                 }
@@ -264,7 +277,7 @@ namespace RBMCampaign
         /// given tier floor and within <paramref name="budget"/>. Returns the market index, plus the item's tier
         /// and price; -1 when nothing qualifies (including a zero budget).
         /// </summary>
-        private static int FindBestAffordable(ItemRoster stock, EquipmentIndex slot, bool isWeapon, ItemObject.ItemTypeEnum requiredWeaponType, Hero lord, MobileParty party, Town town, float tierFloor, int budget, out float bestTier, out int bestPrice)
+        private static int FindBestAffordable(ItemRoster stock, EquipmentIndex slot, WeaponClass? requiredWeaponClass, Hero lord, MobileParty party, Town town, float tierFloor, int budget, out float bestTier, out int bestPrice)
         {
             bestTier = tierFloor;
             bestPrice = 0;
@@ -276,7 +289,7 @@ namespace RBMCampaign
             for (int j = 0; j < stock.Count; j++)
             {
                 ItemObject item = stock.GetItemAtIndex(j);
-                if (!ItemFitsRules(item, slot, isWeapon, requiredWeaponType, lord))
+                if (!ItemFitsRules(item, slot, requiredWeaponClass, lord))
                 {
                     continue;
                 }
@@ -306,10 +319,10 @@ namespace RBMCampaign
             return bestIndex;
         }
 
-        /// <summary>The shared per-item filter: fits the slot, is of the lord's culture (or neutral) for EVERY
-        /// slot, and -- for weapons -- matches the type already worn. Usability and value are checked by the
+        /// <summary>The shared per-item filter: fits the slot, is of the lord's culture (or neutral), and -- for
+        /// weapon slots -- is the EXACT same weapon class already worn. Usability and tier are checked by the
         /// callers against each candidate.</summary>
-        private static bool ItemFitsRules(ItemObject item, EquipmentIndex slot, bool isWeapon, ItemObject.ItemTypeEnum requiredWeaponType, Hero lord)
+        private static bool ItemFitsRules(ItemObject item, EquipmentIndex slot, WeaponClass? requiredWeaponClass, Hero lord)
         {
             if (item == null || !Equipment.IsItemFitsToSlot(slot, item))
             {
@@ -319,9 +332,13 @@ namespace RBMCampaign
             {
                 return false; // no foreign gear in any slot
             }
-            if (isWeapon && item.ItemType != requiredWeaponType)
+            if (requiredWeaponClass.HasValue)
             {
-                return false;
+                WeaponComponentData primary = item.PrimaryWeapon;
+                if (primary == null || primary.WeaponClass != requiredWeaponClass.Value)
+                {
+                    return false; // a weapon slot takes only the exact same weapon class
+                }
             }
             return true;
         }
