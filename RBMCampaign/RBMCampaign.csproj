@@ -417,6 +417,7 @@
     <Compile Include="Settlements\SettlementGoldFunnel.cs" />
     <Compile Include="Settlements\ShipTradeFunnel.cs" />
     <Compile Include="Settlements\SettlementWealth.cs" />
+    <Compile Include="Settlements\WorkshopCapital.cs" />
     <Compile Include="Settlements\WorkshopDiagnostics.cs" />
     <Compile Include="Settlements\WorkshopPurse.cs" />
     <Compile Include="Settlements\SettlementWealthTooltip.cs" />
