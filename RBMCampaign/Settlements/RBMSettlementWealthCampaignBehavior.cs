@@ -45,6 +45,10 @@ namespace RBMCampaign
             // A castle earns first, then pays: income is minted before the day's upkeep and wealth tax
             // so those act on the post-income balance.
             CastleEconomy.OnDailyTick(settlement);
+            // A town's mint strikes coin from its silver stock, alongside the castle's income as a town's
+            // own income step and before the day's upkeep and wealth tax, so the struck coin is part of
+            // the market balance those act on.
+            Minting.OnDailyTick(settlement);
             AdministrativeUpkeep.OnDailyTick(settlement);
             // The garrison's maintenance leg -- its wage is billed through the finance model (see
             // GarrisonUpkeep.GarrisonWageSharePatch); this is the kit-value half, charged here so it lands

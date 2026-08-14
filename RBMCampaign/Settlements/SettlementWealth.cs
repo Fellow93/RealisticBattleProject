@@ -346,6 +346,14 @@ namespace RBMCampaign
             public const string CastleIncome = "castle-income";
 
             /// <summary>
+            /// A town's mint striking coin from the silver ore standing in its market. The ore is
+            /// consumed off the shelves and its value struck into fresh coin, most of it landing in the
+            /// citizens' purse; the owner, the ruler and the fief's own strongbox each take a cut. See
+            /// <see cref="Minting"/>.
+            /// </summary>
+            public const string Minting = "minting";
+
+            /// <summary>
             /// A village spending its accumulated purse on finished goods at its market town, once the
             /// purse has grown past a headman's reserve. The village's savings leaving for the town
             /// market instead of hoarding forever; the goods bought leave the town's shelves, consumed
