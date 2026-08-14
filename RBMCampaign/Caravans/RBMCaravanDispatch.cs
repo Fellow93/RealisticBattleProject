@@ -49,9 +49,19 @@ namespace RBMCampaign
         // A destination whose market holds less than this cannot be trusted to pay for a caravan's load.
         private const int MinBuyerWealth = 1000;
 
-        // Days of food a fresh caravan is stocked with, so its guards do not go hungry and desert on the
-        // road. Consumed as the party travels; whatever is left dies with the caravan.
+        // Minimum days of food a caravan is stocked with, so even a short hop keeps a cushion; the actual
+        // amount is sized to the leg's estimated travel time (see StockFood). Consumed as the party travels;
+        // whatever is left dies with the caravan.
         private const int FoodDays = 5;
+
+        // A ceiling on provisioning so a route the land estimate reads as near-unreachable cannot pile on an
+        // absurd, caravan-slowing mountain of food. Real routes are well under this.
+        private const int MaxFoodDays = 60;
+
+        // The estimated road time is multiplied by this before provisioning, so a slow, heavily-laden, or
+        // waylaid caravan still never runs dry before it arrives. Food is cheap and dies with the caravan, so
+        // erring high costs nothing but a little carried weight.
+        private const float FoodDaysSafetyFactor = 1.5f;
 
         // A caravan bundles every good that shares its source→destination route, up to these limits, so
         // one trip can carry several goods rather than a single one.
@@ -419,11 +429,13 @@ namespace RBMCampaign
                 }
             }
 
-            // Feed the guards for the outbound leg so they do not starve on the road.
-            StockFood(caravan, goods);
-
+            // Point it at the destination first (which also grants any ship a sea route needs), so the food
+            // estimate below sees the real leg and navigation the caravan will actually travel.
             RBMCaravanRegister.SetState(caravan.StringId, RBMCaravanRegister.StateEnRoute);
             RouteBetween(caravan, src.Settlement, dst.Settlement, culture);
+
+            // Feed the guards for the whole outbound leg so they do not starve or slow on the road.
+            StockFood(caravan, dst.Settlement, goods);
 
             CaravanLog.Log("DISPATCH", CaravanLog.Name(src.Settlement),
                 "→ " + CaravanLog.Name(dst.Settlement)
@@ -632,13 +644,16 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Adds <see cref="FoodDays"/> of provisions to a caravan so its guards stay fed and do not desert.
-        /// The food is a cheap staple that is never the good being traded (so the sale and the homecoming,
-        /// which act only on the traded good, leave it alone); the party eats it as it travels and whatever
-        /// is left dies with the caravan. Called at dispatch for the outbound leg and again at the
-        /// destination for the return leg.
+        /// Provisions a caravan with enough food to last the whole leg to <paramref name="target"/> so its
+        /// guards stay fed and do not starve or slow on the road. The amount is sized to the leg's estimated
+        /// travel time (with a safety margin, floored at <see cref="FoodDays"/> and capped at
+        /// <see cref="MaxFoodDays"/>), not a flat few days -- a long haul is stocked for the long haul. The
+        /// food is a cheap staple that is never the good being traded (so the sale and the homecoming, which
+        /// act only on the traded good, leave it alone); the party eats it as it travels and whatever is left
+        /// dies with the caravan. Called at dispatch for the outbound leg, at the destination for the return
+        /// leg, and on a re-route for the new leg.
         /// </summary>
-        internal static void StockFood(MobileParty caravan, List<RBMCaravanRegister.GoodLot> goods)
+        internal static void StockFood(MobileParty caravan, Settlement target, List<RBMCaravanRegister.GoodLot> goods)
         {
             if (caravan == null)
             {
@@ -650,15 +665,43 @@ namespace RBMCampaign
                 return;
             }
 
-            // A safe over-estimate of daily consumption (roughly a food per eight mouths a day), so five
-            // days' worth is always plenty for a caravan-sized party.
+            // A safe over-estimate of daily consumption (roughly a food per eight mouths a day), times the
+            // days the leg is expected to take, so the caravan carries enough to reach the far end.
             int men = caravan.MemberRoster.TotalManCount;
             int perDay = Math.Max(1, men / 8);
-            int units = perDay * FoodDays;
+            int units = perDay * EstimateTravelDays(caravan, target);
             if (units > 0)
             {
                 caravan.ItemRoster.AddToCounts(new EquipmentElement(food), units);
             }
+        }
+
+        /// <summary>
+        /// How many days of food to stock for the leg from the caravan's current position to
+        /// <paramref name="target"/>: the estimated travel time (distance at the caravan's own navigation
+        /// over the average caravan speed) scaled by <see cref="FoodDaysSafetyFactor"/>, floored at
+        /// <see cref="FoodDays"/> and capped at <see cref="MaxFoodDays"/>. Falls back to the floor if the
+        /// distance or speed cannot be read.
+        /// </summary>
+        private static int EstimateTravelDays(MobileParty caravan, Settlement target)
+        {
+            if (caravan == null || target == null || Campaign.Current == null)
+            {
+                return FoodDays;
+            }
+            MobileParty.NavigationType nav = caravan.HasNavalNavigationCapability
+                ? MobileParty.NavigationType.All
+                : MobileParty.NavigationType.Default;
+            bool isPort = caravan.HasNavalNavigationCapability && target.HasPort;
+            float d = Campaign.Current.Models.MapDistanceModel.GetDistance(caravan, target, isPort, nav, out float _);
+            float speed = Campaign.Current.EstimatedAverageCaravanPartySpeed;
+            if (speed <= 0f || d <= 0f || float.IsNaN(d) || float.IsInfinity(d))
+            {
+                return FoodDays;
+            }
+            float travelDays = d / (speed * (float)CampaignTime.HoursInDay);
+            int provisioned = (int)Math.Ceiling(travelDays * FoodDaysSafetyFactor);
+            return Math.Max(FoodDays, Math.Min(provisioned, MaxFoodDays));
         }
 
         /// <summary>The cheapest staple food to provision a caravan with, never one of the goods it carries.</summary>

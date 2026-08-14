@@ -137,6 +137,19 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>
+        /// Changes where a caravan calls home -- the town it will unload its takings and unsold goods at.
+        /// Used when the original source becomes unreachable and the caravan is re-routed to the nearest
+        /// friendly town of its realm instead, so its coin and goods stay in the realm rather than being lost.
+        /// </summary>
+        public static void SetSource(string caravanId, string newSourceId)
+        {
+            if (caravanId != null && !string.IsNullOrEmpty(newSourceId) && _src.ContainsKey(caravanId))
+            {
+                _src[caravanId] = newSourceId;
+            }
+        }
+
         public static void Remove(string caravanId)
         {
             if (caravanId == null)
