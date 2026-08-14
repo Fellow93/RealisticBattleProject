@@ -31,6 +31,12 @@ namespace RBMCampaign
         /// </summary>
         public const int CoinsPerOre = 85;
 
+        /// <summary>
+        /// Silver ore the mint never touches: a standing seed kept on the market's shelves so the good
+        /// itself never fully disappears from trade. Minting only ever draws stock down to this floor.
+        /// </summary>
+        public const int ReserveOre = 10;
+
         /// <summary>Fraction of the day's ore, up to the surplus line, that is struck into coin.</summary>
         public const float BaseRate = 0.10f;
 
@@ -76,7 +82,10 @@ namespace RBMCampaign
             }
 
             int stock = roster.GetItemNumber(silver);
-            if (stock <= 0)
+            // Nothing is struck until the stock stands above the reserve floor -- the seed ore below it
+            // is never touched.
+            int mintable = stock - ReserveOre;
+            if (mintable <= 0)
             {
                 return;
             }
@@ -90,9 +99,10 @@ namespace RBMCampaign
             {
                 return;
             }
-            if (minted > stock)
+            // Never draw stock below the reserve, however hot the day's rate.
+            if (minted > mintable)
             {
-                minted = stock;
+                minted = mintable;
             }
 
             roster.AddToCounts(silver, -minted);
