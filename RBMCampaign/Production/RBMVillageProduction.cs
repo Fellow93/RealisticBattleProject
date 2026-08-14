@@ -46,16 +46,16 @@ namespace RBMCampaign
             ("wool", 0.02f),
             ("sheep", 0.002f),
             //basic village "industrial" production so cities can function
-            ("charcoal", 0.07f),
-            ("planks", 0.03f),
-            ("clay", 0.002f),
+            ("charcoal", 0.1f),
+            ("planks", 0.01f),
+            ("clay", 0.001f),
             ("ironIngot1", 0.015f),
             ("flax", 0.017f),
             // Every village occasionally raises a pack animal (PackAnimal). Set to 10% of a horse
             // ranch's per-item mule rate (HorsePackBucket/2), so it reads as subsistence, not a
             // production speciality. Does NOT affect the map primary-production icon (that draws
             // only from SpecByType).
-            ("mule", HorsePackBucket / 2f * 0.1f),
+            ("mule", HorsePackBucket / 2f * 0.05f),
         };
 
         // Horse ranches produce culture-appropriate breeds, one item per tier at the rates below:
@@ -94,8 +94,8 @@ namespace RBMCampaign
                 { "cattle_farm", new (string, float)[] { ("cheese", 0.035f), ("butter", 0.028f), ("cow", 0.008f) } },
                 { "sheep_farm", new (string, float)[] { ("sheep", 0.0031f), ("cheese", 0.02f), ("butter", 0.015f), ("wool", 0.08f) } },
                 { "swine_farm", new (string, float)[] { ("hog", 0.019f) } },
-                { "lumberjack", new (string, float)[] { ("charcoal", 1.027f*1.5f), ("planks", 1.027f*0.5f) } },
-                { "clay_mine", new (string, float)[] { ("clay", 2.6f) } },
+                { "lumberjack", new (string, float)[] { ("charcoal", 1.027f*1.8f), ("planks", 1.027f*0.2f) } },
+                { "clay_mine", new (string, float)[] { ("clay", 1.3f), ("grain", 0.07f) } },
                 { "salt_mine", new (string, float)[] { ("salt", 0.7f) } },
                 { "iron_mine", new (string, float)[] { ("ironIngot1", 2f * 0.75f), ("charcoal", 1.027f * 0.5f) } },
                 { "silver_mine", new (string, float)[] { ("silver", 0.85f * 0.75f), ("ironIngot1", 2f * 0.25f) } },
@@ -105,7 +105,7 @@ namespace RBMCampaign
                 { "date_farm", new (string, float)[] { ("date_fruit", 0.547f) } },
                 { "olive_trees", new (string, float)[] { ("olives", 0.089f) } },
                 { "silk_plant", new (string, float)[] { ("cotton", 0.008f) } },
-                { "trapper", new (string, float)[] { ("fur", 0.055f) } },
+                { "trapper", new (string, float)[] { ("fur", 0.055f), ("meat", 0.055f) } },
                 { "europe_horse_ranch", HorseRanch("empire_horse") },
                 { "steppe_horse_ranch", HorseRanch("khuzait_horse") },
                 { "battanian_horse_ranch", HorseRanch("battania_horse") },
@@ -126,8 +126,8 @@ namespace RBMCampaign
                         ("war_camel", 0.0005f),
                     }
                 },
-                { "walrus_hunter", new (string, float)[] { ("walrus_tusk", 0.008f), ("salt", 0.07f) } }, // Naval DLC
-                { "whaler", new (string, float)[] { ("whale_oil", 0.29f), ("salt", 0.07f) } },           // Naval DLC
+                { "walrus_hunter", new (string, float)[] { ("walrus_tusk", 0.008f), ("salt", 0.07f), ("meat", 0.055f) } }, // Naval DLC
+                { "whaler", new (string, float)[] { ("whale_oil", 0.29f), ("salt", 0.07f), ("meat", 0.055f) } },           // Naval DLC
             };
 
         // Culture "flavour": a light trickle of a signature good produced by EVERY village of a

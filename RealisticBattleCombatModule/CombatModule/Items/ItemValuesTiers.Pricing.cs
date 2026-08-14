@@ -54,23 +54,23 @@ namespace RBMCombat
 
                     if (item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
                     {
-                        price = 4f * (item.ArmorComponent.LegArmor * materialPriceModifier);
+                        price = 50f + 4f * (item.ArmorComponent.LegArmor * materialPriceModifier);
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
                     {
-                        price = 5f * (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f);
+                        price = 50f + 5f * (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f);
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
                     {
-                        price = 3f * ((item.ArmorComponent.HeadArmor * materialPriceModifier * 1.2f) + (item.ArmorComponent.BodyArmor * materialPriceModifier * 0.6f));
+                        price = 70f + 3f * ((item.ArmorComponent.HeadArmor * materialPriceModifier * 1.2f) + (item.ArmorComponent.BodyArmor * materialPriceModifier * 0.6f));
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.Cape)
                     {
-                        price = 5f * ((item.ArmorComponent.BodyArmor * materialPriceModifier * 0.8f) + (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f));
+                        price = 50f + 5f * ((item.ArmorComponent.BodyArmor * materialPriceModifier * 0.8f) + (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f));
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                     {
-                        price = 2.32f * ((item.ArmorComponent.BodyArmor * materialPriceModifier * 2.5f) + (item.ArmorComponent.LegArmor * materialPriceModifier) + (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f));
+                        price = 150f + 5f * ((item.ArmorComponent.BodyArmor * materialPriceModifier * 2.5f) + (item.ArmorComponent.LegArmor * materialPriceModifier) + (item.ArmorComponent.ArmArmor * materialPriceModifier * 0.8f));
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                     {
