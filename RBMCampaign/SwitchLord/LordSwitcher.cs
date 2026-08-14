@@ -171,6 +171,23 @@ namespace RBMCampaign
                 oldParty.ChangePartyLeader(oldHero);
             }
 
+            // Rebuild the map nameplate for the party we just left.
+            //
+            // PartyNameplatesVM.OnPlayerCharacterChangedEvent only re-points the single PLAYER
+            // nameplate onto the new main party. The party we left was, as the former main party,
+            // tracked ONLY by that player nameplate -- it never had an entry in the AI-nameplate pool.
+            // After the swap the player nameplate belongs to the new party, so the old party is left
+            // with no nameplate at all and its floating map label simply vanishes (the "switched-from
+            // party name is wrong/stale" symptom). Re-firing a visibility change for it makes
+            // PartyNameplatesVM.UpdateMobilePartyVisibility notice a spotted party with no nameplate on
+            // the next tick and build a fresh AI nameplate from its now-correct LeaderHero. This is the
+            // same event the engine raises whenever a party is spotted, so replaying it once is safe.
+            if (oldParty != null && oldParty != MobileParty.MainParty && oldParty.IsActive
+                && oldParty.MemberRoster.TotalManCount > 0)
+            {
+                CampaignEventDispatcher.Instance.OnPartyVisibilityChanged(oldParty.Party);
+            }
+
             string msg = "Switched from " + oldHero.Name + " (" + (oldClan != null ? oldClan.Name.ToString() : "?") +
                          ") to " + targetHero.Name + " (" + (newClan != null ? newClan.Name.ToString() : "?") + ")";
             InformationManager.DisplayMessage(new InformationMessage(msg, Colors.Green));
