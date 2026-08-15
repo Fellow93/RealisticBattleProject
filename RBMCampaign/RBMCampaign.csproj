@@ -420,6 +420,7 @@
     <Compile Include="Settlements\WorkshopCapital.cs" />
     <Compile Include="Settlements\WorkshopDiagnostics.cs" />
     <Compile Include="Settlements\WorkshopPurse.cs" />
+    <Compile Include="Settlements\ArtisanStanding.cs" />
     <Compile Include="Settlements\SettlementWealthTooltip.cs" />
     <Compile Include="Settlements\SettlementIncomeFinanceLine.cs" />
     <Compile Include="Settlements\MercenaryContractPay.cs" />
