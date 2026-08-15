@@ -340,6 +340,13 @@ namespace RBMCampaign
             public const string WorkshopWages = "workshop-wages";
 
             /// <summary>
+            /// A notable's own wealth, settling back into the market he is part of. Vanilla burned the
+            /// surplus above his purse's band for standing and destroyed it; a notable is a citizen, and
+            /// his money belongs in the same pot as everyone else's. See <see cref="NotableWealth"/>.
+            /// </summary>
+            public const string NotableWealth = "notable-wealth";
+
+            /// <summary>
             /// A castle's daily income drawn straight from its prosperity -- the taxable life behind the
             /// wall, apart from the town market model. See <see cref="CastleEconomy"/>.
             /// </summary>

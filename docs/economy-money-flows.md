@@ -311,6 +311,7 @@ The honest list. Sorted by size.
 | Garrison wage share | destroyed | `GarrisonUpkeep` | RBM moves a quarter of the bill from clan gold onto the fief's treasury, but the debit still credits nobody. It relocates the sink rather than closing it. |
 | Recruit upkeep seed | conjured | `SpoilsPool` | `RecruitMaintenanceDays` of upkeep appears in a fresh recruit's purse. |
 | Village admin salary | destroyed | `AdministrativeUpkeep` | Deliberate, and structural: a village has no citizen pot for the wage to land in, so it leaves the purse into the untracked household economy. Up to 100/day, capped at what the purse holds — a ceiling, not a rate. A town's equivalent is conserving, since its officials are townsfolk and the wage lands back in citizen wealth. |
+| Alley income | conjured | vanilla | `CalculateHeroIncomeFromAssets` adds a flat 30/day per owned alley to a gang leader's purse with no counterparty debit. It was net zero until the notable converter stopped destroying his surplus (below), and is now a real faucet: 30/day/alley, 60–120 a town. Closing it means charging the townspeople for the racket, which is a gameplay decision, not plumbing. |
 | Perk-based tax mints | conjured | vanilla | `Tollgates`, `TravelingRumors`, Naval `Salvage` add straight to `TradeTaxAccumulated` with no counterparty. Small. |
 | Worldgen seeding | conjured | `SettlementGoldFunnel` | Deliberate, once. `Town.OnInit` deals every town 20,000 through the same `ChangeGold` as everything else; the funnel books it as `Source.Seed` so it is not counted as a trade or charged a market fee. |
 
@@ -332,6 +333,20 @@ its garrison free — destroying physical value rather than gold.
 
 Worth knowing so they are not "fixed" twice:
 
+- **The notable purse.** Measured as the second-largest sink on the map after party wages, and unlisted
+  here until 2026-08-15. Every notable's balance is pinned to a band around 10,000 by a nightly
+  converter that turns the surplus into standing at 500 gold a point — and the upward leg is
+  `GiveGoldAction.ApplyBetweenCharacters(notable, null, …)`, which credits nobody. Everything feeding
+  that purse came out of citizen wealth: a named workshop's day is a net withdrawal from the market
+  (the shop is credited `min(1000, price)` an output and billed for one input, and every trade-good
+  recipe turns one input into two dearer outputs), and a caravan buys and sells against `Town.Gold` on
+  both legs. The owner then draws a fifth of the accumulation. Order of magnitude at four gold-settling
+  shops and two caravans a town: **12,000–22,000 a day per town, destroyed within 24 hours** — against
+  a 20,000 worldgen seed. Note the withdrawals themselves are honest transfers; the destruction is
+  entirely at the converter, so that is the only place `NotableWealth` patches. The surplus now credits
+  the market and the refill leg is paid out of it, clamped to what the market can find. Two things it
+  deliberately does not touch: `DefaultClanFinanceModel`, which carries the cctor trap and holds only
+  conserving legs anyway, and alley income, which is listed above.
 - **Leaderless-party stall trades.** `GiveGoldAction.ApplyInternal` silently skips a null participant,
   so a villager, bandit or garrison party buying from a town paid nothing (town credited from thin
   air) and selling to one was paid nothing (town's money destroyed). `NativeTradeConservation` supplies
