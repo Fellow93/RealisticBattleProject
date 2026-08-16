@@ -442,6 +442,58 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// The village type's speciality goods as resolved, sellable items ordered by the same
+        /// <c>rate * Value</c> weight <see cref="GetPrimaryProduction"/> ranks by (a pinned
+        /// <see cref="PrimaryOverride"/> good first). Used by the map/ledger icon resolver to fall back
+        /// from a primary good the nameplate brush ships no sprite for (charcoal) to the best companion
+        /// speciality good that it does -- so a lumberjack reads as planks, a salt-and-charcoal village
+        /// as salt. Drawn from <see cref="SpecByType"/> only, matching <see cref="GetPrimaryProduction"/>.
+        /// </summary>
+        public static List<ItemObject> GetSpecialityItemsByWeight(VillageType villageType)
+        {
+            var ordered = new List<ItemObject>();
+            if (villageType == null || Game.Current == null)
+            {
+                return ordered;
+            }
+
+            // Reuse GetRates' per-campaign invalidation so a new campaign drops stale item refs.
+            GetRates(villageType);
+
+            string overrideId;
+            if (PrimaryOverride.TryGetValue(villageType.StringId, out overrideId))
+            {
+                ItemObject pinned = Game.Current.ObjectManager.GetObject<ItemObject>(overrideId);
+                if (pinned != null && !pinned.NotMerchandise)
+                {
+                    ordered.Add(pinned);
+                }
+            }
+
+            (string id, float rate)[] spec;
+            if (SpecByType.TryGetValue(villageType.StringId, out spec))
+            {
+                var ranked = new List<(ItemObject item, float weight)>();
+                foreach (var s in spec)
+                {
+                    ItemObject item = Game.Current.ObjectManager.GetObject<ItemObject>(s.id);
+                    if (item == null || item.NotMerchandise || ordered.Contains(item))
+                    {
+                        continue;
+                    }
+                    ranked.Add((item, s.rate * item.Value));
+                }
+                ranked.Sort((a, b) => b.weight.CompareTo(a.weight));
+                foreach (var r in ranked)
+                {
+                    ordered.Add(r.item);
+                }
+            }
+
+            return ordered;
+        }
+
+        /// <summary>
         /// Points the game's "primary production" at the village type's RBM speciality good, so the
         /// map nameplate icon -- and every other reader of <c>PrimaryProduction</c> (hover tooltip,
         /// town-management list, trade issues) -- shows what the village actually produces under the
