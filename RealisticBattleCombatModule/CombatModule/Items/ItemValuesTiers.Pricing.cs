@@ -32,7 +32,7 @@ namespace RBMCombat
                             }
                         case ArmorComponent.ArmorMaterialTypes.Leather:
                             {
-                                materialPriceModifier = 1.5f;
+                                materialPriceModifier = 2f;
                                 break;
                             }
                         case ArmorComponent.ArmorMaterialTypes.Chainmail:
