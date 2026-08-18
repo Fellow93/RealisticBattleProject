@@ -74,7 +74,7 @@ namespace RBMCampaign
                 { "tools",       (48,     1f) },    // finished ironwork, ~4x the wrought iron in it
                 { "felt",        (250,    1f) },
                 { "iron",        (1,      4f) },    // iron ore
-                { "hardwood",    (11,     200f) },
+                { "hardwood",    (10,     1f) },
                 { "charcoal",    (3,      4f) },
                 { "ironIngot1",  (4,      2f) },    // crude iron
                 { "ironIngot2",  (11,     1f) },    // wrought iron

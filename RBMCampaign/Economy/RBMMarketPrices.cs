@@ -218,17 +218,16 @@ namespace RBMCampaign
             // Basic (2x) -- staples every region produces; a shortage cannot spike them far.
             { "flax", BasicCap }, { "clay", BasicCap }, { "cheese", BasicCap }, { "cow", BasicCap },
             { "butter", BasicCap }, { "olives", BasicCap }, { "grape", BasicCap }, { "wool", BasicCap },
-            { "grain", BasicCap }, { "hides", BasicCap }, { "meat", BasicCap }, 
+            { "grain", BasicCap }, { "hides", BasicCap }, { "meat", BasicCap }, { "leather", BasicCap },
             { "silver", BasicCap }, { "iron", BasicCap }, { "hardwood", BasicCap }, 
             { "ironIngot1", BasicCap }, { "ironIngot2", BasicCap }, { "ironIngot3", BasicCap },
-            { "hog", BasicCap }, { "sheep", BasicCap },
+            { "hog", BasicCap }, { "sheep", BasicCap },{ "felt", BasicCap },{ "linen", BasicCap },
 
             // Medium (4x) -- semi-processed or regional goods that answer scarcity harder.
-            { "leather", MediumCap }, { "fish", MediumCap }, { "salt", MediumCap }, { "cotton", MediumCap },
+            { "fish", MediumCap }, { "salt", MediumCap }, { "cotton", MediumCap },
             { "beer", MediumCap }, { "date_fruit", MediumCap }, { "tools", MediumCap }, { "wine", MediumCap },
             { "oil", MediumCap }, { "ironIngot4", MediumCap }, { "ironIngot5", MediumCap }, { "planks", MediumCap },
-            { "whale_oil", MediumCap }, { "pottery", MediumCap }, { "charcoal", MediumCap }, { "linen", MediumCap },
-            { "felt", MediumCap },
+            { "whale_oil", MediumCap }, { "pottery", MediumCap }, { "charcoal", MediumCap }, 
 
             // Luxury (8x) -- status goods a shortage carries as far as the shelf is bare.
             { "jewelry", MaxFactor }, { "spice", MaxFactor }, { "velvet", MaxFactor }, { "fur", MaxFactor },

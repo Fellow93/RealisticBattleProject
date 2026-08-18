@@ -45,16 +45,16 @@ namespace RBMCombat
                         return 1.15f;
 
                     case DamageTypes.Blunt:
-                        return 2.0f;
+                        return 1.2f;
                 }
             }
 
             private static bool Prefix(ref DefaultItemValueModel __instance, WeaponComponent weaponComponent, ref float __result)
             {
                 WeaponComponentData weaponComponentData = weaponComponent.Weapons[0];
-                float val = ((float)weaponComponentData.ThrustDamage * RBMConfig.RBMConfig.OneHandedThrustDamageBonus - 75f) * 0.1f * GetFactor(weaponComponentData.ThrustDamageType) * ((float)weaponComponentData.ThrustSpeed * 0.01f);
-                float num = ((float)weaponComponentData.SwingDamage) * 0.2f * GetFactor(weaponComponentData.SwingDamageType) * ((float)weaponComponentData.SwingSpeed * 0.01f);
-                float maceTier = ((float)weaponComponentData.SwingDamage - 3f) * 0.23f * ((float)weaponComponentData.SwingSpeed * 0.01f);
+                float val = ((((float)weaponComponentData.ThrustDamageFactor) * 15.4f) - 11.55f)  * ((float)weaponComponentData.ThrustSpeed * 0.01f);
+                float num = ((((float)weaponComponentData.SwingDamageFactor) * 15.4f) - 11.55f) * GetFactor(weaponComponentData.SwingDamageType) * ((float)weaponComponentData.SwingSpeed * 0.01f);
+                float maceTier = ((((float)weaponComponentData.SwingDamageFactor) * 10.9f) - 6.54f) * ((float)weaponComponentData.SwingSpeed * 0.01f);
                 if (val < 0f)
                 {
                     val = 0f;
@@ -72,57 +72,61 @@ namespace RBMCombat
                 switch (weaponComponentData.WeaponClass)
                 {
                     case WeaponClass.OneHandedSword:
-                    case WeaponClass.Dagger:
-                    case WeaponClass.ThrowingKnife:
                         {
                             num2 = (val + num) * 0.5f;
                             break;
                         }
+                    case WeaponClass.Dagger:
+                    case WeaponClass.ThrowingKnife:
+                        {
+                            num2 = (val * 0.7f) + (num * 0.3f);
+                            break;
+                        }
                     case WeaponClass.TwoHandedSword:
                         {
-                            num2 = (val + num) * 0.5f / 1.3f;
+                            num2 = (val + num) * 0.5f;
                             break;
                         }
                     case WeaponClass.TwoHandedPolearm:
                     case WeaponClass.LowGripPolearm:
                         {
-                            num2 = val + (num * 0.5f);
+                            num2 = val + (num * 0.3f);
                             break;
                         }
                     case WeaponClass.TwoHandedAxe:
                         {
-                            num2 = num / 1.3f;
+                            num2 = num;
                             break;
                         }
                     case WeaponClass.OneHandedAxe:
                     case WeaponClass.Pick:
                         {
-                            num2 = num * (float)weaponComponentData.WeaponLength * 0.014f;
+                            num2 = num;
                             break;
                         }
                     case WeaponClass.TwoHandedMace:
                         {
-                            num2 = maceTier * (float)weaponComponentData.WeaponLength * 0.014f / 1.3f;
+                            num2 = maceTier + (val * 0.3f);
                             break;
                         }
                     case WeaponClass.Mace:
                         {
-                            num2 = maceTier * (float)weaponComponentData.WeaponLength * 0.014f;
+                            num2 = maceTier + (val * 0.3f);
                             break;
                         }
                     case WeaponClass.ThrowingAxe:
                         {
-                            num2 = (float)weaponComponentData.SwingDamage * 0.05f;
+                            num2 = num;
                             break;
                         }
                     case WeaponClass.Javelin:
                         {
-                            num2 = ((float)weaponComponentData.ThrustDamage * RBMConfig.RBMConfig.OneHandedThrustDamageBonus - 60f) * 0.1f; //XmlConfig.ThrustModifier;
+                            num2 = val; //XmlConfig.ThrustModifier;
                             break;
                         }
                     case WeaponClass.OneHandedPolearm:
                         {
-                            num2 = val + (num * 0.5f);
+                            num2 = val + (num * 0.3f);
                             break;
                         }
                     default:
@@ -131,9 +135,9 @@ namespace RBMCombat
                             break;
                         }
                 }
-                if (num2 < 0f)
+                if (num2 < 0.3f)
                 {
-                    num2 = 0f;
+                    num2 = 0.3f;
                 }
                 if (num2 > 6.5f)
                 {
@@ -154,8 +158,8 @@ namespace RBMCombat
                 float missileWeight = weaponComponent.Item.Weight;
                 float missileDamage = weaponComponentData.MissileDamage;
                 float arrowTier = (missileDamage * 0.01f) * (((missileWeight * 100f - 4f) + 0.01f) * 0.8f);
-                if (arrowTier > 6.5f)
-                { arrowTier = 6.5f; }
+                if (arrowTier > 6f)
+                { arrowTier = 6f; }
                 __result = arrowTier;
                 return false;
             }
@@ -173,7 +177,7 @@ namespace RBMCombat
                 float bodyArmor = (float)weaponComponentData.BodyArmor;
                 float weaponLength = (float)weaponComponentData.WeaponLength;
                 float shieldTier = ((hp - 400f) * 0.005f + bodyArmor * 0.2f) * (weaponLength / 60f);
-                shieldTier += 1f;
+                shieldTier += 0f;
                 if (shieldTier > 6.5f)
                 { shieldTier = 6.5f; }
                 __result = shieldTier;
@@ -194,11 +198,11 @@ namespace RBMCombat
                 switch (weaponComponent.Item?.ItemType ?? ItemObject.ItemTypeEnum.Invalid)
                 {
                     default:
-                        RangedTier = (DrawWeight - 40f) * 0.049f;
+                        RangedTier = (DrawWeight - 60f) * 0.049f + 1f;
                         break;
 
                     case ItemObject.ItemTypeEnum.Crossbow:
-                        RangedTier = (DrawWeight - 70f) * 0.031f;
+                        RangedTier = (DrawWeight - 80f) * 0.031f + 1f;
                         break;
                 }
                 //num = RangedTier;
@@ -216,27 +220,27 @@ namespace RBMCombat
                 float ArmorTier = 0f;
                 if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.LegArmor)
                 {
-                    ArmorTier = (float)armorComponent.LegArmor * 0.10f - 1f;
+                    ArmorTier = (float)armorComponent.LegArmor * 0.10f - 0f;
                 }
                 else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
                 {
-                    ArmorTier = (float)armorComponent.ArmArmor * 0.10f - 1f;
+                    ArmorTier = (float)armorComponent.ArmArmor * 0.10f - 0f;
                 }
                 else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.HeadArmor)
                 {
-                    ArmorTier = (float)armorComponent.HeadArmor * 0.06f - 1f;
+                    ArmorTier = (float)armorComponent.HeadArmor * 0.06f - 0f;
                 }
                 else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
                 {
-                    ArmorTier = ((float)armorComponent.BodyArmor + (float)armorComponent.ArmArmor) * 0.15f - 1f;
+                    ArmorTier = ((float)armorComponent.BodyArmor + (float)armorComponent.ArmArmor) * 0.15f - 0f;
                 }
                 else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                 {
-                    ArmorTier = ((float)armorComponent.BodyArmor * 0.05f) + ((float)armorComponent.LegArmor * 0.035f) + ((float)armorComponent.ArmArmor * 0.025f) - 1f;
+                    ArmorTier = ((float)armorComponent.BodyArmor * 0.05f) + ((float)armorComponent.LegArmor * 0.035f) + ((float)armorComponent.ArmArmor * 0.025f) - 0f;
                 }
                 else if (armorComponent.Item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                 {
-                    ArmorTier = ((float)armorComponent.BodyArmor * 0.02f + (float)armorComponent.LegArmor * 0.04f + (float)armorComponent.ArmArmor * 0.02f + (float)armorComponent.HeadArmor * 0.02f) - 1f;
+                    ArmorTier = ((float)armorComponent.BodyArmor * 0.02f + (float)armorComponent.LegArmor * 0.04f + (float)armorComponent.ArmArmor * 0.02f + (float)armorComponent.HeadArmor * 0.02f) - 0f;
                 }
                 if (ArmorTier < 0f)
                 {

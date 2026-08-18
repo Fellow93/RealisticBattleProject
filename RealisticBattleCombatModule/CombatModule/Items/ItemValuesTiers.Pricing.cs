@@ -1,6 +1,7 @@
-using HarmonyLib;
 using System;
+using HarmonyLib;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 
 namespace RBMCombat
 {
@@ -27,22 +28,22 @@ namespace RBMCombat
                     {
                         case ArmorComponent.ArmorMaterialTypes.Cloth:
                             {
-                                materialPriceModifier = 1f;
+                                materialPriceModifier = 0.4f * MathF.Clamp(tier - 1f, 0f, 4f);
                                 break;
                             }
                         case ArmorComponent.ArmorMaterialTypes.Leather:
                             {
-                                materialPriceModifier = 2f;
+                                materialPriceModifier = 0.6f * MathF.Clamp(tier - 1f, 0f, 6f);
                                 break;
                             }
                         case ArmorComponent.ArmorMaterialTypes.Chainmail:
                             {
-                                materialPriceModifier = 3f;
+                                materialPriceModifier = 1.6f *  MathF.Clamp(tier - 3f, 1f, 6f); 
                                 break;
                             }
                         case ArmorComponent.ArmorMaterialTypes.Plate:
                             {
-                                materialPriceModifier = 3.1f;
+                                materialPriceModifier = 1.7f * MathF.Clamp(tier - 3f, 1f, 6f);
                                 break;
                             }
                         default:
@@ -74,20 +75,20 @@ namespace RBMCombat
                     }
                     else if (item.ItemType == ItemObject.ItemTypeEnum.HorseHarness)
                     {
-                        price = 400f * ((item.ArmorComponent.BodyArmor * 0.2f) + (item.ArmorComponent.ArmArmor * 0.2f) + (item.ArmorComponent.LegArmor * 0.4f) + (item.ArmorComponent.HeadArmor * 0.2f));
+                        price = 600f + (70f * materialPriceModifier * ((item.ArmorComponent.BodyArmor * 0.2f) + (item.ArmorComponent.ArmArmor * 0.2f) + (item.ArmorComponent.LegArmor * 0.4f) + (item.ArmorComponent.HeadArmor * 0.2f)));
                     }
                     price *= RBMConfig.RBMConfig.priceMultipliers.ArmorPriceModifier;
                 }
                 else if (item.ItemComponent is WeaponComponent)
                 {
-                    price = (60f + (tier * 36f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
+                    price = (30f + (tier * 24f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     if (item.ItemType == ItemObject.ItemTypeEnum.Polearm)
                     {
-                        price = (20f + (tier * 20f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
+                        price = (30f + (tier * 16f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Thrown)
                     {
-                        price *= 0.5f;
+                        price *= 1f;
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Sling)
                     {
@@ -95,15 +96,15 @@ namespace RBMCombat
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.TwoHandedWeapon)
                     {
-                        price *= 2f;
+                        price *= 1.5f;
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Shield)
                     {
-                        price = (20f + (tier * 140f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
+                        price = (120f + (tier * 2f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     }
                     if (item.ItemType == ItemObject.ItemTypeEnum.Arrows || item.ItemType == ItemObject.ItemTypeEnum.Bolts || item.ItemType == ItemObject.ItemTypeEnum.SlingStones)
                     {
-                        price = (20f + (tier * 2f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
+                        price = (20f + (tier * 1f)) * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     }
                 }
                 else if (item.ItemComponent is HorseComponent)

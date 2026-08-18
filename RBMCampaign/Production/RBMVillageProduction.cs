@@ -90,7 +90,7 @@ namespace RBMCampaign
         private static readonly Dictionary<string, (string id, float rate)[]> SpecByType =
             new Dictionary<string, (string, float)[]>
             {
-                { "wheat_farm", new (string, float)[] { ("grain", 0.2f) } },
+                { "wheat_farm", new (string, float)[] { ("grain", 0.2f * 0.95f), ("planks", 1.027f * 0.1f) } },
                 { "cattle_farm", new (string, float)[] { ("cheese", 0.035f), ("butter", 0.028f), ("cow", 0.008f) } },
                 { "sheep_farm", new (string, float)[] { ("sheep", 0.0031f), ("cheese", 0.02f), ("butter", 0.015f), ("wool", 0.08f) } },
                 { "swine_farm", new (string, float)[] { ("hog", 0.019f) } },
@@ -100,7 +100,7 @@ namespace RBMCampaign
                 { "iron_mine", new (string, float)[] { ("ironIngot1", 2f * 0.75f), ("charcoal", 1.027f * 0.5f) } },
                 { "silver_mine", new (string, float)[] { ("silver", 0.85f * 0.75f), ("ironIngot1", 2f * 0.25f) } },
                 { "fisherman", new (string, float)[] { ("fish", 0.2f), ("salt", 0.07f) } },
-                { "vineyard", new (string, float)[] { ("grape", 0.038f) } },
+                { "vineyard", new (string, float)[] { ("grape", 0.038f), ("clay", 0.035f) } },
                 { "flax_plant", new (string, float)[] { ("flax", 0.170f) } },
                 { "date_farm", new (string, float)[] { ("date_fruit", 0.547f) } },
                 { "olive_trees", new (string, float)[] { ("olives", 0.089f) } },
