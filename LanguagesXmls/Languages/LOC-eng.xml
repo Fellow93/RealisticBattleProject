@@ -327,13 +327,13 @@
 	<string id="RBM_LAN_018" text="Western Pike" />
 	<string id="RBM_LAN_019" text="Light Menavlion" />
 	<!-- RBMCombat_ranged.xml Strings -->
-	<string id="RBM_RAN_001" text="500 Pound Doubler Belt Crossbow" />
-	<string id="RBM_RAN_002" text="450 Pound Doubler Belt Crossbow" />
-	<string id="RBM_RAN_003" text="410 Pound Doubler Belt Crossbow" />
-	<string id="RBM_RAN_004" text="370 Pound Doubler Belt Crossbow" />
-	<string id="RBM_RAN_005" text="330 Pound Spanning Belt Crossbow" />
-	<string id="RBM_RAN_006" text="290 Pound Spanning Belt Crossbow" />
-	<string id="RBM_RAN_007" text="250 Pound Spanning Belt Crossbow" />
+	<string id="RBM_RAN_001" text="330 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_002" text="300 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_003" text="270 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_004" text="230 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_005" text="200 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_006" text="160 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_007" text="120 Pound Eastern Crossbow" />
 	<string id="RBM_RAN_008" text="200 Pound War Longbow" />
 	<string id="RBM_RAN_009" text="200 Pound Tournament Longbow" />
 	<string id="RBM_RAN_010" text="180 Pound War Longbow" />
@@ -355,6 +355,31 @@
 	<string id="RBM_RAN_026" text="90 Pound Composite Bow" />
 	<string id="RBM_RAN_027" text="70 Pound Composite Bow" />
 	<string id="RBM_RAN_028" text="60 Pound Composite Bow" />
+	
+	<string id="RBM_RAN_029" text="100 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_030" text="80 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_031" text="Heavy 80 Pound Repeating Crossbow" />
+	<string id="RBM_RAN_032" text="Heavy 60 Pound Repeating Crossbow" />
+	<string id="RBM_RAN_033" text="Heavy 45 Pound Repeating Crossbow" />
+	<string id="RBM_RAN_034" text="Stone Sling Pebbles 35 grams" />
+	<string id="RBM_RAN_035" text="Stone Sling Pebbles 50 grams" />
+	<string id="RBM_RAN_036" text="Stone Sling Pebbles 80 grams" />
+	<string id="RBM_RAN_037" text="Stone Sling Stones 120 grams" />
+	<string id="RBM_RAN_038" text="Stone Sling Half-Libra 164 grams" />
+	<string id="RBM_RAN_039" text="Stone Sling Half-Mina 218 grams" />
+	<string id="RBM_RAN_040" text="Stone Sling Libra 329 grams" />
+	<string id="RBM_RAN_041" text="Stone Sling Mina 436 grams" />
+	<string id="RBM_RAN_042" text="Chiseled Sling Bullets 35 grams" />
+	<string id="RBM_RAN_043" text="Chiseled Sling Bullets 50 grams" />
+	<string id="RBM_RAN_044" text="Chiseled Sling Bullets 80 grams" />
+	<string id="RBM_RAN_045" text="Chiseled Sling Siege Bullets 140 grams" />
+	<string id="RBM_RAN_046" text="Lead Sling Bullets 35 grams" />
+	<string id="RBM_RAN_047" text="Lead Sling Bullets 50 grams" />
+	<string id="RBM_RAN_048" text="Lead Sling Bullets 80 grams" />
+	<string id="RBM_RAN_049" text="Wool Sling 18 Inches" />
+	<string id="RBM_RAN_050" text="Braided Sling 28 Inches" />
+	<string id="RBM_RAN_051" text="Reinforced Sling 41 Inches" />
+	<string id="RBM_RAN_052" text="Imperial Cheirosiphon" />
 	<!-- RBMCombat_shields.xml Strings -->
 	<string id="RBM_SHI_001" text="Shoulder Strapped Reinforced Targe" />
 	<string id="RBM_SHI_002" text="Shoulder Strapped Round Steppe Shield" />
@@ -429,28 +454,32 @@
 	<string id="RBM_OVH_012" text="Son of Boyar" />
 	<string id="RBM_OVH_013" text="Sturgian Berserker" />
 	<string id="RBM_OVH_014" text="Sturgian Ulfhednar" />
-	<string id="RBM_OVH_015" text="Skene" />
-	<string id="RBM_OVH_016" text="Kern" />
-	<string id="RBM_OVH_017" text="Redshank" />
-	<string id="RBM_OVH_018" text="Guardian Recruit" />
-	<string id="RBM_OVH_019" text="Expert Guardian" />
-	<string id="RBM_OVH_020" text="Veteran Guardian" />
+	<string id="RBM_OVH_015" text="Battanian Yeoman Hunter" />
+	<string id="RBM_OVH_016" text="Battanian Yeoman Archer" />
+	<string id="RBM_OVH_017" text="Battanian Yeoman Veteran Archer" />
+	<string id="RBM_OVH_018" text="Imperial Trained Slinger" />
+	<string id="RBM_OVH_019" text="Imperial Veteran Slinger" />
+	<string id="RBM_OVH_020" text="Imperial Legionary Slinger" />
 	<string id="RBM_OVH_021" text="Knight of Sacred Fire" />
 	<string id="RBM_OVH_022" text="Karakhuzait Nomad" />
 	<string id="RBM_OVH_023" text="Karakhuzait Rider" />
 	<string id="RBM_OVH_024" text="Karakhuzait Elder" />
-	<string id="RBM_OVH_025" text="Watchman" />
-	<string id="RBM_OVH_026" text="Mercenary Guard" />
-	<string id="RBM_OVH_027" text="Mercenary Scout" />
-	<string id="RBM_OVH_028" text="Mercenary Swordsman" />
-	<string id="RBM_OVH_029" text="Mercenary Crossbowman" />
-	<string id="RBM_OVH_030" text="Mercenary Horseman" />
-	<string id="RBM_OVH_031" text="Hired Blade" />
-	<string id="RBM_OVH_032" text="Mercenary Cavalry" />
+	<string id="RBM_OVH_025" text="Hireling Varangian" />
+	<string id="RBM_OVH_026" text="Aserai Slinger" />
+	<string id="RBM_OVH_027" text="Hireling Elite Varangian" />
+	<string id="RBM_OVH_028" text="Aserai Experienced Slinger" />
+	<string id="RBM_OVH_029" text="Mercenary Slinger" />
+	<string id="RBM_OVH_030" text="Hireling Horseman" />
+	<string id="RBM_OVH_031" text="Aserai Master Slinger" />
+	<string id="RBM_OVH_032" text="Hireling Heavy Cavalry" />
 	<string id="RBM_OVH_033" text="Crossbow Sister" />
 	<string id="RBM_OVH_034" text="Gallant Glaive Sister" />
 	<string id="RBM_OVH_035" text="Glaive Sister" />
 	<string id="RBM_OVH_036" text="Imperial Mounted Acritae" />
+	<string id="RBM_OVH_037" text="Jawwal Recruit Slinger" />
+	<string id="RBM_OVH_038" text="Jawwal Slinger" />
+	<string id="RBM_OVH_039" text="Jawwal Master Slinger" />
+	<string id="RBM_OVH_040" text="Mercenary Elite Slinger" />
 	<!-- Trade Good Repricing Strings -->
 	<string id="RBM_CON_103" text="Historical Trade Goods" />
 	<string id="RBM_CON_104" text="Reprices the trade goods off historical figures -- a period price in denars and the real weight of one lot -- so worth and bulk move together and a cart of velvet is no longer a cart of hardwood. Off restores the game's own numbers. Default on." />
@@ -475,5 +504,15 @@
 	<string id="RBM_SPECTATE_008" text="An army is storming the walls. You may watch the assault from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the siege on the map resolves on its own, and nothing you see here changes it." />
 	<string id="RBM_CAMP_001" text="RBM Campaign: incompatible save" />
 	<string id="RBM_CAMP_002" text="This save was not started with RBM Campaign features enabled.{newline}{newline}The one-time economy setup (settlement treasuries, citizen wealth, village purses and starting prosperity) only runs when a campaign is CREATED with RBM Campaign on, and it cannot be applied to an existing save. This campaign will run with a half-built, unbalanced economy -- markets stuck poor, treasuries and prosperity wrong, spoils and upkeep skewed.{newline}{newline}To get the intended experience, start a NEW campaign with RBM Campaign enabled. You can keep playing this save, but the economy will not behave correctly." />
+	<!-- RBMCombat_WS_items.xml Strings -->
+	<string id="RBM_WS_001" text="Master Assassin Boots" />
+	<string id="RBM_WS_002" text="Master Assassin Armor" />
+	<string id="RBM_WS_003" text="Master Assassin Cape" />
+	<string id="RBM_WS_004" text="Calradian Liquid Fire" />
+	<!-- RBMEconomy_trade_goods.xml Strings -->
+	<string id="RBM_E_001" text="Plain Ceramic"	/>
+	<string id="RBM_E_002" text="Decorated Pottery"	/>	
+	<string id="RBM_E_003" text="Ale"	/>		
+	<string id="RBM_E_004" text="Herd of Sheep"	/>	
   </strings>
 </base>

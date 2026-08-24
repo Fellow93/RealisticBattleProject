@@ -138,7 +138,7 @@
 	
 	<Item
 		id="heavy_gambeson_armor_plain"
-		name="{=*}Mariner Gambeson"
+		name="{=nRjmVzmb}Mariner Gambeson"
 		mesh="heavy_gambeson_armor_plain"
 		culture="Culture.nord"
 		weight="5"
@@ -160,7 +160,7 @@
 	</Item>
 	<Item
 		id="nordic_chainmail_a"
-		name="{=*}Nordic Long Heavy Mail"
+		name="{=Vo9rZoJC}Nordic Long Heavy Mail"
 		subtype="body_armor"
 		mesh="nordic_chainmail_a"
 		culture="Culture.nord"
@@ -182,7 +182,7 @@
 	</Item>
 	<Item
 		id="nordic_chainmail_c"
-		name="{=*}Reinforced Mail Coat"
+		name="{=ZTLwYnQH}Reinforced Mail Coat"
 		subtype="body_armor"
 		mesh="nordic_chainmail_c"
 		culture="Culture.nord"
@@ -621,7 +621,7 @@
 	
 	<Item
 		id="nord_helmet_a"
-		name="{=*}Ornate Vendel Helmet"
+		name="{=g2ZSzfD0}Ornate Vendel Helmet"
 		subtype="head_armor"
 		mesh="nord_helmet_a"
 		culture="Culture.nord"
@@ -644,7 +644,7 @@
 	
 	<Item
 		id="nord_helmet_b"
-		name="{=*}Vendel Noble Helmet"
+		name="{=Q1NegWRJ}Vendel Noble Helmet"
 		subtype="head_armor"
 		mesh="nord_helmet_b"
 		culture="Culture.nord"
@@ -667,7 +667,7 @@
 	
 	<Item
 		id="nord_helmet_c"
-		name="{=*}Brass Vendel Helmet"
+		name="{=0s6iBQlt}Brass Vendel Helmet"
 		subtype="head_armor"
 		mesh="nord_helmet_c"
 		culture="Culture.nord"
@@ -690,7 +690,7 @@
 	
 	<Item
 		id="nord_helmet_d"
-		name="{=*}Nordic Spectacle Helmet"
+		name="{=2l0Vqtdm}Nordic Spectacle Helmet"
 		subtype="head_armor"
 		mesh="nord_helmet_d"
 		culture="Culture.nord"
@@ -713,7 +713,7 @@
 	
 	<Item
 		id="nord_helmet_da"
-		name="{=*}Nordic Spectacle Helm over Padded"
+		name="{=5sjm7Ufs}Nordic Spectacle Helm over Padded"
 		subtype="head_armor"
 		mesh="nord_helmet_da"
 		culture="Culture.nord"
@@ -736,7 +736,7 @@
 	
 	<Item
 		id="nord_helmet_e"
-		name="{=*}Nordic Nasal Helm over Mail"
+		name="{=TJgEpiqz}Nordic Nasal Helm over Mail"
 		subtype="head_armor"
 		mesh="nord_helmet_e"
 		culture="Culture.nord"
@@ -759,7 +759,7 @@
 	
 	<Item
 		id="nord_helmet_ea"
-		name="{=*}Nordic Nasal Helmet"
+		name="{=7zexUGUb}Nordic Nasal Helmet"
 		subtype="head_armor"
 		mesh="nord_helmet_ea"
 		culture="Culture.nord"
@@ -782,7 +782,7 @@
 	
 	<Item
 		id="nord_helmet_f"
-		name="{=*}Nordic Iron Helm over Mail"
+		name="{=V32cLwdx}Nordic Iron Helm over Mail"
 		subtype="head_armor"
 		mesh="nord_helmet_f"
 		culture="Culture.nord"
@@ -805,7 +805,7 @@
 	
 	<Item
 		id="nord_helmet_fa"
-		name="{=*}Nordic Iron Helmet"
+		name="{=tiYr7rPf}Nordic Iron Helmet"
 		subtype="head_armor"
 		mesh="nord_helmet_fa"
 		culture="Culture.nord"
@@ -1268,7 +1268,7 @@
 	</Item>
 	<Item
 		id="pirate_tier_3_armor"
-		name="{=*}Sky Chain Armor"
+		name="{=3bB9jfSX}Sky Chain Armor"
 		mesh="pirate_tier_3_armor"
 		culture="Culture.nord"
 		weight="14"
@@ -2350,6 +2350,7 @@
 		body_name="bo_capsule_arrow"
 		holster_body_name="bo_arrow_bl_i_quiver"
 		mesh="arrow_bl_i"
+		is_merchandise="false"
 		weight="0.050"
 		appearance="1"
 		holster_mesh="arrow_bl_i_quiver"
@@ -3238,7 +3239,7 @@
 	<!-- RBM Puppet Masters and Quest-->
 	<Item
 		id="RBM_master_assassin_boot"
-		name="Master Assassin Boots"
+		name="{=RBM_WS_001}Master Assassin Boots"
 		mesh="assassin_boot"
 		culture="Culture.nord"
 		weight="1"
@@ -3258,7 +3259,7 @@
 	</Item>
 	<Item
 		id="RBM_master_assassin_armor"
-		name="Master Assassin Armor"
+		name="{=RBM_WS_002}Master Assassin Armor"
 		subtype="body_armor"
 		mesh="assassin_armor"
 		culture="Culture.nord"
@@ -3282,7 +3283,7 @@
 	</Item>
 	<Item
 		id="RBM_master_assassin_shoulder"
-		name="Master Assassin Cape"
+		name="{=RBM_WS_003}Master Assassin Cape"
 		mesh="assassin_shoulder"
 		culture="Culture.nord"
 		subtype="body_armor"
@@ -3453,7 +3454,7 @@
 	<Item
 		multiplayer_item="false"
 		id="calradian_fire_RBM"
-		name="Calradian Liquid Fire"
+		name="{=RBM_WS_004}Calradian Liquid Fire"
 		prefab="burning_bolt"
 		body_name="bo_projectile_rock"
 		holster_body_name="bo_axe_short"

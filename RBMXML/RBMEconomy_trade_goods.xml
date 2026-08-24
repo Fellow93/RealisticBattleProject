@@ -81,7 +81,7 @@
 	</Item>
 	<Item
 		id="clay"
-		name="{=Zwb65ufG}Plain Ceramic{@Plural}plain ceramics{\@}"
+		name="{=RBM_E_001}Plain Ceramic{@Plural}plain ceramics{\@}"
 		mesh="merchandise_clay"
 		item_category="clay"
 		value="130"
@@ -92,7 +92,7 @@
 	</Item>
 	<Item
 		id="pottery"
-		name="{=awQrcrt2}Decorated Pottery{@Plural}crates of decorated pottery{\@}"
+		name="{=RBM_E_002}Decorated Pottery{@Plural}crates of decorated pottery{\@}"
 		mesh="merchandise_pottery"
 		item_category="pottery"
 		value="900"
@@ -232,7 +232,7 @@
 	</Item>
 	<Item
 		id="beer"
-		name="{=HiSzYWeh}Ale{@Plural}casks of ale{\@}"
+		name="{=RBM_E_003}Ale{@Plural}casks of ale{\@}"
 		mesh="bd_barrel_a"
 		item_category="beer"
 		IsFood="true"
@@ -288,7 +288,7 @@
 	<!-- #endregion -->
 	<Item
 		id="sheep"
-		name="{=GD4aQgl7}Herd of Sheep{@Plural}herds of sheep{\@}"
+		name="{=RBM_E_004}Herd of Sheep{@Plural}herds of sheep{\@}"
 		mesh="sheep_mesh_new"
 		item_category="sheep"
 		value="220"

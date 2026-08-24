@@ -16791,7 +16791,7 @@
                 occupation="Soldier"
                 is_basic_troop="true"
                 culture="Culture.aserai"
-                name="{=vxlAJIiU}Jawwal Recruit">
+                name="{=RBM_OVH_037}Jawwal Recruit Slinger">
     <face>
       <face_key_template value="BodyProperty.fighter_jawwal" />
     </face>
@@ -16844,7 +16844,7 @@
                 level="19"
                 occupation="Soldier"
                 culture="Culture.aserai"
-                name="{=Mcbjdntz}Jawwal Slinger">
+                name="{=RBM_OVH_038}Jawwal Slinger">
     <face>
       <face_key_template value="BodyProperty.fighter_jawwal" />
     </face>
@@ -16897,7 +16897,7 @@
                 level="26"
                 occupation="Soldier"
                 culture="Culture.aserai"
-                name="{=qAvxmnav}Jawwal Master Slinger">
+                name="{=RBM_OVH_039}Jawwal Master Slinger">
     <face>
       <face_key_template value="BodyProperty.fighter_jawwal" />
     </face>
@@ -18510,7 +18510,7 @@
                 default_group="Ranged"
                 is_hero="false"
                 level="26"
-                name="{=QfVe3IVw}Mercenary Elite Slinger"
+                name="{=RBM_OVH_040}Mercenary Elite Slinger"
                 occupation="Mercenary"
                 culture="Culture.neutral_culture">
     <face>

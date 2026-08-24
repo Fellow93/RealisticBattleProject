@@ -61,7 +61,7 @@
 
 	<Item
 		id="crossbow_i"
-		name="{=nq26Puio}100 Pound Eastern Crossbow"
+		name="{=RBM_RAN_029}100 Pound Eastern Crossbow"
 		body_name="bo_cross_bow_heavy"
 		mesh="crossbow_b"
 		culture="Culture.empire"
@@ -104,7 +104,7 @@
 	
 	<Item
 		id="crossbow_h"
-		name="{=0S8k9Hqa}Light 80 Pound Eastern Crossbow"
+		name="{=RBM_RAN_030}Light 80 Pound Eastern Crossbow"
 		body_name="bo_cross_bow_heavy"
 		mesh="crossbow_a"
 		culture="Culture.vlandia"
@@ -147,7 +147,7 @@
 
 <Item
 		id="crossbow_repeating_heavy_RBM"
-		name="Heavy 80 Pound Repeating Crossbow"
+		name="{=RBM_RAN_031}Heavy 80 Pound Repeating Crossbow"
 		body_name="bo_cross_bow_heavy"
 		mesh="crossbow_a"
 		culture="Culture.vlandia"
@@ -190,7 +190,7 @@
 
 	<Item
 		id="crossbow_repeating_medium_RBM"
-		name="Medium 60 Pound Repeating Crossbow"
+		name="{=RBM_RAN_032}Medium 60 Pound Repeating Crossbow"
 		body_name="bo_cross_bow_heavy"
 		mesh="crossbow_a"
 		culture="Culture.vlandia"
@@ -233,7 +233,7 @@
 	
 	<Item
 		id="crossbow_repeating_light_RBM"
-		name="Light 45 Pound Repeating Crossbow"
+		name="{=RBM_RAN_033}Light 45 Pound Repeating Crossbow"
 		body_name="bo_cross_bow_heavy"
 		mesh="crossbow_a"
 		culture="Culture.vlandia"
@@ -453,7 +453,7 @@
 	
 	<Item
 		id="sling_stoneammo"
-		name="{=a3WNz6Ci}Stone Sling Pebbles 35 grams"
+		name="{=RBM_RAN_034}Stone Sling Pebbles 35 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="sling_ammo_flying"
@@ -493,7 +493,7 @@
 	
 	<Item
 		id="sling_stoneammo_50g"
-		name="{=a3WNz6Ci}Stone Sling Pebbles 50 grams"
+		name="{=RBM_RAN_035}Stone Sling Pebbles 50 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="sling_ammo_flying"
@@ -533,7 +533,7 @@
 	
 	<Item
 		id="sling_stoneammo_80g"
-		name="{=a3WNz6Ci}Stone Sling Pebbles 80 grams"
+		name="{=RBM_RAN_036}Stone Sling Pebbles 80 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="throwing_stone"
@@ -573,7 +573,7 @@
 
 	<Item
 		id="sling_stoneammo_120g"
-		name="{=a3WNz6Ci}Stone Sling Ammo 120 grams"
+		name="{=RBM_RAN_037}Stone Sling Stones 120 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="throwing_stone"
@@ -613,7 +613,7 @@
 
 	<Item
 		id="sling_stoneammo_164g"
-		name="{=a3WNz6Ci}Stone Sling Half-Libra 164 grams"
+		name="{=RBM_RAN_038}Stone Sling Half-Libra 164 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="throwing_stone"
@@ -653,7 +653,7 @@
 	
 	<Item
 		id="sling_stoneammo_218g"
-		name="{=a3WNz6Ci}Stone Sling Half-Mina 218 grams"
+		name="{=RBM_RAN_039}Stone Sling Half-Mina 218 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="projectile_grapeshot_piece_a"
@@ -693,7 +693,7 @@
 
 	<Item
 		id="sling_stoneammo_329g"
-		name="{=a3WNz6Ci}Stone Sling Libra 329 grams"
+		name="{=RBM_RAN_040}Stone Sling Libra 329 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="projectile_grapeshot_piece_a"
@@ -733,7 +733,7 @@
 
 	<Item
 		id="sling_stoneammo_436g"
-		name="{=a3WNz6Ci}Stone Sling Mina 436 grams"
+		name="{=RBM_RAN_041}Stone Sling Mina 436 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="projectile_grapeshot_piece_a"
@@ -773,7 +773,7 @@
 	
 	<Item
 		id="sling_chiseledammo"
-		name="{=yeQr4RiM}Chiseled Sling Bullets 35 grams"
+		name="{=RBM_RAN_042}Chiseled Sling Bullets 35 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="sling_ammo_flying"
@@ -813,7 +813,7 @@
 	
 	<Item
 		id="sling_chiseledammo_50g"
-		name="{=yeQr4RiM}Chiseled Sling Bullets 50 grams"
+		name="{=RBM_RAN_043}Chiseled Sling Bullets 50 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="sling_ammo_flying"
@@ -853,7 +853,7 @@
 
 	<Item
 		id="sling_chiseledammo_80g"
-		name="{=yeQr4RiM}Chiseled Sling Bullets 80 grams"
+		name="{=RBM_RAN_044}Chiseled Sling Bullets 80 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="sling_ammo_flying"
@@ -893,7 +893,7 @@
 
 	<Item
 		id="sling_chiseledammo_140g"
-		name="{=yeQr4RiM}Chiseled Sling Siege Bullets 140 grams"
+		name="{=RBM_RAN_045}Chiseled Sling Siege Bullets 140 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="sling_ammo_flying"
@@ -933,7 +933,7 @@
 	
 	<Item
 		id="sling_leadammo"
-		name="{=ZDZR5UzN}Lead Sling Bullets 35 grams"
+		name="{=RBM_RAN_046}Lead Sling Bullets 35 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="sling_ammo_flying"
@@ -973,7 +973,7 @@
 	
 	<Item
 		id="sling_leadammo_50g"
-		name="{=ZDZR5UzN}Lead Sling Bullets 50 grams"
+		name="{=RBM_RAN_047}Lead Sling Bullets 50 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="sling_ammo_flying"
@@ -1012,7 +1012,7 @@
 	</Item>
 	<Item
 		id="sling_leadammo_80g"
-		name="{=ZDZR5UzN}Lead Sling Bullets 80 grams"
+		name="{=RBM_RAN_048}Lead Sling Bullets 80 grams"
 		body_name="bo_sling_ammo"
 		holster_body_name="bo_axe_short"
 		flying_mesh="sling_ammo_flying"
@@ -1174,7 +1174,7 @@
 
 	<Item
 		id="sling_wool"
-		name="{=L5i5RgO0}Wool Sling 18 Inches"
+		name="{=RBM_RAN_049}Wool Sling 18 Inches"
 		body_name="bo_throwing_stone"
 		skeleton_name="sling_skeleton"
 		static_animation_name="sling_drop_weapon"
@@ -1215,7 +1215,7 @@
 	</Item>
 	<Item
 		id="sling_braided"
-		name="{=z3brrzJ9}Braided Sling 28 Inches"
+		name="{=RBM_RAN_050}Braided Sling 28 Inches"
 		body_name="bo_throwing_stone"
 		skeleton_name="sling_skeleton"
 		static_animation_name="sling_drop_weapon"
@@ -1256,7 +1256,7 @@
 	</Item>
 	<Item
 		id="sling_reinforced"
-		name="{=qxYDHkKl}Reinforced Sling 41 Inches"
+		name="{=RBM_RAN_051}Reinforced Sling 41 Inches"
 		body_name="bo_throwing_stone"
 		skeleton_name="sling_skeleton"
 		static_animation_name="sling_drop_weapon"
@@ -1297,7 +1297,7 @@
 	</Item>
 
 
-	<Item id="Flamethrower_RBM" name="Imperial Cheirosiphon" body_name="bo_cross_bow_heavy" is_merchandise="false" mesh="crossbow_f" weight="5" difficulty="100" appearance="1" Type="Crossbow" value="50000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
+	<Item id="Flamethrower_RBM" name="{=RBM_RAN_052}Imperial Cheirosiphon" body_name="bo_cross_bow_heavy" is_merchandise="false" mesh="crossbow_f" weight="5" difficulty="100" appearance="1" Type="Crossbow" value="50000" item_holsters="crossbow_back:bow_hip:mace_right_hip:bow_hip_2" culture="Culture.vlandia" AmmoOffset="0.0, 0.02131, 0.22975" holster_position_shift="0.02,0,-0.4">
 		<ItemComponent>
 			<Weapon weapon_class="Crossbow" ammo_class="Bolt" thrust_speed="40" speed_rating="70" missile_speed="20" weapon_length="200" thrust_damage="100" item_usage="crossbow_fast" physics_material="wood_weapon" center_of_mass="0,0,0.4" ammo_limit="1" accuracy="90" thrust_damage_type="Pierce" reload_phase_count="2" modifier_group="crossbow">
 				<WeaponFlags RangedWeapon="true" NotUsableWithOneHand="true" TwoHandIdleOnMount="true" HasString="true"/>
