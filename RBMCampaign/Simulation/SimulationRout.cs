@@ -93,13 +93,13 @@ namespace RBMCampaign
         // live-headcount ratio broke on both. Casualty share reads the fight the right way round: the side bleeding
         // out faster, whatever its raw numbers, is the one that breaks. This is the gap in loss fractions at which a
         // side comes at risk of breaking -- it has lost this much MORE of itself, in proportion, than its enemy.
-        private const float RoutLossGapThreshold = 0.2f;
+        private const float RoutLossGapThreshold = 0.12f;
 
-        // ...and it must also have taken real losses of its own before it will run: a side twenty points ahead on a
+        // ...and it must also have taken real losses of its own before it will run: a side a dozen points ahead on a
         // near-bloodless field is not being butchered. This floors the beaten side's own casualty fraction -- it must
-        // have bled a quarter of itself away before it will consider breaking, so a side runs only once it is plainly
-        // being ground down rather than merely bloodied.
-        private const float RoutMinBeatenLoss = 0.25f;
+        // have bled roughly a seventh of itself away before it will consider breaking, so a side runs only once it is
+        // plainly being ground down rather than merely bloodied.
+        private const float RoutMinBeatenLoss = 0.15f;
 
         // The chance to break in a given round, once at risk: a small base, plus a share that grows with how far past
         // the gap the butchery has gone (severity 0 at the threshold, 1 as the side is wiped out). Re-rolled each
