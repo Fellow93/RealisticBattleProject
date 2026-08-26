@@ -163,6 +163,7 @@
 		<string id="RBM_SPOILS_026" text="Their kit is stripped for spoils:{newline}Spoils to your men: {SPOILS}{newline}Your leader's cut: {CUT} gold" />
 		<string id="RBM_SPOILS_027" text="{BASE}{newline}Spoils to your men: {SPOILS}{newline}Your leader's cut: {CUT} gold" />
 		<string id="RBM_SPOILS_028" text="Your companions claim {AMOUNT} gold in spoils." />
+		<string id="RBM_SPOILS_029" text="Your men strip the delivered prisoners' kit and keep {AMOUNT} in spoils." />
 		<string id="RBM_UPGCAP_TITLE" text="Upgrade Budget / Day" />
 	<string id="RBM_UPGCAP_UNLIMITED" text="Unlimited" />
 	<string id="RBM_militia_unpaid" text="Cannot be paid" />

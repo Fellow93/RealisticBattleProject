@@ -1,3 +1,4 @@
+using System;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -39,6 +40,31 @@ namespace RBMCampaign
         /// </summary>
         public static void RansomPrisonersForSpoils(PartyBase sellerParty, TroopRoster prisoners)
         {
+            StripPrisonersForSpoils(sellerParty, prisoners, "RANSOM", "ransomed prisoners",
+                AnnounceRansomSpoilsToPlayer);
+        }
+
+        /// <summary>
+        /// The same kit-strip gather as a ransom, for prisoners handed over to satisfy a delivery quest --
+        /// a route that never touches <see cref="SellPrisonersAction"/>, so the ransom gear-strip would
+        /// otherwise skip it. Keeps delivering a captive worth the same stripped kit as ransoming one; the
+        /// quest's own gold reward is separate and untouched.
+        /// </summary>
+        public static void DeliverQuestPrisonersForSpoils(PartyBase sellerParty, TroopRoster prisoners)
+        {
+            StripPrisonersForSpoils(sellerParty, prisoners, "QUESTDELIVER", "delivered quest prisoners",
+                AnnounceQuestDeliverSpoilsToPlayer);
+        }
+
+        /// <summary>
+        /// Shared kit-strip gather behind ransom and quest delivery: prices the prisoners' kit, splits it
+        /// to the party's stacks by tier weight, skims the leader's cut, and (for the main party) announces
+        /// through <paramref name="announce"/>. <paramref name="logCategory"/> and <paramref name="logVerb"/>
+        /// only colour the dev log; the money math is identical either way.
+        /// </summary>
+        private static void StripPrisonersForSpoils(PartyBase sellerParty, TroopRoster prisoners,
+            string logCategory, string logVerb, Action<int, int> announce)
+        {
             if (!IsEnabled || sellerParty == null || prisoners == null || IsExemptParty(sellerParty))
             {
                 return;
@@ -50,12 +76,12 @@ namespace RBMCampaign
                 return;
             }
 
-            int total = GrantSpoilsWeightedByTier(sellerParty, pot, "RANSOM", out int companionGold);
+            int total = GrantSpoilsWeightedByTier(sellerParty, pot, logCategory, out int companionGold);
             int troopGranted = total - companionGold;
             if (SpoilsLog.IsEnabled)
             {
-                SpoilsLog.Log("RANSOM", sellerParty, SpoilsLog.Describe(sellerParty)
-                    + " ransomed prisoners; their kit worth " + pot + " split to the stacks by tier weight ("
+                SpoilsLog.Log(logCategory, sellerParty, SpoilsLog.Describe(sellerParty)
+                    + " " + logVerb + "; their kit worth " + pot + " split to the stacks by tier weight ("
                     + troopGranted + ")");
             }
             int leaderCut = (troopGranted > 0)
@@ -63,7 +89,7 @@ namespace RBMCampaign
                 : (companionGold > 0 ? 0 : ApplyLeaderCutSolo(sellerParty, pot));
             if (sellerParty == PartyBase.MainParty)
             {
-                AnnounceRansomSpoilsToPlayer(troopGranted, leaderCut);
+                announce(troopGranted, leaderCut);
                 AnnounceCompanionSpoilsToPlayer(companionGold);
             }
         }
@@ -111,6 +137,22 @@ namespace RBMCampaign
                 InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
             }
             // Even with no men to share the kit, a lone captor still keeps his commander's cut -- announce it.
+            AnnounceLeaderCutToPlayer(leaderCut);
+        }
+
+        /// <summary>
+        /// Tells the player what stripping the prisoners he handed to a delivery quest fetched -- the kit
+        /// half RBM adds on top of the quest's own gold reward, so the spoils bar filling after a delivery
+        /// is not a silent mystery.
+        /// </summary>
+        private static void AnnounceQuestDeliverSpoilsToPlayer(int granted, int leaderCut)
+        {
+            if (granted > 0)
+            {
+                TextObject message = new TextObject("{=RBM_SPOILS_029}Your men strip the delivered prisoners' kit and keep {AMOUNT} in spoils.");
+                message.SetTextVariable("AMOUNT", granted);
+                InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+            }
             AnnounceLeaderCutToPlayer(leaderCut);
         }
     }
@@ -166,7 +208,7 @@ namespace RBMCampaign
             {
                 return;
             }
-            SpoilsPool.RansomPrisonersForSpoils(PartyBase.MainParty, leftPrisonRoster);
+            SpoilsPool.DeliverQuestPrisonersForSpoils(PartyBase.MainParty, leftPrisonRoster);
         }
     }
 }
