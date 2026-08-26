@@ -365,6 +365,7 @@
     <Compile Include="Simulation\SimulationMorale.cs" />
     <Compile Include="Simulation\SimulationPlayerParticipation.cs" />
     <Compile Include="Simulation\SimulationRout.cs" />
+    <Compile Include="Simulation\SimulationWoundedCapture.cs" />
     <Compile Include="Simulation\SimulationSiege.cs" />
     <Compile Include="Simulation\SimulationSiegeEngines.cs" />
     <Compile Include="Simulation\SimulationWeaponModel.cs" />
