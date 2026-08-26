@@ -6,8 +6,9 @@ using TaleWorlds.CampaignSystem.Settlements;
 namespace RBMCampaign
 {
     /// <summary>
-    /// When a settlement is attacked -- a fortification assault or a village raid -- the volunteers
-    /// waiting in it take up arms alongside the defenders instead of standing idle in the recruit pool.
+    /// When a settlement is attacked -- a fortification assault, a village raid, or a village that
+    /// resists a forced levy of recruits or goods -- the volunteers waiting in it take up arms alongside
+    /// the defenders instead of standing idle in the recruit pool.
     ///
     /// Every notable's available recruit slots are emptied into the settlement's own defending party:
     /// the garrison for a besieged town or castle, the militia for a raided village (and the militia as
@@ -33,7 +34,8 @@ namespace RBMCampaign
 
         private void OnMapEventStarted(MapEvent mapEvent, PartyBase attackerParty, PartyBase defenderParty)
         {
-            if (mapEvent == null || (!mapEvent.IsSiegeAssault && !mapEvent.IsRaid))
+            if (mapEvent == null || (!mapEvent.IsSiegeAssault && !mapEvent.IsRaid
+                && !mapEvent.IsForcingVolunteers && !mapEvent.IsForcingSupplies))
             {
                 return;
             }
