@@ -83,7 +83,7 @@
 				body_armor="28"
 				leg_armor="28"
 				arm_armor="18"
-				has_gender_variations="false"
+				has_gender_variations="true"
 				covers_body="true"
 				modifier_group="leather"
 				material_type="Leather" />

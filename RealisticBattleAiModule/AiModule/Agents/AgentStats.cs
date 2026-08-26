@@ -147,8 +147,8 @@ namespace RBMAI
                         //agentDrivenProperties.AiRangerHorizontalErrorMultiplier = 0f;//horse archers
                         agentDrivenProperties.AiRangerVerticalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
                         agentDrivenProperties.AiRangerHorizontalErrorMultiplier = MBMath.ClampFloat(0.025f - effectiveSkill * 0.0001f, 0.01f, 0.025f);//bow
-                        agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.25f;
-                        agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= 0.4f;
+                        agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.1f;
+                        agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= 0.2f;
                         agentDrivenProperties.WeaponRotationalAccuracyPenaltyInRadians = 0.015f;
                     }
                     else

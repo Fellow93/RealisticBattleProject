@@ -10,7 +10,7 @@
 	</Item>
 	<Item id="dummy_armor_min" name="{=Zx4h7jDy}Dummy Min Armor" mesh="gambeson_b" culture="Culture.looters" weight="10" Type="BodyArmor" is_merchandise="false">
 		<ItemComponent>
-			<Armor body_armor="0" leg_armor="0" covers_body="true" modifier_group="cloth" material_type="Cloth" has_gender_variations="false" arm_armor="0" head_armor="0"/>
+			<Armor body_armor="0" leg_armor="0" covers_body="true" modifier_group="cloth" material_type="Cloth" has_gender_variations="true" arm_armor="0" head_armor="0"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
@@ -1042,7 +1042,7 @@
 	</Item>
 	<Item id="vlandia_chainmail" name="{=atSRQkCE}Heavy Mail Hauberk" mesh="vlandia_chainmail_a" culture="Culture.vlandia" weight="10" Type="BodyArmor" appearance="1">
 		<ItemComponent>
-			<Armor body_armor="40" leg_armor="44" covers_body="true" modifier_group="chain" material_type="Chainmail" has_gender_variations="false" arm_armor="40"/>
+			<Armor body_armor="40" leg_armor="44" covers_body="true" modifier_group="chain" material_type="Chainmail" has_gender_variations="true" arm_armor="40"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
@@ -1060,7 +1060,7 @@
 	</Item>
 	<Item id="khuzait_lamellar_strapped" name="{=jimBaHvz}Reinforced Leather Armor" mesh="khuzait_lamellar_strap" culture="Culture.khuzait" weight="15" Type="BodyArmor" appearance="1.4">
 		<ItemComponent>
-			<Armor body_armor="40" leg_armor="32" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="false" arm_armor="15"/>
+			<Armor body_armor="40" leg_armor="32" covers_body="true" modifier_group="plate" material_type="Plate" has_gender_variations="true" arm_armor="15"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
@@ -1108,7 +1108,7 @@
 	</Item>
 	<Item id="white_coat_over_mail" name="{=YxglkaXU}White Tabard over Mail Hauberk" mesh="templar_a_white" culture="Culture.vlandia" weight="9.6" Type="BodyArmor" appearance="1.2" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="45" leg_armor="38" covers_body="true" modifier_group="chain" material_type="Chainmail" has_gender_variations="false" arm_armor="42"/>
+			<Armor body_armor="45" leg_armor="38" covers_body="true" modifier_group="chain" material_type="Chainmail" has_gender_variations="true" arm_armor="42"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
