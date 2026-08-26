@@ -31,6 +31,17 @@ namespace RBMCampaign
         private const float MercenaryLeaderCutMultiplier = 1.5f;
 
         /// <summary>
+        /// How much each point of the leader's Roguery widens his cut, relative to the share his standing and
+        /// contract already earn him: the fraction is multiplied by (1 + Roguery x this), so a sharper eye for
+        /// plunder skims a larger slice of the same pot without touching what the tier scaling below hands out.
+        /// At 0.003 a hundred points of Roguery is a +30% share -- a tier-1 lord's usual tenth carried up to 13%
+        /// -- and the 300-point cap is very nearly double. Stacks on top of the tier and mercenary scaling, and
+        /// like them is drawn back out of the men's own purses, so a keener leader mints no coin, he only keeps
+        /// more of what his men already took.
+        /// </summary>
+        private const float LeaderRogueryShareBonusPerPoint = 0.003f;
+
+        /// <summary>
         /// Skims the party leader's share off a fresh gather and hands it to him as gold. Called with the
         /// spoils the men actually took (loot, plunder or a sack), so the cut is a share of what reached
         /// the stacks, not of what the field nominally held. The share is drawn back out of those stacks
@@ -57,6 +68,11 @@ namespace RBMCampaign
             if (MercenaryContractPay.IsMercenaryClan(payee.Clan))
             {
                 fraction *= MercenaryLeaderCutMultiplier;
+            }
+            int roguery = payee.GetSkillValue(DefaultSkills.Roguery);
+            if (roguery > 0)
+            {
+                fraction *= (1f + roguery * LeaderRogueryShareBonusPerPoint);
             }
             return MathF.Clamp(fraction, 0f, 1f);
         }
@@ -110,6 +126,7 @@ namespace RBMCampaign
                     + " took a " + drawn + " gold cut (" + fraction.ToString("0.00") + " = base x (clan tier "
                     + clanTier + " + 1)"
                     + (MercenaryContractPay.IsMercenaryClan(payee.Clan) ? " x " + MercenaryLeaderCutMultiplier.ToString("0.0") + " mercenary" : "")
+                    + (payee.GetSkillValue(DefaultSkills.Roguery) > 0 ? " x (1 + Roguery " + payee.GetSkillValue(DefaultSkills.Roguery) + " x " + LeaderRogueryShareBonusPerPoint.ToString("0.000") + ")" : "")
                     + ") of " + gathered + " gathered");
             }
             return drawn;
@@ -181,6 +198,7 @@ namespace RBMCampaign
                     + " took a " + cut + " gold solo cut (" + fraction.ToString("0.00") + " = base x (clan tier "
                     + clanTier + " + 1)"
                     + (MercenaryContractPay.IsMercenaryClan(payee.Clan) ? " x " + MercenaryLeaderCutMultiplier.ToString("0.0") + " mercenary" : "")
+                    + (payee.GetSkillValue(DefaultSkills.Roguery) > 0 ? " x (1 + Roguery " + payee.GetSkillValue(DefaultSkills.Roguery) + " x " + LeaderRogueryShareBonusPerPoint.ToString("0.000") + ")" : "")
                     + ") of " + pot + " stripped, no men to share the rest");
             }
             return cut;
