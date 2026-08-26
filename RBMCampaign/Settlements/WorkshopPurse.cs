@@ -349,8 +349,8 @@ namespace RBMCampaign
         /// whether it ran fifty cycles or none: an overhead, not a wage. So the one number in the game
         /// that was supposed to represent workshop labour was blind to whether any labour happened.
         ///
-        /// This is per CYCLE, so it scales with the work actually done -- one batch a day costs a
-        /// hundred and fifty, ten batches fifteen hundred.
+        /// This is per CYCLE, so it scales with the work actually done -- one batch a day costs
+        /// seventy-five, ten batches seven hundred and fifty.
         ///
         /// A named shop pays a wage and the artisans do not, and the asymmetry is the whole distinction
         /// between them: a brewery has an owner, and the hands who work it are not him. The artisans have
@@ -359,7 +359,7 @@ namespace RBMCampaign
         /// Left alongside vanilla's flat expense rather than replacing it, because the two now mean
         /// different things -- the hundred is the shop's standing overhead, this is its payroll.
         /// </remarks>
-        private const int WorkshopWagePerCycle = 150;
+        private const int WorkshopWagePerCycle = 75;
 
         // Cycles each shop actually completed today, counted off the two methods that run one. Consumed
         // by whichever payroll pays that shop, so an entry never outlives the day that made it.

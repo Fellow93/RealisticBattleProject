@@ -3,6 +3,7 @@ using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.Core;
 
 namespace RBMCampaign
 {
@@ -77,6 +78,75 @@ namespace RBMCampaign
                 {
                     tradeProfit = Damp(tradeProfit);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Caps the Trade XP a player's workshops can mint in a single day.
+        /// </summary>
+        /// <remarks>
+        /// Workshop production XP does NOT come through <c>OnTradeProfitMade</c> and so the diminishing
+        /// curve above never touched it. It is a separate path: every output a shop sends to town calls
+        /// <see cref="SkillLevelingManager.OnProductionProducedToWarehouse"/>, which grants
+        /// <c>WorkshopModel.GetTradeXpPerWarehouseProduction</c> = base value x0.1 of that one unit.
+        ///
+        /// Two RBM changes make that a firehose. The whole price list moved to the historical x10 scale,
+        /// so each unit's base value -- and therefore its XP -- is an order of magnitude larger; and RBM
+        /// runs many more production cycles per day than vanilla (WorkshopProductionMargin drops the
+        /// profit floor, ArtisanOutput scales a named shop's speed by town prosperity), so a prosperous
+        /// velvet weavery clears a stack of high-value cycles on the FIRST daily tick and hands the whole
+        /// pile of XP over at once. The observed result was 50+ Trade XP from one tick of one shop.
+        ///
+        /// The curve above is the wrong tool here: it acts per transaction, and this is a burst of many
+        /// small per-unit grants, each under the knee. So instead the grants are summed against a flat
+        /// daily budget and the day's total is clamped -- a shop still earns its owner a decent, steady
+        /// Trade income (it is an expensive investment) without turning the first day of ownership into a
+        /// free skill level. The grant is taken over entirely so a partial award at the cap edge is exact.
+        ///
+        /// Gated on <see cref="RBMConfig.RBMConfig.rbmCampaignEnabled"/> rather than the price toggle,
+        /// because the dominant amplifier is the cycle throughput, which is campaign-gated, not the
+        /// repricing. The per-day tally is plain process state: it resets when the map day rolls over, and
+        /// a save/reload simply starts the running day fresh.
+        /// </remarks>
+        [HarmonyPatch(typeof(SkillLevelingManager), nameof(SkillLevelingManager.OnProductionProducedToWarehouse))]
+        private static class WorkshopProductionXpCap
+        {
+            /// <summary>Most Trade XP a player's workshops may grant in one map day. Tunable.</summary>
+            private const float PerDayCap = 20f;
+
+            private static int _day = -1;
+            private static float _grantedToday;
+
+            private static bool Prefix(EquipmentElement production)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || Campaign.Current == null)
+                {
+                    return true;
+                }
+
+                int today = (int)CampaignTime.Now.ToDays;
+                if (today != _day)
+                {
+                    _day = today;
+                    _grantedToday = 0f;
+                }
+
+                float xp = Campaign.Current.Models.WorkshopModel.GetTradeXpPerWarehouseProduction(production);
+                if (xp <= 0f)
+                {
+                    return false;
+                }
+
+                float remaining = PerDayCap - _grantedToday;
+                if (remaining <= 0f)
+                {
+                    return false;
+                }
+
+                float grant = (xp < remaining) ? xp : remaining;
+                _grantedToday += grant;
+                Hero.MainHero.AddSkillXp(DefaultSkills.Trade, grant);
+                return false;
             }
         }
     }
