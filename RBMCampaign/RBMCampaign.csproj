@@ -412,6 +412,7 @@
     <Compile Include="Economy\CaravanCapital.cs" />
     <Compile Include="Economy\RecruitCostHint.cs" />
     <Compile Include="Economy\RecruitSupply.cs" />
+    <Compile Include="Economy\RecruitCapacity.cs" />
     <Compile Include="Settlements\NativeTradeConservation.cs" />
     <Compile Include="Settlements\RansomFunding.cs" />
     <Compile Include="Settlements\SettlementGoldFunnel.cs" />
