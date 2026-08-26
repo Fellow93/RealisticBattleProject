@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
@@ -247,20 +248,26 @@ namespace RBMCampaign
         /// party has no non-hero stacks left to take it, in which case nothing is granted.</returns>
         private static int GrantSpoilsWeightedByTier(PartyBase party, int amount, string logCategory)
         {
+            return GrantSpoilsWeightedByTier(party, amount, logCategory, out int _);
+        }
+
+        private static int GrantSpoilsWeightedByTier(PartyBase party, int amount, string logCategory, out int companionGold)
+        {
+            companionGold = 0;
             TroopRoster roster = party?.MemberRoster;
             if (roster == null || amount <= 0)
             {
                 return 0;
             }
+            Hero payee = GetPartyPayee(party);
             long totalWeight = 0L;
             for (int i = 0; i < roster.Count; i++)
             {
                 TroopRosterElement element = roster.GetElementCopyAtIndex(i);
-                if (element.Character.IsHero || element.Number <= 0)
+                if (element.Number > 0 && (!element.Character.IsHero || IsCompanionStack(element.Character, payee)))
                 {
-                    continue;
+                    totalWeight += (long)element.Number * MathF.Max(1, element.Character.Tier);
                 }
-                totalWeight += (long)element.Number * MathF.Max(1, element.Character.Tier);
             }
             if (totalWeight <= 0L)
             {
@@ -273,12 +280,15 @@ namespace RBMCampaign
             for (int i = 0; i < roster.Count; i++)
             {
                 TroopRosterElement element = roster.GetElementCopyAtIndex(i);
-                if (element.Character.IsHero || element.Number <= 0)
+                if (element.Number <= 0 || (element.Character.IsHero && !IsCompanionStack(element.Character, payee)))
                 {
                     continue;
                 }
+                bool isCompanion = IsCompanionStack(element.Character, payee);
                 long weight = (long)element.Number * MathF.Max(1, element.Character.Tier);
-                if (weight > topWeight)
+                // Only a troop (non-companion) stack can be the rounding-remainder mop-up target, since the
+                // remainder goes to a purse; a companion holds none.
+                if (!isCompanion && weight > topWeight)
                 {
                     topWeight = weight;
                     topIndex = i;
@@ -288,20 +298,50 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                AddSpoils(party, element.Character, share);
-                distributed += share;
-                if (SpoilsLog.Verbose)
+                if (isCompanion)
                 {
-                    int after = GetSpoils(party, element.Character);
-                    SpoilsLog.LogVerbose(logCategory, party, "  " + SpoilsLog.Describe(element.Character) + " x" + element.Number
-                        + " (weight " + weight + "): +" + share + " (pool " + (after - share) + " -> " + after + ")");
+                    companionGold += share;
+                    if (SpoilsLog.Verbose)
+                    {
+                        SpoilsLog.LogVerbose(logCategory, party, "  " + SpoilsLog.Describe(element.Character) + " x" + element.Number
+                            + " (weight " + weight + ", companion): +" + share + " gold to the party");
+                    }
                 }
+                else
+                {
+                    AddSpoils(party, element.Character, share);
+                    if (SpoilsLog.Verbose)
+                    {
+                        int after = GetSpoils(party, element.Character);
+                        SpoilsLog.LogVerbose(logCategory, party, "  " + SpoilsLog.Describe(element.Character) + " x" + element.Number
+                            + " (weight " + weight + "): +" + share + " (pool " + (after - share) + " -> " + after + ")");
+                    }
+                }
+                distributed += share;
             }
             int remainder = amount - distributed;
-            if (remainder > 0 && topIndex >= 0)
+            if (remainder > 0)
             {
-                AddSpoils(party, roster.GetElementCopyAtIndex(topIndex).Character, remainder);
-                distributed += remainder;
+                if (topIndex >= 0)
+                {
+                    AddSpoils(party, roster.GetElementCopyAtIndex(topIndex).Character, remainder);
+                    distributed += remainder;
+                }
+                else if (payee != null)
+                {
+                    companionGold += remainder;
+                    distributed += remainder;
+                }
+            }
+
+            if (companionGold > 0 && payee != null && payee.IsAlive)
+            {
+                GiveGoldAction.ApplyBetweenCharacters(null, payee, companionGold, true);
+                if (SpoilsLog.IsEnabled)
+                {
+                    SpoilsLog.Log(logCategory, party, SpoilsLog.Describe(party) + " companions claimed " + companionGold
+                        + " gold in spoils, paid to " + payee.Name);
+                }
             }
             return distributed;
         }

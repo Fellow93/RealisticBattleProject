@@ -49,17 +49,21 @@ namespace RBMCampaign
                 return;
             }
 
-            int granted = GrantSpoilsWeightedByTier(sellerParty, pot, "RANSOM");
+            int total = GrantSpoilsWeightedByTier(sellerParty, pot, "RANSOM", out int companionGold);
+            int troopGranted = total - companionGold;
             if (SpoilsLog.IsEnabled)
             {
                 SpoilsLog.Log("RANSOM", sellerParty, SpoilsLog.Describe(sellerParty)
                     + " ransomed prisoners; their kit worth " + pot + " split to the stacks by tier weight ("
-                    + granted + ")");
+                    + troopGranted + ")");
             }
-            int leaderCut = (granted > 0) ? ApplyLeaderCut(sellerParty, granted) : ApplyLeaderCutSolo(sellerParty, pot);
+            int leaderCut = (troopGranted > 0)
+                ? ApplyLeaderCut(sellerParty, troopGranted)
+                : (companionGold > 0 ? 0 : ApplyLeaderCutSolo(sellerParty, pot));
             if (sellerParty == PartyBase.MainParty)
             {
-                AnnounceRansomSpoilsToPlayer(granted, leaderCut);
+                AnnounceRansomSpoilsToPlayer(troopGranted, leaderCut);
+                AnnounceCompanionSpoilsToPlayer(companionGold);
             }
         }
 

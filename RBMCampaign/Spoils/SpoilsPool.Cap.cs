@@ -49,5 +49,18 @@ namespace RBMCampaign
             Hero payee = (party.Owner != null && party.Owner.IsAlive) ? party.Owner : party.LeaderHero;
             return (payee != null && payee.IsAlive) ? payee : null;
         }
+
+        /// <summary>
+        /// A companion collects spoils like a soldier but holds no purse: his share is paid straight into the
+        /// party's gold (its <see cref="GetPartyPayee"/>) and no leader cut is skimmed from it -- he is the clan's
+        /// own, not a hired sword. The payee himself is never a companion by this test, so the leader keeps
+        /// working exactly as before. False when there is no living payee to pay, so companions collect only where
+        /// there is someone to receive it.
+        /// </summary>
+        public static bool IsCompanionStack(CharacterObject character, Hero payee)
+        {
+            return character != null && character.IsHero
+                && payee != null && character.HeroObject != null && character.HeroObject != payee;
+        }
     }
 }

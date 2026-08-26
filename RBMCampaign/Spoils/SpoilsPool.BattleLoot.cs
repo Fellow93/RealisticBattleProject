@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
@@ -225,13 +226,34 @@ namespace RBMCampaign
                 float share = (float)weight / divisor * RBMConfig.RBMConfig.troopUpgradeSpoilsLootMultiplier;
                 SpoilsLog.Log("LOOT", victor.Party, SpoilsLog.Describe(victor.Party) + ": contribution " + victor.ContributionToBattle
                     + "/" + totalContribution + ", share " + share.ToString("0.000"));
-                int granted = GrantToParty(victor.Party, spoilsByTier, piecesByTier, share);
-                int leaderCut = (granted > 0)
-                    ? ApplyLeaderCut(victor.Party, granted)
-                    : ApplyLeaderCutSolo(victor.Party, (int)MathF.Min(fieldWorth * share, (float)int.MaxValue));
+                Hero payee = GetPartyPayee(victor.Party);
+                int companionGold = 0;
+                int granted = GrantToParty(victor.Party, spoilsByTier, piecesByTier, share, payee, ref companionGold);
+                int leaderCut;
+                if (granted > 0)
+                {
+                    leaderCut = ApplyLeaderCut(victor.Party, granted);
+                }
+                else if (companionGold > 0)
+                {
+                    leaderCut = 0; // companions stripped the field into the payee's own gold; no separate cut to take
+                }
+                else
+                {
+                    leaderCut = ApplyLeaderCutSolo(victor.Party, (int)MathF.Min(fieldWorth * share, (float)int.MaxValue));
+                }
+                if (companionGold > 0 && payee != null && payee.IsAlive)
+                {
+                    GiveGoldAction.ApplyBetweenCharacters(null, payee, companionGold, true);
+                    if (SpoilsLog.IsEnabled)
+                    {
+                        SpoilsLog.Log("LOOT", victor.Party, SpoilsLog.Describe(victor.Party)
+                            + " companions claimed " + companionGold + " gold in spoils, paid to " + payee.Name);
+                    }
+                }
                 if (victor.Party == PartyBase.MainParty)
                 {
-                    AnnounceSpoilsToPlayer(granted, leaderCut);
+                    AnnounceSpoilsToPlayer(granted, leaderCut, companionGold);
                 }
             }
         }
@@ -244,19 +266,33 @@ namespace RBMCampaign
         /// A victory can still grant nothing: a small party with its arms already full, or one whose
         /// men walked past everything the field had left. Saying so is more use than saying nothing.
         /// </remarks>
-        private static void AnnounceSpoilsToPlayer(int granted, int leaderCut)
+        private static void AnnounceSpoilsToPlayer(int granted, int leaderCut, int companionGold)
         {
-            // Skip the "found nothing" line when a lone leader still took a solo cut off the field -- the cut
-            // line alone tells that story, and "your men found nothing" reads false when there were no men.
-            if (granted > 0 || leaderCut <= 0)
+            if (granted > 0)
             {
-                TextObject message = new TextObject((granted > 0)
-                    ? "{=RBM_SPOILS_009}Your men strip the fallen and recover {AMOUNT} in spoils."
-                    : "{=RBM_SPOILS_010}Your men find nothing on the fallen they can use.");
+                TextObject message = new TextObject("{=RBM_SPOILS_009}Your men strip the fallen and recover {AMOUNT} in spoils.");
                 message.SetTextVariable("AMOUNT", granted);
                 InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
             }
+            else if (companionGold <= 0 && leaderCut <= 0)
+            {
+                // Only truly nothing collected -- no troop spoils, no companion gold, no lone-leader cut --
+                // reads as "your men found nothing"; otherwise the other lines tell the story.
+                TextObject message = new TextObject("{=RBM_SPOILS_010}Your men find nothing on the fallen they can use.");
+                message.SetTextVariable("AMOUNT", granted);
+                InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+            }
+            AnnounceCompanionSpoilsToPlayer(companionGold);
             AnnounceLeaderCutToPlayer(leaderCut);
+        }
+
+        /// <summary>Tells the player what his companions claimed from a gather, paid into his own gold.</summary>
+        private static void AnnounceCompanionSpoilsToPlayer(int companionGold)
+        {
+            if (companionGold <= 0) return;
+            TextObject message = new TextObject("{=RBM_SPOILS_028}Your companions claim {AMOUNT} gold in spoils.");
+            message.SetTextVariable("AMOUNT", companionGold);
+            InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
         }
 
         /// <summary>
@@ -359,7 +395,7 @@ namespace RBMCampaign
         /// </remarks>
         /// <returns>The points the party's stacks actually took, which is less than its share
         /// whenever a tier is overlooked or is more than the men have arms to carry.</returns>
-        private static int GrantToParty(PartyBase party, long[] spoilsByTier, long[] piecesByTier, float share)
+        private static int GrantToParty(PartyBase party, long[] spoilsByTier, long[] piecesByTier, float share, Hero payee, ref int companionGold)
         {
             if (party == null || share <= 0f)
             {
@@ -379,20 +415,20 @@ namespace RBMCampaign
                 int pieces = (int)MathF.Min(piecesByTier[tier] * share, (float)int.MaxValue);
                 if (pieces > 0 && valuePerPiece > 0f)
                 {
-                    granted += GrantTierToParty(party, carried, tier, pieces, valuePerPiece);
+                    granted += GrantTierToParty(party, carried, tier, pieces, valuePerPiece, payee, ref companionGold);
                 }
             }
             return granted;
         }
 
-        private static int GrantTierToParty(PartyBase party, Dictionary<CharacterObject, int> carried, int itemTier, int pieces, float valuePerPiece)
+        private static int GrantTierToParty(PartyBase party, Dictionary<CharacterObject, int> carried, int itemTier, int pieces, float valuePerPiece, Hero payee, ref int companionGold)
         {
             List<TroopRosterElement> claimants = new List<TroopRosterElement>();
             TroopRoster roster = party.MemberRoster;
             for (int i = 0; i < roster.Count; i++)
             {
                 TroopRosterElement element = roster.GetElementCopyAtIndex(i);
-                if (!element.Character.IsHero && GetCarryRoom(carried, element) > 0)
+                if ((!element.Character.IsHero || IsCompanionStack(element.Character, payee)) && GetCarryRoom(carried, element) > 0)
                 {
                     claimants.Add(element);
                 }
@@ -436,7 +472,7 @@ namespace RBMCampaign
                 // What this rank of troops sees of what is still lying there. The rest they walk past.
                 int gap = GetTierGap(itemTier, claimants[groupStart].Character);
                 int noticed = (int)MathF.Min(GetNoticedPieces(remaining, gap), (long)remaining);
-                remaining -= GrantToTierGroup(party, carried, claimants, groupStart, groupEnd, noticed, itemTier, valuePerPiece, ref granted);
+                remaining -= GrantToTierGroup(party, carried, claimants, groupStart, groupEnd, noticed, itemTier, valuePerPiece, ref granted, payee, ref companionGold);
                 groupStart = groupEnd;
             }
 
@@ -462,7 +498,7 @@ namespace RBMCampaign
         /// stack cannot take, because its arms are already full, is passed around the group before
         /// cascading. Returns how many pieces the group actually carried off.
         /// </summary>
-        private static int GrantToTierGroup(PartyBase party, Dictionary<CharacterObject, int> carried, List<TroopRosterElement> claimants, int start, int end, int available, int itemTier, float valuePerPiece, ref int granted)
+        private static int GrantToTierGroup(PartyBase party, Dictionary<CharacterObject, int> carried, List<TroopRosterElement> claimants, int start, int end, int available, int itemTier, float valuePerPiece, ref int granted, Hero payee, ref int companionGold)
         {
             int groupMen = 0;
             for (int i = start; i < end; i++)
@@ -503,20 +539,36 @@ namespace RBMCampaign
                     continue;
                 }
                 int points = MathF.Round(taken * valuePerPiece);
-                if (SpoilsLog.Verbose)
+                if (element.Character.IsHero)
                 {
-                    int before = GetSpoils(party, element.Character);
-                    SpoilsLog.LogVerbose("LOOT", party, "  tier " + (itemTier + 1) + " -> " + SpoilsLog.Describe(element.Character)
-                        + " x" + element.Number + " in " + SpoilsLog.Describe(party)
-                        + ": " + taken + " pieces, +" + points + " (pool " + before + " -> " + (before + points)
-                        + ", arms left " + (GetCarryRoom(carried, element) - taken)
-                        + ", gap " + GetTierGap(itemTier, element.Character) + ")");
+                    // The payee is already excluded from the claimant list, so any hero here is a companion:
+                    // his pieces are worth gold paid to the party at the end, not a purse, and take no leader cut.
+                    companionGold += points;
+                    if (SpoilsLog.Verbose)
+                    {
+                        SpoilsLog.LogVerbose("LOOT", party, "  tier " + (itemTier + 1) + " -> " + SpoilsLog.Describe(element.Character)
+                            + " (companion) in " + SpoilsLog.Describe(party)
+                            + ": " + taken + " pieces, +" + points + " gold to the party"
+                            + ", gap " + GetTierGap(itemTier, element.Character) + ")");
+                    }
                 }
-                AddSpoils(party, element.Character, points);
+                else
+                {
+                    if (SpoilsLog.Verbose)
+                    {
+                        int before = GetSpoils(party, element.Character);
+                        SpoilsLog.LogVerbose("LOOT", party, "  tier " + (itemTier + 1) + " -> " + SpoilsLog.Describe(element.Character)
+                            + " x" + element.Number + " in " + SpoilsLog.Describe(party)
+                            + ": " + taken + " pieces, +" + points + " (pool " + before + " -> " + (before + points)
+                            + ", arms left " + (GetCarryRoom(carried, element) - taken)
+                            + ", gap " + GetTierGap(itemTier, element.Character) + ")");
+                    }
+                    AddSpoils(party, element.Character, points);
+                    granted += points;
+                }
                 int alreadyCarried;
                 carried.TryGetValue(element.Character, out alreadyCarried);
                 carried[element.Character] = alreadyCarried + taken;
-                granted += points;
                 consumed += taken;
             }
             return consumed;

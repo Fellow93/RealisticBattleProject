@@ -143,14 +143,18 @@ namespace RBMCampaign
                 long weight = (totalContribution > 0L) ? MathF.Max(0, raider.ContributionToBattle) : 1L;
                 long divisor = (totalContribution > 0L) ? totalContribution : attackers.Parties.Count;
                 int share = MathF.Round(pot * ((float)weight / divisor));
-                int granted = GrantSpoilsWeightedByTier(raider.Party, share, "RAID");
-                int leaderCut = (granted > 0) ? ApplyLeaderCut(raider.Party, granted) : ApplyLeaderCutSolo(raider.Party, share);
+                int total = GrantSpoilsWeightedByTier(raider.Party, share, "RAID", out int companionGold);
+                int troopGranted = total - companionGold;
+                int leaderCut = (troopGranted > 0)
+                    ? ApplyLeaderCut(raider.Party, troopGranted)
+                    : (companionGold > 0 ? 0 : ApplyLeaderCutSolo(raider.Party, share));
                 if (raider.Party == PartyBase.MainParty)
                 {
-                    if (granted > 0)
+                    if (troopGranted > 0)
                     {
-                        AnnounceRaidSpoilsToPlayer(settlement, granted);
+                        AnnounceRaidSpoilsToPlayer(settlement, troopGranted);
                     }
+                    AnnounceCompanionSpoilsToPlayer(companionGold);
                     AnnounceLeaderCutToPlayer(leaderCut);
                 }
             }
@@ -386,14 +390,18 @@ namespace RBMCampaign
                 long weight = (totalMen > 0L) ? MathF.Max(0, p.Party.MemberRoster.TotalManCount) : 1L;
                 long divisor = (totalMen > 0L) ? totalMen : parties.Count;
                 int share = MathF.Round(pot * ((float)weight / divisor));
-                int granted = GrantSpoilsWeightedByTier(p.Party, share, logCategory);
-                int leaderCut = (granted > 0) ? ApplyLeaderCut(p.Party, granted) : ApplyLeaderCutSolo(p.Party, share);
+                int total = GrantSpoilsWeightedByTier(p.Party, share, logCategory, out int companionGold);
+                int troopGranted = total - companionGold;
+                int leaderCut = (troopGranted > 0)
+                    ? ApplyLeaderCut(p.Party, troopGranted)
+                    : (companionGold > 0 ? 0 : ApplyLeaderCutSolo(p.Party, share));
                 if (announceSack && p.Party == PartyBase.MainParty)
                 {
-                    if (granted > 0)
+                    if (troopGranted > 0)
                     {
-                        AnnounceSackSpoilsToPlayer(settlement, granted);
+                        AnnounceSackSpoilsToPlayer(settlement, troopGranted);
                     }
+                    AnnounceCompanionSpoilsToPlayer(companionGold);
                     AnnounceLeaderCutToPlayer(leaderCut);
                 }
             }

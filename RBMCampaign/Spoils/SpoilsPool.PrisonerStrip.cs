@@ -75,15 +75,19 @@ namespace RBMCampaign
                 return 0;
             }
 
-            int granted = GrantSpoilsWeightedByTier(party, stripped, "STRIP");
+            int total = GrantSpoilsWeightedByTier(party, stripped, "STRIP", out int companionGold);
+            int troopGranted = total - companionGold;
             if (SpoilsLog.IsEnabled)
             {
                 SpoilsLog.Log("STRIP", party, "left " + men + " prisoners on the field; their kit worth " + gross
-                    + " stripped for " + stripped + " (half), " + granted + " split to the stacks by tier weight");
+                    + " stripped for " + stripped + " (half), " + troopGranted + " split to the stacks by tier weight");
             }
-            int leaderCut = (granted > 0) ? ApplyLeaderCut(party, granted) : ApplyLeaderCutSolo(party, stripped);
-            AnnounceStrippedPrisonersToPlayer(granted, leaderCut, men);
-            return granted;
+            int leaderCut = (troopGranted > 0)
+                ? ApplyLeaderCut(party, troopGranted)
+                : (companionGold > 0 ? 0 : ApplyLeaderCutSolo(party, stripped));
+            AnnounceStrippedPrisonersToPlayer(troopGranted, leaderCut, men);
+            AnnounceCompanionSpoilsToPlayer(companionGold);
+            return troopGranted;
         }
 
         /// <summary>
