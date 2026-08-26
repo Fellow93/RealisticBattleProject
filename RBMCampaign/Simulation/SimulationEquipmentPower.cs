@@ -874,6 +874,18 @@ namespace RBMCampaign
                 {
                     breakdown.Correction *= vanillaPowerFactor;
                 }
+
+                // THE COMMANDER'S TACTICS, RESHAPED. Vanilla's flat one-sided Tactics advantage rode into the blow
+                // through strikerAdvantage, untouched by the equipment correction above; it is lifted back off here
+                // and a gentler two-sided edge -- striker's general against struck's -- is folded in to replace it.
+                // Only the gap between the two generals' training tells, so an army out-led loses ground and one
+                // evenly matched neither gains nor gives it. Nothing off the model (SimulationEnabled gates the
+                // whole postfix), so with the overhaul off vanilla's advantage is left exactly as it was.
+                float commanderFactor = CommanderTacticsFactor(strikerParty, struckParty);
+                if (commanderFactor != 1f)
+                {
+                    breakdown.Correction *= commanderFactor;
+                }
             }
 
             float vanillaDamage = __result.ResultNumber;
@@ -2447,6 +2459,65 @@ namespace RBMCampaign
         private static float LeaderModifierOf(PartyBase party)
         {
             return party?.MapEventSide?.LeaderParty?.LeaderHero?.PowerModifier ?? 0f;
+        }
+
+        /// <summary>
+        /// What DefaultSkillEffects.TacticsAdvantage charges a point of the side commander's Tactics: +0.1% a
+        /// point, so a hundred-Tactics general lands every one of his side's blows 10% the harder. It is a pure
+        /// AddFactor on a base-one advantage (see DefaultCombatSimulationModel.GetPartyBattleAdvantage), riding
+        /// into the blow as a flat one-sided multiplier -- the "personal simulation advantage" this rework lifts
+        /// out. Kept here as the exact figure to divide back off, so what we replace is precisely what vanilla
+        /// added and no more.
+        /// </summary>
+        private const float VanillaTacticsAdvantagePerPoint = 0.001f;
+
+        /// <summary>
+        /// What a point of a side commander's Tactics is worth in the REPLACEMENT: +0.05% a point, +5% at a
+        /// hundred -- half vanilla's rate, the "much lower degree" the redesign asked for. Unlike vanilla's it
+        /// tells on BOTH sides (see <see cref="CommanderTacticsFactor"/>): a drilled army lands its blows a
+        /// little harder and turns the enemy's a little better alike, so only the GAP between the two generals'
+        /// training survives into the blow -- which is what raising every man's skill on both sides actually
+        /// comes to once the blows are traded, and why two equal commanders cancel to nothing.
+        /// </summary>
+        private const float CommanderTacticsPerPoint = 0.0005f;
+
+        /// <summary>
+        /// A side commander's Tactics skill -- the same hero vanilla reads for its advantage: the LEADER of the
+        /// side's leader party, shared by every man standing on that side. Zero where there is no commander to
+        /// ask, which leaves the blow exactly as it was.
+        /// </summary>
+        private static int SideCommanderTactics(PartyBase party)
+        {
+            Hero commander = party?.MapEventSide?.LeaderParty?.LeaderHero;
+            return (commander != null) ? commander.GetSkillValue(DefaultSkills.Tactics) : 0;
+        }
+
+        /// <summary>
+        /// The commander-Tactics fixup for one blow, folded into the correction like every other lift so the log's
+        /// Vanilla x Correction = Final identity holds. Two things happen at once: vanilla's one-sided Tactics
+        /// advantage is divided back off the striker's blow (it rode in through <c>strikerAdvantage</c>, untouched
+        /// by the equipment correction), and a gentler two-sided edge is put in its place -- the striker's general
+        /// sharpening his side's blow against the softening of the struck man's general defending his.
+        ///
+        /// The neutralisation is <c>1 / (1 + T x per-point)</c>, which is exact for a field battle. In a siege the
+        /// storming penalty (a flat -10% AddFactor vanilla lays on the attacker) rides the same base-one
+        /// accumulator, so the divide is a percent shy of exact there -- and that is deliberate: the -10% is not a
+        /// Tactics term and is kept, along with the PreBattleManeuvers perk gap, both of which this leaves in the
+        /// blow. Only the base Tactics skill effect is replaced.
+        /// </summary>
+        private static float CommanderTacticsFactor(PartyBase strikerParty, PartyBase struckParty)
+        {
+            int strikerTactics = SideCommanderTactics(strikerParty);
+            int struckTactics = SideCommanderTactics(struckParty);
+            if (strikerTactics <= 0 && struckTactics <= 0)
+            {
+                return 1f;
+            }
+
+            float neutraliseVanilla = 1f / (1f + strikerTactics * VanillaTacticsAdvantagePerPoint);
+            float replacement = (1f + strikerTactics * CommanderTacticsPerPoint)
+                / (1f + struckTactics * CommanderTacticsPerPoint);
+            return neutraliseVanilla * replacement;
         }
 
         /// <summary>
