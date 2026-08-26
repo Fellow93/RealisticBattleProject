@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using HarmonyLib;
+using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.CampaignSystem.Party;
@@ -703,50 +704,117 @@ namespace RBMCampaign
                     return;
                 }
 
-                ItemObject item = itemRosterElement.Item;
-                if (item == null)
-                {
-                    return;
-                }
-
-                float days = DaysOfSupply(____town, item);
-                if (days < 0f)
-                {
-                    // Not a good RBM models. Vanilla prices it.
-                    return;
-                }
-
-                // Ours, and only ours: the good's base value is the historical floor price
-                // (TradeGoodValues), scarcity is the markup, and the base value is the floor. isSelling is
-                // from the PARTY's side -- true means the party is selling and the town is buying.
-                //
-                // Who is selling decides whether the sale carries scarcity. A village convoy delivering
-                // its harvest is paid the flat wholesale floor: that is the daily bulk flow, and paying it
-                // the famine price would drain a short town on its own countryside's food -- the very harm
-                // WholesaleFactor exists to prevent. A caravan, a lord, or the player selling into the town
-                // is instead paid the real days-of-supply price, the same curve a buyer pays, so a shortage
-                // rewards whoever hauls the good in and the market can pull supply toward it on its own
-                // rather than waiting on the administrative caravans. A null party is not a trade at all but
-                // an internal valuation -- GetItemsToProduce values a workshop's output isSelling:true -- and
-                // keeps the flat wholesale figure it was tuned against; see WholesaleFactor.
-                bool wholesale = isSelling && (tradingParty == null || tradingParty.IsVillager);
-                float factor = wholesale ? WholesaleFactor : ScarcityFactor(days, MarkupCap(item));
-
-                // The one thing kept from vanilla: the party's own trade spread -- their Trade skill and
-                // the goods' trade perks. Passing a null merchant is what strips everything else, because
-                // the war markup and every village/caravan spread key off the merchant party; with none
-                // supplied GetTradePenalty returns just the base margin scaled by the party's skill and
-                // the perks the goods carry. Vanilla applies that spread as (1 + penalty) to a buyer and
-                // 1 / (1 + penalty) to a seller.
-                ItemData data = __instance.GetCategoryData(item.GetItemCategory());
-                float penalty = Campaign.Current.Models.TradeItemPriceFactorModel.GetTradePenalty(
-                    item, tradingParty, null, isSelling, data.InStoreValue, data.Supply, data.Demand);
-                float spread = isSelling ? (1f / (1f + penalty)) : (1f + penalty);
-
-                float priced = itemRosterElement.ItemValue * factor * spread;
-                int rounded = isSelling ? MathF.Floor(priced) : MathF.Ceiling(priced);
-                __result = (rounded > 1) ? rounded : 1;
+                ApplyDaysOfSupplyPrice(____town, __instance, itemRosterElement, tradingParty, isSelling,
+                    ref __result);
             }
+        }
+
+        /// <summary>
+        /// Extends the same days-of-supply price to a VILLAGE trade screen, which vanilla routes through
+        /// its own <see cref="VillageMarketData"/> instead of the town's -- a separate class the retail
+        /// patch above never touches.
+        /// </summary>
+        /// <remarks>
+        /// The trade screen at a village prices via <c>settlement.Village.MarketData.GetPrice</c>
+        /// (<see cref="VillageMarketData"/>), which calls the vanilla price model DIRECTLY and only borrows
+        /// its bound town's category DATA -- it never calls <see cref="TownMarketData.GetPrice"/>, so
+        /// <see cref="ScarcityPricePatch"/> does not reach it. Left unpatched, a village sold the player
+        /// goods at vanilla's factor, which floors trade goods at 0.1x; a good the village overproduces and
+        /// dumps into its bound town (furs, hides) read as glutted there and collapsed to ~0.1x of RBM's
+        /// x10-inflated base value -- roughly ten times too cheap, and only on the goods a village floods.
+        ///
+        /// This mirrors the retail patch onto the SAME bound town <see cref="VillageMarketData"/> itself
+        /// resolves (<c>TradeBound ?? nearest town</c>) and reuses <see cref="ApplyDaysOfSupplyPrice"/>, so
+        /// a village and its town quote the identical price for the same good by construction. Only the
+        /// four-argument <c>EquipmentElement</c> overload is patched; the <c>ItemObject</c> overload
+        /// forwards to it, so patching both would apply the adjustment twice -- the same reasoning as the
+        /// town patch. Four underscores on the village field for the same field-injection reason.
+        ///
+        /// A village bound to a CASTLE resolves to a non-town settlement, so <see cref="DaysOfSupply"/>'s
+        /// <c>town.IsTown</c> guard returns negative and vanilla prices it -- the same boundary drawn
+        /// everywhere else RBM does not model a market.
+        /// </remarks>
+        [HarmonyPatch(typeof(VillageMarketData), "GetPrice",
+            new Type[] { typeof(EquipmentElement), typeof(MobileParty), typeof(bool), typeof(PartyBase) })]
+        private static class VillageScarcityPricePatch
+        {
+            private static void Postfix(Village ____village,
+                EquipmentElement itemRosterElement, MobileParty tradingParty, bool isSelling, ref int __result)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || ____village == null)
+                {
+                    return;
+                }
+
+                // The town whose stock and category data the village trades against -- resolved exactly as
+                // VillageMarketData does: its explicit trade-bound settlement, else the nearest town.
+                Town town = ____village.TradeBound?.Town
+                    ?? SettlementHelper.FindNearestTownToSettlement(
+                        ____village.Settlement, MobileParty.NavigationType.All);
+                if (town == null)
+                {
+                    return;
+                }
+
+                ApplyDaysOfSupplyPrice(town, town.MarketData, itemRosterElement, tradingParty, isSelling,
+                    ref __result);
+            }
+        }
+
+        /// <summary>
+        /// Rebuilds a price from RBM's own terms -- the good's base value, its days-of-supply scarcity
+        /// factor, and the party's own trade spread -- discarding everything else vanilla's model decided.
+        /// Shared by the town retail patch and the village trade patch so the two never disagree about a
+        /// good's price; <paramref name="town"/> supplies the days-of-supply reading and
+        /// <paramref name="marketData"/> the category data the trade spread keys off (the village's bound
+        /// town for both).
+        /// </summary>
+        private static void ApplyDaysOfSupplyPrice(Town town, TownMarketData marketData,
+            EquipmentElement itemRosterElement, MobileParty tradingParty, bool isSelling, ref int __result)
+        {
+            ItemObject item = itemRosterElement.Item;
+            if (item == null)
+            {
+                return;
+            }
+
+            float days = DaysOfSupply(town, item);
+            if (days < 0f)
+            {
+                // Not a good RBM models. Vanilla prices it.
+                return;
+            }
+
+            // Ours, and only ours: the good's base value is the historical floor price
+            // (TradeGoodValues), scarcity is the markup, and the base value is the floor. isSelling is
+            // from the PARTY's side -- true means the party is selling and the town is buying.
+            //
+            // Who is selling decides whether the sale carries scarcity. A village convoy delivering
+            // its harvest is paid the flat wholesale floor: that is the daily bulk flow, and paying it
+            // the famine price would drain a short town on its own countryside's food -- the very harm
+            // WholesaleFactor exists to prevent. A caravan, a lord, or the player selling into the town
+            // is instead paid the real days-of-supply price, the same curve a buyer pays, so a shortage
+            // rewards whoever hauls the good in and the market can pull supply toward it on its own
+            // rather than waiting on the administrative caravans. A null party is not a trade at all but
+            // an internal valuation -- GetItemsToProduce values a workshop's output isSelling:true -- and
+            // keeps the flat wholesale figure it was tuned against; see WholesaleFactor.
+            bool wholesale = isSelling && (tradingParty == null || tradingParty.IsVillager);
+            float factor = wholesale ? WholesaleFactor : ScarcityFactor(days, MarkupCap(item));
+
+            // The one thing kept from vanilla: the party's own trade spread -- their Trade skill and
+            // the goods' trade perks. Passing a null merchant is what strips everything else, because
+            // the war markup and every village/caravan spread key off the merchant party; with none
+            // supplied GetTradePenalty returns just the base margin scaled by the party's skill and
+            // the perks the goods carry. Vanilla applies that spread as (1 + penalty) to a buyer and
+            // 1 / (1 + penalty) to a seller.
+            ItemData data = marketData.GetCategoryData(item.GetItemCategory());
+            float penalty = Campaign.Current.Models.TradeItemPriceFactorModel.GetTradePenalty(
+                item, tradingParty, null, isSelling, data.InStoreValue, data.Supply, data.Demand);
+            float spread = isSelling ? (1f / (1f + penalty)) : (1f + penalty);
+
+            float priced = itemRosterElement.ItemValue * factor * spread;
+            int rounded = isSelling ? MathF.Floor(priced) : MathF.Ceiling(priced);
+            __result = (rounded > 1) ? rounded : 1;
         }
 
         /// <summary>
