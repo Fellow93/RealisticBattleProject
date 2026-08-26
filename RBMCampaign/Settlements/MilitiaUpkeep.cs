@@ -238,8 +238,15 @@ namespace RBMCampaign
         /// <summary>
         /// The pot that funds a settlement's militia, and against which its affordability is judged. Each
         /// kind of place pays from the purse the spec names: a village and a castle from their single
-        /// settlement wealth, a town from its citizens' market money.
+        /// settlement wealth, a town from its citizens' market money -- BACKED by its own treasury.
         /// </summary>
+        /// <remarks>
+        /// A town's treasury backstops the citizen pot: when the market is bare -- most sharply just after
+        /// a storm, where the sack strips citizen wealth but spares the treasury -- the fief funds militia
+        /// from the treasury rather than fielding none while it visibly holds gold. <see cref="DebitFundingPot"/>
+        /// spends the two pots in the same order this reads them, so the affordability floor and the actual
+        /// draw stay in step and no militiaman is armed for free.
+        /// </remarks>
         private static int MaintenancePot(Settlement settlement)
         {
             if (settlement == null)
@@ -248,7 +255,8 @@ namespace RBMCampaign
             }
             if (settlement.IsTown)
             {
-                return SettlementWealth.GetCitizenWealth(settlement);
+                return SettlementWealth.GetCitizenWealth(settlement)
+                    + SettlementWealth.GetSettlementWealth(settlement);
             }
             return SettlementWealth.GetSettlementWealth(settlement);
         }
@@ -264,9 +272,20 @@ namespace RBMCampaign
             {
                 return 0;
             }
-            return settlement.IsTown
-                ? SettlementWealth.DebitCitizens(settlement, amount, SettlementWealth.Source.Militia)
-                : SettlementWealth.Debit(settlement, amount, SettlementWealth.Source.Militia);
+            if (settlement.IsTown)
+            {
+                // Citizens pay first; the treasury backstops the remainder, in the same order
+                // MaintenancePot reads the two pots -- so what the floor judged affordable is exactly
+                // what can be drawn.
+                int paid = SettlementWealth.DebitCitizens(settlement, amount, SettlementWealth.Source.Militia);
+                int remaining = amount - paid;
+                if (remaining > 0)
+                {
+                    paid += SettlementWealth.Debit(settlement, remaining, SettlementWealth.Source.Militia);
+                }
+                return paid;
+            }
+            return SettlementWealth.Debit(settlement, amount, SettlementWealth.Source.Militia);
         }
 
         /// <summary>
