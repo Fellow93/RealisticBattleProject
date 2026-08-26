@@ -1,6 +1,7 @@
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.Issues;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Library;
@@ -136,6 +137,36 @@ namespace RBMCampaign
                 return;
             }
             SpoilsPool.RansomPrisonersForSpoils(sellerParty, prisoners);
+        }
+    }
+
+    /// <summary>
+    /// Gives the prisoner-delivery quest ("Landowner Needs Manual Laborers") the same gear-strip spoils a
+    /// normal ransom grants, so handing captives to the quest is not silently worth far less than selling
+    /// them at a settlement would be.
+    /// </summary>
+    /// <remarks>
+    /// The quest delivers prisoners through its OWN <c>PartyScreenMode.PrisonerManage</c> screen and never
+    /// calls <see cref="SellPrisonersAction"/>, so <see cref="SellPrisonersGearSpoilsPatch"/> never fires
+    /// for it -- the player got only the quest's gold and none of the kit worth. Vanilla still pays that
+    /// gold (5x the ransom value per captive); this only adds back the stripped-kit half a normal ransom
+    /// grants, restoring parity between delivering and ransoming.
+    ///
+    /// <c>OnDoneClicked</c> runs once per delivery session, and <c>leftPrisonRoster</c> is exactly the
+    /// prisoners moved to the quest giver's side that session -- the same roster its own reward loop meters
+    /// -- so stripping it grants the kit spoils once, for precisely the captives handed over. Priced and
+    /// paid through the very same <see cref="RansomPrisonersForSpoils"/> a settlement ransom uses.
+    /// </remarks>
+    [HarmonyPatch(typeof(LandLordNeedsManualLaborersIssueBehavior.LandLordNeedsManualLaborersIssueQuest), "OnDoneClicked")]
+    public static class ManualLaborersQuestGearSpoilsPatch
+    {
+        private static void Postfix(TroopRoster leftPrisonRoster)
+        {
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled)
+            {
+                return;
+            }
+            SpoilsPool.RansomPrisonersForSpoils(PartyBase.MainParty, leftPrisonRoster);
         }
     }
 }
