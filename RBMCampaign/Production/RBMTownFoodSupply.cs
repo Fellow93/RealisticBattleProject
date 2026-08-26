@@ -243,10 +243,10 @@ namespace RBMCampaign
             // the same result as applying it to their sum because the perk is a proportional factor.
             if (town.IsUnderSiege)
             {
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, ref garrison);
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, ref militia);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, false, ref garrison);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, false, ref militia);
             }
-            PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, ref households);
+            PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, false, ref households);
 
             breakdown.Citizens = (int)MathF.Round(households.ResultNumber);
             breakdown.Garrison = (int)MathF.Round(garrison.ResultNumber);
@@ -616,7 +616,7 @@ namespace RBMCampaign
                 // Flat Add (2f), so it needs no base to scale off -- unlike an AddFactor perk, which
                 // would have to be folded into a running total to mean anything.
                 ExplainedNumber smuggled = new ExplainedNumber(0f);
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Roguery.DirtyFighting, town, ref smuggled);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Roguery.DirtyFighting, town, false, ref smuggled);
                 DeliverGood(town, RandomSmuggledFood(), smuggled.ResultNumber, "smuggled", delivered);
             }
 
@@ -691,10 +691,10 @@ namespace RBMCampaign
 
             if (town.IsUnderSiege)
             {
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, ref soldiers);
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Medicine.TriageTent, town, ref rations);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, false, ref soldiers);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Medicine.TriageTent, town, false, ref rations);
             }
-            PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, ref households);
+            PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, false, ref households);
 
             rations.Add(households.ResultNumber);
             rations.Add(soldiers.ResultNumber);

@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using Helpers;
 using System;
 using System.Collections.Generic;
@@ -334,9 +334,17 @@ namespace RBMCampaign
             }
 
             MobileParty mobileParty = (party != null) ? party.MobileParty : null;
-            PerkHelper.AddPerkBonusForParty(DefaultPerks.Medicine.Sledges, mobileParty, false, ref stat);
-            PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Riding.Veterinary, rider, true, ref stat);
-            PerkHelper.AddPerkBonusForParty(DefaultPerks.Riding.Veterinary, mobileParty, false, ref stat);
+            // v1.5.1's 4-arg AddPerkBonusForParty convenience overload reads party.CurrentBattleEnvironment
+            // BEFORE its null-guard, so a null party NREs (the old overload was null-safe). Guard it here.
+            if (mobileParty != null)
+            {
+                PerkHelper.AddPerkBonusForParty(DefaultPerks.Medicine.Sledges, mobileParty, false, ref stat);
+            }
+            PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Riding.Veterinary, BattleEnvironment.Land, rider, true, ref stat);
+            if (mobileParty != null)
+            {
+                PerkHelper.AddPerkBonusForParty(DefaultPerks.Riding.Veterinary, mobileParty, false, ref stat);
+            }
             return stat;
         }
 

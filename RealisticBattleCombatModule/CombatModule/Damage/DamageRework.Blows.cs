@@ -118,7 +118,7 @@ namespace RBMCombat
         [HarmonyPatch("RegisterBlow")]
         private class RegisterBlowPatch
         {
-            private static bool Prefix(ref Mission __instance, ref Agent attacker, ref Agent victim, GameEntity realHitEntity, ref Blow b, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, ref CombatLogData combatLogData)
+            private static bool Prefix(ref Mission __instance, ref Agent attacker, ref Agent victim, WeakGameEntity realHitEntity, ref Blow b, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, ref CombatLogData combatLogData)
             {
                 if (victim != null && victim.IsMount && collisionData.IsMissile)
                 {
@@ -154,7 +154,7 @@ namespace RBMCombat
                 }
                 foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
                 {
-                    missionBehaviour.OnRegisterBlow(attacker, victim, realHitEntity.WeakEntity, b, ref collisionData, in attackerWeapon);
+                    missionBehaviour.OnRegisterBlow(attacker, victim, realHitEntity, b, ref collisionData, in attackerWeapon);
                 }
                 return false;
             }

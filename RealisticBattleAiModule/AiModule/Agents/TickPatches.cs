@@ -94,7 +94,7 @@ namespace RBMAI
                         ___Agent.MovementInputVector = ___Agent.LookDirection.AsVec2 * 2f;
                     }
                 }
-                if (___Agent.GetMorale() > 0f && currentTime - ___Agent.LastMeleeHitTime > 10f)
+                if (___Agent.GetMorale() > 0f && currentTime - ___Agent.LastRecievedMeleeHitTime > 10f)
                 {
                     ___Agent.CommonAIComponent?.StopRetreating();
                 }

@@ -483,7 +483,7 @@ namespace RBMCampaign
                 // the fleet is already at the quay and embarking is instant (distance ~0 => zero transition).
                 if (from != null && from.HasPort && caravan.Anchor != null)
                 {
-                    caravan.Anchor.SetSettlement(from);
+                    caravan.Anchor.Settlement = from;
                 }
                 caravan.SetMoveGoToSettlement(to, MobileParty.NavigationType.All, true);
                 CaravanLog.Log("SEA", CaravanLog.Name(to), "by ship from " + CaravanLog.Name(from));

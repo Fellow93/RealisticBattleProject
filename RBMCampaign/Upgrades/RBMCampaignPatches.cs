@@ -34,11 +34,11 @@ namespace RBMCampaign
             MobileParty mobileParty = party?.MobileParty;
             if (mobileParty != null)
             {
-                if (mobileParty.HasPerk(DefaultPerks.Steward.SoundReserves))
+                if (mobileParty.HasPerk(DefaultPerks.Steward.SoundReserves, out _))
                 {
                     PerkHelper.AddPerkBonusForParty(DefaultPerks.Steward.SoundReserves, mobileParty, isPrimaryBonus: true, ref stat);
                 }
-                if (characterObject.IsRanged && mobileParty.HasPerk(DefaultPerks.Bow.RenownedArcher, checkSecondaryRole: true))
+                if (characterObject.IsRanged && mobileParty.HasPerk(DefaultPerks.Bow.RenownedArcher, out _, checkSecondaryRole: true))
                 {
                     PerkHelper.AddPerkBonusForParty(DefaultPerks.Bow.RenownedArcher, mobileParty, isPrimaryBonus: false, ref stat);
                 }
@@ -46,7 +46,7 @@ namespace RBMCampaign
                 {
                     stat.AddFactor(DefaultCulturalFeats.KhuzaitRecruitUpgradeFeat.EffectBonus, GameTexts.FindText("str_culture"));
                 }
-                if (isForHire && mobileParty.HasPerk(DefaultPerks.Steward.Contractors))
+                if (isForHire && mobileParty.HasPerk(DefaultPerks.Steward.Contractors, out _))
                 {
                     PerkHelper.AddPerkBonusForParty(DefaultPerks.Steward.Contractors, mobileParty, isPrimaryBonus: true, ref stat);
                 }

@@ -135,10 +135,11 @@ namespace RBMAI
         [HarmonyPatch("UpdateLastAttackAndHitTimes")]
         internal class UpdateLastAttackAndHitTimesFix
         {
-            private static readonly PropertyInfo _lastRangedHitTime = typeof(Agent).GetProperty("LastRangedHitTime");
-            private static readonly PropertyInfo _lastRangedAttackTime = typeof(Agent).GetProperty("LastRangedAttackTime");
-            private static readonly PropertyInfo _lastMeleeHitTime = typeof(Agent).GetProperty("LastMeleeHitTime");
-            private static readonly PropertyInfo _lastMeleeAttackTime = typeof(Agent).GetProperty("LastMeleeAttackTime");
+            // v1.5.1 rename: old LastX*HitTime (received) -> LastRecievedX*HitTime; old LastX*AttackTime (dealt) -> LastX*HitTime
+            private static readonly PropertyInfo _lastRangedHitTime = typeof(Agent).GetProperty("LastRecievedRangedHitTime");
+            private static readonly PropertyInfo _lastRangedAttackTime = typeof(Agent).GetProperty("LastRangedHitTime");
+            private static readonly PropertyInfo _lastMeleeHitTime = typeof(Agent).GetProperty("LastRecievedMeleeHitTime");
+            private static readonly PropertyInfo _lastMeleeAttackTime = typeof(Agent).GetProperty("LastMeleeHitTime");
 
             private static bool Prefix(ref Agent __instance, Agent attackerAgent, bool isMissile)
             {

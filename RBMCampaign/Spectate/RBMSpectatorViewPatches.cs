@@ -156,7 +156,10 @@ namespace RBMCampaign
     /// watched-side party lands on the one PlayerTeam. Gated on IsSpectating, inert in every real battle, and it
     /// covers the siege fork for free since it splits the player side the same way.
     /// </summary>
-    [HarmonyPatch(typeof(MissionCombatantsLogic), "SupportsAllyTeamOnPlayerSide")]
+    // v1.5.1 added a 5-arg naval static overload of SupportsAllyTeamOnPlayerSide, so the name-only
+    // selector became ambiguous and failed to bind. Pin the 1-arg instance overload by its out param.
+    [HarmonyPatch(typeof(MissionCombatantsLogic), "SupportsAllyTeamOnPlayerSide",
+        new[] { typeof(IBattleCombatant) }, new[] { ArgumentType.Out })]
     public static class RBMSpectatorSuppressAllyTeamPatch
     {
         public static void Postfix(ref bool __result, ref IBattleCombatant allyCombatant)

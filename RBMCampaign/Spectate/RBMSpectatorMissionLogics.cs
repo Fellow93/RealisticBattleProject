@@ -180,6 +180,10 @@ namespace RBMCampaign
         private DefaultBattleMissionAgentSpawnLogic _spawn;
         private bool _done;
 
+        // v1.5.1 made Mission.OnDeploymentFinished internal; reach it by reflection (was a public call before).
+        private static readonly MethodInfo _onDeploymentFinished =
+            typeof(Mission).GetMethod("OnDeploymentFinished", BindingFlags.Instance | BindingFlags.NonPublic);
+
         private bool _commandModeChanged;
         private bool _previousCommandMode;
 
@@ -212,7 +216,7 @@ namespace RBMCampaign
             // Between the two moments is exactly here.
             SetCommandMode(true);
 
-            Mission.Current.OnDeploymentFinished();
+            _onDeploymentFinished?.Invoke(Mission.Current, null);
         }
 
         public override void OnRemoveBehavior()

@@ -18,7 +18,7 @@ namespace RBMAI
         private class OverrideFormation
         {
             private static readonly PropertyInfo LastRangedAttackTimeProperty =
-                typeof(Agent).GetProperty("LastRangedAttackTime");
+                typeof(Agent).GetProperty("LastRangedHitTime");
 
             // Mission.GetNearby*Agents clears the list it is handed before filling it (verified against
             // TaleWorlds.MountAndBlade.Mission), so these scratch buffers can be reused instead of allocating a
@@ -156,7 +156,7 @@ namespace RBMAI
                     //ranged charge if they are skirmishing but not attacking
                     if (__instance.AI != null && __instance.AI.ActiveBehavior != null)
                     {
-                        if (unit.LastRangedAttackTime > 0)
+                        if (unit.LastRangedHitTime > 0)
                         {
                             Type activeBehaviorType = __instance.AI.ActiveBehavior.GetType();
                             if (activeBehaviorType == typeof(RBMBehaviorArcherFlank) || activeBehaviorType == typeof(RBMBehaviorArcherSkirmish)
@@ -165,13 +165,13 @@ namespace RBMAI
                                 MBList<Agent> enemyCloseBy = ScratchEnemyQuery;
                                 mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 15f, unit.Team, enemyCloseBy);
                                 float currentTime = MBCommon.GetTotalMissionTime();
-                                if (currentTime - unit.LastMeleeAttackTime > 10f && currentTime - unit.LastMeleeHitTime > 10f)
+                                if (currentTime - unit.LastMeleeHitTime > 10f && currentTime - unit.LastRecievedMeleeHitTime > 10f)
                                 {
-                                    if (currentTime - unit.LastRangedAttackTime > 50f)
+                                    if (currentTime - unit.LastRangedHitTime > 50f)
                                     {
                                         LastRangedAttackTimeProperty.SetValue(unit, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                                     }
-                                    if (currentTime - unit.LastRangedAttackTime > 20f && enemyCloseBy.Count < 3)
+                                    if (currentTime - unit.LastRangedHitTime > 20f && enemyCloseBy.Count < 3)
                                     {
                                         __result = WorldPosition.Invalid;
                                         return false;

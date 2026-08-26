@@ -40,7 +40,7 @@ namespace RBMCombat
                 {
                     MobileParty mobileParty = party.MobileParty;
                     SkillHelper.AddSkillBonusForParty(DefaultSkillEffects.SurgeonSurvivalBonus, mobileParty, ref stat);
-                    if (enemyParty?.MobileParty != null && enemyParty.MobileParty.HasPerk(DefaultPerks.Medicine.DoctorsOath))
+                    if (enemyParty?.MobileParty != null && enemyParty.MobileParty.HasPerk(DefaultPerks.Medicine.DoctorsOath, out _))
                     {
                         SkillHelper.AddSkillBonusForParty(DefaultSkillEffects.SurgeonSurvivalBonus, enemyParty.MobileParty, ref stat);
                     }
@@ -60,7 +60,7 @@ namespace RBMCombat
                     ExplainedNumber stat2 = new ExplainedNumber(1f / stat.ResultNumber);
                     if (character.IsHero)
                     {
-                        if (party.IsMobile && party.MobileParty.HasPerk(DefaultPerks.Medicine.CheatDeath, checkSecondaryRole: true))
+                        if (party.IsMobile && party.MobileParty.HasPerk(DefaultPerks.Medicine.CheatDeath, out _, checkSecondaryRole: true))
                         {
                             stat2.AddFactor(DefaultPerks.Medicine.CheatDeath.SecondaryBonus, DefaultPerks.Medicine.CheatDeath.Name);
                         }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Helpers;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
@@ -810,9 +810,9 @@ namespace RBMCampaign
                 // two divisors identically -- same Master of Warcraft factor on each -- and add the
                 // difference back, putting the castle on vanilla's divisor.
                 ExplainedNumber chargedRBM = new ExplainedNumber(town.Prosperity / (float)RBMProsperityToEatOneFood);
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, ref chargedRBM);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, false, ref chargedRBM);
                 ExplainedNumber chargedVanilla = new ExplainedNumber(town.Prosperity / (float)VanillaProsperityToEatOneFood);
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, ref chargedVanilla);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, false, ref chargedVanilla);
 
                 __result.Add(chargedRBM.ResultNumber - chargedVanilla.ResultNumber, CastleSelfSufficiencyText);
             }

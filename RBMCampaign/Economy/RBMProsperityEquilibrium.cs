@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using HarmonyLib;
 using Helpers;
 using TaleWorlds.CampaignSystem;
@@ -509,7 +509,7 @@ namespace RBMCampaign
             if (fortification.Owner != null && fortification.Owner.IsStarving)
             {
                 ExplainedNumber bonuses = new ExplainedNumber((foodChange < 0f) ? ((int)foodChange) : 0);
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Medicine.HelpingHands, fortification, ref bonuses);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Medicine.HelpingHands, fortification, false, ref bonuses);
                 total += bonuses.ResultNumber * 0.5f;
             }
 
