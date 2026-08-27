@@ -93,11 +93,16 @@ namespace RBMCampaign
         [HarmonyPatch(typeof(DefaultRaidModel), "GetRaidLootMultiplier")]
         private class ScaleRaidLootByTakenFraction
         {
-            private static void Postfix(PartyBase receivingParty, ref float __result)
+            // The model returns an ExplainedNumber, whose result is BaseNumber * (1 + SumOfFactors).
+            // To scale the whole result by the taken fraction f we add a factor of (1 + SumOfFactors) * (f - 1):
+            // that reproduces an exact multiply-by-f no matter how vanilla assembled its base and factors, and
+            // collapses to a no-op when f == 1 (the most skilled raider keeps vanilla's full haul).
+            private static void Postfix(PartyBase receivingParty, ref ExplainedNumber __result)
             {
                 if (IsEnabled)
                 {
-                    __result *= TakenFraction(receivingParty);
+                    float fraction = TakenFraction(receivingParty);
+                    __result.AddFactor((1f + __result.SumOfFactors) * (fraction - 1f));
                 }
             }
         }
