@@ -39,6 +39,10 @@ namespace RBMConfig
         public TextViewModel CaravanLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> CaravanLoggingEnabled { get; }
 
+        // Deserter raider AI (hunt villagers/caravans, raid villages): master on/off.
+        public TextViewModel DeserterRaidersEnabledText { get; }
+        public SelectorVM<SelectorItemVM> DeserterRaidersEnabled { get; }
+
         // SupplyTown gate: on/off toggle for gating upgrades on a nearby friendly town.
         public TextViewModel TroopUpgradeRequireSupplyTownText { get; }
         public SelectorVM<SelectorItemVM> TroopUpgradeRequireSupplyTown { get; }
@@ -720,6 +724,15 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel CaravanLoggingEnabledHint { get; } = Hint("Writes the supply-caravan system to logs/caravans next to the config: each caravan dispatched, its arrival and sale, capital injected and repaid, and any lost on the road. Needs Kingdom Supply Caravans on. Default on.");
+
+        [DataSourceProperty]
+        public string DeserterRaidersEnabledt
+        {
+            get { return new TextObject("Deserter Raiders").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel DeserterRaidersEnabledHint { get; } = Hint("Gives deserter parties initiative: they actively hunt nearby villager convoys and caravans and raid weakly-held villages when they out-match the target, instead of aimlessly patrolling their spawn point. Off leaves deserters on vanilla behavior. Default on.");
 
         // SupplyTown gate: radius slider (whole map units) + the toggle's row label.
         private float _troopUpgradeSupplyRadius;

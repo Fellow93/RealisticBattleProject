@@ -221,5 +221,10 @@ namespace RBMConfig
         // Writes the supply-caravan system to its own logs/caravans folder -- each caravan dispatched,
         // its arrival and sale, and any lost on the road. No effect unless the caravans above are on.
         public static bool caravanLoggingEnabled = false;
+
+        // Whether deserter parties are given raider initiative: actively hunting nearby villager convoys
+        // and caravans and raiding weakly-held villages when they out-match the target, instead of vanilla's
+        // aimless patrol around their spawn point. Off leaves deserters on vanilla behavior.
+        public static bool deserterRaidersEnabled = true;
     }
 }

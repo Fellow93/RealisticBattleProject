@@ -350,6 +350,11 @@ namespace RBMConfig
             CaravanLoggingEnabledText = new TextViewModel(new TextObject("Caravan Logging"));
             CaravanLoggingEnabled = new SelectorVM<SelectorItemVM>(caravanLoggingOptions, 0, null);
 
+            // Deserter raider AI: on by default, so Enabled carries the "(Default)" tag.
+            List<string> deserterRaidersOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            DeserterRaidersEnabledText = new TextViewModel(new TextObject("Deserter Raiders"));
+            DeserterRaidersEnabled = new SelectorVM<SelectorItemVM>(deserterRaidersOptions, 0, null);
+
             // Equipment simulation: Enabled is the default, so its option carries the "(Default)" tag.
             List<string> simulationEquipmentOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             SimulationEquipmentEnabledText = new TextViewModel(new TextObject("{=RBM_CON_093}Detailed Auto Resolve"));
@@ -474,6 +479,7 @@ namespace RBMConfig
             KingdomCaravansEnabled.SelectedIndex = RBMConfig.kingdomCaravansEnabled ? 1 : 0;
             CaravanInvestmentEnabled.SelectedIndex = RBMConfig.caravanInvestmentEnabled ? 1 : 0;
             CaravanLoggingEnabled.SelectedIndex = RBMConfig.caravanLoggingEnabled ? 1 : 0;
+            DeserterRaidersEnabled.SelectedIndex = RBMConfig.deserterRaidersEnabled ? 1 : 0;
             SimulationEquipmentEnabled.SelectedIndex = RBMConfig.simulationEquipmentEnabled ? 1 : 0;
             SimulationRoutEnabled.SelectedIndex = RBMConfig.simulationRoutEnabled ? 1 : 0;
             StrategicPowerEnabled.SelectedIndex = RBMConfig.strategicPowerEnabled ? 1 : 0;
@@ -691,6 +697,7 @@ namespace RBMConfig
             RBMConfig.kingdomCaravansEnabled = KingdomCaravansEnabled.SelectedIndex == 1;
             RBMConfig.caravanInvestmentEnabled = CaravanInvestmentEnabled.SelectedIndex == 1;
             RBMConfig.caravanLoggingEnabled = CaravanLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.deserterRaidersEnabled = DeserterRaidersEnabled.SelectedIndex == 1;
             RBMConfig.simulationEquipmentEnabled = SimulationEquipmentEnabled.SelectedIndex == 1;
             RBMConfig.simulationRoutEnabled = SimulationRoutEnabled.SelectedIndex == 1;
             RBMConfig.strategicPowerEnabled = StrategicPowerEnabled.SelectedIndex == 1;
@@ -777,6 +784,7 @@ namespace RBMConfig
             KingdomCaravansEnabled.SelectedIndex = 1;
             CaravanInvestmentEnabled.SelectedIndex = 1;
             CaravanLoggingEnabled.SelectedIndex = 0;
+            DeserterRaidersEnabled.SelectedIndex = 1;
             SimulationEquipmentEnabled.SelectedIndex = 1;
             SimulationRoutEnabled.SelectedIndex = 0;
             StrategicPowerEnabled.SelectedIndex = 1;
