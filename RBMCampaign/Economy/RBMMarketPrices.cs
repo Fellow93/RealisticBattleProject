@@ -781,7 +781,16 @@ namespace RBMCampaign
             float days = DaysOfSupply(town, item);
             if (days < 0f)
             {
-                // Not a good RBM models. Vanilla prices it.
+                // Not a good RBM models (tools, war gear, horses, and any trade good with no local
+                // citizen or workshop sink) -- vanilla prices it. But the base value is still the
+                // floor for the market's ASK price: a buyer never pays below the good's Value (the
+                // historical floor price), even where vanilla's own model would discount a glutted
+                // good to 0.1x of base. A seller keeps vanilla's price, so the trade spread can still
+                // put a sale below base as before -- only the buy side is floored.
+                if (!isSelling && __result < itemRosterElement.ItemValue)
+                {
+                    __result = itemRosterElement.ItemValue;
+                }
                 return;
             }
 

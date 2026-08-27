@@ -1,4 +1,5 @@
 using HarmonyLib;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Workshops;
@@ -29,7 +30,9 @@ namespace RBMCampaign
     ///
     /// Both the notable (AI and the hidden artisans) and the player tick are patched, so a glutted good is
     /// not topped up whoever owns the shop. The glut is read against the TOWN's store in both cases -- the
-    /// market the good ultimately lands in -- not the player's warehouse.
+    /// market the good ultimately lands in. The one exception is a PLAYER shop set to bank its output in
+    /// the owner's warehouse (see <see cref="SendsOutputToWarehouseWithRoom"/>): while that warehouse has
+    /// room the output never reaches the town shelf, so the town glut does not gate it.
     ///
     /// A multi-output recipe is skipped only when EVERY output is full, so a wanted co-product is never
     /// starved for a glutted one (cow -> meat + hides still runs while hides has room, accepting a little
@@ -99,12 +102,44 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>
+        /// True when a PLAYER shop is set to bank its output in the owner's warehouse and that warehouse
+        /// still has room. Such a cycle never reaches the town shelf, so a TOWN-market glut is no reason to
+        /// skip it -- the whole point of the warehouse is to stockpile a low-demand good the market cannot
+        /// absorb. Once the warehouse fills, vanilla spills the overflow back onto the town market
+        /// (see <c>TickOneProductionCycleForPlayerWorkshop</c>), so the glut gate rightly applies again.
+        /// </summary>
+        private static bool SendsOutputToWarehouseWithRoom(Workshop workshop)
+        {
+            if (Campaign.Current == null || workshop.Settlement == null)
+            {
+                return false;
+            }
+
+            IWorkshopWarehouseCampaignBehavior warehouse =
+                Campaign.Current.GetCampaignBehavior<IWorkshopWarehouseCampaignBehavior>();
+            if (warehouse == null || warehouse.GetStockProductionInWarehouseRatio(workshop) <= 0f)
+            {
+                return false;
+            }
+
+            float weight = warehouse.GetWarehouseItemRosterWeight(workshop.Settlement);
+            return weight < Campaign.Current.Models.WorkshopModel.WarehouseCapacity;
+        }
+
         [HarmonyPatch(typeof(WorkshopsCampaignBehavior), "TickOneProductionCycleForPlayerWorkshop")]
         private static class PlayerGate
         {
             [HarmonyPriority(Priority.First)]
             private static bool Prefix(WorkshopType.Production production, Workshop workshop, ref bool __result)
             {
+                // A player banking output into a warehouse with room is not dumping on the glutted town
+                // market, so let the cycle run regardless of the town glut. Notable shops have no
+                // warehouse (ratio stays 0), so this never fires for them.
+                if (workshop != null && SendsOutputToWarehouseWithRoom(workshop))
+                {
+                    return true;
+                }
                 return GateCycle(production, workshop, ref __result);
             }
         }
