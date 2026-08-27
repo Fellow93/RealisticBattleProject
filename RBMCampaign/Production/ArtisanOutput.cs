@@ -77,15 +77,19 @@ namespace RBMCampaign
             Bench bench = BenchFor(town, workshop.WorkshopType);
             if (bench.Active <= 0) return 1f;
 
+            // The config multiplier layers onto RBM's prosperity-driven scale, so both AI and player
+            // shops -- and every tooltip and log that reads the model -- speed up or slow down together.
+            float mult = RBMConfig.RBMConfig.workshopProductionMultiplier;
+
             if (workshop.WorkshopType.IsHidden)
             {
                 int ownedCount = CountOwnedWorkshops(town);
                 float share = 1f - OwnedWorkshopProsperityShare * ownedCount;
                 if (share <= 0f) return 1f;
-                return (prosperity * share) / bench.Active;
+                return (prosperity * share) / bench.Active * mult;
             }
 
-            return (prosperity * OwnedWorkshopProsperityShare) / bench.Active;
+            return (prosperity * OwnedWorkshopProsperityShare) / bench.Active * mult;
         }
 
         private static int CountOwnedWorkshops(Town town)

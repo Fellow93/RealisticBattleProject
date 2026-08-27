@@ -140,6 +140,91 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopUpgradeCostHint { get; } = Hint("{=RBM_CON_050}Multiplier on the gold-and-spoils cost to upgrade a troop. 0 turns the spoils system off and makes upgrades free. Default 1.00.");
 
+        private float _villageProductionMultiplier;
+
+        [DataSourceProperty]
+        public float VillageProductionMultiplier
+        {
+            get
+            {
+                return _villageProductionMultiplier;
+            }
+            set
+            {
+                // Slider reports continuous values; snap to 0.01 steps and hold to the 0.01..2 range.
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0.01f, 2f);
+                if (snapped != _villageProductionMultiplier)
+                {
+                    _villageProductionMultiplier = snapped;
+                    OnPropertyChangedWithValue(snapped, "VillageProductionMultiplier");
+                    OnPropertyChanged("VillageProductionMultiplierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string VillageProductionMultiplierValue
+        {
+            get
+            {
+                return _villageProductionMultiplier.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string VillageProductiont
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_112}Village Production").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel VillageProductionHint { get; } = Hint("{=RBM_CON_113}Multiplier on every village's daily output -- its production, warehouse size and production tooltip together. Below 1 throttles the countryside, above 1 floods it. Default 1.00.");
+
+        private float _workshopProductionMultiplier;
+
+        [DataSourceProperty]
+        public float WorkshopProductionMultiplier
+        {
+            get
+            {
+                return _workshopProductionMultiplier;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0.01f, 2f);
+                if (snapped != _workshopProductionMultiplier)
+                {
+                    _workshopProductionMultiplier = snapped;
+                    OnPropertyChangedWithValue(snapped, "WorkshopProductionMultiplier");
+                    OnPropertyChanged("WorkshopProductionMultiplierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string WorkshopProductionMultiplierValue
+        {
+            get
+            {
+                return _workshopProductionMultiplier.ToString("0.00");
+            }
+        }
+
+        [DataSourceProperty]
+        public string WorkshopProductiont
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_114}Workshop Production").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel WorkshopProductionHint { get; } = Hint("{=RBM_CON_115}Multiplier on every workshop's conversion speed -- how fast it turns inputs into outputs -- on top of RBM's prosperity-driven scale. Below 1 slows shops, above 1 speeds them. Default 1.00.");
+
         private float _troopUpgradeSpoilsLootMultiplier;
 
         [DataSourceProperty]

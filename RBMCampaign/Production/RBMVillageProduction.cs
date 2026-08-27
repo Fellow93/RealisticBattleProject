@@ -583,9 +583,10 @@ namespace RBMCampaign
                 System.Text.StringBuilder produced = logging ? new System.Text.StringBuilder() : null;
                 int totalUnits = 0;
 
+                float mult = RBMConfig.RBMConfig.villageProductionMultiplier;
                 foreach (var kv in GetRates(village))
                 {
-                    int num = MBRandom.RoundRandomized(kv.Value * village.Hearth);
+                    int num = MBRandom.RoundRandomized(kv.Value * village.Hearth * mult);
                     if (num <= 0)
                     {
                         continue;
@@ -677,7 +678,9 @@ namespace RBMCampaign
                     return true;
                 }
 
-                __result = GetGoodCapacity(GetTotalRate(__instance), __instance.Hearth);
+                // Scale capacity by the same production multiplier so the warehouse tracks output and
+                // the production-halt gate stays correctly sized.
+                __result = GetGoodCapacity(GetTotalRate(__instance) * RBMConfig.RBMConfig.villageProductionMultiplier, __instance.Hearth);
                 return false;
             }
         }
@@ -703,7 +706,7 @@ namespace RBMCampaign
                     float rate;
                     if (GetRates(village).TryGetValue(item, out rate))
                     {
-                        amount = rate * village.Hearth;
+                        amount = rate * village.Hearth * RBMConfig.RBMConfig.villageProductionMultiplier;
                     }
                 }
 
@@ -849,9 +852,10 @@ namespace RBMCampaign
                 // Per-good daily output, then the one warehouse figure the game actually tracks --
                 // a single store shared by every good, not a per-good allowance.
                 float hearth = village.Hearth;
+                float mult = RBMConfig.RBMConfig.villageProductionMultiplier;
                 foreach (var kv in ordered)
                 {
-                    float perDay = kv.Value * hearth;
+                    float perDay = kv.Value * hearth * mult;
                     list.Add(new TooltipProperty(kv.Key.Name.ToString(), perDay.ToString("0.##") + " /day", 0));
                 }
 

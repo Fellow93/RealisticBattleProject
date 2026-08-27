@@ -178,6 +178,17 @@ namespace RBMConfig
         // Applies to AI and player shops alike. Off restores vanilla's uncapped production. Default on.
         public static bool workshopHeadroomGateEnabled = true;
 
+        // Multiplies the daily output of every village's production -- the per-Hearth rate the rework
+        // rolls each day, and with it the warehouse capacity and the production tooltip, so all three
+        // stay in step. 1 leaves output as the rework computes it; below 1 throttles the countryside,
+        // above 1 floods it. Range 0.01..2. Default 1.
+        public static float villageProductionMultiplier = 1f;
+
+        // Multiplies the effective conversion speed of every workshop -- how fast it turns its inputs
+        // into outputs -- layered on top of RBM's own prosperity-driven workshop scale. 1 leaves it as
+        // computed; below 1 slows every shop, above 1 speeds them. Range 0.01..2. Default 1.
+        public static float workshopProductionMultiplier = 1f;
+
         // Adds a weight column to the inventory and trade item rows, showing the unit weight of one of
         // the item. With the goods repriced above, weight spans four orders of magnitude and decides
         // what a party can profitably carry, so it stops being a footnote. The column is carved out of

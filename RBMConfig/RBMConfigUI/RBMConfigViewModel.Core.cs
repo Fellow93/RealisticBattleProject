@@ -450,6 +450,8 @@ namespace RBMConfig
 
             _campaignStartingGold = MathF.Clamp(RBMConfig.campaignStartingGold, 1000f, 100000f);
             _troopUpgradeCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeCostMultiplier, 0f, 2f);
+            _villageProductionMultiplier = MathF.Clamp(RBMConfig.villageProductionMultiplier, 0.01f, 2f);
+            _workshopProductionMultiplier = MathF.Clamp(RBMConfig.workshopProductionMultiplier, 0.01f, 2f);
             _troopUpgradeSpoilsLootMultiplier = MathF.Clamp(RBMConfig.troopUpgradeSpoilsLootMultiplier, 0f, 5f);
             _troopUpgradeSupplyRadius = MathF.Clamp(RBMConfig.troopUpgradeSupplyRadius, 0f, 200f);
             TroopUpgradeRequireSupplyTown.SelectedIndex = RBMConfig.troopUpgradeRequireSupplyTown ? 1 : 0;
@@ -665,6 +667,8 @@ namespace RBMConfig
 
             RBMConfig.campaignStartingGold = (int)MathF.Round(_campaignStartingGold);
             RBMConfig.troopUpgradeCostMultiplier = _troopUpgradeCostMultiplier;
+            RBMConfig.villageProductionMultiplier = _villageProductionMultiplier;
+            RBMConfig.workshopProductionMultiplier = _workshopProductionMultiplier;
             RBMConfig.troopUpgradeSpoilsLootMultiplier = _troopUpgradeSpoilsLootMultiplier;
             RBMConfig.troopUpgradeSupplyRadius = _troopUpgradeSupplyRadius;
             RBMConfig.troopUpgradeRequireSupplyTown = TroopUpgradeRequireSupplyTown.SelectedIndex == 1;
@@ -744,6 +748,8 @@ namespace RBMConfig
             // Campaign / spoils
             CampaignStartingGold = 5000f;
             TroopUpgradeCostMultiplier = 1f;
+            VillageProductionMultiplier = 1f;
+            WorkshopProductionMultiplier = 1f;
             TroopUpgradeSpoilsLootMultiplier = 1f;
             TroopUpgradeSupplyRadius = 30f;
             TroopUpgradeRequireSupplyTown.SelectedIndex = 1;
