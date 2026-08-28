@@ -337,6 +337,28 @@ Two of these numbers carry scars worth recording. `CavalryMobilityMultiplier` wa
 
 The tick allocation is called once at the top of every round, and it is the **only** place the simulation ever says a round has turned. A blow cannot say it — a blow does not know how many came before it. So the battle's clock is read from there, and everything spent *over* a battle rather than in an instant hangs off it.
 
+### The field is only as wide as the real one
+
+Before a round is diced into its acts, there is a prior question the acts assume an answer to: **how many men are in the fight at all.** Vanilla, and RBM after it, hands each side `pow(itsOwnMen, 0.6)` blows a round off its **whole headcount** — every soldier a side owns is an eligible striker every round, so a lord who marches up with four times the enemy swings roughly `pow(4)^0.6 ≈ 2.3` times as often and grinds the smaller force to nothing at almost no cost to himself. That is not how the field battle you would have *fought* plays, and it is the reason send-the-troops always looked so much cheaper than going yourself.
+
+**The field only holds so many.** The engine never puts every man in the line at once: it spawns each side up to a share of the battle-size cap (`BannerlordConfig.GetRealBattleSize()`, the 200–1000 slider) and feeds the rest in as reinforcements as their own fall. RBM sets the split the player actually spawns into (RBMAI's `SpawningPatches`), and it is a simple one:
+
+| Both sides' strength | Who stands in the line |
+|---|---|
+| **Fit under the cap** (`nDef + nAtt ≤ cap`) | everyone — the whole of both sides |
+| **Over the cap**, smaller side ≤ half | the **smaller side in full**, the larger fills the remainder of the cap |
+| **Over the cap**, both sides > half | **half the cap each**; the rest is reserve |
+
+So 2000 vs 500 at a cap of 1000 is fought **500 against 500**, with 1500 men waiting behind the larger side's line; 700 vs 250 is fought whole (it fits); 1000 vs 450 is 550 against 450.
+
+**The simulation now fights it the same way.** Each round it reads the two sides' live strength, works out how many of each the cap lets stand in the line — the *engaged* count — and hands out blows off **that** rather than off the whole headcount, using vanilla's own formula (`min(enemy·2, pow(engaged, 0.6))`) so nothing else about the round moves. For 2000 vs 500 the blow ratio collapses from ~2.3 : 1 to ~**1 : 1**: the two lines are the same width, so they trade nearly evenly. The larger side still **wins** — it feeds its reserve forward as the front falls and the smaller side has no reserve to feed — but the smaller side, dying at the pace of the front rather than of the crowd, lands far more blows before it breaks, and the winner **pays in casualties for every rank it has to bring up**. A bloodless four-to-one is now a bloody one, which is the whole point.
+
+**The engaged counts are re-read every round off live strength**, so the front is not frozen at the muster. As the loser thins below half the cap, the winner's share of the line grows to fill what the cap leaves — envelopment, and it falls straight out of the same rule with nothing added for it.
+
+**The round is repriced to match.** Fewer blows a round means the battle takes more rounds to resolve, and charging each of those extra rounds the full field price (§6, the clock) would stretch the fight out across the campaign map — the same "billed half an hour for a slice of a battle" error the clock was rebuilt to kill. So a narrowed field round costs proportionally fewer campaign minutes, scaled by how much of the round the thinner front actually carries. The battle is bloodier; it is not longer.
+
+**Field battles only.** A wall assault has its own, finer frontage — the openings the siege equipment bought (§6, *Width*) — and is left to it; a broken side being ridden down has had its blows zeroed already and is left alone; and a battle small enough that both sides fit under the cap is vanilla's, untouched. It is a model constant (`FieldFrontageEnabled`), dialled against the log rather than set by the player, exactly as the tick multiplier is.
+
 ### A battle has three acts
 
 Auto-resolve has only ever known about the third.
@@ -397,6 +419,12 @@ For the first **two** rounds, only the defender may loose. He is standing on his
 The attacker is not merely out-shot in those rounds — he is doing **nothing at all**, because a man in the volley who is not shooting lands no blow (see above). Two rounds of free fire is the price of crossing open ground at somebody who is already there.
 
 Javelins are unaffected: nobody throws during the volley at all, so there is nothing to delay.
+
+### The defender's high ground
+
+A side that stands and waits picks the ground it waits on — a ridge, a slope, the lip of a ford — and its archers shoot **downhill**: a little more range, a plunging angle that finds the gaps a level shot glances off, and a target that is climbing at them rather than shooting back on even terms. The attacker, coming up, shoots **uphill** for the reverse of all of it. So in a field battle the defender's **fired** shots are worth **×1.10** and the attacker's **×0.90**.
+
+This is the field cousin of the siege wall's magnitude bonus (×1.25 / ×0.85, below), and deliberately a **milder** one: a wall is a wall every time, but a defender does not *always* hold the height, so the flat field figure is kept small. It touches fired missiles only — a javelin at skirmish range is a level, short throw the slope barely moves — and never a wall assault, which prices the same idea harder and by phase. Both figures are model constants (`FieldDefenderShotMagnitude` / `FieldAttackerShotMagnitude`); set them to 1 to switch the bias off.
 
 ### A stormed wall has two acts, not three
 
@@ -878,5 +906,7 @@ Everything else is read from the game's own equations and item data, or measured
 - **There is no A/B any more.** The log cannot tell you what this battle *would* have been without the model, because that battle does not exist and the only way to produce it was to reimplement vanilla's loop and run it — which is precisely how the log came to be lying. To compare, set `SimulationEquipmentEnabled` to `0` and fight the campaign; both logs are records of real battles.
 
 - **Two dials are known to be uncalibrated, and are listed in §11 rather than left to be discovered.** `RangedLandingExponent` double-counts with the ranged miss roll, which was added above it after the exponent had been tuned to carry those misses itself; and `HorseCapacity` was tuned when every footman's blow wore the horse, where the horse-or-man roll now sends 55% of them to the rider. Both want a paired log.
+
+- **The field frontage and the high-ground bias are new, and their figures are starting values.** The frontage (§6, *The field is only as wide as the real one*) is the higher-stakes of the two: it is what makes a lopsided win bloody, and how bloody is exactly what wants checking against the log — a run of big, one-sided auto-resolves, confirming the winner's casualties have climbed to a believable level without the fight dragging on the campaign clock. The defender's ×1.10 / ×0.90 high-ground magnitudes are milder and lower-risk, but likewise unmeasured. Both are model constants, off with `FieldFrontageEnabled = false` or by setting the magnitudes to 1.
 
 - **A riposte deepens a wound; it never lands the kill in the instant.** The counter is applied to the attacker's pool from inside the blow he threw, and is deliberately allowed to accumulate *past* the pool without downing him — the ordinary worn-through path finishes him on his next blow instead. Realising the kill reentrantly would drive the casualty books, the observer and the downed-marker in the middle of another blow's bookkeeping, which is the class of drift this whole file was rebuilt to avoid. A riposte is also never itself blocked or parried (there is no recursion), and **a hero is never wounded by one at all** — he carries his own pool rather than the trooper dictionary, so his counter is printed in the log and left un-applied rather than reimplement the hero-wounding path from inside a blow.

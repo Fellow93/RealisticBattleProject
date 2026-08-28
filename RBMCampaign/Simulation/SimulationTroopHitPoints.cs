@@ -401,6 +401,12 @@ namespace RBMCampaign
             SessionWounds(battle).Remove(selected);
             LastHitPointsLeft = 0f;
             damage = maxHitPoints;
+
+            // And a man of this stack is out of the fight, so the arrows still on his back leave it with him -- a
+            // decimated archer line must not keep shooting from the quivers of its dead. Which side he stood on is
+            // which stack loses him. (He is not a hero here; heroes returned far above and carry no stack quiver.)
+            bool struckIsAttacker = battle.AttackerSide == __instance;
+            SimulationBattleState.SpendAmmoOnDeath(battle, troop, struckIsAttacker);
         }
 
         /// <summary>This battle's per-descriptor ledger, made if it does not exist yet.</summary>

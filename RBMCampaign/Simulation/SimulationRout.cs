@@ -93,13 +93,16 @@ namespace RBMCampaign
         // live-headcount ratio broke on both. Casualty share reads the fight the right way round: the side bleeding
         // out faster, whatever its raw numbers, is the one that breaks. This is the gap in loss fractions at which a
         // side comes at risk of breaking -- it has lost this much MORE of itself, in proportion, than its enemy.
-        private const float RoutLossGapThreshold = 0.12f;
+        // Lowered 0.12 -> 0.06 alongside the RoutMaxBeatenTroops floor: that hard remnant gate is now the primary
+        // control of WHEN a side may break, so this only has to keep a dead-EVEN bleed from breaking anybody -- a
+        // beaten remnant must not be left fighting to the last man just because the winner bled heavily too.
+        private const float RoutLossGapThreshold = 0.06f;
 
-        // ...and it must also have taken real losses of its own before it will run: a side a dozen points ahead on a
-        // near-bloodless field is not being butchered. This floors the beaten side's own casualty fraction -- it must
-        // have bled roughly a seventh of itself away before it will consider breaking, so a side runs only once it is
-        // plainly being ground down rather than merely bloodied.
-        private const float RoutMinBeatenLoss = 0.15f;
+        // ...and it must also have taken real losses of its own before it will run: a side a hair ahead on a
+        // near-bloodless field is not being butchered. This floors the beaten side's own casualty fraction. Lowered
+        // 0.15 -> 0.08 for the same reason as the gap: once the remnant floor gates the break, this need only rule out
+        // the earliest, near-bloodless rounds rather than hold a plainly-beaten side together.
+        private const float RoutMinBeatenLoss = 0.08f;
 
         // The chance to break in a given round, once at risk: a small base, plus a share that grows with how far past
         // the gap the butchery has gone (severity 0 at the threshold, 1 as the side is wiped out). Re-rolled each
@@ -110,6 +113,14 @@ namespace RBMCampaign
         private const float RoutSeverityScale = 0.35f;
 
         private const float RoutMaxChancePerRound = 0.45f;
+
+        // A HARD FLOOR on when a side may break at all: it must be nearly spent -- fewer than this many men still
+        // standing -- before any of the proportional-loss reasoning below is even consulted. A side hundreds strong
+        // holds and fights on whatever its losses; only a remnant runs. This keeps a beaten but still substantial
+        // army from throwing in the towel while it has the numbers to fight, and makes the break the last act of a
+        // force already all but destroyed rather than a mid-battle collapse. It gates only LARGE battles -- in a
+        // skirmish both sides are under it from the first round, so there the proportional loss decides as before.
+        private const int RoutMaxBeatenTroops = 50;
 
         // Vanilla's BattleState setter is internal, so ending the battle from here -- the same act vanilla's own rout
         // performs -- goes through the setter by reflection. Cached once. Going through the SETTER (not the backing
@@ -228,6 +239,15 @@ namespace RBMCampaign
                 return;
             }
 
+            // And it does not break while it is still a real force, whatever its losses: only once it is a remnant --
+            // fewer than RoutMaxBeatenTroops still standing -- is the butchery below allowed to break it. The beaten
+            // side is the one this tests; the winner may be at any strength.
+            int beatenRemaining = (loser == __instance.AttackerSide) ? attackers : defenders;
+            if (beatenRemaining >= RoutMaxBeatenTroops)
+            {
+                return;
+            }
+
             // It runs only once it is being butchered -- far enough ahead of the enemy in proportional losses AND
             // having bled enough of its own to feel it. Either test unmet, it holds.
             float gap = beatenLoss - otherLoss;
@@ -258,6 +278,40 @@ namespace RBMCampaign
                 ? BattleState.AttackerVictory
                 : BattleState.DefenderVictory;
             SetBattleState.Invoke(__instance, new object[] { result });
+        }
+    }
+
+    /// <summary>
+    /// VANILLA'S OWN ROUT, SWITCHED OFF -- so this model is the only thing that can break a side.
+    ///
+    /// <see cref="MapEvent"/>.CalculateWinner ends a battle mid-fight the moment a side's <c>GetSideMorale()</c> falls
+    /// to approximately zero: it sets the enemy's victory and routs the beaten side through <c>Route()</c>. That
+    /// morale is the strength-weighted average of each party's STANDING campaign morale (food, wages, recent map
+    /// events) -- it has nothing to do with how the fight in front of them is going, and it breaks armies on the
+    /// auto-resolve field at strengths (a side still hundreds strong) that <see cref="SimulationRout"/>'s remnant
+    /// floor is expressly built to forbid. It was breaking a 142-man line while this model was still holding it
+    /// together, which is exactly the "routs too fast" this model exists to fix.
+    ///
+    /// So it is disabled where this model is in charge: a Prefix forces both morale arguments above the ~0 rout
+    /// threshold before CalculateWinner runs. NOTHING ELSE in that method is touched -- annihilation (a side reaching
+    /// zero remaining) still ends the battle exactly as before, the raft check still stands, the showResults flag is
+    /// unaffected -- so the ONLY thing removed is the standing-morale rout, and the decision of WHEN a beaten side
+    /// breaks is left to SimulationRout alone. Gated on the same switches as the rest of the feature: with the model
+    /// or the rout toggle off, vanilla's morale rout is left exactly as it was.
+    /// </summary>
+    [HarmonyPatch(typeof(MapEvent), "CalculateWinner")]
+    internal static class SimulationNoVanillaRout
+    {
+        private static void Prefix(ref float attackerSideMorale, ref float defenderSideMorale)
+        {
+            if (!SimulationEquipmentPower.SimulationEnabled || !RBMConfig.RBMConfig.simulationRoutEnabled)
+            {
+                return;
+            }
+            // Above the ApproximatelyEqualsTo(0f) threshold by a wide margin, so neither morale branch of
+            // CalculateWinner can ever trip. The change is local to that method's own copy of the value.
+            attackerSideMorale = 100f;
+            defenderSideMorale = 100f;
         }
     }
 }

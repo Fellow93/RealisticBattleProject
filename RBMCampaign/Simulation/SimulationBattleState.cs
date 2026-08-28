@@ -75,6 +75,13 @@ namespace RBMCampaign
             // and every phase change would be honoured a full round late -- the round the ladders go up would still
             // be diced out as though the men were in the open.
             SimulationBattleState.BattleState state = SimulationBattleState.Get(mapEvent);
+
+            // THE FIELD IS ONLY AS WIDE AS THE REAL ONE. Before a field round is diced out, hold each side to the men
+            // the battle-size cap would actually put in the line -- so a huge army fights at the enemy's frontage with
+            // a reserve behind it, not with its whole weight at once. No-op for a wall assault (SplitTicks owns that
+            // frontage) and for any battle small enough that both sides fit. See ApplyFieldFrontage.
+            SimulationBattleState.ApplyFieldFrontage(mapEvent, state, mult, ref defenderTicks, ref attackerTicks);
+
             SimulationSiege.SplitTicks(state, ref defenderTicks, ref attackerTicks);
 
             __result = new ValueTuple<int, int>(defenderTicks, attackerTicks);
@@ -131,9 +138,19 @@ namespace RBMCampaign
                 return;
             }
 
+            // And a field the battle-size cap has narrowed carries less fighting per round, so its round costs less
+            // campaign time -- the other half of the frontage throttle, without which a fight the cap stretches over
+            // more rounds would drag the clock out with it. 1 for a full field, a siege, or a battle under the cap.
+            float frontage = 1f;
+            SimulationBattleState.BattleState state = SimulationBattleState.Get(mapEvent);
+            if (state != null)
+            {
+                frontage = state.FrontageBlowScale;
+            }
+
             // A round can never be free: at zero the map event would simulate every campaign tick without the clock
             // ever advancing past it, so the floor is one minute.
-            long scaled = (long)MathF.Round((float)__result.ToMinutes * (minutes / VanillaFieldRoundMinutes));
+            long scaled = (long)MathF.Round((float)__result.ToMinutes * (minutes / VanillaFieldRoundMinutes) * frontage);
             __result = CampaignTime.Minutes(Math.Max(1L, scaled));
         }
     }
@@ -471,32 +488,27 @@ namespace RBMCampaign
         // which are worn down by BLOWS ARRIVING, are per-man capacities against a per-man rate of arrival, and come
         // out right at every scale.
         //
-        // AMMUNITION IS NOT LIKE THAT, and denominating it in blows had it exactly backwards.
+        // AMMUNITION IS THE SAME KIND OF THING, and is counted the same way. A quiver is a per-man capacity -- a real
+        // number of arrows on a real man's back -- worn down by the shots he LOOSES, which is a per-man rate exactly
+        // as blows arriving is. So the stack's quiver is (living men x his arrows), it loses one shaft per loosed
+        // shot, and because the pool scales with the stack while the shots it throws scale only as pow(men, 0.6), a
+        // big set-piece line shoots for far longer than a roadside handful -- which is the right way round, and the
+        // whole reason an EARLIER round-clock quiver (a flat AmmoRounds count, the same for every battle) was
+        // replaced: that count held a constant amount of FIGHTING only while a round held a constant amount, and the
+        // field-frontage throttle broke exactly that by stretching a big battle over more, thinner rounds.
         //
-        // A quiver does not empty per blow. It empties per MINUTE: a man looses arrows at a rate, and he keeps
-        // loosing until the quiver is out or the enemy is on him. Blows per man per round go as N^-0.4, so counting
-        // shots in blows meant twenty archers in a roadside skirmish burned their quivers dry before the fight was
-        // decided, while eight hundred archers in the great set-piece battle of the war shot from a full quiver
-        // from the first exchange to the last. That is precisely the wrong way round: the skirmish is over in a
-        // minute and nobody empties anything, and the long battle is exactly where the arrows run out.
-        //
-        // So arrows and javelins are spent against the ROUND COUNTER, which is the only clock this simulation has.
-        // A man shoots for so many rounds and then he is a man with a knife, and how many friends he brought has
-        // nothing to do with it.
+        // Seeded from the men's own equipment (SimulationEquipmentPower.ShotPerMan / CollectShotProfiles), spent in
+        // SimulationEquipmentPower where the shot is fired, and shrunk with casualties in SpendAmmoOnDeath -- a fallen
+        // archer's arrows fall with him, so a line ground to a remnant cannot keep shooting from the quivers of its
+        // dead. Javelins stay a ROUND count (HasJavelins): a thrown bundle is two or three, gone in a round or two of
+        // the skirmish, too shallow for whose-they-are to be worth carrying.
 
         /// <summary>
-        /// Rounds of shooting in a full quiver. Thirty-odd arrows at a couple of shafts a round is a bit over a
-        /// dozen rounds of steady loosing -- long enough to matter in a set-piece battle, longer than a skirmish
-        /// lasts at all.
-        ///
-        /// Raised from 14 to 30 alongside the skill-based defense system: with landed melee lethality now
-        /// skill-gated (most blows fully negated), a battle grinds on for more rounds before it resolves, and a
-        /// quiver that ran dry in fourteen rounds would have the archers reduced to knives for most of a longer
-        /// fight. This is a calibration target -- HasAmmo is Progress &lt;= AmmoRounds (Progress, so the quiver holds
-        /// a constant amount of FIGHTING however the battle is paced; equal to the round count at full size), so
-        /// re-check it once the defense system is measured on a paired log (TickMultiplier=4 already shrank rounds).
+        /// The arrows a ranged man is credited when the kit could read no quiver off him at all -- a fallback only,
+        /// so a troop the model calls ranged never goes out with an empty one. Real troops are seeded from their own
+        /// equipment; this catches only a read that came back empty.
         /// </summary>
-        private const int AmmoRounds = 30;
+        private const float DefaultShotPerMan = 20f;
 
         // A shield eats the blow it stops -- but the two numbers have to be in the same units, and they were not.
         //
@@ -545,9 +557,22 @@ namespace RBMCampaign
             /// </summary>
             public int Count = 1;
 
-            // Arrows and javelins are NOT counted here. They are spent against the battle's round counter, not
-            // against the blows this stack happened to throw -- see the note at the top of the class. Counting them
-            // per blow is what made a skirmish empty a quiver and a pitched battle never touch one.
+            /// <summary>How many men of this stack are still standing. Starts at <see cref="Count"/> and drops by one
+            /// each time one of them falls -- which is the moment a share of the quiver falls with him. See
+            /// SimulationBattleState.SpendAmmoOnDeath.</summary>
+            public int Living = 1;
+
+            /// <summary>The stack's ARROWS (or bolts, or stones), across all its living men. Seeded on the first shot
+            /// from the men's own quivers (Living x ShotPerMan), spent one per loosed shaft in SimulationEquipmentPower,
+            /// and shrunk with casualties in SpendAmmoOnDeath. Javelins are NOT counted here -- a thrown bundle is a
+            /// handful, spent against the round clock in HasJavelins; a quiver is deep enough that whose it is matters,
+            /// so it is carried here and dies with the men who carried it.</summary>
+            public float AmmoRemaining;
+
+            /// <summary>Whether <see cref="AmmoRemaining"/> has been filled yet. Seeded lazily -- the first time the
+            /// stack looses a shot is the first moment the equipment model has handed us the men's per-man arrow
+            /// count -- so until then the quiver reads as full.</summary>
+            public bool AmmoSeeded;
 
             /// <summary>What his shield has eaten. This one IS worn down by blows arriving, so it is counted in them.</summary>
             public float ShieldDamage;
@@ -564,8 +589,9 @@ namespace RBMCampaign
             public int Round;
 
             /// <summary>
-            /// How much FIGHTING has happened, in units of one full-size round. The volley, the skirmish and the
-            /// quiver (VolleyRounds, SkirmishRounds, AmmoRounds) are all denominated in these units.
+            /// How much FIGHTING has happened, in units of one full-size round. The volley and the skirmish
+            /// (VolleyRounds, SkirmishRounds) are denominated in these units. (The quiver no longer is -- arrows are a
+            /// per-man pool spent per shot now, not a round count; see the note above AmmoRemaining.)
             ///
             /// AS THE CODE STANDS, THIS EQUALS <see cref="Round"/> EXACTLY, for every battle at every size: each
             /// round adds SimulationRoundCounter's pace, which is TickMultiplier / TickMultiplier -- 1, always.
@@ -793,6 +819,18 @@ namespace RBMCampaign
             public float DefenderFoot;
 
             /// <summary>
+            /// How much a FIELD-FRONTAGE round is worth on the campaign clock, against a round of the same battle
+            /// with nobody held back -- 1 when the whole of both sides is in the fight, and below 1 when the battle
+            /// size cap has thinned the front. A field so wide that only a fraction of the larger army can reach the
+            /// enemy contains proportionally less fighting per round, so it must cost proportionally fewer minutes,
+            /// or a battle the cap has stretched over more rounds would drag the campaign clock out with it. Set
+            /// every field round by <see cref="ApplyFieldFrontage"/>; read by SimulationRoundClock; 1 for a siege
+            /// (the width model there already redistributes the round rather than shrinking it) and for any battle
+            /// small enough that both sides fit under the cap. See ApplyFieldFrontage.
+            /// </summary>
+            public float FrontageBlowScale = 1f;
+
+            /// <summary>
             /// Each side's chain of command -- who leads the whole thing, and who leads each body of men. Built at
             /// round one off the same roster walk the muster takes (see AdvanceRound), and null until then, which is
             /// harmless: no blow lands before round one, and everything downstream reads a null command as "nobody
@@ -834,6 +872,9 @@ namespace RBMCampaign
                     {
                         state.Count = count;
                     }
+                    // Everyone is standing when the stack is first seen; the quiver and its wear are measured against
+                    // this living count from here (see SpendAmmoOnDeath).
+                    state.Living = state.Count;
                     side[troop] = state;
                 }
                 return state;
@@ -1132,6 +1173,139 @@ namespace RBMCampaign
             if (state.DefenderCommand != null)
             {
                 state.DefenderCommand.RetireTheFallen();
+            }
+        }
+
+        /// <summary>
+        /// The master switch for the field-frontage throttle. On, the simulated field is only as wide as the real
+        /// one: a battle bigger than the engine's battle-size cap fights it out at the same frontage the player would
+        /// have spawned into, and the men who do not fit wait their turn as reinforcements rather than all swinging
+        /// at once. Off, every man on a side is an eligible striker every round and a large army brings its whole
+        /// weight to bear in one instant -- vanilla's own model, which RBM otherwise keeps. A tuning constant rather
+        /// than a config toggle for the same reason <see cref="SimulationRoundCounter.TickMultiplier"/> is: it is a
+        /// property of the model, dialled against the log, not a taste the player sets.
+        /// </summary>
+        internal const bool FieldFrontageEnabled = true;
+
+        /// <summary>
+        /// HOLD THE FIELD TO THE WIDTH THE REAL BATTLE WOULD HAVE.
+        ///
+        /// A field battle bigger than the engine's battle-size cap never puts every man in the line at once. The game
+        /// spawns each side up to a share of the cap and feeds the rest in as reinforcements as their own fall (see
+        /// RBMAI's SpawningPatches, which sets the split the player actually sees). So a lord who marches up with four
+        /// times the enemy does not get to swing four times as often -- he gets a line no wider than the enemy's, a
+        /// reserve behind it, and a fight that grinds the smaller force down at the pace of the FRONT, not of the
+        /// crowd. The smaller side, dying more slowly than a raw power ratio would kill it, lands far more blows
+        /// before it breaks; the larger side wins, but pays in casualties for every rank it has to feed forward.
+        ///
+        /// Vanilla's sim never models this: each side is handed pow(itsOwnMen, 0.6) blows a round off its WHOLE
+        /// headcount, so the big army's every man tells at once and it wins nearly bloodlessly. This substitutes the
+        /// ENGAGED count -- how many of each side the cap lets stand in the line this round -- for that headcount,
+        /// using vanilla's own blow formula (min(enemy*2, pow(men,0.6))) so nothing else about the round moves. The
+        /// engaged counts are re-read every round off live strength, so as the loser thins below half the cap the
+        /// winner's share of the front grows to fill it -- envelopment, and it falls straight out of the same rule.
+        ///
+        /// Field battles only. A wall assault has its own, finer frontage (the openings the siege equipment bought --
+        /// see SimulationSiege.SplitTicks) and must be left to it; a retreating side is already being run down and
+        /// its ticks zeroed, so it is left alone too.
+        /// </summary>
+        internal static void ApplyFieldFrontage(MapEvent mapEvent, BattleState state, float mult,
+            ref int defenderTicks, ref int attackerTicks)
+        {
+            if (!FieldFrontageEnabled || mapEvent == null || state == null || state.SiegeAssaultBattle)
+            {
+                return;
+            }
+
+            // Full field until proven otherwise. Set here so that EVERY path out of this method that is not the active
+            // throttle -- a wall assault, a retreat, a battle under the cap -- leaves the clock at the field price,
+            // and a scale from an earlier round can never linger once the fight has stopped narrowing the front.
+            state.FrontageBlowScale = 1f;
+
+            // A wall assault is caught above; this catches everything else the siege model owns before the ladders go
+            // up, so the two frontage models never both touch the same round.
+            if (mapEvent.IsSiegeAssault)
+            {
+                return;
+            }
+            // A side that has broken and is being ridden down had its ticks zeroed by vanilla; do not hand it a line.
+            if (mapEvent.RetreatingSide != BattleSideEnum.None)
+            {
+                return;
+            }
+            if (mapEvent.AttackerSide == null || mapEvent.DefenderSide == null)
+            {
+                return;
+            }
+
+            int nDef = mapEvent.DefenderSide.NumRemainingSimulationTroops;
+            int nAtt = mapEvent.AttackerSide.NumRemainingSimulationTroops;
+            if (nDef <= 0 || nAtt <= 0)
+            {
+                return;
+            }
+
+            int cap = TaleWorlds.MountAndBlade.BannerlordConfig.GetRealBattleSize();
+            if (cap <= 0 || nDef + nAtt <= cap)
+            {
+                // Both sides fit on the field as they are -- no line is held back, so the round is vanilla's and the
+                // clock is not repriced. (Left explicit: FrontageBlowScale is 1 by default and by the clear below.)
+                state.FrontageBlowScale = 1f;
+                return;
+            }
+
+            int engagedDef;
+            int engagedAtt;
+            EngagedCounts(nDef, nAtt, cap, out engagedDef, out engagedAtt);
+
+            // Vanilla's own field blow formula (DefaultCombatSimulationModel.GetSimulationTicksForBattleRound, the
+            // men>10 branch), with the ENGAGED count standing in for the side's whole strength. The min(enemy*2, ...)
+            // cap rides through untouched so a line facing a handful of men still cannot swing past what is in front
+            // of it.
+            float itemDef = MathF.Min(engagedAtt * 2f, MathF.Pow(engagedDef, 0.6f));
+            float itemAtt = MathF.Min(engagedDef * 2f, MathF.Pow(engagedAtt, 0.6f));
+            int newDefenderTicks = Math.Max(1, MathF.Round(itemDef * mult));
+            int newAttackerTicks = Math.Max(1, MathF.Round(itemAtt * mult));
+
+            // Price the clock by how much of the round the narrowed front actually carries. Fewer blows this round
+            // means the battle takes more of them to resolve; charging each of those extra rounds the full field
+            // price would stretch the fight out across the campaign map. The scale is the round's blows against what
+            // the round would have held with both sides fully in the line.
+            int oldTotal = defenderTicks + attackerTicks;
+            int newTotal = newDefenderTicks + newAttackerTicks;
+            state.FrontageBlowScale = (oldTotal > 0) ? MBMath.ClampFloat((float)newTotal / oldTotal, 0.01f, 1f) : 1f;
+
+            defenderTicks = newDefenderTicks;
+            attackerTicks = newAttackerTicks;
+        }
+
+        /// <summary>
+        /// How many of each side stand in the line this round under a field-size cap, matching the split RBMAI's
+        /// spawn logic gives the real battle: if both sides fit under the cap they are both fully engaged; otherwise
+        /// the larger side is held to half the cap and the smaller takes the remainder -- so a side smaller than half
+        /// the cap fights in full and the larger fills what is left, and two large sides meet at half the cap each.
+        /// The rest of both armies is the reserve, fed in as the front falls.
+        /// </summary>
+        internal static void EngagedCounts(int nDef, int nAtt, int cap, out int engagedDef, out int engagedAtt)
+        {
+            if (cap <= 0 || nDef + nAtt <= cap)
+            {
+                engagedDef = nDef;
+                engagedAtt = nAtt;
+                return;
+            }
+            int half = cap / 2;
+            if (nDef >= nAtt)
+            {
+                // Defender is the larger (or equal) side: the smaller attacker takes its full share up to half the
+                // cap, the larger defender fills the remainder of the cap.
+                engagedAtt = Math.Min(nAtt, half);
+                engagedDef = Math.Min(nDef, cap - engagedAtt);
+            }
+            else
+            {
+                engagedDef = Math.Min(nDef, half);
+                engagedAtt = Math.Min(nAtt, cap - engagedDef);
             }
         }
 
@@ -1806,7 +1980,7 @@ namespace RBMCampaign
         /// Whether this stack still has anything to shoot. A defender on a wall always does: he is not shooting
         /// from his quiver, he is shooting from the stores, and the stores were filled before the siege began.
         /// </summary>
-        internal static bool HasAmmo(BattleState battle, TroopState state, bool attacker)
+        internal static bool HasAmmo(BattleState battle, TroopState state, float shotPerMan, bool attacker)
         {
             // A man on a wall shoots from the town's stores, and the stores were filled before the siege began.
             if (battle != null && battle.DefendersShootFromStores && !attacker)
@@ -1814,17 +1988,65 @@ namespace RBMCampaign
                 return true;
             }
 
-            // No battle to read the clock from (the log's reference tables ask what a blow WOULD do, outside any
+            // No battle to read the quiver from (the log's reference tables ask what a blow WOULD do, outside any
             // battle at all) -- so assume a full quiver and let the question be about the kit, not the moment.
-            if (battle == null)
+            if (battle == null || state == null)
             {
                 return true;
             }
 
-            // Against Progress rather than the raw round, so the quiver is spent by FIGHTING however the battle comes
-            // to be paced. Today the round is never repriced, so this is the raw round count exactly: thirty rounds
-            // of loosing and then he is a man with a knife, in a skirmish and a set-piece alike.
-            return battle.Progress <= AmmoRounds;
+            // Fill the stack's quiver the first time it looses: the men's own arrows, times how many of them are
+            // still standing to loose them (Living, not the muster Count -- any who have already fallen are not
+            // shooting). A ranged troop the kit read no quiver off falls back to a default rather than an empty one.
+            if (!state.AmmoSeeded)
+            {
+                float perMan = (shotPerMan > 0f) ? shotPerMan : DefaultShotPerMan;
+                state.AmmoRemaining = perMan * state.Living;
+                state.AmmoSeeded = true;
+            }
+
+            return state.AmmoRemaining > 0f;
+        }
+
+        /// <summary>
+        /// A man of this stack has fallen, and the arrows still on his back fall with him. Take his share of what the
+        /// stack has left -- the average over the men still standing -- so a line ground down to a remnant cannot keep
+        /// shooting from the quivers of its dead, and one that is wiped shoots no more at all. Called once per man
+        /// downed, from the casualty path (SimulationTroopHitPoints). Harmless for a stack that never shoots: its
+        /// quiver is unseeded, so only the living count moves.
+        /// </summary>
+        internal static void SpendAmmoOnDeath(MapEvent mapEvent, CharacterObject troop, bool attacker)
+        {
+            if (mapEvent == null || troop == null)
+            {
+                return;
+            }
+            BattleState battle = Get(mapEvent);
+            if (battle == null)
+            {
+                return;
+            }
+            TroopState state = battle.For(troop, attacker);
+            if (state == null)
+            {
+                return;
+            }
+
+            // The last man of the stack: whatever was left goes with him.
+            if (state.Living <= 1)
+            {
+                state.Living = 0;
+                state.AmmoRemaining = 0f;
+                return;
+            }
+
+            // His share of the remaining arrows is the average over the men still standing. Scale the pool down by
+            // one man's worth BEFORE dropping the count, so the arithmetic is (had) x (staying / standing).
+            if (state.AmmoSeeded)
+            {
+                state.AmmoRemaining *= (float)(state.Living - 1) / state.Living;
+            }
+            state.Living--;
         }
 
         /// <summary>

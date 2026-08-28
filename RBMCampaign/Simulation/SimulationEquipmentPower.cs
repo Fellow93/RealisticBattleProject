@@ -202,6 +202,12 @@ namespace RBMCampaign
             /// <summary>How many he carries. Two or three, mostly -- which is why the volley ends so quickly.</summary>
             public float ThrownPerMan;
 
+            /// <summary>How many ARROWS (or bolts, or stones) he carries into the battle, read off the stack size of
+            /// every quiver in his kit and averaged over his sets -- the same way <see cref="ThrownPerMan"/> counts
+            /// his javelins. This is the whole of his quiver, and it is spent one shaft per loosed shot until it is
+            /// gone and he draws steel. See SimulationBattleState.HasAmmo.</summary>
+            public float ShotPerMan;
+
             /// <summary>The weight behind a charge, which is a thing that happens once and not for the whole battle.</summary>
             public float ChargeDamage;
 
@@ -476,6 +482,21 @@ namespace RBMCampaign
         /// whole of it (a javelin can still catch flat or land short). Lower toward 0 to land nearer full.
         /// </summary>
         private const float ThrownLandingExponent = 0.2f;
+
+        /// <summary>
+        /// THE DEFENDER HOLDS THE HIGH GROUND. A side that stands and waits picks the ground it waits on -- a ridge, a
+        /// slope, the lip of a ford -- and its archers shoot DOWNHILL into an enemy toiling up at them: a little more
+        /// range, a plunging angle that finds the gaps a level shot glances off, and a target that is climbing rather
+        /// than shooting back on even terms. The attacker, coming up at them, shoots UPHILL for the reverse of all of
+        /// it. This is a small, flat edge to the DEFENDER's fired shots and an equal debit to the ATTACKER's, in field
+        /// battles only -- a wall assault already prices the same idea, harder and by phase (see the siege block in
+        /// Explain), and a defender does not always hold the height, so the field figure is kept mild. Set to 1 to
+        /// switch the bias off. Applies to FIRED missiles only (bow, crossbow, sling); a thrown weapon at skirmish
+        /// range is a level, short throw the slope barely touches.
+        /// </summary>
+        private const float FieldDefenderShotMagnitude = 1.10f;
+
+        private const float FieldAttackerShotMagnitude = 0.90f;
 
         // AND THE ARROW THAT SIMPLY MISSES.
         //
@@ -1346,7 +1367,7 @@ namespace RBMCampaign
                 && struck.IsRanged
                 && state != null
                 && state.KitingRoom > 0f
-                && SimulationBattleState.HasAmmo(state, struckState, !strikerIsAttacker);
+                && SimulationBattleState.HasAmmo(state, struckState, struck.ShotPerMan, !strikerIsAttacker);
 
             // A BATTLE HAS THREE ACTS. The volley, while the lines are far apart and the bowmen have the field. The
             // skirmish, on the ground between them -- javelins in the air, and the horse of each side riding out at
@@ -1372,7 +1393,17 @@ namespace RBMCampaign
             bool shooting = striker.IsRanged
                 && striker.Shot.IsValid
                 && mayLoose
-                && SimulationBattleState.HasAmmo(state, strikerState, strikerIsAttacker);
+                && SimulationBattleState.HasAmmo(state, strikerState, striker.ShotPerMan, strikerIsAttacker);
+
+            // The shaft leaves the string HERE -- and whether it finds a gap, glances off a helm or is missed
+            // clean, it is spent all the same, so one comes out of the stack's quiver the moment he looses. Only on a
+            // LIVE blow (spend): the reference tables and the riposte's reverse-correction pass ask what a shot WOULD
+            // do and loose nothing. When the last shaft is gone HasAmmo above turns false and he draws his sidearm --
+            // see SimulationBattleState.HasAmmo and SpendAmmoOnDeath (which takes the fallen man's share with him).
+            if (shooting && spend && strikerState != null)
+            {
+                strikerState.AmmoRemaining -= 1f;
+            }
             // Otherwise the quiver is empty (or he is not yet in range). He draws from his melee arsenal like
             // anybody else, and his armour was never meant for that.
 
@@ -1512,9 +1543,9 @@ namespace RBMCampaign
                 }
 
                 // A live shot rolls it and is done. The reference tables cannot -- they are asking what a matchup
-                // does, not what one arrow did -- so they take the expectation instead, just below the blow, the
-                // same way they take the shield's. Nothing is spent on a miss: no shaft is deducted here because the
-                // quiver empties by the ROUND and not by the blow (see HasAmmo), so a wasted arrow already counts.
+                // does, not what one arrow did -- so they take the expectation instead, just below the blow, the same
+                // way they take the shield's. The shaft was already spent the instant he loosed it, miss or no (see
+                // the quiver deduction where `shooting` is set, above), so nothing more is deducted here.
                 if (spend && missChance > 0f && MBRandom.RandomFloat < missChance)
                 {
                     // "shoot" / "miss": the trace reads it as the act and its outcome, so the miss RATE comes straight
@@ -1684,6 +1715,14 @@ namespace RBMCampaign
                 actual *= strikerIsAttacker
                     ? SimulationSiege.AttackerShotMagnitude(state)
                     : SimulationSiege.DefenderShotMagnitude(state);
+            }
+            // AND IN THE OPEN FIELD, THE DEFENDER'S HIGH GROUND. Not the wall's hard, phased edge above -- a mild,
+            // flat lift to the waiting side's fired shots and an equal debit to the attacker climbing at them. Scoped
+            // to field battles: a wall assault is caught by the branch above and priced there, so this only fires when
+            // the fight is NOT a storm. See FieldDefenderShotMagnitude.
+            else if (shooting && (state == null || !state.SiegeAssaultBattle))
+            {
+                actual *= strikerIsAttacker ? FieldAttackerShotMagnitude : FieldDefenderShotMagnitude;
             }
 
             // The charge: weight and speed, which a horseman has only some of the time, and only against a man standing
@@ -2164,6 +2203,9 @@ namespace RBMCampaign
 
             public float ThrownPerMan;
 
+            /// <summary>Arrows/bolts/stones per man, read off his quivers -- what his stack's quiver is seeded from.</summary>
+            public float ShotPerMan;
+
             public bool IsPlate;
 
             public float ShieldBlock;
@@ -2326,6 +2368,7 @@ namespace RBMCampaign
             info.ThrownMagnitude = kit.Thrown.IsValid ? kit.Thrown.Magnitude : 0f;
             info.ThrownType = kit.Thrown.IsValid ? kit.Thrown.WeaponType : null;
             info.ThrownPerMan = kit.ThrownPerMan;
+            info.ShotPerMan = kit.ShotPerMan;
             info.IsPlate = kit.IsPlate;
             // The melee figure, as the plain statement of what his shield is worth. The blow-by-blow table below it
             // in the log prints the one that actually applied, which is higher when an arrow was what met it.
@@ -3027,6 +3070,7 @@ namespace RBMCampaign
             int sets = 0;
 
             float thrownMagnitude = 0f, thrownPerMan = 0f, bestThrownMagnitude = 0f;
+            float shotPerMan = 0f;
             int thrownSets = 0;
             SimulationWeaponModel.WeaponProfile bestThrown = default(SimulationWeaponModel.WeaponProfile);
 
@@ -3044,7 +3088,9 @@ namespace RBMCampaign
                 SimulationWeaponModel.WeaponProfile setShot = default(SimulationWeaponModel.WeaponProfile);
                 if (IsRangedTroop(troop))
                 {
-                    List<SimulationWeaponModel.WeaponProfile> setShots = CollectShotProfiles(troop, set, rbmCombat, captain);
+                    float setShotCount;
+                    List<SimulationWeaponModel.WeaponProfile> setShots = CollectShotProfiles(troop, set, rbmCombat, captain, out setShotCount);
+                    shotPerMan += setShotCount;
                     if (setShots.Count > 0)
                     {
                         float share = 1f / setShots.Count;
@@ -3183,6 +3229,10 @@ namespace RBMCampaign
                     kit.Thrown.Magnitude = thrownMagnitude / thrownSets;
                 }
                 kit.ThrownPerMan = thrownPerMan / sets;
+
+                // And the quiver, averaged over his sets the same way the javelin count is: a man who carries arrows
+                // in one set of two shoots for half a battle. This is what his stack's ammunition pool is seeded from.
+                kit.ShotPerMan = shotPerMan / sets;
 
                 // The weights were shares of their own set; divide by the number of sets and they become shares of
                 // the whole stack, summing to one across everything he might have in his hand.
@@ -3790,8 +3840,13 @@ namespace RBMCampaign
         /// Each arrow is priced on its own terms and the average is taken afterwards, in ShotDamage.
         /// </summary>
         private static List<SimulationWeaponModel.WeaponProfile> CollectShotProfiles(CharacterObject troop, Equipment set,
-            bool rbmCombat, CharacterObject captain)
+            bool rbmCombat, CharacterObject captain, out float shotCount)
         {
+            // The COUNT of shafts he carries in this set, summed across his quivers -- a man with two quivers of
+            // thirty carries sixty and shoots twice as long as the same man with one, which is exactly how the
+            // throwing count sums his javelins (see GetThrownProfile). A quiver counts only if he has a launcher that
+            // can loose it: arrows he cannot fire are not ammunition. Read off the ammo item's own stack size.
+            shotCount = 0f;
             List<SimulationWeaponModel.WeaponProfile> profiles = new List<SimulationWeaponModel.WeaponProfile>();
 
             for (EquipmentIndex a = EquipmentIndex.WeaponItemBeginSlot; a < EquipmentIndex.NumAllWeaponSlots; a++)
@@ -3845,6 +3900,7 @@ namespace RBMCampaign
                 if (bestForThisAmmo.IsValid && bestForThisAmmo.Magnitude > 0f)
                 {
                     profiles.Add(bestForThisAmmo);
+                    shotCount += MathF.Max((float)ammo.MaxDataValue, 1f);
                 }
             }
 
