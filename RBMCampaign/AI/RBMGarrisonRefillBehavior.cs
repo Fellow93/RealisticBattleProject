@@ -17,8 +17,9 @@ namespace RBMCampaign
     /// This is a pure, additive bias on the AI "think" loop -- it drops a <c>GoToSettlement</c> score
     /// into the same <see cref="PartyThinkParams"/> every vanilla movement-scorer feeds, and lets the
     /// single highest-scoring behavior win as usual. No Harmony patching, and no forced movement: the
-    /// score sits in a moderate band (below urgent siege/defense and below the 8f "good enough" cutoff),
-    /// so a weak lord still breaks off to react to a real threat instead of stubbornly marching home.
+    /// score is a strong, deficit-scaled pull that outbids idle wandering and settlement visits (and, for
+    /// a badly depleted lord, clears the 8f "good enough" cutoff), yet still sits well under urgent
+    /// siege/defense scores, so a weak lord breaks off to react to a real threat instead of marching home.
     ///
     /// The move itself is executed by vanilla's own <c>SetPartyAiAction</c> when our score wins, and the
     /// actual troop transfer is entirely vanilla's -- we only steer the party toward a settlement where
@@ -26,10 +27,13 @@ namespace RBMCampaign
     /// </summary>
     public class RBMGarrisonRefillBehavior : CampaignBehaviorBase
     {
-        // "Badly depleted": trigger only below this fraction of the party's *affordable* size limit.
+        // "Understrength": trigger while below this fraction of the party's *affordable* size limit.
         // FindPartySizeNormalLimit already caps the target at what the lord can pay for, so a broke
         // lord reads as "at his limit" and is left alone rather than sent on a pointless round-trip.
-        private const float DepletedFractionOfAffordableLimit = 0.4f;
+        // With LordPartyWageLimit restoring a vanilla-scale affordable size, this can sit high: a lord
+        // three-quarters full still has real room, so send him home to top up rather than waiting until
+        // he is nearly wiped out (the old 0.4 fired only under ~24% of the *raw* size cap).
+        private const float DepletedFractionOfAffordableLimit = 0.75f;
 
         // Vanilla's hard garrison floors (GarrisonTroopsCampaignBehavior). A garrison at or below its
         // floor never releases troops, so anything above it is the surplus we can actually draw on.
@@ -138,11 +142,13 @@ namespace RBMCampaign
                 return;
             }
 
-            // Moderate, deficit-scaled score (~2..5): beats idle wandering, but stays under urgent
-            // siege/defense and the 8f terminal cutoff so threats always override the refill trip.
-            // Distance-independent, so it stays accurate every hour even while a cached target is reused.
+            // Deficit-scaled score (~5..9): a strong pull home that a badly depleted lord (top of the band)
+            // pushes past the 8f "good enough" cutoff, so he actually breaks off idle wandering/visiting to
+            // go refill -- yet urgent siege/defense scores (far higher) still override it, so he never
+            // marches home in the teeth of a threat. Distance-independent, so it stays accurate every hour
+            // even while a cached target is reused.
             float depletion = MBMath.ClampFloat(1f - mobileParty.PartySizeRatio / affordableLimit, 0f, 1f);
-            float score = 2f + 3f * depletion;
+            float score = 5f + 4f * depletion;
 
             AddGoToSettlementScore(p, cached.Settlement, score, cached.NavType, cached.IsFromPort, cached.IsTargetingPort);
 

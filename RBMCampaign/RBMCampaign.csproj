@@ -437,6 +437,7 @@
     <Compile Include="Settlements\GarrisonPartySize.cs" />
     <Compile Include="Settlements\GarrisonUpkeep.cs" />
     <Compile Include="Settlements\GarrisonWageLimit.cs" />
+    <Compile Include="Settlements\LordPartyWageLimit.cs" />
     <Compile Include="Settlements\GarrisonRecruitCost.cs" />
     <Compile Include="Settlements\TradeTariff.cs" />
     <Compile Include="Settlements\WealthTax.cs" />
