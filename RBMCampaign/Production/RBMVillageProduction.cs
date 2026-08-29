@@ -40,16 +40,16 @@ namespace RBMCampaign
             ("meat", 0.001f),
             ("hides", 0.01f),
             ("cow", 0.001f),
-            ("cheese", 0.038f),
-            ("butter", 0.03f),
+            ("cheese", 0.038f * 0.5f),
+            ("butter", 0.03f * 0.5f),
             ("grain", 0.05f),
-            ("wool", 0.02f),
+            ("wool", 0.01f),
             ("sheep", 0.002f),
             //basic village "industrial" production so cities can function
             ("charcoal", 0.1f),
             ("planks", 0.01f),
-            ("clay", 0.001f),
-            ("ironIngot1", 0.015f),
+            //("clay", 0.001f),
+            ("ironIngot1", 0.025f),
             ("flax", 0.017f),
             // Every village occasionally raises a pack animal (PackAnimal). Set to 10% of a horse
             // ranch's per-item mule rate (HorsePackBucket/2), so it reads as subsistence, not a
@@ -91,18 +91,18 @@ namespace RBMCampaign
             new Dictionary<string, (string, float)[]>
             {
                 { "wheat_farm", new (string, float)[] { ("grain", 0.2f * 0.95f), ("planks", 1.027f * 0.1f) } },
-                { "cattle_farm", new (string, float)[] { ("cheese", 0.035f), ("butter", 0.028f), ("cow", 0.008f) } },
-                { "sheep_farm", new (string, float)[] { ("sheep", 0.0031f), ("cheese", 0.02f), ("butter", 0.015f), ("wool", 0.08f) } },
-                { "swine_farm", new (string, float)[] { ("hog", 0.019f) } },
+                { "cattle_farm", new (string, float)[] { ("cow", 0.008f * 0.5f), ("cheese", 0.035f * 0.5f), ("butter", 0.028f * 0.5f) } },
+                { "sheep_farm", new (string, float)[] { ("sheep", 0.0031f * 0.5f), ("cheese", 0.02f * 0.5f), ("butter", 0.015f * 0.5f), ("wool", 0.08f * 0.5f) } },
+                { "swine_farm", new (string, float)[] { ("hog", 0.019f * 0.5f) } },
                 { "lumberjack", new (string, float)[] { ("charcoal", 1.027f*1.8f), ("planks", 1.027f*0.2f) } },
-                { "clay_mine", new (string, float)[] { ("clay", 1.3f), ("grain", 0.07f) } },
+                { "clay_mine", new (string, float)[] { ("clay", 0.6f), ("grain", 0.1f) } },
                 { "salt_mine", new (string, float)[] { ("salt", 0.7f) } },
                 { "iron_mine", new (string, float)[] { ("ironIngot1", 2f * 0.75f), ("charcoal", 1.027f * 0.5f) } },
                 { "silver_mine", new (string, float)[] { ("silver", 0.85f * 0.75f), ("ironIngot1", 2f * 0.25f) } },
                 { "fisherman", new (string, float)[] { ("fish", 0.2f), ("salt", 0.07f) } },
                 { "vineyard", new (string, float)[] { ("grape", 0.038f), ("clay", 0.035f) } },
                 { "flax_plant", new (string, float)[] { ("flax", 0.170f) } },
-                { "date_farm", new (string, float)[] { ("date_fruit", 0.547f) } },
+                { "date_farm", new (string, float)[] { ("date_fruit", 0.547f * 0.1f) } },
                 { "olive_trees", new (string, float)[] { ("olives", 0.089f) } },
                 { "silk_plant", new (string, float)[] { ("cotton", 0.008f) } },
                 { "trapper", new (string, float)[] { ("fur", 0.055f), ("meat", 0.055f) } },
@@ -143,7 +143,7 @@ namespace RBMCampaign
         private static readonly Dictionary<string, (string id, float rate)[]> FlavourByCulture =
             new Dictionary<string, (string, float)[]>
             {
-                { "aserai",       new (string, float)[] { ("date_fruit", 0.0547f), ("salt", 0.03f) } },
+                { "aserai",       new (string, float)[] { ("date_fruit", 0.00547f), ("salt", 0.03f) } },
                 { "empire_south", new (string, float)[] { ("olives", 0.0089f) } },
                 { "empire_west",  new (string, float)[] { ("olives", 0.00445f), ("grape", 0.0019f) } },
                 { "empire_north", new (string, float)[] { ("fur", 0.0055f) } },
