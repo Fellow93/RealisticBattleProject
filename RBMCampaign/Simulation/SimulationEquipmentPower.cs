@@ -673,10 +673,11 @@ namespace RBMCampaign
         // foot come at him he turns his horse and goes, and shoots again from where they cannot follow. An infantry
         // line does not kill horse archers. It chases them until it is exhausted, and they kill it.
         //
-        // So a footman's blow at a mounted archer who still has arrows is nearly nothing: not because he cannot fight
+        // So a footman's blow at a mounted archer who still has arrows is much reduced: not because he cannot fight
         // -- his spear is as good as it ever was -- but because there is no one standing in front of him to put it
         // into. This is the fraction of a foot blow that finds him anyway: the man who was caught turning, the horse
-        // gone lame, the pocket of ground with no way out.
+        // gone lame, the pocket of ground with no way out. Kept deliberately non-trivial -- a foot line that runs a
+        // horse archer down does grind him, just slowly -- so the steppe is punishing, not untouchable.
         //
         // Two things end it, and only two.
         //
@@ -690,7 +691,7 @@ namespace RBMCampaign
         //
         // And arrows find him regardless: an archer's shaft does not care how fast his horse is. Only MELEE from
         // FOOT is refused, because only melee from foot requires him to be somewhere he can be reached.
-        private const float HorseArcherEvasion = 0.1f;
+        private const float HorseArcherEvasion = 0.3f;
 
         // HORSE OR MAN.
         //
