@@ -282,7 +282,7 @@ namespace RBMCampaign
     }
 
     /// <summary>
-    /// VANILLA'S OWN ROUT, SWITCHED OFF -- so this model is the only thing that can break a side.
+    /// VANILLA'S OWN ROUT, SWITCHED OFF -- so nothing but RBM (or nothing at all) can break a side.
     ///
     /// <see cref="MapEvent"/>.CalculateWinner ends a battle mid-fight the moment a side's <c>GetSideMorale()</c> falls
     /// to approximately zero: it sets the enemy's victory and routs the beaten side through <c>Route()</c>. That
@@ -292,19 +292,24 @@ namespace RBMCampaign
     /// floor is expressly built to forbid. It was breaking a 142-man line while this model was still holding it
     /// together, which is exactly the "routs too fast" this model exists to fix.
     ///
-    /// So it is disabled where this model is in charge: a Prefix forces both morale arguments above the ~0 rout
+    /// So it is disabled wherever this overhaul is in charge: a Prefix forces both morale arguments above the ~0 rout
     /// threshold before CalculateWinner runs. NOTHING ELSE in that method is touched -- annihilation (a side reaching
     /// zero remaining) still ends the battle exactly as before, the raft check still stands, the showResults flag is
-    /// unaffected -- so the ONLY thing removed is the standing-morale rout, and the decision of WHEN a beaten side
-    /// breaks is left to SimulationRout alone. Gated on the same switches as the rest of the feature: with the model
-    /// or the rout toggle off, vanilla's morale rout is left exactly as it was.
+    /// unaffected -- so the ONLY thing removed is the standing-morale rout.
+    ///
+    /// This is gated on <see cref="SimulationEquipmentPower.SimulationEnabled"/> ALONE, deliberately NOT on the rout
+    /// toggle. The rout toggle decides whether RBM's OWN break model (<see cref="SimulationRout"/>) runs; vanilla's
+    /// buggy standing-morale rout is unwanted in either case. So with the rout toggle ON, RBM decides when a side
+    /// breaks; with it OFF, nothing breaks a side and the battle is fought to annihilation -- and in neither case does
+    /// vanilla's morale rout come back. (With the equipment model itself off, the whole overhaul stands down and
+    /// vanilla's rout is left exactly as it was.)
     /// </summary>
     [HarmonyPatch(typeof(MapEvent), "CalculateWinner")]
     internal static class SimulationNoVanillaRout
     {
         private static void Prefix(ref float attackerSideMorale, ref float defenderSideMorale)
         {
-            if (!SimulationEquipmentPower.SimulationEnabled || !RBMConfig.RBMConfig.simulationRoutEnabled)
+            if (!SimulationEquipmentPower.SimulationEnabled)
             {
                 return;
             }
