@@ -195,7 +195,15 @@ namespace RBMCampaign
         public static ExplainedNumber RecruitPrice(CharacterObject troop, Hero recruiter, Settlement settlement, bool describe = false)
         {
             bool atSettlement = settlement != null && (settlement.IsVillage || settlement.IsTown);
-            if (atSettlement && RecruitsFree(settlement, recruiter))
+            // Mercenaries, gangsters and caravan guards are hired for coin -- never owed as feudal
+            // service -- so they are paid even in one's own fief and stay out of the free path. That
+            // also preserves vanilla's "recruitment cost is never zero" invariant (its own model ends
+            // on LimitMin(1f)) for the one caller that leans on it: RecruitmentCampaignBehavior's tavern
+            // mercenary menu divides the player's gold by the per-man cost, so a zero there is a
+            // divide-by-zero crash the moment the player stands in a town he owns.
+            bool paidTroop = troop != null && (troop.Occupation == Occupation.Mercenary
+                || troop.Occupation == Occupation.Gangster || troop.Occupation == Occupation.CaravanGuard);
+            if (atSettlement && !paidTroop && RecruitsFree(settlement, recruiter))
             {
                 return new ExplainedNumber(0f, describe);
             }
