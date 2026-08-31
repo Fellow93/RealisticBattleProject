@@ -570,6 +570,14 @@ namespace RBMCampaign
         /// </summary>
         private const float RangedMissMountedTargetFactor = 1.4f;
 
+        /// <summary>
+        /// A horse archer, though, does not buy the barded knight's whole lead. He is fast, yes, but he is out ahead of
+        /// his own line, lightly clad and often slowed to loose, so an arrow finds him a good deal more often than it
+        /// finds the shock horse. Applied in place of RangedMissMountedTargetFactor when the mounted mark is himself a
+        /// bowman.
+        /// </summary>
+        private const float RangedMissHorseArcherTargetFactor = 1.15f;
+
         /// <summary>The ceiling, so no pairing of dials ever makes an arm that cannot hit anything at all.</summary>
         private const float RangedMaxMissChance = 0.8f;
 
@@ -1512,7 +1520,8 @@ namespace RBMCampaign
             float missChance = 0f;
             if (shooting && RBMConfig.RBMConfig.simulationRangedMissEnabled)
             {
-                missChance = ShotMissChance(striker, strikerMounted, struckStillMounted, volley,
+                missChance = ShotMissChance(striker, strikerMounted, struckStillMounted,
+                    struckStillMounted && struck.IsRanged, volley,
                     SimulationBattleState.VolleyProgress(state));
 
                 // THE WALL SKEWS THE SHOT. A besieger looses UP at a man on the battlement and misses more; the
@@ -4212,8 +4221,8 @@ namespace RBMCampaign
         /// </summary>
         /// <param name="volleyProgress">How far through the volley this shot falls -- 0 at the opening, 1 as the
         /// javelins start. Ignored outside the volley. See SimulationBattleState.VolleyProgress.</param>
-        private static float ShotMissChance(TroopKit striker, bool strikerMounted, bool struckMounted, bool volley,
-            float volleyProgress)
+        private static float ShotMissChance(TroopKit striker, bool strikerMounted, bool struckMounted,
+            bool struckIsMountedRanged, bool volley, float volleyProgress)
         {
             float chance = RBMConfig.RBMConfig.simulationRangedMissChance;
             if (chance <= 0f)
@@ -4243,10 +4252,11 @@ namespace RBMCampaign
                 chance *= RangedMissMountedShooterFactor;
             }
 
-            // At a man who is not where he was when it left the string.
+            // At a man who is not where he was when it left the string -- though a horse archer, light and slowed to
+            // loose, does not buy the barded horse's whole lead.
             if (struckMounted)
             {
-                chance *= RangedMissMountedTargetFactor;
+                chance *= struckIsMountedRanged ? RangedMissHorseArcherTargetFactor : RangedMissMountedTargetFactor;
             }
 
             return MBMath.ClampFloat(chance, 0f, RangedMaxMissChance);

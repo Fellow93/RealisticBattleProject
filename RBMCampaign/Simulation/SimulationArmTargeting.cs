@@ -144,9 +144,12 @@ namespace RBMCampaign
         private const float MeleeInfVsCavalry = 0.6f;
         private const float MeleeInfVsRanged = 0.2f;
         // Ranged (foot bows and horse archers alike): loose into the massed foot; the mounted are fewer, faster and
-        // further off, and are struck last.
+        // further off, and are struck last. A horse archer, though, is an easier mark than a barded knight -- light,
+        // unarmoured, and out ahead of his own line where the bows can see him -- so he is struck a good deal more
+        // readily than the shock horse (RangedVsHorseArcher, between the foot and the armoured mounted).
         private const float RangedVsFoot = 1.0f;
         private const float RangedVsMounted = 0.35f;
+        private const float RangedVsHorseArcher = 0.6f;
         // Cavalry in the skirmish: horse meets horse out in front of the foot.
         private const float CavSkirmishVsMounted = 1.0f;
         private const float CavSkirmishVsFoot = 0.3f;
@@ -599,7 +602,12 @@ namespace RBMCampaign
             {
                 case SimulationEquipmentPower.ArcherType:
                 case SimulationEquipmentPower.HorseArcherType:
-                    // Ranged: the massed foot first, the mounted last.
+                    // Ranged: the massed foot first, the mounted last -- but a horse archer, light and out front, is a
+                    // far readier mark than the barded shock horse, so he sits between the two.
+                    if (targetArm == SimulationEquipmentPower.HorseArcherType)
+                    {
+                        return RangedVsHorseArcher;
+                    }
                     return targetMounted ? RangedVsMounted : RangedVsFoot;
 
                 case SimulationEquipmentPower.CavalryType:
