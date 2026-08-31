@@ -492,7 +492,9 @@ namespace RBMCampaign
         /// battles only -- a wall assault already prices the same idea, harder and by phase (see the siege block in
         /// Explain), and a defender does not always hold the height, so the field figure is kept mild. Set to 1 to
         /// switch the bias off. Applies to FIRED missiles only (bow, crossbow, sling); a thrown weapon at skirmish
-        /// range is a level, short throw the slope barely touches.
+        /// range is a level, short throw the slope barely touches. And to FOOT shooters only -- a horse archer rides
+        /// where the shot is best and is never the man toiling uphill, so the slope neither helps nor hinders him; see
+        /// the apply site's !strikerMounted gate.
         /// </summary>
         private const float FieldDefenderShotMagnitude = 1.10f;
 
@@ -1730,7 +1732,14 @@ namespace RBMCampaign
             // flat lift to the waiting side's fired shots and an equal debit to the attacker climbing at them. Scoped
             // to field battles: a wall assault is caught by the branch above and priced there, so this only fires when
             // the fight is NOT a storm. See FieldDefenderShotMagnitude.
-            else if (shooting && (state == null || !state.SiegeAssaultBattle))
+            //
+            // THE FOOT'S EDGE, NOT THE HORSE'S. The high ground is a thing the standing line holds: foot archers rooted
+            // on the ridge shoot down the slope, and the attacker's foot bows toil up into it. A horse archer is bound
+            // to no such ground -- he rides where the shot is best and is never the man climbing a hill under fire -- so
+            // the slope neither helps nor hinders him, and he is left out of it entirely. Gated on !strikerMounted, the
+            // battle's own answer (a dismounted trooper is foot today and shares the foot's edge); cavalry never shoot,
+            // so among fired missiles this excludes only the horse archer.
+            else if (shooting && !strikerMounted && (state == null || !state.SiegeAssaultBattle))
             {
                 actual *= strikerIsAttacker ? FieldAttackerShotMagnitude : FieldDefenderShotMagnitude;
             }
