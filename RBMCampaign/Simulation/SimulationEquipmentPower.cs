@@ -695,6 +695,15 @@ namespace RBMCampaign
         // FOOT is refused, because only melee from foot requires him to be somewhere he can be reached.
         private const float HorseArcherEvasion = 0.3f;
 
+        // ...BUT SOMETIMES HE DOES CLOSE. The refusal of contact above is his art, not a law: now and then a horse
+        // archer slings the bow, draws the sword, and wheels in at the couch -- a lull in the shooting, a broken
+        // flank, the one moment the ground offers. He does it FAR less than a true lancer, whose whole purpose is the
+        // charge; this is the fraction of a real horseman's charge rate that a horse archer takes on the same ground
+        // against the same foot. At 0.15 he charges about a seventh as readily as the man born to it -- present, never
+        // his habit. See where it multiplies SimulationBattleState.ChargeChanceAgainst in Explain: a blow he charges
+        // is a blow he does not loose, so it is what turns the bow off for that one hit.
+        private const float HorseArcherChargeFraction = 0.15f;
+
         // HORSE OR MAN.
         //
         // A blow at a mounted troop is a blow at TWO things -- the man and the animal under him -- and it finds
@@ -887,7 +896,8 @@ namespace RBMCampaign
             // battle -- the one the game is actually fighting, and the one the campaign will live with -- and it is
             // the only account of it that cannot drift from the truth.
             Breakdown breakdown;
-            Explain(strikerTroop, struckTroop, out breakdown, state, strikerIsAttacker, spend: true, struckParty: struckParty);
+            Explain(strikerTroop, struckTroop, out breakdown, state, strikerIsAttacker, spend: true,
+                struckParty: struckParty, strikerParty: strikerParty);
 
             // The ground no longer favours an arm of service, and the leader no longer carries his captains on his
             // back. Vanilla's blow rides on (1 + leader + context) over the same for the man being struck, and the
@@ -1157,10 +1167,10 @@ namespace RBMCampaign
         /// (the riposte) has the roles the other way round, so its struckParty is the original striker's.</param>
         internal static float GetCorrection(CharacterObject strikerTroop, CharacterObject struckTroop,
             SimulationBattleState.BattleState state = null, bool strikerIsAttacker = false, bool spend = false,
-            PartyBase struckParty = null)
+            PartyBase struckParty = null, PartyBase strikerParty = null)
         {
             Breakdown breakdown;
-            Explain(strikerTroop, struckTroop, out breakdown, state, strikerIsAttacker, spend, struckParty);
+            Explain(strikerTroop, struckTroop, out breakdown, state, strikerIsAttacker, spend, struckParty, strikerParty);
             return breakdown.Correction;
         }
 
@@ -1287,7 +1297,7 @@ namespace RBMCampaign
         /// </param>
         internal static bool Explain(CharacterObject strikerTroop, CharacterObject struckTroop, out Breakdown breakdown,
             SimulationBattleState.BattleState state = null, bool strikerIsAttacker = false, bool spend = false,
-            PartyBase struckParty = null)
+            PartyBase struckParty = null, PartyBase strikerParty = null)
         {
             breakdown = default(Breakdown);
             breakdown.Correction = 1f;
@@ -1350,7 +1360,11 @@ namespace RBMCampaign
             // the man's own formation class (it is a fact about him, not about today's ground), so the battle's own
             // answer is applied here. See SimulationBattleState.IsMountedIn -- the one place that question is
             // answered, and the same one the kit above was built against.
-            bool strikerMounted = SimulationBattleState.IsMountedIn(strikerTroop, dismounted);
+            // Whether each man's FORMATION puts him on a horse today -- the battle's own answer (a siege dismounts
+            // everyone), read off the template. This is only the first half of the question: a man whose formation is
+            // mounted may still have had his horse killed under him, and that is settled per man just below, once the
+            // horse pool of each side is in hand.
+            bool strikerMountedByFormation = SimulationBattleState.IsMountedIn(strikerTroop, dismounted);
             bool struckMounted = SimulationBattleState.IsMountedIn(struckTroop, dismounted);
 
             // What the horse still has in it. A footman hacking upward is mostly hacking at the horse, and horses
@@ -1367,7 +1381,33 @@ namespace RBMCampaign
                 : (struckState != null)
                     ? SimulationBattleState.HorsesAlive(struckState, horseHealth)
                     : 1f;
-            bool struckStillMounted = struckMounted && horsesAlive > 0.5f;
+            // WHETHER HIS HORSE IS STILL UNDER HIM -- decided PER MAN, not per stack. horsesAlive is the share of the
+            // stack's mounts still standing, so on a live blow it is read as the odds THIS struck man is one of the
+            // still-mounted: a stack half unhorsed answers half its blows as horsemen and half as the footmen its
+            // casualties have become, and the flip to foot comes on smoothly as the pool wears rather than the whole
+            // squadron dropping to the ground the instant the pool crosses a half. The reference tables and the
+            // reverse-correction pass keep the old deterministic reading (mounted while most of the mounts are), so a
+            // matchup stays a stable number and never a coin-flip -- and there horsesAlive is 1 anyway. See HorsesAlive.
+            bool struckStillMounted = struckMounted && (spend
+                ? MBRandom.RandomFloat < horsesAlive
+                : horsesAlive > 0.5f);
+
+            // AND THE SAME QUESTION OF THE MAN STRIKING. His horse can be killed under him exactly as his enemy's can:
+            // his stack wears ONE horse pool (charge self-damage and every blow aimed at it feed the same HorseDamage --
+            // strikerState and the struckState of his own stack are the same TroopState), and once it goes he is a
+            // horseman on foot -- no charge, no cavalry clash, no high busy saddle to shoot from. Read per man off his
+            // own pool, the mirror of struckStillMounted above, so a squadron ridden to the ground stops charging as its
+            // horses fall rather than lancing on with none left. His veterinary rides on his OWN party, handed in from
+            // the postfix (strikerParty) the same way the struck man's is -- null in the reference tables, where his
+            // pool reads full and this collapses to the plain formation answer, unchanged from before.
+            float strikerHorseHealth = SimulationTroopHitPoints.CommandedMountHealth(strikerTroop, strikerParty, striker.HorseHealth);
+            float strikerHorsesAlive = !strikerMountedByFormation ? 0f
+                : (strikerState != null)
+                    ? SimulationBattleState.HorsesAlive(strikerState, strikerHorseHealth)
+                    : 1f;
+            bool strikerMounted = strikerMountedByFormation && (spend
+                ? MBRandom.RandomFloat < strikerHorsesAlive
+                : strikerHorsesAlive > 0.5f);
 
             // AND WHETHER THE MAN BEING STRUCK IS A HORSE ARCHER WHO IS STILL A HORSE ARCHER. Three things have to
             // hold, and each of them is a real way for the steppe to lose its advantage: he must still have a horse
@@ -1398,10 +1438,29 @@ namespace RBMCampaign
             bool mayLoose = !(volley && strikerIsAttacker && state != null
                 && state.Progress <= state.DefenderOnlyRounds);
 
+            // THE HORSE ARCHER WHEELS IN. Decided HERE, ahead of the shot, because a blow he charges is a blow he does
+            // not loose -- this is what turns the bow off for it. His gate is a true lancer's own charge gate (see the
+            // chargeEligible line below, of which this is the mirror): he must be mounted, in the melee and not still
+            // crossing the ground toward it (!approaching), against a man on FOOT (!struckStillMounted), and riding a
+            // horse with weight to give (ChargeDamage). What he does NOT share is how readily -- HorseArcherChargeFraction
+            // thins the ground's charge chance to the sliver a bowman takes. Live blows only (spend); the reference
+            // tables never wheel. When it fires he draws his sidearm like any man out of arrows -- so nothing is
+            // deducted from his quiver below (shooting is false), and the charge branch prices the couch.
+            bool horseArcherStriker = strikerMounted && striker.IsRanged && striker.Shot.IsValid;
+            bool horseArcherCharge = horseArcherStriker
+                && spend
+                && !approaching
+                && !struckStillMounted
+                && striker.ChargeDamage > 0f
+                && state != null
+                && MBRandom.RandomFloat
+                    < SimulationBattleState.ChargeChanceAgainst(state, !strikerIsAttacker) * HorseArcherChargeFraction;
+
             // Whether he still HAS arrows is a question about the clock, not about how many blows he happens to
             // have thrown: a quiver empties per minute, not per swing. Nothing is spent here -- the round counter
-            // is the spending.
-            bool shooting = striker.IsRanged
+            // is the spending. (And nothing at all when he has chosen to charge instead: the bow is slung for this one.)
+            bool shooting = !horseArcherCharge
+                && striker.IsRanged
                 && striker.Shot.IsValid
                 && mayLoose
                 && SimulationBattleState.HasAmmo(state, strikerState, striker.ShotPerMan, strikerIsAttacker);
@@ -1603,7 +1662,11 @@ namespace RBMCampaign
             float chargeChance = chargeEligible
                 ? SimulationBattleState.ChargeChanceAgainst(state, !strikerIsAttacker)
                 : 0f;
-            bool charging = chargeEligible && spend && MBRandom.RandomFloat < chargeChance;
+            // The horse archer who wheeled in above has ALREADY paid the charge's own thinned roll (its gate is the
+            // charge gate, so chargeEligible holds here), and he turned the bow off to do it -- so he couches, he does
+            // not re-roll. A true horseman takes the ordinary roll. Either way the couched branch below prices it.
+            bool charging = horseArcherCharge
+                || (chargeEligible && spend && MBRandom.RandomFloat < chargeChance);
 
             HitZones zones = GetHitZones(strikerMounted, missile, struckStillMounted, striker.HasPolearm);
 
@@ -1802,6 +1865,23 @@ namespace RBMCampaign
                     breakdown.ChargeBonus = 1f + (chargeChance * chargeMagnitude);
                     actual *= breakdown.ChargeBonus;
                 }
+            }
+
+            // MASSED HORSE. A lone rider is a nuisance; a squadron riding knee to knee is a hammer. Men who ride
+            // together hit as one line, cover one another and break what a scattered few only dent -- so a mounted
+            // striker is worth a little more for every other horseman of HIS OWN KIND on the field with him, cavalry
+            // lifted by cavalry and horse archers by horse archers (a lancer takes nothing from bowmen riding beside
+            // him, nor a horse archer from lancers). Bounded and gentle -- a lone rider gets nothing and a fully
+            // massed arm gets MassBonus, ramping in between (see SimulationBattleState.MassFactor). It rides on the
+            // whole of his blow, charge and all, because mass is what lets the charge be delivered as a line at all.
+            // Read from the LIVE arm counts, so a squadron ground down through a battle loses its mass with its men.
+            // Live state only: the reference tables ask what one man is worth against one man and have no side to mass
+            // on -- and CavalryMassFactor returns 1 for a null state, so this is a clean no-op there.
+            if (strikerMounted && state != null)
+            {
+                actual *= striker.IsRanged
+                    ? SimulationBattleState.HorseArcherMassFactor(state, strikerIsAttacker)
+                    : SimulationBattleState.CavalryMassFactor(state, strikerIsAttacker);
             }
 
             // Braced steel. A spear set against a horse is the answer infantry have always had to cavalry, and

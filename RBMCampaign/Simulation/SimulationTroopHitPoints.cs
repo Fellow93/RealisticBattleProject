@@ -186,6 +186,49 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// How far through his wound pool the man at <paramref name="descriptor"/> already is, from 0 (untouched, or
+        /// not yet known to this session's ledger) to just under 1 (one blow from down). READ-ONLY: it never mints a
+        /// record, so asking after a man who has not been struck -- or a hero, who carries no trooper wound -- simply
+        /// returns 0. The arm targeting reads this to give an already-bloodied man a small extra pull on the next blow
+        /// (see <c>SimulationArmTargeting.WoundPull</c>). Gated on the equipment model exactly as the wound trick is:
+        /// with it off there is no accumulating pool to be a fraction of.
+        /// </summary>
+        internal static float GetTakenFraction(MapEventSide side, UniqueTroopDescriptor descriptor, CharacterObject troop)
+        {
+            if (!SimulationEquipmentPower.SimulationEnabled || side == null || troop == null || troop.IsHero)
+            {
+                return 0f;
+            }
+
+            MapEvent battle = side.MapEvent;
+            if (battle == null)
+            {
+                return 0f;
+            }
+
+            Dictionary<UniqueTroopDescriptor, WoundRecord> wounds;
+            WoundRecord record;
+            if (!_wounds.TryGetValue(battle, out wounds)
+                || !wounds.TryGetValue(descriptor, out record)
+                || record.Taken <= 0f)
+            {
+                return 0f;
+            }
+
+            PartyBase party = side.GetAllocatedTroopParty(descriptor);
+            int maxHitPoints = MaxHitPoints(troop, party, SimulationBattleState.IsDismountedBattle(battle));
+            if (maxHitPoints <= 0)
+            {
+                return 0f;
+            }
+
+            float frac = record.Taken / maxHitPoints;
+            if (frac < 0f) { return 0f; }
+            if (frac > 1f) { return 1f; }
+            return frac;
+        }
+
+        /// <summary>
         /// A trooper's hundred, plus whatever his party's commander has learned about keeping men alive.
         ///
         /// SandboxAgentStatCalculateModel.GetEffectiveMaxHealth, transcribed, and deliberately nothing more: the same

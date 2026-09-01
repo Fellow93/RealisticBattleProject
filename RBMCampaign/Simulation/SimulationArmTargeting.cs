@@ -156,6 +156,16 @@ namespace RBMCampaign
         private const float CavContactVsRanged = 0.9f;
         private const float CavContactVsMelee = 0.75f;
 
+        // -- STRUCK, by wound already carried (a small finishing pull) --
+        // A man already bleeding draws the next blow a little more than a fresh one beside him: the line closes on
+        // the wounded, and blows drift toward finishing them rather than spreading evenly across the untouched. The
+        // pull rides on TOP of the arm keep-weight above and is scaled by how far through his wound pool he already
+        // is -- a scratch barely counts, a man one blow from down counts full -- so it stays gentle and self-limiting.
+        // At 0.2 a fresh man is kept at 0.8x and a near-dead man at ~1x of the same arm-weight: a little pull, not a
+        // fixation. Kept small on purpose -- concentrating fire converts blows to kills faster, which sharpens the
+        // winner's lead, so this is a nudge, not a lever.
+        private const float WoundFocusPull = 0.2f;
+
         // =========================================================================================================
         // The coordinator entry points.
 
@@ -247,9 +257,15 @@ namespace RBMCampaign
                     // The defender is under no such restriction: from a wall he can see the whole army.
                     bool besiegerOnTheApproach = SimulationSiege.IsApproach(state)
                         && _pendingStrikerSide == _pendingEvent.AttackerSide;
+
+                    // The finishing pull is a MELEE FOOTMAN'S doing and only his: he stands over the wounded man in
+                    // the line and cuts him down before turning to a fresh one. An archer looses into the mass and a
+                    // horseman rides through it -- neither picks out the bled man -- so the pull is armed only when the
+                    // striker fights as melee infantry, and every other arm keeps the plain arm-weighted spread.
+                    bool finishWounded = _strikerArm == SimulationEquipmentPower.InfantryType;
                     int index = besiegerOnTheApproach
-                        ? PickIndex(instance, phase, ExposedDefenderWeight, strikerArm: _strikerArm)
-                        : PickIndex(instance, phase, StruckKeepWeight, strikerArm: _strikerArm);
+                        ? PickIndex(instance, phase, ExposedDefenderWeight, strikerArm: _strikerArm, biasWounded: finishWounded)
+                        : PickIndex(instance, phase, StruckKeepWeight, strikerArm: _strikerArm, biasWounded: finishWounded);
                     ApplySelection(instance, index, ref result);
                     _stage = StageDone;
                 }
@@ -389,7 +405,7 @@ namespace RBMCampaign
         /// empty (which cannot happen here -- vanilla has just picked from it -- but is handled for safety).
         /// </summary>
         private static int PickIndex(MapEventSide side, int phase,
-            Func<int, int, CharacterObject, float> keepWeight, int strikerArm)
+            Func<int, int, CharacterObject, float> keepWeight, int strikerArm, bool biasWounded = false)
         {
             List<UniqueTroopDescriptor> list = SimulationTroopList(side);
             int count = (list != null) ? list.Count : 0;
@@ -411,6 +427,14 @@ namespace RBMCampaign
                 CharacterObject candidate = side.GetAllocatedTroop(list[index]);
                 float weight = keepWeight(strikerArm, phase, candidate);
 
+                // The finishing pull, on the struck pick only: a man already bloodied is kept a shade more than a
+                // fresh one. Multiplicative on the arm-weight, and only ever <= 1, so it can lower a healthy man's
+                // keep-weight toward 1-pull but never forbid a pick and never overrule the arm bias -- see WoundPull.
+                if (biasWounded)
+                {
+                    weight *= WoundPull(side, list[index], candidate);
+                }
+
                 if (weight >= 1f)
                 {
                     return index;
@@ -423,6 +447,26 @@ namespace RBMCampaign
                 // uniform draw below stands -- a clean degrade to random, never a deadlock.
             }
             return last;
+        }
+
+        /// <summary>
+        /// The gentle extra pull toward a man already bleeding, as a multiplier on his arm keep-weight. Scaled by how
+        /// far through his wound pool he already is: a fresh man returns 1-<see cref="WoundFocusPull"/>, a man one blow
+        /// from down returns ~1, so the blows drift toward finishing the wounded without ever fixating on them. Always
+        /// in [1-pull, 1], so it can only lower a keep-weight, never raise one above always-accept and never forbid a
+        /// pick. A hero, or a man not yet struck, carries no wound and reads as fresh. Any read fault leaves it neutral.
+        /// </summary>
+        private static float WoundPull(MapEventSide side, UniqueTroopDescriptor descriptor, CharacterObject candidate)
+        {
+            try
+            {
+                float taken = SimulationTroopHitPoints.GetTakenFraction(side, descriptor, candidate);
+                return 1f - WoundFocusPull * (1f - taken);
+            }
+            catch
+            {
+                return 1f;
+            }
         }
 
         /// <summary>

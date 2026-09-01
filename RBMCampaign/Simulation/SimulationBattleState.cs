@@ -819,6 +819,35 @@ namespace RBMCampaign
             public float DefenderFoot;
 
             /// <summary>
+            /// What share of each side's muster is CAVALRY, and what share is HORSE ARCHERS -- taken once the same way
+            /// <see cref="AttackerFootShare"/> is, and read the same way to get a live per-arm count off the side's
+            /// remaining strength without walking the rosters again. The two arms are kept apart because each is
+            /// massed by its OWN kind (a lancer takes no cohesion from bowmen riding beside him, nor a horse archer
+            /// from lancers). Default 0 -- an army with no horse in it is massed by none. See <see cref="MassFactor"/>.
+            /// </summary>
+            public float AttackerCavalryShare = 0f;
+
+            public float DefenderCavalryShare = 0f;
+
+            public float AttackerHorseArcherShare = 0f;
+
+            public float DefenderHorseArcherShare = 0f;
+
+            /// <summary>
+            /// How many CAVALRY and how many HORSE ARCHERS each side still has, refreshed every round exactly as
+            /// <see cref="AttackerFoot"/> is -- live strength times the muster share of that arm. This is the mounted
+            /// mass that makes a squadron worth more than the sum of its riders (see <see cref="MassFactor"/>), and it
+            /// wears down with the men, so a squadron ground to a remnant loses its mass with them.
+            /// </summary>
+            public float AttackerCavalry;
+
+            public float DefenderCavalry;
+
+            public float AttackerHorseArchers;
+
+            public float DefenderHorseArchers;
+
+            /// <summary>
             /// How much a FIELD-FRONTAGE round is worth on the campaign clock, against a round of the same battle
             /// with nobody held back -- 1 when the whole of both sides is in the fight, and below 1 when the battle
             /// size cap has thinned the front. A field so wide that only a fraction of the larger army can reach the
@@ -1108,6 +1137,10 @@ namespace RBMCampaign
                 state.DefenderRangedShare = RangedShare(state.DefenderCounts);
                 state.AttackerFootShare = FootShare(state.AttackerCounts);
                 state.DefenderFootShare = FootShare(state.DefenderCounts);
+                state.AttackerCavalryShare = ArmShare(state.AttackerCounts, SimulationEquipmentPower.CavalryType);
+                state.DefenderCavalryShare = ArmShare(state.DefenderCounts, SimulationEquipmentPower.CavalryType);
+                state.AttackerHorseArcherShare = ArmShare(state.AttackerCounts, SimulationEquipmentPower.HorseArcherType);
+                state.DefenderHorseArcherShare = ArmShare(state.DefenderCounts, SimulationEquipmentPower.HorseArcherType);
 
                 // And the volley, re-measured now that the battle can be seen whole. It was set once already when the
                 // state was made, but that was at MapEventStarted -- before a lord's allies had attached themselves --
@@ -1151,10 +1184,14 @@ namespace RBMCampaign
                 {
                     state.DefenderRangedShare = RangedShare(state.DefenderCounts);
                     state.DefenderFootShare = FootShare(state.DefenderCounts);
+                    state.DefenderCavalryShare = ArmShare(state.DefenderCounts, SimulationEquipmentPower.CavalryType);
+                    state.DefenderHorseArcherShare = ArmShare(state.DefenderCounts, SimulationEquipmentPower.HorseArcherType);
                 }
                 if (attackerGrew)
                 {
                     state.AttackerFootShare = FootShare(state.AttackerCounts);
+                    state.AttackerCavalryShare = ArmShare(state.AttackerCounts, SimulationEquipmentPower.CavalryType);
+                    state.AttackerHorseArcherShare = ArmShare(state.AttackerCounts, SimulationEquipmentPower.HorseArcherType);
                 }
             }
 
@@ -1163,6 +1200,14 @@ namespace RBMCampaign
             // is that the charge dies away with the men who are there to be charged.
             state.AttackerFoot = LiveFoot(mapEvent.AttackerSide, state.AttackerFootShare);
             state.DefenderFoot = LiveFoot(mapEvent.DefenderSide, state.DefenderFootShare);
+
+            // The mounted crowd of each arm, re-read the same cheap way and for the same reason: mass has to wear away
+            // with the men who carry it, or a squadron cut to a handful would still strike like a full charge. See
+            // MassFactor.
+            state.AttackerCavalry = LiveFoot(mapEvent.AttackerSide, state.AttackerCavalryShare);
+            state.DefenderCavalry = LiveFoot(mapEvent.DefenderSide, state.DefenderCavalryShare);
+            state.AttackerHorseArchers = LiveFoot(mapEvent.AttackerSide, state.AttackerHorseArcherShare);
+            state.DefenderHorseArchers = LiveFoot(mapEvent.DefenderSide, state.DefenderHorseArcherShare);
 
             // And a lord who has gone down stops leading. Four checks a side and no roster walk -- cheap enough to
             // run every round, which is the whole reason it is a validation and not a rebuild.
@@ -1892,6 +1937,31 @@ namespace RBMCampaign
             return (total > 0) ? (FootCount(roll) / (float)total) : 1f;
         }
 
+        /// <summary>
+        /// What share of this muster fights as one particular arm -- pass a <see cref="SimulationEquipmentPower"/> type
+        /// (CavalryType, HorseArcherType, ...). Classified through the model's ONE arm test (<c>ArmOf</c>), the same
+        /// one selection and the kit are built against, so the count here cannot disagree with how a man is treated
+        /// once he is picked. Zero for an empty roll -- an absent arm is a zero share, not a full one.
+        /// </summary>
+        internal static float ArmShare(Dictionary<CharacterObject, int> roll, int arm)
+        {
+            if (roll == null || roll.Count == 0)
+            {
+                return 0f;
+            }
+            int total = 0;
+            int ofArm = 0;
+            foreach (KeyValuePair<CharacterObject, int> entry in roll)
+            {
+                total += entry.Value;
+                if (SimulationEquipmentPower.ArmOf(entry.Key) == arm)
+                {
+                    ofArm += entry.Value;
+                }
+            }
+            return (total > 0) ? (ofArm / (float)total) : 0f;
+        }
+
         /// <summary>How many men in this roll stand on the ground. See <see cref="FootShare"/> for what counts.</summary>
         internal static int FootCount(Dictionary<CharacterObject, int> roll)
         {
@@ -1974,6 +2044,56 @@ namespace RBMCampaign
             }
             float foot = struckIsAttacker ? state.AttackerFoot : state.DefenderFoot;
             return state.ChargeChance * MBMath.ClampFloat(foot / ChargeCrowdSaturation, 0f, 1f);
+        }
+
+        /// <summary>How much a fully massed arm is worth over a lone rider, as a fraction added to each of his blows --
+        /// 0.25 is a quarter harder per man at the top of the ramp. A "bit better", deliberately: mass is a real edge
+        /// but it is not a second army, and the cavalry balance already carries the charge, the 1.4x blow rate and the
+        /// mounted defence on top of this. UNCALIBRATED -- a starting figure, to be measured against a paired log the
+        /// way the charge saturation below it was.</summary>
+        private const float MassBonus = 0.25f;
+
+        /// <summary>The count of an arm at which its mass is as good as it gets -- below it the bonus ramps in
+        /// proportion, at or above it the bonus stands full. Read as "about the size of a massed squadron": roughly a
+        /// hundred and twenty horse riding together is a hammer, and more than that adds nothing a man can feel.
+        /// Sibling to <see cref="ChargeCrowdSaturation"/> and, like it, a figure to be pinned against a log, not a law.</summary>
+        private const float MassSaturation = 120f;
+
+        /// <summary>
+        /// The mounted-mass multiplier on a CAVALRY striker's blow -- 1 for a lone rider, up to 1 + <see cref="MassBonus"/>
+        /// once his side fields a massed squadron's worth of cavalry, ramping linearly between. Read off the LIVE count,
+        /// so it fades as the squadron takes losses. 1 (a clean no-op) whenever there is no battle to be massed in -- the
+        /// reference tables and the reverse-correction pass hand a null state. See <see cref="MassFactor"/>.
+        /// </summary>
+        internal static float CavalryMassFactor(BattleState state, bool attacker)
+        {
+            if (state == null)
+            {
+                return 1f;
+            }
+            return MassFactor(attacker ? state.AttackerCavalry : state.DefenderCavalry);
+        }
+
+        /// <summary>
+        /// The same mounted-mass multiplier for a HORSE ARCHER striker, off the horse-archer count of his own side -- a
+        /// denser storm of horse bowmen sustains itself where a lone one is ridden down. Kept apart from the cavalry
+        /// count on purpose: each mounted arm is massed by its own kind. See <see cref="CavalryMassFactor"/>.
+        /// </summary>
+        internal static float HorseArcherMassFactor(BattleState state, bool attacker)
+        {
+            if (state == null)
+            {
+                return 1f;
+            }
+            return MassFactor(attacker ? state.AttackerHorseArchers : state.DefenderHorseArchers);
+        }
+
+        /// <summary>The shared ramp both mass factors read: no bonus at none, the full <see cref="MassBonus"/> at and
+        /// beyond <see cref="MassSaturation"/>, and a straight line between -- so one extra rider is always a shade
+        /// more, never a step.</summary>
+        private static float MassFactor(float count)
+        {
+            return 1f + (MassBonus * MBMath.ClampFloat(count / MassSaturation, 0f, 1f));
         }
 
         /// <summary>
