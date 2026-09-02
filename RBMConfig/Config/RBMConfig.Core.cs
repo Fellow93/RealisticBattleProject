@@ -141,7 +141,7 @@ namespace RBMConfig
             realisticTradeGoodPrices = ReadOrCreate("/Config/RBMCampaign", "RealisticTradeGoodPrices", "1").Equals("1");
             rbmDaysOfSupplyAiSignal = ReadOrCreate("/Config/RBMCampaign", "DaysOfSupplyAiSignal", "1").Equals("1");
             workshopHeadroomGateEnabled = ReadOrCreate("/Config/RBMCampaign", "WorkshopHeadroomGate", "1").Equals("1");
-            villageProductionMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "VillageProductionMultiplier", "1"), CultureInfo.InvariantCulture);
+            villageProductionMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "VillageProductionMultiplier", "0.5"), CultureInfo.InvariantCulture);
             workshopProductionMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "WorkshopProductionMultiplier", "1"), CultureInfo.InvariantCulture);
             showInventoryItemWeight = ReadOrCreate("/Config/RBMCampaign", "ShowInventoryItemWeight", "1").Equals("1");
             spoilsLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "SpoilsLoggingEnabled", "0").Equals("1");

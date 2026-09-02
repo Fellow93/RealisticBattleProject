@@ -185,7 +185,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel VillageProductionHint { get; } = Hint("{=RBM_CON_113}Multiplier on every village's daily output -- its production, warehouse size and production tooltip together. Below 1 throttles the countryside, above 1 floods it. Default 1.00.");
+        public BasicTooltipViewModel VillageProductionHint { get; } = Hint("{=RBM_CON_113}Multiplier on every village's daily output -- its production, warehouse size and production tooltip together. Below 1 throttles the countryside, above 1 floods it. Default 0.50.");
 
         private float _workshopProductionMultiplier;
 

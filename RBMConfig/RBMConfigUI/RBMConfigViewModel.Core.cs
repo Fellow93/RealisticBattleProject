@@ -755,7 +755,7 @@ namespace RBMConfig
             // Campaign / spoils
             CampaignStartingGold = 5000f;
             TroopUpgradeCostMultiplier = 1f;
-            VillageProductionMultiplier = 1f;
+            VillageProductionMultiplier = 0.5f;
             WorkshopProductionMultiplier = 1f;
             TroopUpgradeSpoilsLootMultiplier = 1f;
             TroopUpgradeSupplyRadius = 30f;

@@ -182,7 +182,7 @@ namespace RBMConfig
         // rolls each day, and with it the warehouse capacity and the production tooltip, so all three
         // stay in step. 1 leaves output as the rework computes it; below 1 throttles the countryside,
         // above 1 floods it. Range 0.01..2. Default 1.
-        public static float villageProductionMultiplier = 1f;
+        public static float villageProductionMultiplier = 0.5f;
 
         // Multiplies the effective conversion speed of every workshop -- how fast it turns its inputs
         // into outputs -- layered on top of RBM's own prosperity-driven workshop scale. 1 leaves it as
