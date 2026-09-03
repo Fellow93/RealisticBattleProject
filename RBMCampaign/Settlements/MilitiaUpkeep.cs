@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Helpers;
 using HarmonyLib;
@@ -127,11 +127,13 @@ namespace RBMCampaign
         public const float BaseMilitiaVillage = 0.5f;
 
         /// <summary>
-        /// Share of the standing militia that drifts home each day -- the decline spine. At vanilla's
-        /// 0.025 a settlement sheds one man per day per forty it holds, which is what balances the base
-        /// muster and the hearth/prosperity intake into a steady-state count.
+        /// Vanilla's retirement rate, kept ONLY to size the new-campaign seed (<see cref="EquilibriumMilitia"/>).
+        /// Militia no longer retires: the standing watch is bounded by the soft cap and by what the
+        /// settlement's pot can arm and pay, not by a daily drift home. Seeding still opens each place at
+        /// the count vanilla's curve would have settled on (intake / 0.025), so campaign starts are
+        /// unchanged rather than every town opening at its cap.
         /// </summary>
-        public const float MilitiaRetirementRate = 0.025f;
+        public const float MilitiaSeedRetirementRate = 0.025f;
 
         /// <summary>Militia a day per unit of a village's hearth -- vanilla's Hearth / 400.</summary>
         public const float MilitiaPerHearth = 1f / 400f;
@@ -164,23 +166,31 @@ namespace RBMCampaign
         /// <summary>Extra daily muster per unit of a village's hearth while understrength -- Hearth / 150.</summary>
         public const float MilitiaCatchUpPerHearthVillage = 1f / 150f;
 
+        // ------------------------------------------------------------------ prosperous-city muster
+        //
+        // A city whose households have savings to spare arms more of its own: for every luxury tier the
+        // citizens' savings have reached (small / medium / large, the same thresholds CitizenDemand shops
+        // on) the city musters an extra Prosperity / 50 a day. Ordinary positive growth like the rest --
+        // the soft cap throttles it and the pot must still arm every man it raises.
+
+        /// <summary>Extra daily muster per unit of a city's prosperity, per luxury tier its citizens' savings have reached.</summary>
+        public const float MilitiaPerProsperityPerLuxuryTier = 1f / 50f;
+
         // Vanilla's own line labels, reused verbatim so RBM's rebuilt breakdown reads exactly as the
         // player is used to. These are TaleWorlds localization keys resolved by the game, not RBM strings.
         private static readonly TextObject BaseText = new TextObject("{=militarybase}Base");
-        private static readonly TextObject RetiredText = new TextObject("{=gHnfFi1s}Retired");
         private static readonly TextObject FromHearthsText = new TextObject("{=ecdZglky}From Hearths");
         private static readonly TextObject FromProsperityText = new TextObject("{=cTmiNAlI}From Prosperity");
         private static readonly TextObject LowLoyaltyText = new TextObject("{=SJ2qsRdF}Low Loyalty");
         private static readonly TextObject MilitiaFromMarketText = new TextObject("{=7ve3bQxg}Weapons From Market");
         private static readonly TextObject CultureText = GameTexts.FindText("str_culture");
 
-        // A new campaign opens every settlement on the STEADY STATE of RBM's base growth curve -- the
-        // count at which its flat muster and manpower intake exactly balance its retirement drag, so the
-        // watch neither swells nor bleeds from turn one. See EquilibriumMilitia. This replaces both
-        // vanilla's cap-blind MilitiaChange*45 seed and RBM's earlier "quarter of the soft cap" seed: the
-        // soft cap sits far above what the curve sustains (a town's cap is ~0.70 of prosperity, its
-        // equilibrium only ~Prosperity/25), so seeding off the cap opened large towns with several times
-        // the militia they could hold, which then shed for weeks -- reading as the watch collapsing.
+        // A new campaign opens every settlement on the steady state VANILLA's curve would have reached
+        // (intake / 0.025, see EquilibriumMilitia). RBM's live curve has no retirement, so its own
+        // steady state is the soft cap -- but seeding at the cap would open large towns with thousands of
+        // militia; the vanilla-equivalent seed (~Prosperity/25 for a town, ~Hearth/10 for a village) keeps
+        // campaign starts familiar and lets the watch grow from there, budget permitting. This replaces
+        // both vanilla's cap-blind MilitiaChange*45 seed and RBM's earlier "quarter of the soft cap" seed.
 
         /// <summary>Times a militiaman's kit cost the funding pot must hold before it may arm a new one.</summary>
         public const int MilitiaSpawnReserveMult = 5;
@@ -209,6 +219,7 @@ namespace RBMCampaign
         public const float MilitiaVillageGearShare = 0.1f;
 
         private static readonly TextObject UnderstrengthText = new TextObject("{=RBM_militia_understrength}Mustering the levy");
+        private static readonly TextObject ProsperousCityText = new TextObject("{=RBM_militia_prosperous}Prosperous citizens");
         private static readonly TextObject UnaffordableText = new TextObject("{=RBM_militia_unpaid}Cannot be paid");
         private static readonly TextObject OverCapText = new TextObject("{=RBM_militia_overcap}Over muster");
         private static readonly TextObject CannotArmText = new TextObject("{=RBM_militia_unarmed}Cannot be armed");
@@ -422,18 +433,16 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The steady-state militia count of RBM's base growth curve -- the number at which the flat
-        /// muster and manpower intake exactly cancel the retirement drag, so the watch holds. This is the
-        /// count a settlement naturally settles at, well below its soft cap: a town on ~Prosperity/25, a
-        /// village on ~Hearth/10. Used to seed a new campaign so every place opens at the strength it will
-        /// actually keep, rather than above it. Clamped to the soft cap for safety, though the curve's
-        /// equilibrium sits far under it. The kept vanilla modifiers (loyalty, policies, perks, market
-        /// weapons) are not folded in -- at campaign start they are near-zero, and the base spine is what
-        /// determines the standing level.
+        /// The new-campaign seed count: where vanilla's curve would have settled, with the base muster and
+        /// manpower intake balanced against vanilla's retirement drag (<see cref="MilitiaSeedRetirementRate"/>)
+        /// -- a town on ~Prosperity/25, a village on ~Hearth/10. RBM's live curve has no retirement, so
+        /// this is a starting point the watch grows up from, not a level it holds; it is clamped to the
+        /// soft cap for safety. The kept vanilla modifiers (loyalty, policies, perks, market weapons) are
+        /// not folded in -- at campaign start they are near-zero.
         /// </summary>
         public static float EquilibriumMilitia(Settlement settlement)
         {
-            // MilitiaRetirementRate is a positive const, so the intake/rate division is always safe.
+            // MilitiaSeedRetirementRate is a positive const, so the intake/rate division is always safe.
             float intake;
             if (settlement.IsVillage)
             {
@@ -448,7 +457,7 @@ namespace RBMCampaign
             {
                 return 0f;
             }
-            float eq = intake / MilitiaRetirementRate;
+            float eq = intake / MilitiaSeedRetirementRate;
             float cap = MilitiaCap(settlement);
             return (cap > 0f && eq > cap) ? cap : eq;
         }
@@ -463,7 +472,7 @@ namespace RBMCampaign
         /// The number is built in three layers:
         ///
         ///   * THE BASE CURVE (RBM-owned). The muster/retirement/hearth/prosperity spine, rebuilt from
-        ///     RBM's own constants (<see cref="BaseMilitiaFortification"/>, <see cref="MilitiaRetirementRate"/>,
+        ///     RBM's own constants (<see cref="BaseMilitiaFortification"/>, <see cref="MilitiaSeedRetirementRate"/>,
         ///     <see cref="MilitiaPerHearth"/>, <see cref="MilitiaPerProsperity"/>) seeded to vanilla's
         ///     values -- this is the growth/decline RBM now dials.
         ///
@@ -509,7 +518,8 @@ namespace RBMCampaign
 
             float militia = settlement.Militia;
 
-            // --- Base curve (RBM-owned): flat muster, retirement drag, manpower intake.
+            // --- Base curve (RBM-owned): flat muster and manpower intake. No retirement: the watch only
+            // shrinks through losses or the affordability shed, and only grows while the cap and the pot allow.
             // Ride the soft cap in the base line's label -- the count past which muster throttles -- so the
             // tooltip always shows what the watch is growing toward, the way the garrison names its cap.
             TextObject baseLine = BaseText;
@@ -530,8 +540,6 @@ namespace RBMCampaign
             {
                 result.Add(BaseMilitiaVillage, baseLine);
             }
-
-            result.Add(-militia * MilitiaRetirementRate, RetiredText);
 
             if (settlement.IsVillage)
             {
@@ -554,6 +562,9 @@ namespace RBMCampaign
 
             // --- Understrength catch-up: a gutted watch (below half its soft cap) musters far faster.
             AddUnderstrengthMuster(settlement, militia, ref result);
+
+            // --- Prosperous city: Prosperity / 50 more a day per luxury tier the citizens' savings have reached.
+            AddProsperousCityMuster(settlement, ref result);
 
             // --- Kept modifiers (vanilla flavour, reproduced from public API).
             AddKeptModifiers(settlement, ref result);
@@ -683,6 +694,34 @@ namespace RBMCampaign
             if (bonus > 0f)
             {
                 result.Add(bonus, UnderstrengthText);
+            }
+        }
+
+        /// <summary>
+        /// Adds the prosperous-city muster: <see cref="MilitiaPerProsperityPerLuxuryTier"/> of the city's
+        /// prosperity per luxury tier (small / medium / large) its citizens' savings have reached, read off
+        /// the same <see cref="CitizenDemand.SavingsInDaysOfIncome"/> thresholds the households shop on.
+        /// Towns only -- castles and villages have no citizen ledger to measure. Ordinary positive growth:
+        /// the soft cap throttles it and <see cref="CanAffordSpawn"/> still gates it.
+        /// </summary>
+        private static void AddProsperousCityMuster(Settlement settlement, ref ExplainedNumber result)
+        {
+            if (!settlement.IsTown || settlement.Town == null)
+            {
+                return;
+            }
+            float savings = CitizenDemand.SavingsInDaysOfIncome(settlement.Town);
+            int tiers = (savings >= CitizenDemand.SmallLuxuryDays ? 1 : 0)
+                + (savings >= CitizenDemand.MediumLuxuryDays ? 1 : 0)
+                + (savings >= CitizenDemand.LargeLuxuryDays ? 1 : 0);
+            if (tiers <= 0)
+            {
+                return;
+            }
+            float bonus = Prosperity(settlement) * MilitiaPerProsperityPerLuxuryTier * tiers;
+            if (bonus > 0f)
+            {
+                result.Add(bonus, ProsperousCityText);
             }
         }
 
