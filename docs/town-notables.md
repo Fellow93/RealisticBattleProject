@@ -187,7 +187,7 @@ zero gold on a notable→notable transfer.
 > ⚠️ **RBM findings.** In [`WorkshopPurse.cs`](../RBMCampaign/Settlements/WorkshopPurse.cs), the
 > `NotableExpensePatch`'s `fromOwner = state[1] - shop.Owner.Gold` term is **identically zero on every
 > call**, because vanilla's notable branch has no owner-gold leg — the capture is dead weight and the
-> doc comment describing it is wrong for the notable twin. Separately, `IsCitizenLabour` forces
+> doc comment describing it is wrong for the notable twin. Separately, `RBMWorkshopCycle.SettlesInGold` forces
 > `effectCapital = false`, freezing the hidden artisans shop's capital at 10,000 → `ProfitMade == 0` →
 > **RBM Artisans earn exactly nothing** unless they win a named shop (§3.3).
 
@@ -316,7 +316,7 @@ so it never pays the 100/day. In vanilla it accrues capital from its all-trade-g
 (grape→wine, olives→oil, iron→tools, cow→meat+hides), while the armour and garment recipes have
 `isTradeGood: false` outputs and settle in kind.
 
-> ⚠️ **Under RBM the Artisan is the poorest notable in the game.** `WorkshopPurse.IsCitizenLabour`
+> ⚠️ **Under RBM the Artisan is the poorest notable in the game.** `RBMWorkshopCycle.SettlesInGold`
 > freezes the artisans shop, so an Artisan without a named workshop has `I = 0` and their gold never
 > moves after creation. Their power therefore has nothing opposing the `−0.1/day` occupation term.
 > Vanilla's restoring force applies only above 100, so this decayed **without bound** until
@@ -880,7 +880,7 @@ in the repo reads or writes notable `Hero.Power` or `SupporterOf`, and the only 
 
 | File | What it does | Gate |
 |---|---|---|
-| [`Settlements/WorkshopPurse.cs`](../RBMCampaign/Settlements/WorkshopPurse.cs) | `CaptureBefore`/`SettleAfter` around `HandleNotableWorkshopExpense` measure the outlay and credit citizen wealth. `IsCitizenLabour` forces `effectCapital = false` on every path. ⚠️ The `fromOwner` term is **dead** (§2.1), and the freeze **zeroes Artisan income** (§3.3). | `rbmCampaignEnabled` |
+| [`Settlements/WorkshopPurse.cs`](../RBMCampaign/Settlements/WorkshopPurse.cs) | `CaptureBefore`/`SettleAfter` around `HandleNotableWorkshopExpense` measure the outlay and credit citizen wealth. `RBMWorkshopCycle.SettlesInGold` keeps the artisans out of gold on every path. ⚠️ The `fromOwner` term is **dead** (§2.1), and the freeze **zeroes Artisan income** (§3.3). | `rbmCampaignEnabled` |
 | [`Economy/CaravanCapital.cs`](../RBMCampaign/Economy/CaravanCapital.cs) | `PriceScale = 10` on `GetInitialTradeGold` and `GetCaravanFormingCost`; `FormingCostPatch` scales what the player pays. ⚠️ Amplifies the elite-caravan discrepancy to ~15,000/day (§2.2); `CaravanGoldLowLimit` is left unscaled. | `rbmCampaignEnabled` |
 | [`Economy/RecruitSupply.cs`](../RBMCampaign/Economy/RecruitSupply.cs) | Multiset diff around the daily volunteer tick draws each new troop's kit off the market — a town arming its own sons debits its **citizen purse** (`Source.TownArms`). Replaces recruit price wholesale (owner clan/ruler free, vassal gear + 5× wage, foreigner +10 %). | `SpoilsPool.IsEnabled && recruitDrawsFromSettlementStock` |
 | [`Settlements/GarrisonRecruitCost.cs`](../RBMCampaign/Settlements/GarrisonRecruitCost.cs) | Prefix-skips vanilla's garrison auto-recruit so it no longer consumes a notable's volunteer per day; replaced with a wealth-driven growth curve. | `GarrisonRecruitCost.IsEnabled` |
@@ -913,7 +913,7 @@ Recorded as observations, not proposals.
 2. **Power is the lever that matters** — it drives recruit tier, alley strength, elite-caravan chance
    and workshop-buyer weight simultaneously. One number, four consequences; tuning it is not local.
 3. **The artisan's unbounded power decay — fixed 2026-08-15.** The bench freeze itself is a
-   deliberate, measured decision — see the remark on `IsCitizenLabour`, which records that the full
+   deliberate, measured decision — see the remark on `RBMWorkshopCycle.SettlesInGold`, which records that the full
    trade circuit was built, logged over fourteen days, found self-cancelling, and actively harmful
    (the working float held more than the townspeople had, locking the poorest towns). That was never
    in question. The problem was downstream: with `I = 0`, an Artisan holding no named shop has no

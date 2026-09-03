@@ -50,6 +50,8 @@ namespace RBMCampaign
             PartyTradeFlow.Reset();
             TradeTariff.Reset();
             WorkshopPurse.Reset();
+            RBMWorkshopCycle.Reset();
+            RBMWorkshopExpense.Reset();
             WorkshopDiagnostics.Reset();
             TownStorage.Reset();
         }

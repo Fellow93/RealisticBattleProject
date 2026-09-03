@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using HarmonyLib;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Workshops;
 using TaleWorlds.Localization;
@@ -24,7 +22,8 @@ namespace RBMCampaign
     /// adds capacity, it only re-slices it.
     /// </summary>
     /// <remarks>
-    /// Applied on <c>GetEffectiveConversionSpeedOfProduction</c>, which is handed the workshop and
+    /// Applied by <see cref="RBMWorkshopModel"/>'s <c>GetEffectiveConversionSpeedOfProduction</c>
+    /// override, which is handed the workshop and
     /// the recipe's declared speed but NOT which recipe is being ticked. That is exactly enough
     /// here, because the multiplier is a property of the shop and the town rather than of any one
     /// recipe -- every artisan recipe is scaled by the same figure on the same day.
@@ -34,7 +33,9 @@ namespace RBMCampaign
     ///
     /// "Active" means a recipe whose every input the town market can currently cover, which is the
     /// same test <c>DetermineItemRosterHasSufficientInputs</c> makes before a cycle runs -- counted
-    /// in units of the input CATEGORY, since that is how a recipe consumes. The count is cached per
+    /// in units of the input CATEGORY, since that is how a recipe consumes. A bench with no active
+    /// recipe is scaled as if it had one, so the figure never collapses to the declared speed while a
+    /// shop waits for an input. The count is cached per
     /// town per campaign day: the model is called once per recipe per day per workshop and again by
     /// every tooltip that shows a production figure, and recounting fifty recipes against the whole
     /// market roster on each of those calls would be a real cost for a number that moves once a day.
@@ -54,8 +55,10 @@ namespace RBMCampaign
         // "settlement#workshopType" -> that type's reading, taken once a campaign day.
         private static readonly Dictionary<string, Bench> _activeCache = new Dictionary<string, Bench>();
 
-        private static readonly TextObject ScaleText = new TextObject("{=RBM_ARTISAN_SCALE}Town crafts");
-        private static readonly TextObject OwnedScaleText = new TextObject("{=RBM_WORKSHOP_SCALE}Workshop share");
+        // Read by RBMWorkshopModel.GetEffectiveConversionSpeedOfProduction, which is the seam the scale
+        // is applied at; the labels live here beside the math that earns them.
+        internal static readonly TextObject ScaleText = new TextObject("{=RBM_ARTISAN_SCALE}Town crafts");
+        internal static readonly TextObject OwnedScaleText = new TextObject("{=RBM_WORKSHOP_SCALE}Workshop share");
 
         internal static void ResetForNewSession()
         {
@@ -75,7 +78,15 @@ namespace RBMCampaign
             if (prosperity <= 0f) return 1f;
 
             Bench bench = BenchFor(town, workshop.WorkshopType);
-            if (bench.Active <= 0) return 1f;
+
+            // A bench with nothing it can currently make is still a bench of the same size. It used to
+            // fall back to the recipe's declared speed here, which for a one-recipe shop meant the
+            // whole scale switched off whenever its single input ran out -- a velvet weavery at 0.03
+            // cycles a day with no cotton, and eighteen the day some arrived. The labour does not
+            // leave when the shelf is bare; the input gate already stops the cycle, so the speed is
+            // kept honest and the tooltip keeps saying what the shop can do. One idle recipe is the
+            // smallest bench that can exist, so an empty count is read as one.
+            int active = (bench.Active > 0) ? bench.Active : 1;
 
             // The config multiplier layers onto RBM's prosperity-driven scale, so both AI and player
             // shops -- and every tooltip and log that reads the model -- speed up or slow down together.
@@ -86,10 +97,10 @@ namespace RBMCampaign
                 int ownedCount = CountOwnedWorkshops(town);
                 float share = 1f - OwnedWorkshopProsperityShare * ownedCount;
                 if (share <= 0f) return 1f;
-                return (prosperity * share) / bench.Active * mult;
+                return (prosperity * share) / active * mult;
             }
 
-            return (prosperity * OwnedWorkshopProsperityShare) / bench.Active * mult;
+            return (prosperity * OwnedWorkshopProsperityShare) / active * mult;
         }
 
         private static int CountOwnedWorkshops(Town town)
@@ -221,26 +232,6 @@ namespace RBMCampaign
                         + "  ·  active " + bench.Active + " of " + bench.Total + " recipes"
                         + "  ·  speed x" + EconomyLog.Fmt(scale));
                 }
-            }
-        }
-
-        [HarmonyPatch(typeof(DefaultWorkshopModel), "GetEffectiveConversionSpeedOfProduction")]
-        private static class ConversionSpeedPatch
-        {
-            private static void Postfix(Workshop workshop, ref ExplainedNumber __result)
-            {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled
-                    || workshop == null
-                    || workshop.WorkshopType == null)
-                {
-                    return;
-                }
-
-                float scale = Scale(workshop);
-                if (scale == 1f) return;
-
-                TextObject text = workshop.WorkshopType.IsHidden ? ScaleText : OwnedScaleText;
-                __result.AddFactor(scale - 1f, text);
             }
         }
     }

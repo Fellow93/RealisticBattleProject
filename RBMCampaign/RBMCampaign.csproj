@@ -394,9 +394,6 @@
     <Compile Include="Production\ArtisanOutput.cs" />
     <Compile Include="Production\WorkshopVillageBias.cs" />
     <Compile Include="Production\WorkshopDemand.cs" />
-    <Compile Include="Production\WorkshopHeadroomGate.cs" />
-    <Compile Include="Production\WorkshopProductionMargin.cs" />
-    <Compile Include="Production\WorkshopPayoutCap.cs" />
     <Compile Include="Production\WorkshopItemTierBias.cs" />
     <Compile Include="Production\TownFoodReserve.cs" />
     <Compile Include="Production\VillagerConvoys.cs" />
@@ -424,8 +421,11 @@
     <Compile Include="Settlements\SettlementGoldFunnel.cs" />
     <Compile Include="Settlements\ShipTradeFunnel.cs" />
     <Compile Include="Settlements\SettlementWealth.cs" />
-    <Compile Include="Settlements\WorkshopCapital.cs" />
-    <Compile Include="Settlements\WorkshopCardPayrollLine.cs" />
+    <Compile Include="Workshops\RBMWorkshopModel.cs" />
+    <Compile Include="Workshops\RBMWorkshopCycle.cs" />
+    <Compile Include="Workshops\RBMWorkshopSettlement.cs" />
+    <Compile Include="Workshops\RBMWorkshopExpense.cs" />
+    <Compile Include="Workshops\WorkshopCardPayrollLine.cs" />
     <Compile Include="Settlements\WorkshopDiagnostics.cs" />
     <Compile Include="Settlements\WorkshopPurse.cs" />
     <Compile Include="Settlements\ArtisanStanding.cs" />

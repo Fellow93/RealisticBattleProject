@@ -201,6 +201,9 @@ namespace RBM
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMRecruitBiasBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSettlementDefenseBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMDeserterRaiderBehavior());
+                // Registered last so it wins GetGameModel and receives whatever workshop model was
+                // already in place (vanilla's, or NavalDLC's) as its BaseModel to delegate to.
+                ((CampaignGameStarter)gameStarterObject).AddModel(new RBMCampaign.RBMWorkshopModel());
             }
             base.OnGameStart(game, gameStarterObject);
         }

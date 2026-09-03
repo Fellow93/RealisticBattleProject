@@ -14,7 +14,7 @@ namespace RBMCampaign
     /// rank.
     ///
     /// Under RBM the income leg is gone. <see cref="WorkshopPurse"/> settles the artisans' bench in kind
-    /// rather than in gold -- deliberately, and for good reasons recorded on <c>IsCitizenLabour</c> -- so
+    /// rather than in gold -- deliberately, and for good reasons recorded on <c>RBMWorkshopCycle.SettlesInGold</c> -- so
     /// the hidden shop's capital never moves, <c>ProfitMade</c> is permanently zero, and an artisan
     /// holding no named shop has no income at all. Nothing then opposes the <c>-0.1</c>.
     ///

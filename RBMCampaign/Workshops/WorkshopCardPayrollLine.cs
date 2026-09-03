@@ -10,9 +10,8 @@ namespace RBMCampaign
     /// <summary>
     /// Shows the player what their workshop actually pays its hands.
     ///
-    /// The clan-screen workshop card lists a "Daily Wage" of the vanilla flat overhead (100/day) and
-    /// nothing else, while <see cref="WorkshopPurse"/> also draws a per-batch payroll out of the same
-    /// capital. A busy shop could lose several hundred a day to wages the card never mentioned, so its
+    /// The clan-screen workshop card lists a "Daily Wage" of the standing overhead and nothing else,
+    /// while <see cref="RBMWorkshopExpense"/> also draws a per-batch payroll out of the same capital. A busy shop could lose several hundred a day to wages the card never mentioned, so its
     /// capital fell faster than any figure on screen explained. This adds a "Production Wages" row
     /// under the vanilla one, reporting the last day's batches and what they cost.
     /// </summary>
@@ -33,8 +32,8 @@ namespace RBMCampaign
 
             int cycles;
             int paid;
-            bool known = WorkshopPurse.TryGetLastPayroll(shop, out cycles, out paid);
-            int rate = WorkshopPurse.WagePerCycle;
+            bool known = RBMWorkshopExpense.TryGetLastPayroll(shop, out cycles, out paid);
+            int rate = RBMWorkshopExpense.WagePerCycle;
 
             string name = new TextObject("{=RBM_wsPayroll}Production Wages").ToString();
             string value = known ? paid.ToString() : "-";

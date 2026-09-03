@@ -73,7 +73,7 @@ namespace RBMCampaign
         // Per settlement: output good -> how many production cycles the headroom gate skipped because the
         // town was already at its storage ceiling for that good. Written as SHOPCAP. Distinct from the
         // SHOPBLOCK reasons because a gated cycle is refused by RBM on purpose, before vanilla's own gates
-        // are ever consulted, so it never reaches the counters those record. See WorkshopHeadroomGate.
+        // are ever consulted, so it never reaches the counters those record. See RBMWorkshopCycle.Decide.
         private static readonly Dictionary<Settlement, Dictionary<string, int>> _capped =
             new Dictionary<Settlement, Dictionary<string, int>>();
 
@@ -148,7 +148,7 @@ namespace RBMCampaign
 
         /// <summary>
         /// Records one production cycle the headroom gate skipped for a full store, by the output it would
-        /// have made. Called from <see cref="WorkshopHeadroomGate"/>; a no-op when logging is off so no
+        /// have made. Called from <see cref="RBMWorkshopCycle"/>; a no-op when logging is off so no
         /// tally accumulates unread.
         /// </summary>
         public static void CountCapped(Settlement settlement, string output)
@@ -291,12 +291,14 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Catches the economic refusals, and says which of the three fired.
+        /// Catches the economic refusals, and says which one fired.
         /// </summary>
         /// <remarks>
-        /// The conditions are recomputed rather than observed, because vanilla returns a single bool and
-        /// the three are what the answer turns on. They are evaluated in the same order the original
-        /// tests them, so the reason recorded is the one that actually stopped it.
+        /// The reason is now OBSERVED, not recomputed. <see cref="RBMWorkshopCycle"/> owns the decision
+        /// outright and publishes the verdict it just reached, so this reads it back instead of keeping a
+        /// second copy of the rule that has to be edited in step with the first -- which is exactly the
+        /// coupling the workshop rewrite set out to remove. A count under "unknown" now means only that
+        /// no verdict was published, i.e. RBM's gate did not run.
         /// </remarks>
         // Both owner paths, because a player shop refused every day used to leave no line at all: the
         // one workshop the player is watching was the one the log could not see. The player method has
@@ -340,32 +342,33 @@ namespace RBMCampaign
                 return;
             }
 
-            // The same floor the patched gate uses (WorkshopProductionMargin lowers the constant), on
-            // the same income it sees (WorkshopPayoutCap clamps it before the call).
-            float floor = workshop.WorkshopType.IsHidden
-                ? inputMaterialCost
-                : (inputMaterialCost + WorkshopProductionMargin.MarginPerSpeed / production.ConversionSpeed);
-
-            if (outputIncome <= floor)
-            {
-                // Named by what it would have made, and by the margin it fell short of -- the whole
-                // question about this gate is whether the 200/speed term is the thing biting.
-                string made = (production.Outputs.Count > 0 && production.Outputs[0].Item1 != null)
-                    ? production.Outputs[0].Item1.StringId
-                    : "?";
-                Count(settlement, "margin:" + made);
-            }
-            else if (settlement.Town != null && settlement.Town.Gold < outputIncome && effectCapital)
-            {
-                Count(settlement, "town-broke");
-            }
-            else if (workshop.Capital < inputMaterialCost)
-            {
-                Count(settlement, "shop-broke");
-            }
-            else
+            RBMWorkshopCycle.Verdict verdict;
+            if (!RBMWorkshopCycle.TryGetLastVerdict(workshop, out verdict) || verdict.Allowed)
             {
                 Count(settlement, "unknown");
+                return;
+            }
+
+            switch (verdict.Why)
+            {
+                case RBMWorkshopCycle.Reason.Glutted:
+                    // Already reported on its own SHOPCAP line, and deliberately kept off this one: a
+                    // glut is RBM refusing a cycle on purpose, not the shop's economics refusing it.
+                    return;
+                case RBMWorkshopCycle.Reason.Margin:
+                    // Named by what it would have made -- the question about this gate has always been
+                    // which recipes it is biting on.
+                    Count(settlement, "margin:" + RBMWorkshopCycle.PrimaryOutput(production));
+                    return;
+                case RBMWorkshopCycle.Reason.TownBroke:
+                    Count(settlement, "town-broke");
+                    return;
+                case RBMWorkshopCycle.Reason.ShopBroke:
+                    Count(settlement, "shop-broke");
+                    return;
+                default:
+                    Count(settlement, "unknown");
+                    return;
             }
         }
 

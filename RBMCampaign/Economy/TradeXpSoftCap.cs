@@ -92,7 +92,7 @@ namespace RBMCampaign
         ///
         /// Two RBM changes make that a firehose. The whole price list moved to the historical x10 scale,
         /// so each unit's base value -- and therefore its XP -- is an order of magnitude larger; and RBM
-        /// runs many more production cycles per day than vanilla (WorkshopProductionMargin drops the
+        /// runs many more production cycles per day than vanilla (RBMWorkshopCycle relaxes the
         /// profit floor, ArtisanOutput scales a named shop's speed by town prosperity), so a prosperous
         /// velvet weavery clears a stack of high-value cycles on the FIRST daily tick and hands the whole
         /// pile of XP over at once. The observed result was 50+ Trade XP from one tick of one shop.
