@@ -237,5 +237,21 @@ namespace RBMConfig
         // and caravans and raiding weakly-held villages when they out-match the target, instead of vanilla's
         // aimless patrol around their spawn point. Off leaves deserters on vanilla behavior.
         public static bool deserterRaidersEnabled = true;
+
+        // Whether RBM reworks the native settlement and sea patrols. Vanilla spawns them for free -- land
+        // patrols gated only by a town's Guard House, sea patrols by the Coastal Guard Edict -- from culture
+        // templates, drawing on no purse. On, a settlement instead FUNDS its patrol out of its wealth: it
+        // fields one only while it can afford the kit and the daily upkeep, castles field them too (vanilla
+        // gives them none), the patrol is biased toward cavalry to run down bandits, and the Guard House and
+        // the Coastal Guard Edict become budget bonuses rather than the on/off gate. Off leaves patrols on
+        // vanilla's free, town-only behavior. Default on.
+        public static bool settlementPatrolsEnabled = true;
+
+        // Share of a settlement's funding pot set aside each day to keep a patrol under arms -- the size of
+        // its patrol and how good a company it can sustain both scale off this. This is the budget the
+        // Guard House level and the Coastal Guard Edict then multiply. Higher fields larger, richer patrols
+        // and drains more wealth into them; zero fields none. Range 0..0.2. Default 0.02. No effect unless
+        // the patrol rework above is on.
+        public static float patrolBudgetFraction = 0.02f;
     }
 }

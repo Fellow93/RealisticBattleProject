@@ -355,6 +355,11 @@ namespace RBMConfig
             DeserterRaidersEnabledText = new TextViewModel(new TextObject("Deserter Raiders"));
             DeserterRaidersEnabled = new SelectorVM<SelectorItemVM>(deserterRaidersOptions, 0, null);
 
+            // Wealth-funded patrols: on by default, so Enabled carries the "(Default)" tag.
+            List<string> settlementPatrolsOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            SettlementPatrolsEnabledText = new TextViewModel(new TextObject("Funded Patrols"));
+            SettlementPatrolsEnabled = new SelectorVM<SelectorItemVM>(settlementPatrolsOptions, 0, null);
+
             // Equipment simulation: Enabled is the default, so its option carries the "(Default)" tag.
             List<string> simulationEquipmentOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             SimulationEquipmentEnabledText = new TextViewModel(new TextObject("{=RBM_CON_093}Detailed Auto Resolve"));
@@ -457,6 +462,7 @@ namespace RBMConfig
             _troopUpgradeCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeCostMultiplier, 0f, 2f);
             _villageProductionMultiplier = MathF.Clamp(RBMConfig.villageProductionMultiplier, 0.01f, 2f);
             _workshopProductionMultiplier = MathF.Clamp(RBMConfig.workshopProductionMultiplier, 0.01f, 2f);
+            _patrolBudgetFraction = MathF.Clamp(RBMConfig.patrolBudgetFraction, 0f, 0.2f);
             _troopUpgradeSpoilsLootMultiplier = MathF.Clamp(RBMConfig.troopUpgradeSpoilsLootMultiplier, 0f, 5f);
             _troopUpgradeSupplyRadius = MathF.Clamp(RBMConfig.troopUpgradeSupplyRadius, 0f, 200f);
             TroopUpgradeRequireSupplyTown.SelectedIndex = RBMConfig.troopUpgradeRequireSupplyTown ? 1 : 0;
@@ -480,6 +486,7 @@ namespace RBMConfig
             CaravanInvestmentEnabled.SelectedIndex = RBMConfig.caravanInvestmentEnabled ? 1 : 0;
             CaravanLoggingEnabled.SelectedIndex = RBMConfig.caravanLoggingEnabled ? 1 : 0;
             DeserterRaidersEnabled.SelectedIndex = RBMConfig.deserterRaidersEnabled ? 1 : 0;
+            SettlementPatrolsEnabled.SelectedIndex = RBMConfig.settlementPatrolsEnabled ? 1 : 0;
             SimulationEquipmentEnabled.SelectedIndex = RBMConfig.simulationEquipmentEnabled ? 1 : 0;
             SimulationRoutEnabled.SelectedIndex = RBMConfig.simulationRoutEnabled ? 1 : 0;
             StrategicPowerEnabled.SelectedIndex = RBMConfig.strategicPowerEnabled ? 1 : 0;
@@ -700,6 +707,8 @@ namespace RBMConfig
             RBMConfig.caravanInvestmentEnabled = CaravanInvestmentEnabled.SelectedIndex == 1;
             RBMConfig.caravanLoggingEnabled = CaravanLoggingEnabled.SelectedIndex == 1;
             RBMConfig.deserterRaidersEnabled = DeserterRaidersEnabled.SelectedIndex == 1;
+            RBMConfig.settlementPatrolsEnabled = SettlementPatrolsEnabled.SelectedIndex == 1;
+            RBMConfig.patrolBudgetFraction = _patrolBudgetFraction;
             RBMConfig.simulationEquipmentEnabled = SimulationEquipmentEnabled.SelectedIndex == 1;
             RBMConfig.simulationRoutEnabled = SimulationRoutEnabled.SelectedIndex == 1;
             RBMConfig.strategicPowerEnabled = StrategicPowerEnabled.SelectedIndex == 1;
@@ -789,6 +798,8 @@ namespace RBMConfig
             CaravanInvestmentEnabled.SelectedIndex = 1;
             CaravanLoggingEnabled.SelectedIndex = 0;
             DeserterRaidersEnabled.SelectedIndex = 1;
+            SettlementPatrolsEnabled.SelectedIndex = 1;
+            PatrolBudgetFraction = 0.02f;
             SimulationEquipmentEnabled.SelectedIndex = 1;
             SimulationRoutEnabled.SelectedIndex = 0;
             StrategicPowerEnabled.SelectedIndex = 1;

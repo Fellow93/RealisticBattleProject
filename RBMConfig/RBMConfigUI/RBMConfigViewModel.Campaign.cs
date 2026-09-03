@@ -43,6 +43,10 @@ namespace RBMConfig
         public TextViewModel DeserterRaidersEnabledText { get; }
         public SelectorVM<SelectorItemVM> DeserterRaidersEnabled { get; }
 
+        // Wealth-funded settlement & sea patrols: master on/off.
+        public TextViewModel SettlementPatrolsEnabledText { get; }
+        public SelectorVM<SelectorItemVM> SettlementPatrolsEnabled { get; }
+
         // SupplyTown gate: on/off toggle for gating upgrades on a nearby friendly town.
         public TextViewModel TroopUpgradeRequireSupplyTownText { get; }
         public SelectorVM<SelectorItemVM> TroopUpgradeRequireSupplyTown { get; }
@@ -733,6 +737,61 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel DeserterRaidersEnabledHint { get; } = Hint("Gives deserter parties initiative: they actively hunt nearby villager convoys and caravans and raid weakly-held villages when they out-match the target, instead of aimlessly patrolling their spawn point. Off leaves deserters on vanilla behavior. Default on.");
+
+        // Patrol rework label + hint. Plain literal TextObjects (no {=KEY}) to sidestep the LOC-eng.xml
+        // key-collision issue, like the caravan toggles above.
+        [DataSourceProperty]
+        public string SettlementPatrolsEnabledt
+        {
+            get { return new TextObject("Funded Patrols").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel SettlementPatrolsEnabledHint { get; } = Hint("Reworks the settlement and sea patrols. Vanilla spawns them free -- land patrols gated by a town's Guard House, sea patrols by the Coastal Guard Edict -- from culture templates. On, a settlement instead FUNDS its patrol from its wealth: it fields one only while it can afford the kit and daily upkeep, castles field them too, the patrol is biased toward cavalry to run down bandits, and the Guard House and Coastal Guard Edict become budget bonuses rather than the on/off gate. Off leaves patrols on vanilla's free, town-only behavior. Default on.");
+
+        private float _patrolBudgetFraction;
+
+        [DataSourceProperty]
+        public float PatrolBudgetFraction
+        {
+            get
+            {
+                return _patrolBudgetFraction;
+            }
+            set
+            {
+                // Slider reports continuous values; snap to thousandths so the 0.02 default and its
+                // neighbours are reachable, and hold to the 0..0.2 range.
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 3), 0f, 0.2f);
+                if (snapped != _patrolBudgetFraction)
+                {
+                    _patrolBudgetFraction = snapped;
+                    OnPropertyChangedWithValue(snapped, "PatrolBudgetFraction");
+                    OnPropertyChanged("PatrolBudgetFractionValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string PatrolBudgetFractionValue
+        {
+            get
+            {
+                return _patrolBudgetFraction.ToString("0.000");
+            }
+        }
+
+        [DataSourceProperty]
+        public string PatrolBudgetFractiont
+        {
+            get
+            {
+                return new TextObject("Patrol Budget Share").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel PatrolBudgetFractionHint { get; } = Hint("Share of a settlement's funding pot set aside each day to keep a patrol under arms -- its size and how good a company it can sustain both scale off this, and the Guard House level and Coastal Guard Edict then multiply it. Higher fields larger, richer patrols and drains more wealth; zero fields none. Needs 'Funded Patrols' on. Default 0.020.");
 
         // SupplyTown gate: radius slider (whole map units) + the toggle's row label.
         private float _troopUpgradeSupplyRadius;

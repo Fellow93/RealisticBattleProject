@@ -66,6 +66,11 @@ namespace RBMCampaign
             }
             PartyWageModel wageModel = Campaign.Current.Models.PartyWageModel;
             bool isMilitia = party?.MobileParty != null && party.MobileParty.IsMilitia;
+            // A settlement patrol under the wealth-funded rework is billed like a field troop -- a full wage
+            // into the purse, then kit-value maintenance out of it -- but the home settlement is the payer, not
+            // a leader, so the whole of it happens inside PatrolUpkeep. With the rework off a patrol falls
+            // through to the ordinary deposit below, as it did before (vanilla never billed anyone for it).
+            bool isPatrol = PatrolUpkeep.IsEnabled && party?.MobileParty != null && party.MobileParty.IsPatrolParty;
             // A mercenary company's men are kept at double pay while the contract holds, so a stack under it
             // banks twice its wage into spoils. This is the second wage the company is charged for through the
             // finance model (see MercenaryContractPay) and the crown then reimburses, so the extra deposit is
@@ -91,6 +96,13 @@ namespace RBMCampaign
                     // maintenance out of it -- but the settlement is the payer, not the leader, so the whole
                     // of it happens inside MilitiaUpkeep rather than being banked by the caller here.
                     MilitiaUpkeep.PayMilitiaUpkeep(party.MobileParty, element.Character, element.Number, wage);
+                    continue;
+                }
+                if (isPatrol)
+                {
+                    // Same shape as militia -- wage into the purse, maintenance out of it -- with the home
+                    // settlement as payer, so the wage a patrol banks is one a fief actually paid for.
+                    PatrolUpkeep.PayPatrolUpkeep(party.MobileParty, element.Character, element.Number, wage);
                     continue;
                 }
                 // The men skim their whole day's wage into their purse, cap or no cap. Spoils are a

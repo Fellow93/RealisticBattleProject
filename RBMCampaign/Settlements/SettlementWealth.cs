@@ -254,6 +254,12 @@ namespace RBMCampaign
             /// </summary>
             public const string GarrisonRecruit = "garrison-recruit";
             public const string Militia = "militia";
+
+            /// <summary>
+            /// A settlement funding its patrol out of its wealth -- the kit it is armed with, the wage its
+            /// men draw, and the day's maintenance on their gear. See <see cref="PatrolUpkeep"/>.
+            /// </summary>
+            public const string Patrol = "patrol";
             public const string Admin = "admin";
             /// <summary>
             /// A fief's building work: the treasury funding its construction reserve, and the reserve

@@ -22,6 +22,7 @@ namespace RBMCampaign
             WealthTax.ResetForNewSession();
             MilitiaUpkeep.ResetForNewSession();
             Construction.Reset();
+            PatrolUpkeep.ResetForNewSession();
         }
 
         public override void RegisterEvents()

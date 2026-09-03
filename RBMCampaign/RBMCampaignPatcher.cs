@@ -17,6 +17,10 @@ namespace RBMCampaign
             // the process. Apply them by hand instead -- a no-op until Game.Current is live, so it lands
             // on the OnGameStart pass (this runs on every patch pass). See MercenaryContractPay.
             MercenaryContractPay.ApplyDeferred(rbmcampaignHarmony);
+            // The sea-patrol patches target NavalDLC types the mod cannot reference, so they are applied by
+            // hand and guarded on those types being present -- a silent no-op without the DLC. The land patrol
+            // patches ride the PatchAll above like everything else. See PatrolUpkeep.Naval.cs.
+            PatrolUpkeepNaval.ApplyNaval(rbmcampaignHarmony);
         }
     }
 }
