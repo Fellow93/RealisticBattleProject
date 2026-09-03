@@ -107,6 +107,12 @@ namespace RBM
                 // Lets the smithy refine rows shrink-wrap and centre their material cluster so the added silver
                 // tile on the Thamaskene row does not overflow; same cached-before-OnGameStart reason.
                 RefineRowLayoutPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // Shows all three rows of the town-management Projects grid (War Sails' shipyard is the 13th
+                // tile and sat scrolled out of view); same cached-before-OnGameStart reason.
+                ProjectsGridPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // Scales the project tile itself (DevelopmentItem.xml) to match the shrunken grid cells set
+                // above, so two full rows of building icons always fit with slack.
+                TownManagementGridPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
             }
 
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate

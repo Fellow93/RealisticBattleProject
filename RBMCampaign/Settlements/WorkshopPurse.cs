@@ -46,7 +46,7 @@ namespace RBMCampaign
         // named shop pays its hands. (A third, "craftwage", was the artisans' -- they no longer move gold
         // at all, so there is nothing left to label. See IsCitizenLabour.)
         private const string Overhead = "overhead";
-        private const string Payroll = "payroll";
+        private const string PayrollSource = "payroll";
 
         private const string Owner = "owner";
         private const string Other = "other";
@@ -69,6 +69,7 @@ namespace RBMCampaign
             _cyclesToday.Clear();
             _cyclesLogged.Clear();
             _wageDay.Clear();
+            _lastPayroll.Clear();
             _context = null;
         }
 
@@ -378,6 +379,39 @@ namespace RBMCampaign
         // tally as soon as a payroll is worked out, which is well before the log runs.
         private static readonly Dictionary<Workshop, int> _cyclesLogged = new Dictionary<Workshop, int>();
 
+        /// <summary>What a named shop paid its hands on its most recent production day.</summary>
+        private struct Payroll
+        {
+            public int Cycles;
+            public int Paid;
+        }
+
+        // Kept whether or not the log is on, because the clan-screen workshop card reads it (see
+        // WorkshopCardPayrollLine). Overwritten each day the shop is paid, so it always describes the
+        // last day of work rather than accumulating.
+        private static readonly Dictionary<Workshop, Payroll> _lastPayroll = new Dictionary<Workshop, Payroll>();
+
+        /// <summary>The per-batch rate a named shop pays its hands.</summary>
+        public static int WagePerCycle { get { return WorkshopWagePerCycle; } }
+
+        /// <summary>
+        /// Reads what a shop paid its hands the last day it worked. False if it has not worked since the
+        /// session began.
+        /// </summary>
+        public static bool TryGetLastPayroll(Workshop shop, out int cycles, out int paid)
+        {
+            Payroll last;
+            if (shop != null && _lastPayroll.TryGetValue(shop, out last))
+            {
+                cycles = last.Cycles;
+                paid = last.Paid;
+                return true;
+            }
+            cycles = 0;
+            paid = 0;
+            return false;
+        }
+
         private static int TakeCycles(Workshop shop)
         {
             int cycles;
@@ -449,6 +483,9 @@ namespace RBMCampaign
             Settlement settlement = shop.Settlement;
             if (cycles <= 0 || settlement == null || !SettlementWealth.HasCitizenPurse(settlement))
             {
+                // An idle day is still a day: the card should say the shop paid nothing, not repeat
+                // the last day it worked.
+                _lastPayroll[shop] = new Payroll { Cycles = cycles, Paid = 0 };
                 return;
             }
 
@@ -457,12 +494,13 @@ namespace RBMCampaign
             {
                 wage = shop.Capital;
             }
+            _lastPayroll[shop] = new Payroll { Cycles = cycles, Paid = (wage > 0) ? wage : 0 };
             if (wage <= 0)
             {
                 return;
             }
 
-            _context = Payroll;
+            _context = PayrollSource;
             shop.ChangeGold(-wage);
             _context = null;
 
@@ -608,7 +646,7 @@ namespace RBMCampaign
                         {
                             shopOut -= pair.Value;
                         }
-                        if (pair.Key == Payroll)
+                        if (pair.Key == PayrollSource)
                         {
                             wage -= pair.Value;
                         }

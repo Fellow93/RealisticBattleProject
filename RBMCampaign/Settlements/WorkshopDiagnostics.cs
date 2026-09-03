@@ -298,53 +298,74 @@ namespace RBMCampaign
         /// the three are what the answer turns on. They are evaluated in the same order the original
         /// tests them, so the reason recorded is the one that actually stopped it.
         /// </remarks>
+        // Both owner paths, because a player shop refused every day used to leave no line at all: the
+        // one workshop the player is watching was the one the log could not see. The player method has
+        // an extra warehouse argument, which the shared postfix does not need and Harmony matches by name.
         [HarmonyPatch(typeof(WorkshopsCampaignBehavior), "CanNotableWorkshopProduceThisCycle")]
-        private static class EconomicBlockPatch
+        private static class NotableEconomicBlockPatch
         {
             private static void Postfix(WorkshopType.Production production, Workshop workshop,
                 int inputMaterialCost, int outputIncome, bool effectCapital, bool __result)
             {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !EconomyLog.IsEnabled || workshop == null)
-                {
-                    return;
-                }
-                Settlement settlement = workshop.Settlement;
-                if (settlement == null)
-                {
-                    return;
-                }
+                RecordEconomicBlock(production, workshop, inputMaterialCost, outputIncome, effectCapital, __result);
+            }
+        }
 
-                if (__result)
-                {
-                    Count(settlement, Ran);
-                    return;
-                }
+        [HarmonyPatch(typeof(WorkshopsCampaignBehavior), "CanPlayerWorkshopProduceThisCycle")]
+        private static class PlayerEconomicBlockPatch
+        {
+            private static void Postfix(WorkshopType.Production production, Workshop workshop,
+                int inputMaterialCost, int outputIncome, bool effectCapital, bool __result)
+            {
+                RecordEconomicBlock(production, workshop, inputMaterialCost, outputIncome, effectCapital, __result);
+            }
+        }
 
-                float floor = workshop.WorkshopType.IsHidden
-                    ? inputMaterialCost
-                    : (inputMaterialCost + 200f / production.ConversionSpeed);
+        private static void RecordEconomicBlock(WorkshopType.Production production, Workshop workshop,
+            int inputMaterialCost, int outputIncome, bool effectCapital, bool __result)
+        {
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !EconomyLog.IsEnabled || workshop == null)
+            {
+                return;
+            }
+            Settlement settlement = workshop.Settlement;
+            if (settlement == null)
+            {
+                return;
+            }
 
-                if (outputIncome <= floor)
-                {
-                    // Named by what it would have made, and by the margin it fell short of -- the whole
-                    // question about this gate is whether the 200/speed term is the thing biting.
-                    string made = (production.Outputs.Count > 0 && production.Outputs[0].Item1 != null)
-                        ? production.Outputs[0].Item1.StringId
-                        : "?";
-                    Count(settlement, "margin:" + made);
-                }
-                else if (settlement.Town != null && settlement.Town.Gold < outputIncome && effectCapital)
-                {
-                    Count(settlement, "town-broke");
-                }
-                else if (workshop.Capital < inputMaterialCost)
-                {
-                    Count(settlement, "shop-broke");
-                }
-                else
-                {
-                    Count(settlement, "unknown");
-                }
+            if (__result)
+            {
+                Count(settlement, Ran);
+                return;
+            }
+
+            // The same floor the patched gate uses (WorkshopProductionMargin lowers the constant), on
+            // the same income it sees (WorkshopPayoutCap clamps it before the call).
+            float floor = workshop.WorkshopType.IsHidden
+                ? inputMaterialCost
+                : (inputMaterialCost + WorkshopProductionMargin.MarginPerSpeed / production.ConversionSpeed);
+
+            if (outputIncome <= floor)
+            {
+                // Named by what it would have made, and by the margin it fell short of -- the whole
+                // question about this gate is whether the 200/speed term is the thing biting.
+                string made = (production.Outputs.Count > 0 && production.Outputs[0].Item1 != null)
+                    ? production.Outputs[0].Item1.StringId
+                    : "?";
+                Count(settlement, "margin:" + made);
+            }
+            else if (settlement.Town != null && settlement.Town.Gold < outputIncome && effectCapital)
+            {
+                Count(settlement, "town-broke");
+            }
+            else if (workshop.Capital < inputMaterialCost)
+            {
+                Count(settlement, "shop-broke");
+            }
+            else
+            {
+                Count(settlement, "unknown");
             }
         }
 
