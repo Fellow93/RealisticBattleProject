@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Helpers;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Buildings;
@@ -145,6 +146,101 @@ namespace RBMCampaign
             return 1f + 0.05f * MasonTier(town);
         }
 
+        // ---------------------------------------------------------------- perks
+
+        /// <summary>The most the governor, perks, feat and market goods together may multiply a day's work by.</summary>
+        public const float MaxPerkFactor = 2f;
+
+        /// <summary>
+        /// Vanilla's construction bonuses -- the governor's Engineering skill, Forced Labor, Carpenters /
+        /// Military Planner, Stonecutters, Confidence, Self-Made Man, the Battanian feat and the "construction
+        /// from market" goods -- turned from free points into a multiplier on FUNDED work.
+        /// </summary>
+        /// <remarks>
+        /// Vanilla adds each of these on top of a baseline of prosperity/100 points. Running exactly the
+        /// same helpers against exactly that baseline and taking the ratio keeps every perk's relative
+        /// weight as TaleWorlds tuned it, while the absolute figure scales with whatever the fief actually
+        /// pays for. Loyalty and the Mason are deliberately excluded here: they have their own terms.
+        /// </remarks>
+        public static float PerkFactor(Town town)
+        {
+            if (town == null || town.Settlement == null)
+            {
+                return 1f;
+            }
+            float baseline = town.Prosperity * 0.01f;
+            if (baseline < 1f)
+            {
+                baseline = 1f;
+            }
+            ExplainedNumber en = new ExplainedNumber(baseline);
+
+            Hero governor = town.Governor;
+            bool governorHere = governor != null && governor.CurrentSettlement != null && governor.CurrentSettlement.Town == town;
+            bool queued = !town.BuildingsInProgress.IsEmpty();
+            BuildingType queuedType = queued ? town.BuildingsInProgress.Peek().BuildingType : null;
+
+            if (governorHere)
+            {
+                SkillHelper.AddSkillBonusForTown(DefaultSkillEffects.TownProjectBuildingBonus, town, ref en);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.ForcedLabor, town, ref en);
+                if (queued)
+                {
+                    int prisoners = Prisoners(town);
+                    if (governor.GetPerkValue(DefaultPerks.Steward.ForcedLabor) && prisoners > 0)
+                    {
+                        en.AddFactor(MathF.Min(0.3f, prisoners / 3f * DefaultPerks.Steward.ForcedLabor.SecondaryBonus));
+                    }
+                    if (town.IsCastle)
+                    {
+                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Engineering.MilitaryPlanner, town, ref en);
+                    }
+                    else if (town.IsTown)
+                    {
+                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Engineering.Carpenters, town, ref en);
+                    }
+                    if (queuedType == DefaultBuildingTypes.SettlementFortifications
+                        || queuedType == DefaultBuildingTypes.CastleBarracks
+                        || queuedType == DefaultBuildingTypes.SettlementBarracks)
+                    {
+                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Engineering.Stonecutters, town, ref en);
+                    }
+                }
+            }
+
+            int productionGoods = 0;
+            foreach (Town.SellLog log in town.SoldItems)
+            {
+                if (log.Category != null && log.Category.Properties == ItemCategory.Property.BonusToProduction)
+                {
+                    productionGoods += log.Number;
+                }
+            }
+            if (productionGoods > 0)
+            {
+                en.Add(0.25f * productionGoods);
+            }
+
+            if (queuedType != null && queuedType.IsMilitaryProject)
+            {
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.TwoHanded.Confidence, town, ref en);
+            }
+            if (queuedType == DefaultBuildingTypes.SettlementMarketplace)
+            {
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Trade.SelfMadeMan, town, ref en);
+            }
+            // The game build RBM compiles against has no FeatHelper; the feat is applied by hand the way
+            // MilitiaUpkeep applies the Battanian militia feat.
+            if (town.OwnerClan != null && town.OwnerClan.Culture != null
+                && town.OwnerClan.Culture.HasFeat(DefaultCulturalFeats.BattanianConstructionFeat))
+            {
+                en.AddFactor(DefaultCulturalFeats.BattanianConstructionFeat.EffectBonus);
+            }
+
+            float factor = en.ResultNumber / baseline;
+            return MBMath.ClampFloat(factor, 1f, MaxPerkFactor);
+        }
+
         // ---------------------------------------------------------------- capacity
 
         /// <summary>
@@ -284,6 +380,8 @@ namespace RBMCampaign
             /// <summary>The day's wage for the men working bought materials -- all of it reaches them.</summary>
             public int MaterialSalary;
             public float MasonFactor;
+            /// <summary>Governor skill/perks, culture feat and market goods, as one multiplier (see <see cref="PerkFactor"/>).</summary>
+            public float PerkFactor;
             public float Points;
             public List<ConstructionMaterials.Purchase> Purchases;
         }
@@ -301,6 +399,7 @@ namespace RBMCampaign
         {
             DayPlan plan = default(DayPlan);
             plan.MasonFactor = MasonEfficiency(town);
+            plan.PerkFactor = PerkFactor(town);
             plan.Capacity = DailyCapacity(town) * capacityShare;
             if (plan.Capacity < 1f)
             {
@@ -352,7 +451,7 @@ namespace RBMCampaign
             }
             plan.MaterialSalary = materialSalary;
 
-            plan.Points = (plan.Free + plan.MaterialPoints + plan.CashPoints) * plan.MasonFactor;
+            plan.Points = (plan.Free + plan.MaterialPoints + plan.CashPoints) * plan.MasonFactor * plan.PerkFactor;
             return plan;
         }
 
@@ -533,6 +632,8 @@ namespace RBMCampaign
                     + " (free " + (int)plan.Free + ", materials " + (int)plan.MaterialPoints + ", wages " + (int)plan.CashPoints + ")"
                     + "  ·  spent " + spend + "d (materials " + plan.MaterialSpend + "d)"
                     + (short_ ? "  ·  TOOLS SHORT" : "")
+                    + ((plan.MasonFactor > 1f || plan.PerkFactor > 1f)
+                        ? "  ·  x" + EconomyLog.Fmt(plan.MasonFactor) + " mason x" + EconomyLog.Fmt(plan.PerkFactor) + " perks" : "")
                     + "  ·  market " + ((market == null) ? "none"
                         : (market == settlement ? "own" : (market.Name != null ? market.Name.ToString() : market.StringId)))
                     + "  ·  progress " + (int)target.BuildingProgress + "/" + target.GetConstructionCost()
@@ -570,6 +671,7 @@ namespace RBMCampaign
         private static readonly TextObject MasonText = new TextObject("{=!}Masons");
         private static readonly TextObject ToolsText = new TextObject("{=!}Tools shortage");
         private static readonly TextObject LoyaltyText = new TextObject("{=!}Loyalty");
+        private static readonly TextObject PerkText = new TextObject("{=!}Governor, perks and market");
 
         /// <summary>
         /// What the town screen and the days-to-complete estimate should read: today's funded work, by
@@ -609,6 +711,10 @@ namespace RBMCampaign
             if (plan.MasonFactor > 1f)
             {
                 result.AddFactor(plan.MasonFactor - 1f, MasonText);
+            }
+            if (plan.PerkFactor > 1f)
+            {
+                result.AddFactor(plan.PerkFactor - 1f, PerkText);
             }
             // The ceiling is only worth showing when it is what binds -- an empty reserve is the usual
             // limit, and reporting the hands available then would read as a bonus that is not there.
