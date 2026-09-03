@@ -42,7 +42,7 @@ namespace RBMCampaign
         // Was 200. The per-cycle margin a named workshop must clear ON TOP of its input cost, before the
         // division by the recipe's conversion speed. Lower = more willing. Set to 0f to let a named shop
         // produce on any profit at all, exactly like the artisans.
-        private const float MarginPerSpeed = 20f;
+        internal const float MarginPerSpeed = 20f;
 
         private const float VanillaMarginPerSpeed = 200f;
 

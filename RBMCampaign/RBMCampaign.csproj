@@ -1,4 +1,4 @@
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Main Project Properties -->
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -396,6 +396,7 @@
     <Compile Include="Production\WorkshopDemand.cs" />
     <Compile Include="Production\WorkshopHeadroomGate.cs" />
     <Compile Include="Production\WorkshopProductionMargin.cs" />
+    <Compile Include="Production\WorkshopPayoutCap.cs" />
     <Compile Include="Production\WorkshopItemTierBias.cs" />
     <Compile Include="Production\TownFoodReserve.cs" />
     <Compile Include="Production\VillagerConvoys.cs" />
@@ -424,6 +425,7 @@
     <Compile Include="Settlements\ShipTradeFunnel.cs" />
     <Compile Include="Settlements\SettlementWealth.cs" />
     <Compile Include="Settlements\WorkshopCapital.cs" />
+    <Compile Include="Settlements\WorkshopCardPayrollLine.cs" />
     <Compile Include="Settlements\WorkshopDiagnostics.cs" />
     <Compile Include="Settlements\WorkshopPurse.cs" />
     <Compile Include="Settlements\ArtisanStanding.cs" />

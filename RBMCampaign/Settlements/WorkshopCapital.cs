@@ -42,5 +42,34 @@ namespace RBMCampaign
             }
             __result = FoundingCapital;
         }
+
+        /// <summary>
+        /// Keeps the low-capital line at half the founding float, as it is in vanilla (5,000 of 10,000).
+        /// </summary>
+        /// <remarks>
+        /// Below this line vanilla stops charging the daily overhead to the shop and charges the owner's
+        /// treasury instead, and the clan-screen card turns its capital row into a warning. Left at
+        /// 5,000 against a 60,000 float the warning came at a twelfth of the purse rather than half of
+        /// it, so a shop could bleed most of its capital before the player was told anything.
+        ///
+        /// Read by <c>HandlePlayerWorkshopExpense</c>, <c>DefaultClanFinanceModel.AddPlayerExpenseForWorkshops</c>
+        /// and <c>ClanFinanceWorkshopItemVM.GetCurrentCapitalProperty</c>, all live, so the three agree.
+        /// A shop from an old save that still holds vanilla's 10,000 sits under the new line and will
+        /// have its 100/day overhead billed to its owner until production lifts it above 30,000.
+        /// </remarks>
+        [HarmonyPatch(typeof(DefaultWorkshopModel), "CapitalLowLimit", MethodType.Getter)]
+        private static class LowLimit
+        {
+            private const int LowCapital = FoundingCapital / 2;
+
+            private static void Postfix(ref int __result)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled)
+                {
+                    return;
+                }
+                __result = LowCapital;
+            }
+        }
     }
 }
