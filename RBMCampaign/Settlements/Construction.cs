@@ -525,6 +525,13 @@ namespace RBMCampaign
             {
                 town.BoostBuildingProcess += taken;
             }
+            if (EconomyLog.IsEnabled)
+            {
+                EconomyLog.Log("BUILD", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
+                    "deposit " + taken + "d (" + EconomyLog.Fmt(share * 100f) + "% of " + SettlementWealth.GetSettlementWealth(settlement) + "d treasury"
+                    + (taken < wanted ? ", wanted " + wanted + "d" : "") + ")"
+                    + "  ·  reserve " + town.BoostBuildingProcess + "d");
+            }
         }
 
         /// <summary>
