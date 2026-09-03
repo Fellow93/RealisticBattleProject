@@ -107,6 +107,17 @@ namespace RBMConfig
         // a stack sit on a deeper reserve; zero holds it to nothing above what its upkeep spends at once.
         public static int troopSpoilsCapDays = 20;
 
+        // What a building project costs, as a multiple of vanilla's figure. Vanilla prices a project in
+        // construction points that arrive free out of prosperity; RBM makes a point a coin, so those
+        // prices become a week's tax unless they are multiplied up. 250 puts a town's walls at the scale
+        // of a years-long undertaking. 1 leaves vanilla's prices as they stand.
+        public static int buildingCostMultiplier = 250;
+
+        // The share of a fief's treasury tipped into its construction reserve each day. This is the only
+        // thing that funds building besides the owner's own purse, so it sets how fast a fief builds:
+        // higher spends more of what the fief holds on works, zero stops it building on its own account.
+        public static float constructionBudgetShare = 0.01f;
+
         // Days a stack waits after buying a luxury before it will indulge again, so the splurge stays
         // an occasional treat rather than a daily habit. Kept per stack. Zero lets it buy on every roll.
         public static int troopLuxuryCooldownDays = 20;

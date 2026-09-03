@@ -241,7 +241,38 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 
 | Folder | Role |
 |---|---|
-| `Settlements/` | The two-pot settlement wealth ledger (`SettlementWealth`), its funnel over vanilla's writes, tariffs, ransoms, garrison/militia/admin/construction upkeep, wealth-driven garrison growth (`GarrisonRecruitCost`) and drill XP (`GarrisonDrill`), workshop purses. |
+| `Settlements/` | The two-pot settlement wealth ledger (`SettlementWealth`), its funnel over vanilla's writes, tariffs, ransoms, garrison/militia/administrative upkeep, wealth-driven garrison growth (`GarrisonRecruitCost`) and drill XP (`GarrisonDrill`), workshop purses, and the **construction engine** (`Construction.cs` / `.Materials.cs` / `.Patches.cs`). |
+
+#### Construction (`Settlements/Construction*.cs`)
+
+Building work is money. One construction point = one denar, so every project's vanilla price is
+multiplied by `buildingCostMultiplier` (config, default 250) at `BuildingType.GetProductionCost`, and
+the fief has to fund the work before it happens. (Before this there was no daily construction charge at
+all — the "construction upkeep" this table used to list was a misnomer for a single patch on the
+player's boost, now deleted.)
+
+- **Budget** — vanilla's own `Town.BoostBuildingProcess` reserve, refilled daily with
+  `constructionBudgetShare` (default 1%) of settlement wealth via `SettlementWealth.Debit(Source.Construction)`,
+  and toppable up by the owner through the unmodified vanilla reserve UI (its 10,000 ceiling is raised
+  to `min(player gold, 10 x daily capacity)`).
+- **Ceiling** — `prosperity x 36 + prisoners x 60`, times the Mason factor (phase 2), times vanilla's
+  loyalty curve. `prisoners x 30` of it is free labour that costs nothing.
+- **Spending order** — free labour, then clay/hardwood off the settlement's own market (up to half the
+  day's work, never touching the last 20 pieces on the shelves), then wages at a coin a point of which
+  half reaches the townsmen. Tools wear out at one load per 50,000 points and are bought the same way;
+  a load owed with no tools on the market halves the day's output. Nothing calls `ChangeGold`.
+- **Seams** — a prefix on `BuildingsCampaignBehavior.TickCurrentBuildingForTown` takes the tick off
+  vanilla (ours runs from `RBMSettlementWealthCampaignBehavior.OnDailyTickSettlement`), and postfixes on
+  `DefaultBuildingConstructionModel.CalculateDailyConstructionPower`/`WithoutBoost` report the funded
+  figure to the UI and the days-to-complete estimate.
+- **Labour market** — `Construction.LabourMarket` resolves once per tick (cached a day) where the work is
+  transacted: the fief itself if it has a citizen purse, else — for a castle, which has none — the nearest
+  town it is not at war with, as `MilitiaUpkeep` arms a castle's watch. Wages, material and tool money
+  land in that town's citizen purse and the tariff is levied there; goods still come off the castle's own
+  stores first and off the town's shelves only when it has none. A castle that can reach no such town
+  buys no materials and its wage coin leaves the ledger.
+- Towns and castles alike; skipped under siege. Logged as `BUILD` in `EconomyLog`; tool debt persists as
+  `RBM_constructionToolDebt`.
 | `Production/` | Village production, villager convoys and deliveries, town food supply and storage, citizen and workshop demand. |
 | `Economy/` | Market prices and liquidity, caravan capital and trade volume, recruit supply, trade-good values, prosperity equilibrium. |
 | `Simulation/` | The equipment-aware auto-resolve: weapon model, hit points, arm targeting, perks, morale, rout, player participation, and the two-phase wall assault (`SimulationSiege.cs`). |

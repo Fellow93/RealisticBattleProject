@@ -492,6 +492,8 @@ namespace RBMConfig
             _spectateMinTroopsPerSide = MathF.Clamp(RBMConfig.spectateMinTroopsPerSide, 10f, 1000f);
             _troopLeaderSpoilsCutFraction = MathF.Clamp(RBMConfig.troopLeaderSpoilsCutFraction, 0f, 1f);
             _troopSpoilsCapDays = MathF.Clamp(RBMConfig.troopSpoilsCapDays, 0f, 60f);
+            _buildingCostMultiplier = MathF.Clamp(RBMConfig.buildingCostMultiplier, 1f, 1000f);
+            _constructionBudgetShare = MathF.Clamp(RBMConfig.constructionBudgetShare, 0f, 0.1f);
             _troopLuxuryCooldownDays = MathF.Clamp(RBMConfig.troopLuxuryCooldownDays, 0f, 120f);
             _troopLuxurySpendChance = MathF.Clamp(RBMConfig.troopLuxurySpendChance, 0f, 1f);
             _troopFallenSpoilsCaptureFraction = MathF.Clamp(RBMConfig.troopFallenSpoilsCaptureFraction, 0f, 1f);
@@ -710,6 +712,8 @@ namespace RBMConfig
             RBMConfig.spectateMinTroopsPerSide = (int)MathF.Round(_spectateMinTroopsPerSide);
             RBMConfig.troopLeaderSpoilsCutFraction = _troopLeaderSpoilsCutFraction;
             RBMConfig.troopSpoilsCapDays = (int)MathF.Round(_troopSpoilsCapDays);
+            RBMConfig.buildingCostMultiplier = (int)MathF.Round(_buildingCostMultiplier);
+            RBMConfig.constructionBudgetShare = _constructionBudgetShare;
             RBMConfig.troopLuxuryCooldownDays = (int)MathF.Round(_troopLuxuryCooldownDays);
             RBMConfig.troopLuxurySpendChance = _troopLuxurySpendChance;
             RBMConfig.troopFallenSpoilsCaptureFraction = _troopFallenSpoilsCaptureFraction;

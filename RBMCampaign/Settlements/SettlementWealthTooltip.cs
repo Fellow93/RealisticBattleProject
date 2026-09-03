@@ -69,6 +69,7 @@ namespace RBMCampaign
             {
                 propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_wealth_castle}Castle wealth").ToString(),
                     SettlementWealth.GetSettlementWealth(settlement).ToString(), 0);
+                AppendConstruction(propertyBasedTooltipVM, settlement);
                 return;
             }
             if (settlement.IsTown)
@@ -78,6 +79,26 @@ namespace RBMCampaign
             }
             propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_wealth_settlement}Settlement wealth").ToString(),
                 SettlementWealth.GetSettlementWealth(settlement).ToString(), 0);
+            if (settlement.IsTown)
+            {
+                AppendConstruction(propertyBasedTooltipVM, settlement);
+            }
+        }
+
+        /// <summary>
+        /// What the fief's building site cost its reserve on the last building day, and what the reserve
+        /// still holds. See <see cref="Construction"/>.
+        /// </summary>
+        private static void AppendConstruction(PropertyBasedTooltipVM propertyBasedTooltipVM, Settlement settlement)
+        {
+            if (settlement.Town == null)
+            {
+                return;
+            }
+            propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_construction_spend}Construction spend (daily)").ToString(),
+                Construction.LastDailySpend(settlement).ToString(), 0);
+            propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_construction_reserve}Construction reserve").ToString(),
+                settlement.Town.BoostBuildingProcess.ToString(), 0);
         }
     }
 }

@@ -21,6 +21,7 @@ namespace RBMCampaign
             SettlementWealth.Reset();
             WealthTax.ResetForNewSession();
             MilitiaUpkeep.ResetForNewSession();
+            Construction.Reset();
         }
 
         public override void RegisterEvents()
@@ -64,6 +65,10 @@ namespace RBMCampaign
             // recruits from genuine surplus and the base local defence (militia) is funded first.
             GarrisonRecruitCost.GrowGarrison(settlement);
             WealthTax.OnDailyTick(settlement);
+            // Building last of the day's spending: the fief funds its construction reserve out of what is
+            // left once its soldiers, its watch, its staff and its lord have been paid, and then spends
+            // that reserve on the work. See Construction.
+            Construction.OnDailyTick(settlement);
             // After the day's charges, so these report against the purse they left behind.
             TradeTariff.FlushDaily(settlement);
             WorkshopPurse.FlushDaily(settlement);
@@ -154,6 +159,9 @@ namespace RBMCampaign
             // The wealth-tax income owed but not yet paid to lords rides in the same store, so a save in
             // that window credits them on load rather than dropping coin the market already gave up.
             WealthTax.SyncData(dataStore);
+            // The tool wear each building site is carrying, which must survive a save or a reload would
+            // clear a debt the fief has genuinely run up. See Construction.
+            Construction.SyncData(dataStore);
         }
     }
 }

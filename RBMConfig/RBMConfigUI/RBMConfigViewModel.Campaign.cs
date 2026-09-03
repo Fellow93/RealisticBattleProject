@@ -852,6 +852,90 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopLeaderSpoilsCutFractionHint { get; } = Hint("{=RBM_CON_080}Base share of the spoils a party's men gather -- off a battlefield, a raid or a sack -- that their leader skims into his own purse as gold before the rest settles into the stacks. Multiplied by the leader's clan tier plus one, so a tier-0 or clanless leader takes this share once and a tier-6 house seven times it. Zero leaves the men all they take. Default 0.05.");
 
+        private float _buildingCostMultiplier;
+
+        [DataSourceProperty]
+        public float BuildingCostMultiplier
+        {
+            get
+            {
+                return _buildingCostMultiplier;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value), 1f, 1000f);
+                if (snapped != _buildingCostMultiplier)
+                {
+                    _buildingCostMultiplier = snapped;
+                    OnPropertyChangedWithValue(snapped, "BuildingCostMultiplier");
+                    OnPropertyChanged("BuildingCostMultiplierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string BuildingCostMultiplierValue
+        {
+            get
+            {
+                return ((int)_buildingCostMultiplier).ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string BuildingCostMultipliert
+        {
+            get
+            {
+                return new TextObject("Building Cost Multiplier").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel BuildingCostMultiplierHint { get; } = Hint("What a building project costs, as a multiple of vanilla's price. A point of construction is a coin in RBM, so vanilla's prices amount to a week's tax and have to be multiplied up for a project to be the years-long undertaking it should be. 1 leaves vanilla's prices alone. Default 250.");
+
+        private float _constructionBudgetShare;
+
+        [DataSourceProperty]
+        public float ConstructionBudgetShare
+        {
+            get
+            {
+                return _constructionBudgetShare;
+            }
+            set
+            {
+                float snapped = MathF.Clamp(value, 0f, 0.1f);
+                if (snapped != _constructionBudgetShare)
+                {
+                    _constructionBudgetShare = snapped;
+                    OnPropertyChangedWithValue(snapped, "ConstructionBudgetShare");
+                    OnPropertyChanged("ConstructionBudgetShareValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string ConstructionBudgetShareValue
+        {
+            get
+            {
+                return _constructionBudgetShare.ToString("0.000");
+            }
+        }
+
+        [DataSourceProperty]
+        public string ConstructionBudgetSharet
+        {
+            get
+            {
+                return new TextObject("Construction Budget Share").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel ConstructionBudgetShareHint { get; } = Hint("The share of a fief's treasury tipped into its construction reserve every day. Besides the owner's own purse this is the only thing that funds building, so it sets how fast a fief builds on its own account. Zero stops it. Default 0.01.");
+
         private float _troopSpoilsCapDays;
 
         [DataSourceProperty]

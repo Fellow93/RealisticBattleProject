@@ -432,7 +432,9 @@
     <Compile Include="Settlements\AdministrativeUpkeep.cs" />
     <Compile Include="Settlements\CastleEconomy.cs" />
     <Compile Include="Settlements\Minting.cs" />
-    <Compile Include="Settlements\ConstructionLabour.cs" />
+    <Compile Include="Settlements\Construction.cs" />
+    <Compile Include="Settlements\Construction.Materials.cs" />
+    <Compile Include="Settlements\Construction.Patches.cs" />
     <Compile Include="Settlements\GarrisonMorale.cs" />
     <Compile Include="Settlements\GarrisonPartySize.cs" />
     <Compile Include="Settlements\GarrisonUpkeep.cs" />

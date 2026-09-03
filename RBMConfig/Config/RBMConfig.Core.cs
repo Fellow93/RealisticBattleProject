@@ -129,6 +129,8 @@ namespace RBMConfig
             troopRaidSpoilsMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopRaidSpoilsMultiplier", "0.25"), CultureInfo.InvariantCulture);
             troopLeaderSpoilsCutFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLeaderSpoilsCutFraction", "0.05"), CultureInfo.InvariantCulture);
             troopSpoilsCapDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsCapDays", "20"), CultureInfo.InvariantCulture);
+            buildingCostMultiplier = int.Parse(ReadOrCreate("/Config/RBMCampaign", "BuildingCostMultiplier", "250"), CultureInfo.InvariantCulture);
+            constructionBudgetShare = float.Parse(ReadOrCreate("/Config/RBMCampaign", "ConstructionBudgetShare", "0.01"), CultureInfo.InvariantCulture);
             troopLuxuryCooldownDays = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLuxuryCooldownDays", "20"), CultureInfo.InvariantCulture);
             troopLuxurySpendChance = float.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopLuxurySpendChance", "0.02"), CultureInfo.InvariantCulture);
             troopSpoilsHealGoldPerTier = int.Parse(ReadOrCreate("/Config/RBMCampaign", "TroopSpoilsHealGoldPerTier", "10"), CultureInfo.InvariantCulture);
@@ -280,6 +282,8 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopRaidSpoilsMultiplier"), troopRaidSpoilsMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLeaderSpoilsCutFraction"), troopLeaderSpoilsCutFraction.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsCapDays"), troopSpoilsCapDays.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/BuildingCostMultiplier"), buildingCostMultiplier.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/ConstructionBudgetShare"), constructionBudgetShare.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLuxuryCooldownDays"), troopLuxuryCooldownDays.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopLuxurySpendChance"), troopLuxurySpendChance.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopSpoilsHealGoldPerTier"), troopSpoilsHealGoldPerTier.ToString(CultureInfo.InvariantCulture));

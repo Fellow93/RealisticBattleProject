@@ -255,7 +255,24 @@ namespace RBMCampaign
             public const string GarrisonRecruit = "garrison-recruit";
             public const string Militia = "militia";
             public const string Admin = "admin";
+            /// <summary>
+            /// A fief's building work: the treasury funding its construction reserve, and the reserve
+            /// paying the townsmen who do the work. See <see cref="Construction"/>.
+            /// </summary>
             public const string Construction = "construction";
+
+            /// <summary>
+            /// Clay and timber bought off the settlement's own market for a building project. The price
+            /// leaves the construction reserve for the merchants who sold it. See
+            /// <see cref="ConstructionMaterials"/>.
+            /// </summary>
+            public const string BuildMaterials = "build-materials";
+
+            /// <summary>
+            /// Picks, saws and barrows replaced as a building site wears them out, bought off the same
+            /// market and paid for the same way.
+            /// </summary>
+            public const string ConstructionTools = "construction-tools";
 
             /// <summary>
             /// The fief buying food off a convoy its market was too broke to pay for, and only once the

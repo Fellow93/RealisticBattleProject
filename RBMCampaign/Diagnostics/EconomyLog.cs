@@ -28,6 +28,8 @@ namespace RBMCampaign
     /// and every term pushing on prosperity (<see cref="RBMProsperityEquilibrium"/>).</item>
     /// <item>WORKSHOP -- a town's initial or re-rolled workshop pick and the bound-village types that
     /// biased it (<see cref="WorkshopVillageBias"/>).</item>
+    /// <item>BUILD    -- a fief's building day: the project, its labour ceiling, the points free labour,
+    /// bought materials and wages each paid for, and the reserve left (<see cref="Construction"/>).</item>
     /// </list>
     ///
     /// Enabled by the EconomyLogging config flag. One file per play session, opened lazily on the first

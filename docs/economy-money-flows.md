@@ -210,7 +210,8 @@ ledger records it under, which is what you grep the economy log for.
 | Field maintenance | spoils + the lord's gold | `Maintenance` | `SpoilsPool.Maintenance` |
 | Recruitment | the recruiter's gold | `Recruit` | `RecruitSupply` |
 | Workshop wages — named shops only | the shop's capital | `WorkshopWages` | `WorkshopPurse` |
-| Construction labour | the town treasury | `Construction` | `ConstructionLabour` |
+| Construction labour | the construction reserve (funded daily from the treasury) | `Construction` | `Construction` |
+| Building materials and tools | the construction reserve | `BuildMaterials`, `ConstructionTools` | `ConstructionMaterials` |
 | Administrative pay | the town treasury | `Admin` | `AdministrativeUpkeep` |
 | Dearth advance | the town treasury | `Dearth` | `VillagerDelivery` |
 | Worldgen seeding | nowhere — deliberate, once | `Seed` | `SettlementGoldFunnel` |
