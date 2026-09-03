@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Main Project Properties -->
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -384,6 +384,8 @@
     <Compile Include="Production\RBMVillageProduction.cs" />
     <Compile Include="Production\SteelRefining.cs" />
     <Compile Include="UI\RefineRowLayoutPrefabPatch.cs" />
+    <Compile Include="UI\ProjectsGridPrefabPatch.cs" />
+    <Compile Include="UI\TownManagementGridPatch.cs" />
     <Compile Include="Production\VillageProductionIconPatch.cs" />
     <Compile Include="Production\CitizenDemand.cs" />
     <Compile Include="Production\RBMTownFoodSupply.cs" />

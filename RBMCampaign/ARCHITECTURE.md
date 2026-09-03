@@ -303,6 +303,21 @@ vanilla effect stays in place unless the row says "replaces".
 
 `UI/BuildingEffectTooltips.cs` postfixes `BuildingType.GetExplanationAtLevel` to append a plain "RBM:"
 line per building type, so the town management project list names these effects beside vanilla's.
+
+The town management Projects grid is reshaped by two cooperating `WidgetPrefab.LoadFrom` injections, both
+installed from `OnSubModuleLoad` under `rbmCampaignEnabled`. `UI/ProjectsGridPrefabPatch.cs` owns
+`TownManagement.xml`: it shrinks the grid (`DefaultCellWidth` 160 -> 135, `DefaultCellHeight` 140 -> 115, the
+`DevelopmentItem` template 110 -> 90) and widens it to `ColumnCount` 6 -> 7, so War Sails' 13th building (the
+shipyard, which vanilla stranded on a hidden third row) fits the second row; 7 x 135 = 945 still clears the
+950px `ScrollingRect`. The clipped viewport then *shrinks* 290 -> 250 (10px grid margin + 2 x 115 + slack),
+which is what keeps the Daily Defaults row below it inside the Manage dialog. The
+`NavigationScopeTargeter ScopeID="AvailableProjectsScope"` `AlternateMovementStepSize` tracks the column
+count (6 -> 7); the sibling `DailyDefaultsScope` / `DailyDefaults` grid / `DailyDefaultItem.xml` are a
+separate, untouched set.
+`UI/TownManagementGridPatch.cs` owns `DevelopmentItem.xml` and scales that prefab's hard-coded, size-coupled
+values by the same 90/110 factor (caption `MarginTop`, progress strip, hammer cluster, level plate, overlay
+buttons). They are split by file because each redirects to `%TEMP%\RBM\Prefabs\<name>.xml` and would collide
+otherwise. `DevelopmentItem.xml` has exactly one call site (this grid), so scaling the file is safe.
 | `Production/` | Village production, villager convoys and deliveries, town food supply and storage, citizen and workshop demand. |
 | `Economy/` | Market prices and liquidity, caravan capital and trade volume, recruit supply, trade-good values, prosperity equilibrium. |
 | `Simulation/` | The equipment-aware auto-resolve: weapon model, hit points, arm targeting, perks, morale, rout, player participation, and the two-phase wall assault (`SimulationSiege.cs`). |
