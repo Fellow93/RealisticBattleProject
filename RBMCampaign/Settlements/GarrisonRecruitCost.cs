@@ -90,7 +90,14 @@ namespace RBMCampaign
         private static int SpawnCost(Settlement settlement)
         {
             CharacterObject troop = SpawnTroop(settlement);
-            return troop != null ? SpoilsPool.GetEquipmentValue(troop) : 0;
+            if (troop == null)
+            {
+                return 0;
+            }
+            // Barracks: a fief that already houses, beds and stores kit for soldiers arms the next one more
+            // cheaply. −5/10/15% at levels 1/2/3, on the rate and the charge alike, this being the one place
+            // the price of a recruit is worked out.
+            return (int)(SpoilsPool.GetEquipmentValue(troop) * BuildingEffects.SpawnCostFactor(settlement.Town));
         }
 
         /// <summary>
@@ -260,6 +267,7 @@ namespace RBMCampaign
             public int Reserve;         // full daily bill × GarrisonReserveDays -- the recruit gate
             public bool Held;           // treasury below the recruit reserve, so no growth
             public int Rate;            // wealth / (SpawnCost × mult), before any cap
+            public int Barracks;        // extra men a day the Barracks lets through the cap
             public int Capped;          // rate clamped to the daily maximum
             public int Headroom;        // room left under the garrison's size ceiling
             public int AfterHeadroom;   // capped, clamped to headroom -- the grow amount
@@ -289,7 +297,12 @@ namespace RBMCampaign
             c.Held = wealth < c.Reserve;
 
             c.Rate = wealth / (c.SpawnCost * GarrisonSpawnReserveMult);
-            c.Capped = c.Rate > GarrisonSpawnDailyMax ? GarrisonSpawnDailyMax : c.Rate;
+            // Barracks: lodgings and a drill yard are what actually limit how many men a fief can take in
+            // and settle in one day, so each level lifts the daily ceiling by one. It is a CEILING, not an
+            // intake -- a fief too poor to fund the men gets nothing from it.
+            c.Barracks = BuildingEffects.BarracksGrowth(settlement.Town);
+            int dailyMax = GarrisonSpawnDailyMax + c.Barracks;
+            c.Capped = c.Rate > dailyMax ? dailyMax : c.Rate;
 
             int manCount = 0;
             MobileParty garrison = settlement.Town.GarrisonParty;
@@ -380,17 +393,26 @@ namespace RBMCampaign
             {
                 // The daily intake, after the per-day cap (named in the label when it actually trims the
                 // wealth rate) but before the size ceiling and the reserve, which follow.
+                // The barracks share of what got through is shown on its own, so the building's worth is
+                // visible: the base ceiling first, then the extra room the lodgings bought.
+                int baseCap = (c.Capped > GarrisonSpawnDailyMax) ? GarrisonSpawnDailyMax : c.Capped;
+                int barracksPart = c.Capped - baseCap;
+
                 TextObject recruit;
                 if (c.Rate > c.Capped)
                 {
                     recruit = new TextObject("{=rbm_garr_rate_capped}Wealth recruitment (max {MAX}/day)");
-                    recruit.SetTextVariable("MAX", GarrisonSpawnDailyMax);
+                    recruit.SetTextVariable("MAX", GarrisonSpawnDailyMax + c.Barracks);
                 }
                 else
                 {
                     recruit = new TextObject("{=rbm_garr_rate}Wealth recruitment");
                 }
-                en.Add(c.Capped, recruit);
+                en.Add(baseCap, recruit);
+                if (barracksPart > 0)
+                {
+                    en.Add(barracksPart, new TextObject("{=!}Barracks"));
+                }
 
                 // Fewer than the cap when the garrison is near its size ceiling.
                 if (c.Capped > c.AfterHeadroom)

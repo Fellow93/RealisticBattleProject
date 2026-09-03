@@ -583,7 +583,7 @@ namespace RBMCampaign
                 System.Text.StringBuilder produced = logging ? new System.Text.StringBuilder() : null;
                 int totalUnits = 0;
 
-                float mult = RBMConfig.RBMConfig.villageProductionMultiplier;
+                float mult = RBMConfig.RBMConfig.villageProductionMultiplier * RoadsFactor(village);
                 foreach (var kv in GetRates(village))
                 {
                     int num = MBRandom.RoundRandomized(kv.Value * village.Hearth * mult);
@@ -686,6 +686,24 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// The Roads and Paths bonus a village gets from the fief it belongs to, +5/10/15%.
+        ///
+        /// Vanilla's <c>VillageProduction</c> effect is read by
+        /// <c>DefaultVillageProductionCalculatorModel</c>, which RBM replaces outright -- so the building
+        /// was doing nothing at all for production on this branch. Applied here, to the tick and to the
+        /// calculator alike, so the two never disagree. (The Roads <c>VillageHeartsPerDay</c> effect is
+        /// untouched: it still flows through vanilla's hearth model.)
+        /// </summary>
+        private static float RoadsFactor(Village village)
+        {
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled || village == null || village.Bound == null)
+            {
+                return 1f;
+            }
+            return 1f + 0.05f * BuildingEffects.Roads(village.Bound.Town);
+        }
+
+        /// <summary>
         /// Aligns the production-calculator model with the new rates so tooltips, trade AI and the
         /// initial-tax seeding all agree with what the tick actually produces. Returns the per-Hearth
         /// amount for goods in the village's set, 0 otherwise.
@@ -706,7 +724,7 @@ namespace RBMCampaign
                     float rate;
                     if (GetRates(village).TryGetValue(item, out rate))
                     {
-                        amount = rate * village.Hearth * RBMConfig.RBMConfig.villageProductionMultiplier;
+                        amount = rate * village.Hearth * RBMConfig.RBMConfig.villageProductionMultiplier * RoadsFactor(village);
                     }
                 }
 

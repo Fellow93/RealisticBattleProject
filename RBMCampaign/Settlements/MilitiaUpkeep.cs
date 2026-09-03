@@ -224,6 +224,9 @@ namespace RBMCampaign
         private static readonly TextObject OverCapText = new TextObject("{=RBM_militia_overcap}Over muster");
         private static readonly TextObject CannotArmText = new TextObject("{=RBM_militia_unarmed}Cannot be armed");
 
+        /// <summary>The extra intake a fief's Barracks lodgings allow.</summary>
+        private static readonly TextObject BarracksText = new TextObject("{=!}Barracks");
+
         /// <summary>The pay factor for a militiaman of this settlement -- see the wage-factor table.</summary>
         private static float MilitiaWageFactor(Settlement settlement)
         {
@@ -371,6 +374,9 @@ namespace RBMCampaign
         public static int DailyMaintenanceBill(Settlement settlement)
         {
             float wageFactor = MilitiaWageFactor(settlement);
+            // Fortifications: the same armoury and covered walkways that spare the garrison spare the watch.
+            // −0/5/10% at levels 1/2/3.
+            wageFactor *= BuildingEffects.MaintenanceFactor(settlement.Town);
             MobileParty party = (settlement.MilitiaPartyComponent != null)
                 ? settlement.MilitiaPartyComponent.MobileParty
                 : null;
@@ -565,6 +571,15 @@ namespace RBMCampaign
 
             // --- Prosperous city: Prosperity / 50 more a day per luxury tier the citizens' savings have reached.
             AddProsperousCityMuster(settlement, ref result);
+
+            // --- Barracks: the lodgings that let a fief take in more garrison recruits also let it drill
+            // more of its own townsmen. +1/2/3 a day at levels 1/2/3. Held to zero by the affordability
+            // floor below when the pot cannot arm them, so it is a ceiling on intake and not free men.
+            int barracks = BuildingEffects.BarracksGrowth(settlement.Town);
+            if (barracks > 0)
+            {
+                result.Add(barracks, BarracksText);
+            }
 
             // --- Kept modifiers (vanilla flavour, reproduced from public API).
             AddKeptModifiers(settlement, ref result);
@@ -896,10 +911,12 @@ namespace RBMCampaign
             {
                 return 0;
             }
-            int full = SpoilsPool.GetEquipmentValue(troop);
+            // Barracks discount included, so the gate that decides whether a man can be raised is priced
+            // exactly as the charge that raises him (see ArmOneMilitiaman).
+            float full = SpoilsPool.GetEquipmentValue(troop) * BuildingEffects.SpawnCostFactor(settlement != null ? settlement.Town : null);
             return (settlement != null && settlement.IsVillage)
                 ? (int)(full * MilitiaVillageGearShare)
-                : full;
+                : (int)full;
         }
 
         /// <summary>
@@ -1104,16 +1121,19 @@ namespace RBMCampaign
             // stock -- the same remote-buyer draw a village uses, and real, typed stock leaves that town's
             // shelves for it. Only when the draw feature is on and a supply town can be reached; otherwise
             // it falls through to the abstract debit below, so a castle's watch is never armed for free.
+            // Barracks: kit already stored inside the walls, so the watch is armed a little more cheaply --
+            // −5/10/15% at levels 1/2/3, the same discount the garrison's recruits get.
+            float armingShare = BuildingEffects.SpawnCostFactor(settlement.Town);
             if (settlement.IsCastle)
             {
                 Settlement castleMarket = RecruitSupply.IsEnabled ? ResolveCastleSupplyMarket(settlement) : null;
                 if (castleMarket != null)
                 {
-                    RecruitSupply.DrawKitFromMarket(castleMarket, settlement, troop, 1);
+                    RecruitSupply.DrawKitFromMarket(castleMarket, settlement, troop, 1, armingShare);
                     return;
                 }
             }
-            int cost = SpoilsPool.GetEquipmentValue(troop);
+            int cost = (int)(SpoilsPool.GetEquipmentValue(troop) * armingShare);
             if (cost <= 0)
             {
                 return;

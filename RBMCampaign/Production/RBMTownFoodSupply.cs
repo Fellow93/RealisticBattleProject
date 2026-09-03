@@ -228,7 +228,10 @@ namespace RBMCampaign
         public static FoodConsumptionBreakdown GetFoodConsumption(Town town)
         {
             FoodConsumptionBreakdown breakdown = default(FoodConsumptionBreakdown);
-            if (town == null || !town.IsTown || Campaign.Current == null)
+            // Castles included: their food is vanilla's abstract figure rather than a real market, but the
+            // mouths are real -- a keep's garrison and its watch eat exactly as a town's do -- and the
+            // granary cap below is sized off this figure for both kinds of fief.
+            if (town == null || !(town.IsTown || town.IsCastle) || Campaign.Current == null)
             {
                 return breakdown;
             }
@@ -281,25 +284,44 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>The days of eating a fief with no granary at all can keep. Each level of Warehouse (or a
+        /// castle's Granary) adds another ten, to forty at level 3.</summary>
+        private const int FoodStockBaseDays = 10;
+
+        /// <summary>The smallest granary any fief has, whatever it eats -- a floor for a place so small or so
+        /// empty that days-of-supply would round to nothing.</summary>
+        private const int FoodStockFloor = 300;
+
         /// <summary>
-        /// Enlarges a town's food storage limit by <see cref="TownFoodStockScale"/>, so the reported
-        /// stock can reflect what the market is really holding rather than saturating within a week's
-        /// eating.
+        /// A fief's granary measured in DAYS OF EATING rather than in an absolute number of units.
         ///
-        /// Castles are left alone: their food is still vanilla's abstract figure, so a bigger granary
-        /// there would only let an abstract number climb higher.
+        /// Vanilla's limit is 300 plus whatever the Warehouse adds, sized against vanilla's appetite; RBM
+        /// towns eat roughly ten times as much, so the flat figure meant a great city and a market town both
+        /// held the same grain and the city held it for four days. What a granary is actually FOR is
+        /// carrying a siege or a bad season, and that is a length of time -- so the cap is
+        /// <c>days x what this fief eats in a day</c>, ten days bare and ten more per level of Warehouse or
+        /// Granary. A city with a full warehouse holds forty days of its own considerable appetite; a
+        /// half-empty castle holds forty days of very little.
+        ///
+        /// This REPLACES the old flat <see cref="TownFoodStockScale"/> multiple, and it applies to castles
+        /// too (their Granary is the same building by another name), where before they were left on
+        /// vanilla's 300. The floor keeps a tiny or newly-taken fief from reporting a granary of nothing.
         /// </summary>
         [HarmonyPatch(typeof(Town), "FoodStocksUpperLimit")]
         private static class FoodStocksUpperLimitPatch
         {
             private static void Postfix(Town __instance, ref int __result)
             {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !__instance.IsTown)
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || __instance == null
+                    || !(__instance.IsTown || __instance.IsCastle))
                 {
                     return;
                 }
 
-                __result = MathF.Round(__result * TownFoodStockScale);
+                int days = FoodStockBaseDays + 10 * BuildingEffects.FoodStore(__instance);
+                int daily = GetFoodConsumption(__instance).Total;
+                int limit = days * daily;
+                __result = (limit > FoodStockFloor) ? limit : FoodStockFloor;
             }
         }
 

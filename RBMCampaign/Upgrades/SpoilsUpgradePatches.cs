@@ -188,7 +188,7 @@ namespace RBMCampaign
                     // Vanilla clamps by perManPrice * count. Spoils make the first men free, so the
                     // batch price is fullPrice * (count - coveredMen) and the party can afford
                     // coveredMen + gold/fullPrice of them.
-                    int fullGold = RBMCampaignPatches.GetFullUpgradeGoldCost(party, character, upgradeTarget);
+                    int fullGold = DiscountGarrisonUpgrade(party, RBMCampaignPatches.GetFullUpgradeGoldCost(party, character, upgradeTarget));
                     if (party.LeaderHero != null && fullGold > 0)
                     {
                         float coveredMen = SpoilsPool.GetCoveredMen(party, character, upgradeTarget);
@@ -257,7 +257,7 @@ namespace RBMCampaign
                             Target = character,
                             UpgradeTarget = upgradeTarget,
                             Count = count,
-                            TotalGoldCost = RBMCampaignPatches.GetBatchUpgradeGoldCost(party, character, upgradeTarget, count),
+                            TotalGoldCost = DiscountGarrisonUpgrade(party, RBMCampaignPatches.GetBatchUpgradeGoldCost(party, character, upgradeTarget, count)),
                             XpCost = xpCost,
                             StackSize = element.Number,
                             Chance = upgradeModel.GetUpgradeChanceForTroopUpgrade(party, character, i)
@@ -289,6 +289,25 @@ namespace RBMCampaign
                     }
                 }
                 return result;
+            }
+
+            /// <summary>
+            /// What a garrison's promotion costs its fief, after the Training Fields discount -- a fief with
+            /// a drill ground of its own does part of the work itself, so less of the promotion has to be
+            /// bought in. −5/10/15% at levels 1/2/3. Applied to the affordability test and to the sum
+            /// actually billed alike, so the batch the pass allows is the batch the treasury can pay for.
+            /// The same building's discount reaches the settlement's militia through
+            /// <c>MilitiaUpkeep</c>'s own arming path; there is no separate militia PROMOTION path in RBM --
+            /// the watch is armed and shed, never upgraded.
+            /// </summary>
+            private static int DiscountGarrisonUpgrade(PartyBase party, int gold)
+            {
+                if (gold <= 0 || party.MobileParty == null || !party.MobileParty.IsGarrison)
+                {
+                    return gold;
+                }
+                Settlement fief = GarrisonFiefOf(party);
+                return (fief == null) ? gold : (int)(gold * BuildingEffects.UpgradeCostFactor(fief.Town));
             }
 
             /// <summary>The fief a garrison belongs to -- the town or castle it holds -- or null.</summary>

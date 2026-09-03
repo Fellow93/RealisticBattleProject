@@ -138,7 +138,9 @@ namespace RBMCampaign
                 }
                 bill += (int)(SpoilsPool.GetDailyMaintenanceCost(element.Character, element.Number) * GarrisonMaintFactor);
             }
-            return bill;
+            // Fortifications: a proper armoury, covered walkways and a smithy inside the walls mean less of the
+            // garrison's kit is rusting in the open. −0/5/10% off the day's mending at levels 1/2/3.
+            return (int)(bill * BuildingEffects.MaintenanceFactor(settlement.Town));
         }
 
         /// <summary>The garrison's full daily cost -- wage plus maintenance -- for the reserve gates that size recruiting.</summary>

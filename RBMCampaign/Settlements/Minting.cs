@@ -108,9 +108,13 @@ namespace RBMCampaign
             roster.AddToCounts(silver, -minted);
 
             int totalValue = minted * CoinsPerOre;
-            int rulerCut = (int)(totalValue * RulerCutRate);
-            int ownerCut = (int)(totalValue * OwnerCutRate);
-            int settlementCut = (int)(totalValue * SettlementCutRate);
+            // Tax Office: the same clerks who assess the wealth tax weigh the mint's output, so all three
+            // cuts off the top are found more completely -- +5/10/15%. The citizens' share is the remainder,
+            // so it shrinks by exactly what the cuts grow by and nothing is minted or destroyed.
+            float taxOffice = BuildingEffects.TaxFactor(settlement.Town);
+            int rulerCut = (int)(totalValue * RulerCutRate * taxOffice);
+            int ownerCut = (int)(totalValue * OwnerCutRate * taxOffice);
+            int settlementCut = (int)(totalValue * SettlementCutRate * taxOffice);
 
             Hero owner = settlement.OwnerClan?.Leader;
             Hero ruler = settlement.OwnerClan?.Kingdom?.Leader;

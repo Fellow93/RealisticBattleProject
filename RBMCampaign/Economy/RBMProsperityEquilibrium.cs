@@ -257,7 +257,12 @@ namespace RBMCampaign
         /// </summary>
         public static float InfrastructureMultiplier(Town town)
         {
-            float multiplier = 1f + InfrastructureScore(town) * InfrastructureBonusPerTierPoint;
+            // Waterworks: clean water and drains are what let a dense town be a HEALTHY dense town, so it
+            // does not add its own point of development -- it makes every other point worth more, +10/20/30%.
+            float waterworks = RBMConfig.RBMConfig.rbmCampaignEnabled
+                ? 1f + 0.1f * BuildingEffects.Waterworks(town)
+                : 1f;
+            float multiplier = 1f + InfrastructureScore(town) * InfrastructureBonusPerTierPoint * waterworks;
             return (multiplier > MaxInfrastructureMultiplier) ? MaxInfrastructureMultiplier : multiplier;
         }
 

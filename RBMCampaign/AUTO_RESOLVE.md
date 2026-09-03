@@ -449,17 +449,18 @@ This was not hypothetical. At Tamnuh Castle on 1084-030 the garrison went from 2
 
 **And how good the wall is scales all of it.** Fortifications are built, and native tracks the level on the settlement (`Town.GetWallLevel()`, 1–3, off `SettlementFortifications` for a town and `CastleFortifications` for a castle). A higher wall means a higher parapet, better merlons to shoot from and hide behind, and a longer, worse climb.
 
-What scales is the **advantage**, not the raw number: every dial is a departure from parity, and the wall scales that departure. **Level 3 is the reference and nothing scales above it** — a fully fortified city plays exactly as this model did before wall level was read at all, and every lesser wall is a lesser version of the same edge, 25% of the advantage per level down. So nothing can invert into a handicap.
+What scales is the **advantage**, not the raw number: every dial is a departure from parity, and the wall scales that departure — `factor = 1 + 0.1 × level`, so **+10/20/30%** of the whole edge at the three levels. A built wall now *earns* the defender something rather than merely failing to lose it, and because the scaling is applied to the departure and not to the number, nothing can invert into a handicap.
 
 | | palisade (1) | middling (2) | great walls (3) |
 |---|---|---|---|
-| Defender shots per attacker shot, approach | 3 : 1 | 4 : 1 | **5 : 1** |
-| …assault | 1.5 : 1 | 1.75 : 1 | **2 : 1** |
-| Defender magnitude, approach | ×1.13 | ×1.19 | **×1.25** |
-| Attacker magnitude | ×0.93 | ×0.89 | **×0.85** |
-| Attacker miss, approach | ×1.25 | ×1.38 | **×1.50** |
+| Advantage factor | ×1.10 | ×1.20 | **×1.30** |
+| Defender shots per attacker shot, approach | 5.4 : 1 | 5.8 : 1 | **6.2 : 1** |
+| …assault | 2.1 : 1 | 2.2 : 1 | **2.3 : 1** |
+| Defender magnitude, approach | ×1.275 | ×1.30 | **×1.325** |
+| Attacker magnitude | ×0.835 | ×0.82 | **×0.805** |
+| Attacker miss, approach | ×1.55 | ×1.60 | **×1.65** |
 
-A settlement whose wall level cannot be read falls back to the **reference**, not to a poor wall — the conservative failure, since a bad reading can then never quietly hand a siege to the besieger by treating a great city as a palisade. (`GetWallLevel()` genuinely returns 0, not 1, when it cannot find the building.)
+A settlement whose wall level cannot be read falls back to **level 3**, not to a poor wall — the conservative failure, since a bad reading can then never quietly hand a siege to the besieger by treating a great city as a palisade. (`GetWallLevel()` genuinely returns 0, not 1, when it cannot find the building.)
 
 **It does not touch the width**, deliberately. Width is a fact about the *openings* — how wide the breach is, how many men fit through a gatehouse, how many can stand at the top of one ladder — and a hole in a great wall is the same size as a hole in a poor one. A better wall buys a worse approach to it, not a narrower gap once it is down.
 

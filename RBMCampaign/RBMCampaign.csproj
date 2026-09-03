@@ -432,6 +432,8 @@
     <Compile Include="Settlements\AdministrativeUpkeep.cs" />
     <Compile Include="Settlements\CastleEconomy.cs" />
     <Compile Include="Settlements\Minting.cs" />
+    <Compile Include="Settlements\BuildingEffects.cs" />
+    <Compile Include="UI\BuildingEffectTooltips.cs" />
     <Compile Include="Settlements\Construction.cs" />
     <Compile Include="Settlements\Construction.Materials.cs" />
     <Compile Include="Settlements\Construction.Patches.cs" />

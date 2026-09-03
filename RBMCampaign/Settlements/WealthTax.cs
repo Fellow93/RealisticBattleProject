@@ -216,6 +216,12 @@ namespace RBMCampaign
             float ownerRate = hoarding ? HoardOwnerRate : DailyRate;
             float settlementRate = hoarding ? HoardSettlementRate : SettlementDailyRate;
 
+            // Tax Office: clerks, rolls and assessors -- vanilla's own TaxPerDay effect, +5/10/15%, on both
+            // legs. It does not change who is taxed or when; it changes how much of what is there is found.
+            float taxOffice = BuildingEffects.TaxFactor(settlement.Town);
+            ownerRate *= taxOffice;
+            settlementRate *= taxOffice;
+
             int ownerLevy = (int)(taxable * ownerRate);
             int settlementLevy = (int)(taxable * settlementRate);
             if (ownerLevy <= 0 && settlementLevy <= 0)

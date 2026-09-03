@@ -255,8 +255,10 @@ player's boost, now deleted.)
   `constructionBudgetShare` (default 1%) of settlement wealth via `SettlementWealth.Debit(Source.Construction)`,
   and toppable up by the owner through the unmodified vanilla reserve UI (its 10,000 ceiling is raised
   to `min(player gold, 10 x daily capacity)`).
-- **Ceiling** — `prosperity x 36 + prisoners x 60`, times the Mason factor (phase 2), times vanilla's
-  loyalty curve. `prisoners x 30` of it is free labour that costs nothing.
+- **Ceiling** — `prosperity x 36 + prisoners x 60 + guardHouseTier x 0.6 x prosperity`, times the Mason
+  capacity factor (`1 + 0.1 x tier`), times vanilla's loyalty curve. `prisoners x 30 +
+  guardHouseTier x 0.3 x prosperity` of it is free labour that costs nothing, and the Mason's efficiency
+  factor (`1 + 0.05 x tier`) multiplies what the money bought.
 - **Spending order** — free labour, then clay/hardwood off the settlement's own market (up to half the
   day's work, never touching the last 20 pieces on the shelves), then wages at a coin a point of which
   half reaches the townsmen. Tools wear out at one load per 50,000 points and are bought the same way;
@@ -273,6 +275,34 @@ player's boost, now deleted.)
   buys no materials and its wage coin leaves the ledger.
 - Towns and castles alike; skipped under siege. Logged as `BUILD` in `EconomyLog`; tool debt persists as
   `RBM_constructionToolDebt`.
+
+#### Building effects (`Settlements/BuildingEffects.cs`)
+
+`BuildingEffects.Tier(town, townType, castleType)` reads `Building.CurrentLevel` for whichever of a
+matched town/castle `DefaultBuildingTypes` pair the fief actually owns (Fortifications, Barracks,
+Training Fields, Guard House, Mason, Roads map 1:1; Warehouse pairs with the castle Granary; Marketplace,
+Tax Office and Waterworks are towns only). Everything below is gated on `rbmCampaignEnabled`, and every
+vanilla effect stays in place unless the row says "replaces".
+
+| Building | RBM effect | Seam |
+|---|---|---|
+| Fortifications | siege defence advantage x1.1/1.2/1.3 (**replaces** the old downward step from L3) | `SimulationSiege.MeasureWall` = `1 + 0.1 x level` |
+| | garrison + militia maintenance −0/5/10% | `GarrisonUpkeep.MaintenanceBill`, `MilitiaUpkeep.DailyMaintenanceBill` |
+| Barracks | arming a garrison or militia recruit −5/10/15% | `GarrisonRecruitCost.SpawnCost`, `MilitiaUpkeep.SpawnCostPerMan` + `ArmOneMilitiaman` |
+| | intake ceiling +1/2/3 a day | `GarrisonRecruitCost.Compute` (added to `GarrisonSpawnDailyMax`, own tooltip line), `MilitiaUpkeep.ComputeMilitiaChange` |
+| Training Fields | garrison promotions −5/10/15% | `SpoilsUpgradePatches.DiscountGarrisonUpgrade` (both the affordability test and the billed sum) |
+| | +10/20/30 XP a day, garrison AND militia party (10x vanilla's `ExperiencePerDay`) | `GarrisonDrill` postfix on `GetEffectiveDailyExperience`, filter widened to `IsMilitia` |
+| Guard House | tariff +0.3/0.6/1.0 percentage points on GUARDED trade only (caravans, lords, the player) | `TradeTariff.Levy(.., guardedTrade: true)` from `SettlementWealth.RouteNativeWrite` and `InventoryLogic.DoneLogic` |
+| | passive convict labour | the Guard House terms in the construction ceiling/free-labour above |
+| Tax Office | wealth tax and minting cuts x1.05/1.1/1.15, owner and fief legs alike | `WealthTax.OnDailyTick`, `Minting` |
+| Marketplace | tariff x1.1/1.2/1.3 on ALL channels | `TradeTariff.Levy` rate factor |
+| Warehouse / Granary | granary = 10/20/30/40 days of the fief's own consumption (**replaces** the flat `TownFoodStockScale` x10), castles included | `RBMTownFoodSupply.FoodStocksUpperLimitPatch`, sized off `GetFoodConsumption(town).Total` with a 300 floor |
+| Mason | construction efficiency +5/10/15%, labour ceiling +10/20/30% (**replaces** `ConstructionPerDay`) | `Construction.MasonTier` |
+| Waterworks | every other point of infrastructure worth +10/20/30% | `RBMProsperityEquilibrium.InfrastructureMultiplier` = `1 + score x 0.02 x (1 + 0.1 x tier)`, clamp unchanged |
+| Roads and Paths | bound-village production +5/10/15% | `RBMVillageProduction.RoadsFactor`, applied to the tick and to `CalculateDailyProductionAmount` alike |
+
+`UI/BuildingEffectTooltips.cs` postfixes `BuildingType.GetExplanationAtLevel` to append a plain "RBM:"
+line per building type, so the town management project list names these effects beside vanilla's.
 | `Production/` | Village production, villager convoys and deliveries, town food supply and storage, citizen and workshop demand. |
 | `Economy/` | Market prices and liquidity, caravan capital and trade volume, recruit supply, trade-good values, prosperity equilibrium. |
 | `Simulation/` | The equipment-aware auto-resolve: weapon model, hit points, arm targeting, perks, morale, rout, player participation, and the two-phase wall assault (`SimulationSiege.cs`). |

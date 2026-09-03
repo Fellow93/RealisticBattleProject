@@ -109,11 +109,31 @@ namespace RBMCampaign
         /// </summary>
         public static void Levy(Settlement settlement, int tradeValue)
         {
+            Levy(settlement, tradeValue, guardedTrade: false);
+        }
+
+        /// <summary>
+        /// The same fee, told whether this is a GUARDED trade -- a caravan or a traveller coming through the
+        /// gate, weighed and tallied by the watch, as opposed to a townsman buying bread from his neighbour
+        /// or a fief buying its own bricks. Only guarded trade pays the Guard House's surcharge: a gate that
+        /// searches every wagon collects on wagons, and no amount of guarding makes the baker pay more.
+        /// </summary>
+        public static void Levy(Settlement settlement, int tradeValue, bool guardedTrade)
+        {
             if (!RBMConfig.RBMConfig.rbmCampaignEnabled || settlement == null || settlement.Town == null || tradeValue <= 0)
             {
                 return;
             }
-            int tariff = (int)(tradeValue * TariffRate);
+            float rate = TariffRate;
+            if (guardedTrade)
+            {
+                // Guard House: +0.3/0.6/1.0 percentage points at tiers 1/2/3.
+                rate += BuildingEffects.GuardHouseTariffBonus(settlement.Town);
+            }
+            // Marketplace: a proper market square, weights, scales and a clerk taking the toll -- vanilla's
+            // own TariffIncome effect, x1.1/1.2/1.3, on every channel including the townsmen's own trade.
+            rate *= BuildingEffects.TariffFactor(settlement.Town);
+            int tariff = (int)(tradeValue * rate);
             if (tariff <= 0)
             {
                 return;
@@ -215,7 +235,8 @@ namespace RBMCampaign
                     return;
                 }
 
-                Levy(settlement, GrossTraded(__instance));
+                // The player is a traveller trading at the gate: guarded trade.
+                Levy(settlement, GrossTraded(__instance), guardedTrade: true);
             }
 
             private static void Finalizer()

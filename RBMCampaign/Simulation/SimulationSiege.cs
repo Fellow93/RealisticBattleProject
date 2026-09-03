@@ -133,17 +133,17 @@ namespace RBMCampaign
         // wall is the same size as a hole in a poor one. What a better wall buys you is a worse approach to it, not
         // a narrower gap once it is down.
 
-        /// <summary>The wall the constants above were written for: level 3, a fully fortified city or castle. A
-        /// settlement at this level plays exactly as it did before wall level was read at all, and no wall in the
-        /// game scales the advantage UP -- this is the ceiling.</summary>
+        /// <summary>The wall a settlement is credited with when its level cannot be read at all -- the best one, so
+        /// a bad reading can never quietly hand a great city to a besieger by treating it as a palisade.</summary>
         private const int ReferenceWallLevel = 3;
 
-        /// <summary>How much each level BELOW the reference costs, as a share of the whole advantage. At a quarter,
-        /// a level 2 wall keeps three quarters of the edge and a palisade half of it -- so the defender's rate of
-        /// fire on the approach runs 5:1, 4:1 and 3:1 down the three levels, and the besieger's magnitude penalty
-        /// eases from 0.85 through 0.888 to 0.925. Enough to feel, not enough to make the wall the whole battle;
-        /// the garrison is still what decides a siege.</summary>
-        private const float WallLevelStep = 0.25f;
+        /// <summary>What each level of Fortifications is worth, as a share of the whole advantage. Built walls now
+        /// EARN the defender's edge rather than merely failing to lose it: a palisade scales every departure from
+        /// parity by 1.1, middling walls by 1.2, great walls by 1.3 -- so the defender's rate of fire on the approach
+        /// runs 5.4:1, 5.8:1 and 6.2:1 down the three levels, and the besieger's magnitude penalty deepens from
+        /// 0.835 through 0.82 to 0.805. Enough to feel, not enough to make the wall the whole battle; the garrison
+        /// is still what decides a siege.</summary>
+        private const float WallLevelStep = 0.1f;
 
         /// <summary>Wall levels run 1 to 3, but GetWallLevel returns 0 for a fortification whose building it cannot
         /// find at all -- so the reading is clamped rather than trusted.</summary>
@@ -225,7 +225,7 @@ namespace RBMCampaign
             {
                 level = MaxWallLevel;
             }
-            return 1f + ((level - ReferenceWallLevel) * WallLevelStep);
+            return 1f + (level * WallLevelStep);
         }
 
         // =========================================================================================================

@@ -511,7 +511,10 @@ namespace RBMCampaign
             // it on the gross instead; see PlayerMarketSessionPatch.
             if (!TradeTariff.IsSessionDeferred)
             {
-                TradeTariff.Levy(settlement, (applied < 0) ? -applied : applied);
+                // Everything reaching a town's money through a native write is an outsider trading at it --
+                // a caravan, a lord, a party selling loot -- so this is guarded trade and pays the Guard
+                // House's surcharge. RBM's own internal transfers call Levy directly and do not.
+                TradeTariff.Levy(settlement, (applied < 0) ? -applied : applied, guardedTrade: true);
             }
             return true;
         }

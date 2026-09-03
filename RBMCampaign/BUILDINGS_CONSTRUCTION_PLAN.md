@@ -1,6 +1,7 @@
 # Buildings & construction rework — plan (2026-09-03)
 
-Status: PLAN ONLY, nothing implemented. Companion to `GARRISON_MILITIA_WALL_ECONOMY_PLAN.md`
+Status: phase 1 (engine) committed `df4ccaad`; phase 2 (building effects) BUILT 2026-09-03;
+phase 3 (patrols) deferred. Neither phase playtested yet. Companion to `GARRISON_MILITIA_WALL_ECONOMY_PLAN.md`
 (its deferred task 6c "wall upgrade gold cost" is subsumed by this plan).
 
 ## 0. What exists today (verified)
@@ -104,30 +105,31 @@ points  = min(cap, affordable(reserve))
   `RBMConfig.Campaign.cs` / `.Core.cs` load+save / `RBMConfigViewModel.Campaign.cs` / `.Core.cs` /
   `RBMXML/GUI/Prefabs/RBMConfig.xml`. Everything else is `Construction` consts.
 
-## 2. Building effects (phase 2) — one seam per building
+## 2. Building effects (phase 2) — one seam per building — **BUILT 2026-09-03**
 
-Vanilla effects stay unless a row says "replace".
+Vanilla effects stay unless a row says "replace". Shared helper: `Settlements/BuildingEffects.cs`
+(`Tier(town, townType, castleType)` + the derived rates). Tooltips: `UI/BuildingEffectTooltips.cs`.
 
-| Building | New RBM effect | Seam |
-|---|---|---|
-| **Fortifications** L1/2/3 | auto-resolve defender +10/20/30% | `SimulationSiege.MeasureWall` → `1 + 0.1 × level` (currently a downward-only 0.25 step from L3; replace). |
-| | garrison + militia maintenance −0/5/10% | `GarrisonUpkeep.MaintenanceBill`, `MilitiaUpkeep.DailyMaintenanceBill` |
-| **Barracks** | garrison + militia spawn price −5/10/15% | `GarrisonRecruitCost.SpawnCost`/`ArmOneGarrisonTroop`, `MilitiaUpkeep.ArmOneMilitiaman` |
-| | growth +1/2/3 per day when funded | `GarrisonRecruitCost.Compute` (`GarrisonSpawnDailyMax` term), `MilitiaUpkeep.CalculateMilitiaChange` intake |
-| **Training Field** | garrison + militia upgrade −5/10/15% | `SpoilsUpgradePatches` garrison branch (+ militia branch if any) |
-| | XP ×10 (10/20/30 per day), militia too | `GarrisonDrill` postfix on `GetEffectiveDailyExperience`: add `10 × ExperiencePerDay` for garrison AND `MilitiaPartyComponent` parties |
-| **Guard House** T0/1/2/3 | T0 spawns a light patrol; each tier adds one patrol | needs multi-patrol (vanilla single `settlement.PatrolParty` slot) — see §3 |
-| | tariff +0.3/0.6/1.0% on caravan + player trades | `TradeTariff.Levy` gains a channel arg; only `RouteNativeWrite` + `DoneLogic` channels get the bonus |
-| | patrol maintenance −25/50/75% | `PatrolUpkeep.PayPatrolUpkeep` (stash) |
-| | passive prisoners | §1.2 cap/discount terms |
-| **Siege Workshop** | unchanged | — |
-| **Tax Office** | +5/10/15% on wealth tax (owner + fief), optionally minting cuts | `WealthTax.OnDailyTick` rates × `(1 + TaxPerDay effect)`; same factor in `Minting` |
-| **Marketplace** | tariff ×1.1/1.2/1.3 on ALL channels (incl. citizen consumption) | `TradeTariff.Levy` rate factor from `TariffIncome` effect |
-| **Warehouse / Granary** | food cap = days × daily consumption; tier 0/1/2/3 = 10/20/30/40 days | replace `RBMTownFoodSupply` `FoodStocksUpperLimit` postfix: `days × GetFoodConsumption(town).Total`; extend to castles (Granary) |
-| **Mason** | replace ConstructionPerDay: efficiency ×1.05/1.1/1.15, cap ×1.1/1.2/1.3 | §1.2/§1.4 |
-| **Waterworks** | infrastructure bonus ×1.1/1.2/1.3 | `RBMProsperityEquilibrium.InfrastructureMultiplier`: `1 + score×0.02×(1+0.1×tier)` |
-| **Courthouse** | unchanged | — |
-| **Roads** | verify VillageProduction factor reaches RBM production (it does NOT today) | add `village.Bound.Town.AddEffectOfBuildings(VillageProduction)` in `RBMVillageProduction`; VillageHeartsPerDay still flows via vanilla hearth model |
+| Building | New RBM effect | Seam | |
+|---|---|---|---|
+| **Fortifications** L1/2/3 | auto-resolve defender +10/20/30% | `SimulationSiege.MeasureWall` → `1 + 0.1 × level` (was a downward-only 0.25 step from L3) | ✅ |
+| | garrison + militia maintenance −0/5/10% | `GarrisonUpkeep.MaintenanceBill`, `MilitiaUpkeep.DailyMaintenanceBill` | ✅ |
+| **Barracks** | garrison + militia spawn price −5/10/15% | `GarrisonRecruitCost.SpawnCost`, `MilitiaUpkeep.SpawnCostPerMan`/`ArmOneMilitiaman` | ✅ |
+| | growth +1/2/3 per day when funded | `GarrisonRecruitCost.Compute` (`GarrisonSpawnDailyMax` term + tooltip line), `MilitiaUpkeep.ComputeMilitiaChange` intake | ✅ |
+| **Training Field** | garrison upgrade −5/10/15% | `SpoilsUpgradePatches.DiscountGarrisonUpgrade` — **no militia upgrade path exists** (the watch is armed and shed, never promoted) | ✅ |
+| | XP ×10 (10/20/30 per day), militia too | `GarrisonDrill` postfix on `GetEffectiveDailyExperience`, filter widened to `IsMilitia` | ✅ |
+| **Guard House** T0/1/2/3 | T0 spawns a light patrol; each tier adds one patrol | needs multi-patrol — **OUT OF SCOPE**, see §5 | — |
+| | tariff +0.3/0.6/1.0% on caravan + player trades | `TradeTariff.Levy(.., guardedTrade)`; only `RouteNativeWrite` + `DoneLogic` pass true | ✅ |
+| | patrol maintenance −25/50/75% | `PatrolUpkeep.PayPatrolUpkeep` (stash) — **OUT OF SCOPE** | — |
+| | passive prisoners | `Construction.GuardHouseTier`, §1.2 cap/discount terms | ✅ |
+| **Siege Workshop** | unchanged | — | — |
+| **Tax Office** | +5/10/15% on wealth tax (owner + fief) and the minting cuts | `WealthTax.OnDailyTick` rates × `TaxFactor`; same factor in `Minting` | ✅ |
+| **Marketplace** | tariff ×1.1/1.2/1.3 on ALL channels (incl. citizen consumption) | `TradeTariff.Levy` rate factor from `TariffIncome` | ✅ |
+| **Warehouse / Granary** | food cap = days × daily consumption; tier 0/1/2/3 = 10/20/30/40 days | `RBMTownFoodSupply.FoodStocksUpperLimitPatch` rewritten off `GetFoodConsumption(town).Total` (300 floor), castles included | ✅ |
+| **Mason** | replace ConstructionPerDay: efficiency ×1.05/1.1/1.15, cap ×1.1/1.2/1.3 | `Construction.MasonTier`, §1.2/§1.4 | ✅ |
+| **Waterworks** | infrastructure bonus ×1.1/1.2/1.3 | `RBMProsperityEquilibrium.InfrastructureMultiplier`: `1 + score×0.02×(1+0.1×tier)` | ✅ |
+| **Courthouse** | unchanged | — | — |
+| **Roads** | VillageProduction factor did NOT reach RBM production | `RBMVillageProduction.RoadsFactor`, applied in the tick and in `CalculateDailyProductionAmount`; VillageHeartsPerDay still flows via vanilla hearth model | ✅ |
 
 Castle equivalents map 1:1 (CastleFortifications/Barracks/TrainingFields/GuardHouse/Mason/Granary).
 

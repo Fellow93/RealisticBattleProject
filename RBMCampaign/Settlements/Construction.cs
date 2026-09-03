@@ -117,22 +117,22 @@ namespace RBMCampaign
         // ---------------------------------------------------------------- phase 2 seams
 
         /// <summary>
-        /// The Guard House tier, which will keep a standing body of convicts at work on the fief's
-        /// projects. Phase 2 -- see BUILDINGS_CONSTRUCTION_PLAN.md section 2. Returns 0, so the guard
-        /// house terms drop out of both the ceiling and the free-labour discount.
+        /// The Guard House tier. Its gaolers keep a standing body of convicts at work on the fief's
+        /// projects -- men who are housed and fed whatever they do, so half of what they build costs
+        /// nothing (see <see cref="DailyCapacity"/> and <see cref="FreeLabour"/>).
         /// </summary>
         private static int GuardHouseTier(Town town)
         {
-            return 0; // phase 2
+            return BuildingEffects.GuardHouse(town);
         }
 
         /// <summary>
-        /// The Mason tier, which will raise both the day's ceiling and the work each coin buys. Phase 2.
-        /// Returns 0, so both factors are 1.
+        /// The Mason tier, which raises both the day's ceiling and the work each coin buys. This REPLACES
+        /// vanilla's flat ConstructionPerDay 3/6/9, which was worth nothing at RBM's scale.
         /// </summary>
         private static int MasonTier(Town town)
         {
-            return 0; // phase 2
+            return BuildingEffects.Mason(town);
         }
 
         private static float MasonCapacityFactor(Town town)

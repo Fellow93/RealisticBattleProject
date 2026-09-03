@@ -66,11 +66,14 @@ namespace RBMCampaign
         private static class DrillXpPatch
         {
             private static readonly TextObject DrillText = new TextObject("{=rbm_garrison_drill}Garrison drill");
+            private static readonly TextObject TrainingFieldText = new TextObject("{=!}Training field");
 
             private static void Postfix(MobileParty mobileParty, TroopRosterElement troop, ref ExplainedNumber __result)
             {
-                if (!IsEnabled || mobileParty == null || !mobileParty.IsGarrison || troop.Character == null
-                    || troop.Character.IsHero || mobileParty.MapEvent != null)
+                // The watch drills on the same ground the garrison does, and vanilla gives it no daily XP
+                // either -- so a settlement's militia party is treated here exactly as its garrison is.
+                if (!IsEnabled || mobileParty == null || (!mobileParty.IsGarrison && !mobileParty.IsMilitia)
+                    || troop.Character == null || troop.Character.IsHero || mobileParty.MapEvent != null)
                 {
                     return;
                 }
@@ -79,6 +82,17 @@ namespace RBMCampaign
                 {
                     return;
                 }
+
+                // Training Fields. Vanilla's own ExperiencePerDay effect is 1/2/3 a day, which is nothing at
+                // all beside a battle; at ten times that it is a real reason to build the thing. Unlike the
+                // drill term this is NOT scaled by the treasury -- the ground and the sergeants are already
+                // paid for, standing there whether the fief is rich this week or not.
+                int trainingFields = BuildingEffects.TrainingFields(fief.Town);
+                if (trainingFields > 0)
+                {
+                    __result.Add(trainingFields * 10f, TrainingFieldText);
+                }
+
                 float factor = DrillFactor(fief);
                 if (factor <= 0f)
                 {
