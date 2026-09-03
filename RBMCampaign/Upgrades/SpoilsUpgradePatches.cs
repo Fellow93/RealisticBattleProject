@@ -339,23 +339,26 @@ namespace RBMCampaign
                 // Only this reaches the town below -- charging one sum and paying over another would mint
                 // the difference, and paying over a bill nobody was sent would mint the whole of it.
                 int goldCharged = 0;
-                if (payer != null && payer.IsAlive)
+                // A garrison's Owner is the fief's clan leader (GarrisonPartyComponent.PartyOwner), so it
+                // must be tested BEFORE the hero-payer branch: the fief buys its own garrison's promotion
+                // out of its treasury -- the same treasury that pays the garrison's wages and drilled the
+                // men (GarrisonDrill) -- never the owner's personal purse. The clamp in
+                // GetPossibleUpgradeTargets kept the batch inside what the treasury holds, so this debit is
+                // what reaches the town below -- treasury out, the armourers who did the work paid in
+                // (SupplyUpgradeFromTown credits the town's citizens the same sum).
+                if (party.MobileParty != null && party.MobileParty.IsGarrison)
                 {
-                    SkillLevelingManager.OnUpgradeTroops(party, option.Target, option.UpgradeTarget, option.Count);
-                    GiveGoldAction.ApplyBetweenCharacters(payer, null, option.TotalGoldCost, true);
-                    goldCharged = option.TotalGoldCost;
-                }
-                else if (party.MobileParty.IsGarrison)
-                {
-                    // No owner to send the bill to: the fief buys its own garrison's promotion out of its
-                    // treasury. The clamp in GetPossibleUpgradeTargets kept the batch inside what it holds,
-                    // so this debit is what reaches the town below -- treasury out, the armourers who did
-                    // the work paid in (SupplyUpgradeFromTown credits the town's citizens the same sum).
                     Settlement fief = GarrisonFiefOf(party);
                     if (fief != null)
                     {
                         goldCharged = SettlementWealth.Debit(fief, option.TotalGoldCost, SettlementWealth.Source.Upgrade);
                     }
+                }
+                else if (payer != null && payer.IsAlive)
+                {
+                    SkillLevelingManager.OnUpgradeTroops(party, option.Target, option.UpgradeTarget, option.Count);
+                    GiveGoldAction.ApplyBetweenCharacters(payer, null, option.TotalGoldCost, true);
+                    goldCharged = option.TotalGoldCost;
                 }
 
                 // Draw the gold just billed against this party's daily upgrade budget, so a later stack in

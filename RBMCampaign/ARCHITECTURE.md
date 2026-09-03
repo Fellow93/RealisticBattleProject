@@ -241,7 +241,7 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 
 | Folder | Role |
 |---|---|
-| `Settlements/` | The two-pot settlement wealth ledger (`SettlementWealth`), its funnel over vanilla's writes, tariffs, ransoms, garrison/militia/admin/construction upkeep, workshop purses. |
+| `Settlements/` | The two-pot settlement wealth ledger (`SettlementWealth`), its funnel over vanilla's writes, tariffs, ransoms, garrison/militia/admin/construction upkeep, wealth-driven garrison growth (`GarrisonRecruitCost`) and drill XP (`GarrisonDrill`), workshop purses. |
 | `Production/` | Village production, villager convoys and deliveries, town food supply and storage, citizen and workshop demand. |
 | `Economy/` | Market prices and liquidity, caravan capital and trade volume, recruit supply, trade-good values, prosperity equilibrium. |
 | `Simulation/` | The equipment-aware auto-resolve: weapon model, hit points, arm targeting, perks, morale, rout, player participation, and the two-phase wall assault (`SimulationSiege.cs`). |

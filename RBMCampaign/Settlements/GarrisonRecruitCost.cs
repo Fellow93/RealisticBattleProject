@@ -73,7 +73,7 @@ namespace RBMCampaign
         /// administration and the walls. The basic-requirement reserve is a multiple of this -- a fief must
         /// be able to cover everything it already pays for, with room to spare, before it spends on new men.
         /// </summary>
-        private static int FullDailyBill(Settlement settlement)
+        internal static int FullDailyBill(Settlement settlement)
         {
             return GarrisonUpkeep.EstimateDailyBill(settlement)
                 + MilitiaUpkeep.DailyMaintenanceBill(settlement)
