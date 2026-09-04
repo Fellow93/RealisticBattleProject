@@ -62,7 +62,10 @@ namespace RBMCampaign
                 return;
             }
 
-            int income = (int)(prosperity * IncomePerProsperityPerDay);
+            // Craftsman Quarters: smiths, wrights and coopers quartered inside the walls turn the same
+            // lands into more money than raw dues would fetch. ×1.1/1.2/1.3 at levels 1/2/3, on the whole
+            // of the castle's income, this being the one place it is worked out.
+            int income = (int)(prosperity * IncomePerProsperityPerDay * BuildingEffects.CraftsmanIncomeFactor(settlement.Town));
             if (income <= 0)
             {
                 return;

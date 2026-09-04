@@ -222,7 +222,9 @@ namespace RBMCampaign
             public int Citizens;
             public int Garrison;
             public int Militia;
-            public int Total => Citizens + Garrison + Militia;
+            /// <summary>The men in the cells, fed on gruel out of the fief's own stores. See <see cref="PrisonLabour"/>.</summary>
+            public int Prisoners;
+            public int Total => Citizens + Garrison + Militia + Prisoners;
         }
 
         public static FoodConsumptionBreakdown GetFoodConsumption(Town town)
@@ -254,6 +256,7 @@ namespace RBMCampaign
             breakdown.Citizens = (int)MathF.Round(households.ResultNumber);
             breakdown.Garrison = (int)MathF.Round(garrison.ResultNumber);
             breakdown.Militia = (int)MathF.Round(militia.ResultNumber);
+            breakdown.Prisoners = (int)MathF.Round(PrisonLabour.DailyFood(town.Settlement));
             return breakdown;
         }
 
@@ -360,6 +363,68 @@ namespace RBMCampaign
 
                 __result = result;
                 return false;
+            }
+
+            /// <summary>
+            /// The castle half of the same method -- a castle keeps no market, so its food stays vanilla's
+            /// modelled figure and is CORRECTED here rather than replaced. Two corrections:
+            ///
+            /// <list type="bullet">
+            /// <item>FARMLANDS. Vanilla pays the building a flat 6/12/18 food a day, which is the same
+            /// windfall for a keep holding three rich villages and for one holding a rock. What demesne
+            /// fields actually are is more of the SAME countryside worked harder, so the flat line is taken
+            /// back off and +10/20/30% of the castle's own food production put in its place. Production
+            /// here is the countryside term vanilla adds when the fief is not besieged: the lands around
+            /// the settlement plus each unraided bound village's hearth yield.</item>
+            /// <item>PRISONERS. The men in the cells eat, at <see cref="PrisonLabour.FoodPerPrisonerPerDay"/>
+            /// a head -- the castle side of the same mechanic the town pays for in <see cref="FeedPopulation"/>.</item>
+            /// </list>
+            /// </summary>
+            private static void Postfix(Town town, ref ExplainedNumber __result)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || town == null || !town.IsCastle)
+                {
+                    return;
+                }
+
+                float prisonerFood = PrisonLabour.DailyFood(town.Settlement);
+                if (prisonerFood > 0f)
+                {
+                    __result.Add(-prisonerFood, PrisonersText);
+                }
+
+                // Under siege vanilla adds neither the countryside nor the building effect, so there is
+                // nothing to take back and nothing to scale.
+                if (town.IsUnderSiege)
+                {
+                    return;
+                }
+
+                ExplainedNumber vanillaFarmlands = new ExplainedNumber(0f);
+                town.AddEffectOfBuildings(BuildingEffectEnum.FoodProduction, ref vanillaFarmlands);
+                if (vanillaFarmlands.ResultNumber != 0f)
+                {
+                    __result.Add(-vanillaFarmlands.ResultNumber, FarmlandsText);
+                }
+
+                float bonus = BuildingEffects.FarmlandsProductionBonus(town);
+                if (bonus <= 0f)
+                {
+                    return;
+                }
+
+                // Vanilla's own production terms, recomputed rather than read back off the ExplainedNumber
+                // (its lines carry no source we could match on). Kept term-for-term with
+                // DefaultSettlementFoodModel so the two cannot drift.
+                float production = 10f; // "lands around the settlement", the castle figure
+                foreach (Village village in town.Settlement.BoundVillages)
+                {
+                    if (village.VillageState == Village.VillageStates.Normal)
+                    {
+                        production += (village.GetHearthLevel() + 1) * 6;
+                    }
+                }
+                __result.Add(production * bonus, FarmlandsText);
             }
         }
 
@@ -730,7 +795,14 @@ namespace RBMCampaign
             // and no garrison, which is why it is added after the early return below rather than folded
             // into the model total.
             int adminUnits = AdministrativeUpkeep.TownDailyFood;
-            wanted = (units + adminUnits > 0) ? units + adminUnits : 0;
+
+            // The men in the cells eat too -- gruel, at a fifth of a soldier's ration (see PrisonLabour) --
+            // and out of the same city stores, for free, exactly as the garrison and the officials do. A
+            // gaoler does not shop for his prisoners. Added alongside the administration's ration for that
+            // reason, rather than folded into the modelled population above.
+            int prisonerUnits = MBRandom.RoundRandomized(PrisonLabour.DailyFood(town.Settlement));
+
+            wanted = (units + adminUnits + prisonerUnits > 0) ? units + adminUnits + prisonerUnits : 0;
             if (wanted <= 0)
             {
                 return 0;
@@ -752,7 +824,7 @@ namespace RBMCampaign
                 soldierUnits = units;
             }
             int civilianUnits = units - soldierUnits;
-            int provisionedUnits = soldierUnits + adminUnits;
+            int provisionedUnits = soldierUnits + adminUnits + prisonerUnits;
 
             int unmet = 0;
             if (civilianUnits > 0)
@@ -917,5 +989,7 @@ namespace RBMCampaign
 
         private static readonly TextObject MarketFoodText = new TextObject("{=RBM_FOOD_MARKET}Market food");
         private static readonly TextObject FoodShortageText = new TextObject("{=RBM_FOOD_SHORTAGE}Unmet rations");
+        private static readonly TextObject FarmlandsText = new TextObject("{=RBM_FOOD_FARMLANDS}Farmlands");
+        private static readonly TextObject PrisonersText = new TextObject("{=RBM_FOOD_PRISONERS}Prisoners");
     }
 }

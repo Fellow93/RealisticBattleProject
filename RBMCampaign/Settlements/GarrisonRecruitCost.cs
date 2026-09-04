@@ -4,6 +4,7 @@ using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Core;
 using TaleWorlds.Localization;
 
 namespace RBMCampaign
@@ -86,10 +87,41 @@ namespace RBMCampaign
             return (settlement != null && settlement.Culture != null) ? settlement.Culture.BasicTroop : null;
         }
 
+        /// <summary>
+        /// The man actually enlisted today: the culture's basic soldier, or -- where a castellan keeps the
+        /// muster rolls -- its ELITE basic soldier, 10/20/30% of the time at Castellan's Office 1/2/3. An
+        /// officer who knows every household in the valley picks the better men out of the same crowd; he
+        /// does not produce more of them, so this changes WHO is armed and what he costs, never how many.
+        /// Rolled per man, so a day's intake can be mixed.
+        /// </summary>
+        private static CharacterObject PickRecruit(Settlement settlement)
+        {
+            CharacterObject basic = SpawnTroop(settlement);
+            if (basic == null)
+            {
+                return null;
+            }
+            float chance = BuildingEffects.CastellanEliteChance(settlement.Town);
+            if (chance <= 0f || MBRandom.RandomFloat >= chance)
+            {
+                return basic;
+            }
+            // Null-safe: a culture with no elite line simply keeps sending its common soldier.
+            return settlement.Culture.EliteBasicTroop ?? basic;
+        }
+
         /// <summary>What arming one garrison recruit costs -- his kit's full worth. Drives both the rate and the charge.</summary>
         private static int SpawnCost(Settlement settlement)
         {
-            CharacterObject troop = SpawnTroop(settlement);
+            return SpawnCostFor(settlement, SpawnTroop(settlement));
+        }
+
+        /// <summary>
+        /// What arming THIS man costs. Priced off the troop actually being enlisted, so a castellan's elite
+        /// recruit is billed for his own better kit rather than the common soldier's.
+        /// </summary>
+        private static int SpawnCostFor(Settlement settlement, CharacterObject troop)
+        {
             if (troop == null)
             {
                 return 0;
@@ -147,31 +179,42 @@ namespace RBMCampaign
 
             if (c.Final > 0)
             {
-                CharacterObject troop = SpawnTroop(settlement);
-                if (troop == null)
+                if (SpawnTroop(settlement) == null)
                 {
                     return;
                 }
-                int spawnCost = c.SpawnCost;
 
                 int armed = 0;
+                int elites = 0;
                 for (int i = 0; i < c.Final; i++)
                 {
+                    // Who turns up is rolled per man (see PickRecruit), and he is priced on his own kit, so
+                    // the reserve check below is against the cost of THIS enlistment.
+                    CharacterObject troop = PickRecruit(settlement);
+                    if (troop == null)
+                    {
+                        break;
+                    }
+                    int spawnCost = SpawnCostFor(settlement, troop);
                     // Stop the moment arming the next man would break the per-man reserve -- the same floor
                     // the rate is built on, enforced man by man as the treasury drains.
-                    if (FiefWealth(settlement) < spawnCost * GarrisonSpawnReserveMult)
+                    if (spawnCost <= 0 || FiefWealth(settlement) < spawnCost * GarrisonSpawnReserveMult)
                     {
                         break;
                     }
                     ArmOneGarrisonTroop(settlement, troop, spawnCost);
                     armed++;
+                    if (troop != SpawnTroop(settlement))
+                    {
+                        elites++;
+                    }
                 }
 
                 if (EconomyLog.IsEnabled && armed > 0)
                 {
                     EconomyLog.Log("GARRISON", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
-                        "recruited " + armed + "x " + (troop.Name != null ? troop.Name.ToString() : troop.StringId)
-                        + " at " + spawnCost + "d each  ·  treasury now " + FiefWealth(settlement) + "d");
+                        "recruited " + armed + " men" + (elites > 0 ? (" (" + elites + " elite)") : "")
+                        + "  ·  treasury now " + FiefWealth(settlement) + "d");
                 }
                 return;
             }

@@ -639,7 +639,7 @@ namespace RBMCampaign
 
             if (settlement.IsCastle || settlement.IsTown)
             {
-                settlement.Town.AddEffectOfBuildings(BuildingEffectEnum.Militia, ref result);
+                AddMilitiaEffectOfBuildings(settlement.Town, ref result);
                 if (settlement.IsCastle && settlement.Town.InRebelliousState)
                 {
                     settlement.Town.AddEffectOfBuildings(BuildingEffectEnum.MilitiaReduction, ref result);
@@ -667,6 +667,29 @@ namespace RBMCampaign
 
                 Campaign.Current.Models.IssueModel.GetIssueEffectsOfSettlement(
                     DefaultIssueEffects.SettlementMilitia, settlement, ref result);
+            }
+        }
+
+        /// <summary>
+        /// Vanilla's <c>Militia</c> building effect, minus the castle Guard House's share of it.
+        ///
+        /// A castle Guard House adds +1/2/3 militia a day in vanilla, which under RBM would be a second,
+        /// free intake channel sitting beside the Barracks -- the building RBM makes responsible for how
+        /// many men a fief can take in and settle in a day (see <see cref="BuildingEffects.BarracksGrowth"/>).
+        /// Two buildings paying the same currency makes neither choice mean anything, so the Guard House
+        /// keeps its gaol and its tariff and stops raising the watch. Every other building's Militia
+        /// contribution -- the town Guard House has none -- passes through untouched.
+        /// </summary>
+        private static void AddMilitiaEffectOfBuildings(Town town, ref ExplainedNumber result)
+        {
+            bool skipGuardHouse = RBMConfig.RBMConfig.rbmCampaignEnabled;
+            foreach (Building building in town.Buildings)
+            {
+                if (skipGuardHouse && building.BuildingType == DefaultBuildingTypes.CastleGuardHouse)
+                {
+                    continue;
+                }
+                building.AddEffectOfBuilding(BuildingEffectEnum.Militia, ref result);
             }
         }
 

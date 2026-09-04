@@ -133,6 +133,37 @@ Vanilla effects stay unless a row says "replace". Shared helper: `Settlements/Bu
 
 Castle equivalents map 1:1 (CastleFortifications/Barracks/TrainingFields/GuardHouse/Mason/Granary).
 
+## 2b. Castle differences — **BUILT 2026-09-04**
+
+Three castle building types have no town equivalent at all (`CastleCastallansOffice` — vanilla spells it
+"Castallans" — `CastleCraftmansQuarters`, `CastleFarmlands`), and one castle type wants its vanilla effect
+taken away. Accessors: `BuildingEffects.CastellanTier/CraftsmanTier/FarmlandsTier` (castle type only, `null`
+town type) plus the derived rates named below. Tooltips: `UI/BuildingEffectTooltips.cs`, one branch each.
+
+| Building | New RBM effect | Seam | |
+|---|---|---|---|
+| **Castellan's Office** L1/2/3 | 10/20/30% of garrison recruits enlist as `Culture.EliteBasicTroop` instead of `BasicTroop` | `GarrisonRecruitCost.PickRecruit` (rolled per man, null-safe fallback to `BasicTroop`); priced by `SpawnCostFor(settlement, troop)` so the elite man is billed his OWN kit value. `Compute`/`SpawnCost` keep the common soldier so the wealth rate and the tooltip stay deterministic | ✅ |
+| | mounted garrison maintenance −10/20/30% | `GarrisonUpkeep.MaintenanceBill` — per roster element, `character.IsMounted` only, on top of the Fortifications factor | ✅ |
+| **Craftsman Quarters** | castle income ×1.1/1.2/1.3 | `CastleEconomy.OnDailyTick` — `prosperity × IncomePerProsperityPerDay × CraftsmanIncomeFactor`. Vanilla's `DenarByBoundVillageHeartPerDay` left alone | ✅ |
+| **Farmlands** | replace the flat 6/12/18 food with +10/20/30% on the castle's own food PRODUCTION | `RBMTownFoodSupply.TownFoodStocksChangePatch.Postfix` (castles only; the existing prefix is towns-only, so one patch class covers both). Subtracts vanilla's `FoodProduction` building line, adds `production × 0.1 × tier` where production = `10` (lands around the settlement, castle figure) + `Σ (hearthLevel+1)×6` over unraided bound villages — the same terms `DefaultSettlementFoodModel` adds. Skipped under siege, where vanilla adds neither | ✅ |
+| **Guard House** (castle) | REMOVE the vanilla `Militia` +1/2/3 | `MilitiaUpkeep.AddMilitiaEffectOfBuildings` — replaces `Town.AddEffectOfBuildings(Militia)` with the same loop minus `CastleGuardHouse`. The Barracks already owns daily intake (§2), so two buildings paying the same currency made neither choice mean anything. The town Guard House has no `Militia` effect and is untouched; the tariff bonus and the RaiseTroops daily project stay | ✅ |
+| **Guard House toll** (castle) | — | **OPEN.** Caravans never route to castles (`CaravansCampaignBehavior.FindNextDestinationForCaravan` iterates `Town.AllTowns`), and a castle has no citizen purse, so a tariff on it is inert. Candidate: an hourly proximity toll on caravans within N km of the castle, 0.33/0.66/1% of cargo value, ×2 for foreign-kingdom caravans, paid from caravan gold into the castle treasury. **Not implemented** | — |
+
+### Prisoner mechanic — **BUILT 2026-09-04** (towns AND castles)
+
+New file `Settlements/PrisonLabour.cs`. Each man in `settlement.Party.PrisonRoster` eats
+`FoodPerPrisonerPerDay = 0.05` (a fifth of a soldier's ration) and works off
+`IncomePerPrisonerPerDay = 30` into the fief's own treasury.
+
+| Leg | Seam |
+|---|---|
+| Income | `PrisonLabour.OnDailyTick`, called from `RBMSettlementWealthCampaignBehavior.OnDailyTickSettlement` as a third income step (after Minting, before upkeep) → `SettlementWealth.Credit(.., Source.PrisonLabour)`. `EconomyLog` tag `"PRISON"` |
+| Food — town | `RBMTownFoodSupply.FeedPopulation`: `prisonerUnits` added to `wanted` and to `provisionedUnits`, so the food leaves the market and nobody is charged (a gaoler does not shop) |
+| Food — castle | the same `TownFoodStocksChangePatch.Postfix` as Farmlands, as an explained line "Prisoners" |
+| Readout | `FoodConsumptionBreakdown` gains a `Prisoners` field, folded into `Total` (so the granary cap in `FoodStocksUpperLimitPatch` sizes for them); the ledger's live Food tooltip shows the line when non-zero. History rows carry no prisoner column |
+
+Untouched: `Construction.cs:57/:60` still gives +60 cap and 30 free construction points per prisoner.
+
 ## 3. Guard House & patrols (phase 3)
 
 1. Pop `stash@{0}`, resolve against current `campaignModule`, build, commit ("Campaign: wealth-funded

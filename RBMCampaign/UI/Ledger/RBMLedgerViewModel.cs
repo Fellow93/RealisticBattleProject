@@ -504,7 +504,7 @@ namespace RBMCampaign
             // metric and the history column carry, shown here against the stock it is drawn from.
             RBMTownFoodSupply.FoodConsumptionBreakdown eaten = RBMTownFoodSupply.GetFoodConsumption(town);
             sb.Append('\n').Append('\n');
-            AppendEatenLines(sb, eaten.Total, eaten.Citizens, eaten.Garrison, eaten.Militia);
+            AppendEatenLines(sb, eaten.Total, eaten.Citizens, eaten.Garrison, eaten.Militia, eaten.Prisoners);
 
             string text = sb.ToString();
             return new BasicTooltipViewModel(() => text);
@@ -512,13 +512,19 @@ namespace RBMCampaign
 
         // The food-eaten breakdown: the day's whole-town ration and the three mouths it feeds. Shared by the
         // live Food tooltip and each history row's Eaten cell so the two never word it differently.
-        private static void AppendEatenLines(System.Text.StringBuilder sb, int total, int citizens, int garrison, int militia)
+        // Prisoners default to none: the history rows carry no prisoner column, so their cells simply omit
+        // the line rather than reporting a zero the stored figures cannot vouch for.
+        private static void AppendEatenLines(System.Text.StringBuilder sb, int total, int citizens, int garrison, int militia, int prisoners = 0)
         {
             sb.Append(new TextObject("{=RBM_LEDGER_EATEN_HDR}Food eaten / day").ToString())
               .Append(" (").Append(total).Append(')');
             sb.Append('\n').Append(new TextObject("{=RBM_LEDGER_T_CITIZEN}Citizen").ToString()).Append(": ").Append(citizens);
             sb.Append('\n').Append(new TextObject("{=RBM_LEDGER_T_GARRISON}Garrison").ToString()).Append(": ").Append(garrison);
             sb.Append('\n').Append(new TextObject("{=RBM_LEDGER_T_MILITIA}Militia").ToString()).Append(": ").Append(militia);
+            if (prisoners > 0)
+            {
+                sb.Append('\n').Append(new TextObject("{=RBM_LEDGER_T_PRISONERS}Prisoners").ToString()).Append(": ").Append(prisoners);
+            }
         }
 
         private static BasicTooltipViewModel BuildEatenHint(int total, int citizens, int garrison, int militia)

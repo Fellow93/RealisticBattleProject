@@ -65,9 +65,25 @@ namespace RBMCampaign
             {
                 return "RBM: garrison promotions -5/10/15% · garrison and militia gain +10/20/30 experience a day (replaces the 1/2/3 above)";
             }
-            if (type == DefaultBuildingTypes.SettlementGuardHouse || type == DefaultBuildingTypes.CastleGuardHouse)
+            if (type == DefaultBuildingTypes.SettlementGuardHouse)
             {
                 return "RBM: tariff on caravan and traveller trade +0.3/0.6/1.0 percentage points · convicts kept at work on the fief's building projects";
+            }
+            if (type == DefaultBuildingTypes.CastleGuardHouse)
+            {
+                return "RBM: tariff on caravan and traveller trade +0.3/0.6/1.0 percentage points · convicts kept at work on the fief's building projects · the watch is raised by the barracks instead, so this no longer musters militia";
+            }
+            if (type == DefaultBuildingTypes.CastleCastallansOffice)
+            {
+                return "RBM: 10/20/30% of garrison recruits enlist as the culture's elite soldier rather than its common one · upkeep of the mounted garrison -10/20/30%";
+            }
+            if (type == DefaultBuildingTypes.CastleCraftmansQuarters)
+            {
+                return "RBM: the castle's daily income from its lands +10/20/30%";
+            }
+            if (type == DefaultBuildingTypes.CastleFarmlands)
+            {
+                return "RBM: the castle's own food production +10/20/30% (replaces the flat 6/12/18 food a day)";
             }
             if (type == DefaultBuildingTypes.SettlementTaxOffice)
             {

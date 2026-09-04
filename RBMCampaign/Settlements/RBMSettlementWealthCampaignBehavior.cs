@@ -50,6 +50,9 @@ namespace RBMCampaign
             // own income step and before the day's upkeep and wealth tax, so the struck coin is part of
             // the market balance those act on.
             Minting.OnDailyTick(settlement);
+            // The men in the cells work off their keep, in a town and a castle alike -- the third income
+            // step, and here for the same reason: it is money the fief has before it starts spending.
+            PrisonLabour.OnDailyTick(settlement);
             AdministrativeUpkeep.OnDailyTick(settlement);
             // The garrison's maintenance leg -- its wage is billed through the finance model (see
             // GarrisonUpkeep.GarrisonWageSharePatch); this is the kit-value half, charged here so it lands

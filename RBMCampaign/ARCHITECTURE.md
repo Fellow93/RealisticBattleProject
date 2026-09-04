@@ -301,6 +301,26 @@ vanilla effect stays in place unless the row says "replaces".
 | Waterworks | every other point of infrastructure worth +10/20/30% | `RBMProsperityEquilibrium.InfrastructureMultiplier` = `1 + score x 0.02 x (1 + 0.1 x tier)`, clamp unchanged |
 | Roads and Paths | bound-village production +5/10/15% | `RBMVillageProduction.RoadsFactor`, applied to the tick and to `CalculateDailyProductionAmount` alike |
 
+Four more rows are CASTLE-ONLY, three of them building types a town has no equivalent of (accessors
+`CastellanTier` / `CraftsmanTier` / `FarmlandsTier`, `null` town type):
+
+| Building | RBM effect | Seam |
+|---|---|---|
+| Castellan's Office | 10/20/30% of garrison recruits enlist as `Culture.EliteBasicTroop` | `GarrisonRecruitCost.PickRecruit`, rolled per man and priced through `SpawnCostFor`; `Compute`/`SpawnCost` keep the common soldier so the wealth rate stays deterministic |
+| | mounted garrison maintenance −10/20/30% | `GarrisonUpkeep.MaintenanceBill`, `character.IsMounted` elements only |
+| Craftsman Quarters | castle income x1.1/1.2/1.3 | `CastleEconomy.OnDailyTick` |
+| Farmlands | castle food production +10/20/30% (**replaces** the flat 6/12/18) | `RBMTownFoodSupply.TownFoodStocksChangePatch.Postfix`, castles only |
+| Guard House (castle) | **removes** vanilla's `Militia` +1/2/3 — the Barracks owns intake | `MilitiaUpkeep.AddMilitiaEffectOfBuildings` |
+
+#### Prison labour (`Settlements/PrisonLabour.cs`)
+
+Every man in a fief's `PrisonRoster` eats 0.05 food a day and earns it 30 denars a day, towns and castles
+alike. Income runs from the daily settlement pass as a third income step (`Source.PrisonLabour`, `EconomyLog`
+tag `PRISON`); the food is charged in `RBMTownFoodSupply.FeedPopulation` for a town (provisioned from stock,
+nobody billed) and as an explained line on the castle food postfix. `FoodConsumptionBreakdown.Prisoners`
+carries it into the granary cap and the ledger tooltip. The construction side of the same prisoners
+(`Construction`: +60 ceiling, 30 free points each) is separate and unchanged.
+
 `UI/BuildingEffectTooltips.cs` postfixes `BuildingType.GetExplanationAtLevel` to append a plain "RBM:"
 line per building type, so the town management project list names these effects beside vanilla's.
 

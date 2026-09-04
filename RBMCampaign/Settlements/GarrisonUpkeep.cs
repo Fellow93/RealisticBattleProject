@@ -128,6 +128,10 @@ namespace RBMCampaign
                 return 0;
             }
             TroopRoster roster = garrison.MemberRoster;
+            // Castellan's Office: stables, fodder and a farrier on the payroll are the castellan's own
+            // business, and they tell only on the HORSE. −10/20/30% off the mounted men's day of mending
+            // at levels 1/2/3; the foot pay the same as ever.
+            float mountedFactor = BuildingEffects.CastellanMountedMaintFactor(settlement.Town);
             int bill = 0;
             for (int i = 0; i < roster.Count; i++)
             {
@@ -136,7 +140,12 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                bill += (int)(SpoilsPool.GetDailyMaintenanceCost(element.Character, element.Number) * GarrisonMaintFactor);
+                float cost = SpoilsPool.GetDailyMaintenanceCost(element.Character, element.Number) * GarrisonMaintFactor;
+                if (element.Character.IsMounted)
+                {
+                    cost *= mountedFactor;
+                }
+                bill += (int)cost;
             }
             // Fortifications: a proper armoury, covered walkways and a smithy inside the walls mean less of the
             // garrison's kit is rusting in the open. −0/5/10% off the day's mending at levels 1/2/3.

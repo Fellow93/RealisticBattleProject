@@ -255,6 +255,12 @@ namespace RBMCampaign
             public const string GarrisonRecruit = "garrison-recruit";
             public const string Militia = "militia";
             public const string Admin = "admin";
+
+            /// <summary>
+            /// The day's work got out of the men in the fief's cells -- quarry, ditch and mill -- paid
+            /// into the settlement's own treasury. See <see cref="PrisonLabour"/>.
+            /// </summary>
+            public const string PrisonLabour = "prison-labour";
             /// <summary>
             /// A fief's building work: the treasury funding its construction reserve, and the reserve
             /// paying the townsmen who do the work. See <see cref="Construction"/>.
