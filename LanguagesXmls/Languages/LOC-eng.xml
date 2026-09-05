@@ -382,6 +382,7 @@
 	<string id="RBM_RAN_050" text="Braided Sling 28 Inches" />
 	<string id="RBM_RAN_051" text="Reinforced Sling 41 Inches" />
 	<string id="RBM_RAN_052" text="Imperial Cheirosiphon" />
+	<string id="RBM_RAN_053" text="Whispering Shadow 150 Pounder" />
 	<!-- RBMCombat_shields.xml Strings -->
 	<string id="RBM_SHI_001" text="Shoulder Strapped Reinforced Targe" />
 	<string id="RBM_SHI_002" text="Shoulder Strapped Round Steppe Shield" />
