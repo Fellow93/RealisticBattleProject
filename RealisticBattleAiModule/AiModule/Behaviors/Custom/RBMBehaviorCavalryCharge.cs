@@ -37,7 +37,7 @@ using TaleWorlds.MountAndBlade;
 ///
 /// Normal charge: 8 lancers vs a 40-man bandit line at 200 m. Time to contact drops under 5 s -> Charging.
 /// They hit the line, the bandit centre passes behind them, 3 s later -> ChargingPast toward a point ~145 m
-/// past the bandits. If they come out still together, they turn and charge again as soon as they are 80 m
+/// past the bandits. If they come out still together, they turn and charge again as soon as they are 100 m
 /// clear; if scattered they ride on to the reform point -> Reforming, gather within 20 m -> Charging again
 /// from the far side. Repeat until one side is gone.
 ///
@@ -67,10 +67,10 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
     private const float ChargeThroughGraceSeconds = 3f;
     private const float ChargeContactTimeoutSeconds = 8f;
     private const float ChargingPastTimeoutSeconds = 19f;
-    private const float ReformTimeoutSeconds = 8f;
+    private const float ReformTimeoutSeconds = 10f;
     private const float ReformCohesionRadius = 20f;
-    private const float ReformCohesionMinRatio = 0.8f;
-    private const float RechargeMinRunUpDistance = 80f;
+    private const float ReformCohesionMinRatio = 0.9f;
+    private const float RechargeMinRunUpDistance = 100f;
     private const float ReformAbortRangedAttackRatio = 0.2f;
     private const float ReformThreatDistance = 35f;
     private const float ReformApproachDistanceFactor = 2f;
@@ -101,9 +101,21 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
     private Timer _contactTimer;
 
-    // Resolved once: GetField is slow enough to matter on a per-formation occasional tick, and a null
-    // result (field renamed by a game update) used to NRE on the line that consumed it.
-    private static readonly FieldInfo _currentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static readonly PropertyInfo CurrentTacticProperty = typeof(TeamAIComponent).GetProperty("CurrentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+    private static readonly FieldInfo CurrentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+
+    private static TacticComponent GetCurrentTactic(TeamAIComponent teamAi)
+    {
+        if (teamAi == null)
+        {
+            return null;
+        }
+        if (CurrentTacticProperty != null)
+        {
+            return CurrentTacticProperty.GetValue(teamAi) as TacticComponent;
+        }
+        return CurrentTacticField?.GetValue(teamAi) as TacticComponent;
+    }
 
     public bool ChargeArchers = true;
     public bool ChargeInfantry = true;
@@ -126,8 +138,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
     private void RefreshTacticSettings()
     {
-        object tactic = (_currentTacticField != null && base.Formation?.Team?.TeamAI != null) ? _currentTacticField.GetValue(base.Formation.Team.TeamAI) : null;
-        _isEmbolonTactic = tactic?.ToString().Contains("Embolon") == true;
+        _isEmbolonTactic = GetCurrentTactic(base.Formation?.Team?.TeamAI) is RBMTacticEmbolon;
         base.BehaviorCoherence = _isEmbolonTactic ? ChargeCoherenceEmbolon : ChargeCoherence;
     }
 
