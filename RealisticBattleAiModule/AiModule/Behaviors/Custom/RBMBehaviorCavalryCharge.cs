@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -14,23 +15,28 @@ using TaleWorlds.MountAndBlade;
 ///   ChargeToTarget. The charge is "through" once the target centre is behind us (dot product of the initial
 ///   charge direction flips); ChargeThroughGraceSeconds later we go to ChargingPast.
 /// ChargingPast: ride on to a reform point ChargeStopDistance + target depth beyond the enemy, on the side we
-///   came out on. If the wedge is already tight (ReformDoneMaxDeviation) with RechargeMinRunUpDistance of
-///   room, skip the reform and charge straight away; otherwise switch to Reforming on arrival or after
-///   ChargingPastTimeoutSeconds.
-/// Reforming: hold the reform point only until the wedge is tight with enough run-up, or
+///   came out on. If the wedge is already cohesive (ReformCohesionMinRatio of riders within
+///   ReformCohesionRadius of the centre) with RechargeMinRunUpDistance of room, skip the reform and charge
+///   straight away; otherwise switch to Reforming on arrival or after ChargingPastTimeoutSeconds.
+/// Reforming: hold the reform point only until the wedge is cohesive with enough run-up, or
 ///   ReformTimeoutSeconds runs out, then charge again. Idle time here is kept as short as possible.
+///   Cohesion is counted over all riders, not the native "exclude far agents" deviation, which reads a
+///   scattered wedge with a few bunched riders as tight.
 ///
-/// Two overrides apply while pulling clear or reforming:
-///  - The reform point is resolved every tick (ResolveReformDestination). If it lies inside any formation's
-///    footprint, or off navmesh / outside the map, a ring search around it finds the nearest clear, reachable
-///    point that is not closer to the target; if none exists the reform is skipped and the wedge charges again.
-///  - Any enemy formation within ReformThreatDistance, or within ReformApproachDistanceFactor times that and
-///    moving toward us (IsEnemyClosingIn), ends the reform immediately and triggers a new charge.
+/// Two overrides apply:
+///  - While pulling clear or reforming, the reform point is resolved every tick (ResolveReformDestination).
+///    If it lies inside any formation's footprint, or off navmesh / outside the map, a ring search around it
+///    finds the nearest clear, reachable point that is not closer to the target; if none exists the reform is
+///    skipped and the wedge charges again.
+///  - While reforming only, any enemy formation within ReformThreatDistance, or within
+///    ReformApproachDistanceFactor times that and moving toward us (IsEnemyClosingIn), ends the reform
+///    immediately and triggers a new charge. It is not checked while pulling clear, where every enemy is
+///    close by definition.
 ///
 /// Normal charge: 8 lancers vs a 40-man bandit line at 200 m. Time to contact drops under 5 s -> Charging.
-/// They hit the line, the bandit centre passes behind them, 3 s later -> ChargingPast toward a point ~115 m
-/// past the bandits. If they come out still in order, they turn and charge again as soon as they are 60 m
-/// clear; if scattered they ride on to the reform point -> Reforming, tighten within 12 m -> Charging again
+/// They hit the line, the bandit centre passes behind them, 3 s later -> ChargingPast toward a point ~145 m
+/// past the bandits. If they come out still together, they turn and charge again as soon as they are 80 m
+/// clear; if scattered they ride on to the reform point -> Reforming, gather within 20 m -> Charging again
 /// from the far side. Repeat until one side is gone.
 ///
 /// Interrupted charge: same lancers, but a second bandit group is standing where the reform point lands.
@@ -38,8 +44,8 @@ using TaleWorlds.MountAndBlade;
 /// aside; the lancers reform there instead. While they reform, the first bandit line turns and walks after
 /// them. At 70 m and closing IsEnemyClosingIn fires -> Charging immediately, ignoring the reform timer.
 /// If instead the whole area around the reform point were blocked (formations on all sides, map edge, no
-/// navmesh), ResolveReformDestination returns Invalid and SkipReformAndCharge drops the reform entirely:
-/// new target, ChargeToTarget, no standing still.
+/// navmesh), ResolveReformDestination returns Invalid and TickReformMovement re-enters Charging, dropping the
+/// reform entirely: new target, ChargeToTarget, no standing still.
 /// </summary>
 public class RBMBehaviorCavalryCharge : BehaviorComponent
 {
@@ -51,16 +57,17 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         Reforming
     }
 
-    private const float ChargeStopDistance = 110f;
-    private const float ChargeStopDistanceEmbolon = 50f;
+    private const float ChargeStopDistance = 140f;
+    private const float ChargeStopDistanceEmbolon = 70f;
     private const float ChargeCoherence = 0.5f;
     private const float ChargeCoherenceEmbolon = 0.85f;
     private const float StartChargeTimeToContactSeconds = 5f;
     private const float ChargeThroughGraceSeconds = 3f;
     private const float ChargingPastTimeoutSeconds = 19f;
-    private const float ReformTimeoutSeconds = 6f;
-    private const float ReformDoneMaxDeviation = 12f;
-    private const float RechargeMinRunUpDistance = 60f;
+    private const float ReformTimeoutSeconds = 8f;
+    private const float ReformCohesionRadius = 20f;
+    private const float ReformCohesionMinRatio = 0.8f;
+    private const float RechargeMinRunUpDistance = 80f;
     private const float ReformAbortRangedAttackRatio = 0.2f;
     private const float ReformThreatDistance = 35f;
     private const float ReformApproachDistanceFactor = 2f;
@@ -77,7 +84,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
     private Vec2 _initialChargeDirection;
 
-    private float _desiredChargeStopDistance;
+    private bool _isEmbolonTactic;
+
+    private bool _hasNewTarget;
 
     private WorldPosition _lastReformDestination;
 
@@ -96,9 +105,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
     public bool ChargeCavalry = false;
     public bool ChargeHorseArchers = false;
 
-    public bool newTarget = false;
-
     public override float NavmeshlessTargetPositionPenalty => 1f;
+
+    private float ChargeStopDistanceForTactic => _isEmbolonTactic ? ChargeStopDistanceEmbolon : ChargeStopDistance;
 
     public RBMBehaviorCavalryCharge(Formation formation)
         : base(formation)
@@ -108,7 +117,13 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
         _chargeState = ChargeState.Charging;
         base.BehaviorCoherence = ChargeCoherence;
-        _desiredChargeStopDistance = ChargeStopDistance;
+    }
+
+    private void RefreshTacticSettings()
+    {
+        object tactic = (_currentTacticField != null && base.Formation?.Team?.TeamAI != null) ? _currentTacticField.GetValue(base.Formation.Team.TeamAI) : null;
+        _isEmbolonTactic = tactic?.ToString().Contains("Embolon") == true;
+        base.BehaviorCoherence = _isEmbolonTactic ? ChargeCoherenceEmbolon : ChargeCoherence;
     }
 
     public override void TickOccasionally()
@@ -122,19 +137,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         }
     }
 
-    private ChargeState CheckAndChangeState()
+    private ChargeState DecideNextState()
     {
-        object tacticValue = (_currentTacticField != null && base.Formation?.Team?.TeamAI != null) ? _currentTacticField.GetValue(base.Formation.Team.TeamAI) : null;
-        if (tacticValue?.ToString().Contains("Embolon") == true)
-        {
-            _desiredChargeStopDistance = ChargeStopDistanceEmbolon;
-            base.BehaviorCoherence = ChargeCoherenceEmbolon;
-        }
-        else
-        {
-            _desiredChargeStopDistance = ChargeStopDistance;
-            base.BehaviorCoherence = ChargeCoherence;
-        }
+        RefreshTacticSettings();
         ChargeState result = _chargeState;
         if (base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null)
         {
@@ -156,26 +161,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                     {
                         if (_lastTarget == null || _lastTarget.Formation.CountOfUnits == 0)
                         {
-                            Formation correctEnemy = null;
-                            if (ChargeInfantry)
-                                correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, false, false, false, false);
-                            if (correctEnemy == null && ChargeArchers)
-                                correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, true, false, false, false);
-                            if (correctEnemy == null && ChargeHorseArchers)
-                                correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, false, false, true, false);
-                            if (correctEnemy == null && ChargeCavalry)
-                                correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, false, true, false, false);
-                            if (correctEnemy != null)
-                            {
-                                _lastTarget = correctEnemy.QuerySystem;
-                            }
-                            else
-                            {
-                                _lastTarget = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
-                            }
-                            newTarget = true;
-                            _initialChargeDirection = RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation);
-                            //result = ChargeState.Undetermined;
+                            AcquireTarget();
                         }
                         else if (_initialChargeDirection.DotProduct(RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)) <= 0f)
                         {
@@ -183,7 +169,6 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                             {
                                 _chargeTimer = new Timer(Mission.Current.CurrentTime, ChargeThroughGraceSeconds);
                             }
-                            //result = ChargeState.ChargingPast;
                         }
                         if (_chargeTimer != null && _chargeTimer.Check(Mission.Current.CurrentTime))
                         {
@@ -195,20 +180,17 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                 case ChargeState.ChargingPast:
                     {
                         float distToTarget = RBMAI.Utilities.GetFormationDistance(base.Formation, _lastTarget.Formation);
-                        if (IsEnemyClosingIn(excludeLastTarget: true) || IsReadyToRecharge(distToTarget))
+                        if (IsReadyToRecharge(distToTarget))
                         {
                             result = ChargeState.Charging;
                         }
-                        else if (distToTarget >= (_desiredChargeStopDistance + _lastTarget.Formation.Depth))
+                        else if (distToTarget >= (ChargeStopDistanceForTactic + _lastTarget.Formation.Depth))
                         {
                             result = ChargeState.Reforming;
                         }
                         else if (_chargingPastTimer.Check(Mission.Current.CurrentTime))
                         {
-                            Vec2 awayDir = (RBMAI.Utilities.GetFormationCenter(base.Formation) - RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation)).Normalized();
-                            WorldPosition newReformDest = RBMAI.Utilities.GetFormationCenterWorldPosition(_lastTarget.Formation);
-                            newReformDest.SetVec2(RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) + awayDir * (_desiredChargeStopDistance + _lastTarget.Formation.Depth));
-                            _lastReformDestination = newReformDest;
+                            _lastReformDestination = ComputeReformDestination();
                             result = ChargeState.Reforming;
                         }
                         break;
@@ -230,23 +212,61 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
     private bool IsReadyToRecharge(float distToTarget)
     {
-        return distToTarget >= RechargeMinRunUpDistance
-            && base.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents < ReformDoneMaxDeviation;
+        return distToTarget >= RechargeMinRunUpDistance && IsFormationCohesive();
     }
 
-    public void CheckForNewChargeTarget()
+    private bool IsFormationCohesive()
     {
-        Formation correctEnemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, true, false, false, false);
-        if (correctEnemy != null)
+        Vec2 center = RBMAI.Utilities.GetFormationCenter(base.Formation);
+        float radiusSq = ReformCohesionRadius * ReformCohesionRadius;
+        int total = 0;
+        int near = 0;
+        base.Formation.ApplyActionOnEachUnit(agent =>
         {
-            _lastTarget = correctEnemy.QuerySystem;
-        }
-        else
+            if (agent.IsDetachedFromFormation || agent.IsRunningAway)
+            {
+                return;
+            }
+            total++;
+            if (agent.Position.AsVec2.DistanceSquared(center) <= radiusSq)
+            {
+                near++;
+            }
+        });
+        return total > 0 && near >= total * ReformCohesionMinRatio;
+    }
+
+    private void AcquireTarget()
+    {
+        Formation enemy = null;
+        if (ChargeInfantry)
+            enemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, false, false, false, false);
+        if (enemy == null && ChargeArchers)
+            enemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, true, false, false, false);
+        if (enemy == null && ChargeHorseArchers)
+            enemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, false, false, true, false);
+        if (enemy == null && ChargeCavalry)
+            enemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, false, true, false, false);
+
+        _lastTarget = enemy != null ? enemy.QuerySystem : base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
+        _hasNewTarget = true;
+        if (_lastTarget?.Formation != null)
         {
-            _lastTarget = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
+            _initialChargeDirection = RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation);
         }
-        newTarget = true;
-        _initialChargeDirection = RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation);
+    }
+
+    private WorldPosition ComputeReformDestination()
+    {
+        if (_lastTarget?.Formation == null)
+        {
+            return WorldPosition.Invalid;
+        }
+        Vec2 enemyCenter = RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation);
+        Vec2 awayDir = (RBMAI.Utilities.GetFormationCenter(base.Formation) - enemyCenter).Normalized();
+        WorldPosition dest = RBMAI.Utilities.GetFormationCenterWorldPosition(_lastTarget.Formation);
+        dest.SetVec2(enemyCenter + awayDir * (ChargeStopDistanceForTactic + _lastTarget.Formation.Depth));
+        return dest;
     }
 
     protected override void CalculateCurrentOrder()
@@ -257,135 +277,117 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             return;
         }
 
-        ChargeState chargeState = CheckAndChangeState();
+        ChargeState nextState = DecideNextState();
+        bool chasingCavalry = _lastTarget != null && (_lastTarget.IsCavalryFormation || _lastTarget.IsRangedCavalryFormation);
+        bool reenterCharge = chasingCavalry && nextState == ChargeState.Charging;
 
-        bool isChargingCav = false;
-        if (_lastTarget != null && (_lastTarget.IsCavalryFormation || _lastTarget.IsRangedCavalryFormation))
+        if (nextState != _chargeState || _hasNewTarget || reenterCharge)
         {
-            isChargingCav = true;
-        }
-
-        if (chargeState != _chargeState || newTarget || (isChargingCav && chargeState == ChargeState.Charging))
-        {
-            _chargeState = chargeState;
-
-            switch (_chargeState)
-            {
-                case ChargeState.Undetermined:
-                    {
-                        base.CurrentOrder = MovementOrder.MovementOrderCharge;
-                        CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-                        break;
-                    }
-                case ChargeState.Charging:
-                    {
-                        CheckForNewChargeTarget();
-                        if (_lastTarget == null || _lastTarget.Formation == null)
-                        {
-                            base.CurrentOrder = MovementOrder.MovementOrderCharge;
-                            CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-                            break;
-                        }
-                        base.Formation.SetFormOrder(FormOrder.FormOrderCustom(_lastTarget.Formation.Width));
-                        Vec2 vec4 = (RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)).Normalized();
-                        base.CurrentOrder = MovementOrder.MovementOrderChargeToTarget(_lastTarget.Formation);
-                        CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec4);
-                        break;
-                    }
-                case ChargeState.ChargingPast:
-                    {
-                        _chargingPastTimer = new Timer(Mission.Current.CurrentTime, ChargingPastTimeoutSeconds);
-                        if (_lastTarget != null && _lastTarget.Formation != null)
-                        {
-                            Vec2 awayDir = (RBMAI.Utilities.GetFormationCenter(base.Formation) - RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation)).Normalized();
-                            WorldPosition reformDest = RBMAI.Utilities.GetFormationCenterWorldPosition(_lastTarget.Formation);
-                            reformDest.SetVec2(RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) + awayDir * (_desiredChargeStopDistance + _lastTarget.Formation.Depth));
-                            _lastReformDestination = reformDest;
-                        }
-                        CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-                        break;
-                    }
-                case ChargeState.Reforming:
-                    _reformTimer = new Timer(Mission.Current.CurrentTime, ReformTimeoutSeconds);
-                    CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-                    break;
-
-            }
-            newTarget = false;
+            EnterState(nextState);
         }
 
         if (_chargeState == ChargeState.ChargingPast || _chargeState == ChargeState.Reforming)
         {
-            WorldPosition resolved = _lastReformDestination.IsValid ? ResolveReformDestination(_lastReformDestination) : WorldPosition.Invalid;
-            if (resolved.IsValid)
-            {
-                _lastReformDestination = resolved;
-                base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
-                CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-            }
-            else
-            {
-                SkipReformAndCharge();
-            }
+            TickReformMovement();
         }
     }
 
-    private bool IsEnemyClosingIn(bool excludeLastTarget = false)
+    private void EnterState(ChargeState state)
+    {
+        _chargeState = state;
+        switch (state)
+        {
+            case ChargeState.Undetermined:
+                EnterUndetermined();
+                break;
+            case ChargeState.Charging:
+                EnterCharging();
+                break;
+            case ChargeState.ChargingPast:
+                EnterChargingPast();
+                break;
+            case ChargeState.Reforming:
+                EnterReforming();
+                break;
+        }
+        _hasNewTarget = false;
+    }
+
+    private void EnterUndetermined()
+    {
+        base.CurrentOrder = MovementOrder.MovementOrderCharge;
+        CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+    }
+
+    private void EnterCharging()
+    {
+        _chargeTimer = null;
+        _lastReformDestination = WorldPosition.Invalid;
+        AcquireTarget();
+        if (_lastTarget?.Formation == null)
+        {
+            base.CurrentOrder = MovementOrder.MovementOrderCharge;
+            CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+            return;
+        }
+        base.Formation.SetFormOrder(FormOrder.FormOrderCustom(_lastTarget.Formation.Width));
+        Vec2 chargeDirection = (RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)).Normalized();
+        base.CurrentOrder = MovementOrder.MovementOrderChargeToTarget(_lastTarget.Formation);
+        CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(chargeDirection);
+    }
+
+    private void EnterChargingPast()
+    {
+        _chargingPastTimer = new Timer(Mission.Current.CurrentTime, ChargingPastTimeoutSeconds);
+        _lastReformDestination = ComputeReformDestination();
+        CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+    }
+
+    private void EnterReforming()
+    {
+        _reformTimer = new Timer(Mission.Current.CurrentTime, ReformTimeoutSeconds);
+        CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+    }
+
+    private void TickReformMovement()
+    {
+        WorldPosition resolved = _lastReformDestination.IsValid ? ResolveReformDestination(_lastReformDestination) : WorldPosition.Invalid;
+        if (!resolved.IsValid)
+        {
+            EnterState(ChargeState.Charging);
+            return;
+        }
+        _lastReformDestination = resolved;
+        base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
+        CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+    }
+
+    private bool IsEnemyClosingIn()
     {
         Mission mission = Mission.Current;
         if (mission == null || base.Formation == null)
         {
             return false;
         }
-        Formation lastTargetFormation = excludeLastTarget && _lastTarget != null ? _lastTarget.Formation : null;
         Vec2 myCenter = RBMAI.Utilities.GetFormationCenter(base.Formation);
         float threatSq = ReformThreatDistance * ReformThreatDistance;
         float approachSq = threatSq * ReformApproachDistanceFactor * ReformApproachDistanceFactor;
-        foreach (Team team in mission.Teams)
+        foreach (Formation enemy in OtherFormations(mission, enemiesOnly: true))
         {
-            if (!team.IsEnemyOf(base.Formation.Team))
+            Vec2 enemyCenter = RBMAI.Utilities.GetFormationCenter(enemy);
+            float distSq = myCenter.DistanceSquared(enemyCenter);
+            if (distSq <= threatSq)
             {
-                continue;
+                return true;
             }
-            foreach (Formation enemy in team.FormationsIncludingSpecialAndEmpty)
+            Vec2 toMe = myCenter - enemyCenter;
+            Vec2 vel = enemy.CachedCurrentVelocity;
+            if (distSq <= approachSq && vel.LengthSquared > ReformApproachMinSpeedSq && Vec2.DotProduct(vel.Normalized(), toMe.Normalized()) > ReformApproachMinDot)
             {
-                if (enemy == null || enemy.CountOfUnits == 0 || enemy == lastTargetFormation)
-                {
-                    continue;
-                }
-                Vec2 enemyCenter = RBMAI.Utilities.GetFormationCenter(enemy);
-                float distSq = myCenter.DistanceSquared(enemyCenter);
-                if (distSq <= threatSq)
-                {
-                    return true;
-                }
-                Vec2 toMe = myCenter - enemyCenter;
-                Vec2 vel = enemy.CachedCurrentVelocity;
-                if (distSq <= approachSq && vel.LengthSquared > ReformApproachMinSpeedSq && Vec2.DotProduct(vel.Normalized(), toMe.Normalized()) > ReformApproachMinDot)
-                {
-                    return true;
-                }
+                return true;
             }
         }
         return false;
-    }
-
-    private void SkipReformAndCharge()
-    {
-        _chargeState = ChargeState.Charging;
-        _chargeTimer = null;
-        _lastReformDestination = WorldPosition.Invalid;
-        CheckForNewChargeTarget();
-        if (_lastTarget != null && _lastTarget.Formation != null)
-        {
-            base.CurrentOrder = MovementOrder.MovementOrderChargeToTarget(_lastTarget.Formation);
-        }
-        else
-        {
-            base.CurrentOrder = MovementOrder.MovementOrderCharge;
-        }
-        CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
-        newTarget = false;
     }
 
     private WorldPosition ResolveReformDestination(WorldPosition dest)
@@ -396,7 +398,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             return dest;
         }
         Vec2 origin = dest.AsVec2;
-        if (IsReformPointClear(mission, origin) && IsReformPointUsable(mission, dest))
+        if (IsReformPointAcceptable(mission, dest))
         {
             return dest;
         }
@@ -423,13 +425,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                 {
                     continue;
                 }
-                if (!IsReformPointClear(mission, candidate))
-                {
-                    continue;
-                }
                 WorldPosition candidatePos = dest;
                 candidatePos.SetVec2(candidate);
-                if (!IsReformPointUsable(mission, candidatePos))
+                if (!IsReformPointAcceptable(mission, candidatePos))
                 {
                     continue;
                 }
@@ -450,37 +448,48 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             return best;
         }
         WorldPosition pushed = PushClearSingleDirection(mission, dest);
-        if (pushed.IsValid && IsReformPointClear(mission, pushed.AsVec2) && IsReformPointUsable(mission, pushed))
+        return IsReformPointAcceptable(mission, pushed) ? pushed : WorldPosition.Invalid;
+    }
+
+    private bool IsReformPointAcceptable(Mission mission, WorldPosition pos)
+    {
+        if (!pos.IsValid || pos.GetNavMesh() == System.UIntPtr.Zero || !mission.IsPositionInsideBoundaries(pos.AsVec2))
         {
-            return pushed;
+            return false;
         }
-        return WorldPosition.Invalid;
-    }
-
-    private static bool IsReformPointUsable(Mission mission, WorldPosition pos)
-    {
-        return pos.IsValid && pos.GetNavMesh() != System.UIntPtr.Zero && mission.IsPositionInsideBoundaries(pos.AsVec2);
-    }
-
-    private bool IsReformPointClear(Mission mission, Vec2 point)
-    {
-        float myHalfWidth = base.Formation.Width * 0.5f;
-        foreach (Team team in mission.Teams)
+        Vec2 point = pos.AsVec2;
+        foreach (Formation other in OtherFormations(mission))
         {
-            foreach (Formation other in team.FormationsIncludingSpecialAndEmpty)
+            float clearance = ClearanceRadius(other);
+            if (point.DistanceSquared(RBMAI.Utilities.GetFormationCenter(other)) < clearance * clearance)
             {
-                if (other == null || other == base.Formation || other.CountOfUnits == 0)
-                {
-                    continue;
-                }
-                float clearance = other.Width * 0.5f + other.Depth * 0.5f + myHalfWidth + ReformClearanceMargin;
-                if (point.DistanceSquared(RBMAI.Utilities.GetFormationCenter(other)) < clearance * clearance)
-                {
-                    return false;
-                }
+                return false;
             }
         }
         return true;
+    }
+
+    private IEnumerable<Formation> OtherFormations(Mission mission, bool enemiesOnly = false)
+    {
+        foreach (Team team in mission.Teams)
+        {
+            if (enemiesOnly && !team.IsEnemyOf(base.Formation.Team))
+            {
+                continue;
+            }
+            foreach (Formation other in team.FormationsIncludingSpecialAndEmpty)
+            {
+                if (other != null && other != base.Formation && other.CountOfUnits > 0)
+                {
+                    yield return other;
+                }
+            }
+        }
+    }
+
+    private float ClearanceRadius(Formation other)
+    {
+        return other.Width * 0.5f + other.Depth * 0.5f + base.Formation.Width * 0.5f + ReformClearanceMargin;
     }
 
     private WorldPosition PushClearSingleDirection(Mission mission, WorldPosition dest)
@@ -491,32 +500,24 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         {
             fallbackDir = (point - RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation)).Normalized();
         }
-        float myHalfWidth = base.Formation.Width * 0.5f;
         bool moved = false;
         for (int pass = 0; pass < ReformPushMaxPasses; pass++)
         {
             bool movedThisPass = false;
-            foreach (Team team in mission.Teams)
+            foreach (Formation other in OtherFormations(mission))
             {
-                foreach (Formation other in team.FormationsIncludingSpecialAndEmpty)
+                Vec2 otherCenter = RBMAI.Utilities.GetFormationCenter(other);
+                float clearance = ClearanceRadius(other);
+                Vec2 offset = point - otherCenter;
+                float dist = offset.Length;
+                if (dist >= clearance)
                 {
-                    if (other == null || other == base.Formation || other.CountOfUnits == 0)
-                    {
-                        continue;
-                    }
-                    Vec2 otherCenter = RBMAI.Utilities.GetFormationCenter(other);
-                    float clearance = other.Width * 0.5f + other.Depth * 0.5f + myHalfWidth + ReformClearanceMargin;
-                    Vec2 offset = point - otherCenter;
-                    float dist = offset.Length;
-                    if (dist >= clearance)
-                    {
-                        continue;
-                    }
-                    Vec2 pushDir = dist > 1f ? offset / dist : (fallbackDir.LengthSquared > 0.01f ? fallbackDir : Vec2.Forward);
-                    point = otherCenter + pushDir * clearance;
-                    movedThisPass = true;
-                    moved = true;
+                    continue;
                 }
+                Vec2 pushDir = dist > 1f ? offset / dist : (fallbackDir.LengthSquared > 0.01f ? fallbackDir : Vec2.Forward);
+                point = otherCenter + pushDir * clearance;
+                movedThisPass = true;
+                moved = true;
             }
             if (!movedThisPass)
             {
@@ -560,27 +561,28 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         {
             return 0f;
         }
-        float num = RBMAI.Utilities.GetFormationDistance(querySystem.Formation, querySystem.ClosestSignificantlyLargeEnemyFormation.Formation) / querySystem.MovementSpeedMaximum;
-        float num3;
+        FormationQuerySystem enemy = querySystem.ClosestSignificantlyLargeEnemyFormation;
+        float timeToContact = RBMAI.Utilities.GetFormationDistance(querySystem.Formation, enemy.Formation) / querySystem.MovementSpeedMaximum;
+        float proximityFactor;
         if (!querySystem.IsCavalryFormation && !querySystem.IsRangedCavalryFormation)
         {
-            float num2 = MBMath.ClampFloat(num, 4f, 10f);
-            num3 = MBMath.Lerp(0.8f, 1f, 1f - (num2 - 4f) / 6f);
+            float clamped = MBMath.ClampFloat(timeToContact, 4f, 10f);
+            proximityFactor = MBMath.Lerp(0.8f, 1f, 1f - (clamped - 4f) / 6f);
         }
-        else if (num <= 4f)
+        else if (timeToContact <= 4f)
         {
-            float num4 = MBMath.ClampFloat(num, 0f, 4f);
-            num3 = MBMath.Lerp(0.8f, 1.2f, num4 / 4f);
+            float clamped = MBMath.ClampFloat(timeToContact, 0f, 4f);
+            proximityFactor = MBMath.Lerp(0.8f, 1.2f, clamped / 4f);
         }
         else
         {
-            float num5 = MBMath.ClampFloat(num, 4f, 10f);
-            num3 = MBMath.Lerp(0.8f, 1.2f, 1f - (num5 - 4f) / 6f);
+            float clamped = MBMath.ClampFloat(timeToContact, 4f, 10f);
+            proximityFactor = MBMath.Lerp(0.8f, 1.2f, 1f - (clamped - 4f) / 6f);
         }
-        float num7 = 1f;
-        if (num <= 4f)
+        float slopeFactor = 1f;
+        if (timeToContact <= 4f)
         {
-            float length = (RBMAI.Utilities.GetFormationCenter(querySystem.Formation) - RBMAI.Utilities.GetFormationCenter(querySystem.ClosestSignificantlyLargeEnemyFormation.Formation)).Length;
+            float length = (RBMAI.Utilities.GetFormationCenter(querySystem.Formation) - RBMAI.Utilities.GetFormationCenter(enemy.Formation)).Length;
             // Coincident formation centres divide by zero and GetNavMeshZ returns NaN off the navmesh; either
             // one poisons the slope term, and a NaN weight loses every behaviour comparison silently, so the
             // charge would just stop being picked rather than fail loudly. Fall back to the neutral 1f.
@@ -589,24 +591,16 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                 WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(querySystem.Formation);
                 // Sample the enemy's height off the raw median: it already carries a valid Z, so it costs no navmesh
                 // query, and for a slope estimate one soldier's ground height is as good as the centre's.
-                float value = (medianPosition.GetNavMeshZ() - querySystem.ClosestSignificantlyLargeEnemyFormation.Formation.CachedMedianPosition.GetNavMeshZ()) / length;
-                if (!float.IsNaN(value))
+                float slope = (medianPosition.GetNavMeshZ() - enemy.Formation.CachedMedianPosition.GetNavMeshZ()) / length;
+                if (!float.IsNaN(slope))
                 {
-                    num7 = MBMath.Lerp(0.9f, 1.1f, (MBMath.ClampFloat(value, -0.58f, 0.58f) + 0.58f) / 1.16f);
+                    slopeFactor = MBMath.Lerp(0.9f, 1.1f, (MBMath.ClampFloat(slope, -0.58f, 0.58f) + 0.58f) / 1.16f);
                 }
             }
         }
-        float num8 = 1f;
-        if (num <= 4f && num >= 1.5f)
-        {
-            num8 = 1.2f;
-        }
-        float num9 = 1f;
-        if (num <= 4f && querySystem.ClosestSignificantlyLargeEnemyFormation.ClosestSignificantlyLargeEnemyFormation != querySystem)
-        {
-            num9 = 1.2f;
-        }
-        float num10 = querySystem.GetClassWeightedFactor(1f, 1f, 1.5f, 1.5f) * querySystem.ClosestSignificantlyLargeEnemyFormation.GetClassWeightedFactor(1f, 1f, 0.5f, 0.5f);
-        return (num3 * num7 * num8 * num9 * num10) * 2f;
+        float imminentContactFactor = (timeToContact <= 4f && timeToContact >= 1.5f) ? 1.2f : 1f;
+        float unengagedEnemyFactor = (timeToContact <= 4f && enemy.ClosestSignificantlyLargeEnemyFormation != querySystem) ? 1.2f : 1f;
+        float classFactor = querySystem.GetClassWeightedFactor(1f, 1f, 1.5f, 1.5f) * enemy.GetClassWeightedFactor(1f, 1f, 0.5f, 0.5f);
+        return (proximityFactor * slopeFactor * imminentContactFactor * unengagedEnemyFactor * classFactor) * 2f;
     }
 }
