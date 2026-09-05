@@ -144,7 +144,12 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                 case ChargeState.ChargingPast:
                     {
                         float distToTarget = RBMAI.Utilities.GetFormationDistance(base.Formation, _lastTarget.Formation);
-                        if (distToTarget >= (_desiredChargeStopDistance + _lastTarget.Formation.Depth))
+                        if (IsEnemyClosingIn(excludeLastTarget: true))
+                        {
+                            // Something other than the formation we just went through is on us: turn and charge.
+                            result = ChargeState.Charging;
+                        }
+                        else if (distToTarget >= (_desiredChargeStopDistance + _lastTarget.Formation.Depth))
                         {
                             // Overwriting the reform point with the formation's OWN centre made Reforming a
                             // stand-still. Keep the away-side destination computed on ChargingPast entry so the
@@ -166,7 +171,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                     {
                         float distToEnemy = RBMAI.Utilities.GetFormationDistance(base.Formation, _lastTarget.Formation);
                         bool safeDistanceFromEnemy = distToEnemy >= 30f;
-                        if (_reformTimer.Check(Mission.Current.CurrentTime) || (base.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 12f && safeDistanceFromEnemy) || base.Formation.QuerySystem.UnderRangedAttackRatio > 0.2f)
+                        if (_reformTimer.Check(Mission.Current.CurrentTime) || (base.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 12f && safeDistanceFromEnemy) || base.Formation.QuerySystem.UnderRangedAttackRatio > 0.2f || IsEnemyClosingIn())
                         {
                             result = ChargeState.Charging;
                         }
@@ -284,6 +289,52 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                 SkipReformAndCharge();
             }
         }
+    }
+
+    private const float ReformThreatDistance = 35f;
+
+    // While reforming (or pulling clear), any enemy formation that closes to within ReformThreatDistance
+    // of the cavalry, or is nearer than that and still approaching, is a reason to stop reforming and
+    // charge it: a halted wedge with infantry walking into it is exactly the "cavalry stands AFK and gets
+    // attacked" report.
+    private bool IsEnemyClosingIn(bool excludeLastTarget = false)
+    {
+        Mission mission = Mission.Current;
+        if (mission == null || base.Formation == null)
+        {
+            return false;
+        }
+        Formation lastTargetFormation = excludeLastTarget && _lastTarget != null ? _lastTarget.Formation : null;
+        Vec2 myCenter = RBMAI.Utilities.GetFormationCenter(base.Formation);
+        float threatSq = ReformThreatDistance * ReformThreatDistance;
+        foreach (Team team in mission.Teams)
+        {
+            if (!team.IsEnemyOf(base.Formation.Team))
+            {
+                continue;
+            }
+            foreach (Formation enemy in team.FormationsIncludingSpecialAndEmpty)
+            {
+                if (enemy == null || enemy.CountOfUnits == 0 || enemy == lastTargetFormation)
+                {
+                    continue;
+                }
+                Vec2 enemyCenter = RBMAI.Utilities.GetFormationCenter(enemy);
+                float distSq = myCenter.DistanceSquared(enemyCenter);
+                if (distSq <= threatSq)
+                {
+                    return true;
+                }
+                // Slightly further out but heading for us: velocity toward our centre counts as closing.
+                Vec2 toMe = myCenter - enemyCenter;
+                Vec2 vel = enemy.CachedCurrentVelocity;
+                if (distSq <= threatSq * 4f && vel.LengthSquared > 1f && Vec2.DotProduct(vel.Normalized(), toMe.Normalized()) > 0.7f)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void SkipReformAndCharge()
