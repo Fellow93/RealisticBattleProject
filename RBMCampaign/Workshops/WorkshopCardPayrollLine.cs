@@ -33,16 +33,16 @@ namespace RBMCampaign
             int cycles;
             int paid;
             bool known = RBMWorkshopExpense.TryGetLastPayroll(shop, out cycles, out paid);
-            int rate = RBMWorkshopExpense.WagePerCycle;
+            int rate = RBMWorkshopExpense.DailyWage(shop);
 
             string name = new TextObject("{=RBM_wsPayroll}Production Wages").ToString();
-            string value = known ? paid.ToString() : "-";
+            string value = known ? paid.ToString() : rate.ToString();
 
             BasicTooltipViewModel hint = new BasicTooltipViewModel(delegate
             {
                 TextObject text = known
-                    ? new TextObject("{=RBM_wsPayrollHint}Paid from the workshop's capital to the townspeople who work it: {RATE} denars per batch. Last day: {CYCLES} batches, {PAID} denars. This is on top of the daily wage above.")
-                    : new TextObject("{=RBM_wsPayrollHintIdle}Paid from the workshop's capital to the townspeople who work it: {RATE} denars per batch, on top of the daily wage above. No batch has run yet this session.");
+                    ? new TextObject("{=RBM_wsPayrollHint}Paid daily from the workshop's capital to the townspeople who work it, scaled with the town's prosperity and the workshop's equipment: {RATE} denars a day at today's prosperity. Last day: {CYCLES} batches, {PAID} denars. This is on top of the daily wage above.")
+                    : new TextObject("{=RBM_wsPayrollHintIdle}Paid daily from the workshop's capital to the townspeople who work it, scaled with the town's prosperity and the workshop's equipment: {RATE} denars a day at today's prosperity, on top of the daily wage above. Not billed yet this session.");
                 text.SetTextVariable("RATE", rate);
                 text.SetTextVariable("CYCLES", cycles);
                 text.SetTextVariable("PAID", paid);

@@ -37,15 +37,70 @@ namespace RBMCampaign
         /// What a named workshop pays its hands for one production cycle.
         /// </summary>
         /// <remarks>
-        /// Vanilla's wage bill is <c>DailyExpense</c>, a flat sum a shop pays whether it ran fifty cycles
-        /// or none. This is per BATCH, so it scales with the work actually done -- one batch a day costs
-        /// seventy-five, ten batches seven hundred and fifty.
+        /// Used only as the wage term of the per-batch margin test in <c>RBMWorkshopCycle.Decide</c>.
+        /// The daily bill itself is no longer per batch -- see <see cref="DailyWage"/>.
         ///
         /// A named shop pays a wage and the artisans do not, and the asymmetry is the whole distinction
         /// between them: a brewery has an owner, and the hands who work it are not him. The artisans have
         /// no owner to be separate from -- see <c>RBMWorkshopCycle.SettlesInGold</c>.
         /// </remarks>
         public const int WagePerCycle = 75;
+
+        /// <summary>
+        /// The base of the prosperity wage rate: what a shop pays per point of town prosperity, per
+        /// day, before its equipment is counted. Town prosperity under RBM sits in the low hundreds.
+        /// </summary>
+        public const float WageRateBase = 32f;
+
+        /// <summary>
+        /// What each 48,000 of a workshop type's <c>equipment_cost</c> (from
+        /// <c>RBMEconomy_workshops_artisans.xml</c>) adds to the rate: a pottery at 48,000 pays 35, a
+        /// brewery at 144,000 pays 41, a smithy at 240,000 pays 47.
+        /// </summary>
+        public const float WageRatePerEquipmentStep = 3f;
+        public const float WageEquipmentStep = 48000f;
+
+        /// <summary>
+        /// The wage rate a shop pays per point of its town's prosperity, per day:
+        /// <c>32 + 3 * equipment_cost / 48000</c>.
+        /// </summary>
+        public static float WageRate(Workshop shop)
+        {
+            float equipment = (shop != null && shop.WorkshopType != null) ? shop.WorkshopType.EquipmentCost : 0f;
+            if (equipment < 0f)
+            {
+                equipment = 0f;
+            }
+            return WageRateBase + WageRatePerEquipmentStep * equipment / WageEquipmentStep;
+        }
+
+        /// <summary>
+        /// What a named workshop pays its hands for one day: the town's prosperity times its wage rate.
+        /// </summary>
+        /// <remarks>
+        /// Charged whether or not the shop ran a batch, and to notable-owned shops as much as the
+        /// player's. It scales with the town rather than with the day's batches so that the money in
+        /// workshop capital reaches the townspeople as a steady daily flow instead of in the lumps a
+        /// busy production day makes.
+        /// </remarks>
+        public static int DailyWage(Workshop shop)
+        {
+            if (shop == null || shop.WorkshopType == null || shop.WorkshopType.IsHidden)
+            {
+                return 0;
+            }
+            Town town = (shop.Settlement != null) ? shop.Settlement.Town : null;
+            if (town == null)
+            {
+                return 0;
+            }
+            float prosperity = town.Prosperity;
+            if (prosperity <= 0f)
+            {
+                return 0;
+            }
+            return (int)(prosperity * WageRate(shop));
+        }
 
         // Cycles each shop actually completed today, counted off the two methods that run one. Consumed
         // by the expense step, so an entry never outlives the day that made it.
@@ -175,7 +230,7 @@ namespace RBMCampaign
             }
 
             int cycles = TakeCycles(shop);
-            int wage = cycles * WagePerCycle;
+            int wage = DailyWage(shop);
             int overhead = (Campaign.Current != null) ? Campaign.Current.Models.WorkshopModel.DailyExpense : 0;
             int bill = wage + overhead;
 

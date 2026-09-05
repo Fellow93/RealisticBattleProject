@@ -611,6 +611,16 @@ namespace RBMCampaign
                 town.BoostBuildingProcess = 0;
             }
 
+            // A castle has no citizen purse: its wealth figure stands for the keep AND the people under
+            // it, so the wages and materials its building day spends are, in part, spent on its own
+            // folk. Half of every coin comes back to the castle's wealth; the other half is the share
+            // that reached the market town's masons and merchants above, or was simply consumed.
+            int castleReturn = 0;
+            if (town.IsCastle && spend > 0)
+            {
+                castleReturn = SettlementWealth.Credit(settlement, spend / 2, SettlementWealth.Source.Construction);
+            }
+
             float points = plan.Points;
 
             // Tools. A day's work wears through picks, saws and barrows; the fief replaces them off its
@@ -638,6 +648,7 @@ namespace RBMCampaign
                     + "  ·  points " + (int)points
                     + " (free " + (int)plan.Free + ", materials " + (int)plan.MaterialPoints + ", wages " + (int)plan.CashPoints + ")"
                     + "  ·  spent " + spend + "d (materials " + plan.MaterialSpend + "d)"
+                    + (castleReturn > 0 ? "  ·  castle keeps " + castleReturn + "d" : "")
                     + (short_ ? "  ·  TOOLS SHORT" : "")
                     + ((plan.MasonFactor > 1f || plan.PerkFactor > 1f)
                         ? "  ·  x" + EconomyLog.Fmt(plan.MasonFactor) + " mason x" + EconomyLog.Fmt(plan.PerkFactor) + " perks" : "")
