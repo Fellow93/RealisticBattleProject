@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <WorkshopTypes>
+	<!--RBM_CAMPAIGN_XML_TAG-->
 	<WorkshopType
 		_replaceWhileMerging="true"
 		id="artisans"
