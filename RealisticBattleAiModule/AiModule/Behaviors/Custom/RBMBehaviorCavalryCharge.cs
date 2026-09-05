@@ -269,9 +269,71 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         // previously only set on state change, so a stale/aborted MovementOrderMove left the formation standing.
         if ((_chargeState == ChargeState.ChargingPast || _chargeState == ChargeState.Reforming) && _lastReformDestination.IsValid)
         {
+            // Re-checked every tick because other formations keep moving after the point was chosen.
+            _lastReformDestination = PushClearOfOtherFormations(_lastReformDestination);
             base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
             CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
         }
+    }
+
+    private const float ReformClearanceMargin = 20f;
+
+    // Cavalry must never stop or reform on top of / right beside another formation (friendly or enemy):
+    // a wedge halted inside a melee is a wedge that gets picked apart. Slide the destination away from
+    // any formation whose footprint (half-widths + margin) it would land in, along the direction pointing
+    // from that formation to the destination. A few passes handle chained overlaps.
+    private WorldPosition PushClearOfOtherFormations(WorldPosition dest)
+    {
+        Mission mission = Mission.Current;
+        if (mission == null || base.Formation == null)
+        {
+            return dest;
+        }
+        Vec2 point = dest.AsVec2;
+        Vec2 fallbackDir = Vec2.Zero;
+        if (_lastTarget != null && _lastTarget.Formation != null)
+        {
+            fallbackDir = (point - RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation)).Normalized();
+        }
+        float myHalfWidth = base.Formation.Width * 0.5f;
+        bool moved = false;
+        for (int pass = 0; pass < 3; pass++)
+        {
+            bool movedThisPass = false;
+            foreach (Team team in mission.Teams)
+            {
+                foreach (Formation other in team.FormationsIncludingSpecialAndEmpty)
+                {
+                    if (other == null || other == base.Formation || other.CountOfUnits == 0)
+                    {
+                        continue;
+                    }
+                    Vec2 otherCenter = RBMAI.Utilities.GetFormationCenter(other);
+                    float clearance = other.Width * 0.5f + other.Depth * 0.5f + myHalfWidth + ReformClearanceMargin;
+                    Vec2 offset = point - otherCenter;
+                    float dist = offset.Length;
+                    if (dist >= clearance)
+                    {
+                        continue;
+                    }
+                    Vec2 pushDir = dist > 1f ? offset / dist : (fallbackDir.LengthSquared > 0.01f ? fallbackDir : Vec2.Forward);
+                    point = otherCenter + pushDir * clearance;
+                    movedThisPass = true;
+                    moved = true;
+                }
+            }
+            if (!movedThisPass)
+            {
+                break;
+            }
+        }
+        if (!moved)
+        {
+            return dest;
+        }
+        WorldPosition result = dest;
+        result.SetVec2(point);
+        return result;
     }
 
     protected override void OnBehaviorActivatedAux()
