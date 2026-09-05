@@ -267,13 +267,41 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
         // Re-issue the move order every occasional tick (timers above stay on state entry only): the order was
         // previously only set on state change, so a stale/aborted MovementOrderMove left the formation standing.
-        if ((_chargeState == ChargeState.ChargingPast || _chargeState == ChargeState.Reforming) && _lastReformDestination.IsValid)
+        if (_chargeState == ChargeState.ChargingPast || _chargeState == ChargeState.Reforming)
         {
             // Re-checked every tick because other formations keep moving after the point was chosen.
-            _lastReformDestination = PushClearOfOtherFormations(_lastReformDestination);
-            base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
-            CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+            WorldPosition resolved = _lastReformDestination.IsValid ? ResolveReformDestination(_lastReformDestination) : WorldPosition.Invalid;
+            if (resolved.IsValid)
+            {
+                _lastReformDestination = resolved;
+                base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
+                CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+            }
+            else
+            {
+                // No usable reform spot anywhere nearby: skip the reform and charge again rather than
+                // stand around or ride to an off-navmesh / contested point.
+                SkipReformAndCharge();
+            }
         }
+    }
+
+    private void SkipReformAndCharge()
+    {
+        _chargeState = ChargeState.Charging;
+        _chargeTimer = null;
+        _lastReformDestination = WorldPosition.Invalid;
+        CheckForNewChargeTarget();
+        if (_lastTarget != null && _lastTarget.Formation != null)
+        {
+            base.CurrentOrder = MovementOrder.MovementOrderChargeToTarget(_lastTarget.Formation);
+        }
+        else
+        {
+            base.CurrentOrder = MovementOrder.MovementOrderCharge;
+        }
+        CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+        newTarget = false;
     }
 
     private const float ReformClearanceMargin = 20f;
@@ -286,8 +314,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
     // search rings of candidate points around it and take the nearest one that is clear of every
     // formation's footprint (half width + half depth + own half width + margin), on navmesh, inside the
     // map, and not closer to the charge target than the original point (so the search never pulls the
-    // wedge back into the enemy). If nothing qualifies, fall back to the old single-direction push.
-    private WorldPosition PushClearOfOtherFormations(WorldPosition dest)
+    // wedge back into the enemy). If nothing qualifies, try the single-direction push; if that is not
+    // usable either, return Invalid so the caller skips the reform and charges again.
+    private WorldPosition ResolveReformDestination(WorldPosition dest)
     {
         Mission mission = Mission.Current;
         if (mission == null || base.Formation == null)
@@ -295,7 +324,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             return dest;
         }
         Vec2 origin = dest.AsVec2;
-        if (IsReformPointClear(mission, origin))
+        if (IsReformPointClear(mission, origin) && IsReformPointUsable(mission, dest))
         {
             return dest;
         }
@@ -328,7 +357,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                 }
                 WorldPosition candidatePos = dest;
                 candidatePos.SetVec2(candidate);
-                if (!candidatePos.IsValid || candidatePos.GetNavMesh() == System.UIntPtr.Zero || !mission.IsPositionInsideBoundaries(candidate))
+                if (!IsReformPointUsable(mission, candidatePos))
                 {
                     continue;
                 }
@@ -348,7 +377,18 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         {
             return best;
         }
-        return PushClearSingleDirection(mission, dest);
+        WorldPosition pushed = PushClearSingleDirection(mission, dest);
+        if (pushed.IsValid && IsReformPointClear(mission, pushed.AsVec2) && IsReformPointUsable(mission, pushed))
+        {
+            return pushed;
+        }
+        return WorldPosition.Invalid;
+    }
+
+    // On navmesh and inside the mission boundary; anything else is a point the riders cannot reach.
+    private static bool IsReformPointUsable(Mission mission, WorldPosition pos)
+    {
+        return pos.IsValid && pos.GetNavMesh() != System.UIntPtr.Zero && mission.IsPositionInsideBoundaries(pos.AsVec2);
     }
 
     private bool IsReformPointClear(Mission mission, Vec2 point)
