@@ -471,7 +471,8 @@
   <PropertyGroup>
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_workshops_artisans.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_module_strings.xml" "$(SolutionDir)..\RBM\ModuleData\"
-xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_trade_goods.xml" "$(SolutionDir)..\RBM\ModuleData\"</PostBuildEvent>
+xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_trade_goods.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomyCombat_ranged.xml" "$(SolutionDir)..\RBM\ModuleData\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
