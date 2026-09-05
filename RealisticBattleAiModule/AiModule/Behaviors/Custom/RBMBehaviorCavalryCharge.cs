@@ -13,7 +13,9 @@ using TaleWorlds.MountAndBlade;
 ///   StartChargeTimeToContactSeconds at full speed.
 /// Charging: pick a target (infantry, then archers, then per the Charge* flags), form up to its width and
 ///   ChargeToTarget. The charge is "through" once the target centre is behind us (dot product of the initial
-///   charge direction flips); ChargeThroughGraceSeconds later we go to ChargingPast.
+///   charge direction flips); ChargeThroughGraceSeconds later we go to ChargingPast. If the wedge is in
+///   contact with the target for ChargeContactTimeoutSeconds without ever passing through (bogged down in the
+///   melee), it goes to ChargingPast anyway so it pulls out instead of dying in place.
 /// ChargingPast: ride on to a reform point ChargeStopDistance + target depth beyond the enemy, on the side we
 ///   came out on. If the wedge is already cohesive (ReformCohesionMinRatio of riders within
 ///   ReformCohesionRadius of the centre) with RechargeMinRunUpDistance of room, skip the reform and charge
@@ -63,6 +65,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
     private const float ChargeCoherenceEmbolon = 0.85f;
     private const float StartChargeTimeToContactSeconds = 5f;
     private const float ChargeThroughGraceSeconds = 3f;
+    private const float ChargeContactTimeoutSeconds = 8f;
     private const float ChargingPastTimeoutSeconds = 19f;
     private const float ReformTimeoutSeconds = 8f;
     private const float ReformCohesionRadius = 20f;
@@ -95,6 +98,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
     private Timer _reformTimer;
 
     private Timer _chargeTimer;
+
+    private Timer _contactTimer;
 
     // Resolved once: GetField is slow enough to matter on a per-formation occasional tick, and a null
     // result (field renamed by a game update) used to NRE on the line that consumed it.
@@ -159,26 +164,37 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                     }
                 case ChargeState.Charging:
                     {
-                        if (_lastTarget == null || _lastTarget.Formation.CountOfUnits == 0)
+                        if (IsTargetGone())
                         {
-                            AcquireTarget();
+                            _hasNewTarget = true;
+                            break;
                         }
-                        else if (_initialChargeDirection.DotProduct(RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)) <= 0f)
+                        Vec2 toTarget = RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation);
+                        bool passedThrough = _initialChargeDirection.DotProduct(toTarget) <= 0f;
+                        bool inContact = toTarget.Length <= ContactDistance(_lastTarget.Formation);
+                        if (passedThrough && _chargeTimer == null)
                         {
-                            if (_chargeTimer == null)
-                            {
-                                _chargeTimer = new Timer(Mission.Current.CurrentTime, ChargeThroughGraceSeconds);
-                            }
+                            _chargeTimer = new Timer(Mission.Current.CurrentTime, ChargeThroughGraceSeconds);
                         }
-                        if (_chargeTimer != null && _chargeTimer.Check(Mission.Current.CurrentTime))
+                        if (inContact && _contactTimer == null)
+                        {
+                            _contactTimer = new Timer(Mission.Current.CurrentTime, ChargeContactTimeoutSeconds);
+                        }
+                        bool chargeOver = _chargeTimer != null && _chargeTimer.Check(Mission.Current.CurrentTime);
+                        bool stalledInMelee = _contactTimer != null && _contactTimer.Check(Mission.Current.CurrentTime);
+                        if (chargeOver || stalledInMelee)
                         {
                             result = ChargeState.ChargingPast;
-                            _chargeTimer = null;
                         }
                         break;
                     }
                 case ChargeState.ChargingPast:
                     {
+                        if (IsTargetGone())
+                        {
+                            result = ChargeState.Charging;
+                            break;
+                        }
                         float distToTarget = RBMAI.Utilities.GetFormationDistance(base.Formation, _lastTarget.Formation);
                         if (IsReadyToRecharge(distToTarget))
                         {
@@ -197,6 +213,11 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                     }
                 case ChargeState.Reforming:
                     {
+                        if (IsTargetGone())
+                        {
+                            result = ChargeState.Charging;
+                            break;
+                        }
                         float distToEnemy = RBMAI.Utilities.GetFormationDistance(base.Formation, _lastTarget.Formation);
                         bool underFire = base.Formation.QuerySystem.UnderRangedAttackRatio > ReformAbortRangedAttackRatio;
                         if (_reformTimer.Check(Mission.Current.CurrentTime) || IsReadyToRecharge(distToEnemy) || underFire || IsEnemyClosingIn())
@@ -210,6 +231,16 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         return result;
     }
 
+    private bool IsTargetGone()
+    {
+        return _lastTarget?.Formation == null || _lastTarget.Formation.CountOfUnits == 0;
+    }
+
+    private float ContactDistance(Formation target)
+    {
+        return (target.Width + target.Depth + base.Formation.Depth) * 0.5f;
+    }
+
     private bool IsReadyToRecharge(float distToTarget)
     {
         return distToTarget >= RechargeMinRunUpDistance && IsFormationCohesive();
@@ -218,7 +249,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
     private bool IsFormationCohesive()
     {
         Vec2 center = RBMAI.Utilities.GetFormationCenter(base.Formation);
-        float radiusSq = ReformCohesionRadius * ReformCohesionRadius;
+        float radius = ReformCohesionRadius + MathF.Max(base.Formation.Width, base.Formation.Depth) * 0.5f;
+        float radiusSq = radius * radius;
         int total = 0;
         int near = 0;
         base.Formation.ApplyActionOnEachUnit(agent =>
@@ -278,10 +310,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         }
 
         ChargeState nextState = DecideNextState();
-        bool chasingCavalry = _lastTarget != null && (_lastTarget.IsCavalryFormation || _lastTarget.IsRangedCavalryFormation);
-        bool reenterCharge = chasingCavalry && nextState == ChargeState.Charging;
-
-        if (nextState != _chargeState || _hasNewTarget || reenterCharge)
+        if (nextState != _chargeState || _hasNewTarget)
         {
             EnterState(nextState);
         }
@@ -322,6 +351,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
     private void EnterCharging()
     {
         _chargeTimer = null;
+        _contactTimer = null;
         _lastReformDestination = WorldPosition.Invalid;
         AcquireTarget();
         if (_lastTarget?.Formation == null)
