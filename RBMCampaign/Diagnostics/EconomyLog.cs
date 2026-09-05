@@ -117,7 +117,6 @@ namespace RBMCampaign
                     header.Append(Environment.NewLine);
                     header.Append("Settings:").Append(Environment.NewLine);
                     header.Append("  rbmCampaignEnabled          = ").Append(RC.rbmCampaignEnabled).Append(Environment.NewLine);
-                    header.Append("  realisticTradeGoodPrices    = ").Append(RC.realisticTradeGoodPrices).Append(Environment.NewLine);
                     header.Append("  prosperityPerBoundHearth    = ").Append(Fmt(RBMProsperityEquilibrium.ProsperityPerBoundHearth)).Append(Environment.NewLine);
                     header.Append("  vanillaProsperityScale      = ").Append(Fmt(RBMProsperityEquilibrium.VanillaProsperityScale)).Append(Environment.NewLine);
                     header.Append("  townTreasuryScale           = ").Append(Fmt(RBMProsperityEquilibrium.TownTreasuryScale)).Append(Environment.NewLine);

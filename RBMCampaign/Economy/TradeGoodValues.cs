@@ -95,7 +95,7 @@ namespace RBMCampaign
         /// </summary>
         public static void Apply(ItemObject item)
         {
-            if (!RBMConfig.RBMConfig.realisticTradeGoodPrices || item == null || item.StringId == null)
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled || item == null || item.StringId == null)
             {
                 return;
             }

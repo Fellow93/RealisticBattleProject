@@ -168,12 +168,6 @@ namespace RBMConfig
         // opening decisions affordable. New games only; a loaded save keeps the gold it was saved with.
         public static int campaignStartingGold = 5000;
 
-        // Replaces the vanilla worth and weight of the trade goods with historically derived figures --
-        // a period price in denars times ten, and the real mass in kilograms of one lot. Value and weight
-        // move together, so a cart of velvet is no longer worth what a cart of hardwood is. Off restores
-        // the game's own numbers. Only the trade goods are touched; no other item changes.
-        public static bool realisticTradeGoodPrices = true;
-
         // When on, the AI navigates by RBM's days-of-supply scarcity instead of vanilla's parallel demand
         // EMA: TownMarketData.GetPriceFactor is overridden with the same signal the retail price is built
         // on, so trade caravans, the settlement trade budget, and village/workshop AI all read the real

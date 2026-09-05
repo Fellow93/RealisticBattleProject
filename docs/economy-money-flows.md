@@ -406,7 +406,6 @@ Grouped by what they actually change. Full descriptions in
 | `TroopSpoilsCapDays` | How long a stack saves before its surplus goes to drink — i.e. how much of the spoils supply sits idle rather than reaching towns. |
 | `RecruitMaintenanceDays` | The size of the recruit-seed faucet (§7). |
 | `TroopRaidSpoilsMultiplier`, `TroopUpgradeSpoilsLootMultiplier`, `TroopFallenSpoilsCaptureFraction` | How much new value a battle or a sack injects. |
-| `RealisticTradeGoodPrices` | What everything is worth, and so the magnitude of every trade flow. |
 
 Troop **wages** have no dial. They are a fixed per-tier table
 (`RBMCampaign/Wages/TierBasedWageModel.cs`) and apply whenever the module is on. Since the wage is

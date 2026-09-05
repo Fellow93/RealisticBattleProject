@@ -35,10 +35,10 @@ namespace RBMCampaign
     /// Hence the prefix below, which swaps the argument on its way in. <see cref="TradeGoodValues"/>
     /// already postfixes the same method to reprice these same goods, for the same reason.
     ///
-    /// Deliberately NOT gated on a config toggle. The recipes that name these categories ship in
-    /// RBM's WorkshopTypes XML, which the engine loads whatever the campaign module's settings say,
-    /// so a toggle could only ever produce the half-state this exists to remove: categories the
-    /// recipes name but no item belongs to.
+    /// Gated on <c>rbmCampaignEnabled</c> at the call site in <c>RBM.SubModule</c>. The recipes that
+    /// name these categories ship in RBM's WorkshopTypes XML, which now carries
+    /// <c>RBM_CAMPAIGN_XML_TAG</c> and so is skipped by <c>MergeTwoXmlsPatch</c> when the module is
+    /// off -- registering and skipping move together, and neither half-state can occur.
     /// </remarks>
     public static class TradeGoodCategories
     {

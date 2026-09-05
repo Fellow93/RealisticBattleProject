@@ -219,7 +219,10 @@ namespace RBM
             }
             // Where TaleWorlds register theirs, and for the same reason: the tooltip registry has to know what draws
             // an RBMPowerTooltipData before the first hover can ask for one.
-            RBMCampaign.RBMPowerTooltipVM.Register();
+            if (RBMConfig.RBMConfig.rbmCampaignEnabled)
+            {
+                RBMCampaign.RBMPowerTooltipVM.Register();
+            }
             ApplyHarmonyPatches();
         }
 
@@ -286,7 +289,13 @@ namespace RBM
         public override void InitializeSubModuleGameObjects(Game game)
         {
             base.InitializeSubModuleGameObjects(game);
-            TradeGoodCategories.Register(game);
+            // Gated with the rest of RBMCampaign: the WorkshopTypes XML whose recipes name these
+            // categories (RBMEconomy_workshops_artisans.xml) now carries RBM_CAMPAIGN_XML_TAG, so
+            // MergeTwoXmlsPatch skips it when the module is off and nothing asks for the categories.
+            if (RBMConfig.RBMConfig.rbmCampaignEnabled)
+            {
+                TradeGoodCategories.Register(game);
+            }
         }
 
         public override void OnGameInitializationFinished(Game game)

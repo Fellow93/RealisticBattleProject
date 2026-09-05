@@ -866,8 +866,8 @@ mass in kilograms of one trade lot. Value and weight move together, so a cart of
 what a cart of hardwood is. These are *floor* prices — §5.2 marks up from here.
 
 Applied at both good-creation sites (XML goods and the code-built grain/meat/iron chain), before item
-category averages, initial town stock seeding, and trade AI read them. Gated on
-`realisticTradeGoodPrices` (default on) — the one toggle here independent of `rbmCampaignEnabled`.
+category averages, initial town stock seeding, and trade AI read them. Unconditional whenever
+`rbmCampaignEnabled` is on — there is no separate toggle.
 Items outside the table — tools, stolen goods, trash, all non-Goods — are untouched.
 
 | Good | Value | Weight (kg) | | Good | Value | Weight (kg) |
@@ -941,8 +941,9 @@ much the bench *could* have run, `SHOPBLOCK` is how much was refused and why, `S
 recipes never got a turn at all, and `SHOPS` is the money. A town producing nothing reads them in
 that order.
 
-**Config** — three toggles, all default on: `realisticTradeGoodPrices`, `showInventoryItemWeight`,
-`economyLoggingEnabled`. The latter two are additionally gated on `rbmCampaignEnabled`.
+**Config** — two toggles, both default on: `showInventoryItemWeight` and `economyLoggingEnabled`,
+each additionally gated on `rbmCampaignEnabled`. The trade-good repricing has no toggle of its own —
+it applies whenever the campaign module is enabled.
 
 ---
 

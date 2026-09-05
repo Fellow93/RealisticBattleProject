@@ -28,9 +28,9 @@ namespace RBMCampaign
     /// luxury unit dumped into a bare town at the 8x cap -- which still mints XP on the sell side after the
     /// money loop was closed.
     ///
-    /// Gated on <see cref="RBMConfig.RBMConfig.realisticTradeGoodPrices"/>: the toggle that applies the x10
-    /// repricing that causes the inflation. With vanilla-scale prices there is nothing to damp, so the curve
-    /// stays off and Trade XP is left untouched.
+    /// Gated on <see cref="RBMConfig.RBMConfig.rbmCampaignEnabled"/>: the campaign module applies the x10
+    /// repricing that causes the inflation. With the module off there are vanilla-scale prices and nothing
+    /// to damp, so the curve stays off and Trade XP is left untouched.
     /// </summary>
     public static class TradeXpSoftCap
     {
@@ -40,8 +40,7 @@ namespace RBMCampaign
         /// <summary>Compression exponent applied to profit above the knee. &lt;1 == diminishing returns.</summary>
         private const double Power = 0.8;
 
-        private static bool Active =>
-            RBMConfig.RBMConfig.rbmCampaignEnabled && RBMConfig.RBMConfig.realisticTradeGoodPrices;
+        private static bool Active => RBMConfig.RBMConfig.rbmCampaignEnabled;
 
         /// <summary>Passes the transaction profit through the diminishing curve.</summary>
         private static int Damp(int tradeProfit)

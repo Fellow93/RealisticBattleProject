@@ -24,11 +24,11 @@ namespace RBMCampaign
     /// correct should a future DLC build either good in code instead.
     /// </summary>
     /// <remarks>
-    /// Gated on <c>realisticTradeGoodPrices</c>, the same toggle the core table reads, rather than a
+    /// Gated on <c>rbmCampaignEnabled</c>, the same toggle the core table reads, rather than a
     /// naval-specific one: repricing these two in isolation while every other good stayed on the
-    /// vanilla scale would be the inconsistency the toggle exists to switch off cleanly. The whole
-    /// class is moot unless the campaign module is enabled anyway -- its patches are only applied
-    /// from <c>RBMCampaignPatcher.DoPatching</c>, which runs only when <c>rbmCampaignEnabled</c>.
+    /// vanilla scale would be an inconsistency. The gate is belt-and-braces -- the class's patches
+    /// are only applied from <c>RBMCampaignPatcher.DoPatching</c>, which runs only when
+    /// <c>rbmCampaignEnabled</c>.
     /// </remarks>
     public static class NavalTradeGoodValues
     {
@@ -51,7 +51,7 @@ namespace RBMCampaign
         /// </summary>
         public static void Apply(ItemObject item)
         {
-            if (!RBMConfig.RBMConfig.realisticTradeGoodPrices || item == null || item.StringId == null)
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled || item == null || item.StringId == null)
             {
                 return;
             }

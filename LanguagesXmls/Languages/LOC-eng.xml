@@ -484,8 +484,6 @@
 	<string id="RBM_OVH_039" text="Jawwal Master Slinger" />
 	<string id="RBM_OVH_040" text="Mercenary Elite Slinger" />
 	<!-- Trade Good Repricing Strings -->
-	<string id="RBM_CON_103" text="Historical Trade Goods" />
-	<string id="RBM_CON_104" text="Reprices the trade goods off historical figures -- a period price in denars and the real weight of one lot -- so worth and bulk move together and a cart of velvet is no longer a cart of hardwood. Off restores the game's own numbers. Default on." />
 	<!-- Inventory Weight Column Strings -->
 	<string id="RBM_CON_105" text="Inventory Weight Column" />
 	<string id="RBM_CON_106" text="Wt." />
