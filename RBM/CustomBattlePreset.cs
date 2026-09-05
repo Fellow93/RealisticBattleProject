@@ -524,11 +524,34 @@ namespace RBM
             side.CompositionGroup.ArmySize = Math.Max(side.CompositionGroup.MinArmySize,
                 Math.Min(side.CompositionGroup.MaxArmySize, armySize));
 
-            // Composition percentages
-            side.CompositionGroup.MeleeInfantryComposition.CompositionValue = comp[0];
-            side.CompositionGroup.RangedInfantryComposition.CompositionValue = comp[1];
-            side.CompositionGroup.MeleeCavalryComposition.CompositionValue = comp[2];
-            side.CompositionGroup.RangedCavalryComposition.CompositionValue = comp[3];
+            // Composition percentages. Do NOT go through CompositionValue setters: each one runs the
+            // native UpdateSliders rebalancing against the other unlocked sliders, so four sequential
+            // writes smear the saved split (50/50/0/0 came back as 4% cavalry). Write the shared
+            // backing array in one go and refresh every item VM.
+            var group = side.CompositionGroup;
+            int sum = 0;
+            for (int i = 0; i < 4; i++) sum += Math.Max(0, comp[i]);
+            int[] target = new int[4];
+            if (sum > 0)
+            {
+                int acc = 0;
+                for (int i = 0; i < 3; i++)
+                {
+                    target[i] = (int)Math.Round(100.0 * Math.Max(0, comp[i]) / sum);
+                    acc += target[i];
+                }
+                target[3] = 100 - acc;
+            }
+            else
+            {
+                target[0] = 25; target[1] = 25; target[2] = 25; target[3] = 25;
+            }
+            for (int i = 0; i < 4; i++)
+                group.CompositionValues[i] = target[i];
+            group.MeleeInfantryComposition.RefreshCompositionValue();
+            group.RangedInfantryComposition.RefreshCompositionValue();
+            group.MeleeCavalryComposition.RefreshCompositionValue();
+            group.RangedCavalryComposition.RefreshCompositionValue();
 
             // Troop type selections — faction change populates TroopTypes, so apply after faction
             ApplyTroopSelection(side.CompositionGroup.MeleeInfantryComposition.TroopTypes, troopsMI);
