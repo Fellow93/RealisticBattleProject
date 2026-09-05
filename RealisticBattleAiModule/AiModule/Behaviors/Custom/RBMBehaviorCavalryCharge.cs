@@ -5,6 +5,42 @@ using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
+/// <summary>
+/// Cavalry charge as a four-state loop: Undetermined -> Charging -> ChargingPast -> Reforming -> Charging ...
+///
+/// Undetermined: no enemy in reach; plain charge order until the closest enemy is within
+///   StartChargeTimeToContactSeconds at full speed.
+/// Charging: pick a target (infantry, then archers, then per the Charge* flags), form up to its width and
+///   ChargeToTarget. The charge is "through" once the target centre is behind us (dot product of the initial
+///   charge direction flips); ChargeThroughGraceSeconds later we go to ChargingPast.
+/// ChargingPast: ride on to a reform point ChargeStopDistance + target depth beyond the enemy, on the side we
+///   came out on. If the wedge is already tight (ReformDoneMaxDeviation) with RechargeMinRunUpDistance of
+///   room, skip the reform and charge straight away; otherwise switch to Reforming on arrival or after
+///   ChargingPastTimeoutSeconds.
+/// Reforming: hold the reform point only until the wedge is tight with enough run-up, or
+///   ReformTimeoutSeconds runs out, then charge again. Idle time here is kept as short as possible.
+///
+/// Two overrides apply while pulling clear or reforming:
+///  - The reform point is resolved every tick (ResolveReformDestination). If it lies inside any formation's
+///    footprint, or off navmesh / outside the map, a ring search around it finds the nearest clear, reachable
+///    point that is not closer to the target; if none exists the reform is skipped and the wedge charges again.
+///  - Any enemy formation within ReformThreatDistance, or within ReformApproachDistanceFactor times that and
+///    moving toward us (IsEnemyClosingIn), ends the reform immediately and triggers a new charge.
+///
+/// Normal charge: 8 lancers vs a 40-man bandit line at 200 m. Time to contact drops under 5 s -> Charging.
+/// They hit the line, the bandit centre passes behind them, 3 s later -> ChargingPast toward a point ~115 m
+/// past the bandits. If they come out still in order, they turn and charge again as soon as they are 60 m
+/// clear; if scattered they ride on to the reform point -> Reforming, tighten within 12 m -> Charging again
+/// from the far side. Repeat until one side is gone.
+///
+/// Interrupted charge: same lancers, but a second bandit group is standing where the reform point lands.
+/// ResolveReformDestination finds the point contested, ring-searches around it and moves the reform 40 m
+/// aside; the lancers reform there instead. While they reform, the first bandit line turns and walks after
+/// them. At 70 m and closing IsEnemyClosingIn fires -> Charging immediately, ignoring the reform timer.
+/// If instead the whole area around the reform point were blocked (formations on all sides, map edge, no
+/// navmesh), ResolveReformDestination returns Invalid and SkipReformAndCharge drops the reform entirely:
+/// new target, ChargeToTarget, no standing still.
+/// </summary>
 public class RBMBehaviorCavalryCharge : BehaviorComponent
 {
     private enum ChargeState
@@ -14,6 +50,26 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         ChargingPast,
         Reforming
     }
+
+    private const float ChargeStopDistance = 110f;
+    private const float ChargeStopDistanceEmbolon = 50f;
+    private const float ChargeCoherence = 0.5f;
+    private const float ChargeCoherenceEmbolon = 0.85f;
+    private const float StartChargeTimeToContactSeconds = 5f;
+    private const float ChargeThroughGraceSeconds = 3f;
+    private const float ChargingPastTimeoutSeconds = 19f;
+    private const float ReformTimeoutSeconds = 6f;
+    private const float ReformDoneMaxDeviation = 12f;
+    private const float RechargeMinRunUpDistance = 60f;
+    private const float ReformAbortRangedAttackRatio = 0.2f;
+    private const float ReformThreatDistance = 35f;
+    private const float ReformApproachDistanceFactor = 2f;
+    private const float ReformApproachMinSpeedSq = 1f;
+    private const float ReformApproachMinDot = 0.7f;
+    private const float ReformClearanceMargin = 20f;
+    private static readonly float[] ReformSearchRadii = { 20f, 40f, 60f, 90f, 130f };
+    private const int ReformSearchDirections = 12;
+    private const int ReformPushMaxPasses = 3;
 
     private ChargeState _chargeState;
 
@@ -51,9 +107,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         base.CurrentOrder = MovementOrder.MovementOrderCharge;
         CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
         _chargeState = ChargeState.Charging;
-        base.BehaviorCoherence = 0.5f;
-        // Reform point on the far side of the enemy; the distance is fine, the old bug was its sign.
-        _desiredChargeStopDistance = 110f;
+        base.BehaviorCoherence = ChargeCoherence;
+        _desiredChargeStopDistance = ChargeStopDistance;
     }
 
     public override void TickOccasionally()
@@ -72,13 +127,13 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         object tacticValue = (_currentTacticField != null && base.Formation?.Team?.TeamAI != null) ? _currentTacticField.GetValue(base.Formation.Team.TeamAI) : null;
         if (tacticValue?.ToString().Contains("Embolon") == true)
         {
-            _desiredChargeStopDistance = 50f;
-            base.BehaviorCoherence = 0.85f;
+            _desiredChargeStopDistance = ChargeStopDistanceEmbolon;
+            base.BehaviorCoherence = ChargeCoherenceEmbolon;
         }
         else
         {
-            _desiredChargeStopDistance = 110f;
-            base.BehaviorCoherence = 0.5f;
+            _desiredChargeStopDistance = ChargeStopDistance;
+            base.BehaviorCoherence = ChargeCoherence;
         }
         ChargeState result = _chargeState;
         if (base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null)
@@ -91,7 +146,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             {
                 case ChargeState.Undetermined:
                     {
-                        if ((!base.Formation.QuerySystem.IsCavalryFormation && !base.Formation.QuerySystem.IsRangedCavalryFormation) || RBMAI.Utilities.GetFormationDistance(base.Formation, base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation) / base.Formation.QuerySystem.MovementSpeedMaximum <= 5f)
+                        if ((!base.Formation.QuerySystem.IsCavalryFormation && !base.Formation.QuerySystem.IsRangedCavalryFormation) || RBMAI.Utilities.GetFormationDistance(base.Formation, base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation) / base.Formation.QuerySystem.MovementSpeedMaximum <= StartChargeTimeToContactSeconds)
                         {
                             result = ChargeState.Charging;
                         }
@@ -126,14 +181,10 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                         {
                             if (_chargeTimer == null)
                             {
-                                _chargeTimer = new Timer(Mission.Current.CurrentTime, 3f);
+                                _chargeTimer = new Timer(Mission.Current.CurrentTime, ChargeThroughGraceSeconds);
                             }
                             //result = ChargeState.ChargingPast;
                         }
-                        // A tight formation (low position deviation) is the normal state of a cavalry wedge that has
-                        // NOT yet reached the enemy, so this flipped Charging->ChargingPast before contact and the
-                        // charge never landed. Native BehaviorTacticalCharge exits Charging on the dot-product flip
-                        // alone; keep that (plus RBM's 3s grace timer) as the only exit.
                         if (_chargeTimer != null && _chargeTimer.Check(Mission.Current.CurrentTime))
                         {
                             result = ChargeState.ChargingPast;
@@ -144,21 +195,16 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                 case ChargeState.ChargingPast:
                     {
                         float distToTarget = RBMAI.Utilities.GetFormationDistance(base.Formation, _lastTarget.Formation);
-                        if (IsEnemyClosingIn(excludeLastTarget: true))
+                        if (IsEnemyClosingIn(excludeLastTarget: true) || IsReadyToRecharge(distToTarget))
                         {
-                            // Something other than the formation we just went through is on us: turn and charge.
                             result = ChargeState.Charging;
                         }
                         else if (distToTarget >= (_desiredChargeStopDistance + _lastTarget.Formation.Depth))
                         {
-                            // Overwriting the reform point with the formation's OWN centre made Reforming a
-                            // stand-still. Keep the away-side destination computed on ChargingPast entry so the
-                            // formation actually pulls clear before turning around.
                             result = ChargeState.Reforming;
                         }
                         else if (_chargingPastTimer.Check(Mission.Current.CurrentTime))
                         {
-                            // Timer fired but didn't reach destination — recalculate reform point from current positions
                             Vec2 awayDir = (RBMAI.Utilities.GetFormationCenter(base.Formation) - RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation)).Normalized();
                             WorldPosition newReformDest = RBMAI.Utilities.GetFormationCenterWorldPosition(_lastTarget.Formation);
                             newReformDest.SetVec2(RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) + awayDir * (_desiredChargeStopDistance + _lastTarget.Formation.Depth));
@@ -170,8 +216,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                 case ChargeState.Reforming:
                     {
                         float distToEnemy = RBMAI.Utilities.GetFormationDistance(base.Formation, _lastTarget.Formation);
-                        bool safeDistanceFromEnemy = distToEnemy >= 30f;
-                        if (_reformTimer.Check(Mission.Current.CurrentTime) || (base.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 12f && safeDistanceFromEnemy) || base.Formation.QuerySystem.UnderRangedAttackRatio > 0.2f || IsEnemyClosingIn())
+                        bool underFire = base.Formation.QuerySystem.UnderRangedAttackRatio > ReformAbortRangedAttackRatio;
+                        if (_reformTimer.Check(Mission.Current.CurrentTime) || IsReadyToRecharge(distToEnemy) || underFire || IsEnemyClosingIn())
                         {
                             result = ChargeState.Charging;
                         }
@@ -180,6 +226,12 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             }
         }
         return result;
+    }
+
+    private bool IsReadyToRecharge(float distToTarget)
+    {
+        return distToTarget >= RechargeMinRunUpDistance
+            && base.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents < ReformDoneMaxDeviation;
     }
 
     public void CheckForNewChargeTarget()
@@ -228,10 +280,6 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                 case ChargeState.Charging:
                     {
                         CheckForNewChargeTarget();
-                        // This null test used to guard SetFormOrder alone while the position maths below
-                        // dereferenced _lastTarget.Formation regardless - so either the guard was needed and
-                        // the next line NREs, or it was dead. Cover the whole arm, falling back to a plain
-                        // charge the way the Undetermined arm does.
                         if (_lastTarget == null || _lastTarget.Formation == null)
                         {
                             base.CurrentOrder = MovementOrder.MovementOrderCharge;
@@ -240,17 +288,13 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                         }
                         base.Formation.SetFormOrder(FormOrder.FormOrderCustom(_lastTarget.Formation.Width));
                         Vec2 vec4 = (RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)).Normalized();
-                        // No longer seeds _lastReformDestination here: it used the TOWARDS-enemy direction (wrong
-                        // sign, a point beyond the enemy) and ChargingPast now computes the away-side point itself.
                         base.CurrentOrder = MovementOrder.MovementOrderChargeToTarget(_lastTarget.Formation);
                         CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec4);
                         break;
                     }
                 case ChargeState.ChargingPast:
                     {
-                        _chargingPastTimer = new Timer(Mission.Current.CurrentTime, 19f);
-                        // Mirror native: reform on the side of the enemy the formation has come out on
-                        // (myCentre - enemyCentre), not towards the enemy.
+                        _chargingPastTimer = new Timer(Mission.Current.CurrentTime, ChargingPastTimeoutSeconds);
                         if (_lastTarget != null && _lastTarget.Formation != null)
                         {
                             Vec2 awayDir = (RBMAI.Utilities.GetFormationCenter(base.Formation) - RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation)).Normalized();
@@ -262,7 +306,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                         break;
                     }
                 case ChargeState.Reforming:
-                    _reformTimer = new Timer(Mission.Current.CurrentTime, 10f);
+                    _reformTimer = new Timer(Mission.Current.CurrentTime, ReformTimeoutSeconds);
                     CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
                     break;
 
@@ -270,11 +314,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             newTarget = false;
         }
 
-        // Re-issue the move order every occasional tick (timers above stay on state entry only): the order was
-        // previously only set on state change, so a stale/aborted MovementOrderMove left the formation standing.
         if (_chargeState == ChargeState.ChargingPast || _chargeState == ChargeState.Reforming)
         {
-            // Re-checked every tick because other formations keep moving after the point was chosen.
             WorldPosition resolved = _lastReformDestination.IsValid ? ResolveReformDestination(_lastReformDestination) : WorldPosition.Invalid;
             if (resolved.IsValid)
             {
@@ -284,19 +325,11 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             }
             else
             {
-                // No usable reform spot anywhere nearby: skip the reform and charge again rather than
-                // stand around or ride to an off-navmesh / contested point.
                 SkipReformAndCharge();
             }
         }
     }
 
-    private const float ReformThreatDistance = 35f;
-
-    // While reforming (or pulling clear), any enemy formation that closes to within ReformThreatDistance
-    // of the cavalry, or is nearer than that and still approaching, is a reason to stop reforming and
-    // charge it: a halted wedge with infantry walking into it is exactly the "cavalry stands AFK and gets
-    // attacked" report.
     private bool IsEnemyClosingIn(bool excludeLastTarget = false)
     {
         Mission mission = Mission.Current;
@@ -307,6 +340,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         Formation lastTargetFormation = excludeLastTarget && _lastTarget != null ? _lastTarget.Formation : null;
         Vec2 myCenter = RBMAI.Utilities.GetFormationCenter(base.Formation);
         float threatSq = ReformThreatDistance * ReformThreatDistance;
+        float approachSq = threatSq * ReformApproachDistanceFactor * ReformApproachDistanceFactor;
         foreach (Team team in mission.Teams)
         {
             if (!team.IsEnemyOf(base.Formation.Team))
@@ -325,10 +359,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                 {
                     return true;
                 }
-                // Slightly further out but heading for us: velocity toward our centre counts as closing.
                 Vec2 toMe = myCenter - enemyCenter;
                 Vec2 vel = enemy.CachedCurrentVelocity;
-                if (distSq <= threatSq * 4f && vel.LengthSquared > 1f && Vec2.DotProduct(vel.Normalized(), toMe.Normalized()) > 0.7f)
+                if (distSq <= approachSq && vel.LengthSquared > ReformApproachMinSpeedSq && Vec2.DotProduct(vel.Normalized(), toMe.Normalized()) > ReformApproachMinDot)
                 {
                     return true;
                 }
@@ -355,18 +388,6 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         newTarget = false;
     }
 
-    private const float ReformClearanceMargin = 20f;
-
-    private static readonly float[] ReformSearchRadii = { 20f, 40f, 60f, 90f, 130f };
-    private const int ReformSearchDirections = 12;
-
-    // Cavalry must never stop or reform on top of / right beside another formation (friendly or enemy):
-    // a wedge halted inside a melee is a wedge that gets picked apart. If the destination is contested,
-    // search rings of candidate points around it and take the nearest one that is clear of every
-    // formation's footprint (half width + half depth + own half width + margin), on navmesh, inside the
-    // map, and not closer to the charge target than the original point (so the search never pulls the
-    // wedge back into the enemy). If nothing qualifies, try the single-direction push; if that is not
-    // usable either, return Invalid so the caller skips the reform and charges again.
     private WorldPosition ResolveReformDestination(WorldPosition dest)
     {
         Mission mission = Mission.Current;
@@ -421,7 +442,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             }
             if (best.IsValid)
             {
-                break; // nearest ring wins; no need to widen further
+                break;
             }
         }
         if (best.IsValid)
@@ -436,7 +457,6 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         return WorldPosition.Invalid;
     }
 
-    // On navmesh and inside the mission boundary; anything else is a point the riders cannot reach.
     private static bool IsReformPointUsable(Mission mission, WorldPosition pos)
     {
         return pos.IsValid && pos.GetNavMesh() != System.UIntPtr.Zero && mission.IsPositionInsideBoundaries(pos.AsVec2);
@@ -463,8 +483,6 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         return true;
     }
 
-    // Fallback when the ring search finds nothing: slide out of each overlapping footprint along the line
-    // from that formation's centre to the point. A few passes handle chained overlaps.
     private WorldPosition PushClearSingleDirection(Mission mission, WorldPosition dest)
     {
         Vec2 point = dest.AsVec2;
@@ -475,7 +493,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         }
         float myHalfWidth = base.Formation.Width * 0.5f;
         bool moved = false;
-        for (int pass = 0; pass < 3; pass++)
+        for (int pass = 0; pass < ReformPushMaxPasses; pass++)
         {
             bool movedThisPass = false;
             foreach (Team team in mission.Teams)

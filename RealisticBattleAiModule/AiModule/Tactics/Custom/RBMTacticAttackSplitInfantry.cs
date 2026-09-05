@@ -25,9 +25,6 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
         _leftFlankingInfantry = null;
         _rightFlankingInfantry = null;
 
-        // Native AssignTacticFormations sets IsMainFormation regardless of AI control; gating on IsAIControlled
-        // left the team with NO main formation whenever the player commanded the infantry, breaking every
-        // behavior that looks one up (ProtectFlank, etc.).
         if (_mainInfantry != null)
         {
             _mainInfantry.AI.IsMainFormation = true;

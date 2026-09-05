@@ -147,8 +147,6 @@ namespace RBMAI
                     __result = 0f;
                     return false;
                 }
-                // Native BehaviorRegroup weighs the ACTIVE behavior's coherence, not Regroup's own: using
-                // Regroup's constant made regroup fire against behaviors that tolerate a loose formation.
                 float coherence = __instance.Formation.AI.ActiveBehavior?.BehaviorCoherence ?? __instance.BehaviorCoherence;
                 __result = MBMath.Lerp(0.1f, 1.2f, MBMath.ClampFloat(coherence * (querySystem.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents + 1f) / (querySystem.IdealAverageDisplacement + 1f), 0f, 3f) / 3f);
                 return false;
