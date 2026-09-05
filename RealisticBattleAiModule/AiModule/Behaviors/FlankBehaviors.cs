@@ -40,7 +40,12 @@ namespace RBMAI
 
             if (____mainFormation == null || __instance.Formation == null || __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null)
             {
-                ____currentOrder = MovementOrder.MovementOrderStop;
+                // Stop left flank formations rooted for the whole battle whenever no main formation existed;
+                // charging keeps them in the fight instead.
+                FormationQuerySystem closestEnemy = __instance.Formation?.QuerySystem?.ClosestSignificantlyLargeEnemyFormation;
+                ____currentOrder = (closestEnemy?.Formation != null)
+                    ? MovementOrder.MovementOrderChargeToTarget(closestEnemy.Formation)
+                    : MovementOrder.MovementOrderCharge;
                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
             }
             else if (____protectFlankState == BehaviorState.HoldingFlank || ____protectFlankState == BehaviorState.Returning)
@@ -163,9 +168,13 @@ namespace RBMAI
                         case BehaviorState.HoldingFlank:
                             {
                                 FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
-                                if (closestFormation != null && closestFormation.Formation != null && (closestFormation.Formation.QuerySystem.IsCavalryFormation || closestFormation.Formation.QuerySystem.IsRangedCavalryFormation))
+                                // Restricting the charge trigger to cavalry targets meant flank guards ignored
+                                // enemy infantry/archers walking into them. Any closest enemy triggers now;
+                                // cavalry keeps the longer intercept range, everything else uses native's 50m.
+                                if (closestFormation != null && closestFormation.Formation != null)
                                 {
-                                    float changeToChargeDistance = 110f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
+                                    bool isCavTarget = closestFormation.Formation.QuerySystem.IsCavalryFormation || closestFormation.Formation.QuerySystem.IsRangedCavalryFormation;
+                                    float changeToChargeDistance = (isCavTarget ? 110f : 50f) + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
                                     if (RBMAI.Utilities.GetFormationCenter(closestFormation.Formation).DistanceSquared(position) < changeToChargeDistance * changeToChargeDistance || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
                                     {
                                         ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(closestFormation.Formation);
@@ -223,12 +232,20 @@ namespace RBMAI
             {
                 ____mainFormation = __instance.Formation.Team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).FirstOrDefault((Formation f) => f.AI.IsMainFormation);
             }
-            if (____mainFormation == null || __instance.Formation.AI.IsMainFormation)
+            if (__instance.Formation.AI.IsMainFormation)
             {
                 __result = 0f;
                 return false;
             }
-            __result = 10f;
+            if (____mainFormation == null)
+            {
+                // Low but positive: with no main formation the order above is now a charge, not a stop,
+                // so it is safe (and better than idling) for this behavior to win occasionally.
+                __result = 0.5f;
+                return false;
+            }
+            // 10f made ProtectFlank beat every other behavior unconditionally; native weight is 1.2f.
+            __result = 1.2f;
             return false;
         }
     }

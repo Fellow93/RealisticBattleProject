@@ -229,13 +229,23 @@ namespace RBMAI
                 {
                     return true;
                 }
+                // Native latch: once the main infantry is actually charging, the battle is joined for good —
+                // without this the flag flickered back off whenever the melee ratio dipped, re-running approach
+                // tactics mid-fight.
+                BehaviorComponent activeBehavior = mainInfantry.AI?.ActiveBehavior;
+                if (activeBehavior is BehaviorCharge || activeBehavior is BehaviorTacticalCharge || activeBehavior is RBMBehaviorCavalryCharge)
+                {
+                    return true;
+                }
                 if (mainInfantry != null && mainInfantry.CountOfUnits > 0)
                 {
                     Formation enemyForamtion = RBMAI.Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
                     {
                         float distance = GetFormationDistance(mainInfantry, enemyForamtion) + mainInfantry.Depth / 2f + enemyForamtion.Depth / 2f;
-                        return (distance <= (battleJoinRange + (hasBattleBeenJoined ? 5f : 0f)));
+                        // Wider hysteresis (was 5m): 5m was inside the noise of formation drift, so the flag
+                        // oscillated on/off across the threshold every tick.
+                        return (distance <= (battleJoinRange + (hasBattleBeenJoined ? 25f : 0f)));
                     }
                 }
             }

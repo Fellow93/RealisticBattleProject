@@ -257,13 +257,19 @@ namespace RBMAI
 
                     if (isKnockDown)
                     {
+                        // Charge-panic odds trimmed slightly (2026-09-05): a runaway in contact never recovers,
+                        // so in small battles a single cavalry pass dissolved the whole line.
                         if (isChargedFromBack)
                         {
-                            victim.CommonAIComponent?.Retreat();
+                            bool shouldPanic = MBRandom.RandomInt(4) != 0; // 75%
+                            if (shouldPanic)
+                            {
+                                victim.CommonAIComponent?.Retreat();
+                            }
                         }
                         else
                         {
-                            bool shouldPanic = MBRandom.RandomInt(2) == 0;
+                            bool shouldPanic = MBRandom.RandomInt(3) == 0; // 33%
                             if (shouldPanic)
                             {
                                 victim.CommonAIComponent?.Retreat();
@@ -274,7 +280,7 @@ namespace RBMAI
                     {
                         if (isChargedFromBack)
                         {
-                            bool shouldPanic = MBRandom.RandomInt(2) == 0;
+                            bool shouldPanic = MBRandom.RandomInt(3) == 0; // 33%
                             if (shouldPanic)
                             {
                                 victim.CommonAIComponent?.Retreat();
@@ -282,7 +288,7 @@ namespace RBMAI
                         }
                         else
                         {
-                            int sumModifiers = Math.Max(2, 1 + victimTier);
+                            int sumModifiers = Math.Max(3, 1 + victimTier);
                             bool shouldPanic = MBRandom.RandomInt(sumModifiers) == 0;
                             if (shouldPanic)
                             {

@@ -52,6 +52,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
         _chargeState = ChargeState.Charging;
         base.BehaviorCoherence = 0.5f;
+        // Reform point on the far side of the enemy; the distance is fine, the old bug was its sign.
         _desiredChargeStopDistance = 110f;
     }
 
@@ -129,15 +130,10 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                             }
                             //result = ChargeState.ChargingPast;
                         }
-                        if (base.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents < 5f)
-                        {
-                            Vec2 chargeDir = (RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)).Normalized();
-                            WorldPosition newReformDest = RBMAI.Utilities.GetFormationCenterWorldPosition(_lastTarget.Formation);
-                            newReformDest.SetVec2(RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) + chargeDir * (_desiredChargeStopDistance + _lastTarget.Formation.Depth));
-                            _lastReformDestination = newReformDest;
-                            result = ChargeState.ChargingPast;
-                            _chargeTimer = null;
-                        }
+                        // A tight formation (low position deviation) is the normal state of a cavalry wedge that has
+                        // NOT yet reached the enemy, so this flipped Charging->ChargingPast before contact and the
+                        // charge never landed. Native BehaviorTacticalCharge exits Charging on the dot-product flip
+                        // alone; keep that (plus RBM's 3s grace timer) as the only exit.
                         if (_chargeTimer != null && _chargeTimer.Check(Mission.Current.CurrentTime))
                         {
                             result = ChargeState.ChargingPast;
@@ -150,7 +146,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                         float distToTarget = RBMAI.Utilities.GetFormationDistance(base.Formation, _lastTarget.Formation);
                         if (distToTarget >= (_desiredChargeStopDistance + _lastTarget.Formation.Depth))
                         {
-                            _lastReformDestination = RBMAI.Utilities.GetFormationCenterWorldPosition(base.Formation);
+                            // Overwriting the reform point with the formation's OWN centre made Reforming a
+                            // stand-still. Keep the away-side destination computed on ChargingPast entry so the
+                            // formation actually pulls clear before turning around.
                             result = ChargeState.Reforming;
                         }
                         else if (_chargingPastTimer.Check(Mission.Current.CurrentTime))
@@ -237,11 +235,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                         }
                         base.Formation.SetFormOrder(FormOrder.FormOrderCustom(_lastTarget.Formation.Width));
                         Vec2 vec4 = (RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)).Normalized();
-                        WorldPosition medianPosition3 = RBMAI.Utilities.GetFormationCenterWorldPosition(_lastTarget.Formation);
-                        Vec2 vec5 = medianPosition3.AsVec2 + vec4 * (_desiredChargeStopDistance + _lastTarget.Formation.Depth);
-                        medianPosition3.SetVec2(vec5);
-                        _lastReformDestination = medianPosition3;
-                        //base.CurrentOrder = MovementOrder.MovementOrderMove(medianPosition3);
+                        // No longer seeds _lastReformDestination here: it used the TOWARDS-enemy direction (wrong
+                        // sign, a point beyond the enemy) and ChargingPast now computes the away-side point itself.
                         base.CurrentOrder = MovementOrder.MovementOrderChargeToTarget(_lastTarget.Formation);
                         CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec4);
                         break;
@@ -249,23 +244,33 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                 case ChargeState.ChargingPast:
                     {
                         _chargingPastTimer = new Timer(Mission.Current.CurrentTime, 19f);
-                        //Vec2 vec2 = (base.Formation.CachedAveragePosition - _lastTarget.MedianPosition.AsVec2).Normalized();
-                        //_lastReformDestination = _lastTarget.MedianPosition;
-                        //Vec2 vec3 = _lastTarget.MedianPosition.AsVec2 + vec2 * (_desiredChargeStopDistance + _lastTarget.Formation.Depth);
-                        //_lastReformDestination.SetVec2(vec3);
-                        base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
-                        //CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(_initialChargeDirection);
+                        // Mirror native: reform on the side of the enemy the formation has come out on
+                        // (myCentre - enemyCentre), not towards the enemy.
+                        if (_lastTarget != null && _lastTarget.Formation != null)
+                        {
+                            Vec2 awayDir = (RBMAI.Utilities.GetFormationCenter(base.Formation) - RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation)).Normalized();
+                            WorldPosition reformDest = RBMAI.Utilities.GetFormationCenterWorldPosition(_lastTarget.Formation);
+                            reformDest.SetVec2(RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) + awayDir * (_desiredChargeStopDistance + _lastTarget.Formation.Depth));
+                            _lastReformDestination = reformDest;
+                        }
                         CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
                         break;
                     }
                 case ChargeState.Reforming:
                     _reformTimer = new Timer(Mission.Current.CurrentTime, 10f);
-                    base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
                     CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
                     break;
 
             }
             newTarget = false;
+        }
+
+        // Re-issue the move order every occasional tick (timers above stay on state entry only): the order was
+        // previously only set on state change, so a stale/aborted MovementOrderMove left the formation standing.
+        if ((_chargeState == ChargeState.ChargingPast || _chargeState == ChargeState.Reforming) && _lastReformDestination.IsValid)
+        {
+            base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
+            CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
         }
     }
 
