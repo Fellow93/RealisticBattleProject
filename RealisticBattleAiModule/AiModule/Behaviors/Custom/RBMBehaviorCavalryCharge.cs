@@ -278,10 +278,15 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
     private const float ReformClearanceMargin = 20f;
 
+    private static readonly float[] ReformSearchRadii = { 20f, 40f, 60f, 90f, 130f };
+    private const int ReformSearchDirections = 12;
+
     // Cavalry must never stop or reform on top of / right beside another formation (friendly or enemy):
-    // a wedge halted inside a melee is a wedge that gets picked apart. Slide the destination away from
-    // any formation whose footprint (half-widths + margin) it would land in, along the direction pointing
-    // from that formation to the destination. A few passes handle chained overlaps.
+    // a wedge halted inside a melee is a wedge that gets picked apart. If the destination is contested,
+    // search rings of candidate points around it and take the nearest one that is clear of every
+    // formation's footprint (half width + half depth + own half width + margin), on navmesh, inside the
+    // map, and not closer to the charge target than the original point (so the search never pulls the
+    // wedge back into the enemy). If nothing qualifies, fall back to the old single-direction push.
     private WorldPosition PushClearOfOtherFormations(WorldPosition dest)
     {
         Mission mission = Mission.Current;
@@ -289,6 +294,88 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         {
             return dest;
         }
+        Vec2 origin = dest.AsVec2;
+        if (IsReformPointClear(mission, origin))
+        {
+            return dest;
+        }
+
+        Vec2 enemyCenter = Vec2.Zero;
+        bool hasEnemy = _lastTarget != null && _lastTarget.Formation != null;
+        float minEnemyDistSq = 0f;
+        if (hasEnemy)
+        {
+            enemyCenter = RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation);
+            minEnemyDistSq = origin.DistanceSquared(enemyCenter);
+        }
+
+        WorldPosition best = WorldPosition.Invalid;
+        float bestDistSq = float.MaxValue;
+        float step = MathF.PI * 2f / ReformSearchDirections;
+        foreach (float radius in ReformSearchRadii)
+        {
+            for (int i = 0; i < ReformSearchDirections; i++)
+            {
+                float angle = i * step;
+                Vec2 candidate = origin + new Vec2(MathF.Cos(angle), MathF.Sin(angle)) * radius;
+                if (hasEnemy && candidate.DistanceSquared(enemyCenter) < minEnemyDistSq)
+                {
+                    continue;
+                }
+                if (!IsReformPointClear(mission, candidate))
+                {
+                    continue;
+                }
+                WorldPosition candidatePos = dest;
+                candidatePos.SetVec2(candidate);
+                if (!candidatePos.IsValid || candidatePos.GetNavMesh() == System.UIntPtr.Zero || !mission.IsPositionInsideBoundaries(candidate))
+                {
+                    continue;
+                }
+                float distSq = candidate.DistanceSquared(origin);
+                if (distSq < bestDistSq)
+                {
+                    bestDistSq = distSq;
+                    best = candidatePos;
+                }
+            }
+            if (best.IsValid)
+            {
+                break; // nearest ring wins; no need to widen further
+            }
+        }
+        if (best.IsValid)
+        {
+            return best;
+        }
+        return PushClearSingleDirection(mission, dest);
+    }
+
+    private bool IsReformPointClear(Mission mission, Vec2 point)
+    {
+        float myHalfWidth = base.Formation.Width * 0.5f;
+        foreach (Team team in mission.Teams)
+        {
+            foreach (Formation other in team.FormationsIncludingSpecialAndEmpty)
+            {
+                if (other == null || other == base.Formation || other.CountOfUnits == 0)
+                {
+                    continue;
+                }
+                float clearance = other.Width * 0.5f + other.Depth * 0.5f + myHalfWidth + ReformClearanceMargin;
+                if (point.DistanceSquared(RBMAI.Utilities.GetFormationCenter(other)) < clearance * clearance)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // Fallback when the ring search finds nothing: slide out of each overlapping footprint along the line
+    // from that formation's centre to the point. A few passes handle chained overlaps.
+    private WorldPosition PushClearSingleDirection(Mission mission, WorldPosition dest)
+    {
         Vec2 point = dest.AsVec2;
         Vec2 fallbackDir = Vec2.Zero;
         if (_lastTarget != null && _lastTarget.Formation != null)
