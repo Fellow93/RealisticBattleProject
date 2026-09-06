@@ -45,6 +45,23 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// The kit-strip gather for a single captive lord freed by a ransom struck OUTSIDE the settlement
+        /// sale -- a courier's offer accepted on the map, an AI-to-AI barter, a release haggled in the
+        /// barter screen. Priced and split exactly like a settlement ransom of the same man.
+        /// </summary>
+        public static void RansomHeroForSpoils(PartyBase captorParty, Hero hero)
+        {
+            if (hero == null || hero.CharacterObject == null)
+            {
+                return;
+            }
+            TroopRoster roster = TroopRoster.CreateDummyTroopRoster();
+            roster.AddToCounts(hero.CharacterObject, 1);
+            StripPrisonersForSpoils(captorParty, roster, "RANSOM", "ransomed a captive lord",
+                AnnounceRansomSpoilsToPlayer);
+        }
+
+        /// <summary>
         /// The same kit-strip gather as a ransom, for prisoners handed over to satisfy a delivery quest --
         /// a route that never touches <see cref="SellPrisonersAction"/>, so the ransom gear-strip would
         /// otherwise skip it. Keeps delivering a captive worth the same stripped kit as ransoming one; the
@@ -172,6 +189,24 @@ namespace RBMCampaign
     [HarmonyPatch(typeof(SellPrisonersAction), "ApplyInternal")]
     public static class SellPrisonersGearSpoilsPatch
     {
+        /// <summary>
+        /// True while a settlement sale is running. <c>SellPrisonersAction</c> frees each captive lord
+        /// through <c>EndCaptivityAction.ApplyByRansom</c>, the same call the map ransom offer ends in;
+        /// this tells <see cref="HeroRansomGearSpoilsPatch"/> the roster-wide strip below already covers
+        /// him, so he is not stripped twice. Cleared from a finalizer so a throwing sale cannot leave it set.
+        /// </summary>
+        internal static bool InSale;
+
+        private static void Prefix()
+        {
+            InSale = true;
+        }
+
+        private static void Finalizer()
+        {
+            InSale = false;
+        }
+
         private static void Postfix(PartyBase sellerParty, TroopRoster prisoners, bool applyConsequences)
         {
             if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !applyConsequences)
@@ -179,6 +214,38 @@ namespace RBMCampaign
                 return;
             }
             SpoilsPool.RansomPrisonersForSpoils(sellerParty, prisoners);
+        }
+    }
+
+    /// <summary>
+    /// Gives every OTHER ransom of a captive lord the same kit-strip a settlement sale grants. Vanilla has
+    /// three more roads to a paid release that never pass through <see cref="SellPrisonersAction"/>: the
+    /// courier's ransom offer the player accepts on the map (<c>RansomOfferCampaignBehavior</c>), the
+    /// AI-to-AI ransom barter the same behavior runs daily, and a release haggled in the barter screen
+    /// (<c>SetPrisonerFreeBarterable.Apply</c>). All three end in <c>EndCaptivityAction.ApplyByRansom</c>
+    /// and paid only vanilla's gold, so a lord ransomed by courier was worth far less to his captors than
+    /// the same lord sold at a town -- the gap the player sees as "the offer ignores RBM's ransom values".
+    /// </summary>
+    /// <remarks>
+    /// Prefix, because the release clears <c>PartyBelongedToAsPrisoner</c>, and that party is the one
+    /// whose men strip him. The gold half is untouched: the offer path already names a real payer, so
+    /// <see cref="RansomFunding"/> has nothing to fund. The player being freed is skipped -- his captors
+    /// are AI and vanilla's own ransom is the whole of that bargain.
+    /// </remarks>
+    [HarmonyPatch(typeof(EndCaptivityAction), "ApplyByRansom")]
+    public static class HeroRansomGearSpoilsPatch
+    {
+        private static void Prefix(Hero character)
+        {
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled
+                || SellPrisonersGearSpoilsPatch.InSale
+                || character == null
+                || character == Hero.MainHero
+                || !character.IsPrisoner)
+            {
+                return;
+            }
+            SpoilsPool.RansomHeroForSpoils(character.PartyBelongedToAsPrisoner, character);
         }
     }
 
