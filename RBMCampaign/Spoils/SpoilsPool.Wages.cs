@@ -57,13 +57,13 @@ namespace RBMCampaign
             {
                 return;
             }
-            // A garrison is pulled out of the spoils economy entirely: its wages are the fief's to pay
-            // (see GarrisonUpkeep) and its promotions are billed straight to the fief's treasury (see
-            // SpoilsUpgradePatches), so it keeps no purse of its own to skim a wage into.
-            if (party?.MobileParty != null && party.MobileParty.IsGarrison)
-            {
-                return;
-            }
+            // A garrison banks its wage like any other troop. The fief pays that wage out of its treasury
+            // (owner backstop -- see GarrisonUpkeep), so the purse holds real coin, and what the men do
+            // not spend on their own promotions they drink and spend where they stand, which hands it back
+            // to the settlement that paid it (TroopUpkeep / TroopMarketFeedback.CreditLocalPurse).
+            // Kit maintenance is the one leg still billed to the fief directly rather than the purse
+            // (GarrisonUpkeep.ChargeMaintenance); the garrison is no WarPartyComponent, so the clan
+            // maintenance pass never touches it and nothing is charged twice.
             PartyWageModel wageModel = Campaign.Current.Models.PartyWageModel;
             bool isMilitia = party?.MobileParty != null && party.MobileParty.IsMilitia;
             // A mercenary company's men are kept at double pay while the contract holds, so a stack under it

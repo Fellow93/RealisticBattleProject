@@ -315,8 +315,10 @@ namespace RBMCampaign
         /// of its own treasury by real debits, every hour, into purses that then incinerated the money --
         /// so a castle's treasury drained into nothing at exactly the rate it paid its men.
         ///
-        /// A town or castle takes it into the market, which is where a shopkeeper's takings belong. A
-        /// village has no market -- one purse only -- so it goes there. See <see cref="SettlementWealth"/>.
+        /// A town takes it into the market, which is where a shopkeeper's takings belong. A castle or a
+        /// village has no market -- one purse only, its settlement wealth -- so it goes there. For a
+        /// castle that closes the garrison's loop: the treasury pays the men's wage, the men drink it in
+        /// the castle, and the castle's wealth gets it back. See <see cref="SettlementWealth"/>.
         /// </remarks>
         private static bool CreditLocalPurse(Settlement settlement, int goldSpent, string source)
         {
@@ -329,7 +331,7 @@ namespace RBMCampaign
             {
                 SettlementWealth.CreditCitizens(settlement, goldSpent, source);
             }
-            else if (settlement.IsVillage)
+            else if (settlement.IsVillage || settlement.IsCastle)
             {
                 SettlementWealth.Credit(settlement, goldSpent, source);
             }

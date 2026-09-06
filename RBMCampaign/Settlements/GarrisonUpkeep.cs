@@ -167,7 +167,8 @@ namespace RBMCampaign
         /// Priced off the same kit-value formula a marching troop's maintenance is (<see cref="SpoilsPool.GetDailyMaintenanceCost"/>),
         /// summed over the garrison roster and drawn from the fief's treasury -- the pot its wage comes from
         /// -- with the coin paid over to the town that does the mending (a town itself, else the nearest
-        /// friendly one). No owner backstop and no purse: a garrison keeps none, so a treasury too empty to
+        /// friendly one). No owner backstop, and the men's spoils purse is not drawn on here (that purse
+        /// is the wage they bank and spend on drink, luxuries and promotions), so a treasury too empty to
         /// pay simply leaves that day's mending undone, and only what the treasury could give reaches the
         /// market. Money conserved throughout -- the fief pays exactly what the market receives.
         /// </remarks>

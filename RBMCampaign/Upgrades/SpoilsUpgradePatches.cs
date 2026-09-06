@@ -222,26 +222,33 @@ namespace RBMCampaign
                             continue;
                         }
                     }
-                    // A garrison has neither an owner to bill nor -- now it is out of the spoils economy --
-                    // a purse of its own: its promotions come out of the fief's treasury. That is a GOLD
+                    // A garrison has no owner to bill: the men its purse covers promote off their own
+                    // spoils, and the rest come out of the fief's treasury. The treasury share is a GOLD
                     // leg, so it is gated by supply exactly as a lord's gold-buyers are (a stationed garrison
-                    // is supplied by its own settlement, so this only bites the pathological unsupplied case).
-                    // Clamp the batch to what the treasury can spare above the reserve it keeps to go on
-                    // paying the garrison's wages, and require it to hold ten times a man's promotion first.
+                    // is supplied by its own settlement, so this only bites the pathological unsupplied case);
+                    // the purse-covered men are not, like a lord's. Clamp the treasury batch to what it can
+                    // spare above the reserve it keeps to go on paying the garrison's wages, and require it
+                    // to hold ten times a man's promotion first.
                     else if (party.MobileParty.IsGarrison && fullGold > 0)
                     {
+                        float coveredMen = SpoilsPool.GetCoveredMen(party, character, upgradeTarget);
+                        int affordable;
                         if (!_supplyGoldAllowed)
                         {
-                            continue;
+                            affordable = (int)coveredMen;
                         }
-                        Settlement fief = GarrisonFiefOf(party);
-                        int wealth = (fief != null) ? SettlementWealth.GetSettlementWealth(fief) : 0;
-                        int reserve = party.MobileParty.TotalWage * GarrisonRecruitCost.GarrisonReserveDays;
-                        int spendable = MathF.Max(0, wealth - reserve);
-                        int affordable = spendable / fullGold;
-                        if (wealth < fullGold * GarrisonRecruitCost.GarrisonSpawnReserveMult)
+                        else
                         {
-                            affordable = 0;
+                            Settlement fief = GarrisonFiefOf(party);
+                            int wealth = (fief != null) ? SettlementWealth.GetSettlementWealth(fief) : 0;
+                            int reserve = party.MobileParty.TotalWage * GarrisonRecruitCost.GarrisonReserveDays;
+                            int spendable = MathF.Max(0, wealth - reserve);
+                            int fromTreasury = spendable / fullGold;
+                            if (wealth < fullGold * GarrisonRecruitCost.GarrisonSpawnReserveMult)
+                            {
+                                fromTreasury = 0;
+                            }
+                            affordable = (int)(coveredMen + fromTreasury);
                         }
                         count = MathF.Min(count, affordable);
                         if (count <= 0)

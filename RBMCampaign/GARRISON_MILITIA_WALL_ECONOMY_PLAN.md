@@ -18,13 +18,17 @@ for garrison (spec: paid by castle/city WEALTH). Charge site (3a): gate read-onl
 `CalculateMilitiaChange` postfix + charge the realized whole-man day-over-day delta in RBM's
 daily-settlement handler (never move money in the model).
 
-**(3d) garrison-upgrade fief billing — IMPLEMENTED.** Garrison parties are pulled out of the spoils
-economy (`SpoilsPool.Wages` skips `IsGarrison`, so they accrue no wage-spoils), and a garrison
-promotion is billed straight to the fief's treasury: `SpoilsUpgradePatches.GetPossibleUpgradeTargets`
-gains a garrison branch that clamps the batch to what the treasury holds over its 30×-wage reserve
-(and 10× a man's cost), and `ApplyEffects` debits the fief (`Source.Upgrade`) in place of the absent
-owner's gold — which `SupplyUpgradeFromTown` then credits to the town's citizens, conserving. The
-GENERAL/player upgrade path is untouched; only the ownerless-garrison branches are new.
+**(3d) garrison-upgrade fief billing — IMPLEMENTED; revised 2026-09-06.** Garrisons are back IN the
+spoils economy: `SpoilsPool.Wages` banks a garrison's wage into its purse like any troop (the fief paid
+it), and the purse is spent on carousing/luxuries/healing where the garrison stands — in a castle that
+coin now credits the castle's single wealth pool (`TroopMarketFeedback.CreditLocalPurse`), closing the
+treasury → men → treasury loop instead of destroying it. A garrison promotion is purse-first: the men
+the spoils cover promote free, the rest is billed to the fief's treasury via the garrison branch in
+`SpoilsUpgradePatches.GetPossibleUpgradeTargets` (clamped to the treasury over its 30×-wage reserve and
+10× a man's cost); `ApplyEffects` debits the fief (`Source.Upgrade`) for that gold leg, which
+`SupplyUpgradeFromTown` credits to the town's citizens, conserving. Kit maintenance stays a direct
+fief debit (`GarrisonUpkeep.ChargeMaintenance`); the garrison is no `WarPartyComponent`, so the clan
+purse-maintenance pass never double-charges it.
 
 **(3f / 5b) horse-presence gate — DROPPED ENTIRELY (user).** No mount gating on spawn, recruit, or
 upgrade. `HasHorseInStock` and the garrison mounted-recruit check were removed. Task 3 = the militia +

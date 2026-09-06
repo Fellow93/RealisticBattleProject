@@ -779,9 +779,10 @@ namespace RBMCampaign
         private static bool HasMarket(Settlement settlement)
         {
             // Towns only. A castle has no market circulating money and so no citizen purse: it holds a
-            // SINGLE pool, its settlement wealth (see CastleEconomy), and everything that would credit a
-            // castle's "citizens" -- garrison spending, trade or a ransom struck there -- has no second
-            // pot to land in and falls back to vanilla, the castle's income being its lands, not its bar.
+            // SINGLE pool, its settlement wealth (see CastleEconomy). Everything that would credit a
+            // castle's "citizens" -- its garrison's carousing and purchases above all -- is routed into
+            // that one pool instead (TroopMarketFeedback.CreditLocalPurse), so the wage a castle pays its
+            // men comes back to it over the counter rather than vanishing.
             return settlement != null && settlement.IsTown;
         }
 
