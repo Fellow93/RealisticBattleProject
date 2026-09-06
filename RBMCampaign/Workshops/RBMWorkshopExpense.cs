@@ -9,18 +9,18 @@ using TaleWorlds.CampaignSystem.Settlements.Workshops;
 namespace RBMCampaign
 {
     /// <summary>
-    /// A workshop's daily bill: its standing overhead, the wage for the batches it actually ran, and the
-    /// bankruptcy that follows when it can pay neither.
+    /// What a workshop pays the townspeople who work it: a share of every sale as the salary, the standing
+    /// daily overhead, and the bankruptcy that follows when the overhead cannot be paid.
     ///
-    /// Vanilla splits this across three methods (<c>HandleDailyExpense</c> dispatching to
+    /// Vanilla splits the daily step across three methods (<c>HandleDailyExpense</c> dispatching to
     /// <c>HandlePlayerWorkshopExpense</c> or <c>HandleNotableWorkshopExpense</c>) and charges only a flat
     /// <c>DailyExpense</c> -- an overhead that is blind to whether any work was done. It then destroys the
     /// money: the one number in the game meant to represent workshop labour was paid to nobody.
     ///
-    /// RBM owns the whole step at one seam. The bill is overhead plus a per-batch payroll, and every denar
-    /// of it is credited to the townspeople who did the work, which makes workshops a standing channel
-    /// from owners and capital into the market rather than a hole in it. A brewery's costs are its
-    /// brewers, and its brewers drink in the same town.
+    /// RBM owns the daily step at one seam and adds the salary at the sale itself. Every denar of both is
+    /// credited to the townspeople who did the work, which makes workshops a standing channel from owners
+    /// and capital into the market rather than a hole in it. A brewery's costs are its brewers, and its
+    /// brewers drink in the same town.
     /// </summary>
     /// <remarks>
     /// This replaces what <c>WorkshopPurse</c> used to do with a payroll postfix and two before/after
@@ -34,77 +34,100 @@ namespace RBMCampaign
     public static class RBMWorkshopExpense
     {
         /// <summary>
-        /// What a named workshop pays its hands for one production cycle.
+        /// The salary is a share of every sale: whenever a named workshop's capital is paid for a finished
+        /// good, this fraction of the payment goes to the townspeople who made it instead of into the till.
         /// </summary>
         /// <remarks>
-        /// Used only as the wage term of the per-batch margin test in <c>RBMWorkshopCycle.Decide</c>.
-        /// The daily bill itself is no longer per batch -- see <see cref="DailyWage"/>.
-        ///
-        /// A named shop pays a wage and the artisans do not, and the asymmetry is the whole distinction
+        /// A named shop pays its hands and the artisans do not, and the asymmetry is the whole distinction
         /// between them: a brewery has an owner, and the hands who work it are not him. The artisans have
         /// no owner to be separate from -- see <c>RBMWorkshopCycle.SettlesInGold</c>.
+        ///
+        /// The share is <c>55% - 5% per 48,000 of equipment_cost</c>: a pottery at 48,000 pays 50%, a
+        /// brewery at 144,000 pays 40%, a smithy at 240,000 pays 30%. A dearer shop is a bigger stake for
+        /// its owner, so more of each sale is his. Floored so no shop type ever pays nothing.
         /// </remarks>
-        public const int WagePerCycle = 75;
+        public const float SalaryShareBase = 0.55f;
+        public const float SalaryShareStepReduction = 0.05f;
+        public const float SalaryEquipmentStep = 48000f;
+        public const float SalaryShareFloor = 0.10f;
 
         /// <summary>
-        /// The base of the prosperity wage rate: what a shop pays per point of town prosperity, per
-        /// day, before its equipment is counted. Town prosperity under RBM sits in the low hundreds.
+        /// Below this capital a shop keeps the whole of every sale. It sits between the low-capital mark
+        /// and the founding capital: a struggling shop rebuilds its till before it pays anyone.
         /// </summary>
-        public const float WageRateBase = 32f;
+        public const int SalaryCapitalThreshold = 40000;
 
-        /// <summary>
-        /// What each 48,000 of a workshop type's <c>equipment_cost</c> (from
-        /// <c>RBMEconomy_workshops_artisans.xml</c>) adds to the rate: a pottery at 48,000 pays 35, a
-        /// brewery at 144,000 pays 41, a smithy at 240,000 pays 47.
-        /// </summary>
-        public const float WageRatePerEquipmentStep = 3f;
-        public const float WageEquipmentStep = 48000f;
-
-        /// <summary>
-        /// The wage rate a shop pays per point of its town's prosperity, per day:
-        /// <c>32 + 3 * equipment_cost / 48000</c>.
-        /// </summary>
-        public static float WageRate(Workshop shop)
+        /// <summary>The fraction of a sale that goes to the hands, by workshop type.</summary>
+        public static float SalaryShare(Workshop shop)
         {
             float equipment = (shop != null && shop.WorkshopType != null) ? shop.WorkshopType.EquipmentCost : 0f;
             if (equipment < 0f)
             {
                 equipment = 0f;
             }
-            return WageRateBase + WageRatePerEquipmentStep * equipment / WageEquipmentStep;
+            float share = SalaryShareBase - SalaryShareStepReduction * equipment / SalaryEquipmentStep;
+            return (share < SalaryShareFloor) ? SalaryShareFloor : share;
         }
 
         /// <summary>
-        /// What a named workshop pays its hands for one day: the town's prosperity times its wage rate.
+        /// What the hands take out of one payment to the shop. Zero for the artisans and for a shop whose
+        /// capital, before the payment, is not above <see cref="SalaryCapitalThreshold"/>.
         /// </summary>
-        /// <remarks>
-        /// Charged whether or not the shop ran a batch, and to notable-owned shops as much as the
-        /// player's. It scales with the town rather than with the day's batches so that the money in
-        /// workshop capital reaches the townspeople as a steady daily flow instead of in the lumps a
-        /// busy production day makes.
-        /// </remarks>
-        public static int DailyWage(Workshop shop)
+        public static int SalaryFromPayout(Workshop shop, int payout)
         {
-            if (shop == null || shop.WorkshopType == null || shop.WorkshopType.IsHidden)
+            if (payout <= 0 || shop == null || shop.WorkshopType == null || shop.WorkshopType.IsHidden)
             {
                 return 0;
             }
-            Town town = (shop.Settlement != null) ? shop.Settlement.Town : null;
-            if (town == null)
+            if (shop.Capital <= SalaryCapitalThreshold)
             {
                 return 0;
             }
-            float prosperity = town.Prosperity;
-            if (prosperity <= 0f)
+            int salary = (int)(payout * SalaryShare(shop));
+            return (salary > payout) ? payout : salary;
+        }
+
+        /// <summary>
+        /// Takes the hands' share out of a payment the shop has just received and credits it to the town's
+        /// citizens. Called by the output leg right after the payout lands in capital, so the SHOPS
+        /// breakdown still sees the whole sale come in and the payroll go out.
+        /// </summary>
+        public static void PaySalary(Workshop shop, int payout)
+        {
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled)
             {
-                return 0;
+                return;
             }
-            return (int)(prosperity * WageRate(shop));
+            // Capital is read AFTER the payout has landed, so the threshold is tested against the till
+            // that will actually be paying.
+            int salary = SalaryFromPayout(shop, payout);
+            if (salary <= 0)
+            {
+                return;
+            }
+            WorkshopPurse.SetContext(WorkshopPurse.Payroll);
+            shop.ChangeGold(-salary);
+            WorkshopPurse.ClearContext();
+
+            Settlement settlement = shop.Settlement;
+            if (settlement != null && SettlementWealth.HasCitizenPurse(settlement))
+            {
+                // Untaxed, unlike the trades on either side of it. The market fee is charged on goods
+                // changing hands over a counter, and a wage is not that -- it is a man being paid, and the
+                // town takes its penny later when he spends it.
+                SettlementWealth.CreditCitizens(settlement, salary, SettlementWealth.Source.WorkshopWages);
+            }
+            int running;
+            _salaryToday.TryGetValue(shop, out running);
+            _salaryToday[shop] = running + salary;
         }
 
         // Cycles each shop actually completed today, counted off the two methods that run one. Consumed
         // by the expense step, so an entry never outlives the day that made it.
         private static readonly Dictionary<Workshop, int> _cyclesToday = new Dictionary<Workshop, int>();
+
+        // Salary each shop has paid out of today's sales, likewise consumed by the expense step.
+        private static readonly Dictionary<Workshop, int> _salaryToday = new Dictionary<Workshop, int>();
 
         /// <summary>What a named shop paid its hands on its most recent production day.</summary>
         private struct Payroll
@@ -126,6 +149,7 @@ namespace RBMCampaign
         public static void Reset()
         {
             _cyclesToday.Clear();
+            _salaryToday.Clear();
             _lastPayroll.Clear();
         }
 
@@ -166,6 +190,17 @@ namespace RBMCampaign
             return cycles;
         }
 
+        private static int TakeSalary(Workshop shop)
+        {
+            int salary;
+            if (shop == null || !_salaryToday.TryGetValue(shop, out salary))
+            {
+                return 0;
+            }
+            _salaryToday.Remove(shop);
+            return salary;
+        }
+
         private static void CountCycle(Workshop workshop, bool produced)
         {
             if (!produced || workshop == null || !RBMConfig.RBMConfig.rbmCampaignEnabled)
@@ -190,29 +225,24 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The whole daily bill for one shop.
+        /// The daily overhead for one shop, and the bankruptcy that follows when it cannot be paid.
         /// </summary>
         /// <remarks>
-        /// The ladder is vanilla's (WCB:729-748), with the bill widened from overhead alone to overhead
-        /// plus payroll and one rung added before bankruptcy:
+        /// The salary is no longer part of this bill: it came off each sale as it was made
+        /// (<see cref="PaySalary"/>), so a shop can never be bankrupted by its own good day. What is
+        /// billed here is the standing overhead alone, on vanilla's ladder (WCB:729-748):
         ///
         /// <list type="number">
         /// <item>capital, while the shop is above <c>CapitalLowLimit</c>;</item>
         /// <item>the player owner's own gold -- vanilla's signal that an undercapitalised shop is billed
         /// to its owner, which is also what the clan finance expense line reports;</item>
         /// <item>capital again, if it covers the bill;</item>
-        /// <item>whatever capital there is, if that at least covers the standing overhead. A busy shop
-        /// must never be bankrupted BY ITS OWN GOOD DAY -- the payroll is a consequence of work done, and
-        /// work done is the last thing that should close a business;</item>
         /// <item>bankruptcy, charging nothing: vanilla hands the shop to a new owner instead, and the
         /// capital goes with it.</item>
         /// </list>
         ///
-        /// A partial payment is attributed to the overhead FIRST and only the remainder to the wage. The
-        /// overhead is a standing obligation (rent, tools, the licence) that falls due whether or not
-        /// anyone worked, so it has the prior claim on a thin till; the payroll is what gets shorted, and
-        /// the SHOPWAGE line's per-batch figure dipping below the declared rate is exactly the signal that
-        /// a shop ran out mid-payroll.
+        /// The overhead is credited to the townspeople like the salary, so nothing is destroyed. The day's
+        /// salary tally is taken here too, so the card and the SHOPWAGE line report a whole day of sales.
         ///
         /// The artisans pay nothing at all -- vanilla exempts hidden workshops from the whole method, and
         /// under RBM they do not move gold in either direction (<c>RBMWorkshopCycle.SettlesInGold</c>).
@@ -226,92 +256,55 @@ namespace RBMCampaign
             if (shop.WorkshopType.IsHidden)
             {
                 TakeCycles(shop);
+                TakeSalary(shop);
                 return;
             }
 
             int cycles = TakeCycles(shop);
-            int wage = DailyWage(shop);
-            int overhead = (Campaign.Current != null) ? Campaign.Current.Models.WorkshopModel.DailyExpense : 0;
-            int bill = wage + overhead;
+            int salary = TakeSalary(shop);
+            _lastPayroll[shop] = new Payroll { Cycles = cycles, Paid = salary };
 
             Settlement settlement = shop.Settlement;
+            WorkshopPurse.RecordWage(settlement, cycles, salary);
+
+            int overhead = (Campaign.Current != null) ? Campaign.Current.Models.WorkshopModel.DailyExpense : 0;
+            if (overhead <= 0)
+            {
+                return;
+            }
             int lowLimit = (Campaign.Current != null)
                 ? Campaign.Current.Models.WorkshopModel.CapitalLowLimit
                 : 0;
 
-            int fromCapital = 0;
-            int fromOwner = 0;
-
-            if (bill <= 0)
+            if (shop.Capital > lowLimit && shop.Capital >= overhead)
             {
-                _lastPayroll[shop] = new Payroll { Cycles = cycles, Paid = 0 };
-                return;
+                WorkshopPurse.SetContext(WorkshopPurse.Overhead);
+                shop.ChangeGold(-overhead);
+                WorkshopPurse.ClearContext();
             }
-
-            if (shop.Capital > lowLimit && shop.Capital >= bill)
+            else if (shop.Owner != null && shop.Owner == Hero.MainHero && shop.Owner.Gold >= overhead)
             {
-                fromCapital = bill;
-            }
-            else if (shop.Owner != null && shop.Owner == Hero.MainHero && shop.Owner.Gold >= bill)
-            {
-                fromOwner = bill;
-            }
-            else if (shop.Capital >= bill)
-            {
-                fromCapital = bill;
+                // Mirrors vanilla's own write (WCB:738): the owner's pocket, not a GiveGoldAction, so no
+                // clan-income event fires for what is an expense.
+                shop.Owner.Gold -= overhead;
             }
             else if (shop.Capital >= overhead)
             {
-                fromCapital = shop.Capital;
+                WorkshopPurse.SetContext(WorkshopPurse.Overhead);
+                shop.ChangeGold(-overhead);
+                WorkshopPurse.ClearContext();
             }
             else
             {
-                _lastPayroll[shop] = new Payroll { Cycles = cycles, Paid = 0 };
                 Bankrupt(behavior, shop);
                 return;
             }
 
-            int paid = fromCapital + fromOwner;
-
-            // Overhead has the prior claim; the wage takes what is left.
-            int overheadPaid = (paid < overhead) ? paid : overhead;
-            int wagePaid = paid - overheadPaid;
-
-            if (fromCapital > 0)
+            if (settlement != null && SettlementWealth.HasCitizenPurse(settlement))
             {
-                // Split into two debits so the SHOPS breakdown keeps its overhead and payroll buckets.
-                int capitalOverhead = (fromCapital < overheadPaid) ? fromCapital : overheadPaid;
-                if (capitalOverhead > 0)
-                {
-                    WorkshopPurse.SetContext(WorkshopPurse.Overhead);
-                    shop.ChangeGold(-capitalOverhead);
-                    WorkshopPurse.ClearContext();
-                }
-                int capitalWage = fromCapital - capitalOverhead;
-                if (capitalWage > 0)
-                {
-                    WorkshopPurse.SetContext(WorkshopPurse.Payroll);
-                    shop.ChangeGold(-capitalWage);
-                    WorkshopPurse.ClearContext();
-                }
+                // Rent, tools and the licence are bought from townspeople too.
+                SettlementWealth.CreditCitizens(settlement, overhead, SettlementWealth.Source.WorkshopWages);
             }
-            if (fromOwner > 0 && shop.Owner != null)
-            {
-                // Mirrors vanilla's own write (WCB:738): the owner's pocket, not a GiveGoldAction, so no
-                // clan-income event fires for what is an expense.
-                shop.Owner.Gold -= fromOwner;
-            }
-
-            _lastPayroll[shop] = new Payroll { Cycles = cycles, Paid = wagePaid };
-
-            if (paid > 0 && settlement != null && SettlementWealth.HasCitizenPurse(settlement))
-            {
-                // Untaxed, unlike the trades on either side of it. The market fee is charged on goods
-                // changing hands over a counter, and a wage is not that -- it is a man being paid, and the
-                // town takes its penny later when he spends it.
-                SettlementWealth.CreditCitizens(settlement, paid, SettlementWealth.Source.WorkshopWages);
-            }
-            WorkshopPurse.RecordWage(settlement, cycles, wagePaid);
         }
 
         private static void Bankrupt(WorkshopsCampaignBehavior behavior, Workshop shop)

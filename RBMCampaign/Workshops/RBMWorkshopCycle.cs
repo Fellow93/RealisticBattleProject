@@ -219,7 +219,6 @@ namespace RBMCampaign
             Town town = (workshop != null && workshop.Settlement != null) ? workshop.Settlement.Town : null;
             bool hidden = workshop != null && workshop.WorkshopType != null && workshop.WorkshopType.IsHidden;
             bool started = Campaign.Current != null && Campaign.Current.GameStarted;
-            int wage = hidden ? 0 : RBMWorkshopExpense.WagePerCycle;
 
             // 1. Glut. Refused before anything is consumed, so a gated cycle wastes nothing -- the clay
             //    stays on the shelf. Counted on its own SHOPCAP line, not among the SHOPBLOCK reasons.
@@ -237,13 +236,16 @@ namespace RBMCampaign
             // 2. Payout -- the figure the settlement step will actually pay, not the retail value.
             verdict.Payout = RBMWorkshopSettlement.ValueOfOutputs(town, production, rawOutputIncome);
 
-            // 3. Margin. The artisans use the bare test: they pay no wage and vanilla gave them no margin
-            //    term either, because they are not a business trying to clear one.
+            // 3. Margin, on what the SHOP keeps: the hands' share of the sale never reaches the till, so
+            //    a batch must clear its inputs after the salary or the shop is working at a loss. The
+            //    artisans use the bare test: they pay no salary and vanilla gave them no margin term
+            //    either, because they are not a business trying to clear one.
+            int netPayout = verdict.Payout - RBMWorkshopExpense.SalaryFromPayout(workshop, verdict.Payout);
             if (started)
             {
                 bool clearsMargin = hidden
                     ? (verdict.Payout > inputMaterialCost)
-                    : ((float)verdict.Payout >= inputMaterialCost * (1f + MarginRate) + wage);
+                    : ((float)netPayout >= inputMaterialCost * (1f + MarginRate));
                 if (!clearsMargin)
                 {
                     verdict.Allowed = false;
@@ -255,7 +257,7 @@ namespace RBMCampaign
 
             // 4. Shop solvency. Skipped for the artisans: they settle in kind, so there is nothing for
             //    them to be short of.
-            if (!hidden && workshop != null && workshop.Capital < inputMaterialCost + wage)
+            if (!hidden && workshop != null && workshop.Capital < inputMaterialCost)
             {
                 verdict.Allowed = false;
                 verdict.Why = Reason.ShopBroke;

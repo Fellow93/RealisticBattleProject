@@ -161,6 +161,8 @@ namespace RBMCampaign
                         workshop.ChangeGold(payout);
                         WorkshopPurse.ClearContext();
                         town.ChangeGold(-payout);
+                        // The hands' share of the sale, straight from the till to the townspeople.
+                        RBMWorkshopExpense.PaySalary(workshop, payout);
                     }
                 }
                 return false;

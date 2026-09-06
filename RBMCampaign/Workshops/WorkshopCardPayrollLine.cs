@@ -11,9 +11,10 @@ namespace RBMCampaign
     /// Shows the player what their workshop actually pays its hands.
     ///
     /// The clan-screen workshop card lists a "Daily Wage" of the standing overhead and nothing else,
-    /// while <see cref="RBMWorkshopExpense"/> also draws a per-batch payroll out of the same capital. A busy shop could lose several hundred a day to wages the card never mentioned, so its
-    /// capital fell faster than any figure on screen explained. This adds a "Production Wages" row
-    /// under the vanilla one, reporting the last day's batches and what they cost.
+    /// while <see cref="RBMWorkshopExpense"/> also takes the hands' share out of every sale. A busy shop
+    /// could hand over half its sales to wages the card never mentioned, so its capital grew slower than
+    /// any figure on screen explained. This adds a "Production Wages" row under the vanilla one,
+    /// reporting the shop's share rate and the last day's batches and salary.
     /// </summary>
     [HarmonyPatch(typeof(ClanFinanceWorkshopItemVM), "PopulateStatsList")]
     public static class WorkshopCardPayrollLine
@@ -33,17 +34,19 @@ namespace RBMCampaign
             int cycles;
             int paid;
             bool known = RBMWorkshopExpense.TryGetLastPayroll(shop, out cycles, out paid);
-            int rate = RBMWorkshopExpense.DailyWage(shop);
+            int rate = (int)(RBMWorkshopExpense.SalaryShare(shop) * 100f + 0.5f);
+            int threshold = RBMWorkshopExpense.SalaryCapitalThreshold;
 
             string name = new TextObject("{=RBM_wsPayroll}Production Wages").ToString();
-            string value = known ? paid.ToString() : rate.ToString();
+            string value = known ? paid.ToString() : "-";
 
             BasicTooltipViewModel hint = new BasicTooltipViewModel(delegate
             {
                 TextObject text = known
-                    ? new TextObject("{=RBM_wsPayrollHint}Paid daily from the workshop's capital to the townspeople who work it, scaled with the town's prosperity and the workshop's equipment: {RATE} denars a day at today's prosperity. Last day: {CYCLES} batches, {PAID} denars. This is on top of the daily wage above.")
-                    : new TextObject("{=RBM_wsPayrollHintIdle}Paid daily from the workshop's capital to the townspeople who work it, scaled with the town's prosperity and the workshop's equipment: {RATE} denars a day at today's prosperity, on top of the daily wage above. Not billed yet this session.");
+                    ? new TextObject("{=RBM_wsPayrollHint}Paid to the townspeople who work the shop as {RATE}% of every sale, while its capital is above {THRESHOLD}. Last day: {CYCLES} batches, {PAID} denars. This is on top of the daily wage above.")
+                    : new TextObject("{=RBM_wsPayrollHintIdle}Paid to the townspeople who work the shop as {RATE}% of every sale, while its capital is above {THRESHOLD}, on top of the daily wage above. No batch has run yet this session.");
                 text.SetTextVariable("RATE", rate);
+                text.SetTextVariable("THRESHOLD", threshold);
                 text.SetTextVariable("CYCLES", cycles);
                 text.SetTextVariable("PAID", paid);
                 return text.ToString();
