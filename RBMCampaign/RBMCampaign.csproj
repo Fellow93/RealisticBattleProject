@@ -302,6 +302,8 @@
     <Compile Include="Spoils\SpoilsPool.PrisonerStrip.cs" />
     <Compile Include="Spoils\SpoilsPool.Ransom.cs" />
     <Compile Include="Spoils\SpoilsPool.Plunder.cs" />
+    <Compile Include="Spoils\SpoilsPool.MarketSack.cs" />
+    <Compile Include="Spoils\SiegeAftermathPatches.cs" />
     <Compile Include="Spoils\RaidGoodsDestruction.cs" />
     <Compile Include="Spoils\SpoilsPool.Wages.cs" />
     <Compile Include="Spoils\SpoilsPool.Maintenance.cs" />

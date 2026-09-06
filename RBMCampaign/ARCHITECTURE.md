@@ -64,15 +64,30 @@ which fires once when a raid concludes. Only on `winnerSide == Attacker`. The po
 head count within each party via `GrantFlatSpoilsToParty` (plunder is shared, not fought over piece
 by piece like battlefield kit). The player gets a "Your men plunder {SETTLEMENT}…" message.
 
-### 3. Town/castle sacking (`SpoilsPool.OnSettlementCaptured`)
+### 3. Town/castle sacking (`SpoilsPool.OnSiegeAftermathApplied`)
 
-Hooks `CampaignEvents.OnSettlementOwnerChangedEvent`, gated on
-`detail == ChangeOwnerOfSettlementDetail.BySiege` (so barter/gift/vote transfers grant nothing).
-Pot = `town.Prosperity × troopRaidSpoilsMultiplier` (prosperity, not hearth — towns are measured in
-it; the same knob tunes both). Granted to the **single capturing party** — `capturerHero` (fallback
-`newOwner`) → `PartyBelongedTo.Party` — via `GrantFlatSpoilsToParty`, mirroring how the game credits
-a capture to one hero rather than splitting across a besieging army. Player gets a "Your men sack
-{SETTLEMENT}…" message. (Army-wide splitting is a possible future refinement.)
+Driven by the **vanilla aftermath choice** — the player's Devastate / Pillage / Show Mercy menu, or
+`DetermineAISiegeAftermath`'s weighted pick for an AI — off
+`CampaignEvents.OnSiegeAftermathAppliedEvent`. Towns and castles, player and AI alike. Per tier:
+
+| Tier | Prosperity | Wealth stolen | Spoils share | Market goods | Spoils share |
+|---|---|---|---|---|---|
+| Show Mercy | −10% | 10% | 0.5 | — | — |
+| Pillage | −20% | 50% | 0.5 | 40% | 0.5 |
+| Devastate | −50% | 90% | 0.1 | 90% | 0.1 |
+
+Wealth is drawn from a town's **citizen wealth** or a castle's **treasury** (a town's treasury passes
+intact to the new owner). Market goods (towns only) come off `town.Owner.ItemRoster` at the market's
+own asking price, food at half the fraction. Everything paid out was first taken from the settlement;
+the non-spoils remainder is destroyed, never banked. The pot is split across **every besieging party**
+by vanilla's contribution map (headcount fallback), then by tier weight within each party.
+
+The prosperity fraction and the zeroing of vanilla's minted army gold live in
+`SiegeAftermathPatches`. **Ordering note:** `MapEvent.FinalizeEventAux` dispatches `OnMapEventEnded`
+(→ aftermath, for AI and player-army-member captures) *before* `OnBeforeMapEventFinalize` (→
+`SiegeCompleted` → owner change); a player-led siege reverses that, since its aftermath waits on his
+menu. `OnSettlementCaptured` therefore only parks/consumes a besieger snapshot, with an hourly sweep
+as the backstop for any capture path that raises no aftermath at all (sacked at Pillage).
 
 ### 4. Wages (`SpoilsPool.OnDailyTickParty`)
 
@@ -212,7 +227,9 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Spoils/SpoilsPool.cs` | Purse storage, keying, `IsEnabled`. A `partial static class` split across the files below. |
 | `Spoils/SpoilsPool.Equipment.cs` | Equipment valuation and its cache. |
 | `Spoils/SpoilsPool.BattleLoot.cs` / `.Casualties.cs` | Loot distribution off a field, and who is strippable. |
-| `Spoils/SpoilsPool.Plunder.cs` | Raid and siege plunder pots. |
+| `Spoils/SpoilsPool.Plunder.cs` | Raid and siege plunder pots; the wealth leg of the sack and the capture/aftermath handshake. |
+| `Spoils/SpoilsPool.MarketSack.cs` | The sack of a stormed fief, tiered by the vanilla aftermath choice (Devastate / Pillage / Show Mercy): wealth and prosperity fractions, the market-goods sack, and the orphaned-capture sweep. |
+| `Spoils/SiegeAftermathPatches.cs` | Replaces vanilla's army-size prosperity penalty with the flat tier fraction, and zeroes the gold it minted for the victors. |
 | `Spoils/SpoilsPool.Wages.cs` | The daily wage deposit. |
 | `Spoils/SpoilsPool.Maintenance.cs` | Daily field upkeep and its market hand-off. |
 | `Spoils/SpoilsPool.UpgradeMath.cs` | Upgrade pricing, the player-side commit path. |
@@ -365,7 +382,8 @@ otherwise. `DevelopmentItem.xml` has exactly one call site (this grid), so scali
 - `OnSessionLaunchedEvent` → session setup
 - `MapEventEnded` → loot distribution
 - `RaidCompletedEvent` → village-raid plunder
-- `OnSettlementOwnerChangedEvent` → town/castle sack plunder (siege captures only)
+- `OnSiegeAftermathAppliedEvent` → town/castle sack, tiered by the aftermath choice
+- `OnSettlementOwnerChangedEvent` → besieger snapshot handshake for that sack (siege captures only)
 - `DailyTickPartyEvent` → wage deposits
 - `MobilePartyDestroyed` → prune purses
 - `PlayerUpgradedTroopsEvent` → charge staged spoils

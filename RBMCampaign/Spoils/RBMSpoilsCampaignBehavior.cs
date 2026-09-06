@@ -24,7 +24,11 @@ namespace RBMCampaign
             // Snapshots the besieging parties of every besieged fief (so the sack at capture can pay them
             // all after the camp is gone) and bleeds a besieged castle's treasury a little each day.
             CampaignEvents.DailyTickSettlementEvent.AddNonSerializedListener(this, SpoilsPool.OnBesiegedFortificationDailyTick);
+            // The sack of a stormed fief hangs off the aftermath its conqueror chose; the owner change is
+            // only half the handshake, since the two fire in either order (see OnSettlementCaptured).
             CampaignEvents.OnSettlementOwnerChangedEvent.AddNonSerializedListener(this, SpoilsPool.OnSettlementCaptured);
+            CampaignEvents.OnSiegeAftermathAppliedEvent.AddNonSerializedListener(this, SpoilsPool.OnSiegeAftermathApplied);
+            CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, SpoilsPool.OnHourlyTickSackSweep);
             CampaignEvents.DailyTickPartyEvent.AddNonSerializedListener(this, SpoilsPool.OnDailyTickParty);
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, SpoilsPool.OnMobilePartyDestroyed);
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, PartyUpgradeBudget.OnMobilePartyDestroyed);

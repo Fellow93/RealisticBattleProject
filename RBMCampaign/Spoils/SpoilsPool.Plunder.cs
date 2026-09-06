@@ -42,23 +42,6 @@ namespace RBMCampaign
         private const float SiegeDrainSpoilsShare = 0.5f;
 
         /// <summary>
-        /// The share of a stormed fief's sacked pot that stays behind rather than being carried off or
-        /// destroyed -- a castle's treasury, or a town's market liquidity. A conquered fief is left
-        /// something to run on. (A town's TREASURY is a separate pot that is not touched at all: it passes
-        /// whole to the new owner. See <see cref="SackTownOnCapture"/>.) Shared by both sacks; split into
-        /// castle- and town-specific dials if they ever want to diverge.
-        /// </summary>
-        private const float SackRetainShare = 0.34f;
-
-        /// <summary>
-        /// Of the sacked pot removed on capture (what is not retained), the share carried off as the
-        /// besiegers' spoils; the rest is destroyed. With <see cref="SackRetainShare"/> at a third, a
-        /// half here splits the remainder into roughly equal thirds: kept, looted, burned. Held below 1
-        /// by construction so the spoils leg never pays out more than was drawn.
-        /// </summary>
-        private const float SackRemovedSpoilsShare = 0.5f;
-
-        /// <summary>
         /// The besieging parties seen on the last daily drain of each castle under siege, kept so the
         /// sack at capture can pay the whole siege rather than only the party the capture is credited to.
         /// The <see cref="SiegeEvent"/> -- and with it the besieger camp -- is already torn down by the
@@ -255,73 +238,28 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Sacks a castle taken by storm out of its own treasury. What the siege left is split three ways:
-        /// <see cref="SackRetainShare"/> stays with the fief for its new owner (simply never drawn), and
-        /// the rest is removed -- <see cref="SackRemovedSpoilsShare"/> of it carried off as spoils across
-        /// every party that besieged the place, the remainder destroyed. The besieging parties come from
-        /// the snapshot the daily drain kept; a siege short enough to fall before its first daily tick
-        /// falls back to the party the capture is credited to.
+        /// Strips a stormed fief's purse by the fraction its conqueror's aftermath choice calls for, and
+        /// reports what became of the coin. A castle is drawn from its own treasury; a town from its
+        /// market (citizen) wealth -- NOT its treasury, which is left untouched to pass to the new owner,
+        /// since draining the coffers you are about to hold would only hand you a bankrupt conquest. Of
+        /// what is taken, <paramref name="spoilsShare"/> is carried off by the besiegers and the rest is
+        /// destroyed: burned in the streets, buried by the townsfolk, or simply spilled.
         /// </summary>
-        private static void SackCastleOnCapture(Settlement castle, Hero capturerHero)
+        /// <returns>The spoils pot the wealth leg contributes.</returns>
+        private static int SackWealthOnCapture(Settlement settlement, float stolenFraction, float spoilsShare,
+            out int held, out int stolen, out int destroyed)
         {
-            int wealth = SettlementWealth.GetSettlementWealth(castle);
-            List<MobileParty> besiegers = TakeBesiegerSnapshot(castle, capturerHero);
+            bool citizens = !settlement.IsCastle;
+            held = citizens ? SettlementWealth.GetCitizenWealth(settlement) : SettlementWealth.GetSettlementWealth(settlement);
 
-            // Retained coin is left in the treasury untouched; only the removable remainder is debited.
-            int retained = MathF.Round(wealth * SackRetainShare);
-            int removable = wealth - retained;
-            int drained = SettlementWealth.Debit(castle, removable, SettlementWealth.Source.Sack);
+            int target = MathF.Round(held * MathF.Clamp(stolenFraction, 0f, 1f));
+            stolen = citizens
+                ? SettlementWealth.DebitCitizens(settlement, target, SettlementWealth.Source.Sack)
+                : SettlementWealth.Debit(settlement, target, SettlementWealth.Source.Sack);
 
-            int pot = MathF.Round(drained * SackRemovedSpoilsShare);
-            int destroyed = drained - pot;
-
-            if (SpoilsLog.IsEnabled)
-            {
-                SpoilsLog.Log("SACK", "castle " + (castle.Name != null ? castle.Name.ToString() : castle.StringId)
-                    + " taken: purse " + wealth + " -> retained " + retained
-                    + ", drained " + drained + " (spoils " + pot + ", destroyed " + destroyed + ")"
-                    + " across " + besiegers.Count + " siege party(s)");
-            }
-
-            if (pot >= 1 && besiegers.Count > 0)
-            {
-                DistributeToParties(besiegers, pot, "SACK", castle, announceSack: true);
-            }
-        }
-
-        /// <summary>
-        /// Sacks a town taken by storm out of its market (citizen) wealth -- NOT its treasury, which is
-        /// left untouched to pass to the new owner; draining the coffers you are about to hold would only
-        /// hand you a bankrupt conquest. What the market held is split three ways: <see cref="SackRetainShare"/>
-        /// stays as circulating liquidity (never drawn), and the rest is removed -- <see cref="SackRemovedSpoilsShare"/>
-        /// of it carried off as spoils across every party that besieged the place, the remainder destroyed.
-        /// A sacked market recovers slowly, which is the town's lasting wound from the storm.
-        /// </summary>
-        private static void SackTownOnCapture(Settlement town, Hero capturerHero)
-        {
-            int market = SettlementWealth.GetCitizenWealth(town);
-            List<MobileParty> besiegers = TakeBesiegerSnapshot(town, capturerHero);
-
-            // Retained liquidity is left in the market untouched; only the removable remainder is debited.
-            int retained = MathF.Round(market * SackRetainShare);
-            int removable = market - retained;
-            int drained = SettlementWealth.DebitCitizens(town, removable, SettlementWealth.Source.Sack);
-
-            int pot = MathF.Round(drained * SackRemovedSpoilsShare);
-            int destroyed = drained - pot;
-
-            if (SpoilsLog.IsEnabled)
-            {
-                SpoilsLog.Log("SACK", "town " + (town.Name != null ? town.Name.ToString() : town.StringId)
-                    + " taken: market " + market + " -> retained " + retained
-                    + ", drained " + drained + " (spoils " + pot + ", destroyed " + destroyed + ")"
-                    + " across " + besiegers.Count + " siege party(s); treasury left to the new owner");
-            }
-
-            if (pot >= 1 && besiegers.Count > 0)
-            {
-                DistributeToParties(besiegers, pot, "SACK", town, announceSack: true);
-            }
+            int pot = MathF.Round(stolen * MathF.Clamp(spoilsShare, 0f, 1f));
+            destroyed = stolen - pot;
+            return pot;
         }
 
         /// <summary>Every besieging party currently in the camp, deduplicated, mobile only.</summary>
@@ -372,13 +310,35 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Splits a plunder pot across several parties by their troop count -- a bigger contingent takes
-        /// a bigger share -- then within each party by tier weight, the same split captured spoils take,
-        /// and skims each party's leader cut. Announces to the player only for a sack, to keep a
-        /// multi-day siege from spamming a daily popup.
+        /// Splits a plunder pot across several parties -- by the battle contributions vanilla worked out
+        /// when one is given, otherwise by troop count, so a bigger contingent takes a bigger share --
+        /// then within each party by tier weight, the same split captured spoils take, and skims each
+        /// party's leader cut. Announces to the player only for a sack, to keep a multi-day siege from
+        /// spamming a daily popup.
         /// </summary>
-        private static void DistributeToParties(List<MobileParty> parties, int pot, string logCategory, Settlement settlement, bool announceSack)
+        /// <param name="contributions">
+        /// Vanilla's per-party share of the siege, as percentages of the total (0-100). Null, empty or
+        /// all-zero falls back to the headcount split.
+        /// </param>
+        private static void DistributeToParties(List<MobileParty> parties, int pot, string logCategory, Settlement settlement,
+            bool announceSack, bool goodsTaken = false, Dictionary<MobileParty, float> contributions = null)
         {
+            // Only trust the contribution map when it actually covers the parties being paid and carries
+            // some weight; a simulated or instantly-resolved siege can leave every figure at zero.
+            float totalContribution = 0f;
+            if (contributions != null)
+            {
+                foreach (MobileParty p in parties)
+                {
+                    float c;
+                    if (contributions.TryGetValue(p, out c) && c > 0f)
+                    {
+                        totalContribution += c;
+                    }
+                }
+            }
+            bool byContribution = totalContribution > 0f;
+
             long totalMen = 0L;
             foreach (MobileParty p in parties)
             {
@@ -387,9 +347,22 @@ namespace RBMCampaign
 
             foreach (MobileParty p in parties)
             {
-                long weight = (totalMen > 0L) ? MathF.Max(0, p.Party.MemberRoster.TotalManCount) : 1L;
-                long divisor = (totalMen > 0L) ? totalMen : parties.Count;
-                int share = MathF.Round(pot * ((float)weight / divisor));
+                int share;
+                if (byContribution)
+                {
+                    float c;
+                    if (!contributions.TryGetValue(p, out c) || c < 0f)
+                    {
+                        c = 0f;
+                    }
+                    share = MathF.Round(pot * (c / totalContribution));
+                }
+                else
+                {
+                    long weight = (totalMen > 0L) ? MathF.Max(0, p.Party.MemberRoster.TotalManCount) : 1L;
+                    long divisor = (totalMen > 0L) ? totalMen : parties.Count;
+                    share = MathF.Round(pot * ((float)weight / divisor));
+                }
                 int total = GrantSpoilsWeightedByTier(p.Party, share, logCategory, out int companionGold);
                 int troopGranted = total - companionGold;
                 int leaderCut = (troopGranted > 0)
@@ -399,7 +372,7 @@ namespace RBMCampaign
                 {
                     if (troopGranted > 0)
                     {
-                        AnnounceSackSpoilsToPlayer(settlement, troopGranted);
+                        AnnounceSackSpoilsToPlayer(settlement, troopGranted, goodsTaken);
                     }
                     AnnounceCompanionSpoilsToPlayer(companionGold);
                     AnnounceLeaderCutToPlayer(leaderCut);
@@ -408,17 +381,27 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// A fief taken by storm is sacked by the men who took it. Fires on the settlement changing
-        /// hands; only a capture by siege sacks it, so a fief handed over by barter, gift or council vote
-        /// leaves its wealth alone. A castle is sacked out of its own treasury; a town out of its market
-        /// (citizen) wealth, its treasury left to pass intact to the new owner -- robbing the treasury
-        /// you are about to hold would only bankrupt your own conquest. Either way the pot is split three
-        /// ways -- some kept, some spoils, some destroyed -- and the spoils go to every party that
-        /// besieged the place, not only the one the capture is credited to.
+        /// A fief changing hands. The sack itself no longer happens here -- it hangs off the siege
+        /// aftermath the conqueror chooses (see <see cref="OnSiegeAftermathApplied"/>) -- but the two
+        /// events fire in either order depending on who took the place, so this is where the besieger
+        /// snapshot is parked for the aftermath to consume when the aftermath comes second.
         /// </summary>
+        /// <remarks>
+        /// Vanilla's ordering, verified in the decompiled sources:
+        /// <c>MapEvent.FinalizeEventAux</c> dispatches <c>OnMapEventEnded</c> BEFORE
+        /// <c>Component.OnBeforeMapEventFinalize</c>, and it is the latter that runs
+        /// <c>SiegeCompleted</c> -> <c>ChangeOwnerOfSettlementAction.ApplyBySiege</c>. So when an AI (or a
+        /// player who is only an army member) takes the fief, <c>SiegeAftermathCampaignBehavior</c>
+        /// applies the aftermath from inside <c>OnMapEventEnded</c> and the aftermath comes FIRST; when
+        /// the PLAYER leads the siege the aftermath waits on his menu choice and comes SECOND, after the
+        /// fief has already changed hands.
+        ///
+        /// Hence the two-sided handshake: an aftermath that already sacked leaves a mark here to consume,
+        /// and a capture with no mark parks its snapshot for the aftermath still to come.
+        /// </remarks>
         public static void OnSettlementCaptured(Settlement settlement, bool openToClaim, Hero newOwner, Hero oldOwner, Hero capturerHero, ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail detail)
         {
-            if (!IsEnabled || RBMConfig.RBMConfig.troopRaidSpoilsMultiplier <= 0f)
+            if (!SackActive || settlement == null)
             {
                 return;
             }
@@ -426,25 +409,30 @@ namespace RBMCampaign
             {
                 return;
             }
-            if (settlement == null)
+            if (!settlement.IsFortification)
             {
+                // A village never reaches here by siege -- it is raided, not stormed.
                 return;
             }
-            if (settlement.IsCastle)
+
+            if (_sackedByAftermath.Remove(settlement))
             {
-                SackCastleOnCapture(settlement, capturerHero);
+                // The aftermath ran first and has already sacked the place; drop the marker and let the
+                // snapshot the aftermath consumed stay consumed.
+                return;
             }
-            else if (settlement.IsTown)
-            {
-                SackTownOnCapture(settlement, capturerHero);
-            }
-            // A village never reaches here by siege -- it is raided, not stormed -- so there is nothing
-            // else to sack.
+
+            // The aftermath is still to come (player-led siege). Park the besiegers for it, and stamp the
+            // moment so the fallback sweep can tell a genuinely orphaned capture from one still waiting on
+            // a menu -- campaign time does not advance while that menu is open.
+            _pendingCaptures[settlement] = new PendingCapture(TakeBesiegerSnapshot(settlement, capturerHero), CampaignTime.Now);
         }
 
-        private static void AnnounceSackSpoilsToPlayer(Settlement settlement, int granted)
+        private static void AnnounceSackSpoilsToPlayer(Settlement settlement, int granted, bool goodsTaken)
         {
-            TextObject message = new TextObject("{=RBM_SPOILS_014}Your men sack {SETTLEMENT} and pocket {AMOUNT} in spoils.");
+            TextObject message = goodsTaken
+                ? new TextObject("{=RBM_SPOILS_030}Your men sack {SETTLEMENT}, stripping its markets bare, and pocket {AMOUNT} in spoils.")
+                : new TextObject("{=RBM_SPOILS_014}Your men sack {SETTLEMENT} and pocket {AMOUNT} in spoils.");
             message.SetTextVariable("SETTLEMENT", settlement.Name);
             message.SetTextVariable("AMOUNT", granted);
             InformationManager.DisplayMessage(new InformationMessage(message.ToString()));

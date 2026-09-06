@@ -133,6 +133,8 @@ namespace RBMCampaign
             // The besieger snapshots the siege drain keeps are transient and settlement-keyed; a finished
             // campaign's entries would otherwise hold its settlements alive into the next.
             _siegeBesiegers.Clear();
+            // Same reason: the capture/aftermath handshake tables are settlement-keyed and transient.
+            ResetSackHandshake();
         }
 
         public static void SyncData(IDataStore dataStore)
