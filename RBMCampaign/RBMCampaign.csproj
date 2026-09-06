@@ -446,6 +446,8 @@
     <Compile Include="Settlements\Construction.Patches.cs" />
     <Compile Include="Settlements\GarrisonMorale.cs" />
     <Compile Include="Settlements\GarrisonPartySize.cs" />
+    <Compile Include="Settlements\GarrisonSubsidy.cs" />
+    <Compile Include="Settlements\GarrisonSubsidyFinanceLine.cs" />
     <Compile Include="Settlements\GarrisonUpkeep.cs" />
     <Compile Include="Settlements\GarrisonWageLimit.cs" />
     <Compile Include="Settlements\LordPartyWageLimit.cs" />

@@ -64,47 +64,102 @@ namespace RBMCampaign
         [HarmonyPatch(typeof(DefaultClanFinanceModel), "CalculatePartyWage")]
         private static class GarrisonWageSharePatch
         {
-            private static void Postfix(MobileParty mobileParty, bool applyWithdrawals, ref int __result)
+            // The budget vanilla was handed before the prefix widened it, and the fief the prefix resolved.
+            // The daily finance pass is single-threaded and prefix and postfix bracket one call, so a pair
+            // of scratch fields is safe and saves resolving the settlement twice.
+            private static int _originalBudget;
+            private static Settlement _fief;
+
+            /// <summary>
+            /// Widens the budget vanilla measures the garrison against, so the men are not docked morale
+            /// for a wage their fief is in fact paying.
+            /// </summary>
+            /// <remarks>
+            /// Vanilla's budget is the OWNER's gold, and <c>ApplyMoraleEffect</c> runs against it before
+            /// our postfix ever sees the number -- so a fief whose treasury covers its garrison in full
+            /// still took a morale hit whenever its lord happened to be broke. Raising the budget by what
+            /// the fief and its citizens will actually put in makes vanilla's own <c>min(wage, budget)</c>
+            /// and its morale penalty read the real coverage. The original budget is kept for the postfix,
+            /// which still needs to know what the OWNER alone could pay.
+            /// </remarks>
+            private static void Prefix(MobileParty mobileParty, ref int budget)
             {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || mobileParty == null
-                    || !mobileParty.IsGarrison || __result <= 0)
+                _originalBudget = budget;
+                _fief = null;
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || mobileParty == null || !mobileParty.IsGarrison)
                 {
                     return;
                 }
-
                 Settlement settlement = mobileParty.CurrentSettlement ?? mobileParty.HomeSettlement;
                 if (settlement == null)
                 {
                     return;
                 }
+                _fief = settlement;
 
-                int share = (int)(__result * GarrisonFiefWageShare);
-                if (share <= 0)
+                long widened = (long)budget
+                    + SettlementWealth.GetSettlementWealth(settlement)
+                    + GarrisonSubsidy.CitizenCapacity(settlement);
+                budget = (widened > int.MaxValue) ? int.MaxValue : (int)widened;
+            }
+
+            private static void Postfix(MobileParty mobileParty, bool applyWithdrawals, ref int __result)
+            {
+                Settlement settlement = _fief;
+                _fief = null;
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || mobileParty == null
+                    || !mobileParty.IsGarrison || settlement == null)
                 {
                     return;
                 }
 
+                // Read off the party, not off __result: the prefix widened the budget, but vanilla may
+                // still have trimmed the return, and the split below has to be against the whole bill.
+                int wage = mobileParty.TotalWage;
+                if (wage <= 0)
+                {
+                    return;
+                }
+
+                int share = (int)(wage * GarrisonFiefWageShare);
                 // Capped at what the fief actually holds, and read the same way on both passes so the
                 // projected figure on the clan finance screen matches the charge that follows it.
                 int available = SettlementWealth.GetSettlementWealth(settlement);
-                int paid = share < available ? share : available;
-                if (paid <= 0)
+                int fiefPaid = (share < available ? share : available);
+                if (fiefPaid < 0)
                 {
-                    return;
+                    fiefPaid = 0;
                 }
+
+                int residual = wage - fiefPaid;
+                // The owner pays what his own gold could always have paid -- unlimited wage limit or not,
+                // this is the bill vanilla has always sent him, and it is the one figure that must stay on
+                // his books so the "{SETTLEMENT} Garrison" line keeps meaning what it says.
+                int ownerBudget = _originalBudget > 0 ? _originalBudget : 0;
+                int ownerPart = residual < ownerBudget ? residual : ownerBudget;
+                int citizensPart = 0;
 
                 if (applyWithdrawals)
                 {
-                    SettlementWealth.Debit(settlement, paid, SettlementWealth.Source.GarrisonWage);
+                    if (fiefPaid > 0)
+                    {
+                        SettlementWealth.Debit(settlement, fiefPaid, SettlementWealth.Source.GarrisonWage);
+                    }
+                    // Whatever neither the treasury nor the owner could reach falls to the town's own
+                    // burghers, out of their surplus alone -- the last leg of the subsidy order.
+                    citizensPart = GarrisonSubsidy.CoverFromCitizens(settlement, residual - ownerPart);
+
                     if (EconomyLog.IsEnabled)
                     {
                         EconomyLog.Log("GARRISON", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
-                            "wage " + __result + "d  ·  fief paid " + paid + "d, owner " + (__result - paid) + "d"
+                            "wage " + wage + "d  ·  fief paid " + fiefPaid + "d, owner " + ownerPart + "d"
+                            + (citizensPart > 0 ? ", citizens " + citizensPart + "d" : "")
+                            + (residual - ownerPart - citizensPart > 0 ? ", unpaid " + (residual - ownerPart - citizensPart) + "d" : "")
                             + "  ·  treasury now " + SettlementWealth.GetSettlementWealth(settlement) + "d");
                     }
                 }
 
-                __result -= paid;
+                __result = ownerPart;
             }
         }
 
@@ -167,10 +222,11 @@ namespace RBMCampaign
         /// Priced off the same kit-value formula a marching troop's maintenance is (<see cref="SpoilsPool.GetDailyMaintenanceCost"/>),
         /// summed over the garrison roster and drawn from the fief's treasury -- the pot its wage comes from
         /// -- with the coin paid over to the town that does the mending (a town itself, else the nearest
-        /// friendly one). No owner backstop, and the men's spoils purse is not drawn on here (that purse
-        /// is the wage they bank and spend on drink, luxuries and promotions), so a treasury too empty to
-        /// pay simply leaves that day's mending undone, and only what the treasury could give reaches the
-        /// market. Money conserved throughout -- the fief pays exactly what the market receives.
+        /// friendly one). The men's spoils purse is not drawn on here (that purse is the wage they bank and
+        /// spend on drink, luxuries and promotions); what the treasury cannot cover is offered instead to
+        /// the owner and then the town's burghers through <see cref="GarrisonSubsidy"/>, and what none of
+        /// the three can reach simply leaves that day's mending undone. Money conserved throughout -- the
+        /// three payers between them give exactly what the market receives.
         /// </remarks>
         public static void ChargeMaintenance(Settlement settlement)
         {
@@ -191,7 +247,16 @@ namespace RBMCampaign
             }
 
             int paid = SettlementWealth.Debit(settlement, bill, SettlementWealth.Source.Maintenance);
-            if (paid <= 0)
+
+            // What the treasury could not reach is offered to the owner (only where he has taken the
+            // fief's garrison on -- an unlimited wage limit) and then to the town's burghers. Anything
+            // still short is simply that day's mending left undone, as before.
+            int ownerPaid;
+            int citizensPaid;
+            GarrisonSubsidy.Cover(settlement, bill - paid, GarrisonSubsidy.Purpose.Maintenance,
+                int.MaxValue, out ownerPaid, out citizensPaid);
+            int total = paid + ownerPaid + citizensPaid;
+            if (total <= 0)
             {
                 return;
             }
@@ -200,13 +265,16 @@ namespace RBMCampaign
                 : (UpgradeSupply.FindNearestFriendlyTown(garrison)?.Settlement);
             if (market != null)
             {
-                TroopMarketFeedback.RegisterPurchase(market, null, paid, SettlementWealth.Source.Maintenance);
+                // Money conserved: exactly what the three payers gave between them reaches the market.
+                TroopMarketFeedback.RegisterPurchase(market, null, total, SettlementWealth.Source.Maintenance);
             }
 
             if (EconomyLog.IsEnabled)
             {
                 EconomyLog.Log("GARRISON", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,
                     "maintenance " + bill + "d  ·  fief paid " + paid + "d"
+                    + (ownerPaid > 0 ? ", owner " + ownerPaid + "d" : "")
+                    + (citizensPaid > 0 ? ", citizens " + citizensPaid + "d" : "")
                     + (market != null ? " to " + market.Name : " — no town in reach")
                     + "  ·  treasury now " + SettlementWealth.GetSettlementWealth(settlement) + "d");
             }

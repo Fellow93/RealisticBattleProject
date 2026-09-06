@@ -316,6 +316,7 @@ namespace RBMCampaign
             public int AfterHeadroom;   // capped, clamped to headroom -- the grow amount
             public int KeepThreshold;   // garrison's own daily bill × GarrisonKeepDays -- the shed floor
             public int Shed;            // men leaving today when too poor to keep the garrison
+            public bool Subsidized;     // the trim was called off: somebody outside the treasury is paying
             public int Final;           // signed net: >0 recruit, <0 shed, 0 hold
         }
 
@@ -375,7 +376,20 @@ namespace RBMCampaign
                 // of the garrison's own bill), so it is trimmed toward an affordable size. A dead band sits
                 // between here and the recruit reserve, where the garrison simply holds.
                 c.Shed = GarrisonShedPerDay < manCount ? GarrisonShedPerDay : manCount;
-                c.Final = -c.Shed;
+                // ...unless somebody outside the treasury is willing to carry the garrison's day: the
+                // owner, where he has taken this fief's garrison on (an unlimited wage limit), or the
+                // town's own burghers out of their surplus. Then the garrison HOLDS at its present size
+                // rather than being trimmed -- it will not decline while it is being paid for, and it does
+                // not grow on somebody else's money either. Growth still answers to the fief's own wealth.
+                if (GarrisonSubsidy.CanCoverDaily(settlement, garrisonBill))
+                {
+                    c.Subsidized = true;
+                    c.Final = 0;
+                }
+                else
+                {
+                    c.Final = -c.Shed;
+                }
             }
             // else: between the shed floor and the recruit reserve -- hold, Final stays 0.
             return c;
@@ -423,7 +437,22 @@ namespace RBMCampaign
             ExplainedNumber en = new ExplainedNumber(0f, includeDescriptions: true);
             GrowthCalc c = Compute(town != null ? town.Settlement : null);
 
-            if (c.Valid && c.Final < 0)
+            if (c.Valid && c.Subsidized)
+            {
+                // Shown as the trim it would have been and the subsidy that cancels it, rather than as a
+                // single zero: ExplainedNumber DROPS a zero-valued line (see its Add), so a "held" line on
+                // its own would never reach the player. Two lines that net to nothing do, and they say
+                // more -- how many men were about to go, and who paid for them to stay.
+                TextObject wouldShed = new TextObject("{=rbm_garr_shed}Over-strength — reducing (upkeep reserve {KEEP})");
+                wouldShed.SetTextVariable("KEEP", c.KeepThreshold);
+                en.Add(-c.Shed, wouldShed);
+
+                string who = GarrisonSubsidy.SubsidiserName(town.Settlement);
+                TextObject subsidy = new TextObject("{=rbm_garr_subsidy}Held — upkeep subsidised by {WHO}");
+                subsidy.SetTextVariable("WHO", who ?? new TextObject("{=rbm_garr_subsidy_town}the town reserve").ToString());
+                en.Add(c.Shed, subsidy);
+            }
+            else if (c.Valid && c.Final < 0)
             {
                 // The garrison is larger than the fief can sustain -- the men are paid, there are simply too
                 // many of them for the treasury -- so it is trimmed toward an affordable size. The upkeep

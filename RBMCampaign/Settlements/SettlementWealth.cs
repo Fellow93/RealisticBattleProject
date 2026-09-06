@@ -246,6 +246,15 @@ namespace RBMCampaign
             public const string GarrisonFood = "garrison-food";
 
             /// <summary>
+            /// The town's citizens covering a garrison bill their fief's treasury could not -- wages,
+            /// kit maintenance or a promotion -- out of the market surplus they hold above
+            /// <see cref="GarrisonSubsidy.CitizenReserveFloor"/>. A burgher class paying for the wall
+            /// between it and a sack, and the last resort after the owner clan. See
+            /// <see cref="GarrisonSubsidy"/>.
+            /// </summary>
+            public const string GarrisonSubsidy = "garrison-subsidy";
+
+            /// <summary>
             /// A fief arming a garrison troop it auto-recruited: the equipment cost, drawn from the
             /// fief's own treasury rather than the owner's gold as vanilla charged it. In a town it
             /// reaches the armourers who kitted the man (citizen wealth); a castle, with no market,

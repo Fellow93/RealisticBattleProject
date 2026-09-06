@@ -248,7 +248,11 @@ namespace RBMCampaign
                             {
                                 fromTreasury = 0;
                             }
-                            affordable = (int)(coveredMen + fromTreasury);
+                            // Beyond the treasury, the men the owner will pay for out of this party's
+                            // daily upgrade budget -- his opt-in for garrison promotions -- and then the
+                            // town's own burghers out of their surplus. Same gold price per man.
+                            int fromSubsidy = GarrisonSubsidy.UpgradeCapacity(fief, party, _upgradeGoldBudgetRemaining) / fullGold;
+                            affordable = (int)(coveredMen + fromTreasury + fromSubsidy);
                         }
                         count = MathF.Min(count, affordable);
                         if (count <= 0)
@@ -377,7 +381,29 @@ namespace RBMCampaign
                     Settlement fief = GarrisonFiefOf(party);
                     if (fief != null)
                     {
-                        goldCharged = SettlementWealth.Debit(fief, option.TotalGoldCost, SettlementWealth.Source.Upgrade);
+                        // The treasury pays down to the same reserve the affordability gate measured
+                        // against -- the wages it must go on covering -- so the two never disagree.
+                        int reserve = party.MobileParty.TotalWage * GarrisonRecruitCost.GarrisonReserveDays;
+                        int spendable = MathF.Max(0, SettlementWealth.GetSettlementWealth(fief) - reserve);
+                        int fromTreasury = SettlementWealth.Debit(fief,
+                            MathF.Min(option.TotalGoldCost, spendable), SettlementWealth.Source.Upgrade);
+
+                        // The rest to the owner (inside his daily upgrade budget) and then the burghers.
+                        int ownerPaid;
+                        int citizensPaid;
+                        GarrisonSubsidy.Cover(fief, option.TotalGoldCost - fromTreasury,
+                            GarrisonSubsidy.Purpose.Upgrade, _upgradeGoldBudgetRemaining,
+                            out ownerPaid, out citizensPaid);
+
+                        goldCharged = fromTreasury + ownerPaid + citizensPaid;
+                        // Anything STILL unpaid comes out of the treasury regardless, reserve and all: the
+                        // batch was already approved and the men already promoted upstream, and a half-paid
+                        // promotion would mint the difference into the town below. Today's behaviour.
+                        int unpaid = option.TotalGoldCost - goldCharged;
+                        if (unpaid > 0)
+                        {
+                            goldCharged += SettlementWealth.Debit(fief, unpaid, SettlementWealth.Source.Upgrade);
+                        }
                     }
                 }
                 else if (payer != null && payer.IsAlive)

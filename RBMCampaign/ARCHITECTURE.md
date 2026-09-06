@@ -258,7 +258,7 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 
 | Folder | Role |
 |---|---|
-| `Settlements/` | The two-pot settlement wealth ledger (`SettlementWealth`), its funnel over vanilla's writes, tariffs, ransoms, garrison/militia/administrative upkeep, wealth-driven garrison growth (`GarrisonRecruitCost`) and drill XP (`GarrisonDrill`), workshop purses, and the **construction engine** (`Construction.cs` / `.Materials.cs` / `.Patches.cs`). |
+| `Settlements/` | The two-pot settlement wealth ledger (`SettlementWealth`), its funnel over vanilla's writes, tariffs, ransoms, garrison/militia/administrative upkeep, the owner/citizen garrison backstop (`GarrisonSubsidy` + its player-facing `GarrisonSubsidyFinanceLine`), wealth-driven garrison growth (`GarrisonRecruitCost`) and drill XP (`GarrisonDrill`), workshop purses, and the **construction engine** (`Construction.cs` / `.Materials.cs` / `.Patches.cs`). |
 
 #### Construction (`Settlements/Construction*.cs`)
 
