@@ -50,7 +50,7 @@ namespace RBMCampaign
             ("planks", 0.01f),
             //("clay", 0.001f),
             ("ironIngot1", 0.025f),
-            ("flax", 0.017f),
+            ("flax", 0.0085f),
             // Every village occasionally raises a pack animal (PackAnimal). Set to 10% of a horse
             // ranch's per-item mule rate (HorsePackBucket/2), so it reads as subsistence, not a
             // production speciality. Does NOT affect the map primary-production icon (that draws
@@ -100,8 +100,8 @@ namespace RBMCampaign
                 { "iron_mine", new (string, float)[] { ("ironIngot1", 2f * 0.75f), ("charcoal", 1.027f * 0.5f) } },
                 { "silver_mine", new (string, float)[] { ("silver", 0.85f * 0.75f), ("ironIngot1", 2f * 0.25f) } },
                 { "fisherman", new (string, float)[] { ("fish", 0.2f), ("salt", 0.07f) } },
-                { "vineyard", new (string, float)[] { ("grape", 0.038f), ("clay", 0.035f) } },
-                { "flax_plant", new (string, float)[] { ("flax", 0.170f) } },
+                { "vineyard", new (string, float)[] { ("grape", 0.06f), ("clay", 0.035f) } },
+                { "flax_plant", new (string, float)[] { ("flax", 0.085f), ("grain", 0.05f) } },
                 { "date_farm", new (string, float)[] { ("date_fruit", 0.547f * 0.1f) } },
                 { "olive_trees", new (string, float)[] { ("olives", 0.089f) } },
                 { "silk_plant", new (string, float)[] { ("cotton", 0.008f) } },
@@ -143,15 +143,15 @@ namespace RBMCampaign
         private static readonly Dictionary<string, (string id, float rate)[]> FlavourByCulture =
             new Dictionary<string, (string, float)[]>
             {
-                { "aserai",       new (string, float)[] { ("date_fruit", 0.00547f), ("salt", 0.03f) } },
+                { "aserai",       new (string, float)[] { ("date_fruit", 0.00547f), ("salt", 0.03f), ("grain", 0.01f) } },
                 { "empire_south", new (string, float)[] { ("olives", 0.0089f) } },
-                { "empire_west",  new (string, float)[] { ("olives", 0.00445f), ("grape", 0.0019f) } },
-                { "empire_north", new (string, float)[] { ("fur", 0.0055f) } },
+                { "empire_west",  new (string, float)[] { ("olives", 0.00445f), ("grape", 0.003f) } },
+                { "empire_north", new (string, float)[] { ("fur", 0.0055f), ("meat", 0.0055f) } },
                 { "battania",     new (string, float)[] { ("charcoal", 1.027f*0.15f), ("planks", 1.027f*0.05f) } },
-                { "vlandia",      new (string, float)[] { ("grape", 0.0038f) } },
+                { "vlandia",      new (string, float)[] { ("grape", 0.006f) } },
                 { "khuzait",      ScaleRates(HorseRanch("khuzait_horse"), 0.1f) },
-                { "sturgia",      new (string, float)[] { ("fur", 0.0055f) } },
-                { "nord",         new (string, float)[] { ("walrus_tusk", 0.0008f) } }, // Naval DLC culture
+                { "sturgia",      new (string, float)[] { ("fur", 0.0055f), ("meat", 0.0055f) } },
+                { "nord",         new (string, float)[] { ("walrus_tusk", 0.0008f), ("meat", 0.0055f) } }, // Naval DLC culture
             };
 
         private static (string, float)[] ScaleRates((string id, float rate)[] rates, float factor)
