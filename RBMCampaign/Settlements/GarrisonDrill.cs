@@ -32,6 +32,13 @@ namespace RBMCampaign
         /// <summary>Most a flush fief can multiply the base drill by.</summary>
         public const float MaxFactor = 2f;
 
+        /// <summary>
+        /// Share of the garrison's drill a settlement's MILITIA earns. The watch is a part-time body that
+        /// stands its post between shifts at its trade, not a company drilled all day, so it tiers up at a
+        /// third of the garrison's pace. Scales both the drill term and the Training Fields term.
+        /// </summary>
+        public const float MilitiaDrillShare = 1f / 3f;
+
         public static bool IsEnabled
         {
             get { return GarrisonRecruitCost.IsEnabled; }
@@ -87,10 +94,12 @@ namespace RBMCampaign
                 // all beside a battle; at ten times that it is a real reason to build the thing. Unlike the
                 // drill term this is NOT scaled by the treasury -- the ground and the sergeants are already
                 // paid for, standing there whether the fief is rich this week or not.
+                // The militia drills at a fraction of the garrison's pace (see MilitiaDrillShare).
+                float share = mobileParty.IsMilitia ? MilitiaDrillShare : 1f;
                 int trainingFields = BuildingEffects.TrainingFields(fief.Town);
                 if (trainingFields > 0)
                 {
-                    __result.Add(trainingFields * 10f, TrainingFieldText);
+                    __result.Add(trainingFields * 10f * share, TrainingFieldText);
                 }
 
                 float factor = DrillFactor(fief);
@@ -98,7 +107,7 @@ namespace RBMCampaign
                 {
                     return;
                 }
-                float xp = (BaseXp + troop.Character.Tier * TierXp) * factor;
+                float xp = (BaseXp + troop.Character.Tier * TierXp) * factor * share;
                 __result.Add(xp, DrillText);
 
                 // One line a day per garrison, not one per stack: log off the first roster entry only.

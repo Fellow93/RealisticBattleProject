@@ -112,6 +112,14 @@ namespace RBMCampaign
         /// <summary>What fraction of a day's growth a settlement keeps once it is over its soft cap.</summary>
         public const float MilitiaOverCapGrowthFactor = 0.10f;
 
+        /// <summary>
+        /// The HARD cap on a settlement's militia, as a multiple of its soft cap. The soft cap only slows
+        /// growth; this one stops it: no day's muster may carry the count past twice the soft cap, however
+        /// strong the loyalty or the governor's perks. Existing men over it are left standing (a siege
+        /// spawn, an escort returning) -- the clamp is on growth, not a dismissal.
+        /// </summary>
+        public const float MilitiaHardCapMult = 2f;
+
         // ------------------------------------------------------------------ base growth curve (RBM-owned)
         //
         // RBM now authors the whole militia change rather than shaving vanilla's: these are the base-curve
@@ -222,6 +230,7 @@ namespace RBMCampaign
         private static readonly TextObject ProsperousCityText = new TextObject("{=RBM_militia_prosperous}Prosperous citizens");
         private static readonly TextObject UnaffordableText = new TextObject("{=RBM_militia_unpaid}Cannot be paid");
         private static readonly TextObject OverCapText = new TextObject("{=RBM_militia_overcap}Over muster");
+        private static readonly TextObject HardCapText = new TextObject("{=RBM_militia_hardcap}Full muster");
         private static readonly TextObject CannotArmText = new TextObject("{=RBM_militia_unarmed}Cannot be armed");
 
         /// <summary>The extra intake a fief's Barracks lodgings allow.</summary>
@@ -586,6 +595,7 @@ namespace RBMCampaign
 
             // --- RBM ceiling and floor.
             ApplySoftCap(settlement, ref result);
+            ApplyHardCap(settlement, militia, ref result);
 
             // A settlement that cannot arm a new militiaman fields no new ones -- growth is held to zero,
             // though the men it already has are left standing (the maintenance shed below thins those, when
@@ -779,6 +789,35 @@ namespace RBMCampaign
                 return;
             }
             result.Add(-(1f - MilitiaOverCapGrowthFactor) * result.ResultNumber, OverCapText);
+        }
+
+        /// <summary>
+        /// Clamps the day's growth so the count never crosses <see cref="MilitiaHardCapMult"/> times the
+        /// soft cap. Growth that would land under the hard cap passes untouched; growth that would overshoot
+        /// is cut to exactly what fills it; a settlement already at or over it raises no one. Decline is
+        /// never touched, and neither is a settlement with no cap to measure against.
+        /// </summary>
+        private static void ApplyHardCap(Settlement settlement, float militia, ref ExplainedNumber result)
+        {
+            if (result.ResultNumber <= 0f)
+            {
+                return;
+            }
+            float cap = MilitiaCap(settlement);
+            if (cap <= 0f)
+            {
+                return;
+            }
+            float hardCap = cap * MilitiaHardCapMult;
+            float room = hardCap - militia;
+            if (room < 0f)
+            {
+                room = 0f;
+            }
+            if (result.ResultNumber > room)
+            {
+                result.Add(room - result.ResultNumber, HardCapText);
+            }
         }
 
         /// <summary>
