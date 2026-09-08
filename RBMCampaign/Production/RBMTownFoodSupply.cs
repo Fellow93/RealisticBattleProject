@@ -186,7 +186,15 @@ namespace RBMCampaign
         /// </summary>
         public static int FoodUnitsInMarket(Town town)
         {
-            ItemRoster itemRoster = town.Owner.ItemRoster;
+            // Owner is a plain field assigned when the settlement is initialised; a Town object that
+            // never got one (an orphan the save graph still reaches, a third-party settlement mid-setup)
+            // has no market at all. Report it empty rather than throw -- this runs inside the save
+            // system's parallel collect via the FoodStocks getter, where an exception aborts the save.
+            ItemRoster itemRoster = town?.Owner?.ItemRoster;
+            if (itemRoster == null)
+            {
+                return 0;
+            }
             int version = itemRoster.VersionNo;
             if (_foodCountCache.TryGetValue(town, out KeyValuePair<int, int> cached) && cached.Key == version)
             {
@@ -277,7 +285,10 @@ namespace RBMCampaign
         {
             private static bool Prefix(Fief __instance, ref float __result)
             {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !(__instance is Town town) || !town.IsTown)
+                // A town with no Owner party has no market to read; leave vanilla's stored value alone
+                // (the getter is also invoked by reflection during save collection, so never throw here).
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !(__instance is Town town) || !town.IsTown
+                    || town.Owner == null)
                 {
                     return true;
                 }
