@@ -12,6 +12,8 @@ namespace RBMCampaign
             // Same reset-before-load ordering: drop the previous campaign's per-party upgrade caps so a new
             // game starts uncapped and only a real save repopulates them.
             PartyUpgradeBudget.Reset();
+            // And the previous campaign's event-gold record, for the same reason.
+            ClanEventGoldLedger.Reset();
         }
 
         public override void RegisterEvents()
@@ -55,6 +57,7 @@ namespace RBMCampaign
         {
             SpoilsPool.SyncData(dataStore);
             PartyUpgradeBudget.SyncData(dataStore);
+            ClanEventGoldLedger.SyncData(dataStore);
         }
     }
 }

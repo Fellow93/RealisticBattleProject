@@ -410,6 +410,7 @@ namespace RBMCampaign
                 {
                     SkillLevelingManager.OnUpgradeTroops(party, option.Target, option.UpgradeTarget, option.Count);
                     GiveGoldAction.ApplyBetweenCharacters(payer, null, option.TotalGoldCost, true);
+                    ClanEventGoldLedger.Record(payer, EventGoldKind.UpgradeGold, option.TotalGoldCost);
                     goldCharged = option.TotalGoldCost;
                 }
 

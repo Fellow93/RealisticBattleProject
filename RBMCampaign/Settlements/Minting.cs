@@ -142,10 +142,12 @@ namespace RBMCampaign
             if (ownerCut > 0)
             {
                 GiveGoldAction.ApplyBetweenCharacters(null, owner, ownerCut, true);
+                ClanEventGoldLedger.Record(owner, EventGoldKind.Minting, ownerCut);
             }
             if (rulerCut > 0)
             {
                 GiveGoldAction.ApplyBetweenCharacters(null, ruler, rulerCut, true);
+                ClanEventGoldLedger.Record(ruler, EventGoldKind.Minting, rulerCut);
             }
 
             if (EconomyLog.IsEnabled)

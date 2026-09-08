@@ -448,6 +448,9 @@
     <Compile Include="Settlements\GarrisonPartySize.cs" />
     <Compile Include="Settlements\GarrisonSubsidy.cs" />
     <Compile Include="Settlements\GarrisonSubsidyFinanceLine.cs" />
+    <Compile Include="Finance\ClanEventGoldLedger.cs" />
+    <Compile Include="Finance\ClanFinanceTabLines.cs" />
+    <Compile Include="Finance\FiefProfitLines.cs" />
     <Compile Include="Settlements\GarrisonUpkeep.cs" />
     <Compile Include="Settlements\GarrisonWageLimit.cs" />
     <Compile Include="Settlements\LordPartyWageLimit.cs" />

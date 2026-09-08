@@ -337,6 +337,7 @@ namespace RBMCampaign
             if (companionGold > 0 && payee != null && payee.IsAlive)
             {
                 GiveGoldAction.ApplyBetweenCharacters(null, payee, companionGold, true);
+                ClanEventGoldLedger.Record(payee, EventGoldKind.CompanionSpoils, companionGold);
                 if (SpoilsLog.IsEnabled)
                 {
                     SpoilsLog.Log(logCategory, party, SpoilsLog.Describe(party) + " companions claimed " + companionGold

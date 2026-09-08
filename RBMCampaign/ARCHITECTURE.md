@@ -239,6 +239,9 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Spoils/RBMSpoilsCampaignBehavior.cs` | Event subscriptions and `SyncData`. |
 | `Spoils/MaintenanceFinanceLine.cs` / `MaintenancePartyWageLine.cs` | Clan-finance and party-wage tooltip lines (display only). |
 | `Spoils/SpoilsTransferOnPartyScreen.cs` | Purse follows men moved on the party screen. |
+| `Finance/ClanEventGoldLedger.cs` | 14-day record of the gold paid to the player's clan per event (leader's cut, companions' share, mint cuts, gold-paid promotions), averaged into the finance breakdown. Display only. |
+| `Finance/FiefProfitLines.cs` | Per-fief rows: the Fiefs tab's dead Tariffs row becomes the fief's wealth tax / castle surplus, Garrison Wages becomes the owner's residual after the treasury pays, both with hints; town management gets an owner-income row. Display only. |
+| `Finance/ClanFinanceTabLines.cs` | Deferred postfixes on `CalculateClanIncome` / `CalculateClanExpenses` so the Clan screen's Finances tab totals carry every RBM line the denar tooltip does. |
 
 ### Spending and upgrades
 

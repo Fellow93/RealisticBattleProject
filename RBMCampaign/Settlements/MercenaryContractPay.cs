@@ -182,87 +182,133 @@ namespace RBMCampaign
                 return;
             }
 
-            Hero ruler = clan.Kingdom.Leader;
-            int baseWages = ClanFieldTroopBaseWages(clan);
-            int stipend = StipendFor(clan);
-
-            // The second wage the company lays out on its men, the one that makes the mercenary rate a
-            // double. Vanilla already charged the first; this is the extra, and the men bank it as the
-            // doubled spoils deposit (see DepositWageSpoils). Unconditional while under contract and on
-            // both passes, a negative as any wage expense is -- it stands whether or not the crown pays.
-            if (baseWages > 0)
-            {
-                __result.Add(-baseWages, new TextObject("{=RBM_merc_wage_cost}Mercenary troop wages"));
-            }
-
-            // Vanilla slips a mercenary bonus into the landless-clan subsistence stipend as well -- an
-            // extra 40 per tier on top of the 80 every fiefless minor clan draws (CalculateClanIncomeInternal
-            // line 133). That extra is a mercenary payment too, and RBM is now the company's sole paymaster,
-            // so cancel it; the 80-per-tier floor is left, being a minor-clan subsistence rather than a
-            // mercenary award. Vanilla excludes the player from that stipend outright, so this only ever
-            // fires for AI companies, which is why it goes unlabelled -- no one reads their finance screen.
-            if (clan != Clan.PlayerClan && clan.Fiefs.Count == 0)
-            {
-                int mercBonus = clan.Tier * 40;
-                if (mercBonus > 0)
-                {
-                    __result.Add(-mercBonus);
-                }
-            }
-
-            // What the crown owes today: the full doubled wage, and the standing stipend on top. Capped
-            // at what the ruler can actually afford -- stipend first, wages with whatever is left -- so a
-            // poor employer pays what he can and the company eats the rest, as a stiffed mercenary would.
-            int wageDue = 2 * baseWages;
-            int affordable = MathF.Max(0, ruler.Gold);
-            int stipendPaid = MathF.Min(stipend, affordable);
-            int wagePaid = MathF.Min(wageDue, affordable - stipendPaid);
+            Contract contract = Assess(clan);
 
             if (applyWithdrawals)
             {
                 // The authoritative once-a-day pass whose result becomes the leader's gold. Debit the
                 // ruler for exactly what the mercenary is paid (a null-recipient give takes it out of
                 // him), then book the pay as income; the two net to no coin created.
-                int total = stipendPaid + wagePaid;
+                int total = contract.StipendPaid + contract.WagePaid;
                 if (total > 0)
                 {
-                    GiveGoldAction.ApplyBetweenCharacters(ruler, null, total, true);
+                    GiveGoldAction.ApplyBetweenCharacters(contract.Ruler, null, total, true);
                 }
             }
 
-            // Both passes book the same income lines: the apply pass turns them into gold, the display pass
-            // only makes the breakdown read what the day paid. The net booked here is always the paid amount
-            // (stipendPaid + wagePaid), identical to the debit, so the Daily Gold Change and the ruler's
-            // debit never disagree -- but how it is spelt out depends on who reads the screen.
-            int unpaid = (stipend - stipendPaid) + (wageDue - wagePaid);
-            if (clan == Clan.PlayerClan && unpaid > 0)
+            // Both passes book the same lines: the apply pass turns them into gold, the display pass only
+            // makes the breakdown read what the day paid.
+            Book(clan, contract, ref __result, income: true, expense: true);
+        }
+
+        /// <summary>
+        /// Books the contract's lines into a display-only breakdown -- the income lines, the expense lines,
+        /// or both -- so the Clan screen's separate income and expense totals can each carry their half
+        /// (see <see cref="ClanFinanceTabLines"/>). Moves no coin.
+        /// </summary>
+        internal static void AddDisplayLines(Clan clan, ref ExplainedNumber breakdown, bool income, bool expense)
+        {
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !IsMercenaryClan(clan))
+            {
+                return;
+            }
+            Book(clan, Assess(clan), ref breakdown, income, expense);
+        }
+
+        /// <summary>What the contract owes and pays today, figured once so every booking quotes the same numbers.</summary>
+        private struct Contract
+        {
+            public Hero Ruler;
+            public int BaseWages;
+            public int Stipend;
+            public int WageDue;
+            public int StipendPaid;
+            public int WagePaid;
+            public int Unpaid;
+        }
+
+        private static Contract Assess(Clan clan)
+        {
+            Contract c = default(Contract);
+            c.Ruler = clan.Kingdom.Leader;
+            c.BaseWages = ClanFieldTroopBaseWages(clan);
+            c.Stipend = StipendFor(clan);
+            // What the crown owes today: the full doubled wage, and the standing stipend on top. Capped
+            // at what the ruler can actually afford -- stipend first, wages with whatever is left -- so a
+            // poor employer pays what he can and the company eats the rest, as a stiffed mercenary would.
+            c.WageDue = 2 * c.BaseWages;
+            int affordable = MathF.Max(0, c.Ruler.Gold);
+            c.StipendPaid = MathF.Min(c.Stipend, affordable);
+            c.WagePaid = MathF.Min(c.WageDue, affordable - c.StipendPaid);
+            c.Unpaid = (c.Stipend - c.StipendPaid) + (c.WageDue - c.WagePaid);
+            return c;
+        }
+
+        private static void Book(Clan clan, Contract c, ref ExplainedNumber result, bool income, bool expense)
+        {
+            if (expense)
+            {
+                // The second wage the company lays out on its men, the one that makes the mercenary rate a
+                // double. Vanilla already charged the first; this is the extra, and the men bank it as the
+                // doubled spoils deposit (see DepositWageSpoils). Unconditional while under contract and on
+                // both passes, a negative as any wage expense is -- it stands whether or not the crown pays.
+                if (c.BaseWages > 0)
+                {
+                    result.Add(-c.BaseWages, new TextObject("{=RBM_merc_wage_cost}Mercenary troop wages"));
+                }
+
+                // Vanilla slips a mercenary bonus into the landless-clan subsistence stipend as well -- an
+                // extra 40 per tier on top of the 80 every fiefless minor clan draws (CalculateClanIncomeInternal
+                // line 133). That extra is a mercenary payment too, and RBM is now the company's sole paymaster,
+                // so cancel it; the 80-per-tier floor is left, being a minor-clan subsistence rather than a
+                // mercenary award. Vanilla excludes the player from that stipend outright, so this only ever
+                // fires for AI companies, which is why it goes unlabelled -- no one reads their finance screen.
+                if (clan != Clan.PlayerClan && clan.Fiefs.Count == 0)
+                {
+                    int mercBonus = clan.Tier * 40;
+                    if (mercBonus > 0)
+                    {
+                        result.Add(-mercBonus);
+                    }
+                }
+            }
+
+            if (!income)
+            {
+                return;
+            }
+
+            // The net booked here is always the paid amount (StipendPaid + WagePaid), identical to the
+            // ruler's debit, so the Daily Gold Change and the debit never disagree -- but how it is spelt
+            // out depends on who reads the screen.
+            if (clan == Clan.PlayerClan && c.Unpaid > 0)
             {
                 // The player reads a finance screen, so when the crown falls short show the full pay owed as
                 // income and book the unpaid remainder back as a matching shortfall line -- the breakdown
                 // then reads what was earned AND what a broke employer failed to hand over, netting to the
                 // paid amount all the same.
-                if (stipend > 0)
+                if (c.Stipend > 0)
                 {
-                    __result.Add(stipend, new TextObject("{=RBM_merc_stipend}Mercenary stipend"));
+                    result.Add(c.Stipend, new TextObject("{=RBM_merc_stipend}Mercenary stipend"));
                 }
-                if (wageDue > 0)
+                if (c.WageDue > 0)
                 {
-                    __result.Add(wageDue, new TextObject("{=RBM_merc_wage_pay}Mercenary wage pay"));
+                    result.Add(c.WageDue, new TextObject("{=RBM_merc_wage_pay}Mercenary wage pay"));
                 }
-                __result.Add(-unpaid, new TextObject("{=RBM_merc_unpaid}Employer could not pay"));
+                result.Add(-c.Unpaid, new TextObject("{=RBM_merc_unpaid}Employer could not pay"));
             }
             else
             {
                 // Paid in full, or an AI clan whose breakdown no one reads: book only what was actually
                 // handed over. For an AI clan this is what keeps its gold conserved without an informational
                 // shortfall line it would never see.
-                if (stipendPaid > 0)
+                if (c.StipendPaid > 0)
                 {
-                    __result.Add(stipendPaid, new TextObject("{=RBM_merc_stipend}Mercenary stipend"));
+                    result.Add(c.StipendPaid, new TextObject("{=RBM_merc_stipend}Mercenary stipend"));
                 }
-                if (wagePaid > 0)
+                if (c.WagePaid > 0)
                 {
-                    __result.Add(wagePaid, new TextObject("{=RBM_merc_wage_pay}Mercenary wage pay"));
+                    result.Add(c.WagePaid, new TextObject("{=RBM_merc_wage_pay}Mercenary wage pay"));
                 }
             }
         }

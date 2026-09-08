@@ -120,6 +120,7 @@ namespace RBMCampaign
             // Null giver mints the coin into the payee's purse, the mirror of how an upgrade pays gold out
             // to a null receiver.
             GiveGoldAction.ApplyBetweenCharacters(null, payee, drawn, true);
+            ClanEventGoldLedger.Record(payee, EventGoldKind.LeaderCut, drawn);
             if (SpoilsLog.IsEnabled)
             {
                 SpoilsLog.Log("LEADER", party, SpoilsLog.Describe(party) + " leader " + payee.Name
@@ -192,6 +193,7 @@ namespace RBMCampaign
             // Nothing was minted into the (absent) stacks to draw the cut back out of, so mint it straight to
             // the leader -- the same null-giver mint ApplyLeaderCut ends on, just without the purse round-trip.
             GiveGoldAction.ApplyBetweenCharacters(null, payee, cut, true);
+            ClanEventGoldLedger.Record(payee, EventGoldKind.LeaderCut, cut);
             if (SpoilsLog.IsEnabled)
             {
                 SpoilsLog.Log("LEADER", party, SpoilsLog.Describe(party) + " leader " + payee.Name

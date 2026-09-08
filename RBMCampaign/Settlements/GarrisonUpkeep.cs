@@ -163,6 +163,30 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>
+        /// Projects today's split of the garrison wage: what the fief's treasury will pay and what falls to
+        /// the owner. The same arithmetic as the postfix above, without the citizen leg or any debit, for
+        /// the per-fief display on the Clan screen's Fiefs tab (see <see cref="FiefProfitLines"/>).
+        /// </summary>
+        public static void ProjectWageSplit(Settlement settlement, out int wage, out int fiefPaid, out int ownerPart)
+        {
+            wage = WageBill(settlement);
+            fiefPaid = 0;
+            ownerPart = wage;
+            if (wage <= 0 || !RBMConfig.RBMConfig.rbmCampaignEnabled)
+            {
+                return;
+            }
+            int share = (int)(wage * GarrisonFiefWageShare);
+            int available = SettlementWealth.GetSettlementWealth(settlement);
+            fiefPaid = (share < available ? share : available);
+            if (fiefPaid < 0)
+            {
+                fiefPaid = 0;
+            }
+            ownerPart = wage - fiefPaid;
+        }
+
         /// <summary>The garrison's daily wage bill -- what its men are paid, read off its own party like the militia's.</summary>
         public static int WageBill(Settlement settlement)
         {

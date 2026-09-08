@@ -147,6 +147,18 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// What one settlement remitted to its owner on its most recent daily tick -- the wealth tax for a
+        /// town, the surplus skim for a castle. Display only (the per-fief line on the Clan screen's Fiefs
+        /// tab and the town management screen, see <see cref="FiefProfitLines"/>); zero before the fief
+        /// has ticked this session.
+        /// </summary>
+        internal static int GetSettlementDailyOwnerIncome(Settlement settlement)
+        {
+            int amount;
+            return (settlement != null && _lastOwnerIncome.TryGetValue(settlement, out amount)) ? amount : 0;
+        }
+
+        /// <summary>
         /// Persists the in-flight pending pool with the rest of the settlement-wealth store, so income
         /// the market has already given up but the lord has not yet been paid is not lost across a save.
         /// The display record (<see cref="_lastOwnerIncome"/>) is not saved -- it is a cosmetic estimate

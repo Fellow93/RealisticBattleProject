@@ -17,6 +17,7 @@ namespace RBMCampaign
             // the process. Apply them by hand instead -- a no-op until Game.Current is live, so it lands
             // on the OnGameStart pass (this runs on every patch pass). See MercenaryContractPay.
             MercenaryContractPay.ApplyDeferred(rbmcampaignHarmony);
+            ClanFinanceTabLines.ApplyDeferred(rbmcampaignHarmony);
         }
     }
 }

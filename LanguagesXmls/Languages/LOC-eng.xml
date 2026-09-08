@@ -182,6 +182,20 @@
 	<string id="RBM_merc_unpaid" text="Employer could not pay" />
 	<string id="RBM_garrison_food" text="Garrison provisioning" />
 	<string id="RBM_wealth_settlement" text="Settlement wealth" />
+	<string id="RBM_fin_leader_cut" text="Your cut of the spoils ({DAYS}-day avg.)" />
+	<string id="RBM_fin_companion_spoils" text="Companions' spoils share ({DAYS}-day avg.)" />
+	<string id="RBM_fin_minting" text="Mint revenue ({DAYS}-day avg.)" />
+	<string id="RBM_fin_upgrade_gold" text="Clan party promotions paid in gold ({DAYS}-day avg.)" />
+	<string id="RBM_fief_wealth_tax" text="Wealth tax" />
+	<string id="RBM_fief_castle_surplus" text="Castle surplus" />
+	<string id="RBM_fief_hint_wealth" text="A daily levy on the money standing in the market. Your share leaves the town; the fief's own share pays its garrison, militia and clerks. Trade tariffs stay in the fief's treasury." />
+	<string id="RBM_fief_hint_castle" text="A tenth of the wealth the castle holds above what it needs, remitted to you each day." />
+	<string id="RBM_fief_hint_citizen" text="Citizen wealth" />
+	<string id="RBM_fief_hint_owner" text="Paid to you today" />
+	<string id="RBM_fief_hint_garrison" text="The fief pays its garrison out of its own treasury first; only what the treasury cannot cover is billed to you." />
+	<string id="RBM_fief_hint_wage" text="Daily wage bill" />
+	<string id="RBM_fief_hint_fief_pays" text="Paid by the fief's treasury" />
+	<string id="RBM_fief_hint_owner_pays" text="Billed to you" />
 	<string id="RBM_SPOILS_004" text="Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. The veterans pick first, and the further beneath a man a piece lies the likelier he is to step over it, so what they overlook falls to greener troops. What his men do not spend on their own upgrades they spend on food and drink in the settlements you stop in." />
 	<!-- Strategic Power Tooltip Strings -->
 	<string id="RBM_POWER_001" text="Power: {ATTACKER_TOTAL} attacking  vs  {DEFENDER_TOTAL} defending" />
