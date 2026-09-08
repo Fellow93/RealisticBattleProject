@@ -229,18 +229,13 @@ namespace RBMAI
                 {
                     return true;
                 }
-                BehaviorComponent activeBehavior = mainInfantry.AI?.ActiveBehavior;
-                if (activeBehavior is BehaviorCharge || activeBehavior is BehaviorTacticalCharge || activeBehavior is RBMBehaviorCavalryCharge)
-                {
-                    return true;
-                }
                 if (mainInfantry != null && mainInfantry.CountOfUnits > 0)
                 {
                     Formation enemyForamtion = RBMAI.Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
                     {
                         float distance = GetFormationDistance(mainInfantry, enemyForamtion) + mainInfantry.Depth / 2f + enemyForamtion.Depth / 2f;
-                        return (distance <= (battleJoinRange + (hasBattleBeenJoined ? 25f : 0f)));
+                        return (distance <= (battleJoinRange + (hasBattleBeenJoined ? 10f : 0f)));
                     }
                 }
             }
