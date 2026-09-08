@@ -127,7 +127,9 @@ namespace RBMCampaign
             }
             else
             {
-                held = IsGarment(item) ? CountGarments(town) : town.Owner.ItemRoster.GetItemNumber(item);
+                held = IsGarment(item)
+                    ? CountGarments(town)
+                    : ((town.Owner != null) ? town.Owner.ItemRoster.GetItemNumber(item) : 0);
             }
 
             int room = capacity - held;
@@ -199,7 +201,11 @@ namespace RBMCampaign
 
         private static int CountGarments(Town town)
         {
-            ItemRoster roster = town.Owner.ItemRoster;
+            ItemRoster roster = (town != null && town.Owner != null) ? town.Owner.ItemRoster : null;
+            if (roster == null)
+            {
+                return 0;
+            }
             int held = 0;
             for (int i = roster.Count - 1; i >= 0; i--)
             {

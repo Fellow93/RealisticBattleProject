@@ -97,7 +97,7 @@ namespace RBMCampaign
         /// </remarks>
         public static int UnitsInStore(Town town, ItemCategory category)
         {
-            if (town == null || category == null)
+            if (town == null || category == null || town.Owner == null)
             {
                 return 0;
             }

@@ -598,7 +598,7 @@ namespace RBMCampaign
         /// <summary>Units a town can spare of a good while keeping <see cref="KeepDays"/> for itself.</summary>
         private static int SpareUnits(Town town, ItemObject good, float days)
         {
-            if (days <= KeepDays)
+            if (days <= KeepDays || town.Owner == null)
             {
                 return 0;
             }

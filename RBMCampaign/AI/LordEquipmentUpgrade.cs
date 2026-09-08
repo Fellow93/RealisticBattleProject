@@ -127,6 +127,11 @@ namespace RBMCampaign
         {
             Hero lord = party.LeaderHero;
             Town town = settlement.Town;
+            if (town == null || town.Owner == null)
+            {
+                return;
+            }
+
             ItemRoster stock = town.Owner.ItemRoster;
 
             // Gold budget for MARKET buys only. A lord too poor to shop (budget 0) can still put on better

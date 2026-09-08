@@ -522,7 +522,11 @@ namespace RBMCampaign
                 return 0;
             }
 
-            ItemRoster itemRoster = town.Owner.ItemRoster;
+            ItemRoster itemRoster = (town.Owner != null) ? town.Owner.ItemRoster : null;
+            if (itemRoster == null)
+            {
+                return 0;
+            }
             int available = itemRoster.GetItemNumber(item);
             int taken = (available < wanted) ? available : wanted;
             if (taken < wanted)
@@ -568,7 +572,12 @@ namespace RBMCampaign
                 return;
             }
 
-            ItemRoster itemRoster = town.Owner.ItemRoster;
+            ItemRoster itemRoster = (town.Owner != null) ? town.Owner.ItemRoster : null;
+            if (itemRoster == null)
+            {
+                return;
+            }
+
             List<GarmentLot> lots = new List<GarmentLot>();
             for (int i = itemRoster.Count - 1; i >= 0; i--)
             {

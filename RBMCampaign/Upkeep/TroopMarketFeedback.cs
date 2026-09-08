@@ -234,7 +234,7 @@ namespace RBMCampaign
             int poured = 0;
             int spentOnGoods = 0;
 
-            if (budget > 0)
+            if (budget > 0 && town.Owner != null)
             {
                 ItemRoster roster = town.Owner.ItemRoster;
                 foreach (KeyValuePair<string, float> fare in TavernFare)

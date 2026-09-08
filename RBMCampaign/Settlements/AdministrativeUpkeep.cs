@@ -187,7 +187,7 @@ namespace RBMCampaign
         /// </summary>
         private static void ConsumeVillageFood(Settlement settlement, int amount)
         {
-            if (settlement.Village == null || amount <= 0)
+            if (settlement.Village == null || amount <= 0 || settlement.Village.Owner == null)
             {
                 return;
             }

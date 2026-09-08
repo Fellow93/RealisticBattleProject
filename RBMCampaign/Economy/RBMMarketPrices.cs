@@ -345,7 +345,7 @@ namespace RBMCampaign
         /// </remarks>
         public static float DaysOfSupply(Town town, ItemObject item)
         {
-            if (town == null || item == null || !town.IsTown)
+            if (town == null || item == null || !town.IsTown || town.Owner == null)
             {
                 return -1f;
             }
@@ -423,7 +423,7 @@ namespace RBMCampaign
         public static float DaysOfSupplyForCategory(Town town, ItemCategory category, out float cap)
         {
             cap = MaxFactor;
-            if (town == null || category == null || !town.IsTown)
+            if (town == null || category == null || !town.IsTown || town.Owner == null)
             {
                 return -1f;
             }

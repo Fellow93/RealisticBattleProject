@@ -453,7 +453,7 @@ namespace RBMCampaign
         {
             private static bool Prefix(Town town, Dictionary<ItemCategory, float> categoryDemand, Dictionary<ItemCategory, int> saleLog)
             {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || town == null || !town.IsTown)
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || town == null || !town.IsTown || town.Owner == null)
                 {
                     return true;
                 }
@@ -654,12 +654,15 @@ namespace RBMCampaign
 
             private static void Prefix(Town __instance, out CampaignTime __state)
             {
-                __state = LastEatingTime(__instance.Owner);
+                __state = (__instance != null && __instance.Owner != null)
+                    ? LastEatingTime(__instance.Owner)
+                    : CampaignTime.Now;
             }
 
             private static void Postfix(Town __instance, CampaignTime __state)
             {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !__instance.IsTown)
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || __instance == null || !__instance.IsTown
+                    || __instance.Owner == null)
                 {
                     return;
                 }
@@ -738,7 +741,7 @@ namespace RBMCampaign
 
         private static void DeliverGood(Town town, ItemObject item, float amount, string source, StringBuilder delivered)
         {
-            if (item == null)
+            if (item == null || town == null || town.Owner == null)
             {
                 return;
             }
@@ -883,7 +886,12 @@ namespace RBMCampaign
         /// </summary>
         private static int BuyFoodFromMarket(Town town, int amount, Dictionary<ItemCategory, int> saleLog, bool provisioned)
         {
-            ItemRoster itemRoster = town.Owner.ItemRoster;
+            ItemRoster itemRoster = (town != null && town.Owner != null) ? town.Owner.ItemRoster : null;
+            if (itemRoster == null)
+            {
+                return 0;
+            }
+
             TownMarketData marketData = town.MarketData;
 
             List<FoodLot> lots = new List<FoodLot>();

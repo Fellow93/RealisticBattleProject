@@ -288,7 +288,12 @@ namespace RBMCampaign
         /// </summary>
         public static int StoredUnits(Village village)
         {
-            ItemRoster roster = village.Owner.ItemRoster;
+            ItemRoster roster = (village != null && village.Owner != null) ? village.Owner.ItemRoster : null;
+            if (roster == null)
+            {
+                return 0;
+            }
+
             int units = 0;
             for (int i = 0; i < roster.Count; i++)
             {
@@ -573,6 +578,13 @@ namespace RBMCampaign
                 // Seeding has nowhere to write without a bound town, and unlike the normal branch it
                 // has no local store to fall back on. Vanilla's own guard, at vanilla's position.
                 if (initialProductionForTowns && village.TradeBound == null)
+                {
+                    return false;
+                }
+
+                // The normal branch writes into the village's own party roster; without an Owner party
+                // there is nowhere to put the day's output, so skip it as for a raided village.
+                if (!initialProductionForTowns && village.Owner == null)
                 {
                     return false;
                 }

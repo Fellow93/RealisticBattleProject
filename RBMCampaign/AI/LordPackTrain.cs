@@ -231,7 +231,7 @@ namespace RBMCampaign
         private static int BuyCategory(MobileParty party, Town town, ItemCategory cat, int wantCount, int budget, out int bought)
         {
             bought = 0;
-            if (wantCount <= 0 || budget <= 0 || town.MarketData.GetItemCountOfCategory(cat) <= 0)
+            if (wantCount <= 0 || budget <= 0 || town.Owner == null || town.MarketData.GetItemCountOfCategory(cat) <= 0)
             {
                 return 0;
             }
