@@ -183,6 +183,10 @@
     <Compile Include="AiModule\Behaviors\MiscBehaviorPatches.cs" />
     <Compile Include="AiModule\Orders\MovementOrderPatches.cs" />
     <Compile Include="AiModule\Formations\FormationGridGuards.cs" />
+    <Compile Include="AiModule\Formations\FormationPaceFix.cs" />
+    <Compile Include="AiModule\Formations\FormationCatchUpGate.cs" />
+    <Compile Include="AiModule\Diagnostics\AiBehaviorLog.cs" />
+    <Compile Include="AiModule\Diagnostics\AiBehaviorLogic.cs" />
     <Compile Include="AiModule\Frontline\AgentPanicFix.cs" />
     <Compile Include="AiModule\Frontline\FrontlineDecision.cs" />
     <Compile Include="AiModule\Frontline\FrontlinePositioning.cs" />

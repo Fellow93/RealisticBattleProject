@@ -166,6 +166,19 @@ namespace RBMAI
                     // accordions back and forth instead of advancing. Flooring the offset keeps it pressing forward.
                     float baseOffset = MBMath.ClampFloat(enemyDistance * 0.3f, 10f, 50f) + __instance.Formation.Depth * 0.5f;
                     float advanceOffset = baseOffset * MBMath.Lerp(0.5f, 1f, scaleT);
+                    // Converge the carrot: never order past the enemy. Without this the target sits a
+                    // fixed distance ahead of our own moving centroid forever, so the frame keeps
+                    // sprinting and the line strings out. Leave a small standoff margin so contact is
+                    // still made by the charge, not by walking into them.
+                    float maxOffset = enemyDistance - 5f;
+                    if (advanceOffset > maxOffset)
+                    {
+                        advanceOffset = maxOffset;
+                    }
+                    if (advanceOffset < 3f)
+                    {
+                        advanceOffset = 3f;
+                    }
                     Vec2 advanceVec2 = RBMAI.Utilities.GetFormationCenter(__instance.Formation) + directionToEnemy * advanceOffset;
                     WorldPosition advancePosition = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
                     advancePosition.SetVec2(advanceVec2);

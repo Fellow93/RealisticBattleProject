@@ -20,6 +20,13 @@ namespace RBMConfig
         public static bool rbmCampaignEnabled = true;
         public static bool developerMode = false;
 
+        // Writes, second by second, every team's chosen tactic and every formation's active behavior and
+        // movement order to logs/ai -- the only way to see why the enemy team's infantry and the player's
+        // delegated team, running the same code, do not do the same thing.
+        // Currently defaulted ON so it can be read without touching the config; flip to false once the
+        // question it was built for is answered.
+        public static bool aiBehaviorLogEnabled = false;
+
         public static void LoadConfig()
         {
             weaponTypesFactors.Clear();
@@ -182,6 +189,7 @@ namespace RBMConfig
             postureGUIEnabled = ReadOrCreate("/Config/RBMAI", "PostureGUIEnabled", "1").Equals("1");
             vanillaCombatAi = ReadOrCreate("/Config/RBMAI", "VanillaCombatAi", "0").Equals("1");
             keepBattleEnabled = ReadOrCreate("/Config/RBMAI", "KeepBattleEnabled", "0").Equals("1");
+            aiBehaviorLogEnabled = ReadOrCreate("/Config/RBMAI", "AiBehaviorLogEnabled", "0").Equals("1");
             switch (ReadOrCreate("/Config/RBMAI", "PlayerPostureMultiplier", "0"))
             {
                 case "1": playerPostureMultiplier = 1.5f; break;
@@ -333,6 +341,7 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureGUIEnabled"), postureGUIEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/VanillaCombatAi"), vanillaCombatAi);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/KeepBattleEnabled"), keepBattleEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/AiBehaviorLogEnabled"), aiBehaviorLogEnabled);
             switch (playerPostureMultiplier)
             {
                 case 1f:
