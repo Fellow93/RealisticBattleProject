@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -266,7 +267,10 @@ namespace RBMCampaign
             ItemRoster roster = town.Town.Owner.ItemRoster;
             // Priced and tallied in one pass over a stable index, then removed in a second: AddToCounts
             // reshuffles the roster, so mutating it mid-walk would skip stacks or read the wrong ones.
-            List<KeyValuePair<ItemObject, int>> taken = new List<KeyValuePair<ItemObject, int>>();
+            // Keyed by the full EquipmentElement, not the ItemObject: a market can hold the same item in
+            // several stacks that differ only by modifier, and AddToCounts(ItemObject) would charge every
+            // one of those tallies against the single unmodified stack and drive it negative.
+            List<KeyValuePair<EquipmentElement, int>> taken = new List<KeyValuePair<EquipmentElement, int>>();
             for (int i = 0; i < roster.Count; i++)
             {
                 ItemRosterElement element = roster.GetElementCopyAtIndex(i);
@@ -292,12 +296,21 @@ namespace RBMCampaign
                 {
                     result.OtherUnits += n;
                 }
-                taken.Add(new KeyValuePair<ItemObject, int>(item, n));
+                taken.Add(new KeyValuePair<EquipmentElement, int>(element.EquipmentElement, n));
             }
 
-            foreach (KeyValuePair<ItemObject, int> line in taken)
+            foreach (KeyValuePair<EquipmentElement, int> line in taken)
             {
-                roster.AddToCounts(line.Key, -line.Value);
+                int idx = roster.FindIndexOfElement(line.Key);
+                if (idx < 0)
+                {
+                    continue;
+                }
+                int remove = Math.Min(line.Value, roster.GetElementNumber(idx));
+                if (remove > 0)
+                {
+                    roster.AddToCounts(line.Key, -remove);
+                }
             }
 
             result.Pot = MathF.Round(result.Value * MathF.Clamp(spoilsShare, 0f, 1f));
