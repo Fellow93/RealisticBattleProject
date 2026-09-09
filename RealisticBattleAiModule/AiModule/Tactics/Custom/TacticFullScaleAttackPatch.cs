@@ -16,6 +16,10 @@ namespace RBMAI.AiModule.RbmTactics
             if (____mainInfantry != null)
             {
                 ____mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+                // Native SetDefaultBehaviorWeights leaves BehaviorCharge at 1, so it overtakes
+                // the flat-1.0 BehaviorAdvance late in the approach. Match the RBM split tactics
+                // (which never re-arm Charge after ResetBehaviorWeights); PostfixAttack re-arms it.
+                ____mainInfantry.AI.SetBehaviorWeight<BehaviorCharge>(0f);
             }
             if (____archers != null)
             {

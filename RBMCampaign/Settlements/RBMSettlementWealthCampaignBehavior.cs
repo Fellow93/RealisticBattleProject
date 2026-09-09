@@ -64,6 +64,9 @@ namespace RBMCampaign
             // its recovered kit value to the funding pot.
             MilitiaUpkeep.ChargePendingSpawn(settlement);
             MilitiaUpkeep.RefundPendingDecline(settlement);
+            // A starving fief's garrison and militia take the day's toll here, before the garrison is
+            // grown, so the losses are on the books when the growth gate is read. See FiefStarvation.
+            FiefStarvation.OnDailyTick(settlement);
             // Grow the garrison off the fief's wealth, after its upkeep and its militia are paid, so it
             // recruits from genuine surplus and the base local defence (militia) is funded first.
             GarrisonRecruitCost.GrowGarrison(settlement);
