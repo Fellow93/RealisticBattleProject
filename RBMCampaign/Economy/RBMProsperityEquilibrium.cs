@@ -410,6 +410,13 @@ namespace RBMCampaign
                         // its figure rather than swinging on its garrison's larder. Perks, policies, loyalty
                         // and building effects are left in place.
                         float drift = (castleTarget - fortification.Prosperity) * CastleConvergenceRate;
+                        // Food gates a castle the same way it gates a town: under a week of supply it
+                        // stops growing, and short of that it loses a share a day. See FiefStarvation.
+                        if (drift > 0f && FiefStarvation.BlocksGrowth(fortification))
+                        {
+                            drift = 0f;
+                        }
+                        drift -= FiefStarvation.ProsperityLossRate(fortification) * fortification.Prosperity;
                         __result.Add(drift - VanillaFoodAndMarketProsperity(fortification), CountrysideText);
                     }
                     return;
@@ -430,7 +437,9 @@ namespace RBMCampaign
                     // town supplies its people's wants. Base demand is the backbone; met medium and
                     // luxury demand add to it, so a town whose citizens can actually buy what they want
                     // climbs faster than one that only just feeds itself.
-                    float foodGate = RBMTownFoodSupply.RationSatisfaction(fortification);
+                    // The gate has two parts: today's rations (were the people fed) and the reserve behind
+                    // them (under a week of granary the town is rationing and adds nobody). See FiefStarvation.
+                    float foodGate = FiefStarvation.BlocksGrowth(fortification) ? 0f : RBMTownFoodSupply.RationSatisfaction(fortification);
                     float demandModifier = CitizenDemand.BaseDemandSatisfaction(fortification)
                         * (1f + MediumDemandGrowthBonus * CitizenDemand.MediumDemandSatisfaction(fortification)
                               + LuxuryDemandGrowthBonus * CitizenDemand.LuxuryDemandSatisfaction(fortification));
@@ -443,11 +452,11 @@ namespace RBMCampaign
                     change = gap * ProsperityDeclineRate * DeclineFloor;
                 }
 
-                // Starvation drags prosperity down on top of the drift, and unlike the countryside pull it
+                // Hunger drags prosperity down on top of the drift, and unlike the countryside pull it
                 // fires even below target -- a town that cannot feed itself sheds people wherever it sits.
-                // The fall starts slow and steepens with the town's accumulated hunger, so a passing
-                // shortage barely registers while a lasting famine collapses it. See HungerPressure.
-                change -= ProsperityDeclineRate * RBMTownFoodSupply.HungerPressure(fortification) * fortification.Prosperity;
+                // Stepped on the granary: 1% a day under three days of food, 3% a day once rations go
+                // unmet. See FiefStarvation. (Supersedes the HungerPressure ramp, which is kept for the ledger.)
+                change -= FiefStarvation.ProsperityLossRate(fortification) * fortification.Prosperity;
 
                 // One combined line: vanilla's food/market/housing pulls cancelled, RBM's food-and-demand
                 // drift applied. Folding them together keeps the town screen to a single readable entry

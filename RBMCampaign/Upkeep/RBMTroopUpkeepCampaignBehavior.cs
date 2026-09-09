@@ -16,6 +16,8 @@ namespace RBMCampaign
             CampaignEvents.SettlementEntered.AddNonSerializedListener(this, TroopUpkeep.OnSettlementEntered);
             CampaignEvents.HourlyTickPartyEvent.AddNonSerializedListener(this, TroopUpkeep.OnHourlyTickParty);
             CampaignEvents.DailyTickPartyEvent.AddNonSerializedListener(this, TroopUpkeep.OnDailyTickParty);
+            // A field party out of food buries a share of its wounded each day. See FiefStarvation.
+            CampaignEvents.DailyTickPartyEvent.AddNonSerializedListener(this, FiefStarvation.OnDailyTickParty);
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, TroopUpkeep.OnMobilePartyDestroyed);
         }
 

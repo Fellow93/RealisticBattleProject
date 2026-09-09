@@ -179,6 +179,12 @@ namespace RBMCampaign
 
             if (c.Final > 0)
             {
+                // A fief under a week of food is rationing and takes on no new mouths, whatever its
+                // treasury says. Shedding (below) is unaffected. See FiefStarvation.
+                if (FiefStarvation.BlocksGrowth(settlement.Town))
+                {
+                    return;
+                }
                 if (SpawnTroop(settlement) == null)
                 {
                     return;

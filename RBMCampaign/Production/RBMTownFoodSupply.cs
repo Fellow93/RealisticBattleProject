@@ -136,6 +136,13 @@ namespace RBMCampaign
             return (town != null && _rationSatisfaction.TryGetValue(town, out float satisfaction)) ? satisfaction : 1f;
         }
 
+        /// <summary>Rations the town wanted on its last daily tick that the market could not fill; 0 for a
+        /// town not yet ticked. Read by <see cref="FiefStarvation"/> as the town's starvation signal.</summary>
+        public static int UnmetRationsToday(Town town)
+        {
+            return (town != null && _unmetRations.TryGetValue(town, out int unmet)) ? unmet : 0;
+        }
+
         // Days of unbroken famine for hunger pressure to ramp from nothing to full -- the point at which a
         // starving town declines at the full prosperity decline rate. A month: a shortage has to persist,
         // not merely flicker, to collapse a town.
