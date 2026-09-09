@@ -234,7 +234,8 @@ namespace RBMAI
                     }
                     foreach (Agent agent in _inactiveAgentsBuffer)
                     {
-                        AgentStances.values.Remove(agent);
+                        Stance removedStance;
+                        AgentStances.values.TryRemove(agent, out removedStance);
                     }
 
                     foreach (KeyValuePair<Agent, FormationClass> entry in agentsToChangeFormation)

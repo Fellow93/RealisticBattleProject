@@ -163,6 +163,57 @@ namespace RBMAI
         public class AIDecisionState
         {
             public AIMindset AIMindset = new AIMindset();
+
+            // Utilities.GetCorrectTarget walks every enemy formation's roster (ToArray per call), so calling
+            // it per agent per tick from the parallel movement job is O(n^2) plus an allocation storm.
+            // Cache it per agent for a randomised 0.5-1s so the recomputes spread across ticks instead of
+            // all landing on the same one.
+            public Agent cachedTarget = null;
+            public float cachedTargetExpiry = float.MinValue;
+
+            // RBM-side stand-in for the old forged write to Agent.LastRangedAttackTime: records when the
+            // >50s "archer has stalled" reset fired, so the 20s/50s logic keeps its effect without
+            // reflecting into engine state from a worker thread.
+            public float stallResetTime = float.MinValue;
+        }
+
+        // Returns this agent's melee/charge target, reusing the cached one while it is fresh and still alive.
+        // Behaviour matches a direct Utilities.GetCorrectTarget call apart from up to ~1s of staleness.
+        public static Agent GetCachedCorrectTarget(Agent unit, AIDecisionState state)
+        {
+            if (unit == null)
+            {
+                return null;
+            }
+            if (state == null)
+            {
+                return Utilities.GetCorrectTarget(unit);
+            }
+            Mission mission = Mission.Current;
+            float now = mission != null ? mission.CurrentTime : 0f;
+            Agent cached = state.cachedTarget;
+            if (cached != null && now < state.cachedTargetExpiry && cached.IsActive())
+            {
+                return cached;
+            }
+            Agent target = Utilities.GetCorrectTarget(unit);
+            state.cachedTarget = target;
+            state.cachedTargetExpiry = now + MBRandom.RandomFloatRanged(0.5f, 1f);
+            return target;
+        }
+
+        public static AIDecisionState GetOrCreateDecisionState(Agent unit)
+        {
+            if (unit == null)
+            {
+                return null;
+            }
+            AIDecisionState state;
+            if (aiDecisionCooldownDict.TryGetValue(unit, out state))
+            {
+                return state;
+            }
+            return aiDecisionCooldownDict.GetOrAdd(unit, new AIDecisionState());
         }
 
         public static int LimitCount(int count, int max)

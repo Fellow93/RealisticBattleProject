@@ -257,6 +257,11 @@ namespace RBM
                 {
                     mission.AddMissionBehavior((MissionBehavior)(object)new StanceVisualLogic());
                 }
+                if (RBMConfig.RBMConfig.frontlineEnabled)
+                {
+                    // Inert until toggled in-mission with Ctrl+Shift+F.
+                    mission.AddMissionBehavior((MissionBehavior)(object)new FrontlineDebugOverlay());
+                }
                 mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
                 if (RBMConfig.RBMConfig.postureEnabled)
                 {
@@ -265,6 +270,10 @@ namespace RBM
             }
             else
             {
+                if (mission.GetMissionBehavior<FrontlineDebugOverlay>() != null)
+                {
+                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<FrontlineDebugOverlay>());
+                }
                 if (mission.GetMissionBehavior<SiegeArcherPoints>() != null)
                 {
                     mission.RemoveMissionBehavior(mission.GetMissionBehavior<SiegeArcherPoints>());

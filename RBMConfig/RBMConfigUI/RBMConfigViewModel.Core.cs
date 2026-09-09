@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Core.ViewModelCollection.Selector;
@@ -242,6 +242,17 @@ namespace RBMConfig
             List<string> keepBattleOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
             KeepBattleEnabledText = new TextViewModel(new TextObject("Keep Battle (Last Stand)"));
             KeepBattleEnabled = new SelectorVM<SelectorItemVM>(keepBattleOptions, 0, null);
+
+            List<string> frontlineOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            FrontlineEnabledText = new TextViewModel(new TextObject("Frontline System"));
+            FrontlineEnabled = new SelectorVM<SelectorItemVM>(frontlineOptions, 0, OnFrontlineEnabledChanged);
+            FrontlineEnabled.SelectedIndex = RBMConfig.frontlineEnabled ? 1 : 0;
+            _frontlineMinFormationSize = MathF.Clamp(RBMConfig.frontlineMinFormationSize, 0f, 200f);
+            _frontlineDecisionTimerMax = MathF.Clamp(RBMConfig.frontlineDecisionTimerMax, 0f, 10f);
+            _frontlineAttackWeight = MathF.Clamp(RBMConfig.frontlineAttackWeight, 0f, 3f);
+            _frontlineBackStepWeight = MathF.Clamp(RBMConfig.frontlineBackStepWeight, 0f, 3f);
+            _frontlineFindAllyWeight = MathF.Clamp(RBMConfig.frontlineFindAllyWeight, 0f, 3f);
+            _frontlineFlankWeight = MathF.Clamp(RBMConfig.frontlineFlankWeight, 0f, 3f);
 
             if (RBMConfig.playerPostureMultiplier == 1f)
             {
@@ -631,6 +642,14 @@ namespace RBMConfig
                 RBMConfig.keepBattleEnabled = true;
             }
 
+            RBMConfig.frontlineEnabled = FrontlineEnabled.SelectedIndex == 1;
+            RBMConfig.frontlineMinFormationSize = (int)_frontlineMinFormationSize;
+            RBMConfig.frontlineDecisionTimerMax = _frontlineDecisionTimerMax;
+            RBMConfig.frontlineAttackWeight = _frontlineAttackWeight;
+            RBMConfig.frontlineBackStepWeight = _frontlineBackStepWeight;
+            RBMConfig.frontlineFindAllyWeight = _frontlineFindAllyWeight;
+            RBMConfig.frontlineFlankWeight = _frontlineFlankWeight;
+
             if (RBMCombatEnabled.SelectedIndex == 0)
             {
                 RBMConfig.rbmCombatEnabled = false;
@@ -744,6 +763,13 @@ namespace RBMConfig
             StaminaSystemEnabled.SelectedIndex = 1;
             HitStopEnabled.SelectedIndex = 1;
             RBMAIEnabled.SelectedIndex = 1;
+            FrontlineEnabled.SelectedIndex = 1;
+            FrontlineMinFormationSize = 25f;
+            FrontlineDecisionTimerMax = 2f;
+            FrontlineAttackWeight = 1f;
+            FrontlineBackStepWeight = 1f;
+            FrontlineFindAllyWeight = 1f;
+            FrontlineFlankWeight = 1f;
 
             // Modules
             RBMTournamentEnabled.SelectedIndex = 1;

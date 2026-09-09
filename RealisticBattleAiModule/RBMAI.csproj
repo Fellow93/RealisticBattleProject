@@ -184,6 +184,7 @@
     <Compile Include="AiModule\Orders\MovementOrderPatches.cs" />
     <Compile Include="AiModule\Formations\FormationGridGuards.cs" />
     <Compile Include="AiModule\Frontline\AgentPanicFix.cs" />
+    <Compile Include="AiModule\Frontline\FrontlineDebugOverlay.cs" />
     <Compile Include="AiModule\Frontline\FrontlineDecision.cs" />
     <Compile Include="AiModule\Frontline\FrontlinePositioning.cs" />
     <Compile Include="AiModule\Frontline\FormationMovement.cs" />

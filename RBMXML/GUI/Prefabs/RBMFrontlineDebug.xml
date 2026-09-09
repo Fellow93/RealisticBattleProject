@@ -1,0 +1,26 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" IsVisible="@IsActive">
+      <Children>
+        <!-- Zero-sized ItemTemplate roots so the ListPanel stack contributes no advance; each marker
+             places itself absolutely via PositionXOffset/PositionYOffset (same trick as UnitStatus.xml). -->
+        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DataSource="{Markers}">
+          <ItemTemplate>
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="0" SuggestedHeight="0" IsHidden="@IsHidden">
+              <Children>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                        SuggestedWidth="@Size" SuggestedHeight="@Size"
+                        PositionXOffset="@ScreenX" PositionYOffset="@ScreenY"
+                        Sprite="BlankWhiteSquare_9" Color="@MarkerColor" />
+              </Children>
+            </Widget>
+          </ItemTemplate>
+        </ListPanel>
+        <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
+                    HorizontalAlignment="Left" VerticalAlignment="Top"
+                    MarginLeft="40" MarginTop="220"
+                    Brush="EnemyName" Text="@Readout" />
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

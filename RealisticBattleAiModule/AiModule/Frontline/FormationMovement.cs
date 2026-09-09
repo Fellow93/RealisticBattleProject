@@ -50,10 +50,15 @@ namespace RBMAI
                 bool formationScattered = formationIntegrityData.DeviationOfPositionsExcludeFarAgents > catchUpThreshold;
                 bool unitFarFromSlot = ___Agent.Position.AsVec2.Distance(currentGlobalPositionOfUnit) >= catchUpThreshold * 2f;
 
-                if (!formationScattered && !unitFarFromSlot)
+                if (!formationScattered && !unitFarFromSlot && ShouldCatchUpWithFormationProperty != null)
                 {
                     ShouldCatchUpWithFormationProperty.SetValue(__instance, true, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
 
+                    // shouldKeepWithFormationInsteadOfMovingToAgent is hard-set to true on purpose. Native
+                    // computes it as (shield in the offhand) && (formation is >=50% ranged), so only a
+                    // shielded man in a mostly-missile formation holds his slot and everyone else drifts
+                    // toward whichever agent he is targeting. RBM wants every moving unit to hold slot --
+                    // a Move order should march the formation, not smear it toward enemy individuals.
                     ___Agent.SetFormationIntegrityData(currentGlobalPositionOfUnit, ___Agent.Formation.CurrentDirection, formationIntegrityData.AverageVelocityExcludeFarAgents, formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents, formationIntegrityData.DeviationOfPositionsExcludeFarAgents, true);
                 }
             }
@@ -78,13 +83,19 @@ namespace RBMAI
         private static readonly MethodInfo IsUnitDetachedForDebug =
             typeof(Formation).GetMethod("IsUnitDetachedForDebug", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        // NOT dead work, even though the sibling postfix disables the frame again for ChargeToTarget.
+        // Native's ChargeToTarget path goes through Agent.GetBaseFormationFrame and never calls the managed
+        // Formation.GetOrderPositionOfUnit, so this explicit call is the ONLY thing that runs RBM's frontline
+        // prefix (the mindset step + ClearTargetFrame side effect) for units under ChargeWithTarget.
+        // Removing it made ChargeWithTarget infantry run straight in instead of advancing as a line.
+        // The speed limit (isCharging: false -> CachedMovementSpeed) also survives the postfix.
         [HarmonyPrefix]
         [HarmonyPatch("GetFormationFrame")]
         private static bool PrefixGetFormationFrame(ref bool __result, ref Agent ___Agent, ref HumanAIComponent __instance, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool limitIsMultiplier)
         {
             // Also on the parallel formation-movement worker path -- see PostfixParallelUpdateFormationMovement.
             // Defer to native (return true = run original) when a MissionLibrary mod is present.
-            if (RBMAI.Tactics.IsFormationReshufflingUnsafe)
+            if (RBMAI.Tactics.IsFormationReshufflingUnsafe || IsUnitDetachedForDebug == null)
             {
                 return true;
             }

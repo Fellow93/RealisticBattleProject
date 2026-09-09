@@ -17,9 +17,6 @@ namespace RBMAI
         [HarmonyPatch(typeof(Formation))]
         private class OverrideFormation
         {
-            private static readonly PropertyInfo LastRangedAttackTimeProperty =
-                typeof(Agent).GetProperty("LastRangedAttackTime");
-
             // Mission.GetNearby*Agents clears the list it is handed before filling it (verified against
             // TaleWorlds.MountAndBlade.Mission), so these scratch buffers can be reused instead of allocating a
             // fresh MBList per query -- this prefix ran 4-7 allocations per agent per tick.
@@ -53,11 +50,12 @@ namespace RBMAI
                         return;
                     }
                     MovementOrder order = __instance.GetReadonlyMovementOrderReference();
-                    if (order.OrderType != OrderType.Charge && order.OrderType != OrderType.ChargeWithTarget && order.OrderType != OrderType.Advance && order.OrderType != OrderType.FollowMe && order.OrderType != OrderType.FollowEntity)
+                    // Frontline facing only applies under charge orders, matching the mindset block below.
+                    if (order.OrderType != OrderType.Charge && order.OrderType != OrderType.ChargeWithTarget)
                     {
                         return;
                     }
-                    Agent targetAgent = Utilities.GetCorrectTarget(unit);
+                    Agent targetAgent = GetCachedCorrectTarget(unit, GetOrCreateDecisionState(unit));
                     if (targetAgent != null)
                     {
                         float distanceToEnemy = unit.Position.AsVec2.Distance(targetAgent.Position.AsVec2);
@@ -72,9 +70,26 @@ namespace RBMAI
                 }
             }
 
+            // This prefix runs on the parallel formation-movement job. An escaping exception there does not
+            // surface as a managed error -- it tears down the worker. Mirror the sibling GetDirectionOfUnit
+            // postfix and swallow, falling through to native with __result untouched.
             [HarmonyPrefix]
             [HarmonyPatch("GetOrderPositionOfUnit")]
             private static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
+            {
+                WorldPosition originalResult = __result;
+                try
+                {
+                    return GetOrderPositionOfUnitCore(__instance, ref ____orderPosition, ref ____arrangement, ref unit, ____detachedUnits, ref __result);
+                }
+                catch
+                {
+                    __result = originalResult;
+                    return true;
+                }
+            }
+
+            private static bool GetOrderPositionOfUnitCore(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
             {
                 Mission mission = Mission.Current;
 
@@ -82,9 +97,15 @@ namespace RBMAI
                 {
                     return true;
                 }
+                // Every branch below feeds unit.Team into Mission.GetNearby*Agents, which dereferences it.
+                // A teamless agent (spawning, or just detached) would NRE on the worker thread.
+                if (unit.Team == null)
+                {
+                    return true;
+                }
                 if (mission.IsSiegeBattle)
                 {
-                    if (unit.Position == null || unit.Team == null)
+                    if (unit.Position == null)
                     {
                         return true;
                     }
@@ -130,7 +151,7 @@ namespace RBMAI
                     var targetAgent = unit.GetTargetAgent();
                     if (__instance.IsAIControlled)
                     {
-                        targetAgent = Utilities.GetCorrectTarget(unit);
+                        targetAgent = GetCachedCorrectTarget(unit, GetOrCreateDecisionState(unit));
                     }
                     if (targetAgent != null)
                     {
@@ -167,11 +188,26 @@ namespace RBMAI
                                 float currentTime = MBCommon.GetTotalMissionTime();
                                 if (currentTime - unit.LastMeleeAttackTime > 10f && currentTime - unit.LastMeleeHitTime > 10f)
                                 {
-                                    if (currentTime - unit.LastRangedAttackTime > 50f)
+                                    // The old code forged Agent.LastRangedAttackTime through reflection to
+                                    // "restart the clock" once a unit had gone 50s without shooting. Writing
+                                    // engine state from the parallel movement job is unsafe, so the same clock
+                                    // is now kept RBM-side: the effective last-shot time is whichever of the
+                                    // engine's value and our own reset stamp is later.
+                                    AIDecisionState rangedState = GetOrCreateDecisionState(unit);
+                                    float lastRangedTime = unit.LastRangedAttackTime;
+                                    if (rangedState != null && rangedState.stallResetTime > lastRangedTime)
                                     {
-                                        LastRangedAttackTimeProperty.SetValue(unit, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                                        lastRangedTime = rangedState.stallResetTime;
                                     }
-                                    if (currentTime - unit.LastRangedAttackTime > 20f && enemyCloseBy.Count < 3)
+                                    if (currentTime - lastRangedTime > 50f)
+                                    {
+                                        if (rangedState != null)
+                                        {
+                                            rangedState.stallResetTime = currentTime;
+                                        }
+                                        lastRangedTime = currentTime;
+                                    }
+                                    if (currentTime - lastRangedTime > 20f && enemyCloseBy.Count < 3)
                                     {
                                         __result = WorldPosition.Invalid;
                                         return false;
@@ -182,27 +218,28 @@ namespace RBMAI
                     }
                 }
 
-                AIDecisionState aiDecision;
-                bool hasDecisionState = aiDecisionCooldownDict.TryGetValue(unit, out aiDecision);
+                AIDecisionState aiDecision = GetOrCreateDecisionState(unit);
 
-                if (hasDecisionState && aiDecision.AIMindset.shouldClearTargetFrame)
+                if (aiDecision.AIMindset.shouldClearTargetFrame)
                 {
                     unit.ClearTargetFrame();
                     aiDecision.AIMindset.shouldClearTargetFrame = false;
                 }
 
-                // Below this size the system does nothing, so don't build decision state for the unit.
-                // The pending clear above still runs first: formations shrink as they take casualties, so
-                // a unit can fall under the threshold still owing a frame clear from an earlier tick.
-                if (__instance.CountOfUnitsWithoutDetachedOnes <= 25)
+                // The mindset/decision block below is the configurable "frontline system". The cavalry and
+                // ranged free-charge gates above, and the GetDirectionOfUnit facing postfix, stay on
+                // regardless -- they are not part of what frontlineEnabled turns off.
+                if (!RBMConfig.RBMConfig.frontlineEnabled)
                 {
                     return true;
                 }
 
-                if (!hasDecisionState)
+                // Below this size the system does nothing, so don't build decision state for the unit.
+                // The pending clear above still runs first: formations shrink as they take casualties, so
+                // a unit can fall under the threshold still owing a frame clear from an earlier tick.
+                if (__instance.CountOfUnitsWithoutDetachedOnes <= RBMConfig.RBMConfig.frontlineMinFormationSize)
                 {
-                    aiDecision = new AIDecisionState();
-                    aiDecisionCooldownDict[unit] = aiDecision;
+                    return true;
                 }
 
                 if (mission != null && mission.IsFieldBattle && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
@@ -211,13 +248,13 @@ namespace RBMAI
                     var vanillaTargetAgent = targetAgent = unit.GetTargetAgent();
                     if (__instance.IsAIControlled)
                     {
-                        targetAgent = Utilities.GetCorrectTarget(unit);
+                        targetAgent = GetCachedCorrectTarget(unit, aiDecision);
                     }
                     else
                     {
                         if (__instance.TargetFormation == null)
                         {
-                            targetAgent = Utilities.GetCorrectTarget(unit);
+                            targetAgent = GetCachedCorrectTarget(unit, aiDecision);
                         }
                         else
                         {
@@ -337,11 +374,14 @@ namespace RBMAI
 
                         attack = attack > 0 ? (attack * staminaModifier) : attack;
 
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.Attack, attack > 0 ? attack * (postureModifier * healthModifier) : attack);
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.BackStep, fallback > 0 ? (fallback * (2 - postureModifier)) : fallback);
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FindAlly, findAlly > 0 ? (findAlly * (2 - postureModifier)) : findAlly);
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FlankAllyLeft, flankAllyLeft > 0 ? (flankAllyLeft) : flankAllyLeft);
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FlankAllyRight, flankAllyRight > 0 ? (flankAllyRight) : flankAllyRight);
+                        // The per-decision config weights are applied last, to the finished score, so a weight
+                        // of 1 reproduces the old hard-coded behaviour exactly. Both flank directions share
+                        // one weight -- steering left and right apart would bias the whole line sideways.
+                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.Attack, (attack > 0 ? attack * (postureModifier * healthModifier) : attack) * RBMConfig.RBMConfig.frontlineAttackWeight);
+                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.BackStep, (fallback > 0 ? (fallback * (2 - postureModifier)) : fallback) * RBMConfig.RBMConfig.frontlineBackStepWeight);
+                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FindAlly, (findAlly > 0 ? (findAlly * (2 - postureModifier)) : findAlly) * RBMConfig.RBMConfig.frontlineFindAllyWeight);
+                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FlankAllyLeft, flankAllyLeft * RBMConfig.RBMConfig.frontlineFlankWeight);
+                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FlankAllyRight, flankAllyRight * RBMConfig.RBMConfig.frontlineFlankWeight);
 
                         //bool checkTimer = aiDecision.AIMindset.AIDecisionTimer != null ? aiDecision.AIMindset.AIDecisionTimer.Check(Mission.Current.CurrentTime) : true;
                         //aiDecision.AIMindset.AIDecisionTimer = null;
@@ -355,7 +395,7 @@ namespace RBMAI
                             {
                                 aiDecision.AIMindset.getDecision(out aiDecision.AIMindset.currentDecision);
                             }
-                            aiDecision.AIMindset.AIDecisionTimer = new Timer(Mission.Current.CurrentTime, MBRandom.RandomFloatRanged(0f, 2f), false);
+                            aiDecision.AIMindset.AIDecisionTimer = new Timer(Mission.Current.CurrentTime, MBRandom.RandomFloatRanged(0f, RBMConfig.RBMConfig.frontlineDecisionTimerMax), false);
                         }
                         else
                         {
@@ -390,7 +430,7 @@ namespace RBMAI
                                                 unit.SetTargetPosition(unitPosition);
                                                 return false;
                                             }
-                                            targetPosition.SetVec2(targetVec2);
+                                            targetPosition.SetVec2MT(targetVec2);
                                             __result = targetAgent.GetWorldPosition();
                                             unit.SetTargetPosition(targetPosition.AsVec2);
                                             return false;
@@ -408,7 +448,7 @@ namespace RBMAI
                                         unit.SetTargetPosition(unitPosition);
                                         return false;
                                     }
-                                    backPosition.SetVec2(backVec2);
+                                    backPosition.SetVec2MT(backVec2);
                                     unit.SetTargetPosition(backPosition.AsVec2);
                                     __result = backPosition;
                                     return false;
@@ -437,7 +477,7 @@ namespace RBMAI
                                         unit.SetTargetPosition(unitPosition);
                                         return false;
                                     }
-                                    leftPosition.SetVec2(leftTargetVec2);
+                                    leftPosition.SetVec2MT(leftTargetVec2);
                                     __result = leftPosition;
                                     unit.SetTargetPosition(leftPosition.AsVec2);
                                     return false;
@@ -452,7 +492,7 @@ namespace RBMAI
                                         unit.SetTargetPosition(unitPosition);
                                         return false;
                                     }
-                                    rightPosition.SetVec2(rightTargetVec2);
+                                    rightPosition.SetVec2MT(rightTargetVec2);
                                     __result = rightPosition;
                                     unit.SetTargetPosition(rightPosition.AsVec2);
                                     return false;
@@ -506,12 +546,12 @@ namespace RBMAI
                 // 0.7m probe and be vetoed anyway, so attempting it only burned the decision window in place.
                 if (nearestDistance <= 0.9f)
                 {
-                    result.SetVec2(unitPosition);
+                    result.SetVec2MT(unitPosition);
                     return result;
                 }
 
                 Vec2 direction = (nearestAlly.Position.AsVec2 - unitPosition).Normalized();
-                result.SetVec2(unitPosition + direction * MBRandom.RandomFloatRanged(0.15f, 0.3f));
+                result.SetVec2MT(unitPosition + direction * MBRandom.RandomFloatRanged(0.15f, 0.3f));
                 return result;
             }
 

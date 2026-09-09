@@ -22,6 +22,17 @@ namespace RBMConfig
         public static bool vanillaCombatAi = false;
         public static bool keepBattleEnabled = false;
 
+        // Frontline -- the per-agent melee jostling system in RBMAI/AiModule/Frontline/FrontlinePositioning.cs.
+        // Only the mindset/decision block is gated by frontlineEnabled; the cavalry and ranged free-charge
+        // gates and the facing postfix in the same file are always on.
+        public static bool frontlineEnabled = true;
+        public static int frontlineMinFormationSize = 25;
+        public static float frontlineDecisionTimerMax = 2f;
+        public static float frontlineAttackWeight = 1f;
+        public static float frontlineBackStepWeight = 1f;
+        public static float frontlineFindAllyWeight = 1f;
+        public static float frontlineFlankWeight = 1f;
+
         //RBMCombat
         public static bool realisticArrowArc = false;
 

@@ -182,6 +182,13 @@ namespace RBMConfig
             postureGUIEnabled = ReadOrCreate("/Config/RBMAI", "PostureGUIEnabled", "1").Equals("1");
             vanillaCombatAi = ReadOrCreate("/Config/RBMAI", "VanillaCombatAi", "0").Equals("1");
             keepBattleEnabled = ReadOrCreate("/Config/RBMAI", "KeepBattleEnabled", "0").Equals("1");
+            frontlineEnabled = ReadOrCreate("/Config/RBMAI", "FrontlineEnabled", "1").Equals("1");
+            frontlineMinFormationSize = int.Parse(ReadOrCreate("/Config/RBMAI", "FrontlineMinFormationSize", "25"), CultureInfo.InvariantCulture);
+            frontlineDecisionTimerMax = float.Parse(ReadOrCreate("/Config/RBMAI", "FrontlineDecisionTimerMax", "2"), CultureInfo.InvariantCulture);
+            frontlineAttackWeight = float.Parse(ReadOrCreate("/Config/RBMAI", "FrontlineAttackWeight", "1"), CultureInfo.InvariantCulture);
+            frontlineBackStepWeight = float.Parse(ReadOrCreate("/Config/RBMAI", "FrontlineBackStepWeight", "1"), CultureInfo.InvariantCulture);
+            frontlineFindAllyWeight = float.Parse(ReadOrCreate("/Config/RBMAI", "FrontlineFindAllyWeight", "1"), CultureInfo.InvariantCulture);
+            frontlineFlankWeight = float.Parse(ReadOrCreate("/Config/RBMAI", "FrontlineFlankWeight", "1"), CultureInfo.InvariantCulture);
             switch (ReadOrCreate("/Config/RBMAI", "PlayerPostureMultiplier", "0"))
             {
                 case "1": playerPostureMultiplier = 1.5f; break;
@@ -333,6 +340,13 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureGUIEnabled"), postureGUIEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/VanillaCombatAi"), vanillaCombatAi);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/KeepBattleEnabled"), keepBattleEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/FrontlineEnabled"), frontlineEnabled);
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/FrontlineMinFormationSize"), frontlineMinFormationSize.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/FrontlineDecisionTimerMax"), frontlineDecisionTimerMax.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/FrontlineAttackWeight"), frontlineAttackWeight.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/FrontlineBackStepWeight"), frontlineBackStepWeight.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/FrontlineFindAllyWeight"), frontlineFindAllyWeight.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/FrontlineFlankWeight"), frontlineFlankWeight.ToString(CultureInfo.InvariantCulture));
             switch (playerPostureMultiplier)
             {
                 case 1f:
