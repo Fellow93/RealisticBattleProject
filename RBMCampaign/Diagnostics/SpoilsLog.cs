@@ -334,19 +334,9 @@ namespace RBMCampaign
                 _lastCategory = category;
                 WriteToFile(block.ToString());
             }
+            // Not echoed into the player's message feed even in developer mode: the lines come
+            // too fast to read there. The file log and the debug output are the places to look.
             Debug.Print("[RBM][Spoils] " + line);
-            if (!RBMConfig.RBMConfig.developerMode)
-            {
-                return;
-            }
-            try
-            {
-                // The earliest lines run from OnSubModuleLoad, before the message log exists.
-                InformationManager.DisplayMessage(new InformationMessage("[RBM] " + line));
-            }
-            catch
-            {
-            }
         }
 
         /// <summary>
