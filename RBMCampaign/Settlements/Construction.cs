@@ -634,7 +634,7 @@ namespace RBMCampaign
             if (points > 0f)
             {
                 target.BuildingProgress += points;
-                BuildingHelper.CheckIfBuildingIsComplete(target);
+                CompleteIfBuilt(town, target);
             }
 
             // Materials, wages and any tools bought, as one figure for the map tooltip.
@@ -656,6 +656,32 @@ namespace RBMCampaign
                         : (market == settlement ? "own" : (market.Name != null ? market.Name.ToString() : market.StringId)))
                     + "  ·  progress " + (int)target.BuildingProgress + "/" + target.GetConstructionCost()
                     + "  ·  reserve " + town.BoostBuildingProcess + "d");
+            }
+        }
+
+        /// <summary>
+        /// Levels a finished project up. Mirrors <c>BuildingHelper.CheckIfBuildingIsComplete</c>, except
+        /// that it only pops the queue when the finished building is actually its head: an idle-project
+        /// day works on a building that was never queued, and the native helper's unconditional
+        /// Dequeue on an empty queue throws.
+        /// </summary>
+        private static void CompleteIfBuilt(Town town, Building building)
+        {
+            if ((float)building.GetConstructionCost() > building.BuildingProgress)
+            {
+                return;
+            }
+            if (building.CurrentLevel < 3)
+            {
+                building.LevelUp();
+            }
+            if (building.CurrentLevel == 3)
+            {
+                building.BuildingProgress = building.GetConstructionCost();
+            }
+            if (!town.BuildingsInProgress.IsEmpty() && town.BuildingsInProgress.Peek() == building)
+            {
+                town.BuildingsInProgress.Dequeue();
             }
         }
 
