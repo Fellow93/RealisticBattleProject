@@ -370,8 +370,15 @@ that could not buy a sack of grain. Each good now gets its own ceiling:
 Capacity(town, item) = max(1, ceil( CitizenDemand.DailyUnits(town, item) × StorageDays ))
 StorageDays = 60
 Headroom             = max(0, Capacity - held)
+                       for food, also ≤ GranaryRoom = FoodStocksUpperLimit − foodUnitsInMarket   (§6.2)
 Accept(offered)      = min(offered, Headroom)
 ```
+
+Food goods share one granary on top of their per-good shelves: the Warehouse-tier cap from §6.2
+bounds the *total* food a town will take in. Kingdom caravan dispatch draws every food lot for a
+town against that one budget (less food already in flight), so it does not order a granary's worth
+of grain, meat and fish each. A food-producing workshop (brewery, press) also stops when the granary
+is full, or it would stuff a market that is refusing every villager's grain at the gate.
 
 Two months: long enough to ride out a season, short enough that a market is not an infinite sink.
 Nothing is destroyed when a cap binds — the goods stay with whoever brought them, to be carried to a
@@ -383,7 +390,8 @@ Goods RBM does not model household consumption of — iron, clay, tools, war gea
 **uncapped**, because they are bought by workshops and passing parties and a guessed cap would
 throttle them.
 
-The clamp is applied at the two inbound doors: native `SellItemsAction`, and villager delivery.
+The clamp is applied at the three inbound doors: native `SellItemsAction`, villager delivery, and
+kingdom caravan arrival. Player sales run through `InventoryLogic` and are not clamped.
 
 ### 5.2 Price: days of supply, not gold
 
@@ -581,15 +589,25 @@ vanilla's gold budget, which still runs afterwards for items the basket does not
 A town's `FoodStocks` is the food physically in its market roster:
 
 ```
-FoodStocks = min( foodUnitsInMarket, FoodStocksUpperLimit × TownFoodStockScale )
-TownFoodStockScale = 10
+FoodStocks           = min( foodUnitsInMarket, FoodStocksUpperLimit )
+FoodStocksUpperLimit = max( 300, FoodStockDays × dailyFoodConsumption )
+FoodStockDays        = 30 + 10 × WarehouseOrGranaryTier          // 30/40/50/60
+dailyFoodConsumption = citizens + garrison + militia + prisoners  // GetFoodConsumption(town).Total
 ```
 
-The limit is scaled to keep the granary a town *shows* the same size as the one it can *fill* under
-`StorageDays = 60`; it multiplies the whole of the vanilla limit, so granary buildings keep
-proportional worth. The clamp is required because `DefaultSettlementProsperityModel` pays
-`((FoodStocks + FoodChange) − FoodStocksUpperLimit) × 0.1`, and an unclamped roster would hand the
-town a large standing prosperity bonus for hoarding.
+The granary is measured in *days of the fief's own eating* rather than in units, and the Warehouse
+(or a castle's Granary) is the only building that moves it. Vanilla's flat +100/300/500 is
+discarded. Towns and castles use the same ladder; castles keep vanilla's stored running total and
+are clamped to the new limit by vanilla's own daily tick.
+
+For towns the limit is also the intake ceiling (§5.1): once the market holds this much food, villager
+convoys, kingdom caravans and native trade are refused, and food workshops idle. A full Warehouse
+lands exactly on `StorageDays = 60`, so a tier-3 town holds what its per-good shelves always could
+and every lower tier is tighter. The clamp on the *reported* stock stays because the market can still
+exceed the granary — the player sells past it, and modelled production (Farmlands, hunting) is
+deliberately not gated — and the reported figure is what the siege AI and `FiefStarvation` count.
+The vanilla prosperity bonus for stock over the limit is unreachable; `RBMProsperityEquilibrium`
+replaces that model outright.
 
 `FoodChange` is measured, not modelled:
 
@@ -990,8 +1008,9 @@ saved figure.
 - Every rate and coefficient above is uncalibrated in-game.
 - `QuietRate` (§3.3) no longer matches the base set's own sum, so no village sits at the quiet end of
   the party-size band, and warehouses are ~13% larger than intended.
-- `AbundantDays`, `StorageDays` and `TownFoodStockScale` are three expressions of one decision and must
-  be moved together.
+- `AbundantDays`, `StorageDays` and the tier-3 `FoodStockDays` (§6.2) are three expressions of one
+  decision and must be moved together. The 30/40/50/60 ladder and the 3-day villager dearth mark
+  are uncalibrated.
 - Charcoal at 0.6 units/Prosperity/day is the largest physical flow in the economy and only lumberjack
   villages make any. Either the rate or the production side is wrong.
 - Several basket goods — civilian garments above all — have no producer anywhere in the chain.

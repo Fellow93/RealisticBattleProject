@@ -194,6 +194,11 @@ namespace RBMCampaign
                     Dictionary<Town, List<RBMCaravanRegister.GoodLot>> bySource = new Dictionary<Town, List<RBMCaravanRegister.GoodLot>>();
                     Dictionary<Town, int> bySourceUnits = new Dictionary<Town, int>();
 
+                    // Every food good draws on ONE granary. Headroom reports the whole of its room to each
+                    // of them, so without a shared budget a town 500 under its cap would order 500 grain,
+                    // 500 meat and 500 fish, and two of the three would haul their cargo home refused.
+                    int foodRoom = FoodRoomLessInFlight(dst);
+
                     foreach (string goodId in CitizenDemand.ModelledGoods)
                     {
                         ItemObject good = RBMCaravanRegister.FindItem(goodId);
@@ -210,7 +215,12 @@ namespace RBMCampaign
                         {
                             continue; // no one in the realm has it to spare
                         }
+                        bool food = TownStorage.IsFood(good);
                         int room = EffectiveHeadroom(dst, good);
+                        if (food)
+                        {
+                            room = Math.Min(room, foodRoom);
+                        }
                         if (room <= 0)
                         {
                             continue;
@@ -243,6 +253,10 @@ namespace RBMCampaign
                         lots.Add(new RBMCaravanRegister.GoodLot(goodId, qty));
                         bySourceUnits[src] = already + qty;
                         srcRemaining[rk] = remaining - qty;
+                        if (food)
+                        {
+                            foodRoom -= qty;
+                        }
                     }
 
                     // One caravan per source supplying this town, up to the goods budget.
@@ -617,6 +631,26 @@ namespace RBMCampaign
             }
             int inFlight = RBMCaravanRegister.InFlightQty(town.Settlement.StringId, good.StringId);
             int room = headroom - inFlight;
+            return (room > 0) ? room : 0;
+        }
+
+        /// <summary>Room left in a town's granary for food of any kind, less every food caravan already on
+        /// its way there. The shared budget the per-good <see cref="EffectiveHeadroom"/> is drawn against.</summary>
+        private static int FoodRoomLessInFlight(Town town)
+        {
+            int room = TownStorage.GranaryRoom(town);
+            if (room == TownStorage.Uncapped)
+            {
+                return room;
+            }
+            foreach (string goodId in CitizenDemand.ModelledGoods)
+            {
+                ItemObject good = RBMCaravanRegister.FindItem(goodId);
+                if (good != null && TownStorage.IsFood(good))
+                {
+                    room -= RBMCaravanRegister.InFlightQty(town.Settlement.StringId, goodId);
+                }
+            }
             return (room > 0) ? room : 0;
         }
 

@@ -247,10 +247,21 @@ namespace RBMCampaign
             return 0.1f * FarmlandsTier(town);
         }
 
-        /// <summary>Warehouse / Granary: days of eating the fief can keep in store.</summary>
+        /// <summary>The days of eating a fief with no granary at all can keep. Thirty, because this cap gates
+        /// what a town's market will physically ACCEPT (see <see cref="TownStorage.Headroom"/>), not just what
+        /// it reports: ten days would have every unimproved town turning away its own villagers' grain.</summary>
+        private const int FoodStockBaseDays = 30;
+
+        /// <summary>Days each level of Warehouse (or a castle's Granary) adds, to sixty at level 3 -- which is
+        /// exactly <see cref="TownStorage.StorageDays"/>, so a full Warehouse holds what the market could
+        /// always hold of any one good, and every lower tier is tighter.</summary>
+        private const int FoodStockDaysPerLevel = 10;
+
+        /// <summary>Warehouse / Granary: days of eating the fief can keep in store (30/40/50/60 by tier). The
+        /// sole source of the ladder; <see cref="RBMTownFoodSupply"/>'s cap patch and the tooltip read it.</summary>
         public static int FoodStockDays(Town town)
         {
-            return 10 + 10 * FoodStore(town);
+            return FoodStockBaseDays + FoodStockDaysPerLevel * FoodStore(town);
         }
     }
 }

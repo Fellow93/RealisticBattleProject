@@ -306,6 +306,16 @@ namespace RBMCampaign
         private const float DearthStockShare = 0.25f;
 
         /// <summary>
+        /// The low-water mark in days of the town's own eating, three: the same absolute mark
+        /// <see cref="DearthStockShare"/> gave when the granary was ten days deep. Expressed in days
+        /// rather than as a share of the cap because the cap now runs 30 to 60 days by Warehouse tier,
+        /// and a share of it would have the treasury provisioning a week or two of grain for a town that
+        /// is not even rationing (<see cref="FiefStarvation"/> starts at seven days). The share is kept
+        /// only as a ceiling so the mark can never exceed a quarter of whatever granary the fief has.
+        /// </summary>
+        private const float DearthDays = 3f;
+
+        /// <summary>
         /// Fraction of a town's prosperity-implied worth that its market keeps in hand rather than spend
         /// on anything but food. Below this line a convoy sells the town only food; above it the town
         /// spends the surplus over the line on its cheapest cargo first, so a little slack buys staples
@@ -363,7 +373,9 @@ namespace RBMCampaign
 
             // How far the granary is under the low-water mark. Measured off the market roster rather
             // than town.FoodStocks so the reading is the raw stock, not the clamped figure the UI shows.
-            int lowWaterMark = MathF.Round(town.FoodStocksUpperLimit() * DearthStockShare);
+            int lowWaterMark = MathF.Min(
+                MathF.Round(DearthDays * RBMTownFoodSupply.GetFoodConsumption(town).Total),
+                MathF.Round(town.FoodStocksUpperLimit() * DearthStockShare));
             int shortfall = lowWaterMark - RBMTownFoodSupply.FoodUnitsInMarket(town);
             if (shortfall <= 0)
             {

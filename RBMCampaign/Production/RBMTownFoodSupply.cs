@@ -64,29 +64,6 @@ namespace RBMCampaign
         /// </summary>
         private const float DemandFromPurchaseFactor = 1f;
 
-        /// <summary>
-        /// Multiplier on a town's food storage limit.
-        ///
-        /// Vanilla's 300 was sized against vanilla's appetite. RBM towns eat roughly ten times as
-        /// much (<c>NumberOfProsperityToEatOneFood</c> at 4 rather than 40), so the same number now
-        /// buys a fraction of the reserve it used to: measured at a median ration of 47 a day, 300 is
-        /// SIX days of food, and 25 of 57 towns sat pinned at the limit with their markets still
-        /// gaining 150 a day. A fief that cannot hold more than a week of grain cannot be besieged
-        /// meaningfully, cannot carry a bad season, and shows a granary bar that is full whatever it
-        /// actually has.
-        ///
-        /// Ten puts a typical town at about two months of supply. Applied to the whole of
-        /// <c>Town.FoodStocksUpperLimit()</c> rather than to the base figure, so granary buildings
-        /// keep their proportional worth instead of being swamped.
-        ///
-        /// Raised from five to keep step with <see cref="TownStorage.StorageDays"/>, which is what now
-        /// decides how much a town can actually hold. The two must agree: this figure is only the
-        /// number the granary bar, the prosperity model and the siege AI READ, and if it sat at a month
-        /// while the bins held two, every town would report a full granary at half full and no shortage
-        /// would ever show.
-        /// </summary>
-        private const float TownFoodStockScale = 10f;
-
         // Market food at the end of each town's last daily tick, and the day-over-day change derived
         // from it. Ephemeral -- both are rebuilt within a day of any gap -- but they hold Town
         // references, so they are cleared per session (see ResetForNewSession).
@@ -280,11 +257,12 @@ namespace RBMCampaign
         /// total, so every reader -- the town screen, siege logic, AI target scoring,
         /// <c>Settlement.IsStarving</c> -- sees the real granary.
         ///
-        /// Clamped to <see cref="Town.FoodStocksUpperLimit"/> rather than reported raw, for one
-        /// specific reason: <c>DefaultSettlementProsperityModel</c> pays a prosperity bonus of
-        /// <c>((FoodStocks + FoodChange) - FoodStocksUpperLimit()) * 0.1</c>. A raw roster sum would
-        /// hand a town sitting on 2000 grain +170 prosperity per day, which then buys more food.
-        /// The clamp also keeps the stock in the 0..300 range the rest of the game was tuned for.
+        /// Clamped to <see cref="Town.FoodStocksUpperLimit"/> rather than reported raw. The market can
+        /// hold more than the granary -- the player sells past it, workshops and modelled production
+        /// add to it -- and the granary is what the building tier bought: what the town screen, the
+        /// siege AI and <see cref="FiefStarvation"/>'s days-of-food should count. (The vanilla prosperity
+        /// bonus for stock over the limit is unreachable under RBM; <c>RBMProsperityEquilibrium</c>
+        /// replaces that model outright.)
         /// <c>Town.DailyTick</c> still writes to the underlying auto-property; nothing reads it now.
         /// </summary>
         [HarmonyPatch(typeof(Fief), "FoodStocks", MethodType.Getter)]
@@ -305,10 +283,6 @@ namespace RBMCampaign
             }
         }
 
-        /// <summary>The days of eating a fief with no granary at all can keep. Each level of Warehouse (or a
-        /// castle's Granary) adds another ten, to forty at level 3.</summary>
-        private const int FoodStockBaseDays = 10;
-
         /// <summary>The smallest granary any fief has, whatever it eats -- a floor for a place so small or so
         /// empty that days-of-supply would round to nothing.</summary>
         private const int FoodStockFloor = 300;
@@ -320,13 +294,18 @@ namespace RBMCampaign
         /// towns eat roughly ten times as much, so the flat figure meant a great city and a market town both
         /// held the same grain and the city held it for four days. What a granary is actually FOR is
         /// carrying a siege or a bad season, and that is a length of time -- so the cap is
-        /// <c>days x what this fief eats in a day</c>, ten days bare and ten more per level of Warehouse or
-        /// Granary. A city with a full warehouse holds forty days of its own considerable appetite; a
-        /// half-empty castle holds forty days of very little.
+        /// <c>days x what this fief eats in a day</c>, thirty days bare and ten more per level of Warehouse or
+        /// Granary (the ladder lives in <see cref="BuildingEffects.FoodStockDays"/>). A city with a full
+        /// warehouse holds sixty days of its own considerable appetite; a half-empty castle holds sixty
+        /// days of very little.
         ///
-        /// This REPLACES the old flat <see cref="TownFoodStockScale"/> multiple, and it applies to castles
-        /// too (their Granary is the same building by another name), where before they were left on
-        /// vanilla's 300. The floor keeps a tiny or newly-taken fief from reporting a granary of nothing.
+        /// For towns this is also the intake ceiling: <see cref="TownStorage.Headroom"/> refuses food
+        /// deliveries once the market holds this much, so the building decides how much a town can
+        /// actually stockpile for a siege, not merely how much of it the town screen admits to.
+        ///
+        /// This REPLACES the old flat x10 multiple on vanilla's figure (since removed), and it applies to
+        /// castles too (their Granary is the same building by another name), where before they were left
+        /// on vanilla's 300. The floor keeps a tiny or newly-taken fief from reporting a granary of nothing.
         /// </summary>
         [HarmonyPatch(typeof(Town), "FoodStocksUpperLimit")]
         private static class FoodStocksUpperLimitPatch
@@ -339,7 +318,7 @@ namespace RBMCampaign
                     return;
                 }
 
-                int days = FoodStockBaseDays + 10 * BuildingEffects.FoodStore(__instance);
+                int days = BuildingEffects.FoodStockDays(__instance);
                 int daily = GetFoodConsumption(__instance).Total;
                 int limit = days * daily;
                 __result = (limit > FoodStockFloor) ? limit : FoodStockFloor;
@@ -708,6 +687,10 @@ namespace RBMCampaign
         /// Returns what it delivered, good by good, for the economy log -- or an empty string when it
         /// delivered nothing. Building, policy and perk food is the one channel that adds food out of
         /// nowhere, so it is worth being able to see it separately from what the villages hauled in.
+        ///
+        /// Deliberately NOT put through <see cref="TownStorage.Accept"/>: this is the town's own land and
+        /// hunting, a few units a day, and the siege lifeline -- a besieged town at a full granary still
+        /// eats what its walls enclose. The granary clamp on the reported stock absorbs any overshoot.
         /// </summary>
         private static string DeliverModelledProduction(Town town)
         {

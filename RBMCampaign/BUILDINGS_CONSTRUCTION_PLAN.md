@@ -29,8 +29,15 @@ RBM:
 - Building reads: `RBMProsperityEquilibrium.InfrastructureMultiplier` (Σ levels × 0.02, cap 2.0),
   `RBMTownFoodSupply` (FoodProduction/FoodConsumption effects), `MilitiaUpkeep` (Militia effect),
   `SimulationSiege.MeasureWall` (wall level), `AdministrativeUpkeep` wall upkeep.
-- Food cap: `RBMTownFoodSupply` postfix on `Town.FoodStocksUpperLimit` = vanilla (300 + FoodStock
-  effects) × `TownFoodStockScale`, towns only. Not days-based.
+- Food cap: `RBMTownFoodSupply.FoodStocksUpperLimitPatch` (postfix on `Town.FoodStocksUpperLimit`)
+  discards vanilla's flat FoodStock add-values and sets
+  `cap = (30 + 10 × tier) days × GetFoodConsumption(town).Total`, floored at 300, where tier is the
+  Warehouse/Granary level read via `BuildingEffects.FoodStore` (0/1/2/3 → 30/40/50/60 days). Towns
+  and castles alike. For towns the cap is also the market's food INTAKE ceiling:
+  `TownStorage.Headroom` bounds any food good by `FoodStocksUpperLimit − FoodUnitsInMarket` on top
+  of the per-good 60-day shelf, so caravans/villagers/native trade are refused once the granary is
+  full (tier 3 = the 60-day shelf, so a full Warehouse holds what the market always could).
+  `TownFoodStockScale` is a leftover constant no longer used by the cap.
 - Daily settlement pass: `RBMSettlementWealthCampaignBehavior.OnDailyTickSettlement` — CastleEconomy,
   Minting, AdministrativeUpkeep, GarrisonUpkeep, MilitiaUpkeep, GarrisonRecruitCost, WealthTax, flushes.
 - **Patrols: NOT on the branch.** `PatrolUpkeep.cs/.Patches.cs/.Naval.cs` + config/prefab wiring exist
@@ -125,7 +132,7 @@ Vanilla effects stay unless a row says "replace". Shared helper: `Settlements/Bu
 | **Siege Workshop** | unchanged | — | — |
 | **Tax Office** | +5/10/15% on wealth tax (owner + fief) and the minting cuts | `WealthTax.OnDailyTick` rates × `TaxFactor`; same factor in `Minting` | ✅ |
 | **Marketplace** | tariff ×1.1/1.2/1.3 on ALL channels (incl. citizen consumption) | `TradeTariff.Levy` rate factor from `TariffIncome` | ✅ |
-| **Warehouse / Granary** | food cap = days × daily consumption; tier 0/1/2/3 = 10/20/30/40 days | `RBMTownFoodSupply.FoodStocksUpperLimitPatch` rewritten off `GetFoodConsumption(town).Total` (300 floor), castles included | ✅ |
+| **Warehouse / Granary** | food cap = days × daily consumption; tier 0/1/2/3 = 30/40/50/60 days; towns also refuse food intake past the cap | `RBMTownFoodSupply.FoodStocksUpperLimitPatch` rewritten off `GetFoodConsumption(town).Total` (300 floor), castles included; `TownStorage.Headroom` granary bound | ✅ |
 | **Mason** | replace ConstructionPerDay: efficiency ×1.05/1.1/1.15, cap ×1.1/1.2/1.3 | `Construction.MasonTier`, §1.2/§1.4 | ✅ |
 | **Waterworks** | infrastructure bonus ×1.1/1.2/1.3 | `RBMProsperityEquilibrium.InfrastructureMultiplier`: `1 + score×0.02×(1+0.1×tier)` | ✅ |
 | **Courthouse** | unchanged | — | — |

@@ -51,8 +51,11 @@ namespace RBMCampaign
         /// the week. Sixty days is enough to ride out a season and short enough that a market still
         /// cannot become an infinite sink for whatever a caravan happens to be carrying.
         ///
-        /// <see cref="RBMTownFoodSupply"/>'s reporting cap is scaled to match, so the granary a town
-        /// SHOWS and the granary it can actually fill stay the same size.
+        /// Food is additionally bounded by the granary: <see cref="RBMTownFoodSupply.FoodStocksUpperLimitPatch"/>
+        /// sizes <c>Town.FoodStocksUpperLimit</c> at 30 days plus ten per Warehouse level, and
+        /// <see cref="Headroom"/> refuses food once the market holds that much in total. A level 3
+        /// Warehouse lands exactly on this sixty-day figure, so the granary a town SHOWS and the granary
+        /// it can actually fill are the same size, and every lower tier is tighter.
         /// </summary>
         public const float StorageDays = 60f;
 
@@ -113,26 +116,63 @@ namespace RBMCampaign
         /// </remarks>
         public static int Headroom(Town town, ItemObject item)
         {
+            // The granary bound is a town's; a castle or a null item falls through to Capacity's Uncapped.
+            bool food = town != null && town.IsTown && IsFood(item);
             int capacity = Capacity(town, item);
-            if (capacity == Uncapped)
+            if (capacity == Uncapped && !food)
             {
                 return Uncapped;
             }
 
-            ItemCategory category = item.GetItemCategory();
-            int held;
-            if (WorkshopDemand.DailyUnits(town, category) > 0f)
+            int room = Uncapped;
+            if (capacity != Uncapped)
             {
-                held = WorkshopDemand.UnitsInStore(town, category);
-            }
-            else
-            {
-                held = IsGarment(item)
-                    ? CountGarments(town)
-                    : ((town.Owner != null) ? town.Owner.ItemRoster.GetItemNumber(item) : 0);
+                ItemCategory category = item.GetItemCategory();
+                int held;
+                if (WorkshopDemand.DailyUnits(town, category) > 0f)
+                {
+                    held = WorkshopDemand.UnitsInStore(town, category);
+                }
+                else
+                {
+                    held = IsGarment(item)
+                        ? CountGarments(town)
+                        : ((town.Owner != null) ? town.Owner.ItemRoster.GetItemNumber(item) : 0);
+                }
+                room = capacity - held;
             }
 
-            int room = capacity - held;
+            // Food shares one granary across every food good, and that granary is the Warehouse-tier
+            // cap Town.FoodStocksUpperLimit reports. Per-good shelves alone would let grain, meat and
+            // fish each fill sixty days and the town hold several granaries' worth uncounted.
+            if (food)
+            {
+                int granaryRoom = GranaryRoom(town);
+                if (granaryRoom < room)
+                {
+                    room = granaryRoom;
+                }
+            }
+            return (room > 0) ? room : 0;
+        }
+
+        /// <summary>Whether a good counts toward the granary. Reads the raw <c>ItemCategory</c> rather than
+        /// <c>GetItemCategory()</c> because that is what <see cref="RBMTownFoodSupply.FoodUnitsInMarket"/>
+        /// counts, and the gate must agree with the counter.</summary>
+        public static bool IsFood(ItemObject item)
+        {
+            return item != null && item.ItemCategory != null
+                && item.ItemCategory.Properties == ItemCategory.Property.BonusToFoodStores;
+        }
+
+        /// <summary>Units of food, of any kind, the town's granary has room for. Zero when full.</summary>
+        public static int GranaryRoom(Town town)
+        {
+            if (town == null || !town.IsTown)
+            {
+                return Uncapped;
+            }
+            int room = town.FoodStocksUpperLimit() - RBMTownFoodSupply.FoodUnitsInMarket(town);
             return (room > 0) ? room : 0;
         }
 
@@ -155,6 +195,12 @@ namespace RBMCampaign
             if (town == null || category == null || !town.IsTown)
             {
                 return false;
+            }
+            // A food output also stops at the granary, or a brewery would keep stuffing a market that
+            // is refusing every villager's grain at the gate.
+            if (category.Properties == ItemCategory.Property.BonusToFoodStores && GranaryRoom(town) <= 0)
+            {
+                return true;
             }
             float cap;
             float days = RBMMarketPrices.DaysOfSupplyForCategory(town, category, out cap);

@@ -95,7 +95,7 @@ namespace RBMCampaign
             }
             if (type == DefaultBuildingTypes.SettlementWarehouse || type == DefaultBuildingTypes.CastleGranary)
             {
-                return "RBM: the granary holds 20/30/40 days of the fief's own eating (10 days with no granary), replacing the fixed food limit";
+                return "RBM: the granary holds 40/50/60 days of the fief's own eating (30 days with no granary), replacing the fixed food limit; a town's market refuses food beyond it";
             }
             if (type == DefaultBuildingTypes.SettlementMason || type == DefaultBuildingTypes.CastleMason)
             {

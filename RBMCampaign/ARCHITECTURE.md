@@ -316,7 +316,7 @@ vanilla effect stays in place unless the row says "replaces".
 | | passive convict labour | the Guard House terms in the construction ceiling/free-labour above |
 | Tax Office | wealth tax and minting cuts x1.05/1.1/1.15, owner and fief legs alike | `WealthTax.OnDailyTick`, `Minting` |
 | Marketplace | tariff x1.1/1.2/1.3 on ALL channels | `TradeTariff.Levy` rate factor |
-| Warehouse / Granary | granary = 10/20/30/40 days of the fief's own consumption (**replaces** the flat `TownFoodStockScale` x10), castles included | `RBMTownFoodSupply.FoodStocksUpperLimitPatch`, sized off `GetFoodConsumption(town).Total` with a 300 floor |
+| Warehouse / Granary | granary = 30/40/50/60 days of the fief's own consumption (**replaces** the flat `TownFoodStockScale` x10), castles included; for towns it is also the market's food intake ceiling (`TownStorage.Headroom`) | `RBMTownFoodSupply.FoodStocksUpperLimitPatch`, sized off `GetFoodConsumption(town).Total` with a 300 floor |
 | Mason | construction efficiency +5/10/15%, labour ceiling +10/20/30% (**replaces** `ConstructionPerDay`) | `Construction.MasonTier` |
 | Waterworks | every other point of infrastructure worth +10/20/30% | `RBMProsperityEquilibrium.InfrastructureMultiplier` = `1 + score x 0.02 x (1 + 0.1 x tier)`, clamp unchanged |
 | Roads and Paths | bound-village production +5/10/15% | `RBMVillageProduction.RoadsFactor`, applied to the tick and to `CalculateDailyProductionAmount` alike |
