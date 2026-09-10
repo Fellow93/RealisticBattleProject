@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using HarmonyLib;
 using Helpers;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -25,15 +26,14 @@ namespace RBMCampaign
     /// This REPLACES vanilla's equilibrium rather than layering on top of it. Vanilla drives
     /// prosperity with a housing-cost ladder in <c>DefaultSettlementProsperityModel</c> -- a flat
     /// +6/day below 250 prosperity, tapering to -6/day above 21000 -- which is an attractor toward
-    /// roughly 1500-6000 with no reference to the land. Left in place it would simply pull every town
-    /// back out of the band set here, so the postfix cancels it before applying the hearth pull.
+    /// roughly 1500-6000 with no reference to the land, plus perk, building, loyalty and policy terms
+    /// sized for that band. While the campaign module is on the vanilla model does not run at all
+    /// (a prefix supplies the whole result), and vanilla's one-off prosperity writes -- perk bonuses,
+    /// quest rewards, incidents -- are divided down to RBM's scale; see <see cref="DiscreteWriteScale"/>.
     ///
-    /// This is one force among several, not a ceiling. Prosperity settles where every term cancels,
-    /// so a fief with a standing bonus -- a full granary paying Surplus Food, a good governor, strong
-    /// loyalty -- rests above its countryside figure, and a famine or unrest holds it below. What the
-    /// countryside sets is the level a fief returns to once those pressures pass, and how hard it is
-    /// pulled back; see <see cref="ProsperityGrowthRate"/> and <see cref="DeclineUrgency"/>, which are
-    /// what decide that authority.
+    /// Two forces remain: the countryside pull toward the hearth figure, and the hunger drain. A fief
+    /// rests on its countryside figure while fed and is held below it while it starves. See
+    /// <see cref="ProsperityGrowthRate"/> and <see cref="ProsperityDeclineRate"/>.
     /// </summary>
     public static class RBMProsperityEquilibrium
     {
@@ -387,28 +387,35 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>
+        /// REPLACES vanilla's daily prosperity model outright while the campaign module is on. The
+        /// old postfix cancelled only the housing ladder and the food/market terms and let the rest of
+        /// vanilla's list ride: governor perks (Clean Infrastructure is +1 per built building per day),
+        /// the Housing project's flat +2, Trickle Down, loyalty, policies and issue effects. Those were
+        /// tuned for prosperity in the thousands; on RBM's 200-300 scale a governed town netted +10 to
+        /// +15 a day from them alone, i.e. +100 a week that no RBM term pushed back against. So the
+        /// vanilla body no longer runs at all: the result is RBM's countryside drift and the hunger
+        /// drain, and nothing else.
+        /// </summary>
         [HarmonyPatch(typeof(DefaultSettlementProsperityModel), "CalculateProsperityChange")]
         private static class ProsperityEquilibriumPatch
         {
-            private static void Postfix(Town fortification, ref ExplainedNumber __result)
+            private static bool Prefix(Town fortification, bool includeDescriptions, ref ExplainedNumber __result)
             {
                 if (!RBMConfig.RBMConfig.rbmCampaignEnabled || fortification == null)
                 {
-                    return;
+                    return true;
                 }
 
-                // A castle drifts toward the average hearth of its own bound villages. Vanilla's
-                // housing ladder was town-gated to begin with, so a castle needs no cancellation --
-                // only the pull. A zero target means the bounds are not readable yet; leave it be.
+                __result = new ExplainedNumber(0f, includeDescriptions);
+
                 if (fortification.IsCastle)
                 {
+                    // A castle drifts toward the average hearth of its own bound villages. A zero
+                    // target means the bounds are not readable yet; hold still rather than let vanilla in.
                     float castleTarget = CastleTargetProsperity(fortification.Settlement);
                     if (castleTarget > 0f)
                     {
-                        // Ride the hearth equilibrium, and cancel vanilla's food-shortage and surplus-food
-                        // pulls (a castle has no market, so no goods term to cancel) so it mostly drifts to
-                        // its figure rather than swinging on its garrison's larder. Perks, policies, loyalty
-                        // and building effects are left in place.
                         float drift = (castleTarget - fortification.Prosperity) * CastleConvergenceRate;
                         // Food gates a castle the same way it gates a town: under a week of supply it
                         // stops growing, and short of that it loses a share a day. See FiefStarvation.
@@ -416,15 +423,15 @@ namespace RBMCampaign
                         {
                             drift = 0f;
                         }
-                        drift -= FiefStarvation.ProsperityLossRate(fortification) * fortification.Prosperity;
-                        __result.Add(drift - VanillaFoodAndMarketProsperity(fortification), CountrysideText);
+                        __result.Add(drift, CountrysideText);
+                        AddHungerDrain(fortification, ref __result);
                     }
-                    return;
+                    return false;
                 }
 
                 if (!fortification.IsTown)
                 {
-                    return;
+                    return false;
                 }
 
                 float gap = TargetProsperity(fortification.Settlement) - fortification.Prosperity;
@@ -452,110 +459,119 @@ namespace RBMCampaign
                     change = gap * ProsperityDeclineRate * DeclineFloor;
                 }
 
-                // Hunger drags prosperity down on top of the drift, and unlike the countryside pull it
-                // fires even below target -- a town that cannot feed itself sheds people wherever it sits.
-                // Stepped on the granary: 1% a day under three days of food, 3% a day once rations go
-                // unmet. See FiefStarvation. (Supersedes the HungerPressure ramp, which is kept for the ledger.)
-                change -= FiefStarvation.ProsperityLossRate(fortification) * fortification.Prosperity;
+                __result.Add(change, CountrysideText);
+                AddHungerDrain(fortification, ref __result);
+                return false;
+            }
 
-                // One combined line: vanilla's food/market/housing pulls cancelled, RBM's food-and-demand
-                // drift applied. Folding them together keeps the town screen to a single readable entry
-                // rather than a correction and a counter-correction.
-                __result.Add(change - VanillaHousingCosts(fortification) - VanillaFoodAndMarketProsperity(fortification), CountrysideText);
+            /// <summary>
+            /// Hunger drags prosperity down on top of the drift, and unlike the countryside pull it
+            /// fires even below target -- a fief that cannot feed itself sheds people wherever it sits.
+            /// Stepped on the granary: 1% a day under three days of food, 3% a day once rations go
+            /// unmet. See FiefStarvation. (Supersedes the HungerPressure ramp, which is kept for the ledger.)
+            /// </summary>
+            private static void AddHungerDrain(Town fortification, ref ExplainedNumber result)
+            {
+                float drain = FiefStarvation.ProsperityLossRate(fortification) * fortification.Prosperity;
+                if (drain > 0f)
+                {
+                    result.Add(-drain, HungerText);
+                }
             }
         }
 
         /// <summary>
-        /// Reproduces the housing-cost term of <c>CalculateProsperityChangeInternal</c> so it can be
-        /// subtracted back out. It is a pure function of prosperity and is gated to towns, so castles
-        /// -- which never received it -- need no cancellation.
-        ///
-        /// Kept as a literal transcription of the vanilla brackets rather than a formula: if a game
-        /// update retunes them, a mismatch here shows up as prosperity that will not settle, and a
-        /// transcription is far easier to diff against the decompiled source than an approximation.
+        /// Divisor applied to every one-off prosperity write vanilla makes outside the daily model:
+        /// the Engineering Foreman governor perk (+100 per finished project), issue and quest rewards
+        /// (+10 to +100), incident effects (+10 to +100), the War Sails fishing perk. All are flat
+        /// figures on the vanilla thousands scale; on RBM's the Foreman bonus alone was a +40% step.
+        /// Twice <see cref="VanillaProsperityScale"/> rather than the scale itself, so that even the
+        /// largest of them lands as a couple of points -- a nudge, not an event.
         /// </summary>
-        private static float VanillaHousingCosts(Town fortification)
-        {
-            if (!fortification.IsTown)
-            {
-                return 0f;
-            }
+        public const float DiscreteWriteScale = VanillaProsperityScale * 2f;
 
-            float prosperity = fortification.Prosperity;
-            if (prosperity < 250f) return 6f;
-            if (prosperity < 500f) return 5f;
-            if (prosperity < 750f) return 4f;
-            if (prosperity < 1000f) return 3f;
-            if (prosperity < 1250f) return 2f;
-            if (prosperity < 1500f) return 1f;
-            if (prosperity > 21000f) return -6f;
-            if (prosperity > 18000f) return -5f;
-            if (prosperity > 15000f) return -4f;
-            if (prosperity > 12000f) return -3f;
-            if (prosperity > 9000f) return -2f;
-            if (prosperity > 6000f) return -1f;
-            return 0f;
+        /// <summary>
+        /// Depth of the scope in which prosperity writes are RBM's own or already on RBM's scale and
+        /// must not be divided by <see cref="DiscreteWriteScale"/>: the daily tick (whose delta the
+        /// model above already sets), RBM's siege-sack penalty, and RBM's new-game seeding.
+        /// </summary>
+        private static int _scaleExemptDepth;
+
+        /// <summary>Marks the caller's prosperity writes as already on RBM's scale. Pair with <see cref="ExitScaleExempt"/>.</summary>
+        public static void EnterScaleExempt()
+        {
+            _scaleExemptDepth++;
+        }
+
+        public static void ExitScaleExempt()
+        {
+            if (_scaleExemptDepth > 0)
+            {
+                _scaleExemptDepth--;
+            }
         }
 
         /// <summary>
-        /// Reproduces the vanilla prosperity terms RBM's own model OWNS -- the starvation food-shortage
-        /// penalty, the surplus-food bonus and the goods-from-market bonus -- so they can be subtracted
-        /// back out and RBM's drift is the sole authority on food- and trade-driven fief prosperity. A
-        /// literal transcription of the vanilla lines (same getters, same perk call, same order) rather
-        /// than a formula, for the same reason <see cref="VanillaHousingCosts"/> is: a game update that
-        /// retunes them then shows up as a mismatch easy to diff against the decompiled source.
-        ///
-        /// Applies to both towns and castles: vanilla gives food-shortage and surplus-food to either, so
-        /// this cancels them for either. Goods-from-market is vanilla's town-only term (a castle has no
-        /// market and never receives it), so the cancellation adds it only for a town.
-        ///
-        /// Same small imprecision as the housing cancellation: vanilla folds these into the running total
-        /// BEFORE the multiplicative Apprenticeship perk factor, so subtracting them afterwards does not
-        /// unwind their tiny contribution to that factor. Negligible, and accepted for housing already.
+        /// Shrinks the one-off vanilla writes to the prosperity property (see
+        /// <see cref="DiscreteWriteScale"/>) by rewriting the incoming value so the DELTA from the
+        /// current figure is divided, not the value itself. Absolute sets therefore still land where
+        /// they were aimed once the game is running relative to the current value, and the property's
+        /// own zero floor is untouched. Off until the campaign has started so world generation, the
+        /// old-save migration and RBM's own seed write are never touched.
         /// </summary>
-        private static float VanillaFoodAndMarketProsperity(Town fortification)
+        [HarmonyPatch(typeof(Town), nameof(Town.Prosperity), MethodType.Setter)]
+        private static class DiscreteProsperityWritePatch
         {
-            float total = 0f;
-            float foodChange = fortification.FoodChange;
-
-            // Food shortage: vanilla docks half the negative food change when the OWNING CLAN is starving,
-            // town or castle alike, softened by the Helping Hands perk. Reproduce the perk-modified figure.
-            if (fortification.Owner != null && fortification.Owner.IsStarving)
+            private static void Prefix(Town __instance, ref float value)
             {
-                ExplainedNumber bonuses = new ExplainedNumber((foodChange < 0f) ? ((int)foodChange) : 0);
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Medicine.HelpingHands, fortification, ref bonuses);
-                total += bonuses.ResultNumber * 0.5f;
-            }
-
-            // Surplus food: vanilla pays 0.1 per unit of food projected over the granary cap, town or castle.
-            int cap = fortification.FoodStocksUpperLimit();
-            int surplus = (int)(fortification.FoodStocks + foodChange) - cap;
-            if (surplus > 0)
-            {
-                total += surplus * 0.1f;
-            }
-
-            // Goods from market: vanilla pays 0.1 per prosperity-good sold -- but only for a TOWN. A castle
-            // has no market and vanilla never gives it this term, so neither does the cancellation.
-            if (fortification.IsTown)
-            {
-                int prosperityGoods = 0;
-                foreach (Town.SellLog log in fortification.SoldItems)
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || _scaleExemptDepth > 0)
                 {
-                    if (log.Category != null && log.Category.Properties == ItemCategory.Property.BonusToProsperity)
-                    {
-                        prosperityGoods += log.Number;
-                    }
+                    return;
                 }
-                if (prosperityGoods > 0)
+                Campaign campaign = Campaign.Current;
+                if (campaign == null || !campaign.GameStarted)
                 {
-                    total += prosperityGoods * 0.1f;
+                    return;
                 }
+                float current = __instance.Prosperity;
+                value = current + (value - current) / DiscreteWriteScale;
+            }
+        }
+
+        /// <summary>The daily tick applies the model's own delta; it must not be divided again.</summary>
+        [HarmonyPatch(typeof(Town), "DailyTick")]
+        private static class DailyTickScaleExemptPatch
+        {
+            private static void Prefix()
+            {
+                EnterScaleExempt();
             }
 
-            return total;
+            private static void Finalizer()
+            {
+                ExitScaleExempt();
+            }
+        }
+
+        /// <summary>
+        /// The siege aftermath applies a prosperity penalty that RBM already replaces with a fraction
+        /// of the fief's own figure (see <c>SiegeAftermathPatches</c>), so it is on RBM's scale already.
+        /// </summary>
+        [HarmonyPatch(typeof(SiegeAftermathCampaignBehavior), "OnSiegeAftermathApplied")]
+        private static class SiegeAftermathScaleExemptPatch
+        {
+            private static void Prefix()
+            {
+                EnterScaleExempt();
+            }
+
+            private static void Finalizer()
+            {
+                ExitScaleExempt();
+            }
         }
 
         private static readonly TextObject CountrysideText = new TextObject("{=RBM_PROSPERITY_HEARTH}Countryside support");
+        private static readonly TextObject HungerText = new TextObject("{=RBM_PROSPERITY_HUNGER}Hunger");
     }
 }

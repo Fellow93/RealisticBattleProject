@@ -228,20 +228,29 @@ namespace RBMCampaign
             // Start every fief on its own equilibrium so the map does not open mid-correction: a town
             // on its trade-bound hearths, a castle on the average hearth of its own bound villages. A
             // castle whose bounds are not readable yet (target 0) keeps its authored prosperity.
-            foreach (Settlement settlement in Settlement.All)
+            // These are absolute sets on RBM's own scale; keep them clear of the discrete-write scaling.
+            RBMProsperityEquilibrium.EnterScaleExempt();
+            try
             {
-                if (settlement.IsTown)
+                foreach (Settlement settlement in Settlement.All)
                 {
-                    settlement.Town.Prosperity = RBMProsperityEquilibrium.TargetProsperity(settlement);
-                }
-                else if (settlement.IsCastle)
-                {
-                    float castleTarget = RBMProsperityEquilibrium.CastleTargetProsperity(settlement);
-                    if (castleTarget > 0f)
+                    if (settlement.IsTown)
                     {
-                        settlement.Town.Prosperity = castleTarget;
+                        settlement.Town.Prosperity = RBMProsperityEquilibrium.TargetProsperity(settlement);
+                    }
+                    else if (settlement.IsCastle)
+                    {
+                        float castleTarget = RBMProsperityEquilibrium.CastleTargetProsperity(settlement);
+                        if (castleTarget > 0f)
+                        {
+                            settlement.Town.Prosperity = castleTarget;
+                        }
                     }
                 }
+            }
+            finally
+            {
+                RBMProsperityEquilibrium.ExitScaleExempt();
             }
         }
     }
