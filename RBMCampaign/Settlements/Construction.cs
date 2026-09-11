@@ -28,7 +28,7 @@ namespace RBMCampaign
     ///   FREE LABOUR -- prisoners in the settlement's pit, and (phase 2) the men a Guard House keeps at
     ///   work. They are already fed and housed by the fief; the work they do costs nothing more.
     ///
-    ///   MATERIALS -- clay and hardwood bought off the settlement's own market. A load of clay is worth
+    ///   MATERIALS -- clay and planks bought off the settlement's own market. A load of clay is worth
     ///   a great deal of building and costs what the market asks for it, so a town with a full yard
     ///   builds far more cheaply per coin than one buying every day's work in wages.
     ///

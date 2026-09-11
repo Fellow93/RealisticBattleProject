@@ -6,7 +6,7 @@ using TaleWorlds.Core;
 namespace RBMCampaign
 {
     /// <summary>
-    /// What a building site takes off the market: clay and hardwood for the work itself, and the tools
+    /// What a building site takes off the market: clay and planks for the work itself, and the tools
     /// that wear out doing it.
     ///
     /// A fief that has stone, brick-clay and timber standing in its yards builds cheaply -- a cartload of
@@ -39,11 +39,15 @@ namespace RBMCampaign
         /// <summary>Points of work one load of clay -- brick, mortar, daub -- is worth.</summary>
         public const int ClayPoints = 300;
 
-        /// <summary>Points of work one log of hardwood is worth once sawn into planks and beams.</summary>
-        public const int HardwoodPoints = 50;
+        /// <summary>Points of work one load of planks -- the lumberjack villages' sawn timber -- is worth.</summary>
+        public const int PlanksPoints = 50;
 
         public const string ClayId = "clay";
-        public const string HardwoodId = "hardwood";
+        /// <summary>
+        /// Planks, not <c>hardwood</c>: RBM's villages produce planks, and hardwood only ever comes out of
+        /// the smithy refining recipe, so a site buying hardwood would never find any on the shelves.
+        /// </summary>
+        public const string PlanksId = "planks";
         public const string ToolsId = "tools";
 
         /// <summary>One line of a day's material buying, worked out before any of it is carried out.</summary>
@@ -81,7 +85,7 @@ namespace RBMCampaign
             // Clay first: it is worth six times a log per piece, so a site short of money gets more built
             // out of the denser material.
             AddLine(town, supplier, ClayId, ClayPoints, maxPoints, ref points, ref budget, ref spend, ref purchases);
-            AddLine(town, supplier, HardwoodId, HardwoodPoints, maxPoints, ref points, ref budget, ref spend, ref purchases);
+            AddLine(town, supplier, PlanksId, PlanksPoints, maxPoints, ref points, ref budget, ref spend, ref purchases);
             return purchases;
         }
 

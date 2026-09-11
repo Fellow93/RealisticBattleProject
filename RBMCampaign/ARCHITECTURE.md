@@ -279,7 +279,7 @@ player's boost, now deleted.)
   capacity factor (`1 + 0.1 x tier`), times vanilla's loyalty curve. `prisoners x 30 +
   guardHouseTier x 0.3 x prosperity` of it is free labour that costs nothing, and the Mason's efficiency
   factor (`1 + 0.05 x tier`) multiplies what the money bought.
-- **Spending order** — free labour, then clay/hardwood off the settlement's own market (up to half the
+- **Spending order** — free labour, then clay/planks off the settlement's own market (up to half the
   day's work, never touching the last 20 pieces on the shelves), then wages at a coin a point of which
   half reaches the townsmen. Tools wear out at one load per 50,000 points and are bought the same way;
   a load owed with no tools on the market halves the day's output. Nothing calls `ChangeGold`.
