@@ -56,7 +56,19 @@ namespace RBMAI
                 float catchUpThreshold = formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents * 3f;
                 bool unitFarFromSlot = ___Agent.Position.AsVec2.Distance(currentGlobalPositionOfUnit) >= catchUpThreshold * 2f;
 
-                if (!unitFarFromSlot && ShouldCatchUpWithFormationProperty != null)
+                // The "far from slot -> sprint" escape above (native's own rule, kept) assumes a man far from
+                // his slot is LAGGING and needs to close. Under RBM's advance that assumption breaks: the
+                // ordered position is placed 10-50 m + half a depth AHEAD of the formation's own centre
+                // (AdvanceBehavior.PrefixCalculateCurrentOrder), so every slot sits far in front of the line
+                // and the distance test trips for men who are already at the front. Their speed cap is then
+                // dropped and whoever has the highest unlimited speed (light gear / high athletics) walks out
+                // of the line toward the carrot -- the reported "one or two soldiers run ahead of the
+                // formation". Judge lagging by the line, not by the slot: a man behind the formation's average
+                // position may sprint, a man level with or ahead of it is paced regardless of slot distance.
+                Vec2 formationDirection = ___Agent.Formation.CurrentDirection;
+                bool unitBehindLine = (___Agent.Position.AsVec2 - ___Agent.Formation.CachedAveragePosition).DotProduct(formationDirection) < 0f;
+
+                if ((!unitFarFromSlot || !unitBehindLine) && ShouldCatchUpWithFormationProperty != null)
                 {
                     System.Threading.Interlocked.Increment(ref SetCount);
                     ShouldCatchUpWithFormationProperty.SetValue(__instance, true, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
@@ -138,6 +150,67 @@ namespace RBMAI
             }
 
             return true;
+        }
+
+        // Breaks native's run-ahead latch under Move orders. GetFormationFrame's Hold case hands out
+        // speedLimit = -1 (no limit) whenever ShouldCatchUpWithFormation is false, and native only sets that
+        // flag true again once the man is back within ~22 m of his slot. A man who trips it while AHEAD of
+        // the line therefore runs at his own unlimited speed, pulls further ahead, and can never re-enter the
+        // window -- the "one or two soldiers sprint to the front and don't wait" on every advance (logged
+        // 2026-09-11: the captain and one ranker at limit -1 / catchUp 0 / 2-4 m/s while 498 men sat at 0.8).
+        //
+        // This postfix only rewrites the out value: no formation-grid or integrity-data writes, so it does
+        // NOT need the IsFormationReshufflingUnsafe guard the sibling patches carry -- which is the point,
+        // since with MissionLibrary loaded those patches never run and the latch was going unbroken.
+        // A man behind the line keeps his unlimited speed so he can genuinely catch up.
+        [HarmonyPostfix]
+        [HarmonyPatch("GetFormationFrame")]
+        private static void PostfixGetFormationFrame(ref Agent ___Agent, ref float speedLimit, ref bool limitIsMultiplier)
+        {
+            try
+            {
+                if (speedLimit >= 0f || !HumanAIComponent.FormationSpeedAdjustmentEnabled)
+                {
+                    return;
+                }
+                Agent agent = ___Agent;
+                if (agent == null || agent.IsMount || !agent.IsActive() || agent.Controller != AgentControllerType.AI || agent.IsDetachedFromFormation)
+                {
+                    return;
+                }
+                Formation formation = agent.Formation;
+                if (formation == null || formation.Arrangement is ColumnFormation)
+                {
+                    return;
+                }
+                if (formation.GetReadonlyMovementOrderReference().MovementState != MovementOrder.MovementStateEnum.Hold)
+                {
+                    return;
+                }
+                Vec2 direction = formation.CurrentDirection;
+                if (!direction.IsValid || direction.LengthSquared < 0.01f)
+                {
+                    return;
+                }
+                float ahead = (agent.Position.AsVec2 - formation.CachedAveragePosition).DotProduct(direction);
+                if (ahead < 0f)
+                {
+                    return; // behind the line: let him sprint to catch up, as native intends
+                }
+                float ownMax = agent.MountAgent != null ? agent.MountAgent.GetMaximumForwardUnlimitedSpeed() : agent.GetMaximumForwardUnlimitedSpeed();
+                if (ownMax <= 0.01f)
+                {
+                    return;
+                }
+                // Same shape as GetDesiredSpeedInFormation's steady-state result: pace to the formation's
+                // cached movement speed, floored at 0.2 of own top speed.
+                speedLimit = MathF.Clamp(formation.CachedMovementSpeed / ownMax, 0.2f, 1f);
+                limitIsMultiplier = true;
+            }
+            catch
+            {
+                // Worker-thread path: never let an exception escape.
+            }
         }
     }
 }

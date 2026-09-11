@@ -218,17 +218,17 @@ namespace RBMAI
                         {
                             // Divisor is effectively the rank count (width in metres = units / ranks). Lower = wider
                             // line, fewer ranks. Widen the advancing line a touch (4.5 -> 4.0 ranks).
-                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(__instance.Formation.CountOfUnitsWithoutDetachedOnes / 4.0f), true);
+                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 4.0f)), true);
                             break;
                         }
                     case OrderType.ArrangementLoose:
                         {
-                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(__instance.Formation.CountOfUnitsWithoutDetachedOnes / 2.75f), true);
+                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 2.75f)), true);
                             break;
                         }
                     case OrderType.ArrangementCloseOrder:
                         {
-                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(__instance.Formation.CountOfUnitsWithoutDetachedOnes / 7f), true);
+                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 7f)), true);
                             break;
                         }
                 }

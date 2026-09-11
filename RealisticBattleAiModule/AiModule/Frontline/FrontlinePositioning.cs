@@ -175,7 +175,14 @@ namespace RBMAI
                         return false;
                     }
                     //ranged charge if they are skirmishing but not attacking
-                    if (__instance.AI != null && __instance.AI.ActiveBehavior != null)
+                    // Engagement-range gate: the stall test below only knows "this man has not shot for a
+                    // while and has nobody next to him", which is also exactly true of an archer walking a
+                    // long reposition/advance toward a distant enemy (his shots are out of range, so the
+                    // clock runs). Granting the free charge there sends individuals sprinting the whole
+                    // gap while the formation is still marching in ranks -- the reported "one or two men
+                    // run to the front". Only let it fire once the formation itself is in contact range of
+                    // the enemy, so the charge it grants is a few metres, not a hundred.
+                    if (__instance.AI != null && __instance.AI.ActiveBehavior != null && IsFormationInEngagementRange(__instance, 30f))
                     {
                         if (unit.LastRangedAttackTime > 0)
                         {
@@ -553,6 +560,26 @@ namespace RBMAI
                 Vec2 direction = (nearestAlly.Position.AsVec2 - unitPosition).Normalized();
                 result.SetVec2MT(unitPosition + direction * MBRandom.RandomFloatRanged(0.15f, 0.3f));
                 return result;
+            }
+
+            // True when the formation as a whole is already within `range` of its nearest enemy formation.
+            // Reads only cached per-tick formation state (CachedAveragePosition / CachedClosestEnemyFormation /
+            // CachedMedianPosition) -- all three are read by native's own ParallelUpdateFormationMovement and
+            // GetDesiredSpeedInFormation, so they are safe from the movement worker. Fails closed (false) when
+            // there is no enemy formation to measure against: no enemy means no reason to break ranks.
+            private static bool IsFormationInEngagementRange(Formation formation, float range)
+            {
+                if (formation == null)
+                {
+                    return false;
+                }
+                FormationQuerySystem closestEnemy = formation.CachedClosestEnemyFormation;
+                if (closestEnemy == null || closestEnemy.Formation == null)
+                {
+                    return false;
+                }
+                float distance = formation.CachedAveragePosition.Distance(closestEnemy.Formation.CachedMedianPosition.AsVec2);
+                return distance <= range;
             }
 
             private static int CountByMounted(MBList<Agent> agents, bool mounted)

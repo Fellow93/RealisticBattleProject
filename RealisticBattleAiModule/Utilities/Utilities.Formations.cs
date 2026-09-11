@@ -242,6 +242,84 @@ namespace RBMAI
             return true;
         }
 
+        // Advancing lines must be wider than they are deep: the file count ("width ranks") has to exceed the
+        // rank count (depth) by at least 2. A line that advances deeper than it is wide presents a narrow face
+        // to the enemy, gets enveloped, and wastes its rear ranks.
+        //
+        // Engine formula (decompiled/TaleWorlds.MountAndBlade/LineFormation.cs:196-199 GetFileCountFromWidth,
+        // mirrored by Formation.SetFormOrder's _desiredFileCount at Formation.cs:782-787):
+        //     files f = floor((width - UnitDiameter) / (Interval + UnitDiameter)) + 1
+        // inverse (LineFormation.cs:115 FlankWidth getter):
+        //     width  = (f - 1) * (Interval + UnitDiameter) + UnitDiameter
+        // ranks r = ceil(n / f), with n = CountOfUnitsWithoutDetachedOnes.
+        //
+        // Only ever call this from a main-thread behavior/tactic tick (TickOccasionally / OnBehaviorActivated),
+        // never from the movement worker job -- it touches QuerySystem-backed formation properties.
+        public static float EnforceMinFileWidth(Formation formation, float desiredWidth)
+        {
+            if (formation == null || desiredWidth <= 0f)
+            {
+                return desiredWidth;
+            }
+
+            Mission mission = Mission.Current;
+            if (mission == null || mission.IsSiegeBattle || mission.IsSallyOutBattle)
+            {
+                return desiredWidth;
+            }
+
+            // Cavalry and horse archers keep whatever frontage their behavior asked for.
+            if (formation.QuerySystem.IsCavalryFormation || formation.QuerySystem.IsRangedCavalryFormation)
+            {
+                return desiredWidth;
+            }
+
+            // Line-type arrangements only -- circle/square/skein/scatter/column derive their shape differently.
+            ArrangementOrder.ArrangementOrderEnum arrangement = formation.ArrangementOrder.OrderEnum;
+            if (arrangement != ArrangementOrder.ArrangementOrderEnum.Line
+                && arrangement != ArrangementOrder.ArrangementOrderEnum.ShieldWall
+                && arrangement != ArrangementOrder.ArrangementOrderEnum.Loose)
+            {
+                return desiredWidth;
+            }
+
+            int n = formation.CountOfUnitsWithoutDetachedOnes;
+            if (n <= 2)
+            {
+                return desiredWidth;
+            }
+
+            float spacing = formation.Interval + formation.UnitDiameter;
+            if (spacing <= 0.01f)
+            {
+                return desiredWidth;
+            }
+
+            int files = MathF.Max(1, (int)((desiredWidth - formation.UnitDiameter) / spacing) + 1);
+            int ranks = MathF.Ceiling(n / (float)files);
+            if (files >= ranks + 2)
+            {
+                return desiredWidth;
+            }
+
+            // Smallest file count that satisfies f >= ceil(n / f) + 2. n is small, so just walk upward.
+            int fixedFiles = files;
+            while (fixedFiles < n && fixedFiles < MathF.Ceiling(n / (float)fixedFiles) + 2)
+            {
+                fixedFiles++;
+            }
+
+            float fixedWidth = (fixedFiles - 1) * spacing + formation.UnitDiameter;
+            fixedWidth = MathF.Max(desiredWidth, fixedWidth);
+
+            float maximumWidth = formation.MaximumWidth;
+            if (maximumWidth > 0f && fixedWidth > maximumWidth)
+            {
+                fixedWidth = MathF.Max(desiredWidth, maximumWidth);
+            }
+            return fixedWidth;
+        }
+
         public static void FixCharge(ref Formation formation)
         {
             if (formation != null)
