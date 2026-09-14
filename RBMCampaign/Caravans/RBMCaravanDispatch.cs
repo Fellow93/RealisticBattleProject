@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.CampaignSystem.Naval;
 using TaleWorlds.CampaignSystem.Party;
@@ -17,12 +18,46 @@ namespace RBMCampaign
     /// <summary>
     /// The dispatch brain of the supply-caravan system: it reads which of a kingdom's towns are drowning
     /// in a good and which of its other towns are short of it, and puts a caravan on the road between
-    /// them. Only towns of the SAME kingdom are ever matched -- the search is binned by
-    /// <see cref="IFaction"/> and never looks across a bin -- so no caravan crosses a border. Run on a
-    /// cadence by <see cref="RBMCaravanBehavior"/> (currently every two days).
+    /// them. Sources are always the kingdom's OWN towns; destinations are its own towns plus the towns of
+    /// any kingdom it holds a trade agreement with (see <see cref="CanTradeWith"/>), so a caravan only
+    /// crosses a border under a standing agreement. Run on a cadence by <see cref="RBMCaravanBehavior"/>
+    /// (currently every two days).
     /// </summary>
     internal static class RBMCaravanDispatch
     {
+        /// <summary>
+        /// Whether a caravan from <paramref name="src"/> may deliver to <paramref name="dst"/>: the two are
+        /// in the same realm, or both belong to kingdoms that hold a trade agreement with each other and
+        /// are not at war. Vanilla's own caravans use the same agreement lookup for their route bonus.
+        /// </summary>
+        public static bool CanTradeWith(Settlement src, Settlement dst)
+        {
+            if (src == null || dst == null)
+            {
+                return false;
+            }
+            return CanTradeWith(src.MapFaction, dst.MapFaction);
+        }
+
+        /// <summary>Faction-level form of <see cref="CanTradeWith(Settlement, Settlement)"/>.</summary>
+        public static bool CanTradeWith(IFaction a, IFaction b)
+        {
+            if (a == null || b == null)
+            {
+                return false;
+            }
+            if (a == b)
+            {
+                return true;
+            }
+            if (!a.IsKingdomFaction || !b.IsKingdomFaction || a.IsAtWarWith(b))
+            {
+                return false;
+            }
+            ITradeAgreementsCampaignBehavior agreements = Campaign.Current?.GetCampaignBehavior<ITradeAgreementsCampaignBehavior>();
+            return agreements != null && agreements.HasTradeAgreement((Kingdom)a, (Kingdom)b, out _);
+        }
+
         // Days of its own supply above which a town's stock of a good counts as a surplus worth moving.
         private const float SurplusDays = 30f;
 
@@ -120,9 +155,21 @@ namespace RBMCampaign
             foreach (KeyValuePair<IFaction, List<Town>> realm in byFaction)
             {
                 List<Town> towns = realm.Value;
-                if (towns.Count < 2)
+
+                // Destinations: the realm's own towns plus every town of a kingdom it holds a trade
+                // agreement with. Sources stay the realm's own towns, so goods flow OUT along agreements
+                // and the partner's own dispatch pass sends goods back the other way.
+                List<Town> reachable = new List<Town>(towns);
+                foreach (KeyValuePair<IFaction, List<Town>> other in byFaction)
                 {
-                    // A realm needs at least two towns to run a caravan between.
+                    if (other.Key != realm.Key && CanTradeWith(realm.Key, other.Key))
+                    {
+                        reachable.AddRange(other.Value);
+                    }
+                }
+                if (towns.Count < 1 || reachable.Count < 2)
+                {
+                    // Needs a source town and at least one other town to run a caravan between.
                     continue;
                 }
 
@@ -170,11 +217,11 @@ namespace RBMCampaign
 
                 // Neediest towns first, so the per-pass cap serves the most-starved markets.
                 Dictionary<Town, int> neediness = new Dictionary<Town, int>();
-                foreach (Town town in towns)
+                foreach (Town town in reachable)
                 {
                     neediness[town] = Neediness(town);
                 }
-                List<Town> dests = new List<Town>(towns);
+                List<Town> dests = new List<Town>(reachable);
                 dests.Sort((a, b) => neediness[b].CompareTo(neediness[a]));
 
                 HashSet<Town> served = new HashSet<Town>();
@@ -285,7 +332,8 @@ namespace RBMCampaign
                         {
                             break;
                         }
-                        if (served.Contains(dst) || Busy(dst.Settlement))
+                        // Relief (capital injection) stays intra-kingdom: no cross-border debt.
+                        if (served.Contains(dst) || Busy(dst.Settlement) || dst.Settlement.MapFaction != realm.Key)
                         {
                             continue;
                         }

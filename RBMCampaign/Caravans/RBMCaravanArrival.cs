@@ -69,17 +69,22 @@ namespace RBMCampaign
 
             Settlement investSrc = RBMCaravanRegister.FindSettlement(order.SourceId);
             int proceeds = 0;
-            // Deliver only into a live town of the caravan's own realm. If the destination was captured out
-            // of the source's kingdom (or besieged/razed) between dispatch and arrival, move no goods or
-            // coin across the new border -- carry the load home instead. This mirrors the hourly divert and
-            // catches the case where a caravan reaches the town the same tick it changed hands.
-            if (dst.Town != null && dst.IsTown && dst.SiegeEvent == null && SameRealm(investSrc, dst))
+            // Deliver only into a live town of the caravan's own realm or of a trade-agreement partner. If
+            // the destination was captured out of reach (or the agreement lapsed, or war broke out, or it
+            // is besieged/razed) between dispatch and arrival, move no goods or coin across the border --
+            // carry the load home instead. This mirrors the hourly divert and catches the case where a
+            // caravan reaches the town the same tick it changed hands.
+            if (dst.Town != null && dst.IsTown && dst.SiegeEvent == null && RBMCaravanDispatch.CanTradeWith(investSrc, dst))
             {
                 // Prop a struggling destination up with a repayable capital injection -- for a goods
                 // caravan this comes BEFORE the sale so a broke town can then afford the goods; for a pure
                 // relief caravan (empty manifest) it is the whole point of the trip. ApplyInjection
-                // self-checks whether the pairing qualifies, so it is safe to always attempt.
-                RBMCaravanInvestment.ApplyInjection(investSrc, dst);
+                // self-checks whether the pairing qualifies, so it is safe to always attempt. Capital only
+                // moves within the realm: no cross-border debt to a trade partner.
+                if (SameRealm(investSrc, dst))
+                {
+                    RBMCaravanInvestment.ApplyInjection(investSrc, dst);
+                }
 
                 if (order.Goods != null && order.Goods.Count > 0)
                 {
@@ -89,7 +94,7 @@ namespace RBMCampaign
             else
             {
                 CaravanLog.Log("ABORT", CaravanLog.Name(dst),
-                    (SameRealm(investSrc, dst) ? "cannot sell/deliver here" : "destination no longer in the realm")
+                    (RBMCaravanDispatch.CanTradeWith(investSrc, dst) ? "cannot sell/deliver here" : "destination no longer in the realm or a trade partner")
                     + " — heading home");
             }
 
@@ -359,8 +364,9 @@ namespace RBMCampaign
 
         /// <summary>
         /// Whether an out-bound caravan's destination is still a town it can lawfully and physically deliver
-        /// to: a live town, of the source's own kingdom (the system is intra-kingdom only), and not currently
-        /// besieged (it could not get in). A destination that fails any of these is a drop we must abandon.
+        /// to: a live town, of the source's own kingdom or of a kingdom it holds a trade agreement with, and
+        /// not currently besieged (it could not get in). A destination that fails any of these is a drop we
+        /// must abandon.
         /// </summary>
         private static bool DestinationUsable(RBMCaravanRegister.Order order)
         {
@@ -370,7 +376,7 @@ namespace RBMCampaign
                 return false; // razed, no longer a town, or besieged
             }
             Settlement src = RBMCaravanRegister.FindSettlement(order.SourceId);
-            return SameRealm(src, dst);
+            return RBMCaravanDispatch.CanTradeWith(src, dst);
         }
 
         /// <summary>
