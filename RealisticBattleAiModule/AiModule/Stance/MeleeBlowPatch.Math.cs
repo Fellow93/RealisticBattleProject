@@ -1,7 +1,10 @@
 ﻿using HarmonyLib;
+using Helpers;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -267,8 +270,98 @@ namespace RBMAI
 
                 //actionTypeDamageModifier += actionTypeDamageModifier * 0.5f * comHitModifier;
                 result = basePostureDamage * actionTypeDamageModifier * defenderPostureDamageModifier * comHitModifier;
+                result *= GetDefenderBlockPerkFactor(defenderAgent, meleeHitType);
                 //InformationManager.DisplayMessage(new InformationMessage("Deffender PD: " + result));
                 return result;
+            }
+
+            /// <summary>
+            /// Posture reads skills but never the driven properties vanilla's personal perks land on.
+            /// This maps the block-related ones onto the posture cost of a block:
+            ///  - handling perks (Athletics.Fury, OneHanded.WrappedHandles, TwoHanded.StrongGrip,
+            ///    Polearm.CounterWeight; SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent)
+            ///    reduce posture lost on any block or parry, since handling is vanilla's block readiness;
+            ///  - shield perks (Engineering.Scaffolds shield HP; OneHanded.SteelCoreShields and
+            ///    OneHanded.ShieldWall shield-damage reduction; SandboxAgentApplyDamageModel) reduce
+            ///    posture lost on shield blocks by the same proportion they protect the shield.
+            /// The factors are rebuilt from the perks rather than read from the driven properties,
+            /// because RBM already multiplies those properties by stamina and posture applies its own
+            /// stamina penalty. Returns 1 for unperked agents and for direct hits.
+            /// </summary>
+            private static float GetDefenderBlockPerkFactor(Agent defenderAgent, MeleeHitType meleeHitType)
+            {
+                if (meleeHitType == MeleeHitType.AgentHit || Campaign.Current == null)
+                {
+                    return 1f;
+                }
+                CharacterObject character = defenderAgent.Character as CharacterObject;
+                if (character == null)
+                {
+                    return 1f;
+                }
+                BattleEnvironment env = defenderAgent.CurrentBattleEnvironment;
+                Agent captainAgent = defenderAgent.Formation?.Captain;
+                CharacterObject captain = (captainAgent != null && captainAgent != defenderAgent) ? captainAgent.Character as CharacterObject : null;
+                bool onFoot = !defenderAgent.HasMount;
+
+                float factor = 1f;
+
+                // Handling: applies to every block/parry type.
+                WeaponComponentData wielded = defenderAgent.WieldedWeapon.IsEmpty ? null : defenderAgent.WieldedWeapon.CurrentUsageItem;
+                if (wielded != null && wielded.IsMeleeWeapon)
+                {
+                    ExplainedNumber handling = new ExplainedNumber(1f);
+                    if (onFoot)
+                    {
+                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Athletics.Fury, env, character, true, ref handling);
+                        if (captain != null)
+                        {
+                            PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Athletics.Fury, env, captain, ref handling);
+                        }
+                    }
+                    if (wielded.RelevantSkill == DefaultSkills.OneHanded)
+                    {
+                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.OneHanded.WrappedHandles, env, character, true, ref handling);
+                    }
+                    else if (wielded.RelevantSkill == DefaultSkills.TwoHanded)
+                    {
+                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.TwoHanded.StrongGrip, env, character, true, ref handling);
+                    }
+                    else if (wielded.RelevantSkill == DefaultSkills.Polearm && wielded.SwingDamageType != DamageTypes.Invalid)
+                    {
+                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Polearm.CounterWeight, env, character, true, ref handling);
+                    }
+                    if (handling.ResultNumber > 0f)
+                    {
+                        factor /= handling.ResultNumber;
+                    }
+                }
+
+                // Shield: only on shield blocks.
+                bool shieldBlock = meleeHitType == MeleeHitType.ShieldBlock || meleeHitType == MeleeHitType.ShieldIncorrectBlock || meleeHitType == MeleeHitType.ShieldParry;
+                if (shieldBlock)
+                {
+                    ExplainedNumber shieldHp = new ExplainedNumber(1f);
+                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Engineering.Scaffolds, env, character, false, ref shieldHp);
+                    if (shieldHp.ResultNumber > 0f)
+                    {
+                        factor /= shieldHp.ResultNumber;
+                    }
+
+                    ExplainedNumber shieldDamage = new ExplainedNumber(1f);
+                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.OneHanded.SteelCoreShields, env, character, true, ref shieldDamage);
+                    if (onFoot && captain != null)
+                    {
+                        PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.OneHanded.SteelCoreShields, env, captain, ref shieldDamage);
+                    }
+                    if (meleeHitType == MeleeHitType.ShieldIncorrectBlock)
+                    {
+                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.OneHanded.ShieldWall, env, character, true, ref shieldDamage);
+                    }
+                    factor *= Math.Max(0f, shieldDamage.ResultNumber);
+                }
+
+                return factor;
             }
 
             private static float calculateAttackerPostureDamage(Agent defenderAgent, Agent attackerAgent, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType, bool isUnarmedAttack)
