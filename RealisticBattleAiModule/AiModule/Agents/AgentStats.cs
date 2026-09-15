@@ -25,6 +25,9 @@ namespace RBMAI
             private static readonly MethodInfo _getMeleeSkillMethod = typeof(AgentStatCalculateModel).GetMethod("GetMeleeSkill", BindingFlags.NonPublic | BindingFlags.Instance);
             private static readonly MBList<Agent> _nearbyEnemiesBuffer = new MBList<Agent>();
 
+            // Runs after RBMCombat's postfix on the same method (Priority.High there), which assigns
+            // ReloadSpeed outright. The stamina multipliers below must apply on top of that base.
+            [HarmonyPriority(Priority.Low)]
             private static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
             {
                 bool agentHasShield = false;
