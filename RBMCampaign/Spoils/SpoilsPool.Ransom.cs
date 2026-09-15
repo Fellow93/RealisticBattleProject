@@ -62,6 +62,66 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// An executed captive is stripped like a ransomed one. Vanilla's execution paths -- the player's
+        /// post-battle or party-screen execution, and v1.5.0's blood-feud executions, including the one
+        /// carried out in a settlement dungeon eight days after hand-over -- kill the hero through
+        /// <c>KillCharacterAction</c> with no ransom, so no RBM strip ever saw his kit and a lord's full
+        /// mail and mount simply evaporated with him. Fires BEFORE the kill, while
+        /// <c>PartyBelongedToAsPrisoner</c> still names his captors. A mobile captor's men split the kit
+        /// as spoils; a settlement captor sells it into its treasury.
+        /// </summary>
+        public static void OnBeforeHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, bool showNotification)
+        {
+            if (!IsEnabled || victim == null || victim == Hero.MainHero || victim.CharacterObject == null)
+            {
+                return;
+            }
+            if (detail != KillCharacterAction.KillCharacterActionDetail.Executed
+                && detail != KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent)
+            {
+                return;
+            }
+            PartyBase captor = victim.PartyBelongedToAsPrisoner;
+            if (captor == null || !victim.IsPrisoner)
+            {
+                return;
+            }
+            TroopRoster roster = TroopRoster.CreateDummyTroopRoster();
+            roster.AddToCounts(victim.CharacterObject, 1);
+            if (captor.IsMobile)
+            {
+                StripPrisonersForSpoils(captor, roster, "EXECUTE", "executed a captive lord",
+                    AnnounceExecutionSpoilsToPlayer);
+                return;
+            }
+            if (captor.IsSettlement && captor.Settlement != null)
+            {
+                int value = SumRansomGearValue(roster);
+                if (value > 0)
+                {
+                    int credited = SettlementWealth.Credit(captor.Settlement, value, SettlementWealth.Source.Execution);
+                    if (SpoilsLog.IsEnabled)
+                    {
+                        SpoilsLog.Log("EXECUTE", victim.Name + " executed at "
+                            + (captor.Settlement.Name != null ? captor.Settlement.Name.ToString() : captor.Settlement.StringId)
+                            + "; kit worth " + value + " sold into its treasury (" + credited + ")");
+                    }
+                }
+            }
+        }
+
+        private static void AnnounceExecutionSpoilsToPlayer(int granted, int leaderCut)
+        {
+            if (granted > 0)
+            {
+                TextObject message = new TextObject("{=RBM_SPOILS_033}Your men strip the executed captive's kit and split {AMOUNT} in spoils.");
+                message.SetTextVariable("AMOUNT", granted);
+                InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+            }
+            AnnounceLeaderCutToPlayer(leaderCut);
+        }
+
+        /// <summary>
         /// The same kit-strip gather as a ransom, for prisoners handed over to satisfy a delivery quest --
         /// a route that never touches <see cref="SellPrisonersAction"/>, so the ransom gear-strip would
         /// otherwise skip it. Keeps delivering a captive worth the same stripped kit as ransoming one; the

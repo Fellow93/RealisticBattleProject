@@ -143,6 +143,71 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>
+        /// Supplies forced out of a village that did not resist (see <see cref="VillageCoercion"/>). The
+        /// coin has already been drawn from the village purse; unlike a raid nothing is burned -- the
+        /// villagers simply hand it over -- so the whole draw is the pot, split among the men by tier
+        /// weight with the leader's cut skimmed, the same way a raid's spoils are.
+        /// </summary>
+        public static void OnVillageCoerced(Settlement settlement, PartyBase party, int drained)
+        {
+            if (settlement == null)
+            {
+                return;
+            }
+            if (SpoilsLog.IsEnabled)
+            {
+                SpoilsLog.Log("COERCE", "supplies forced from " + (settlement.Name != null ? settlement.Name.ToString() : settlement.StringId)
+                    + ": drained " + drained + " into " + (party != null ? party.Name.ToString() : "?"));
+            }
+            TextObject message = new TextObject("{=RBM_SPOILS_031}Your men squeeze {SETTLEMENT} for supplies and pocket {AMOUNT} in spoils.");
+            message.SetTextVariable("SETTLEMENT", settlement.Name);
+            GrantLumpToParty(party, drained, "COERCE", message);
+        }
+
+        /// <summary>
+        /// Coin dug out of a battle site or wreckage (v1.5.0, see <see cref="BattleSiteSpoils"/>). Vanilla
+        /// mints it straight into the player's gold; here the men who searched the field take it as
+        /// spoils and only the leader's cut reaches the purse, like any other lump of plunder.
+        /// </summary>
+        public static void OnBattleSiteGold(PartyBase party, int amount)
+        {
+            if (SpoilsLog.IsEnabled)
+            {
+                SpoilsLog.Log("SITE", "battle site yields " + amount + " to " + (party != null ? party.Name.ToString() : "?"));
+            }
+            GrantLumpToParty(party, amount, "SITE",
+                new TextObject("{=RBM_SPOILS_032}Your men pick over the battle site and pocket {AMOUNT} in spoils."));
+        }
+
+        /// <summary>
+        /// One lump of plunder to one party: split among the men by tier weight, the leader's cut skimmed,
+        /// and announced to the player with <paramref name="troopMessage"/> (which must carry an
+        /// <c>{AMOUNT}</c> variable) when the party is his.
+        /// </summary>
+        private static void GrantLumpToParty(PartyBase party, int pot, string logCategory, TextObject troopMessage)
+        {
+            if (!IsEnabled || party == null || pot < 1)
+            {
+                return;
+            }
+            int total = GrantSpoilsWeightedByTier(party, pot, logCategory, out int companionGold);
+            int troopGranted = total - companionGold;
+            int leaderCut = (troopGranted > 0)
+                ? ApplyLeaderCut(party, troopGranted)
+                : (companionGold > 0 ? 0 : ApplyLeaderCutSolo(party, pot));
+            if (party == PartyBase.MainParty)
+            {
+                if (troopGranted > 0)
+                {
+                    troopMessage.SetTextVariable("AMOUNT", troopGranted);
+                    InformationManager.DisplayMessage(new InformationMessage(troopMessage.ToString()));
+                }
+                AnnounceCompanionSpoilsToPlayer(companionGold);
+                AnnounceLeaderCutToPlayer(leaderCut);
+            }
+        }
+
         private static void AnnounceRaidSpoilsToPlayer(Settlement settlement, int granted)
         {
             TextObject message = new TextObject("{=RBM_SPOILS_013}Your men plunder {SETTLEMENT} and pocket {AMOUNT} in spoils.");

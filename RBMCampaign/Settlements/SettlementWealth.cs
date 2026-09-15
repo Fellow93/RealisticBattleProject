@@ -356,6 +356,12 @@ namespace RBMCampaign
             /// </summary>
             public const string Ransom = "ransom";
 
+            /// <summary>
+            /// The kit of a captive lord executed in the settlement's dungeon (v1.5.0 blood feuds), sold
+            /// off by the keep. Inflow. See <see cref="SpoilsPool.OnBeforeHeroKilled"/>.
+            /// </summary>
+            public const string Execution = "execution";
+
             /// <summary>Surgeons and bonesetters paid by soldiers mending in the settlement.</summary>
             public const string Surgery = "surgery";
 

@@ -70,7 +70,7 @@ namespace RBMCampaign
         /// party riding in an army, else the party's own -- so a follower party in a Nord lord's host shares
         /// his raiding prowess. Clamped to [0, 1]: never negative, never past vanilla's full haul.
         /// </summary>
-        private static float TakenFraction(PartyBase receivingParty)
+        internal static float TakenFraction(PartyBase receivingParty)
         {
             float fraction = BaseTakenFraction;
             MobileParty mobileParty = receivingParty?.MobileParty;

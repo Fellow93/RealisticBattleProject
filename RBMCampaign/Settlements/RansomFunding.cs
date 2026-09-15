@@ -1,6 +1,7 @@
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -120,6 +121,43 @@ namespace RBMCampaign
                 // straight against citizen wealth, so RouteNativeWrite -- which levies on everything that
                 // does pass through it -- never sees this one.
                 TradeTariff.Levy(_market, goldAmount);
+            }
+        }
+
+        /// <summary>
+        /// Stops the courier's ransom offer from minting the payer's money. Vanilla's
+        /// <c>RansomOfferCampaignBehavior.AcceptRansomOffer</c> tops an AI payer up to the price plus a
+        /// 1,000-denar reserve before paying -- coin from nowhere -- whenever the clan cannot afford it.
+        /// </summary>
+        /// <remarks>
+        /// The ransom is clamped to what the payer holds above that same reserve, so vanilla's top-up
+        /// condition (<c>Gold &lt; price + 1000</c>) is false and never fires: a poor clan simply pays less,
+        /// the way a poor town pays less for the prisoners it buys (<see cref="FundRansomPatch"/>). The
+        /// player as payer is left alone -- the offer already refuses him when he cannot afford it. A payer
+        /// holding under the reserve pays nothing and vanilla still tops him up to the reserve; that is the
+        /// one residual mint, capped at 1,000 and rare.
+        /// </remarks>
+        [HarmonyPatch(typeof(RansomOfferCampaignBehavior), "AcceptRansomOffer")]
+        private static class CapRansomOfferPatch
+        {
+            private const int VanillaReserve = 1000;
+
+            private static void Prefix(Hero ____currentRansomPayer, ref int ransomPrice)
+            {
+                Hero payer = ____currentRansomPayer;
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || payer == null || payer == Hero.MainHero || ransomPrice <= 0)
+                {
+                    return;
+                }
+                int affordable = payer.Gold - VanillaReserve;
+                if (affordable < 0)
+                {
+                    affordable = 0;
+                }
+                if (ransomPrice > affordable)
+                {
+                    ransomPrice = affordable;
+                }
             }
         }
     }

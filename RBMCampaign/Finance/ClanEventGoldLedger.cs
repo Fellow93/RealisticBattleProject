@@ -15,7 +15,11 @@ namespace RBMCampaign
         /// <summary>The owner's and ruler's cuts of a settlement's mint output (<see cref="Minting"/>).</summary>
         Minting,
         /// <summary>Gold a clan party's leader was billed for troop promotions its spoils could not cover (a drain).</summary>
-        UpgradeGold
+        UpgradeGold,
+        /// <summary>Blood money paid to a ransom broker to end a feud (a drain; see <see cref="BloodMoney"/>).</summary>
+        BloodMoney,
+        /// <summary>Scrap value of a disbanded clan party's ships paid to the player (see <see cref="ShipScrapGold"/>).</summary>
+        ShipScrap
     }
 
     /// <summary>
@@ -114,10 +118,12 @@ namespace RBMCampaign
                 AddLine(ref breakdown, EventGoldKind.LeaderCut, 1, "{=RBM_fin_leader_cut}Your cut of the spoils ({DAYS}-day avg.)");
                 AddLine(ref breakdown, EventGoldKind.CompanionSpoils, 1, "{=RBM_fin_companion_spoils}Companions' spoils share ({DAYS}-day avg.)");
                 AddLine(ref breakdown, EventGoldKind.Minting, 1, "{=RBM_fin_minting}Mint revenue ({DAYS}-day avg.)");
+                AddLine(ref breakdown, EventGoldKind.ShipScrap, 1, "{=RBM_fin_ship_scrap}Ships recovered from disbanded parties ({DAYS}-day avg.)");
             }
             if (expense)
             {
                 AddLine(ref breakdown, EventGoldKind.UpgradeGold, -1, "{=RBM_fin_upgrade_gold}Clan party promotions paid in gold ({DAYS}-day avg.)");
+                AddLine(ref breakdown, EventGoldKind.BloodMoney, -1, "{=RBM_fin_blood_money}Blood money paid to end feuds ({DAYS}-day avg.)");
             }
         }
 

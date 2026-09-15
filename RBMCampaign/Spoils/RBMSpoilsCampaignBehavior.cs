@@ -43,6 +43,9 @@ namespace RBMCampaign
             // player's recruit screen (one man at a time into the main party, no settlement arg).
             CampaignEvents.OnTroopRecruitedEvent.AddNonSerializedListener(this, SpoilsPool.OnTroopRecruited);
             CampaignEvents.OnUnitRecruitedEvent.AddNonSerializedListener(this, SpoilsPool.OnUnitRecruited);
+            // An executed captive (player execution or a v1.5.0 blood feud) is stripped of his kit like a
+            // ransomed one; must run BEFORE the kill, while his captor party is still known.
+            CampaignEvents.BeforeHeroKilledEvent.AddNonSerializedListener(this, SpoilsPool.OnBeforeHeroKilled);
         }
 
         private void OnSessionLaunched(CampaignGameStarter starter)
