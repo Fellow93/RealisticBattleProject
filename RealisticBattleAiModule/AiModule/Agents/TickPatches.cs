@@ -94,9 +94,13 @@ namespace RBMAI
                         ___Agent.MovementInputVector = ___Agent.LookDirection.AsVec2 * 2f;
                     }
                 }
-                if (___Agent.GetMorale() > 0f && currentTime - ___Agent.LastRecievedMeleeHitTime > 10f)
+                // Rally only agents whose retreat came from a morale panic. An agent obeying a Retreat
+                // order (or RBM's keep-battle fallback) has IsRetreating set with full morale and takes no
+                // melee hits, so without the IsPanicked gate it was un-retreated every tick.
+                CommonAIComponent rallyAi = ___Agent.CommonAIComponent;
+                if (rallyAi != null && rallyAi.IsPanicked && ___Agent.GetMorale() > 0f && currentTime - ___Agent.LastRecievedMeleeHitTime > 10f)
                 {
-                    ___Agent.CommonAIComponent?.StopRetreating();
+                    rallyAi.StopRetreating();
                 }
                 //if (___Agent.HasMount)
                 //{
