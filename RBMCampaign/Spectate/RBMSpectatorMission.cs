@@ -215,9 +215,10 @@ namespace RBMCampaign
                     //
                     // BattleDeploymentMissionController and BattleDeploymentHandler are DROPPED and must stay
                     // dropped: the deployment controller dereferences Mission.InitialPlayerAgent unconditionally,
-                    // in two places, and no argument we could pass would stop it. This is the one that costs us
-                    // something -- with no deployment controller, nothing calls Mission.OnDeploymentFinished --
-                    // and the finisher below is what pays it back.
+                    // in two places, and no argument we could pass would stop it. Since v1.5.0 the spawn logic
+                    // fires Mission.OnDeploymentFinished itself when no deployment controller is present; the
+                    // finisher below does the RTSCamera command-mode handoff ahead of that signal and keeps a
+                    // manual fallback for the signal itself.
                     new RBMSpectatorDeploymentFinisher(),
 
                     // The shared spectate marker. IsSpectating keys on this, and this alone, in both mission kinds.

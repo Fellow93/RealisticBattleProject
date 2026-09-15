@@ -365,6 +365,13 @@ namespace RBMAI
                     agentDrivenProperties.ReloadSpeed = stat3.ResultNumber;
                 }
 
+                // v1.5.0 vanilla tail: Roguery drives crouched movement speed. Mirrored so the prefix replacement
+                // does not silently drop it.
+                int rogueryskill = __instance.GetEffectiveSkill(agent, DefaultSkills.Roguery);
+                ExplainedNumber crouchedSpeed = new ExplainedNumber(1f);
+                SkillHelper.AddSkillBonusForSkillLevel(DefaultSkillEffects.CrouchedSpeed, ref crouchedSpeed, rogueryskill);
+                agentDrivenProperties.CrouchedSpeedMultiplier = crouchedSpeed.ResultNumber;
+
                 return false;
             }
         }

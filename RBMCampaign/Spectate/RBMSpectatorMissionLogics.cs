@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using HarmonyLib;
 using SandBox.Missions.MissionLogics;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Localization;
@@ -170,10 +171,17 @@ namespace RBMCampaign
     ///   RTSCamera's own OnDeploymentFinished, which is where it settles what its camera is looking at.
     ///
     /// The troops themselves spawn regardless -- the spawn logic has a no-deployment-controller path -- so the
-    /// signal is all that is missing. Wait for both sides to be down (IsInitialSpawnOver, which only goes true after
-    /// each side's deployment-over fired OnTeamDeployed) and then fire it by hand, once.
+    /// signal is all that is missing.
     ///
-    /// The RTSCamera handoff rides on this same tick, and the ORDER matters -- see SetCommandMode below.
+    /// Since v1.5.0 vanilla fires it for us: DefaultBattleMissionAgentSpawnLogic.OnSideDeploymentOver calls
+    /// Mission.OnInitialSpawnCompleted, which -- with no DeploymentMissionController in the mission -- calls
+    /// OnDeploymentFinished as soon as the second side is down. That happens INSIDE the spawn logic's tick, before
+    /// this behaviour's tick ever sees IsInitialSpawnOver. So the manual call below is now only a fallback, guarded
+    /// by Mission.IsDeploymentFinished so the signal never fires twice (twice would re-initialise every TeamAI).
+    ///
+    /// The RTSCamera handoff must land BEFORE the signal, and the ORDER matters -- see SetCommandMode below. With
+    /// vanilla firing the signal first, the tick is too late, so DeploymentFinishedPrefix hooks
+    /// Mission.OnDeploymentFinished itself and does the flip right before vanilla's body runs.
     /// </summary>
     internal sealed class RBMSpectatorDeploymentFinisher : MissionLogic
     {
@@ -195,6 +203,31 @@ namespace RBMCampaign
             {
                 return;
             }
+            PrepareForDeploymentFinished();
+
+            // Fallback only: on v1.5.0+ vanilla has already fired the signal by now (see the class comment) and
+            // IsDeploymentFinished is true. Firing it again would re-run every TeamAI's deployment init.
+            if (Mission.Current != null && !Mission.Current.IsDeploymentFinished)
+            {
+                // Mission.OnDeploymentFinished is internal; reach it reflectively.
+                MethodInfo onDeploymentFinished = _onDeploymentFinished;
+                if (onDeploymentFinished != null)
+                {
+                    onDeploymentFinished.Invoke(Mission.Current, null);
+                }
+            }
+        }
+
+        /// <summary>
+        /// The command-mode flip, once, from whichever of the two paths reaches it first: the OnDeploymentFinished
+        /// prefix (the normal path on v1.5.0+) or the tick fallback.
+        /// </summary>
+        internal void PrepareForDeploymentFinished()
+        {
+            if (_done)
+            {
+                return;
+            }
             _done = true;
 
             // LATE, and not a moment earlier. RTSCamera's free-camera logic reads this flag twice, and wants opposite
@@ -211,17 +244,24 @@ namespace RBMCampaign
             //
             // Between the two moments is exactly here.
             SetCommandMode(true);
-
-            // v1.5.x made Mission.OnDeploymentFinished internal; reach it reflectively.
-            MethodInfo onDeploymentFinished = _onDeploymentFinished;
-            if (onDeploymentFinished != null && Mission.Current != null)
-            {
-                onDeploymentFinished.Invoke(Mission.Current, null);
-            }
         }
 
         private static readonly MethodInfo _onDeploymentFinished = typeof(Mission).GetMethod(
             "OnDeploymentFinished", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        /// <summary>
+        /// Runs right before Mission.OnDeploymentFinished's body, in every mission; a no-op unless this mission
+        /// carries the finisher. Keeps the flip ahead of RTSCamera's OnDeploymentFinished callback now that vanilla
+        /// fires the signal from inside the spawn logic.
+        /// </summary>
+        [HarmonyPatch(typeof(Mission), "OnDeploymentFinished")]
+        private static class DeploymentFinishedPrefix
+        {
+            private static void Prefix(Mission __instance)
+            {
+                __instance.GetMissionBehavior<RBMSpectatorDeploymentFinisher>()?.PrepareForDeploymentFinished();
+            }
+        }
 
         public override void OnRemoveBehavior()
         {

@@ -244,6 +244,7 @@ namespace RBMCampaign
                 PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, isPrimaryBonus: false, ref militia);
             }
             PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, isPrimaryBonus: false, ref households);
+            ApplyGovernorGenerosity(town, ref garrison);
 
             breakdown.Citizens = (int)MathF.Round(households.ResultNumber);
             breakdown.Garrison = (int)MathF.Round(garrison.ResultNumber);
@@ -771,24 +772,43 @@ namespace RBMCampaign
         /// the only thing that changed is that the result is now a shopping list rather than a
         /// number subtracted from an abstract store.
         /// </summary>
+        /// <summary>
+        /// v1.5.0 governor trait effect: a generous governor, resident in the town, lightens the garrison's
+        /// ration (DefaultPersonalityTraitEffects.GenerosityFoodCostEffect). Mirrors the guard vanilla uses in
+        /// CalculateTownFoodChangeInternal, which RBM's prefix replaces for towns.
+        /// </summary>
+        private static void ApplyGovernorGenerosity(Town town, ref ExplainedNumber garrison)
+        {
+            Hero governor = town.Governor;
+            if (governor != null && governor.CurrentSettlement?.Town == town)
+            {
+                TraitEffectHelper.ApplyTraitEffect(governor, DefaultPersonalityTraitEffects.GenerosityFoodCostEffect, ref garrison);
+            }
+        }
+
         private static int FeedPopulation(Town town, Dictionary<ItemCategory, int> saleLog, out int wanted)
         {
             SettlementFoodModel foodModel = Campaign.Current.Models.SettlementFoodModel;
 
             ExplainedNumber households = new ExplainedNumber(town.Prosperity / foodModel.NumberOfProsperityToEatOneFood);
-            float men = (town.GarrisonParty?.Party.NumberOfAllMembers ?? 0) + town.Militia;
-            ExplainedNumber soldiers = new ExplainedNumber(men / foodModel.NumberOfMenOnGarrisonToEatOneFood);
+            // Garrison and militia kept as separate legs: the governor's Generosity trait (v1.5.0) only
+            // lightens the garrison's ration, exactly as in vanilla's CalculateTownFoodChangeInternal.
+            ExplainedNumber garrison = new ExplainedNumber((town.GarrisonParty?.Party.NumberOfAllMembers ?? 0) / (float)foodModel.NumberOfMenOnGarrisonToEatOneFood);
+            ExplainedNumber militia = new ExplainedNumber(town.Militia / (float)foodModel.NumberOfMenOnGarrisonToEatOneFood);
             ExplainedNumber rations = new ExplainedNumber(0f);
 
             if (town.IsUnderSiege)
             {
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, isPrimaryBonus: false, ref soldiers);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, isPrimaryBonus: false, ref garrison);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, isPrimaryBonus: false, ref militia);
                 PerkHelper.AddPerkBonusForTown(DefaultPerks.Medicine.TriageTent, town, isPrimaryBonus: false, ref rations);
             }
             PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, isPrimaryBonus: false, ref households);
+            ApplyGovernorGenerosity(town, ref garrison);
 
             rations.Add(households.ResultNumber);
-            rations.Add(soldiers.ResultNumber);
+            rations.Add(garrison.ResultNumber);
+            rations.Add(militia.ResultNumber);
             town.AddEffectOfBuildings(BuildingEffectEnum.FoodConsumption, ref rations);
 
             int units = MBRandom.RoundRandomized(rations.ResultNumber);
@@ -820,7 +840,7 @@ namespace RBMCampaign
             // Split by the pre-building shares rather than by recomputing each leg through the perk
             // and building chain, so the day's total ration is exactly what it was before the split.
             // The food balance is calibrated on that total and must not move.
-            float soldierPart = soldiers.ResultNumber;
+            float soldierPart = garrison.ResultNumber + militia.ResultNumber;
             float bothParts = households.ResultNumber + soldierPart;
             int soldierUnits = (units > 0 && bothParts > 0f) ? MBRandom.RoundRandomized(units * soldierPart / bothParts) : 0;
             if (soldierUnits > units)

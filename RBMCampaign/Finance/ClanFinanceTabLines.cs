@@ -8,15 +8,22 @@ using TaleWorlds.Localization;
 namespace RBMCampaign
 {
     /// <summary>
-    /// Makes the Clan screen's Finances tab agree with the denar tooltip.
+    /// Makes the Clan screen's income/expense totals agree with the denar tooltip.
     ///
     /// Every RBM finance line -- settlement wealth tax, troop maintenance, garrison subsidies, the mercenary
     /// contract -- is fed into <c>DefaultClanFinanceModel.CalculateClanGoldChange</c>, which is what the map
-    /// bar's gold tooltip and the daily apply pass read. But the Finances tab's "Total Income" / "Total
+    /// bar's gold tooltip and the daily apply pass read. But the Clan screen's "Total Income" / "Total
     /// Expenses" / "Expected Gold" figures come from the two SEPARATE wrappers <c>CalculateClanIncome</c> and
     /// <c>CalculateClanExpenses</c> (<c>ClanManagementVM.RefreshDailyValues</c>), which none of those
-    /// postfixes touch, so the tab silently omitted all of RBM's money. This routes the same lines into
+    /// postfixes touch, so the screen silently omitted all of RBM's money. This routes the same lines into
     /// whichever wrapper their sign belongs to, display pass only, player clan only.
+    ///
+    /// v1.5.0 removed the Finances tab itself; the two wrappers are now only called with
+    /// <c>includeDescriptions: false</c> for the header totals, so the <c>TextObject</c> labels passed below
+    /// are ignored there and the map-bar denar tooltip (via <c>CalculateClanGoldChange</c>) is the only place
+    /// the itemised breakdown is shown. Every line here already reaches that call through its own postfix
+    /// (<c>SettlementIncomeFinanceLine</c>, <c>MaintenanceFinanceLine</c>, <c>GarrisonSubsidyFinanceLine</c>,
+    /// <c>MercenaryContractPay</c>) or through <see cref="GoldChangePostfix"/>, so nothing is lost.
     ///
     /// It also books the event-paid gold <see cref="ClanEventGoldLedger"/> averages -- the leader's cut of
     /// spoils, the companions' share, mint cuts, gold-paid promotions -- into all three calls, so the sources
