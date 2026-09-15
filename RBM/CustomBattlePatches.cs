@@ -162,6 +162,13 @@ namespace RBM
             }
         }
 
+        // KNOWN ISSUE (2026-09-15): War Sails' hidden town guard "guard_nord" ("Guard", occupation Soldier,
+        // civilian rosters only) is listed in the land custom-battle picker and hard-hangs the engine at
+        // spawn (native job deadlock, no exception, no dump). Only reproduces on the classic land provider
+        // that StartCustomBattlePatch below forces; a FirstBattleEquipment == null filter on
+        // ArmyCompositionItemVM.IsValidUnitItem did NOT hide it, so the trigger is not simply an empty
+        // battle roster. Left as-is by decision; just don't pick "Guard".
+
         [HarmonyPatch(typeof(MapSelectionGroupVM))]
         [HarmonyPatch("RefreshValues")]
         private class RefreshValuesPatch

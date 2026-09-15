@@ -73,9 +73,11 @@ namespace RBMAI
             private static void Postfix()
             {
                 AgentStances.values.Clear();
+                AgentStances.postureVisual = null;
                 agentsToDropShield.Clear();
                 agentsToDropWeapon.Clear();
                 agentsToChangeFormation.Clear();
+                CreateMeleeBlowPatch.ClearSweetSpotMagnitudeCache();
             }
         }
 
@@ -86,9 +88,11 @@ namespace RBMAI
             private static void Postfix()
             {
                 AgentStances.values.Clear();
+                AgentStances.postureVisual = null;
                 agentsToDropShield.Clear();
                 agentsToDropWeapon.Clear();
                 agentsToChangeFormation.Clear();
+                CreateMeleeBlowPatch.ClearSweetSpotMagnitudeCache();
             }
         }
     }

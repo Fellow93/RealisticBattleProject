@@ -22,6 +22,11 @@ namespace RBMAI
             {
                 SkillObject attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wc);
 
+                if (shooterAgent == null)
+                {
+                    return fixedPS + dynamicPS;
+                }
+
                 float attackerEffectiveWeaponSkill = 0;
                 float attackerEffectiveStrengthSkill = 0;
 
@@ -48,10 +53,17 @@ namespace RBMAI
                 return fixedPostureLoss + dynamicPostureLoss;
             }
 
-            private static float calculateShootMissileStaminaLoss(Agent agent, WeaponClass wc)
+            private static float calculateShootMissileStaminaLoss(Agent agent, WeaponClass wc, MissionWeapon firedWeapon)
             {
                 SkillObject attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wc);
-                int attackerEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, attackerWeaponSkill);
+                int attackerEffectiveWeaponSkill = 0;
+                if (agent != null && attackerWeaponSkill != null)
+                {
+                    attackerEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, attackerWeaponSkill);
+                }
+
+                // Item can be null for e.g. ammo-less usages; treat as difficulty 0.
+                int firedWeaponDifficulty = firedWeapon.Item?.Difficulty ?? 0;
 
                 //base stamina loss
                 float result = 50f;
@@ -60,7 +72,7 @@ namespace RBMAI
                 {
                     case WeaponClass.Bow:
                         {
-                            int weaponDifficulty = agent.WieldedWeapon.Item.Difficulty;
+                            int weaponDifficulty = firedWeaponDifficulty;
                             int skillDifference = Math.Max(0, attackerEffectiveWeaponSkill - weaponDifficulty);
                             float skillModifier = skillDifference * 0.5f;
                             result = Math.Max(20f, 70f - skillModifier);
@@ -68,7 +80,7 @@ namespace RBMAI
                         }
                     case WeaponClass.Crossbow:
                         {
-                            int weaponDifficulty = agent.WieldedWeapon.Item.Difficulty;
+                            int weaponDifficulty = firedWeaponDifficulty;
                             int skillDifference = Math.Max(0, attackerEffectiveWeaponSkill - weaponDifficulty);
                             float skillModifier = skillDifference * 0.5f;
                             result = Math.Max(20f, 70f - skillModifier);
@@ -97,7 +109,15 @@ namespace RBMAI
                 {
                     if (RBMConfig.RBMConfig.postureEnabled)
                     {
+                        if (shooterAgent == null || shooterAgent.Equipment == null || weaponIndex == EquipmentIndex.None)
+                        {
+                            return;
+                        }
                         MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
+                        if (missionWeapon.IsEmpty || missionWeapon.CurrentUsageItem == null)
+                        {
+                            return;
+                        }
                         WeaponClass wc = missionWeapon.CurrentUsageItem.WeaponClass;
                         Stance shooterPosture = null;
                         AgentStances.values.TryGetValue(shooterAgent, out shooterPosture);
@@ -130,20 +150,12 @@ namespace RBMAI
                                     }
                             }
 
-                            if (shooterPosture.posture - postureLoss <= 0f)
-                            {
-                                shooterPosture.posture = 0f;
-                                float postureResetModifier = 0.5f;
-                                ResetPostureForAgent(ref shooterPosture, postureResetModifier);
-                            }
-                            else
-                            {
-                                shooterPosture.posture -= postureLoss;
-                            }
+                            // Shooting drains posture; it never refills it. Regen handles recovery.
+                            shooterPosture.posture = Math.Max(0f, shooterPosture.posture - postureLoss);
 
                             if (RBMConfig.RBMConfig.staminaEnabled)
                             {
-                                float staminaLoss = calculateShootMissileStaminaLoss(shooterAgent, wc);
+                                float staminaLoss = calculateShootMissileStaminaLoss(shooterAgent, wc, missionWeapon);
                                 shooterPosture.reduceStamina(staminaLoss);
                             }
                         }

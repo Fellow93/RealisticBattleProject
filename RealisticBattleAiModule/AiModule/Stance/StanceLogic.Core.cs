@@ -19,10 +19,14 @@ namespace RBMAI
     {
         private static float timeToCalc = 0.5f;
         private static float timeToCalcStaminaHealth = 10f;
-        private static float timeToUpdateAgents = 3f;
+        // UpdateAgentStats is only re-run for an agent when its stamina fraction has moved at least
+        // this far from the fraction last applied to its driven properties...
+        private const float StaminaRefreshThreshold = 0.05f;
+        // ...and never for an agent whose stance is younger than this (seconds of mission time), so a
+        // reinforcement wave is never stat-rebuilt while its spawn is still being wired up.
+        private const float MinAgeForStatRefresh = 1f;
 
         private static float currentDt = 0f;
-        private static float currentDtToUpdateAgents = 0f;
         private static float currentDtToUpdateStaminaHealth = 0f;
 
         public static MBArrayList<Agent> agentsToDropShield = new MBArrayList<Agent> { };
@@ -32,6 +36,7 @@ namespace RBMAI
         private readonly MBArrayList<Agent> _inactiveAgentsBuffer = new MBArrayList<Agent>();
         private readonly MBArrayList<Agent> _dropShieldBuffer = new MBArrayList<Agent>();
         private readonly MBArrayList<Agent> _dropWeaponBuffer = new MBArrayList<Agent>();
+        private readonly MBArrayList<Agent> _statRefreshBuffer = new MBArrayList<Agent>();
 
         public static void TryToDropShield(Agent victimAgent)
         {
@@ -129,24 +134,8 @@ namespace RBMAI
         public override void OnMissionTick(float dt)
         {
             base.OnMissionTick(dt);
-            if (RBMConfig.RBMConfig.postureEnabled && Mission.Current.AllowAiTicking)
+            if (RBMConfig.RBMConfig.postureEnabled)
             {
-                if (currentDtToUpdateAgents < timeToUpdateAgents)
-                {
-                    currentDtToUpdateAgents += dt;
-                }
-                else
-                {
-                    foreach (Agent agent in Mission.Current.Agents)
-                    {
-                        if (agent.IsActive() && agent.IsHuman)
-                        {
-                            agent.UpdateAgentStats();
-                        }
-                    }
-                    currentDtToUpdateAgents = 0f;
-                }
-
                 currentDtToUpdateStaminaHealth += dt;
 
                 if (currentDt < timeToCalc)
@@ -156,27 +145,27 @@ namespace RBMAI
                 else
                 {
                     _inactiveAgentsBuffer.Clear();
+                    _statRefreshBuffer.Clear();
+                    // Stat refresh is AI work: only while AI ticking is on, and only stamina feeds
+                    // AgentDrivenProperties (AgentStats reads it under postureEnabled && staminaEnabled).
+                    bool canRefreshStats = RBMConfig.RBMConfig.staminaEnabled && Mission.Current.AllowAiTicking;
+                    float now = Mission.Current.CurrentTime;
                     foreach (KeyValuePair<Agent, Stance> entry in AgentStances.values)
                     {
-                        if (entry.Key != null && entry.Key.Mission != null && !entry.Key.IsActive())
+                        if (entry.Key == null)
+                        {
+                            continue;
+                        }
+                        // An agent whose Mission is null has already been cleared (Agent.Clear ran);
+                        // it must be evicted, never read below.
+                        if (entry.Key.Mission == null || !entry.Key.IsActive())
                         {
                             _inactiveAgentsBuffer.Add(entry.Key);
                             continue;
                         }
                         if (entry.Key.IsPlayerControlled)
                         {
-                            if (AgentStances.postureVisual != null && AgentStances.postureVisual._dataSource.ShowPlayerPostureStatus)
-                            {
-                                AgentStances.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
-                                AgentStances.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
-                                AgentStances.postureVisual._dataSource.PlayerPostureText = ((int)entry.Value.posture).ToString();
-                                AgentStances.postureVisual._dataSource.PlayerPostureMaxText = ((int)entry.Value.maxPosture).ToString();
-
-                                AgentStances.postureVisual._dataSource.PlayerStamina = (int)entry.Value.stamina;
-                                AgentStances.postureVisual._dataSource.PlayerStaminaMax = (int)entry.Value.maxStamina;
-                                AgentStances.postureVisual._dataSource.PlayerStaminaText = ((int)entry.Value.stamina).ToString();
-                                AgentStances.postureVisual._dataSource.PlayerStaminaMaxText = ((int)entry.Value.maxStamina).ToString();
-                            }
+                            PushPlayerStanceBars(entry.Value);
                         }
                         if (entry.Value.posture < entry.Value.maxPosture)
                         {
@@ -225,8 +214,29 @@ namespace RBMAI
                                     entry.Key.Health = Math.Min(entry.Key.HealthLimit, entry.Key.Health + 0.9f);
                                 }
                             }
+
+                            // Event-driven driven-properties refresh: only when the stamina fraction
+                            // has drifted from what was last applied, and never on a just-built agent.
+                            if (canRefreshStats
+                                && entry.Key.IsHuman
+                                && now - entry.Value.createdAt >= MinAgeForStatRefresh
+                                && Math.Abs(staminaLevel - entry.Value.lastAppliedStaminaFraction) >= StaminaRefreshThreshold)
+                            {
+                                entry.Value.lastAppliedStaminaFraction = staminaLevel;
+                                _statRefreshBuffer.Add(entry.Key);
+                            }
                         }
                     }
+                    // Run outside the dictionary walk: UpdateAgentStats can re-enter the wield patches
+                    // that add stance entries.
+                    foreach (Agent agent in _statRefreshBuffer)
+                    {
+                        if (agent.Mission != null && agent.IsActive())
+                        {
+                            agent.UpdateAgentStats();
+                        }
+                    }
+                    _statRefreshBuffer.Clear();
                     if (currentDtToUpdateStaminaHealth > timeToCalcStaminaHealth)
                     {
                         currentDtToUpdateStaminaHealth = 0f;
@@ -337,6 +347,12 @@ namespace RBMAI
             {
                 return;
             }
+            // Same gate the melee patch uses: no posture bookkeeping for friendly fire or for hits
+            // with no identifiable affector.
+            if (affectorAgent == null || affectorAgent.IsFriendOf(affectedAgent))
+            {
+                return;
+            }
             if (RBMConfig.RBMConfig.postureEnabled)
             {
                 Stance affectedAgentPosture = null;
@@ -359,7 +375,7 @@ namespace RBMAI
                         if (isDirectHit)
                         {
                             //headshot multiplier
-                            if (blow.VictimBodyPart == BoneBodyPartType.Head || blow.VictimBodyPart == BoneBodyPartType.Head)
+                            if (blow.VictimBodyPart == BoneBodyPartType.Head || blow.VictimBodyPart == BoneBodyPartType.Neck)
                             {
                                 arrowAgentPostureDamage = 50f;
                                 throwingAgentPostureDamage = 200f;

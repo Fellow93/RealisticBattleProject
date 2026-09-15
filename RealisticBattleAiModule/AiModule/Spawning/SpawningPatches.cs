@@ -62,7 +62,15 @@ namespace RBMAI.AiModule
                         return;
                     }
                     float target = MathF.Min(firstValid + ReinforcementInsetMeters, cap);
-                    if (target <= firstValid)
+                    // The one-argument GetSpawnFrame below does no alpha/navmesh check, so the inset
+                    // offset must be validated here: if the path leaves the playable area again within
+                    // the inset, walk back toward firstValid (which is known-valid) until it is inside.
+                    // Never call the searchNearestValidFrame overload here - it re-enters this postfix.
+                    while (target > firstValid && !__instance.IsPathOffsetValid(target))
+                    {
+                        target -= SearchStepMeters;
+                    }
+                    if (target <= firstValid || !__instance.IsPathOffsetValid(target))
                     {
                         return;
                     }

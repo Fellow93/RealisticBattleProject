@@ -13,6 +13,7 @@ namespace RBMAI
         public StanceVisualVM _dataSource;
 
         private GauntletLayer _gauntletLayer;
+        private MissionScreen _missionScreen;
         public Agent affectedAgent = null;
 
         public int DisplayTime
@@ -37,9 +38,18 @@ namespace RBMAI
 
         public override void OnMissionTick(float dt)
         {
+            if (_dataSource == null)
+            {
+                return;
+            }
             if (timer == 0)
             {
-                _dataSource.ShowEnemyStatus = false;
+                // Only write on the transition; the setter is guarded too, but this avoids the
+                // property access entirely on every tick once the bar is already hidden.
+                if (_dataSource.ShowEnemyStatus)
+                {
+                    _dataSource.ShowEnemyStatus = false;
+                }
             }
             else
             {
@@ -49,19 +59,44 @@ namespace RBMAI
 
         public override void AfterStart()
         {
-            MissionScreen missionScreen = TaleWorlds.ScreenSystem.ScreenManager.TopScreen as MissionScreen;
+            _missionScreen = TaleWorlds.ScreenSystem.ScreenManager.TopScreen as MissionScreen;
+            if (_missionScreen == null)
+            {
+                // No mission screen (headless/spectator/teardown) - run without any UI.
+                return;
+            }
             _dataSource = new StanceVisualVM();
             _gauntletLayer = new GauntletLayer("GauntletLayer", -1);
-            missionScreen.AddLayer(_gauntletLayer);
+            _missionScreen.AddLayer(_gauntletLayer);
             _gauntletLayer.LoadMovie("CombatUI", (ViewModel)_dataSource);
             _dataSource.ShowPlayerPostureStatus = true;
             AgentStances.postureVisual = this;
         }
 
+        public override void OnRemoveBehavior()
+        {
+            if (AgentStances.postureVisual == this)
+            {
+                AgentStances.postureVisual = null;
+            }
+            if (_missionScreen != null && _gauntletLayer != null)
+            {
+                _missionScreen.RemoveLayer(_gauntletLayer);
+            }
+            _gauntletLayer = null;
+            _missionScreen = null;
+            if (_dataSource != null)
+            {
+                _dataSource.OnFinalize();
+                _dataSource = null;
+            }
+            base.OnRemoveBehavior();
+        }
+
         public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
         {
             //this.OnAgentHit(affectedAgent, affectorAgent, damage, affectorWeapon);
-            if (!IsEnabled || affectorAgent == null || affectedAgent == null || Agent.Main == null)
+            if (!IsEnabled || _dataSource == null || affectorAgent == null || affectedAgent == null || Agent.Main == null)
             {
                 return;
             }

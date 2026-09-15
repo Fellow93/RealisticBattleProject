@@ -18,8 +18,31 @@ namespace RBMAI
         public float maxStamina = 1500f;
         public float staminaRegenPerTick = 0.01f;
 
+        // Cache for CreateMeleeBlowPatch.GetDefenderBlockPerkFactor. The perk math is static for a
+        // mission except for the wielded item (and its usage) and the formation captain, so the three
+        // block-class factors are recomputed only when one of those keys moves.
+        public bool blockPerkFactorsValid = false;
+        public Agent blockPerkCaptain = null;
+        public EquipmentIndex blockPerkPrimaryIndex = EquipmentIndex.None;
+        public EquipmentIndex blockPerkOffhandIndex = EquipmentIndex.None;
+        public int blockPerkUsageIndex = -1;
+        public float blockPerkWeaponFactor = 1f;
+        public float blockPerkShieldFactor = 1f;
+        public float blockPerkShieldIncorrectFactor = 1f;
+
+        // Mission time at which this stance was created (i.e. the agent was being built). The
+        // stat-refresh loop skips agents younger than StanceLogic.MinAgeForStatRefresh so
+        // UpdateAgentStats never runs on an agent whose spawn is still in progress.
+        public float createdAt = 0f;
+
+        // Stamina fraction that was last pushed into AgentDrivenProperties via UpdateAgentStats.
+        // The refresh is event-driven: it only fires when the live fraction has drifted from this.
+        public float lastAppliedStaminaFraction = 1f;
+
         public Stance()
         {
+            Mission mission = Mission.Current;
+            this.createdAt = mission != null ? mission.CurrentTime : 0f;
             this.posture = this.maxPosture;
 
             this.stamina = this.maxStamina;
@@ -60,6 +83,10 @@ namespace RBMAI
 
             int usageIndex = 0;
             EquipmentIndex slotIndex = agent.GetPrimaryWieldedItemIndex();
+            // The weapon-dependent term is the only part that needs a wielded item; an unarmed agent
+            // falls back to WeaponClass.Undefined (the UNARMED table rows), whose relevant skill is
+            // Athletics. Everything below then runs for wielded and unwielded agents alike.
+            SkillObject weaponSkill = DefaultSkills.Athletics;
             if (slotIndex != EquipmentIndex.None)
             {
                 usageIndex = agent.Equipment[slotIndex].CurrentUsageIndex;
@@ -70,7 +97,9 @@ namespace RBMAI
                 }
 
                 WeaponComponentData wcd = agent.Equipment[slotIndex].GetWeaponComponentDataForUsage(usageIndex);
-                SkillObject weaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wcd.WeaponClass);
+                weaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wcd.WeaponClass);
+            }
+            {
                 int effectiveWeaponSkill = 0;
                 if (weaponSkill != null)
                 {
@@ -136,6 +165,11 @@ namespace RBMAI
 
         public float calcualteRubberBandFactor(float current, float max, float rubberBandStrength)
         {
+            // Pow(x, 0) is always 1; skip the call entirely when the rubber band is disabled.
+            if (rubberBandStrength == 0f)
+            {
+                return 1f;
+            }
             float deficit = 1f - (current / max);
             return ((float)Math.Pow(1f + deficit, rubberBandStrength));
         }

@@ -17,6 +17,46 @@ namespace RBMAI
 {
     public partial class StanceLogic : MissionLogic
     {
+        /// <summary>
+        /// Pushes the player posture/stamina bars. The four int properties are written through
+        /// equality-guarded setters; the matching ToString() strings are only rebuilt when the int
+        /// actually moved, so a steady bar allocates nothing.
+        /// </summary>
+        public static void PushPlayerStanceBars(Stance stance)
+        {
+            StanceVisualLogic visual = AgentStances.postureVisual;
+            if (visual == null || visual._dataSource == null || !visual._dataSource.ShowPlayerPostureStatus)
+            {
+                return;
+            }
+            StanceVisualVM vm = visual._dataSource;
+
+            int posture = (int)stance.posture;
+            if (vm.PlayerPosture != posture)
+            {
+                vm.PlayerPosture = posture;
+                vm.PlayerPostureText = posture.ToString();
+            }
+            int postureMax = (int)stance.maxPosture;
+            if (vm.PlayerPostureMax != postureMax)
+            {
+                vm.PlayerPostureMax = postureMax;
+                vm.PlayerPostureMaxText = postureMax.ToString();
+            }
+            int stamina = (int)stance.stamina;
+            if (vm.PlayerStamina != stamina)
+            {
+                vm.PlayerStamina = stamina;
+                vm.PlayerStaminaText = stamina.ToString();
+            }
+            int staminaMax = (int)stance.maxStamina;
+            if (vm.PlayerStaminaMax != staminaMax)
+            {
+                vm.PlayerStaminaMax = staminaMax;
+                vm.PlayerStaminaMaxText = staminaMax.ToString();
+            }
+        }
+
         private static void addPosturedamageVisual(Agent attackerAgent, Agent victimAgent)
         {
             if (RBMConfig.RBMConfig.postureEnabled)
@@ -30,18 +70,7 @@ namespace RBMAI
                         Stance stance = null;
                         if (AgentStances.values.TryGetValue(victimAgent, out stance))
                         {
-                            if (AgentStances.postureVisual != null && AgentStances.postureVisual._dataSource.ShowPlayerPostureStatus)
-                            {
-                                AgentStances.postureVisual._dataSource.PlayerPosture = (int)stance.posture;
-                                AgentStances.postureVisual._dataSource.PlayerPostureMax = (int)stance.maxPosture;
-                                AgentStances.postureVisual._dataSource.PlayerPostureText = ((int)stance.posture).ToString();
-                                AgentStances.postureVisual._dataSource.PlayerPostureMaxText = ((int)stance.maxPosture).ToString();
-
-                                AgentStances.postureVisual._dataSource.PlayerStamina = (int)stance.stamina;
-                                AgentStances.postureVisual._dataSource.PlayerStaminaMax = (int)stance.maxStamina;
-                                AgentStances.postureVisual._dataSource.PlayerStaminaText = ((int)stance.stamina).ToString();
-                                AgentStances.postureVisual._dataSource.PlayerStaminaMaxText = ((int)stance.maxStamina).ToString();
-                            }
+                            PushPlayerStanceBars(stance);
                         }
                     }
                     else
@@ -50,18 +79,7 @@ namespace RBMAI
                         Stance stance = null;
                         if (AgentStances.values.TryGetValue(attackerAgent, out stance))
                         {
-                            if (AgentStances.postureVisual != null && AgentStances.postureVisual._dataSource.ShowPlayerPostureStatus)
-                            {
-                                AgentStances.postureVisual._dataSource.PlayerPosture = (int)stance.posture;
-                                AgentStances.postureVisual._dataSource.PlayerPostureMax = (int)stance.maxPosture;
-                                AgentStances.postureVisual._dataSource.PlayerPostureText = ((int)stance.posture).ToString();
-                                AgentStances.postureVisual._dataSource.PlayerPostureMaxText = ((int)stance.maxPosture).ToString();
-
-                                AgentStances.postureVisual._dataSource.PlayerStamina = (int)stance.stamina;
-                                AgentStances.postureVisual._dataSource.PlayerStaminaMax = (int)stance.maxStamina;
-                                AgentStances.postureVisual._dataSource.PlayerStaminaText = ((int)stance.stamina).ToString();
-                                AgentStances.postureVisual._dataSource.PlayerStaminaMaxText = ((int)stance.maxStamina).ToString();
-                            }
+                            PushPlayerStanceBars(stance);
                         }
                     }
                     if (AgentStances.postureVisual != null)

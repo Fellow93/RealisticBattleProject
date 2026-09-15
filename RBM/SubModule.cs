@@ -135,7 +135,10 @@ namespace RBM
             }
             try
             {
-                if (ScreenManager.TopScreen != null && (Mission.Current.IsFieldBattle || Mission.Current.IsSiegeBattle || Mission.Current.IsNavalBattle || Mission.Current.SceneName.Contains("arena") || (MapEvent.PlayerMapEvent != null && MapEvent.PlayerMapEvent.IsHideoutBattle)))
+                // MapEvent.PlayerMapEvent dereferences Campaign.Current, which is null outside the campaign
+                // (custom battle); guard it so this tick does not throw-and-swallow every frame.
+                bool isHideout = Campaign.Current != null && MapEvent.PlayerMapEvent != null && MapEvent.PlayerMapEvent.IsHideoutBattle;
+                if (ScreenManager.TopScreen != null && (Mission.Current.IsFieldBattle || Mission.Current.IsSiegeBattle || Mission.Current.IsNavalBattle || Mission.Current.SceneName.Contains("arena") || isHideout))
                 {
                     MissionScreen missionScreen = ScreenManager.TopScreen as MissionScreen;
                     if (missionScreen != null && missionScreen.InputManager != null && missionScreen.InputManager.IsControlDown())
@@ -267,10 +270,10 @@ namespace RBM
                     mission.AddMissionBehavior((MissionBehavior)(object)new FrontlineDebugOverlay());
                 }
                 mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
-                if (RBMConfig.RBMConfig.postureEnabled)
-                {
-                    mission.AddMissionBehavior((MissionBehavior)(object)new StanceLogic());
-                }
+                // Always present: the Harmony posture patches self-gate on postureEnabled at runtime,
+                // so toggling posture on mid-mission would otherwise drain posture with no StanceLogic
+                // to regenerate it. StanceLogic's own tick and handlers check postureEnabled.
+                mission.AddMissionBehavior((MissionBehavior)(object)new StanceLogic());
             }
             else
             {

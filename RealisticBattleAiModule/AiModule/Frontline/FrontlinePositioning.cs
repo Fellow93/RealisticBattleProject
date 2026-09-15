@@ -310,7 +310,7 @@ namespace RBMAI
                                 }
                                 if (stance.maxStamina > 0f)
                                 {
-                                    staminaModifier = MathF.Lerp(0.33f, 1f, stance.stamina / stance.maxStamina);
+                                    staminaModifier = MathF.Lerp(0.33f, 1f, MathF.Clamp(stance.stamina / stance.maxStamina, 0f, 1f));
                                 }
                             }
                         }
