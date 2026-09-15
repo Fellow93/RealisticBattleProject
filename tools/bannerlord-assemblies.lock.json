@@ -1,230 +1,230 @@
 ﻿{
     "$comment":  "SHA256 of each Bannerlord assembly last decompiled into ./decompiled/. Committed on purpose: after a game update, re-run tools/Decompile-Bannerlord.ps1 and diff this file to see which assemblies TaleWorlds changed. The decompiled sources themselves are gitignored.",
-    "gameVersion":  "v1.5.2",
+    "gameVersion":  "v1.5.3",
     "scope":  "Core",
     "generatedBy":  "ilspycmd: 9.1.0.7988",
     "assemblies":  [
                        {
                            "name":  "NavalDLC",
                            "source":  "Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.dll",
-                           "size":  2078168,
-                           "sha256":  "CB0A5226F9A753C879FC2E6279D20F52C07A2F6C4881981A191D406C0B7F8793"
+                           "size":  2079584,
+                           "sha256":  "4C70D17FCF75F36A5952D6D3ECFECA16428F3DC7714FC6FDAA80376200DCFE8A"
                        },
                        {
                            "name":  "NavalDLC.CustomBattle",
                            "source":  "Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.CustomBattle.dll",
-                           "size":  135640,
-                           "sha256":  "F3AF794333087E4462D01827BD50E6914E9C5F3BD37106E6FB5B664476182B36"
+                           "size":  133984,
+                           "sha256":  "13C5416FD038B0E10C0D877F9A944873F0848F1611406819245A84A39B556D69"
                        },
                        {
                            "name":  "NavalDLC.View",
                            "source":  "Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.View.dll",
-                           "size":  160728,
-                           "sha256":  "B4247F175402A6728F44367EE243DB9F7CC740488012177B152F03633C59217F"
+                           "size":  158560,
+                           "sha256":  "5881342C702036A04A43244A4CF350739209C6B1506D361B61B9959EADA30033"
                        },
                        {
                            "name":  "NavalDLC.ViewModelCollection",
                            "source":  "Modules\\NavalDLC\\bin\\Win64_Shipping_Client\\NavalDLC.ViewModelCollection.dll",
-                           "size":  238552,
-                           "sha256":  "CDE8668CEBC61B6ACDB58808C31AD13663BC37B213030EEA60D3999EBCB26990"
+                           "size":  236896,
+                           "sha256":  "337BC5AE526658A812A7B327355A76A149EF849CD8E83629BFC8D17A597B1565"
                        },
                        {
                            "name":  "SandBox",
                            "source":  "Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.dll",
-                           "size":  1347544,
-                           "sha256":  "C00C5766953EF4BA9BD3EDD75786197ED6A5E3604E5A86F2C4CDE9AAAFC3627D"
+                           "size":  1344864,
+                           "sha256":  "16AF436C569675EB30E22514BB755E6FB3612AFCE38F6CC55D1748D079C19C1A"
                        },
                        {
                            "name":  "SandBox.GauntletUI",
                            "source":  "Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.GauntletUI.dll",
-                           "size":  253912,
-                           "sha256":  "D2D10B0DD30F4841ECDD6662A5A7BF6EE27A74CDCB16ECA813A2F1E41DE89F57"
+                           "size":  252768,
+                           "sha256":  "08833265CD4407CE40DC4CC0C94699EBEDDA2B74C81CB1323EEF8A2D44E2B2BA"
                        },
                        {
                            "name":  "SandBox.View",
                            "source":  "Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.View.dll",
-                           "size":  438744,
-                           "sha256":  "35857ACFBB87CB4982F21D7F88344799C2B4701F8EED1E1154719E2DADB25988"
+                           "size":  437088,
+                           "sha256":  "A62078CF179C8A6AC0C74DFE44E56D80DCCBE4740E8E1FF9759FB4FCF2D386D7"
                        },
                        {
                            "name":  "SandBox.ViewModelCollection",
                            "source":  "Modules\\SandBox\\bin\\Win64_Shipping_Client\\SandBox.ViewModelCollection.dll",
-                           "size":  297432,
-                           "sha256":  "5121C4E5B8C434D5599DACC70037259325BE08D9CCDBD8ECD664BF6FD419E45E"
+                           "size":  296288,
+                           "sha256":  "14A533BD1E3C2538531E399BB7799D55EE6ED2F7E585EB439E3C85A70454E861"
                        },
                        {
                            "name":  "StoryMode",
                            "source":  "Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.dll",
-                           "size":  538584,
-                           "sha256":  "ED49E4C5607B5047D81C6185081132CF5B92766B205ED57D96D901FEE2231BC4"
+                           "size":  536416,
+                           "sha256":  "6E49AB8EC9AB58BC54212F0343B23959DC6B9EF108EF1D828E726414FCDDE410"
                        },
                        {
                            "name":  "StoryMode.GauntletUI",
                            "source":  "Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.GauntletUI.dll",
-                           "size":  60376,
-                           "sha256":  "4A3B592051F964D48A2920B97F08B499A1B1D917826227B994AA45B30FE6D6B3"
+                           "size":  58720,
+                           "sha256":  "595F0ADFDC60FEE89EEF79D647A5D747B52D34F8F0B66B30F36B8AE105DCB0B9"
                        },
                        {
                            "name":  "StoryMode.View",
                            "source":  "Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.View.dll",
-                           "size":  29144,
-                           "sha256":  "74F9226ACBBF00599581177A46ED260E1E556DD5625B4E426FCFD32139827666"
+                           "size":  27488,
+                           "sha256":  "55F45E91CDF37AF1302BFD024E17D9C5919850734D32B18FD8C3F7134AC4B2D7"
                        },
                        {
                            "name":  "StoryMode.ViewModelCollection",
                            "source":  "Modules\\StoryMode\\bin\\Win64_Shipping_Client\\StoryMode.ViewModelCollection.dll",
-                           "size":  27608,
-                           "sha256":  "462B9400DFCBAF34994C781BA6337C67065F7F0C5337D94A04F706C9B547CD64"
+                           "size":  25952,
+                           "sha256":  "65C27359D40EFDA60E56E508D59AA98FB4DE3A0D0E3287C1CEBA7C2E1E6E1B17"
                        },
                        {
                            "name":  "TaleWorlds.CampaignSystem",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.CampaignSystem.dll",
-                           "size":  5659096,
-                           "sha256":  "FC2DA9B9388D2740337FD84A72E3EB0F3B9F055482A9D2F7BF115B0E240363B8"
+                           "size":  5658464,
+                           "sha256":  "5B23C3E36D7A5D6D47C47EAB075E9E2B1CC8D1AA53C79E135FA2B5EF434EBC5F"
                        },
                        {
                            "name":  "TaleWorlds.CampaignSystem.ViewModelCollection",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.CampaignSystem.ViewModelCollection.dll",
-                           "size":  1565656,
-                           "sha256":  "99EF855D7F4680C52E317095B3BC0373BC03DC1938573378C52124C3DFDCC80B"
+                           "size":  1564000,
+                           "sha256":  "76279E43C1E27B86BD0E1AA35AA407345725C7B208AC170E0EE0174C1A7ADF2A"
                        },
                        {
                            "name":  "TaleWorlds.Core",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.Core.dll",
-                           "size":  502744,
-                           "sha256":  "1CBAC70967F9F0E6D9747E2E94970672DA556FAD5544F9BC09666FE46AEFDC20"
+                           "size":  501088,
+                           "sha256":  "87EA0E2C58499C1275C535679CACA05B8FED5C9BD513F9CEB56B91742512A6F9"
                        },
                        {
                            "name":  "TaleWorlds.Core.ViewModelCollection",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.Core.ViewModelCollection.dll",
-                           "size":  75736,
-                           "sha256":  "E966DF02CF7BD4D8C72E62F8F735DDCD512C32D6362D992C93C32312EC5958CD"
+                           "size":  74080,
+                           "sha256":  "EEE23B81BE9A231FD1E504C9DB5B8E620C4575E588B2A5795493231AB3C86C07"
                        },
                        {
                            "name":  "TaleWorlds.Engine",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.Engine.dll",
-                           "size":  486360,
-                           "sha256":  "56CB129D1806034765374B35EABE6E841C9FEAEB1EA956E5B6B6AB18F957915E"
+                           "size":  488800,
+                           "sha256":  "9F2B3ECB6AD1C32C7270862605DCA8ADEB23A07DDB155A2A15EBDD0B98FE9A7D"
                        },
                        {
                            "name":  "TaleWorlds.Engine.GauntletUI",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.Engine.GauntletUI.dll",
-                           "size":  41944,
-                           "sha256":  "963A4483683FB798B05108F5FE57BE389E9D26F5AC7A5E53301736FD3FB11F18"
+                           "size":  40288,
+                           "sha256":  "4E31ADB9DD524FC1CE46857FFDC39C4D4DA0AE519C333FFE7A12C334E0F656BA"
                        },
                        {
                            "name":  "TaleWorlds.GauntletUI",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.dll",
-                           "size":  333784,
-                           "sha256":  "0A340C666687A4D3218105620C8AA36B1C058043583669FBDFB8A452C62A9ED0"
+                           "size":  333152,
+                           "sha256":  "703C7B5DFE0D050D07C7B8F907FEA9720A5AE494BD83E98E968EB896CA0FDCEA"
                        },
                        {
                            "name":  "TaleWorlds.GauntletUI.Data",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.Data.dll",
-                           "size":  46040,
-                           "sha256":  "453F9EE5E67F32D04D84240AACF288033FC215ACF3E9554FA4E996E277D1FBB2"
+                           "size":  44384,
+                           "sha256":  "5D811324CE6FEC84DDCB19967563D75684767D9B909AAD353AED5081E742F535"
                        },
                        {
                            "name":  "TaleWorlds.GauntletUI.ExtraWidgets",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.ExtraWidgets.dll",
-                           "size":  76760,
-                           "sha256":  "629635C6E1AEB332200EF6B3D9498CFA5616E47013D2FE98AB2CD201E6505FFF"
+                           "size":  75104,
+                           "sha256":  "80D77189440DD4110536EB87B2E677321EF997D10ECFF32752EDC1D3F587CBA9"
                        },
                        {
                            "name":  "TaleWorlds.GauntletUI.PrefabSystem",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.GauntletUI.PrefabSystem.dll",
-                           "size":  61912,
-                           "sha256":  "B6AD533CC02ED77DA9EDBF6457BCC559B1E0641DFEC677982FA4059A089F0B6C"
+                           "size":  60256,
+                           "sha256":  "2A200C86CFF5FCF4B10F7F5EC0613FEC95254D122DE30BEAC5B0CD53C6CFC327"
                        },
                        {
                            "name":  "TaleWorlds.InputSystem",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.InputSystem.dll",
-                           "size":  66008,
-                           "sha256":  "2DFE2D00EEEEE24785BC6C08F2115CD10EED01A3E7E936644FADF11E749C35F8"
+                           "size":  64352,
+                           "sha256":  "D70A19FA89D7138EF9F5B5B9926999D4FEC1B287D97FA2640E49406517633962"
                        },
                        {
                            "name":  "TaleWorlds.Library",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.Library.dll",
-                           "size":  271832,
-                           "sha256":  "B5DABDB2540DB8FA99F86A5E6424FF2AFA2C8EF7F925EC9895B8218D1F72EA25"
+                           "size":  271200,
+                           "sha256":  "7E4B36A247DFED749692EA24A6132E43634F84DEDE644E32D94FD20B515E4142"
                        },
                        {
                            "name":  "TaleWorlds.LinQuick",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.LinQuick.dll",
-                           "size":  38872,
-                           "sha256":  "007D7C5B5C6C6195E3C054CA305BECF6AAAD43A64C1186E7FEDF7380A68AB718"
+                           "size":  37216,
+                           "sha256":  "C953A7BF7CCFBE7FC8E05182E3E81F5D0F58A4367647846FE8B49DF3E1BC8D1A"
                        },
                        {
                            "name":  "TaleWorlds.Localization",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.Localization.dll",
-                           "size":  211928,
-                           "sha256":  "0F02B07D01913D9C53E09E49B5806950C2E0A6BAC74C411AC2D79075AAFF26D1"
+                           "size":  210272,
+                           "sha256":  "F6C88A76D79ADE50EEFB8878FF728ADE6D6BFC8B3488DC691F504CF953F1DAA8"
                        },
                        {
                            "name":  "TaleWorlds.MountAndBlade",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.dll",
-                           "size":  2641368,
-                           "sha256":  "4811E99F6A5111D535A4BA4789340442005F923C1BE509D62050D95BAF131348"
+                           "size":  2646368,
+                           "sha256":  "12600BAF05865BB8F68C2F881C5EEF3DC7974C8C4435A5600B0473844C7585C1"
                        },
                        {
                            "name":  "TaleWorlds.MountAndBlade.CustomBattle",
                            "source":  "Modules\\CustomBattle\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.CustomBattle.dll",
-                           "size":  141272,
-                           "sha256":  "FC9251DDCE15467CECB380EC3F206FF57787C7E07D9975F073582B86A538483C"
+                           "size":  139616,
+                           "sha256":  "9D415E068675F88E1A15E9E652632E1FB92716AC4546A89B38B46B70455F7BC0"
                        },
                        {
                            "name":  "TaleWorlds.MountAndBlade.GauntletUI",
                            "source":  "Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.GauntletUI.dll",
-                           "size":  214488,
-                           "sha256":  "4B0987955D20201F053A1B05D773177719A99E95C464DD4708A48537F33CC99F"
+                           "size":  212832,
+                           "sha256":  "2DBD2C2A589F5EB9D0330CF25FAB64EFE24780C74E4281108D543E35B04B706C"
                        },
                        {
                            "name":  "TaleWorlds.MountAndBlade.GauntletUI.Widgets",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll",
-                           "size":  686552,
-                           "sha256":  "8E2DD1B56CFFD9EEBB3368697B4C462FB5DB42FA4BC35DDEE4D4C91C3E9636D6"
+                           "size":  686432,
+                           "sha256":  "2CB93A66D59F721481F0CBE4C2481E69EB268CF448310E7C6F19AAA5950D89C8"
                        },
                        {
                            "name":  "TaleWorlds.MountAndBlade.Platform.PC",
                            "source":  "Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Platform.PC.dll",
-                           "size":  17880,
-                           "sha256":  "A6111D2DB54686F63922B7A42560742318E6E1968EBB03C72EA2A0A13E82FE9C"
+                           "size":  16224,
+                           "sha256":  "9A06A78058BF498A57F0AE851F7FDC9DF830023D2A14A30561919C6FD5636DF0"
                        },
                        {
                            "name":  "TaleWorlds.MountAndBlade.View",
                            "source":  "Modules\\Native\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.View.dll",
-                           "size":  411608,
-                           "sha256":  "2EA1ABB4580601A4BCEA5388C04CD32A72B243FE8DC4BC2865E9099F44062C7D"
+                           "size":  409440,
+                           "sha256":  "159EB0B736D50143204704891016C4F4B30314330E3E4DAD65F0D6BF0B0A311A"
                        },
                        {
                            "name":  "TaleWorlds.MountAndBlade.ViewModelCollection",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.ViewModelCollection.dll",
-                           "size":  499160,
-                           "sha256":  "4AE18F2730A3D7CF270B54EB7661E85BB547B4E9321A6792F978AE0A78BC534A"
+                           "size":  497504,
+                           "sha256":  "A26A1F272A6DDE448CECCDB41E03D074A13FC1258CDB902B7FE492BFC4691FE1"
                        },
                        {
                            "name":  "TaleWorlds.ObjectSystem",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.ObjectSystem.dll",
-                           "size":  59864,
-                           "sha256":  "563153C59505DD976527B79E106788B85E29A5F8F67970B6133F5457B65DF10E"
+                           "size":  61792,
+                           "sha256":  "093A3F6DBAEDEBE61CAD06436BA0411C8521B9BD310F598DC93617F9C874F9DD"
                        },
                        {
                            "name":  "TaleWorlds.SaveSystem",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.SaveSystem.dll",
-                           "size":  178136,
-                           "sha256":  "C63062976C29C7486E539BB6F2DD659897F0FC97C67272A02A679D8DD85F7471"
+                           "size":  176480,
+                           "sha256":  "2B5B93EEE2CCF000DA1110D45EAA9B3EC681B7C4A8FFA45F5D31D3CE083B706E"
                        },
                        {
                            "name":  "TaleWorlds.ScreenSystem",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.ScreenSystem.dll",
-                           "size":  48088,
-                           "sha256":  "915811B9EB30DC5B251CF52825A58942809A3FA76F8192445DB743C173BF434C"
+                           "size":  46432,
+                           "sha256":  "0043B86EE2F8D2EDEE75822DF7FDB08DF471FA2B93CD6DDF795479E0FBF7C9B2"
                        },
                        {
                            "name":  "TaleWorlds.TwoDimension",
                            "source":  "bin\\Win64_Shipping_Client\\TaleWorlds.TwoDimension.dll",
-                           "size":  104408,
-                           "sha256":  "2EF0C5A9B13EDCE995F621FCAF56C99485B80575DBF15949EA5CDB84409D81E3"
+                           "size":  102752,
+                           "sha256":  "B4CA68B7421E5568DE9EE5184303EBE818943A31E5258F52BBC10CB683391405"
                        }
                    ]
 }
