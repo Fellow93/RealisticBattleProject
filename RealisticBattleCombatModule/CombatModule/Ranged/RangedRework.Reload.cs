@@ -22,6 +22,9 @@ namespace RBMCombat
         [HarmonyPatch("SetAiRelatedProperties")]
         private class OverrideSetAiRelatedProperties
         {
+            // Runs before RBMAI's postfix on the same method (Priority.Low there), which multiplies
+            // ReloadSpeed by stamina. This one assigns the base value, so it must go first.
+            [HarmonyPriority(Priority.High)]
             private static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
             {
                 if (agent.IsPlayerControlled)

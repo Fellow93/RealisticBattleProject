@@ -41,8 +41,9 @@ namespace RBMAI
                     attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, DefaultSkills.Athletics);
                 }
 
-                dynamicPostureLoss -= Math.Max(0f, 1f - (attackerEffectiveWeaponSkill / 200f)) * (dynamicPS * 0.5f);
-                dynamicPostureLoss -= Math.Max(0f, 1f - (attackerEffectiveStrengthSkill / 200f)) * (dynamicPS * 0.5f);
+                // Higher skill reduces the dynamic cost: skill 0 pays the full dynamicPS, skill >= 200 pays none.
+                dynamicPostureLoss -= Math.Min(1f, attackerEffectiveWeaponSkill / 200f) * (dynamicPS * 0.5f);
+                dynamicPostureLoss -= Math.Min(1f, attackerEffectiveStrengthSkill / 200f) * (dynamicPS * 0.5f);
 
                 return fixedPostureLoss + dynamicPostureLoss;
             }

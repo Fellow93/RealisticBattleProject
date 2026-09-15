@@ -103,8 +103,14 @@ namespace RBMCombat
                     if (attackerParty != null)
                     {
                         MethodInfo method = typeof(DefaultCombatXpModel).GetMethod("GetBattleXpBonusFromPerks", BindingFlags.NonPublic | BindingFlags.Static);
-                        method.DeclaringType.GetMethod("GetBattleXpBonusFromPerks");
-                        method.Invoke(__instance, new object[] { attackerParty, xpToGain, attackerTroop });
+                        if (method != null)
+                        {
+                            // ExplainedNumber is a struct passed by ref: the callee writes into the boxed
+                            // args[1], so it must be read back or every perk bonus is discarded.
+                            object[] args = new object[] { attackerParty, xpToGain, attackerTroop };
+                            method.Invoke(null, args);
+                            xpToGain = (ExplainedNumber)args[1];
+                        }
                     }
                     if (captain != null && captain.IsHero && captain.GetPerkValue(DefaultPerks.Leadership.InspiringLeader))
                     {
