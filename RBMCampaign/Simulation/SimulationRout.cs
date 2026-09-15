@@ -1,0 +1,322 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using HarmonyLib;
+using TaleWorlds.CampaignSystem.MapEvents;
+using TaleWorlds.Core;
+
+namespace RBMCampaign
+{
+    /// <summary>
+    /// A beaten side breaks and runs, instead of being butchered to the last man.
+    ///
+    /// Vanilla auto-resolve already HAS a rout -- <see cref="MapEvent.CalculateWinner"/> ends the battle and calls
+    /// <c>Route()</c> on the losing side, which sends its survivors off as fugitives (counted at a tenth of a
+    /// casualty's weight; the men live) rather than killing them. But the only mid-battle trigger for it is a side's
+    /// <c>GetSideMorale()</c> falling to approximately zero -- and that morale is a strength-weighted average of each
+    /// party's STANDING campaign morale (<c>MobileParty.Morale</c>: food, wages, recent events). It does not move as
+    /// men fall during the simulated fight. So the gate essentially never trips, and every auto-resolved battle grinds
+    /// on until one side's <c>NumRemainingSimulationTroops</c> reaches nought -- annihilation, not a rout.
+    ///
+    /// This adds the missing trigger: once a side is beaten badly enough on the field -- its remaining fighting
+    /// strength fallen below a fraction of the enemy's -- it may break, with a chance that climbs the more lopsided
+    /// the fight becomes and is re-rolled every round, so a hopeless position gives way sooner. When it does, the
+    /// beaten side is routed through vanilla's OWN <c>Route()</c> and the battle is ended for the other side, exactly
+    /// as vanilla's morale rout would have -- so the fugitives survive, the pursuit and the reward books all behave,
+    /// and nothing here reimplements what the game already does. It only decides WHEN the break happens.
+    ///
+    /// Sieges are left to vanilla: a storming assault has its own state machine and its defenders cannot flee a wall
+    /// (see <c>MapEventSide.OnTroopRouted</c>, which refuses to rout a siege defender), so forcing a break here would
+    /// be both wrong and fragile. This fires on field battles, raids and hideouts.
+    /// </summary>
+    /// <summary>
+    /// WHO BROKE, AND HOW MANY OF THEM -- because the casualty figure cannot say.
+    ///
+    /// Native's <c>MapEventSide.Route()</c> walks every man still standing and puts him through
+    /// <c>OnTroopRouted</c>, which increments <c>TroopCasualties</c> exactly as a death does. The men live -- they
+    /// leave the field as fugitives and most come back -- but the number the battle reports afterwards is
+    /// identical to the number it would report if they had all been killed where they stood. So a log reading
+    /// "attacker 1010, defender 570" has been unable to say whether the besiegers were destroyed or simply gave up
+    /// and ran, which are not remotely the same event and want completely different answers from anyone reading.
+    ///
+    /// This catches the break itself. A prefix, deliberately: it has to count the men BEFORE Route() puts them
+    /// through, because afterwards there are none left to count.
+    ///
+    /// It catches EVERY break, not just this file's own -- vanilla's morale rout in CalculateWinner, the
+    /// strength-ratio rout below, and the siege repulse (SimulationSiegeRepulse) all end by calling Route(), and
+    /// all three should be legible in the log as what they are.
+    /// </summary>
+    [HarmonyPatch(typeof(MapEventSide), "Route")]
+    internal static class SimulationRoutMarker
+    {
+        private static void Prefix(MapEventSide __instance)
+        {
+            if (__instance == null)
+            {
+                return;
+            }
+
+            SimulationBattleState.BattleState state = SimulationBattleState.Get(__instance.MapEvent);
+            if (state == null)
+            {
+                return;
+            }
+
+            int fugitives = __instance.NumRemainingSimulationTroops;
+            if (fugitives <= 0)
+            {
+                return;
+            }
+
+            if (__instance.MissionSide == BattleSideEnum.Attacker)
+            {
+                state.AttackerRouted += fugitives;
+            }
+            else
+            {
+                state.DefenderRouted += fugitives;
+            }
+            if (state.RoutRound < 0)
+            {
+                state.RoutRound = state.Round;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(MapEvent), "SimulateBattleRound")]
+    internal static class SimulationRout
+    {
+        // A side breaks when it is being BUTCHERED -- when it has lost a much larger SHARE of the men it marched in
+        // with than the enemy has. Not when it is merely outnumbered: a small party that STARTS lopsided (100 vs 25)
+        // has taken no casualties yet and should not evaporate in round one, and a quality force winning against a
+        // horde (80 knights vs 300 recruits) is BELOW the enemy on live headcount yet is plainly winning -- the old
+        // live-headcount ratio broke on both. Casualty share reads the fight the right way round: the side bleeding
+        // out faster, whatever its raw numbers, is the one that breaks. This is the gap in loss fractions at which a
+        // side comes at risk of breaking -- it has lost this much MORE of itself, in proportion, than its enemy.
+        // Lowered 0.12 -> 0.06 alongside the RoutMaxBeatenTroops floor: that hard remnant gate is now the primary
+        // control of WHEN a side may break, so this only has to keep a dead-EVEN bleed from breaking anybody -- a
+        // beaten remnant must not be left fighting to the last man just because the winner bled heavily too.
+        private const float RoutLossGapThreshold = 0.06f;
+
+        // ...and it must also have taken real losses of its own before it will run: a side a hair ahead on a
+        // near-bloodless field is not being butchered. This floors the beaten side's own casualty fraction. Lowered
+        // 0.15 -> 0.08 for the same reason as the gap: once the remnant floor gates the break, this need only rule out
+        // the earliest, near-bloodless rounds rather than hold a plainly-beaten side together.
+        private const float RoutMinBeatenLoss = 0.08f;
+
+        // The chance to break in a given round, once at risk: a small base, plus a share that grows with how far past
+        // the gap the butchery has gone (severity 0 at the threshold, 1 as the side is wiped out). Re-rolled each
+        // round, so a hopeless stand compounds toward a near-certain break; a merely bad one may yet hold. Kept low so
+        // routs stay the exception -- a beaten side more often fights on and takes its losses than breaks and runs.
+        private const float RoutBaseChancePerRound = 0.03f;
+
+        private const float RoutSeverityScale = 0.35f;
+
+        private const float RoutMaxChancePerRound = 0.45f;
+
+        // A HARD FLOOR on when a side may break at all: it must be nearly spent -- fewer than this many men still
+        // standing -- before any of the proportional-loss reasoning below is even consulted. A side hundreds strong
+        // holds and fights on whatever its losses; only a remnant runs. This keeps a beaten but still substantial
+        // army from throwing in the towel while it has the numbers to fight, and makes the break the last act of a
+        // force already all but destroyed rather than a mid-battle collapse. It gates only LARGE battles -- in a
+        // skirmish both sides are under it from the first round, so there the proportional loss decides as before.
+        private const int RoutMaxBeatenTroops = 50;
+
+        // Vanilla's BattleState setter is internal, so ending the battle from here -- the same act vanilla's own rout
+        // performs -- goes through the setter by reflection. Cached once. Going through the SETTER (not the backing
+        // field) is deliberate: it is what fires OnBattleWon and finalises the event.
+        private static readonly MethodInfo SetBattleState =
+            typeof(MapEvent).GetProperty("BattleState")?.GetSetMethod(nonPublic: true);
+
+        // The men each side marched in with, captured before the first simulated round wears them down -- the
+        // denominator the casualty fractions are measured against. Keyed by the event, dropped when it ends.
+        private static readonly Dictionary<MapEvent, ValueTuple<int, int>> _initial =
+            new Dictionary<MapEvent, ValueTuple<int, int>>();
+
+        /// <summary>A battle is over; drop its starting muster. Wired from OnMapEventEnded alongside the other cleanups.</summary>
+        internal static void Forget(MapEvent mapEvent)
+        {
+            if (mapEvent != null)
+            {
+                _initial.Remove(mapEvent);
+            }
+        }
+
+        /// <summary>A fresh session: the torn-down campaign's musters will never be reclaimed by MapEventEnded, so
+        /// drop them all. Called from OnSessionLaunched.</summary>
+        internal static void ResetForNewSession()
+        {
+            _initial.Clear();
+        }
+
+        // Before the round is simulated, the sides stand at whatever strength they have. The FIRST time we see a
+        // battle that is the strength it marched in with -- nobody has died yet -- so that is the muster to remember.
+        private static void Prefix(MapEvent __instance)
+        {
+            // With the equipment model off the whole overhaul stands down (see SimulationEquipmentPower.
+            // SimulationEnabled): vanilla decides who wins, so there is nothing to muster and nothing to break.
+            if (!SimulationEquipmentPower.SimulationEnabled || !RBMConfig.RBMConfig.simulationRoutEnabled)
+            {
+                return;
+            }
+            if (__instance == null || _initial.ContainsKey(__instance))
+            {
+                return;
+            }
+            _initial[__instance] = new ValueTuple<int, int>(
+                __instance.AttackerSide.NumRemainingSimulationTroops,
+                __instance.DefenderSide.NumRemainingSimulationTroops);
+        }
+
+        private static void Postfix(MapEvent __instance)
+        {
+            // The overhaul stands down with the equipment model off (see SimulationEquipmentPower.SimulationEnabled):
+            // vanilla's own morale/annihilation resolution decides the battle, exactly as it would without RBM. The
+            // dedicated rout toggle stands only this feature down, leaving equipment-aware damage in place.
+            if (!SimulationEquipmentPower.SimulationEnabled || !RBMConfig.RBMConfig.simulationRoutEnabled)
+            {
+                return;
+            }
+            // Only a battle still being fought, and never a siege (see the class note).
+            if (__instance == null || __instance.BattleState != BattleState.None || __instance.IsSiegeAssault)
+            {
+                return;
+            }
+            if (SetBattleState == null)
+            {
+                return;
+            }
+
+            int attackers = __instance.AttackerSide.NumRemainingSimulationTroops;
+            int defenders = __instance.DefenderSide.NumRemainingSimulationTroops;
+
+            // If either side is already gone, vanilla's own CalculateWinner has the battle -- nothing to break.
+            if (attackers <= 0 || defenders <= 0)
+            {
+                return;
+            }
+
+            // The strength each side marched in with. The Prefix caught it before the first round; if it somehow did
+            // not (a battle already under way when the patch loaded), take the current strength as the baseline -- it
+            // makes this round's loss fractions zero, so nobody routs until real casualties accumulate. Never zero, so
+            // the fractions cannot divide by it.
+            ValueTuple<int, int> initial;
+            if (!_initial.TryGetValue(__instance, out initial))
+            {
+                initial = new ValueTuple<int, int>(attackers, defenders);
+                _initial[__instance] = initial;
+            }
+            int attackersInitial = Math.Max(1, initial.Item1);
+            int defendersInitial = Math.Max(1, initial.Item2);
+
+            // What SHARE of itself each side has lost. Clamped at zero because a side that gained men after the muster
+            // (reinforcements attaching mid-battle) would otherwise read a negative loss.
+            float attackerLoss = Math.Max(0f, (attackersInitial - attackers) / (float)attackersInitial);
+            float defenderLoss = Math.Max(0f, (defendersInitial - defenders) / (float)defendersInitial);
+
+            // The side bleeding out faster is the one that breaks -- whatever its raw numbers. A dead-even bleed breaks
+            // nobody.
+            MapEventSide loser;
+            MapEventSide winner;
+            float beatenLoss;
+            float otherLoss;
+            if (attackerLoss > defenderLoss)
+            {
+                loser = __instance.AttackerSide;
+                winner = __instance.DefenderSide;
+                beatenLoss = attackerLoss;
+                otherLoss = defenderLoss;
+            }
+            else if (defenderLoss > attackerLoss)
+            {
+                loser = __instance.DefenderSide;
+                winner = __instance.AttackerSide;
+                beatenLoss = defenderLoss;
+                otherLoss = attackerLoss;
+            }
+            else
+            {
+                return;
+            }
+
+            // And it does not break while it is still a real force, whatever its losses: only once it is a remnant --
+            // fewer than RoutMaxBeatenTroops still standing -- is the butchery below allowed to break it. The beaten
+            // side is the one this tests; the winner may be at any strength.
+            int beatenRemaining = (loser == __instance.AttackerSide) ? attackers : defenders;
+            if (beatenRemaining >= RoutMaxBeatenTroops)
+            {
+                return;
+            }
+
+            // It runs only once it is being butchered -- far enough ahead of the enemy in proportional losses AND
+            // having bled enough of its own to feel it. Either test unmet, it holds.
+            float gap = beatenLoss - otherLoss;
+            if (gap < RoutLossGapThreshold || beatenLoss < RoutMinBeatenLoss)
+            {
+                return;
+            }
+
+            // How far past the breaking point the butchery has gone: 0 right at the gap threshold, 1 when the beaten
+            // side is being wiped out (the enemy untouched). The chance climbs with it, re-rolled every round.
+            float severity = (gap - RoutLossGapThreshold) / (1f - RoutLossGapThreshold);
+            float chance = RoutBaseChancePerRound + severity * RoutSeverityScale;
+            if (chance > RoutMaxChancePerRound)
+            {
+                chance = RoutMaxChancePerRound;
+            }
+
+            if (MBRandom.RandomFloat >= chance)
+            {
+                return;
+            }
+
+            // The break. Vanilla's own Route() sends the survivors off as fugitives; then the battle is ended for the
+            // winner, exactly as CalculateWinner's morale rout does -- BattleState's setter fires OnBattleWon and the
+            // event finalises through the ordinary path.
+            loser.Route();
+            BattleState result = (winner == __instance.AttackerSide)
+                ? BattleState.AttackerVictory
+                : BattleState.DefenderVictory;
+            SetBattleState.Invoke(__instance, new object[] { result });
+        }
+    }
+
+    /// <summary>
+    /// VANILLA'S OWN ROUT, SWITCHED OFF -- so nothing but RBM (or nothing at all) can break a side.
+    ///
+    /// <see cref="MapEvent"/>.CalculateWinner ends a battle mid-fight the moment a side's <c>GetSideMorale()</c> falls
+    /// to approximately zero: it sets the enemy's victory and routs the beaten side through <c>Route()</c>. That
+    /// morale is the strength-weighted average of each party's STANDING campaign morale (food, wages, recent map
+    /// events) -- it has nothing to do with how the fight in front of them is going, and it breaks armies on the
+    /// auto-resolve field at strengths (a side still hundreds strong) that <see cref="SimulationRout"/>'s remnant
+    /// floor is expressly built to forbid. It was breaking a 142-man line while this model was still holding it
+    /// together, which is exactly the "routs too fast" this model exists to fix.
+    ///
+    /// So it is disabled wherever this overhaul is in charge: a Prefix forces both morale arguments above the ~0 rout
+    /// threshold before CalculateWinner runs. NOTHING ELSE in that method is touched -- annihilation (a side reaching
+    /// zero remaining) still ends the battle exactly as before, the raft check still stands, the showResults flag is
+    /// unaffected -- so the ONLY thing removed is the standing-morale rout.
+    ///
+    /// This is gated on <see cref="SimulationEquipmentPower.SimulationEnabled"/> ALONE, deliberately NOT on the rout
+    /// toggle. The rout toggle decides whether RBM's OWN break model (<see cref="SimulationRout"/>) runs; vanilla's
+    /// buggy standing-morale rout is unwanted in either case. So with the rout toggle ON, RBM decides when a side
+    /// breaks; with it OFF, nothing breaks a side and the battle is fought to annihilation -- and in neither case does
+    /// vanilla's morale rout come back. (With the equipment model itself off, the whole overhaul stands down and
+    /// vanilla's rout is left exactly as it was.)
+    /// </summary>
+    [HarmonyPatch(typeof(MapEvent), "CalculateWinner")]
+    internal static class SimulationNoVanillaRout
+    {
+        private static void Prefix(ref float attackerSideMorale, ref float defenderSideMorale)
+        {
+            if (!SimulationEquipmentPower.SimulationEnabled)
+            {
+                return;
+            }
+            // Above the ApproximatelyEqualsTo(0f) threshold by a wide margin, so neither morale branch of
+            // CalculateWinner can ever trip. The change is local to that method's own copy of the value.
+            attackerSideMorale = 100f;
+            defenderSideMorale = 100f;
+        }
+    }
+}

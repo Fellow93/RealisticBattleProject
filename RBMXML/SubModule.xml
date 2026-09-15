@@ -1,17 +1,17 @@
 ﻿<Module>
   <Name value="(RBM) Realistic Battle Mod Bannerlord"/>
   <Id value="RBM"/>
-  <Version value="v4.3.5"/>
+  <Version value="v4.4.8"/>
   <DefaultModule value="true"/>
   <ModuleCategory value="Singleplayer"/>
   <DependedModules>
 
-    <DependedModule Id="Native" DependentVersion="v1.4.6" Optional="false"/>
-    <DependedModule Id="SandBoxCore" DependentVersion="v1.4.6" Optional="false"/>
-    <DependedModule Id="Sandbox" DependentVersion="v1.4.6" Optional="false"/>
-    <DependedModule Id="StoryMode" DependentVersion="v1.4.6" Optional="false"/>
-	<DependedModule Id="CustomBattle" DependentVersion="v1.4.6" Optional="false"/>
-	<DependedModule Id="BirthAndDeath" DependentVersion="v1.4.6" Optional="true"/>
+    <DependedModule Id="Native" DependentVersion="v1.4.8" Optional="false"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="v1.4.8" Optional="false"/>
+    <DependedModule Id="Sandbox" DependentVersion="v1.4.8" Optional="false"/>
+    <DependedModule Id="StoryMode" DependentVersion="v1.4.8" Optional="false"/>
+	<DependedModule Id="CustomBattle" DependentVersion="v1.4.8" Optional="false"/>
+	<DependedModule Id="BirthAndDeath" DependentVersion="v1.4.8" Optional="true"/>
 	<DependedModule Id="RTSCamera" Optional="true"/>
 	<DependedModule Id="RTSCamera.CommandSystem" Optional="true"/>
 
@@ -236,6 +236,30 @@
 		</IncludedGameTypes>
 	</XmlNode>
 	
+	<XmlNode>
+		<XmlName id="WorkshopTypes" path="RBMEconomy_workshops_artisans"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+		</IncludedGameTypes>
+	</XmlNode>
+	
+	<XmlNode>
+		<XmlName id="Items" path="RBMEconomy_trade_goods"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+		</IncludedGameTypes>
+	</XmlNode>
+
+	<XmlNode>
+		<XmlName id="Items" path="RBMEconomyCombat_ranged"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+		</IncludedGameTypes>
+	</XmlNode>
+
 	<XmlNode>                
 		<XmlName id="SkillSets" path="RBM_custom_battle_skill_sets" />
 		<IncludedGameTypes>
@@ -244,8 +268,22 @@
 			<GameType value = "CustomGame"/>
 		</IncludedGameTypes>
 	</XmlNode>
-	<XmlNode>                
+	
+	<XmlNode>
+		<XmlName id="partyTemplates" path="RBMEconomy_patrols"/>
+		<IncludedGameTypes>
+			<Gametype value = "Campaign"/>
+			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value="EditorGame" />
+		</IncludedGameTypes>
+	</XmlNode>
+	
+	<XmlNode>
 		<XmlName id="GameText" path="RBMAI_module_strings"/>
+	</XmlNode>
+	<XmlNode>
+		<XmlName id="GameText" path="RBMEconomy_module_strings"/>
 	</XmlNode>
 	
   </Xmls>

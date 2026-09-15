@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<partyTemplates>
+<!--RBM_XML_TAG-->
+<!--RBM_CAMPAIGN_XML_TAG-->
+<!--RBM_WS_XML_TAG-->
+	<MBPartyTemplate
+		id="patrol_party_nord_template_level_1">
+		<stacks>
+			<PartyTemplateStack
+				min_value="8"
+				max_value="8"
+				troop="NPCCharacter.nord_drengr" />
+			<PartyTemplateStack
+				min_value="4"
+				max_value="4"
+				troop="NPCCharacter.nord_axe_warrior" />
+			<PartyTemplateStack
+				min_value="2"
+				max_value="2"
+				troop="NPCCharacter.nord_freeman_archer" />
+			<PartyTemplateStack
+				min_value="1"
+				max_value="1"
+				troop="NPCCharacter.nord_jarlsmann" />
+		</stacks>
+	</MBPartyTemplate>
+	<MBPartyTemplate
+		id="patrol_party_nord_template_level_2">
+		<stacks>
+			<PartyTemplateStack
+				min_value="9"
+				max_value="9"
+				troop="NPCCharacter.nord_drengr" />
+			<PartyTemplateStack
+				min_value="5"
+				max_value="5"
+				troop="NPCCharacter.nord_axe_warrior" />
+			<PartyTemplateStack
+				min_value="2"
+				max_value="2"
+				troop="NPCCharacter.nord_marksman" />
+			<PartyTemplateStack
+				min_value="1"
+				max_value="1"
+				troop="NPCCharacter.nord_vargr" />
+			<PartyTemplateStack
+				min_value="2"
+				max_value="2"
+				troop="NPCCharacter.nord_jarlsmann" />
+			<PartyTemplateStack
+				min_value="1"
+				max_value="1"
+				troop="NPCCharacter.nord_hirdmann" />
+		</stacks>
+	</MBPartyTemplate>
+	<MBPartyTemplate
+		id="patrol_party_nord_template_level_3">
+		<stacks>
+			<PartyTemplateStack
+				min_value="8"
+				max_value="8"
+				troop="NPCCharacter.nord_drengr" />
+			<PartyTemplateStack
+				min_value="7"
+				max_value="7"
+				troop="NPCCharacter.nord_axe_warrior" />
+			<PartyTemplateStack
+				min_value="4"
+				max_value="4"
+				troop="NPCCharacter.nord_marksman" />
+			<PartyTemplateStack
+				min_value="4"
+				max_value="4"
+				troop="NPCCharacter.nord_vargr" />
+			<PartyTemplateStack
+				min_value="2"
+				max_value="2"
+				troop="NPCCharacter.nord_hirdmann" />
+			<PartyTemplateStack
+				min_value="1"
+				max_value="1"
+				troop="NPCCharacter.nord_berserkr" />
+		</stacks>
+	</MBPartyTemplate>
+	<MBPartyTemplate
+		id="patrol_party_nord_template_level_4">
+		<stacks>
+			<PartyTemplateStack
+				min_value="8"
+				max_value="8"
+				troop="NPCCharacter.nord_drengr" />
+			<PartyTemplateStack
+				min_value="7"
+				max_value="7"
+				troop="NPCCharacter.nord_axe_warrior" />
+			<PartyTemplateStack
+				min_value="4"
+				max_value="4"
+				troop="NPCCharacter.nord_marksman" />
+			<PartyTemplateStack
+				min_value="4"
+				max_value="4"
+				troop="NPCCharacter.nord_vargr" />
+			<PartyTemplateStack
+				min_value="7"
+				max_value="7"
+				troop="NPCCharacter.nord_hirdmann" />
+			<PartyTemplateStack
+				min_value="1"
+				max_value="1"
+				troop="NPCCharacter.nord_berserkr" />
+			<PartyTemplateStack
+				min_value="2"
+				max_value="2"
+				troop="NPCCharacter.nord_huscarl" />
+		</stacks>
+	</MBPartyTemplate>
+</partyTemplates>

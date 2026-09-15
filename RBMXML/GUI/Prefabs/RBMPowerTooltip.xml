@@ -1,0 +1,55 @@
+<!--
+  The power breakdown's tooltip: a headline, then the two sides side by side.
+
+  Deliberately a close copy of Native's Information/HintTooltip.xml - same TooltipWidget, same frame pieces, same
+  panel colour and text brush - so it reads as the game's own hint rather than a mod's. The only real departures are
+  the horizontal ListPanel holding a column per side, and MaxWidth values wide enough that rows laid out in columns
+  are not folded in half. Attackers are the left column because that is the side the encounter overlay and the power
+  bar both put on the left.
+-->
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" IsDisabled="true">
+      <Children>
+
+        <TooltipWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren">
+          <Children>
+
+            <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+              <Children>
+
+                <DimensionSyncWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="12" HorizontalAlignment="Center" PositionYOffset="5" Sprite="General\TooltipHint\tooltip_frame" ExtendLeft="4" ExtendRight="4" DimensionToSync="Horizontal" IsEnabled="false" PaddingAmount="8" WidgetToCopyHeightFrom="..\RBMPowerInnerPanel"/>
+
+                <Widget Id="RBMPowerInnerPanel" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" Sprite="BlankWhiteSquare_9" Color="#000000D9">
+                  <Children>
+
+                    <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="13" MarginRight="13" MarginTop="4" MarginBottom="4" StackLayout.LayoutMethod="VerticalTopToBottom">
+                      <Children>
+
+                        <RichTextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" MarginBottom="6" Brush="Tooltip.Description.Text" MaxWidth="900" Text="@HeaderText"/>
+
+                        <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="HorizontalLeftToRight">
+                          <Children>
+                            <RichTextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginRight="24" Brush="Tooltip.Description.Text" MaxWidth="430" Text="@AttackerText"/>
+                            <RichTextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Tooltip.Description.Text" MaxWidth="430" Text="@DefenderText"/>
+                          </Children>
+                        </ListPanel>
+
+                      </Children>
+                    </ListPanel>
+
+                  </Children>
+                </Widget>
+
+                <DimensionSyncWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedHeight="12" HorizontalAlignment="Center" PositionYOffset="-5" Sprite="General\TooltipHint\tooltip_frame" ExtendLeft="4" ExtendRight="4" DimensionToSync="Horizontal" IsEnabled="false" PaddingAmount="8" WidgetToCopyHeightFrom="..\RBMPowerInnerPanel"/>
+
+              </Children>
+            </ListPanel>
+
+          </Children>
+        </TooltipWidget>
+
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

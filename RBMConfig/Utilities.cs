@@ -176,8 +176,8 @@ namespace RBMConfig
             );
             weaponTypesFactors.Add(new RBMCombatConfigWeaponType(
                weaponType: "SlingStone",
-               ExtraBluntFactorCut: 0.3f,
-               ExtraBluntFactorPierce: 0.35f,
+               ExtraBluntFactorCut: 0.5f,
+               ExtraBluntFactorPierce: 0.6f,
                ExtraBluntFactorBlunt: 1f,
                ExtraArmorThresholdFactorPierce: 6f,
                ExtraArmorThresholdFactorCut: 10f,
@@ -346,6 +346,91 @@ namespace RBMConfig
             RBMCombat.AppendChild(Global);
             RBMCombat.AppendChild(WeaponTypes);
             Config.AppendChild(RBMCombat);
+
+            //RBM campaign
+            XmlElement RBMCampaign = xmlconfig.CreateElement("RBMCampaign");
+
+            XmlElement RBMCampaignEnabled = xmlconfig.CreateElement("Enabled");
+            RBMCampaignEnabled.InnerText = RBMConfig.rbmCampaignEnabled ? "1" : "0";
+            XmlElement TroopUpgradeCostMultiplier = xmlconfig.CreateElement("TroopUpgradeCostMultiplier");
+            TroopUpgradeCostMultiplier.InnerText = RBMConfig.troopUpgradeCostMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopUpgradeSpoilsLootMultiplier = xmlconfig.CreateElement("TroopUpgradeSpoilsLootMultiplier");
+            TroopUpgradeSpoilsLootMultiplier.InnerText = RBMConfig.troopUpgradeSpoilsLootMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopUpgradeRequireSupplyTown = xmlconfig.CreateElement("TroopUpgradeRequireSupplyTown");
+            TroopUpgradeRequireSupplyTown.InnerText = RBMConfig.troopUpgradeRequireSupplyTown ? "1" : "0";
+            XmlElement RecruitDrawsFromSettlementStock = xmlconfig.CreateElement("RecruitDrawsFromSettlementStock");
+            RecruitDrawsFromSettlementStock.InnerText = RBMConfig.recruitDrawsFromSettlementStock ? "1" : "0";
+            XmlElement TroopUpgradeSupplyRadius = xmlconfig.CreateElement("TroopUpgradeSupplyRadius");
+            TroopUpgradeSupplyRadius.InnerText = RBMConfig.troopUpgradeSupplyRadius.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopUpgradeChargeMountValue = xmlconfig.CreateElement("TroopUpgradeChargeMountValue");
+            TroopUpgradeChargeMountValue.InnerText = RBMConfig.troopUpgradeChargeMountValue ? "1" : "0";
+            XmlElement TroopLootPiecesPerMan = xmlconfig.CreateElement("TroopLootPiecesPerMan");
+            TroopLootPiecesPerMan.InnerText = RBMConfig.troopLootPiecesPerMan.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopLootOverlookChancePerTier = xmlconfig.CreateElement("TroopLootOverlookChancePerTier");
+            TroopLootOverlookChancePerTier.InnerText = RBMConfig.troopLootOverlookChancePerTier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopMaintenanceFraction = xmlconfig.CreateElement("TroopMaintenanceFraction");
+            TroopMaintenanceFraction.InnerText = RBMConfig.troopMaintenanceFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopSettlementFoodDays = xmlconfig.CreateElement("TroopSettlementFoodDays");
+            TroopSettlementFoodDays.InnerText = RBMConfig.troopSettlementFoodDays.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement RecruitMaintenanceDays = xmlconfig.CreateElement("RecruitMaintenanceDays");
+            RecruitMaintenanceDays.InnerText = RBMConfig.recruitMaintenanceDays.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopFoodWageFraction = xmlconfig.CreateElement("TroopFoodWageFraction");
+            TroopFoodWageFraction.InnerText = RBMConfig.troopFoodWageFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopSettlementFunWageFraction = xmlconfig.CreateElement("TroopSettlementFunWageFraction");
+            TroopSettlementFunWageFraction.InnerText = RBMConfig.troopSettlementFunWageFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopRaidSpoilsMultiplier = xmlconfig.CreateElement("TroopRaidSpoilsMultiplier");
+            TroopRaidSpoilsMultiplier.InnerText = RBMConfig.troopRaidSpoilsMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopLeaderSpoilsCutFraction = xmlconfig.CreateElement("TroopLeaderSpoilsCutFraction");
+            TroopLeaderSpoilsCutFraction.InnerText = RBMConfig.troopLeaderSpoilsCutFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopSpoilsCapDays = xmlconfig.CreateElement("TroopSpoilsCapDays");
+            TroopSpoilsCapDays.InnerText = RBMConfig.troopSpoilsCapDays.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement BuildingCostMultiplier = xmlconfig.CreateElement("BuildingCostMultiplier");
+            BuildingCostMultiplier.InnerText = RBMConfig.buildingCostMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement ConstructionBudgetShare = xmlconfig.CreateElement("ConstructionBudgetShare");
+            ConstructionBudgetShare.InnerText = RBMConfig.constructionBudgetShare.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopLuxuryCooldownDays = xmlconfig.CreateElement("TroopLuxuryCooldownDays");
+            TroopLuxuryCooldownDays.InnerText = RBMConfig.troopLuxuryCooldownDays.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopLuxurySpendChance = xmlconfig.CreateElement("TroopLuxurySpendChance");
+            TroopLuxurySpendChance.InnerText = RBMConfig.troopLuxurySpendChance.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopSpoilsHealGoldPerTier = xmlconfig.CreateElement("TroopSpoilsHealGoldPerTier");
+            TroopSpoilsHealGoldPerTier.InnerText = RBMConfig.troopSpoilsHealGoldPerTier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopSpoilsHealFractionPerHour = xmlconfig.CreateElement("TroopSpoilsHealFractionPerHour");
+            TroopSpoilsHealFractionPerHour.InnerText = RBMConfig.troopSpoilsHealFractionPerHour.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement TroopFallenSpoilsCaptureFraction = xmlconfig.CreateElement("TroopFallenSpoilsCaptureFraction");
+            TroopFallenSpoilsCaptureFraction.InnerText = RBMConfig.troopFallenSpoilsCaptureFraction.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+            RBMCampaign.AppendChild(RBMCampaignEnabled);
+            RBMCampaign.AppendChild(TroopUpgradeCostMultiplier);
+            XmlElement SpoilsLoggingEnabled = xmlconfig.CreateElement("SpoilsLoggingEnabled");
+            SpoilsLoggingEnabled.InnerText = RBMConfig.spoilsLoggingEnabled ? "1" : "0";
+            XmlElement SpoilsVerboseLoggingEnabled = xmlconfig.CreateElement("SpoilsVerboseLoggingEnabled");
+            SpoilsVerboseLoggingEnabled.InnerText = RBMConfig.spoilsVerboseLoggingEnabled ? "1" : "0";
+
+            RBMCampaign.AppendChild(TroopUpgradeSpoilsLootMultiplier);
+            RBMCampaign.AppendChild(TroopUpgradeRequireSupplyTown);
+            RBMCampaign.AppendChild(RecruitDrawsFromSettlementStock);
+            RBMCampaign.AppendChild(TroopUpgradeSupplyRadius);
+            RBMCampaign.AppendChild(TroopUpgradeChargeMountValue);
+            RBMCampaign.AppendChild(TroopLootPiecesPerMan);
+            RBMCampaign.AppendChild(TroopLootOverlookChancePerTier);
+            RBMCampaign.AppendChild(TroopMaintenanceFraction);
+            RBMCampaign.AppendChild(TroopSettlementFoodDays);
+            RBMCampaign.AppendChild(RecruitMaintenanceDays);
+            RBMCampaign.AppendChild(TroopFoodWageFraction);
+            RBMCampaign.AppendChild(TroopSettlementFunWageFraction);
+            RBMCampaign.AppendChild(TroopRaidSpoilsMultiplier);
+            RBMCampaign.AppendChild(TroopLeaderSpoilsCutFraction);
+            RBMCampaign.AppendChild(TroopSpoilsCapDays);
+            RBMCampaign.AppendChild(BuildingCostMultiplier);
+            RBMCampaign.AppendChild(ConstructionBudgetShare);
+            RBMCampaign.AppendChild(TroopLuxuryCooldownDays);
+            RBMCampaign.AppendChild(TroopLuxurySpendChance);
+            RBMCampaign.AppendChild(TroopSpoilsHealGoldPerTier);
+            RBMCampaign.AppendChild(TroopSpoilsHealFractionPerHour);
+            RBMCampaign.AppendChild(TroopFallenSpoilsCaptureFraction);
+            RBMCampaign.AppendChild(SpoilsLoggingEnabled);
+            RBMCampaign.AppendChild(SpoilsVerboseLoggingEnabled);
+            Config.AppendChild(RBMCampaign);
 
             xmlconfig.AppendChild(Config);
             xmlconfig.Save(GetConfigFilePath());

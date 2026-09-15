@@ -4,7 +4,7 @@
     {
         public float ArmorPriceModifier = 1f;
         public float WeaponPriceModifier = 1f;
-        public float HorsePriceModifier = 0.2f;
+        public float HorsePriceModifier = 1f;
         public float TradePriceModifier = 1f;
 
         public RBMCombatConfigPriceMultipliers()

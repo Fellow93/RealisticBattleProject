@@ -2,6 +2,7 @@
 using RBM.AgentStatusBar;
 using RBMAI;
 using RBMCombat;
+using RBMCampaign;
 using RBMTournament;
 using System;
 using TaleWorlds.CampaignSystem;
@@ -24,6 +25,7 @@ namespace RBM
         public static Harmony rbmaiHarmony = new Harmony("com.rbmai");
         public static Harmony rbmtHarmony = new Harmony("com.rbmt");
         public static Harmony rbmcombatHarmony = new Harmony("com.rbmcombat");
+        public static Harmony rbmcampaignHarmony = new Harmony("com.rbmcampaign");
         public static Harmony rbmHarmony = new Harmony("com.rbmmain");
     }
 
@@ -60,6 +62,14 @@ namespace RBM
             {
                 HarmonyModules.rbmcombatHarmony.UnpatchAll(HarmonyModules.rbmcombatHarmony.Id);
             }
+            if (RBMConfig.RBMConfig.rbmCampaignEnabled)
+            {
+                RBMCampaignPatcher.DoPatching(ref HarmonyModules.rbmcampaignHarmony);
+            }
+            else
+            {
+                HarmonyModules.rbmcampaignHarmony.UnpatchAll(HarmonyModules.rbmcampaignHarmony.Id);
+            }
         }
 
         public static void UnpatchAllRBM()
@@ -69,12 +79,41 @@ namespace RBM
             HarmonyModules.rbmtHarmony.UnpatchAll(HarmonyModules.rbmtHarmony.Id);
             HarmonyModules.rbmaiHarmony.UnpatchAll(HarmonyModules.rbmaiHarmony.Id);
             HarmonyModules.rbmcombatHarmony.UnpatchAll(HarmonyModules.rbmcombatHarmony.Id);
+            HarmonyModules.rbmcampaignHarmony.UnpatchAll(HarmonyModules.rbmcampaignHarmony.Id);
         }
 
         protected override void OnSubModuleLoad()
         {
             RBMConfig.RBMConfig.LoadConfig();
             CustomBattlePreset.LoadPreset();
+
+            // Gauntlet parses and caches the party screen prefab before OnGameStart runs, so this
+            // one hook cannot wait for ApplyHarmonyPatches like the rest of RBMCampaign does.
+            if (RBMConfig.RBMConfig.rbmCampaignEnabled)
+            {
+                SpoilsBarPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // Same story for the inventory screen: its prefabs are parsed and cached long before
+                // OnGameStart, so the weight column has to be injected at module load or not at all.
+                ItemWeightPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // The maintenance line under the party screen's selected-troop wage, injected the same
+                // way and for the same reason as the spoils bar above.
+                MaintenanceLabelPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // The per-party upgrade-budget slider + checkbox beside the clan Parties panel's wage cap,
+                // injected the same way -- the clan screen's prefabs are likewise cached before OnGameStart.
+                UpgradeLimitPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // Grows the map Escape-menu panel so the added RBM Ledger row does not overflow it; same
+                // cached-before-OnGameStart reason as the injections above.
+                RBMEscapeMenuPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // Lets the smithy refine rows shrink-wrap and centre their material cluster so the added silver
+                // tile on the Thamaskene row does not overflow; same cached-before-OnGameStart reason.
+                RefineRowLayoutPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // Shows all three rows of the town-management Projects grid (War Sails' shipyard is the 13th
+                // tile and sat scrolled out of view); same cached-before-OnGameStart reason.
+                ProjectsGridPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // Scales the project tile itself (DevelopmentItem.xml) to match the shrunken grid cells set
+                // above, so two full rows of building icons always fit with slack.
+                TownManagementGridPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+            }
 
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate
             {
@@ -87,6 +126,11 @@ namespace RBM
             CustomBattlePatches.TickInput();
             if (Mission.Current == null)
             {
+                if (RBMConfig.RBMConfig.rbmCampaignEnabled && Campaign.Current != null)
+                {
+                    LordSwitcher.CheckHotkey();
+                    RBMLedgerHotkey.CheckHotkey();
+                }
                 return;
             }
             try
@@ -142,6 +186,25 @@ namespace RBM
         {
             RBMConfig.RBMConfig.LoadConfig();
             ApplyHarmonyPatches();
+            if (RBMConfig.RBMConfig.rbmCampaignEnabled && game.GameType is Campaign)
+            {
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSpoilsCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMTroopUpkeepCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSimulationCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSpectateCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMEconomyCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSettlementWealthCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMCaravanBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMVillageLedgerCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMTownLedgerCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMGarrisonRefillBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMRecruitBiasBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSettlementDefenseBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMDeserterRaiderBehavior());
+                // Registered last so it wins GetGameModel and receives whatever workshop model was
+                // already in place (vanilla's, or NavalDLC's) as its BaseModel to delegate to.
+                ((CampaignGameStarter)gameStarterObject).AddModel(new RBMCampaign.RBMWorkshopModel());
+            }
             base.OnGameStart(game, gameStarterObject);
         }
 
@@ -153,6 +216,12 @@ namespace RBM
             if (isWSActive && isRBMActive && !isRBMWSActive)
             {
                 InformationManager.ShowInquiry(new InquiryData("RBM War Sails submodule is missing!", "RBM War Sails submod is required when using both RBM and the War Sails DLC. Please install and enable the RBM War Sails submod to avoid potential issues, like Nords having no weapons etc.", true, false, "OK", "OK", null, null), false, true);
+            }
+            // Where TaleWorlds register theirs, and for the same reason: the tooltip registry has to know what draws
+            // an RBMPowerTooltipData before the first hover can ask for one.
+            if (RBMConfig.RBMConfig.rbmCampaignEnabled)
+            {
+                RBMCampaign.RBMPowerTooltipVM.Register();
             }
             ApplyHarmonyPatches();
         }
@@ -176,13 +245,26 @@ namespace RBM
                     mission.AddMissionBehavior((MissionBehavior)(object)new PlayerArmorStatus());
                 }
             }
+            if (RBMConfig.RBMConfig.battleHitLoggingEnabled)
+            {
+                mission.AddMissionBehavior((MissionBehavior)(object)new BattleHitLogic());
+            }
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {
+                if (RBMConfig.RBMConfig.aiBehaviorLogEnabled)
+                {
+                    mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.AiBehaviorLogic());
+                }
                 mission.AddMissionBehavior((MissionBehavior)(object)new AgentPanicFix());
                 mission.AddMissionBehavior((MissionBehavior)(object)new RBMAIPatchLogic());
                 if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
                 {
                     mission.AddMissionBehavior((MissionBehavior)(object)new StanceVisualLogic());
+                }
+                if (RBMConfig.RBMConfig.frontlineEnabled)
+                {
+                    // Inert until toggled in-mission with Ctrl+Shift+F.
+                    mission.AddMissionBehavior((MissionBehavior)(object)new FrontlineDebugOverlay());
                 }
                 mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
                 if (RBMConfig.RBMConfig.postureEnabled)
@@ -192,6 +274,10 @@ namespace RBM
             }
             else
             {
+                if (mission.GetMissionBehavior<FrontlineDebugOverlay>() != null)
+                {
+                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<FrontlineDebugOverlay>());
+                }
                 if (mission.GetMissionBehavior<SiegeArcherPoints>() != null)
                 {
                     mission.RemoveMissionBehavior(mission.GetMissionBehavior<SiegeArcherPoints>());
@@ -206,6 +292,23 @@ namespace RBM
                 }
             }
             base.OnMissionBehaviorInitialize(mission);
+        }
+
+        /// <summary>
+        /// Runs from Game.InitializeDefaultGameObjects, after the default item categories are built
+        /// and before DefaultItems, the Items XML and the WorkshopTypes XML -- the one point at which
+        /// RBM's own categories can be added and still be seen by everything that reads them.
+        /// </summary>
+        public override void InitializeSubModuleGameObjects(Game game)
+        {
+            base.InitializeSubModuleGameObjects(game);
+            // Gated with the rest of RBMCampaign: the WorkshopTypes XML whose recipes name these
+            // categories (RBMEconomy_workshops_artisans.xml) now carries RBM_CAMPAIGN_XML_TAG, so
+            // MergeTwoXmlsPatch skips it when the module is off and nothing asks for the categories.
+            if (RBMConfig.RBMConfig.rbmCampaignEnabled)
+            {
+                TradeGoodCategories.Register(game);
+            }
         }
 
         public override void OnGameInitializationFinished(Game game)

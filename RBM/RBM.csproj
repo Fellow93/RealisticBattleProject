@@ -307,6 +307,10 @@
       <Project>{39335729-4fae-451e-991b-123d7898b3eb}</Project>
       <Name>RBMCombat</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RBMCampaign\RBMCampaign.csproj">
+      <Project>{a8d35c12-6b47-4e91-b9f2-3c8d7a45e601}</Project>
+      <Name>RBMCampaign</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBM_native_parameters_tweaks.xml" "$(SolutionDir)..\RBM\ModuleData\"

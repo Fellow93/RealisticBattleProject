@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
   <tags>
     <tag language="English" />
@@ -84,6 +84,124 @@
 	<string id="RBM_CON_014" text="Posture GUI" />
 	<string id="RBM_CON_015" text="Vanilla AI Block/Parry/Attack" />
 	<string id="RBM_CON_031" text="Keep Battle (Last Stand)" />
+	<string id="RBM_CON_032" text="Troop Upgrade Cost" />
+	<string id="RBM_CON_033" text="Realistic Battle Mod" />
+	<string id="RBM_CON_035" text="Battle Spoils Loot" />
+	<string id="RBM_CON_037" text="Kit Pieces per Man" />
+	<string id="RBM_CON_039" text="Spoils Logging" />
+	<string id="RBM_CON_040" text="Overlook Chance / Tier" />
+	<string id="RBM_CON_041" text="Food Days Bought" />
+	<string id="RBM_CON_042" text="Spoils Spent on Food" />
+	<string id="RBM_CON_043" text="Spoils Spent on Fun" />
+	<string id="RBM_CON_044" text="Raid Plunder Pocketed" />
+	<string id="RBM_CON_046" text="Spoils Reserve (Days of Keep)" />
+	<string id="RBM_CON_047" text="Luxury Cooldown (Days)" />
+	<string id="RBM_CON_048" text="Luxury Buy Chance" />
+	<string id="RBM_CON_049" text="Verbose Logging" />
+	<string id="RBM_CON_065" text="Fallen Spoils Captured" />
+	<!-- Campaign option hover tooltips (full descriptions the shortened labels drop) -->
+	<string id="RBM_CON_050" text="Multiplier on the gold-and-spoils cost to upgrade a troop. 0 turns the spoils system off and makes upgrades free. Default 1.00." />
+	<string id="RBM_CON_051" text="Multiplier on the worth of the kit your men salvage from a battlefield. Default 1.00." />
+	<string id="RBM_CON_052" text="How many pieces of kit a single soldier can carry off a field. Default 3." />
+	<string id="RBM_CON_053" text="Chance a man steps over a piece of kit one tier beneath him, leaving it for greener troops. Default 0.50." />
+	<string id="RBM_CON_055" text="Days of food a man buys when he passes through a settlement. 0 stops him buying any. Default 20." />
+	<string id="RBM_CON_056" text="Share of a day's wage a man spends to feed himself for a day. Default 0.50." />
+	<string id="RBM_CON_057" text="A day's wage a man drinks away for each day he sits idle in a settlement. Default 0.25." />
+	<string id="RBM_CON_059" text="Share of a raid's plunder its soldiers keep for themselves as spoils. Default 0.25." />
+	<string id="RBM_CON_061" text="Days of keep a stack holds in its purse before upkeep spends the surplus: this many days of its wage and its field maintenance together. Default 20." />
+	<string id="RBM_CON_063" text="Days a stack waits after buying a luxury before it splurges again. Default 20." />
+	<string id="RBM_CON_064" text="Chance each idle hour that an over-cap stack buys a luxury from the settlement. Default 0.02." />
+	<string id="RBM_CON_066" text="Share of a beaten enemy's killed and wounded spoils the victors carry off; the rest is lost. Default 0.75." />
+	<string id="RBM_CON_062" text="Reset to Default" />
+	<string id="RBM_CON_070" text="Upgrade Near Town" />
+	<string id="RBM_CON_071" text="Upgrade Supply Range" />
+	<string id="RBM_CON_072" text="How near, in map units, a friendly or neutral town must be for a party to upgrade its troops. Needs 'Upgrade Near Town' on. Default 30." />
+	<string id="RBM_CON_073" text="Heal Cost per Tier" />
+	<string id="RBM_CON_074" text="Gold a wounded man's stack pays to mend him faster while resting in a settlement, scaled by his tier. Zero stops paid healing. Default 10." />
+	<string id="RBM_CON_075" text="Heal Rate per Hour" />
+	<string id="RBM_CON_076" text="Most of a stack's wounded that paid healing mends in one hour, so a deep purse buys a faster recovery, not an instant one. Default 0.05." />
+		<string id="RBM_CON_079" text="Leader's Cut" />
+		<string id="RBM_CON_080" text="Base share of the spoils a party's men gather -- off a battlefield, a raid or a sack -- that their leader skims into his own purse as gold before the rest settles into the stacks. Multiplied by the leader's clan tier plus one, so a tier-0 or clanless leader takes this share once and a tier-6 house seven times it. Zero leaves the men all they take. Default 0.05." />
+		<string id="RBM_CON_081" text="Daily Maintenance" />
+		<string id="RBM_CON_082" text="Daily upkeep per soldier as a share of his whole kit's worth -- gear, horse and harness. Paid first from the men's own spoils; any shortfall falls to the party leader's gold. Zero stops maintenance. Default 0.005." />
+		<string id="RBM_CON_083" text="Recruit Maintenance Days" />
+		<string id="RBM_CON_084" text="Days of maintenance a recruit mustered from a village or town brings in his stack's purse, priced off the same daily upkeep. 0 seeds nothing. Default 20." />
+		<string id="RBM_CON_087" text="Buy Mounts For Upgrades" />
+		<string id="RBM_CON_088" text="Upgrading into a mounted troop no longer needs a horse in the baggage train and consumes none; the horse and harness are paid for in gold/spoils instead. Off restores the vanilla horse-item requirement. Default on." />
+		<string id="RBM_CON_091" text="Self-Funded Maintenance Share" />
+		<string id="RBM_CON_092" text="Share of daily maintenance a self-funded clan -- one sworn to no kingdom, or a mercenary company under contract (whose pay is doubled while it holds) -- meets from its own spoils; any shortfall falls to the party leader's gold. Sworn vassals and rulers pay none from their purses. Default 1.00." />
+		<string id="RBM_CON_093" text="Detailed Auto Resolve" />
+		<string id="RBM_CON_094" text="Detailed Auto Resolve Logging" />
+		<string id="RBM_CON_095" text="Field Battle Logging" />
+		<string id="RBM_CON_096" text="Auto Resolve Routing" />
+		<string id="RBM_CON_097" text="Auto Resolve Perks" />
+		<string id="RBM_CON_098" text="Equipment Based Troop Power" />
+	<string id="RBM_SPOILS_001" text="Spoils Stockpile" />
+	<string id="RBM_SPOILS_002" text="Spoils per Upgrade" />
+	<string id="RBM_SPOILS_005" text="Salvaged into spoils: {AMOUNT}" />
+	<string id="RBM_SPOILS_006" text="Spoils cover: {AMOUNT}" />
+	<string id="RBM_SPOILS_007" text="You pay: {AMOUNT}" />
+	<string id="RBM_SPOILS_008" text="{COST}  ({FREE} free)" />
+	<string id="RBM_SPOILS_009" text="Your men strip the fallen and recover {AMOUNT} in spoils." />
+	<string id="RBM_SPOILS_010" text="Your men find nothing on the fallen they can use." />
+	<string id="RBM_SPOILS_011" text="Provisioned from their own purse" />
+	<string id="RBM_SPOILS_013" text="Your men plunder {SETTLEMENT} and pocket {AMOUNT} in spoils." />
+	<string id="RBM_SPOILS_014" text="Your men sack {SETTLEMENT} and pocket {AMOUNT} in spoils." />
+	<string id="RBM_SPOILS_012" text="A Man's Kit Is Worth" />
+	<string id="RBM_SPOILS_015" text="No friendly town nearby to supply this upgrade." />
+		<string id="RBM_SPOILS_016" text="You take a leader's cut of {AMOUNT} gold from the spoils." />
+		<string id="RBM_SPOILS_017" text="Troop maintenance" />
+		<string id="RBM_SPOILS_018" text="Spoils Reserve" />
+		<string id="RBM_SPOILS_019" text="{TOTAL} ({PER} / man)" />
+		<string id="RBM_SPOILS_019" text="{TOTAL} ({PER} / man)" />
+		<string id="RBM_SPOILS_020" text="Maintenance paid from troop spoils" />
+	<string id="RBM_SPOILS_021" text="Includes mount: {AMOUNT}" />
+	<string id="RBM_SPOILS_022" text="Maintenance" />
+	<string id="RBM_SPOILS_023" text="Maintenance: {AMOUNT}" />
+	<string id="RBM_SPOILS_024" text="Your men strip the {COUNT} prisoners you left behind and recover {AMOUNT} in spoils." />
+	<string id="RBM_SPOILS_025" text="Your men strip the ransomed prisoners' kit and split {AMOUNT} in spoils." />
+		<string id="RBM_SPOILS_026" text="Their kit is stripped for spoils:{newline}Spoils to your men: {SPOILS}{newline}Your leader's cut: {CUT} gold" />
+		<string id="RBM_SPOILS_027" text="{BASE}{newline}Spoils to your men: {SPOILS}{newline}Your leader's cut: {CUT} gold" />
+		<string id="RBM_SPOILS_028" text="Your companions claim {AMOUNT} gold in spoils." />
+		<string id="RBM_SPOILS_029" text="Your men strip the delivered prisoners' kit and keep {AMOUNT} in spoils." />
+		<string id="RBM_SPOILS_030" text="Your men sack {SETTLEMENT}, stripping its markets bare, and pocket {AMOUNT} in spoils." />
+		<string id="RBM_UPGCAP_TITLE" text="Upgrade Budget / Day" />
+	<string id="RBM_UPGCAP_UNLIMITED" text="Unlimited" />
+	<string id="RBM_militia_unpaid" text="Cannot be paid" />
+	<string id="RBM_militia_overcap" text="Over muster" />
+	<string id="RBM_militia_unarmed" text="Cannot be armed" />
+	<string id="RBM_recruit_tithe" text="Foreign levy" />
+	<string id="RBM_recruit_gear" text="Equipment" />
+	<string id="RBM_recruit_cost_title" text="Recruitment cost" />
+	<string id="RBM_recruit_cost_free" text="Free" />
+	<string id="RBM_wealth_citizen" text="Citizen wealth" />
+	<string id="RBM_wealth_income" text="Settlement wealth tax" />
+	<string id="RBM_merc_wage_cost" text="Mercenary troop wages" />
+	<string id="RBM_merc_wage_pay" text="Mercenary wage pay" />
+	<string id="RBM_merc_stipend" text="Mercenary stipend" />
+	<string id="RBM_merc_unpaid" text="Employer could not pay" />
+	<string id="RBM_garrison_food" text="Garrison provisioning" />
+	<string id="RBM_wealth_settlement" text="Settlement wealth" />
+	<string id="RBM_fin_leader_cut" text="Your cut of the spoils ({DAYS}-day avg.)" />
+	<string id="RBM_fin_companion_spoils" text="Companions' spoils share ({DAYS}-day avg.)" />
+	<string id="RBM_fin_minting" text="Mint revenue ({DAYS}-day avg.)" />
+	<string id="RBM_fin_upgrade_gold" text="Clan party promotions paid in gold ({DAYS}-day avg.)" />
+	<string id="RBM_fief_wealth_tax" text="Wealth tax" />
+	<string id="RBM_fief_castle_surplus" text="Castle surplus" />
+	<string id="RBM_fief_hint_wealth" text="A daily levy on the money standing in the market. Your share leaves the town; the fief's own share pays its garrison, militia and clerks. Trade tariffs stay in the fief's treasury." />
+	<string id="RBM_fief_hint_castle" text="A tenth of the wealth the castle holds above what it needs, remitted to you each day." />
+	<string id="RBM_fief_hint_citizen" text="Citizen wealth" />
+	<string id="RBM_fief_hint_owner" text="Paid to you today" />
+	<string id="RBM_fief_hint_garrison" text="The fief pays its garrison out of its own treasury first; only what the treasury cannot cover is billed to you." />
+	<string id="RBM_fief_hint_wage" text="Daily wage bill" />
+	<string id="RBM_fief_hint_fief_pays" text="Paid by the fief's treasury" />
+	<string id="RBM_fief_hint_owner_pays" text="Billed to you" />
+	<string id="RBM_SPOILS_004" text="Holding the field earns spoils salvaged from the kit left on it, by the enemies you killed and by your own fallen. Nothing is recovered whole: armour is battered, blades are chipped, and a quiver is worth only the arrows still in it. The veterans pick first, and the further beneath a man a piece lies the likelier he is to step over it, so what they overlook falls to greener troops. What his men do not spend on their own upgrades they spend on food and drink in the settlements you stop in." />
+	<!-- Strategic Power Tooltip Strings -->
+	<string id="RBM_POWER_001" text="Power: {ATTACKER_TOTAL} attacking  vs  {DEFENDER_TOTAL} defending" />
+	<string id="RBM_POWER_002" text="DEFENDERS" />
+	<string id="RBM_POWER_003" text="ATTACKERS" />
+	<string id="RBM_POWER_004" text="{COUNT} {TIER} {NAME}: {PER_MAN} ({TOTAL})" />
 	<string id="RBM_CON_016" text="RBM Combat" />
 	<string id="RBM_CON_017" text="Module Status" />
 	<string id="RBM_CON_018" text="RBM AI" />
@@ -226,13 +344,13 @@
 	<string id="RBM_LAN_018" text="Western Pike" />
 	<string id="RBM_LAN_019" text="Light Menavlion" />
 	<!-- RBMCombat_ranged.xml Strings -->
-	<string id="RBM_RAN_001" text="500 Pound Doubler Belt Crossbow" />
-	<string id="RBM_RAN_002" text="450 Pound Doubler Belt Crossbow" />
-	<string id="RBM_RAN_003" text="410 Pound Doubler Belt Crossbow" />
-	<string id="RBM_RAN_004" text="370 Pound Doubler Belt Crossbow" />
-	<string id="RBM_RAN_005" text="330 Pound Spanning Belt Crossbow" />
-	<string id="RBM_RAN_006" text="290 Pound Spanning Belt Crossbow" />
-	<string id="RBM_RAN_007" text="250 Pound Spanning Belt Crossbow" />
+	<string id="RBM_RAN_001" text="330 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_002" text="300 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_003" text="270 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_004" text="230 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_005" text="200 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_006" text="160 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_007" text="120 Pound Eastern Crossbow" />
 	<string id="RBM_RAN_008" text="200 Pound War Longbow" />
 	<string id="RBM_RAN_009" text="200 Pound Tournament Longbow" />
 	<string id="RBM_RAN_010" text="180 Pound War Longbow" />
@@ -254,6 +372,32 @@
 	<string id="RBM_RAN_026" text="90 Pound Composite Bow" />
 	<string id="RBM_RAN_027" text="70 Pound Composite Bow" />
 	<string id="RBM_RAN_028" text="60 Pound Composite Bow" />
+	
+	<string id="RBM_RAN_029" text="100 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_030" text="80 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_031" text="Heavy 80 Pound Repeating Crossbow" />
+	<string id="RBM_RAN_032" text="Heavy 60 Pound Repeating Crossbow" />
+	<string id="RBM_RAN_033" text="Heavy 45 Pound Repeating Crossbow" />
+	<string id="RBM_RAN_034" text="Stone Sling Pebbles 35 grams" />
+	<string id="RBM_RAN_035" text="Stone Sling Pebbles 50 grams" />
+	<string id="RBM_RAN_036" text="Stone Sling Pebbles 80 grams" />
+	<string id="RBM_RAN_037" text="Stone Sling Stones 120 grams" />
+	<string id="RBM_RAN_038" text="Stone Sling Half-Libra 164 grams" />
+	<string id="RBM_RAN_039" text="Stone Sling Half-Mina 218 grams" />
+	<string id="RBM_RAN_040" text="Stone Sling Libra 329 grams" />
+	<string id="RBM_RAN_041" text="Stone Sling Mina 436 grams" />
+	<string id="RBM_RAN_042" text="Chiseled Sling Bullets 35 grams" />
+	<string id="RBM_RAN_043" text="Chiseled Sling Bullets 50 grams" />
+	<string id="RBM_RAN_044" text="Chiseled Sling Bullets 80 grams" />
+	<string id="RBM_RAN_045" text="Chiseled Sling Siege Bullets 140 grams" />
+	<string id="RBM_RAN_046" text="Lead Sling Bullets 35 grams" />
+	<string id="RBM_RAN_047" text="Lead Sling Bullets 50 grams" />
+	<string id="RBM_RAN_048" text="Lead Sling Bullets 80 grams" />
+	<string id="RBM_RAN_049" text="Wool Sling 18 Inches" />
+	<string id="RBM_RAN_050" text="Braided Sling 28 Inches" />
+	<string id="RBM_RAN_051" text="Reinforced Sling 41 Inches" />
+	<string id="RBM_RAN_052" text="Imperial Cheirosiphon" />
+	<string id="RBM_RAN_053" text="Whispering Shadow 150 Pounder" />
 	<!-- RBMCombat_shields.xml Strings -->
 	<string id="RBM_SHI_001" text="Shoulder Strapped Reinforced Targe" />
 	<string id="RBM_SHI_002" text="Shoulder Strapped Round Steppe Shield" />
@@ -328,27 +472,63 @@
 	<string id="RBM_OVH_012" text="Son of Boyar" />
 	<string id="RBM_OVH_013" text="Sturgian Berserker" />
 	<string id="RBM_OVH_014" text="Sturgian Ulfhednar" />
-	<string id="RBM_OVH_015" text="Skene" />
-	<string id="RBM_OVH_016" text="Kern" />
-	<string id="RBM_OVH_017" text="Redshank" />
-	<string id="RBM_OVH_018" text="Guardian Recruit" />
-	<string id="RBM_OVH_019" text="Expert Guardian" />
-	<string id="RBM_OVH_020" text="Veteran Guardian" />
+	<string id="RBM_OVH_015" text="Battanian Yeoman Hunter" />
+	<string id="RBM_OVH_016" text="Battanian Yeoman Archer" />
+	<string id="RBM_OVH_017" text="Battanian Yeoman Veteran Archer" />
+	<string id="RBM_OVH_018" text="Imperial Trained Slinger" />
+	<string id="RBM_OVH_019" text="Imperial Veteran Slinger" />
+	<string id="RBM_OVH_020" text="Imperial Legionary Slinger" />
 	<string id="RBM_OVH_021" text="Knight of Sacred Fire" />
 	<string id="RBM_OVH_022" text="Karakhuzait Nomad" />
 	<string id="RBM_OVH_023" text="Karakhuzait Rider" />
 	<string id="RBM_OVH_024" text="Karakhuzait Elder" />
-	<string id="RBM_OVH_025" text="Watchman" />
-	<string id="RBM_OVH_026" text="Mercenary Guard" />
-	<string id="RBM_OVH_027" text="Mercenary Scout" />
-	<string id="RBM_OVH_028" text="Mercenary Swordsman" />
-	<string id="RBM_OVH_029" text="Mercenary Crossbowman" />
-	<string id="RBM_OVH_030" text="Mercenary Horseman" />
-	<string id="RBM_OVH_031" text="Hired Blade" />
-	<string id="RBM_OVH_032" text="Mercenary Cavalry" />
+	<string id="RBM_OVH_025" text="Hireling Varangian" />
+	<string id="RBM_OVH_026" text="Aserai Slinger" />
+	<string id="RBM_OVH_027" text="Hireling Elite Varangian" />
+	<string id="RBM_OVH_028" text="Aserai Experienced Slinger" />
+	<string id="RBM_OVH_029" text="Mercenary Slinger" />
+	<string id="RBM_OVH_030" text="Hireling Horseman" />
+	<string id="RBM_OVH_031" text="Aserai Master Slinger" />
+	<string id="RBM_OVH_032" text="Hireling Heavy Cavalry" />
 	<string id="RBM_OVH_033" text="Crossbow Sister" />
 	<string id="RBM_OVH_034" text="Gallant Glaive Sister" />
 	<string id="RBM_OVH_035" text="Glaive Sister" />
 	<string id="RBM_OVH_036" text="Imperial Mounted Acritae" />
+	<string id="RBM_OVH_037" text="Jawwal Recruit Slinger" />
+	<string id="RBM_OVH_038" text="Jawwal Slinger" />
+	<string id="RBM_OVH_039" text="Jawwal Master Slinger" />
+	<string id="RBM_OVH_040" text="Mercenary Elite Slinger" />
+	<!-- Trade Good Repricing Strings -->
+	<!-- Inventory Weight Column Strings -->
+	<string id="RBM_CON_105" text="Inventory Weight Column" />
+	<string id="RBM_CON_106" text="Wt." />
+	<string id="RBM_CON_107" text="Economy Logging" />
+	<string id="RBM_CON_108" text="Writes the village-to-town goods and food chain to logs/economy next to the config: each village's daily production, every villager party sent out with its size, composition and cargo, each town's rations, and the end-of-day state of every settlement. Verbose, and only useful for tuning the economy." />
+	<string id="RBM_CON_109" text="Starting Gold" />
+	<string id="RBM_CON_110" text="The purse a new campaign opens with, replacing whatever character creation handed out. Only applies to a new game; a loaded save keeps its own gold. Default 5000." />
+	<!-- Spectate Strings -->
+	<string id="RBM_CON_099" text="Spectate AI Battles" />
+	<string id="RBM_CON_101" text="Spectate Minimum Troops Per Side" />
+	<string id="RBM_CON_102" text="How many men both sides must field before a battle between two AI lords is worth being asked about. Two patrols brushing past each other say nothing about how a line holds. Default 100." />
+	<string id="RBM_SPECTATE_001" text="Watch this battle?" />
+	<string id="RBM_SPECTATE_002" text="Two armies have met in the field. You may watch the fight from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the battle on the map resolves on its own, and nothing you see here changes it." />
+	<string id="RBM_SPECTATE_003" text="Watch" />
+	<string id="RBM_SPECTATE_004" text="Ignore" />
+	<string id="RBM_SPECTATE_005" text="Attackers: {NAME} ({COUNT} men Â· power {POWER})" />
+	<string id="RBM_SPECTATE_006" text="Defenders: {NAME} ({COUNT} men Â· power {POWER})" />
+	<string id="RBM_SPECTATE_007" text="Watch this assault?" />
+	<string id="RBM_SPECTATE_008" text="An army is storming the walls. You may watch the assault from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the siege on the map resolves on its own, and nothing you see here changes it." />
+	<string id="RBM_CAMP_001" text="RBM Campaign: incompatible save" />
+	<string id="RBM_CAMP_002" text="This save was not started with RBM Campaign features enabled.{newline}{newline}The one-time economy setup (settlement treasuries, citizen wealth, village purses and starting prosperity) only runs when a campaign is CREATED with RBM Campaign on, and it cannot be applied to an existing save. This campaign will run with a half-built, unbalanced economy -- markets stuck poor, treasuries and prosperity wrong, spoils and upkeep skewed.{newline}{newline}To get the intended experience, start a NEW campaign with RBM Campaign enabled. You can keep playing this save, but the economy will not behave correctly." />
+	<!-- RBMCombat_WS_items.xml Strings -->
+	<string id="RBM_WS_001" text="Master Assassin Boots" />
+	<string id="RBM_WS_002" text="Master Assassin Armor" />
+	<string id="RBM_WS_003" text="Master Assassin Cape" />
+	<string id="RBM_WS_004" text="Calradian Liquid Fire" />
+	<!-- RBMEconomy_trade_goods.xml Strings -->
+	<string id="RBM_E_001" text="Plain Ceramic"	/>
+	<string id="RBM_E_002" text="Decorated Pottery"	/>	
+	<string id="RBM_E_003" text="Ale"	/>		
+	<string id="RBM_E_004" text="Herd of Sheep"	/>	
   </strings>
 </base>

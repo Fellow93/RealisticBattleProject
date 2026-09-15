@@ -1,0 +1,578 @@
+using System.Collections.Generic;
+using System.Text;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.MapEvents;
+using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.Core;
+using TaleWorlds.Library;
+using TaleWorlds.Localization;
+
+namespace RBMCampaign
+{
+    /// <summary>
+    /// The field a stack holds after a battle is stripped of the kit its dead wore, and that kit is
+    /// shared out among the victors: the veterans pick first, the further beneath a man a piece lies
+    /// the likelier he is to step over it, and a man can only carry so much.
+    /// </summary>
+    public static partial class SpoilsPool
+    {
+        /// <summary>
+        /// ItemObject.Tier is clamp(round(Tierf), 0, 6) - 1, so it yields -1 for anything whose
+        /// Tierf rounds down to zero. Fold those into Tier1 rather than indexing off the array.
+        /// </summary>
+        private static int GetItemTier(ItemObject item)
+        {
+            return MathF.Min(MathF.Max((int)item.Tier, 0), (int)ItemObject.ItemTiers.NumTiers - 1);
+        }
+
+        /// <summary>
+        /// How far beneath a troop a piece of kit is. Item tiers are zero based (Tier1 == 0) and troop
+        /// tiers are one based, so an item matches a troop's tier when its index is one lower. Zero or
+        /// less means the kit is as good as his own or better.
+        /// </summary>
+        private static int GetTierGap(int itemTier, CharacterObject character)
+        {
+            return (character.Tier - 1) - itemTier;
+        }
+
+        /// <summary>
+        /// The share of a heap of kit a troop stoops to pick up. He never walks past his own tier or
+        /// better, but the further beneath him a piece is the likelier he is to leave it lying: a
+        /// veteran picking over a field steps over the recruits' spears without quite seeing them.
+        /// What he passes over stays on the field for the greener troops behind him, which is how the
+        /// cheap kit reaches the men it would actually be an upgrade for.
+        /// </summary>
+        /// <remarks>
+        /// Compounded per tier of gap rather than subtracted, so nothing is ever certain to be
+        /// overlooked and a rag of tier 1 is still worth something to the tier 6 man who finds
+        /// himself alone on the field. An overlook chance of 1 is the exception: then a troop sees
+        /// nothing at all beneath his own tier, which is how this worked before.
+        /// </remarks>
+        private static float GetNoticeFraction(int tierGap)
+        {
+            if (tierGap <= 0)
+            {
+                return 1f;
+            }
+            float overlook = MathF.Clamp(RBMConfig.RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
+            return MathF.Pow(1f - overlook, tierGap);
+        }
+
+        /// <summary>
+        /// Of <paramref name="available"/> pieces lying at a troop's feet, how many he sees. The
+        /// fractional piece is rolled for rather than dropped, so a lone piece a veteran would notice
+        /// a quarter of the time is not silently unlootable.
+        /// </summary>
+        private static long GetNoticedPieces(long available, int tierGap)
+        {
+            float exact = available * GetNoticeFraction(tierGap);
+            long whole = (long)exact;
+            return whole + ((MBRandom.RandomFloat < exact - whole) ? 1L : 0L);
+        }
+
+        /// <summary>
+        /// The noble line of each culture -- its elite troop tree, rooted at EliteBasicTroop -- so a
+        /// knight can be told from a footman of equal tier when the field is stripped. Cached per
+        /// culture: troop objects live for the whole game process, so the set never goes stale.
+        /// </summary>
+        private static readonly Dictionary<CultureObject, HashSet<CharacterObject>> _nobleLineByCulture = new Dictionary<CultureObject, HashSet<CharacterObject>>();
+
+        /// <summary>Whether a troop belongs to its culture's elite (noble) upgrade line.</summary>
+        private static bool IsNobleLineTroop(CharacterObject character)
+        {
+            if (character == null || character.Culture == null)
+            {
+                return false;
+            }
+            HashSet<CharacterObject> line;
+            if (!_nobleLineByCulture.TryGetValue(character.Culture, out line))
+            {
+                line = BuildNobleLine(character.Culture.EliteBasicTroop);
+                _nobleLineByCulture[character.Culture] = line;
+            }
+            return line.Contains(character);
+        }
+
+        /// <summary>Every troop reachable by upgrade from the elite root, the whole noble tree.</summary>
+        private static HashSet<CharacterObject> BuildNobleLine(CharacterObject root)
+        {
+            HashSet<CharacterObject> line = new HashSet<CharacterObject>();
+            if (root == null)
+            {
+                return line;
+            }
+            List<CharacterObject> frontier = new List<CharacterObject> { root };
+            for (int i = 0; i < frontier.Count; i++)
+            {
+                CharacterObject troop = frontier[i];
+                if (troop == null || !line.Add(troop) || troop.UpgradeTargets == null)
+                {
+                    continue;
+                }
+                frontier.AddRange(troop.UpgradeTargets);
+            }
+            return line;
+        }
+
+        /// <summary>Pieces of kit one man will carry off a field, however much of it he sees.</summary>
+        private static int GetCarryCapacity(int menInStack)
+        {
+            return MathF.Max(0, RBMConfig.RBMConfig.troopLootPiecesPerMan) * menInStack;
+        }
+
+        /// <summary>Every party on a battle side, names comma-joined, for the loot header line.</summary>
+        private static string SidePartyNames(MapEventSide side)
+        {
+            if (side == null || side.Parties == null || side.Parties.Count == 0)
+            {
+                return "none";
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < side.Parties.Count; i++)
+            {
+                if (i > 0)
+                {
+                    sb.Append(", ");
+                }
+                sb.Append(SpoilsLog.Describe(side.Parties[i].Party));
+            }
+            return sb.ToString();
+        }
+
+        public static void OnMapEventEnded(MapEvent mapEvent)
+        {
+            if (!IsEnabled)
+            {
+                return;
+            }
+            MapEventSide winner = mapEvent.Winner;
+            if (winner == null)
+            {
+                return;
+            }
+            // The fallen take their share of the purse to the grave, and a wiped stack's is split among
+            // the men left standing, before the field they hold is stripped for what fills the purse.
+            ApplyBattleCasualties(winner);
+            if (RBMConfig.RBMConfig.troopUpgradeSpoilsLootMultiplier <= 0f || winner.OtherSide == null)
+            {
+                return;
+            }
+
+            // What the field yields, bucketed by the tier of the kit so a man's own tier can decide
+            // how likely he is to stoop for it. Only the dead are stripped: the wounded are carried
+            // off still wearing their kit, and the routed fled with theirs. The victors hold the
+            // field, so they recover their own fallen as well as the enemy's.
+            //
+            // Counted twice over: pieces, because a man can only carry so many, and value, because
+            // that is what a piece is worth once it is his. Both are long, since a big battle sums
+            // well past what an int would hold.
+            long[] spoilsByTier = new long[(int)ItemObject.ItemTiers.NumTiers];
+            long[] piecesByTier = new long[(int)ItemObject.ItemTiers.NumTiers];
+            long intactValue = 0L;
+            foreach (MapEventParty loser in winner.OtherSide.Parties)
+            {
+                CountStrippedEquipment(spoilsByTier, piecesByTier, loser.DiedInBattle, ref intactValue);
+            }
+            foreach (MapEventParty victor in winner.Parties)
+            {
+                CountStrippedEquipment(spoilsByTier, piecesByTier, victor.DiedInBattle, ref intactValue);
+            }
+
+            long totalContribution = 0L;
+            foreach (MapEventParty victor in winner.Parties)
+            {
+                totalContribution += MathF.Max(0, victor.ContributionToBattle);
+            }
+            if (SpoilsLog.IsEnabled)
+            {
+                long salvagedValue = 0L;
+                for (int tier = 0; tier < spoilsByTier.Length; tier++)
+                {
+                    salvagedValue += spoilsByTier[tier];
+                }
+                SpoilsLog.Log("LOOT", "battle ended: " + mapEvent.EventType + ", winner side " + mapEvent.WinningSide
+                    + ", " + winner.Parties.Count + " victor party(s), " + winner.OtherSide.Parties.Count + " loser party(s)"
+                    + "; attackers: " + SidePartyNames(mapEvent.AttackerSide)
+                    + "; defenders: " + SidePartyNames(mapEvent.DefenderSide));
+                SpoilsLog.Log("LOOT", "  the dead wore " + intactValue + " value; " + salvagedValue + " salvaged ("
+                    + (intactValue > 0L ? (100L * salvagedValue / intactValue) : 0L) + "%)");
+                for (int tier = 0; tier < spoilsByTier.Length; tier++)
+                {
+                    if (spoilsByTier[tier] > 0L)
+                    {
+                        SpoilsLog.Log("LOOT", "  field yields tier " + (tier + 1) + ": " + piecesByTier[tier]
+                            + " pieces worth " + spoilsByTier[tier]);
+                    }
+                }
+            }
+
+            // The whole field's salvaged worth, so a party with no men to hold any of it can still figure its
+            // leader's solo cut off the fraction of the field it earned (GrantToParty grants such a party
+            // nothing, its stacks being where spoils land).
+            long fieldWorth = 0L;
+            for (int tier = 0; tier < spoilsByTier.Length; tier++)
+            {
+                fieldWorth += spoilsByTier[tier];
+            }
+
+            foreach (MapEventParty victor in winner.Parties)
+            {
+                // Simulated battles can leave every contribution at zero; fall back to an even split
+                // rather than silently paying nobody.
+                long weight = (totalContribution > 0L) ? MathF.Max(0, victor.ContributionToBattle) : 1L;
+                long divisor = (totalContribution > 0L) ? totalContribution : winner.Parties.Count;
+                float share = (float)weight / divisor * RBMConfig.RBMConfig.troopUpgradeSpoilsLootMultiplier;
+                SpoilsLog.Log("LOOT", victor.Party, SpoilsLog.Describe(victor.Party) + ": contribution " + victor.ContributionToBattle
+                    + "/" + totalContribution + ", share " + share.ToString("0.000"));
+                Hero payee = GetPartyPayee(victor.Party);
+                int companionGold = 0;
+                int granted = GrantToParty(victor.Party, spoilsByTier, piecesByTier, share, payee, ref companionGold);
+                int leaderCut;
+                if (granted > 0)
+                {
+                    leaderCut = ApplyLeaderCut(victor.Party, granted);
+                }
+                else if (companionGold > 0)
+                {
+                    leaderCut = 0; // companions stripped the field into the payee's own gold; no separate cut to take
+                }
+                else
+                {
+                    leaderCut = ApplyLeaderCutSolo(victor.Party, (int)MathF.Min(fieldWorth * share, (float)int.MaxValue));
+                }
+                if (companionGold > 0 && payee != null && payee.IsAlive)
+                {
+                    GiveGoldAction.ApplyBetweenCharacters(null, payee, companionGold, true);
+                    ClanEventGoldLedger.Record(payee, EventGoldKind.CompanionSpoils, companionGold);
+                    if (SpoilsLog.IsEnabled)
+                    {
+                        SpoilsLog.Log("LOOT", victor.Party, SpoilsLog.Describe(victor.Party)
+                            + " companions claimed " + companionGold + " gold in spoils, paid to " + payee.Name);
+                    }
+                }
+                if (victor.Party == PartyBase.MainParty)
+                {
+                    AnnounceSpoilsToPlayer(granted, leaderCut, companionGold);
+                }
+            }
+        }
+
+        /// <summary>
+        /// The stockpiles fill silently otherwise: the party screen shows a bar the player has to go
+        /// looking for, and nothing on the map says a battle paid for anything.
+        /// </summary>
+        /// <remarks>
+        /// A victory can still grant nothing: a small party with its arms already full, or one whose
+        /// men walked past everything the field had left. Saying so is more use than saying nothing.
+        /// </remarks>
+        private static void AnnounceSpoilsToPlayer(int granted, int leaderCut, int companionGold)
+        {
+            if (granted > 0)
+            {
+                TextObject message = new TextObject("{=RBM_SPOILS_009}Your men strip the fallen and recover {AMOUNT} in spoils.");
+                message.SetTextVariable("AMOUNT", granted);
+                InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+            }
+            else if (companionGold <= 0 && leaderCut <= 0)
+            {
+                // Only truly nothing collected -- no troop spoils, no companion gold, no lone-leader cut --
+                // reads as "your men found nothing"; otherwise the other lines tell the story.
+                TextObject message = new TextObject("{=RBM_SPOILS_010}Your men find nothing on the fallen they can use.");
+                message.SetTextVariable("AMOUNT", granted);
+                InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+            }
+            AnnounceCompanionSpoilsToPlayer(companionGold);
+            AnnounceLeaderCutToPlayer(leaderCut);
+        }
+
+        /// <summary>Tells the player what his companions claimed from a gather, paid into his own gold.</summary>
+        private static void AnnounceCompanionSpoilsToPlayer(int companionGold)
+        {
+            if (companionGold <= 0) return;
+            TextObject message = new TextObject("{=RBM_SPOILS_028}Your companions claim {AMOUNT} gold in spoils.");
+            message.SetTextVariable("AMOUNT", companionGold);
+            InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+        }
+
+        /// <summary>
+        /// Notes the leader's cut to the player when there is one, so the gold that lands in his purse is
+        /// not a silent mystery next to the spoils message that just told him what his men recovered.
+        /// </summary>
+        private static void AnnounceLeaderCutToPlayer(int leaderCut)
+        {
+            if (leaderCut <= 0)
+            {
+                return;
+            }
+            TextObject message = new TextObject("{=RBM_SPOILS_016}You take a leader's cut of {AMOUNT} gold from the spoils.");
+            message.SetTextVariable("AMOUNT", leaderCut);
+            InformationManager.DisplayMessage(new InformationMessage(message.ToString()));
+        }
+
+        /// <summary>Narrowest and widest share of its worth a piece of kit can survive a battle with.</summary>
+        private const float MinSalvageFraction = 0.25f;
+        private const float MaxSalvageFraction = 0.75f;
+
+        /// <summary>
+        /// Nothing comes off a battlefield intact, and nothing is destroyed outright either. Armour
+        /// is battered, weapons are chipped, and a quiver is only worth the arrows still in it. The
+        /// exact condition of a dead man's kit is not knowable after the fact -- RBM's armour
+        /// degradation lives on the mission's agents and dies with them, and simulated battles never
+        /// spawn agents at all -- so each piece salvages a random fraction of its worth, between a
+        /// quarter and three quarters.
+        /// </summary>
+        /// <remarks>
+        /// For a quiver of arrows or a bundle of javelins -- anything whose PrimaryWeapon is
+        /// IsConsumable -- the roll is the share still unspent when its owner fell. For armour and
+        /// weapons it is the share that survived the fighting. Same distribution, different reason.
+        /// The mean is still a half, so the loot a stack yields averages to half what replacing it
+        /// costs, exactly as it did when the roll spanned the whole range.
+        /// </remarks>
+        private static float RollSalvageFraction(ItemObject item)
+        {
+            return MBRandom.RandomFloatRanged(MinSalvageFraction, MaxSalvageFraction);
+        }
+
+        /// <summary>
+        /// Every equipment slot of every fallen man yields part of its item's value, bucketed by the
+        /// item's tier so a looter's own tier can decide how likely he is to notice it. Rolled per man
+        /// rather than per troop type, so a hundred casualties average out.
+        /// </summary>
+        /// <remarks>
+        /// Each man is stripped of one battle set drawn at random, the way the game dressed him when
+        /// it spawned him, mount and harness included. Over a stack this averages to the same value
+        /// GetEquipmentValueWithMount prices him at, so a troop cannot yield kit worth more than the
+        /// whole of what it was carrying.
+        /// </remarks>
+        private static void CountStrippedEquipment(long[] spoilsByTier, long[] piecesByTier, TroopRoster roster, ref long intactValue)
+        {
+            if (roster == null)
+            {
+                return;
+            }
+            for (int i = 0; i < roster.Count; i++)
+            {
+                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+                if (element.Character.IsHero)
+                {
+                    continue;
+                }
+                List<Equipment> sets = GetBattleEquipments(element.Character);
+                if (sets.Count == 0)
+                {
+                    continue;
+                }
+                for (int man = 0; man < element.Number; man++)
+                {
+                    // includeMount: a fallen rider's horse and its harness are stripped from the field
+                    // alongside his arms and armour, and salvage the same random fraction of their worth.
+                    foreach (EquipmentElement item in EnumerateEquipmentSlots(sets[MBRandom.RandomInt(sets.Count)], includeMount: true))
+                    {
+                        int tier = GetItemTier(item.Item);
+                        intactValue += item.ItemValue;
+                        spoilsByTier[tier] += (long)(item.ItemValue * RollSalvageFraction(item.Item));
+                        piecesByTier[tier]++;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// The party's share of the field, tier by tier. Every stack has a claim on every tier now --
+        /// a veteran will take a recruit's spear if nothing better is lying near him -- but the
+        /// veterans walk the field first, and the further beneath them a piece is the likelier they
+        /// are to step over it. What they overlook or cannot carry is left for the greener troops.
+        /// </summary>
+        /// <remarks>
+        /// The pieces a stack has already carried off are tracked across the whole field, not per
+        /// tier, so a man who filled his arms with mail cannot also stoop for six spears. And the
+        /// field is worked dearest kit first, from the top tier down, so a man's arms fill with the
+        /// best he can reach before he ever stoops for the cheap stuff. Were it the other way, the
+        /// recruits' spears would soak up every arm and the fine mail lie discarded for want of a
+        /// hand to carry it -- the higher a piece is above the men picking it, the more it is worth
+        /// grabbing, so it is offered while there are still empty arms to take it.
+        /// </remarks>
+        /// <returns>The points the party's stacks actually took, which is less than its share
+        /// whenever a tier is overlooked or is more than the men have arms to carry.</returns>
+        private static int GrantToParty(PartyBase party, long[] spoilsByTier, long[] piecesByTier, float share, Hero payee, ref int companionGold)
+        {
+            if (party == null || share <= 0f)
+            {
+                return 0;
+            }
+            Dictionary<CharacterObject, int> carried = new Dictionary<CharacterObject, int>();
+            int granted = 0;
+            for (int tier = spoilsByTier.Length - 1; tier >= 0; tier--)
+            {
+                if (piecesByTier[tier] <= 0L)
+                {
+                    continue;
+                }
+                // A piece is worth the tier's average. Scaling the count by the share rather than the
+                // worth keeps a party's total at exactly the fraction of the field it earned.
+                float valuePerPiece = (float)spoilsByTier[tier] / piecesByTier[tier];
+                int pieces = (int)MathF.Min(piecesByTier[tier] * share, (float)int.MaxValue);
+                if (pieces > 0 && valuePerPiece > 0f)
+                {
+                    granted += GrantTierToParty(party, carried, tier, pieces, valuePerPiece, payee, ref companionGold);
+                }
+            }
+            return granted;
+        }
+
+        private static int GrantTierToParty(PartyBase party, Dictionary<CharacterObject, int> carried, int itemTier, int pieces, float valuePerPiece, Hero payee, ref int companionGold)
+        {
+            List<TroopRosterElement> claimants = new List<TroopRosterElement>();
+            TroopRoster roster = party.MemberRoster;
+            for (int i = 0; i < roster.Count; i++)
+            {
+                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+                if ((!element.Character.IsHero || IsCompanionStack(element.Character, payee)) && GetCarryRoom(carried, element) > 0)
+                {
+                    claimants.Add(element);
+                }
+            }
+            // Highest troop tier first, so the veterans take their pick before the recruits, and the
+            // noble line ahead of the levy of its own tier: a knight stoops for the good kit before
+            // the footman standing beside him ever reaches it.
+            claimants.Sort((a, b) =>
+            {
+                int byTier = b.Character.Tier.CompareTo(a.Character.Tier);
+                if (byTier != 0)
+                {
+                    return byTier;
+                }
+                return IsNobleLineTroop(b.Character).CompareTo(IsNobleLineTroop(a.Character));
+            });
+
+            if (claimants.Count == 0)
+            {
+                SpoilsLog.LogVerbose("LOOT", party, "  tier " + (itemTier + 1) + " (" + pieces + " pieces): no claimant in "
+                    + SpoilsLog.Describe(party) + ", discarded");
+                return 0;
+            }
+
+            int granted = 0;
+            int remaining = pieces;
+            int groupStart = 0;
+            while (groupStart < claimants.Count && remaining > 0)
+            {
+                int groupEnd = groupStart;
+                int groupTier = claimants[groupStart].Character.Tier;
+                // The noble line of a tier is its own rank, ahead of that tier's levy: split the
+                // group on it so the nobles take their share before the commoners see the rest.
+                bool groupNoble = IsNobleLineTroop(claimants[groupStart].Character);
+                while (groupEnd < claimants.Count
+                    && claimants[groupEnd].Character.Tier == groupTier
+                    && IsNobleLineTroop(claimants[groupEnd].Character) == groupNoble)
+                {
+                    groupEnd++;
+                }
+                // What this rank of troops sees of what is still lying there. The rest they walk past.
+                int gap = GetTierGap(itemTier, claimants[groupStart].Character);
+                int noticed = (int)MathF.Min(GetNoticedPieces(remaining, gap), (long)remaining);
+                remaining -= GrantToTierGroup(party, carried, claimants, groupStart, groupEnd, noticed, itemTier, valuePerPiece, ref granted, payee, ref companionGold);
+                groupStart = groupEnd;
+            }
+
+            if (remaining > 0)
+            {
+                SpoilsLog.LogVerbose("LOOT", party, "  tier " + (itemTier + 1) + ": " + remaining
+                    + " of " + pieces + " pieces left lying in " + SpoilsLog.Describe(party)
+                    + " (overlooked, full, or no arms to carry them)");
+            }
+            return granted;
+        }
+
+        /// <summary>Pieces this stack has arms left to carry.</summary>
+        private static int GetCarryRoom(Dictionary<CharacterObject, int> carried, TroopRosterElement element)
+        {
+            int taken;
+            carried.TryGetValue(element.Character, out taken);
+            return MathF.Max(0, GetCarryCapacity(element.Number) - taken);
+        }
+
+        /// <summary>
+        /// Stacks of equal troop tier have equal claim, so they split by head count, and anything a
+        /// stack cannot take, because its arms are already full, is passed around the group before
+        /// cascading. Returns how many pieces the group actually carried off.
+        /// </summary>
+        private static int GrantToTierGroup(PartyBase party, Dictionary<CharacterObject, int> carried, List<TroopRosterElement> claimants, int start, int end, int available, int itemTier, float valuePerPiece, ref int granted, Hero payee, ref int companionGold)
+        {
+            int groupMen = 0;
+            for (int i = start; i < end; i++)
+            {
+                groupMen += claimants[i].Number;
+            }
+            if (groupMen <= 0 || available <= 0)
+            {
+                return 0;
+            }
+
+            int[] shares = new int[end - start];
+            int allocated = 0;
+            for (int i = start; i < end; i++)
+            {
+                int proportional = (int)((long)available * claimants[i].Number / groupMen);
+                shares[i - start] = MathF.Min(GetCarryRoom(carried, claimants[i]), proportional);
+                allocated += shares[i - start];
+            }
+
+            // Hand what the full-handed stacks left behind to their peers before it cascades down.
+            int leftover = available - allocated;
+            for (int i = start; i < end && leftover > 0; i++)
+            {
+                int room = GetCarryRoom(carried, claimants[i]) - shares[i - start];
+                int extra = MathF.Min(leftover, room);
+                shares[i - start] += extra;
+                leftover -= extra;
+            }
+
+            int consumed = 0;
+            for (int i = start; i < end; i++)
+            {
+                TroopRosterElement element = claimants[i];
+                int taken = shares[i - start];
+                if (taken <= 0)
+                {
+                    continue;
+                }
+                int points = MathF.Round(taken * valuePerPiece);
+                if (element.Character.IsHero)
+                {
+                    // The payee is already excluded from the claimant list, so any hero here is a companion:
+                    // his pieces are worth gold paid to the party at the end, not a purse, and take no leader cut.
+                    companionGold += points;
+                    if (SpoilsLog.Verbose)
+                    {
+                        SpoilsLog.LogVerbose("LOOT", party, "  tier " + (itemTier + 1) + " -> " + SpoilsLog.Describe(element.Character)
+                            + " (companion) in " + SpoilsLog.Describe(party)
+                            + ": " + taken + " pieces, +" + points + " gold to the party"
+                            + ", gap " + GetTierGap(itemTier, element.Character) + ")");
+                    }
+                }
+                else
+                {
+                    if (SpoilsLog.Verbose)
+                    {
+                        int before = GetSpoils(party, element.Character);
+                        SpoilsLog.LogVerbose("LOOT", party, "  tier " + (itemTier + 1) + " -> " + SpoilsLog.Describe(element.Character)
+                            + " x" + element.Number + " in " + SpoilsLog.Describe(party)
+                            + ": " + taken + " pieces, +" + points + " (pool " + before + " -> " + (before + points)
+                            + ", arms left " + (GetCarryRoom(carried, element) - taken)
+                            + ", gap " + GetTierGap(itemTier, element.Character) + ")");
+                    }
+                    AddSpoils(party, element.Character, points);
+                    granted += points;
+                }
+                int alreadyCarried;
+                carried.TryGetValue(element.Character, out alreadyCarried);
+                carried[element.Character] = alreadyCarried + taken;
+                consumed += taken;
+            }
+            return consumed;
+        }
+    }
+}

@@ -1,0 +1,488 @@
+﻿<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Main Project Properties -->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <PlatformTarget Condition=" '$(PlatformTarget)' == '' ">x64</PlatformTarget>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A8D35C12-6B47-4E91-B9F2-3C8D7A45E601}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RBMCampaign</RootNamespace>
+    <AssemblyName>RBMCampaign</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <!-- Debug Configuration Properties -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\RBM\bin\Win64_Shipping_Client\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>5</WarningLevel>
+  </PropertyGroup>
+  <!-- Release Configuration Properties -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Modules\RBMCampaign\bin\Win64_Shipping_Client</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <!-- Debugging Properties -->
+  <PropertyGroup>
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\bin\Win64_Shipping_Client\Bannerlord.exe</StartProgram>
+    <StartArguments>/singleplayer _MODULES_*Native*SandBoxCore*SandBox*StoryMode*CustomBattle*RBM*_MODULES_</StartArguments>
+    <StartWorkingDirectory>..\..\..\bin\Win64_Shipping_Client</StartWorkingDirectory>
+  </PropertyGroup>
+  <!-- Bannerlord Native Assemblies -->
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="0Harmony, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lib.Harmony.2.4.2\lib\net472\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="SandBox">
+      <HintPath>..\..\SandBox\bin\Win64_Shipping_Client\SandBox.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SandBox.GauntletUI">
+      <HintPath>..\..\SandBox\bin\Win64_Shipping_Client\SandBox.GauntletUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SandBox.View">
+      <HintPath>..\..\SandBox\bin\Win64_Shipping_Client\SandBox.View.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SandBox.ViewModelCollection">
+      <HintPath>..\..\SandBox\bin\Win64_Shipping_Client\SandBox.ViewModelCollection.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.AchievementSystem.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.AchievementSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.ActivitySystem.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.ActivitySystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.CampaignSystem.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.CampaignSystem.ViewModelCollection.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.CampaignSystem.ViewModelCollection.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Core.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Core.ViewModelCollection.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Core.ViewModelCollection.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Diamond.AccessProvider.GDK.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.GDK.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Diamond.AccessProvider.GOG.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.GOG.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Diamond.AccessProvider.Steam.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.Steam.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Diamond.AccessProvider.Test.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.AccessProvider.Test.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Diamond.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Diamond.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.DotNet.AutoGenerated.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.DotNet.AutoGenerated.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.DotNet.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.DotNet.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine.AutoGenerated.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Engine.AutoGenerated.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Engine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Engine.GauntletUI.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Engine.GauntletUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.GauntletUI.Data.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.Data.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.GauntletUI.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.GauntletUI.ExtraWidgets.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.ExtraWidgets.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.GauntletUI.PrefabSystem.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.GauntletUI.PrefabSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.InputSystem.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.InputSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Library.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Library.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.LinQuick.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.LinQuick.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Localization.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Localization.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.ModuleManager.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.ModuleManager.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.AutoGenerated.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.AutoGenerated.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.Diamond.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Diamond.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.GauntletUI.Widgets.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.Helpers.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Helpers.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.Launcher.Library.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Launcher.Library.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.Launcher.Steam.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.Launcher.Steam.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.View">
+      <HintPath>..\..\Native\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.View.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.MountAndBlade.ViewModelCollection.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.MountAndBlade.ViewModelCollection.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.NavigationSystem.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.NavigationSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Network.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Network.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.ObjectSystem.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.ObjectSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.PlatformService.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.PlatformService.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.PlatformService.Epic.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.PlatformService.Epic.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.PlatformService.GOG.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.PlatformService.GOG.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.PlatformService.Steam.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.PlatformService.Steam.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.PlayerServices.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.PlayerServices.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.PSAI.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.PSAI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.SaveSystem.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.SaveSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.ScreenSystem.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.ScreenSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.Starter.Library.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.Starter.Library.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.TwoDimension.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.TwoDimension.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds.TwoDimension.Standalone.dll">
+      <HintPath>..\..\..\bin\Win64_Shipping_Client\TaleWorlds.TwoDimension.Standalone.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <!-- Bannerlord Module Assemblies  -->
+    <Reference Include="TaleWorlds*.dll">
+      <HintPath>%(Identity)</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SandBox*.dll">
+      <HintPath>%(Identity)</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="StoryMode*.dll">
+      <HintPath>%(Identity)</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="TaleWorlds*.dll">
+      <HintPath>%(Identity)</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <!-- Files & Classes -->
+  <ItemGroup>
+    <Compile Include="RBMCampaignPatcher.cs" />
+    <Compile Include="Diagnostics\SpoilsLog.cs" />
+    <Compile Include="Diagnostics\EconomyLog.cs" />
+    <Compile Include="Diagnostics\CaravanLog.cs" />
+    <Compile Include="Diagnostics\GarrisonRefillLog.cs" />
+    <Compile Include="Diagnostics\LogRetention.cs" />
+    <Compile Include="Caravans\RBMCaravanRegister.cs" />
+    <Compile Include="Caravans\RBMCaravanDispatch.cs" />
+    <Compile Include="Caravans\RBMCaravanArrival.cs" />
+    <Compile Include="Caravans\RBMCaravanInvestment.cs" />
+    <Compile Include="Caravans\RBMCaravanBehavior.cs" />
+    <Compile Include="AI\RBMGarrisonRefillBehavior.cs" />
+    <Compile Include="AI\RBMRecruitBiasBehavior.cs" />
+    <Compile Include="AI\RBMDeserterRaiderBehavior.cs" />
+    <Compile Include="AI\LordEquipmentUpgrade.cs" />
+    <Compile Include="AI\LordPackTrain.cs" />
+    <Compile Include="AI\RBMLordSpawnSettlementBehavior.cs" />
+    <Compile Include="Spoils\SpoilsPool.cs" />
+    <Compile Include="Spoils\SpoilsPool.Equipment.cs" />
+    <Compile Include="Spoils\SpoilsPool.UpgradeMath.cs" />
+    <Compile Include="Spoils\SpoilsPool.BattleLoot.cs" />
+    <Compile Include="Spoils\SpoilsPool.Casualties.cs" />
+    <Compile Include="Spoils\RansomMenuTooltip.cs" />
+    <Compile Include="Spoils\RansomScreenSpoilsLabel.cs" />
+    <Compile Include="Spoils\SpoilsPool.PrisonerStrip.cs" />
+    <Compile Include="Spoils\SpoilsPool.Ransom.cs" />
+    <Compile Include="Spoils\SpoilsPool.Plunder.cs" />
+    <Compile Include="Spoils\SpoilsPool.MarketSack.cs" />
+    <Compile Include="Spoils\SiegeAftermathPatches.cs" />
+    <Compile Include="Spoils\RaidGoodsDestruction.cs" />
+    <Compile Include="Spoils\SpoilsPool.Wages.cs" />
+    <Compile Include="Spoils\SpoilsPool.Maintenance.cs" />
+    <Compile Include="Spoils\MaintenanceFinanceLine.cs" />
+    <Compile Include="Spoils\MaintenancePartyWageLine.cs" />
+    <Compile Include="Spoils\MaintenanceTroopTooltipLine.cs" />
+    <Compile Include="Spoils\SpoilsPool.Cap.cs" />
+    <Compile Include="Spoils\SpoilsPool.LeaderCut.cs" />
+    <Compile Include="Spoils\SpoilsPool.Transfers.cs" />
+    <Compile Include="Spoils\SpoilsTransferOnPartyScreen.cs" />
+    <Compile Include="Spoils\RBMSpoilsCampaignBehavior.cs" />
+    <Compile Include="Upkeep\TroopMarketFeedback.cs" />
+    <Compile Include="Upkeep\TroopUpkeep.cs" />
+    <Compile Include="Upkeep\TroopUpkeep.Food.cs" />
+    <Compile Include="Upkeep\TroopUpkeep.Healing.cs" />
+    <Compile Include="Upkeep\TroopUpkeep.Luxury.cs" />
+    <Compile Include="Upkeep\TroopUpkeep.Stewardship.cs" />
+    <Compile Include="Upkeep\RBMTroopUpkeepCampaignBehavior.cs" />
+    <Compile Include="Recruitment\TavernMercenaryTroopsPatch.cs" />
+    <Compile Include="Upgrades\RBMCampaignPatches.cs" />
+    <Compile Include="Wages\TierBasedWageModel.cs" />
+    <Compile Include="Upgrades\SpoilsUpgradePatches.cs" />
+    <Compile Include="Upgrades\UpgradeFormationWeights.cs" />
+    <Compile Include="Upgrades\PartyUpgradeBudget.cs" />
+    <Compile Include="Upgrades\PartyScreenStagedUpgrades.cs" />
+    <Compile Include="Upgrades\UpgradeSupply.cs" />
+    <Compile Include="Upgrades\MountValueUpgrade.cs" />
+    <Compile Include="UI\RBMMapNotifications.cs" />
+    <Compile Include="UI\SpoilsBarWidget.cs" />
+    <Compile Include="UI\SpoilsBarPrefabPatch.cs" />
+    <Compile Include="UI\SpoilsPartyTooltip.cs" />
+    <Compile Include="UI\MaintenanceLabelWidget.cs" />
+    <Compile Include="UI\MaintenanceLabelPrefabPatch.cs" />
+    <Compile Include="UI\UpgradeLimitWidgets.cs" />
+    <Compile Include="UI\UpgradeLimitPrefabPatch.cs" />
+    <Compile Include="UI\ItemWeightWidget.cs" />
+    <Compile Include="UI\ItemWeightPrefabPatch.cs" />
+    <Compile Include="UI\SimulationPanel\SimulationBattlePanelVM.cs" />
+    <Compile Include="UI\SimulationPanel\SimulationEventItemVM.cs" />
+    <Compile Include="UI\SimulationPanel\SimulationBattlePanelPatch.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerTabVM.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerViewModel.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerScreen.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerMapTickGuard.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerHotkey.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerEscapeMenuPatch.cs" />
+    <Compile Include="UI\Ledger\RBMEscapeMenuPrefabPatch.cs" />
+    <Compile Include="UI\Ledger\RBMVillageLedger.cs" />
+    <Compile Include="UI\Ledger\RBMVillageLedgerCampaignBehavior.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerVillageVM.cs" />
+    <Compile Include="UI\Ledger\RBMTownLedger.cs" />
+    <Compile Include="UI\Ledger\RBMTownLedgerCampaignBehavior.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerTownVM.cs" />
+    <Compile Include="Power\SiegeDecisionGate.cs" />
+    <Compile Include="Power\StrategicPowerLog.cs" />
+    <Compile Include="Power\StrategicPowerTooltip.cs" />
+    <Compile Include="Power\StrategicPowerTooltipVM.cs" />
+    <Compile Include="Power\StrategicTroopPower.cs" />
+    <Compile Include="Simulation\SimulationArmTargeting.cs" />
+    <Compile Include="Simulation\SimulationCommandStructure.cs" />
+    <Compile Include="Simulation\SimulationPerks.cs" />
+    <Compile Include="Simulation\SimulationEquipmentPower.cs" />
+    <Compile Include="Simulation\SimulationMorale.cs" />
+    <Compile Include="Simulation\SimulationPlayerParticipation.cs" />
+    <Compile Include="Simulation\SimulationRout.cs" />
+    <Compile Include="Simulation\SimulationWoundedCapture.cs" />
+    <Compile Include="Simulation\SimulationSiege.cs" />
+    <Compile Include="Simulation\SimulationSiegeEngines.cs" />
+    <Compile Include="Simulation\SimulationWeaponModel.cs" />
+    <Compile Include="Simulation\SimulationBattleState.cs" />
+    <Compile Include="Simulation\SimulationBattleSnapshot.cs" />
+    <Compile Include="Simulation\SimulationTroopHitPoints.cs" />
+    <Compile Include="Simulation\RBMSimulationCampaignBehavior.cs" />
+    <Compile Include="Diagnostics\SimulationLog.cs" />
+    <Compile Include="Spectate\RBMSpectatorMission.cs" />
+    <Compile Include="Spectate\RBMSpectatorMissionLogics.cs" />
+    <Compile Include="Spectate\RBMSpectatorViewPatches.cs" />
+    <Compile Include="Spectate\RBMSpectateCampaignBehavior.cs" />
+    <Compile Include="SwitchLord\LordSwitcher.cs" />
+    <Compile Include="Production\RBMVillageProduction.cs" />
+    <Compile Include="Production\SteelRefining.cs" />
+    <Compile Include="UI\RefineRowLayoutPrefabPatch.cs" />
+    <Compile Include="UI\ProjectsGridPrefabPatch.cs" />
+    <Compile Include="UI\TownManagementGridPatch.cs" />
+    <Compile Include="Production\VillageProductionIconPatch.cs" />
+    <Compile Include="Production\CitizenDemand.cs" />
+    <Compile Include="Production\RBMTownFoodSupply.cs" />
+    <Compile Include="Production\TownStorage.cs" />
+    <Compile Include="Economy\TradeGoodCategories.cs" />
+    <Compile Include="Production\ArtisanOutput.cs" />
+    <Compile Include="Production\WorkshopVillageBias.cs" />
+    <Compile Include="Production\WorkshopDemand.cs" />
+    <Compile Include="Production\WorkshopItemTierBias.cs" />
+    <Compile Include="Production\TownFoodReserve.cs" />
+    <Compile Include="Production\VillagerConvoys.cs" />
+    <Compile Include="Production\VillagerDispatch.cs" />
+    <Compile Include="Production\VillagerDelivery.cs" />
+    <Compile Include="Production\VillagerEscort.cs" />
+    <Compile Include="Production\VillageHousehold.cs" />
+    <Compile Include="Production\VillageShopping.cs" />
+    <Compile Include="Economy\RBMEconomyCampaignBehavior.cs" />
+    <Compile Include="Economy\PartyTradeFlow.cs" />
+    <Compile Include="Economy\HiddenMarketStock.cs" />
+    <Compile Include="Economy\RBMMarketLiquidity.cs" />
+    <Compile Include="Economy\RBMMarketPrices.cs" />
+    <Compile Include="Economy\RBMProsperityEquilibrium.cs" />
+    <Compile Include="Economy\TradeGoodValues.cs" />
+    <Compile Include="Economy\TradeXpSoftCap.cs" />
+    <Compile Include="Economy\NavalTradeGoodValues.cs" />
+    <Compile Include="Economy\CaravanTradeVolume.cs" />
+    <Compile Include="Economy\CaravanCapital.cs" />
+    <Compile Include="Economy\RecruitCostHint.cs" />
+    <Compile Include="Economy\RecruitSupply.cs" />
+    <Compile Include="Economy\RecruitCapacity.cs" />
+    <Compile Include="Settlements\FiefStarvation.cs" />
+    <Compile Include="Settlements\NativeTradeConservation.cs" />
+    <Compile Include="Settlements\RansomFunding.cs" />
+    <Compile Include="Settlements\SettlementGoldFunnel.cs" />
+    <Compile Include="Settlements\ShipTradeFunnel.cs" />
+    <Compile Include="Settlements\SettlementWealth.cs" />
+    <Compile Include="Workshops\RBMWorkshopModel.cs" />
+    <Compile Include="Workshops\RBMWorkshopCycle.cs" />
+    <Compile Include="Workshops\RBMWorkshopSettlement.cs" />
+    <Compile Include="Workshops\RBMWorkshopExpense.cs" />
+    <Compile Include="Workshops\WorkshopCardPayrollLine.cs" />
+    <Compile Include="Settlements\WorkshopDiagnostics.cs" />
+    <Compile Include="Settlements\WorkshopPurse.cs" />
+    <Compile Include="Settlements\ArtisanStanding.cs" />
+    <Compile Include="Settlements\NotableWealth.cs" />
+    <Compile Include="Settlements\SettlementWealthTooltip.cs" />
+    <Compile Include="Settlements\SettlementIncomeFinanceLine.cs" />
+    <Compile Include="Settlements\MercenaryContractPay.cs" />
+    <Compile Include="Settlements\AdministrativeUpkeep.cs" />
+    <Compile Include="Settlements\CastleEconomy.cs" />
+    <Compile Include="Settlements\Minting.cs" />
+    <Compile Include="Settlements\BuildingEffects.cs" />
+    <Compile Include="Settlements\PrisonLabour.cs" />
+    <Compile Include="UI\BuildingEffectTooltips.cs" />
+    <Compile Include="Settlements\Construction.cs" />
+    <Compile Include="Settlements\Construction.Materials.cs" />
+    <Compile Include="Settlements\Construction.Patches.cs" />
+    <Compile Include="Settlements\GarrisonMorale.cs" />
+    <Compile Include="Settlements\GarrisonPartySize.cs" />
+    <Compile Include="Settlements\GarrisonSubsidy.cs" />
+    <Compile Include="Settlements\GarrisonSubsidyFinanceLine.cs" />
+    <Compile Include="Finance\ClanEventGoldLedger.cs" />
+    <Compile Include="Finance\ClanFinanceTabLines.cs" />
+    <Compile Include="Finance\FiefProfitLines.cs" />
+    <Compile Include="Settlements\GarrisonUpkeep.cs" />
+    <Compile Include="Settlements\GarrisonWageLimit.cs" />
+    <Compile Include="Settlements\LordPartyWageLimit.cs" />
+    <Compile Include="Settlements\GarrisonRecruitCost.cs" />
+    <Compile Include="Settlements\GarrisonDrill.cs" />
+    <Compile Include="Settlements\TradeTariff.cs" />
+    <Compile Include="Settlements\WealthTax.cs" />
+    <Compile Include="Settlements\MilitiaUpkeep.cs" />
+    <Compile Include="Settlements\SettlementDefenseMuster.cs" />
+    <Compile Include="Settlements\VillageGoldStock.cs" />
+    <Compile Include="Settlements\RBMSettlementWealthCampaignBehavior.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <!-- Project References -->
+  <ItemGroup>
+    <ProjectReference Include="..\RBMConfig\RBMConfig.csproj">
+      <Project>{d7f2b557-3d03-4dcf-850c-da8e5e2d8505}</Project>
+      <Name>RBMConfig</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <!-- Post-Build -->
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_workshops_artisans.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_module_strings.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_trade_goods.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomyCombat_ranged.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBMEconomy_patrols.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBM_WS_XML\RBMEconomy_WS_patrols.xml" "$(SolutionDir)..\RBM_WS\ModuleData\"</PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

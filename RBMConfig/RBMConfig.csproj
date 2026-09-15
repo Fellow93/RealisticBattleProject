@@ -270,13 +270,23 @@
   </ItemGroup>
   <!-- Files & Classes -->
   <ItemGroup>
-    <Compile Include="Utilities.cs" />
+    <!-- Config store (partial static class RBMConfig) -->
+    <Compile Include="Config\RBMConfig.Core.cs" />
+    <Compile Include="Config\RBMConfig.Combat.cs" />
+    <Compile Include="Config\RBMConfig.Campaign.cs" />
+    <Compile Include="Config\RBMConfig.Simulation.cs" />
+    <!-- Settings UI -->
     <Compile Include="RBMConfigUI\RBMConfigScreen.cs" />
-    <Compile Include="RBMConfigUI\RBMConfigViewModel.cs" />
+    <Compile Include="RBMConfigUI\RBMConfigViewModel.Core.cs" />
+    <Compile Include="RBMConfigUI\RBMConfigViewModel.Combat.cs" />
+    <Compile Include="RBMConfigUI\RBMConfigViewModel.Campaign.cs" />
+    <Compile Include="RBMConfigUI\RBMConfigViewModel.Simulation.cs" />
     <Compile Include="RBMConfigUI\TextViewModel.cs" />
+    <!-- Config data types -->
     <Compile Include="RBMCombatConfigPriceMultipliers.cs" />
     <Compile Include="RBMCombatConfigWeaponType.cs" />
-    <Compile Include="RBMConfig.cs" />
+    <!-- Helpers -->
+    <Compile Include="Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

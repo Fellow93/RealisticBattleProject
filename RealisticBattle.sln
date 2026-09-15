@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RBM", "RBM\RBM.csproj", "{2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RBMConfig", "RBMConfig\RBMConfig.csproj", "{D7F2B557-3D03-4DCF-850C-DA8E5E2D8505}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RBMCampaign", "RBMCampaign\RBMCampaign.csproj", "{A8D35C12-6B47-4E91-B9F2-3C8D7A45E601}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{D7F2B557-3D03-4DCF-850C-DA8E5E2D8505}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7F2B557-3D03-4DCF-850C-DA8E5E2D8505}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7F2B557-3D03-4DCF-850C-DA8E5E2D8505}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8D35C12-6B47-4E91-B9F2-3C8D7A45E601}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8D35C12-6B47-4E91-B9F2-3C8D7A45E601}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8D35C12-6B47-4E91-B9F2-3C8D7A45E601}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8D35C12-6B47-4E91-B9F2-3C8D7A45E601}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

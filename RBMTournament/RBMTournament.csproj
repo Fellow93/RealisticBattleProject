@@ -270,7 +270,11 @@
   <!-- Files & Classes -->
   <ItemGroup>
     <Compile Include="RBMTournamentPatcher.cs" />
-    <Compile Include="RBMTournament.cs" />
+    <!-- partial class RBMTournament -->
+    <Compile Include="Tournament\RBMTournament.Core.cs" />
+    <Compile Include="Tournament\RBMTournament.FightSimulation.cs" />
+    <Compile Include="Tournament\RBMTournament.Participants.cs" />
+    <Compile Include="Tournament\RBMTournament.Prizes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

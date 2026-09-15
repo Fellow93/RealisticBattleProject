@@ -107,17 +107,34 @@ namespace RBM
                 var isRbmXml = false;
                 var isRbmCombatXml = false;
                 var isRbmUnitOverhaulXml = false;
+                var isRbmCampaignXml = false;
+                // Requires BOTH combat and campaign (e.g. RBMEconomyCombat_ranged.xml).
+                var isRbmEconomyCombatXml = false;
+                // Requires combat WITHOUT campaign (e.g. RBMCombat_ranged.xml, superseded by the economy variant).
+                var isRbmCombatOnlyXml = false;
                 foreach (XComment comment in comments)
                 {
                     if (comment.Value.Contains("RBM_XML_TAG"))
                     {
                         isRbmXml = true;
                     }
+                    if (comment.Value.Contains("RBM_ECONOMY_COMBAT_XML_TAG"))
+                    {
+                        isRbmEconomyCombatXml = true;
+                    }
+                    if (comment.Value.Contains("RBM_COMBAT_ONLY_XML_TAG"))
+                    {
+                        isRbmCombatOnlyXml = true;
+                    }
                     if (comment.Value.Contains("RBM_COMBAT_OVERHAUL_XML_TAG"))
                     {
                         isRbmUnitOverhaulXml = true;
                     }
-                    if (comment.Value.Contains("RBM_COMBAT_XML_TAG"))
+                    if (comment.Value.Contains("RBM_CAMPAIGN_XML_TAG"))
+                    {
+                        isRbmCampaignXml = true;
+                    }
+                    else if (comment.Value.Contains("RBM_COMBAT_XML_TAG"))
                     {
                         isRbmCombatXml = true;
                     }
@@ -131,13 +148,28 @@ namespace RBM
                     __result = MBObjectManager.ToXmlDocument(originalXml);
                     return false;
                 }
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled && isRbmCampaignXml)
+                {
+                    __result = MBObjectManager.ToXmlDocument(originalXml);
+                    return false;
+                }
+                if (isRbmEconomyCombatXml && !(RBMConfig.RBMConfig.rbmCombatEnabled && RBMConfig.RBMConfig.rbmCampaignEnabled))
+                {
+                    __result = MBObjectManager.ToXmlDocument(originalXml);
+                    return false;
+                }
+                if (isRbmCombatOnlyXml && RBMConfig.RBMConfig.rbmCampaignEnabled)
+                {
+                    __result = MBObjectManager.ToXmlDocument(originalXml);
+                    return false;
+                }
                 if ((!RBMConfig.RBMConfig.rbmCombatEnabled || !RBMConfig.RBMConfig.troopOverhaulActive) && isRbmUnitOverhaulXml)
                 {
                     __result = MBObjectManager.ToXmlDocument(originalXml);
                     return false;
                 }
 
-                if (RBMConfig.RBMConfig.rbmCombatEnabled)
+                if (RBMConfig.RBMConfig.rbmCombatEnabled || (RBMConfig.RBMConfig.rbmCampaignEnabled && isRbmCampaignXml))
                 {
                     if (isRbmXml)
                     {
