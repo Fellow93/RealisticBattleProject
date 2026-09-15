@@ -97,7 +97,16 @@ namespace RBMAI
                         }
                         if (crushThrough)
                         {
-                            int hpDamage = (int)Math.Floor(calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureOverkill, blow, isUnarmedAttack));
+                            float rawHpDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureOverkill, blow, isUnarmedAttack);
+                            // Route the crush-through damage through AgentApplyDamageModel exactly as
+                            // Mission.GetAttackCollisionResults does for a normal hit, so perk
+                            // amplifications/reductions, difficulty scaling and damage-ignore rules apply.
+                            if (rawHpDamage > 0f)
+                            {
+                                AttackInformation attackInformation = new AttackInformation(attackerAgent, victimAgent, WeakGameEntity.Invalid, in collisionData, in attackerWeapon);
+                                rawHpDamage = MissionGameModels.Current.AgentApplyDamageModel.CalculateDamage(in attackInformation, in collisionData, rawHpDamage);
+                            }
+                            int hpDamage = (int)Math.Floor(rawHpDamage);
                             makePostureCrashThroughBlow(ref mission, blow, attackerAgent, victimAgent, hpDamage, ref collisionData, attackerWeapon);
                             MBTextManager.SetTextVariable("DMG", hpDamage);
                             if (victimAgent.IsPlayerControlled)

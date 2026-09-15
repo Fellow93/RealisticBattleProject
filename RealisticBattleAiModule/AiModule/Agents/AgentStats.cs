@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -24,6 +25,35 @@ namespace RBMAI
         {
             private static readonly MethodInfo _getMeleeSkillMethod = typeof(AgentStatCalculateModel).GetMethod("GetMeleeSkill", BindingFlags.NonPublic | BindingFlags.Instance);
             private static readonly MBList<Agent> _nearbyEnemiesBuffer = new MBList<Agent>();
+
+            /// <summary>
+            /// Mirrors the Throwing branch of SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent:
+            /// Throwing.PerfectTechnique (self + captain) and the Throwing.UnstoppableForce epic bonus.
+            /// </summary>
+            private static float GetThrowingMissileSpeedMultiplier(Agent agent, WeaponComponentData equippedItem)
+            {
+                if (equippedItem == null || equippedItem.RelevantSkill != DefaultSkills.Throwing || Campaign.Current == null)
+                {
+                    return 1f;
+                }
+                CharacterObject agentCharacter = agent.Character as CharacterObject;
+                if (agentCharacter == null)
+                {
+                    return 1f;
+                }
+                BattleEnvironment env = agent.CurrentBattleEnvironment;
+                Agent captainAgent = agent.Formation?.Captain;
+                CharacterObject captain = (captainAgent != null && captainAgent != agent) ? captainAgent.Character as CharacterObject : null;
+
+                ExplainedNumber bonuses = new ExplainedNumber(1f);
+                PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Throwing.PerfectTechnique, env, agentCharacter, true, ref bonuses);
+                if (captain != null)
+                {
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.PerfectTechnique, env, captain, ref bonuses);
+                }
+                PerkHelper.AddEpicPerkBonusForCharacter(DefaultPerks.Throwing.UnstoppableForce, env, agentCharacter, DefaultSkills.Throwing, true, ref bonuses, Campaign.Current.Models.CharacterDevelopmentModel.MinSkillRequiredForEpicPerkBonus);
+                return bonuses.ResultNumber;
+            }
 
             // Runs after RBMCombat's postfix on the same method (Priority.High there), which assigns
             // ReloadSpeed outright. The stamina multipliers below must apply on top of that base.
@@ -235,7 +265,10 @@ namespace RBMAI
                 agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 1f);
                 //agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 0f);
 
-                agentDrivenProperties.MissileSpeedMultiplier = 1f;
+                // Vanilla builds MissileSpeedMultiplier from the throwing perks plus a wet-weather
+                // penalty for bows/crossbows. RBM neutralises weather and sets bow/crossbow launch
+                // velocity itself, so rebuild the multiplier from the throwing perks alone.
+                agentDrivenProperties.MissileSpeedMultiplier = GetThrowingMissileSpeedMultiplier(agent, equippedItem);
 
                 if (agent.IsRangedCached)
                 {
@@ -334,8 +367,8 @@ namespace RBMAI
                             effectiveSkill = 150;
                         }
                         float skillEffectValue = DefaultSkillEffects.TwoHandedSpeed.GetSkillEffectValue(effectiveSkill);
-                        AddToStat(ref stat, DefaultSkillEffects.TwoHandedSpeed.IncrementType, skillEffectValue, stat.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.OneHandedSpeed.Role.ToString()) : null);
-                        AddToStat(ref stat2, DefaultSkillEffects.TwoHandedSpeed.IncrementType, skillEffectValue, stat2.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.OneHandedSpeed.Role.ToString()) : null);
+                        AddToStat(ref stat, DefaultSkillEffects.TwoHandedSpeed.IncrementType, skillEffectValue, stat.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.TwoHandedSpeed.Role.ToString()) : null);
+                        AddToStat(ref stat2, DefaultSkillEffects.TwoHandedSpeed.IncrementType, skillEffectValue, stat2.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.TwoHandedSpeed.Role.ToString()) : null);
                     }
                     else if (equippedWeaponComponent.RelevantSkill == DefaultSkills.Polearm)
                     {
@@ -344,16 +377,18 @@ namespace RBMAI
                             effectiveSkill = 150;
                         }
                         float skillEffectValue = DefaultSkillEffects.PolearmSpeed.GetSkillEffectValue(effectiveSkill);
-                        AddToStat(ref stat, DefaultSkillEffects.PolearmSpeed.IncrementType, skillEffectValue, stat.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.OneHandedSpeed.Role.ToString()) : null);
-                        AddToStat(ref stat2, DefaultSkillEffects.PolearmSpeed.IncrementType, skillEffectValue, stat2.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.OneHandedSpeed.Role.ToString()) : null);
+                        AddToStat(ref stat, DefaultSkillEffects.PolearmSpeed.IncrementType, skillEffectValue, stat.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.PolearmSpeed.Role.ToString()) : null);
+                        AddToStat(ref stat2, DefaultSkillEffects.PolearmSpeed.IncrementType, skillEffectValue, stat2.IncludeDescriptions ? GameTexts.FindText("role", DefaultSkillEffects.PolearmSpeed.Role.ToString()) : null);
                     }
                     else if (equippedWeaponComponent.RelevantSkill == DefaultSkills.Crossbow)
                     {
-                        SkillHelper.AddSkillBonusForCharacter(DefaultSkillEffects.CrossbowReloadSpeed, characterObject, ref stat3);
+                        // Effective skill (as vanilla and the melee branches above), not raw character
+                        // skill, so captain/party skill perks reach crossbow reload.
+                        SkillHelper.AddSkillBonusForSkillLevel(DefaultSkillEffects.CrossbowReloadSpeed, ref stat3, effectiveSkill);
                     }
                     else if (equippedWeaponComponent.RelevantSkill == DefaultSkills.Throwing)
                     {
-                        SkillHelper.AddSkillBonusForCharacter(DefaultSkillEffects.ThrowingSpeed, characterObject, ref stat2);
+                        SkillHelper.AddSkillBonusForSkillLevel(DefaultSkillEffects.ThrowingSpeed, ref stat2, effectiveSkill);
                     }
                     //if (agent.HasMount)
                     //{

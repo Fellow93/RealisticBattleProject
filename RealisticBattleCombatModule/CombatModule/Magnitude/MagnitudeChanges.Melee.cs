@@ -129,6 +129,7 @@ namespace RBMCombat
                                     }
                             }
 
+                            float thrustExtraSpeed = ApplyMeleeSpeedPerks(in attackInformation, currentUsageItem, exraLinearSpeed);
                             float thrustMagnitude = 0f;
                             switch (weapon.CurrentUsageItem.WeaponClass)
                             {
@@ -138,14 +139,14 @@ namespace RBMCombat
                                 case WeaponClass.Mace:
                                 case WeaponClass.LowGripPolearm:
                                     {
-                                        thrustMagnitude = Utilities.CalculateThrustMagnitudeForOneHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, exraLinearSpeed, attacker.AttackDirection);
+                                        thrustMagnitude = Utilities.CalculateThrustMagnitudeForOneHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, thrustExtraSpeed, attacker.AttackDirection);
                                         break;
                                     }
                                 case WeaponClass.TwoHandedPolearm:
                                 case WeaponClass.TwoHandedSword:
                                 case WeaponClass.TwoHandedMace:
                                     {
-                                        thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, exraLinearSpeed, attacker.AttackDirection);
+                                        thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, thrustExtraSpeed, attacker.AttackDirection);
                                         break;
                                     }
                                     //default:
@@ -160,6 +161,7 @@ namespace RBMCombat
                             {
                                 thrustMagnitude *= 0.2f;
                             }
+                            thrustMagnitude = ApplyCraftedWeaponPerk(in attackInformation, weapon.Item, thrustMagnitude, true);
                             __result = thrustMagnitude;
                             return false;
                         }
@@ -233,8 +235,10 @@ namespace RBMCombat
 
                 float impactPointAsPercent3 = num3 + (float)0 / 4f * (num4 - num3);
                 //newValue = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(attackerAgentCharacter, attackerCaptainCharacter, swingSpeed, impactPointAsPercent3, weapon.Item.Weight, weapon.Item, currentUsageItem, currentUsageItem.GetRealWeaponLength(), currentUsageItem.TotalInertia, currentUsageItem.CenterOfMass, exraLinearSpeed, doesAttackerHaveMount);
+                float swingExtraSpeed = ApplyMeleeSpeedPerks(in attackInformation, currentUsageItem, exraLinearSpeed);
                 newValue = CombatStatCalculator.CalculateStrikeMagnitudeForSwing(swingSpeed, impactPointAsPercent3, weapon.Item.Weight,
-                            currentUsageItem.GetRealWeaponLength(), currentUsageItem.TotalInertia, currentUsageItem.CenterOfMass, exraLinearSpeed);
+                            currentUsageItem.GetRealWeaponLength(), currentUsageItem.TotalInertia, currentUsageItem.CenterOfMass, swingExtraSpeed);
+                newValue = ApplyCraftedWeaponPerk(in attackInformation, weapon.Item, newValue, false);
                 __result = newValue;
                 return false;
             }

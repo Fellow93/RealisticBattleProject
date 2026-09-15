@@ -531,7 +531,7 @@ namespace RBMAI
                     if (currentSelectedChar != null && isUnarmedAttack)
                     {
                         int realDamage = 0;
-                        int effectiveSkill = currentSelectedChar.GetSkillValue(DefaultSkills.Athletics);
+                        int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attacker, DefaultSkills.Athletics);
                         float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
                         float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
 
@@ -591,7 +591,7 @@ namespace RBMAI
                         if (currentSelectedChar != null)
                         {
                             SkillObject skill = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).RelevantSkill;
-                            int effectiveSkill = currentSelectedChar.GetSkillValue(skill);
+                            int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attacker, skill);
                             float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
                             float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
 

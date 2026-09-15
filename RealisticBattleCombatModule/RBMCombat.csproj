@@ -198,6 +198,7 @@
     <Compile Include="CombatModule\Magnitude\MagnitudeChanges.Melee.cs" />
     <Compile Include="CombatModule\Magnitude\MagnitudeChanges.Thrust.cs" />
     <Compile Include="CombatModule\Magnitude\MagnitudeChanges.Missile.cs" />
+    <Compile Include="CombatModule\Magnitude\MagnitudeChanges.Perks.cs" />
     <Compile Include="CombatModule\Magnitude\Tooltips\MagnitudeChanges.WeaponTooltip.cs" />
     <Compile Include="CombatModule\Magnitude\Tooltips\MagnitudeChanges.ArmorTooltip.cs" />
     <Compile Include="CombatModule\Magnitude\Tooltips\MagnitudeChanges.StatCalcs.cs" />

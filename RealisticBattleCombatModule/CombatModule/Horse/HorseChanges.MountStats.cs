@@ -1,6 +1,8 @@
 using HarmonyLib;
+using Helpers;
 using SandBox.GameComponents;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -65,6 +67,21 @@ namespace RBMCombat
 
                     int mountStatSpeed = mountElement.GetModifiedMountSpeed(in harness) + 1;
                     ExplainedNumber mountStatSpeedEN = new ExplainedNumber(mountStatSpeed);
+
+                    // Vanilla folds the mount-speed banner effect and Riding.SweepingWind into this
+                    // same number (SandboxAgentStatCalculateModel.UpdateHorseStats). RBM replaces the
+                    // Riding skill effect and rain penalty with its own mastery/scene modifiers, so
+                    // only the perk and banner factors are carried over here.
+                    Agent rider = agent.RiderAgent;
+                    BannerComponent activeBanner = MissionGameModels.Current.BattleBannerBearersModel.GetActiveBanner(rider.Formation);
+                    if (activeBanner != null)
+                    {
+                        BannerHelper.AddBannerBonusForBanner(DefaultBannerEffects.IncreasedMountMovementSpeed, activeBanner, ref mountStatSpeedEN);
+                    }
+                    if (rider.Character is CharacterObject riderCharacter)
+                    {
+                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Riding.SweepingWind, rider.CurrentBattleEnvironment, riderCharacter, true, ref mountStatSpeedEN);
+                    }
 
                     if (harness.Item == null)
                     {

@@ -190,6 +190,7 @@ namespace RBMCombat
                 {
                     length = missileVelocity.Length;
                 }
+                length = ApplyRunningThrowPerk(in attackInformation, currentUsageItem, length, collisionData.MissileStartingBaseSpeed);
                 baseMagnitude = CalculateMissileMagnitude(weapon.CurrentUsageItem.WeaponClass, weaponItem.Weight, length, missileTotalDamage, momentumRemaining, (DamageTypes)collisionData.DamageType);
                 specialMagnitude = baseMagnitude;
 
