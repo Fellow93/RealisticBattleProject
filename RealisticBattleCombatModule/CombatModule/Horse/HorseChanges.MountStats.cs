@@ -176,6 +176,14 @@ namespace RBMCombat
                     int mountStatSpeed = mountElement.GetModifiedMountSpeed(in harness) + 1;
                     ExplainedNumber mountStatSpeedEN = new ExplainedNumber(mountStatSpeed);
 
+                    // Vanilla CustomBattleAgentStatCalculateModel.UpdateHorseStats applies the mount-speed
+                    // banner effect to this number too; keep it after the overwrite.
+                    BannerComponent activeBanner = MissionGameModels.Current.BattleBannerBearersModel.GetActiveBanner(agent.RiderAgent.Formation);
+                    if (activeBanner != null)
+                    {
+                        BannerHelper.AddBannerBonusForBanner(DefaultBannerEffects.IncreasedMountMovementSpeed, activeBanner, ref mountStatSpeedEN);
+                    }
+
                     if (harness.Item == null)
                     {
                         mountStatSpeedEN.AddFactor(-0.1f);

@@ -237,6 +237,22 @@ namespace RBMAI
         [MBCallback]
         internal class ChargeDamageCallbackPatch
         {
+            /// <summary>
+            /// Route a charge-induced rout through vanilla's panic path instead of calling Retreat()
+            /// directly. Panic() respects CanPanic() (BattleMoraleModel.CanPanicDueToMorale, so
+            /// Leadership.LoyaltyAndHonor and the siege-ladder exemption apply) and is turned into the
+            /// actual retreat by MissionAgentPanicHandler on the next pre-tick, which also fires
+            /// Mission.OnAgentFleeing so the flee-contagion morale wave and its perks run.
+            /// </summary>
+            private static void PanicFromCharge(Agent victim)
+            {
+                CommonAIComponent ai = victim.CommonAIComponent;
+                if (ai != null && !ai.IsRetreating && !ai.IsPanicked && ai.CanPanic())
+                {
+                    ai.Panic();
+                }
+            }
+
             private static void Postfix(ref AttackCollisionData collisionData, Blow blow, Agent attacker, Agent victim, Mission __instance)
             {
                 if (attacker.RiderAgent != null)
@@ -262,7 +278,7 @@ namespace RBMAI
                             bool shouldPanic = MBRandom.RandomInt(4) != 0;
                             if (shouldPanic)
                             {
-                                victim.CommonAIComponent?.Retreat();
+                                PanicFromCharge(victim);
                             }
                         }
                         else
@@ -270,7 +286,7 @@ namespace RBMAI
                             bool shouldPanic = MBRandom.RandomInt(3) == 0;
                             if (shouldPanic)
                             {
-                                victim.CommonAIComponent?.Retreat();
+                                PanicFromCharge(victim);
                             }
                         }
                     }
@@ -281,7 +297,7 @@ namespace RBMAI
                             bool shouldPanic = MBRandom.RandomInt(3) == 0;
                             if (shouldPanic)
                             {
-                                victim.CommonAIComponent?.Retreat();
+                                PanicFromCharge(victim);
                             }
                         }
                         else
@@ -290,7 +306,7 @@ namespace RBMAI
                             bool shouldPanic = MBRandom.RandomInt(sumModifiers) == 0;
                             if (shouldPanic)
                             {
-                                victim.CommonAIComponent?.Retreat();
+                                PanicFromCharge(victim);
                             }
                         }
                     }
