@@ -523,8 +523,6 @@ namespace RBMAI
                     float thrustSpeed = 0f;
                     float swingDamageFactor = 0f;
                     float thrustDamageFactor = 0f;
-                    float sweetSpotOut = 0f;
-                    float sweetSpot = 0f;
                     int targetWeaponUsageIndex = targetWeapon.CurrentUsageIndex;
                     BasicCharacterObject currentSelectedChar = attacker.Character;
 

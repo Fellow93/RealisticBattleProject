@@ -79,7 +79,6 @@ namespace RBMAI.AiModule
                                 return true;
                             }
                             WorldPosition tempWorldPosition = agentTeam.GetMedianPosition(agentTeam.GetAveragePosition());
-                            Vec2 playerDirection;
                             MBReadOnlyList<Vec2> deploymentBoundaries = new MBReadOnlyList<Vec2>();
                             foreach (var item in __instance.DeploymentPlan.GetDeploymentBoundaries(agentTeam))
                             {

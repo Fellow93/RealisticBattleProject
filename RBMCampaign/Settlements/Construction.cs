@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
@@ -183,7 +183,7 @@ namespace RBMCampaign
             if (governorHere)
             {
                 SkillHelper.AddSkillBonusForTown(DefaultSkillEffects.TownProjectBuildingBonus, town, ref en);
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.ForcedLabor, town, ref en);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.ForcedLabor, town, isPrimaryBonus: false, ref en);
                 if (queued)
                 {
                     int prisoners = Prisoners(town);
@@ -193,17 +193,17 @@ namespace RBMCampaign
                     }
                     if (town.IsCastle)
                     {
-                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Engineering.MilitaryPlanner, town, ref en);
+                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Engineering.MilitaryPlanner, town, isPrimaryBonus: false, ref en);
                     }
                     else if (town.IsTown)
                     {
-                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Engineering.Carpenters, town, ref en);
+                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Engineering.Carpenters, town, isPrimaryBonus: false, ref en);
                     }
                     if (queuedType == DefaultBuildingTypes.SettlementFortifications
                         || queuedType == DefaultBuildingTypes.CastleBarracks
                         || queuedType == DefaultBuildingTypes.SettlementBarracks)
                     {
-                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Engineering.Stonecutters, town, ref en);
+                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Engineering.Stonecutters, town, isPrimaryBonus: true, ref en);
                     }
                 }
             }
@@ -223,11 +223,11 @@ namespace RBMCampaign
 
             if (queuedType != null && queuedType.IsMilitaryProject)
             {
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.TwoHanded.Confidence, town, ref en);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.TwoHanded.Confidence, town, isPrimaryBonus: false, ref en);
             }
             if (queuedType == DefaultBuildingTypes.SettlementMarketplace)
             {
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Trade.SelfMadeMan, town, ref en);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Trade.SelfMadeMan, town, isPrimaryBonus: false, ref en);
             }
             // The game build RBM compiles against has no FeatHelper; the feat is applied by hand the way
             // MilitiaUpkeep applies the Battanian militia feat.

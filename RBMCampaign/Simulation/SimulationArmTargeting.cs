@@ -319,7 +319,6 @@ namespace RBMCampaign
         /// </summary>
         private static float ArcherShare(MapEventSide side, int round)
         {
-            int cachedRound;
             if (side == _shareCachedSide && _shareCachedRound == round)
             {
                 return _shareCachedValue;

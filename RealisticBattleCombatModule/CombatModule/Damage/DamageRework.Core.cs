@@ -169,10 +169,8 @@ namespace RBMCombat
 
                 ArmorMaterialTypes armorMaterial = ArmorRework.GetArmorMaterialForBodyPartRBM(victim, attackCollisionData.VictimHitBodyPart);
 
-                bool isBash = false;
                 if (attacker != null && attackCollisionData.StrikeType == (int)StrikeType.Swing && damageType != DamageTypes.Blunt && !attacker.WieldedWeapon.IsEmpty && !Utilities.HitWithWeaponBlade(in attackCollisionData, attacker.WieldedWeapon))
                 {
-                    isBash = true;
                     damageType = DamageTypes.Blunt;
                 }
                 bool isThrustCut = false;

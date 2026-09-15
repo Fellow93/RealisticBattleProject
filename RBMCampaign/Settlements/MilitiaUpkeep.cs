@@ -663,16 +663,16 @@ namespace RBMCampaign
 
                 if (settlement.Town.Governor != null)
                 {
-                    PerkHelper.AddPerkBonusForTown(DefaultPerks.OneHanded.SwiftStrike, settlement.Town, ref result);
-                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Polearm.KeepAtBay, settlement.Town, ref result);
-                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Bow.MerryMen, settlement.Town, ref result);
-                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Crossbow.LongShots, settlement.Town, ref result);
-                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Throwing.SlingingCompetitions, settlement.Town, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.OneHanded.SwiftStrike, settlement.Town, isPrimaryBonus: false, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Polearm.KeepAtBay, settlement.Town, isPrimaryBonus: false, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Bow.MerryMen, settlement.Town, isPrimaryBonus: false, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Crossbow.LongShots, settlement.Town, isPrimaryBonus: false, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Throwing.SlingingCompetitions, settlement.Town, isPrimaryBonus: false, ref result);
                     if (settlement.IsUnderSiege)
                     {
-                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Roguery.ArmsDealer, settlement.Town, ref result);
+                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Roguery.ArmsDealer, settlement.Town, isPrimaryBonus: false, ref result);
                     }
-                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.SevenVeterans, settlement.Town, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.SevenVeterans, settlement.Town, isPrimaryBonus: false, ref result);
                 }
 
                 Campaign.Current.Models.IssueModel.GetIssueEffectsOfSettlement(

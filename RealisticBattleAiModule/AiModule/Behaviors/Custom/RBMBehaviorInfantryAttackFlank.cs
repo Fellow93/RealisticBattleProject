@@ -16,8 +16,6 @@ namespace RBMAI
 
         public FormationAI.BehaviorSide FlankSide = FormationAI.BehaviorSide.Middle;
 
-        private float mobilityModifier = 1.25f;
-
         private enum FlankMode
         {
             Flank,
@@ -64,7 +62,6 @@ namespace RBMAI
             else
             {
                 float flankRange = 45f;
-                float feintRange = 30f;
 
                 Formation enemyFormation = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
                 Formation allyFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, true, false, false, false);

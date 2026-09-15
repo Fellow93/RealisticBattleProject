@@ -188,7 +188,7 @@ namespace RBMCampaign
         /// applied their own gold; a loaded save never passes through here, so an existing campaign
         /// keeps the gold it was saved with.
         /// </summary>
-        private void OnCharacterCreationIsOver()
+        private void OnCharacterCreationIsOver(int obj)
         {
             Hero player = Hero.MainHero;
             if (player == null)

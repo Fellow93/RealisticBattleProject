@@ -129,15 +129,6 @@ namespace RBMCombat
                 return;
             }
             MissionWeapon missionWeapon = attackerWeapon;
-            if (missionWeapon.IsEmpty)
-            {
-                WeaponClass weaponClass = WeaponClass.Undefined;
-            }
-            else
-            {
-                missionWeapon = attackerWeapon;
-                WeaponClass weaponClass = missionWeapon.CurrentUsageItem.WeaponClass;
-            }
             if (!missionWeapon.IsEmpty && isFatalHit && defender != null && defender.IsHuman && !collisionData.IsAlternativeAttack && (sbyte)collisionData.DamageType == 0 && (collisionData.VictimHitBodyPart == BoneBodyPartType.Neck || collisionData.VictimHitBodyPart == BoneBodyPartType.ArmLeft || collisionData.VictimHitBodyPart == BoneBodyPartType.ArmRight || collisionData.VictimHitBodyPart == BoneBodyPartType.Legs))
             {
                 colReaction = MeleeCollisionReaction.SlicedThrough;

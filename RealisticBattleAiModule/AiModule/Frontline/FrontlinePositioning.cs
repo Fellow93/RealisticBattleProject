@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -184,7 +184,7 @@ namespace RBMAI
                     // the enemy, so the charge it grants is a few metres, not a hundred.
                     if (__instance.AI != null && __instance.AI.ActiveBehavior != null && IsFormationInEngagementRange(__instance, 30f))
                     {
-                        if (unit.LastRangedAttackTime > 0)
+                        if (unit.LastRangedHitTime > 0)
                         {
                             Type activeBehaviorType = __instance.AI.ActiveBehavior.GetType();
                             if (activeBehaviorType == typeof(RBMBehaviorArcherFlank) || activeBehaviorType == typeof(RBMBehaviorArcherSkirmish)
@@ -193,15 +193,15 @@ namespace RBMAI
                                 MBList<Agent> enemyCloseBy = ScratchEnemyQuery;
                                 mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 15f, unit.Team, enemyCloseBy);
                                 float currentTime = MBCommon.GetTotalMissionTime();
-                                if (currentTime - unit.LastMeleeAttackTime > 10f && currentTime - unit.LastMeleeHitTime > 10f)
+                                if (currentTime - unit.LastMeleeHitTime > 10f && currentTime - unit.LastRecievedMeleeHitTime > 10f)
                                 {
-                                    // The old code forged Agent.LastRangedAttackTime through reflection to
+                                    // The old code forged Agent.LastRangedHitTime through reflection to
                                     // "restart the clock" once a unit had gone 50s without shooting. Writing
                                     // engine state from the parallel movement job is unsafe, so the same clock
                                     // is now kept RBM-side: the effective last-shot time is whichever of the
                                     // engine's value and our own reset stamp is later.
                                     AIDecisionState rangedState = GetOrCreateDecisionState(unit);
-                                    float lastRangedTime = unit.LastRangedAttackTime;
+                                    float lastRangedTime = unit.LastRangedHitTime;
                                     if (rangedState != null && rangedState.stallResetTime > lastRangedTime)
                                     {
                                         lastRangedTime = rangedState.stallResetTime;

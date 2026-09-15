@@ -45,7 +45,6 @@ namespace RBMAI
         private static float postureResetModifier = 0.75f;
 
         //how much posture is regained after posture break while holding shield
-        private static float shieldPostureResetModifier = 0.4f;
 
         public static void ResetPostureForAgent(ref Stance stance, float resetModifier)
         {
@@ -67,10 +66,10 @@ namespace RBMAI
                 return false;
             }
             float currentTime = MBCommon.GetTotalMissionTime();
-            if (currentTime - agent.LastMeleeAttackTime > 10f &&
-                currentTime - agent.LastMeleeHitTime > 10f &&
-                currentTime - agent.LastRangedAttackTime > 10f &&
-                currentTime - agent.LastRangedHitTime > 10f
+            if (currentTime - agent.LastMeleeHitTime > 10f &&
+                currentTime - agent.LastRecievedMeleeHitTime > 10f &&
+                currentTime - agent.LastRangedHitTime > 10f &&
+                currentTime - agent.LastRecievedRangedHitTime > 10f
                 )
             {
                 return true;
@@ -81,10 +80,10 @@ namespace RBMAI
         private static bool IsAgentInQuickPostureRegen(Agent agent)
         {
             float currentTime = MBCommon.GetTotalMissionTime();
-            if (currentTime - agent.LastMeleeAttackTime > 10f &&
-                currentTime - agent.LastMeleeHitTime > 10f &&
-                currentTime - agent.LastRangedAttackTime > 10f &&
-                currentTime - agent.LastRangedHitTime > 10f
+            if (currentTime - agent.LastMeleeHitTime > 10f &&
+                currentTime - agent.LastRecievedMeleeHitTime > 10f &&
+                currentTime - agent.LastRangedHitTime > 10f &&
+                currentTime - agent.LastRecievedRangedHitTime > 10f
                 )
             {
                 return true;

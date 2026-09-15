@@ -1,4 +1,4 @@
-using RBMConfig;
+﻿using RBMConfig;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -419,7 +419,7 @@ namespace RBMAI
                 {
                     //float currentTime = agent.Mission.CurrentTime;
                     float currentTime = MBCommon.GetTotalMissionTime();
-                    if (agent.LastRangedAttackTime > 0f && currentTime > agent.LastRangedAttackTime && (currentTime - agent.LastRangedAttackTime) < (lastAttackTimeTreshold + (20f * ratioOfCrossbowmen)))
+                    if (agent.LastRangedHitTime > 0f && currentTime > agent.LastRangedHitTime && (currentTime - agent.LastRangedHitTime) < (lastAttackTimeTreshold + (20f * ratioOfCrossbowmen)))
                     {
                         countOfShooting++;
                     }
@@ -446,7 +446,7 @@ namespace RBMAI
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
                     //float currentTime = MBCommon.TimeType.Mission.GetTime();
-                    //if (currentTime - agent.LastRangedAttackTime < 6f)
+                    //if (currentTime - agent.LastRangedHitTime < 6f)
                     //{
                     //    countOfSkirmishers++;
                     //}
@@ -454,7 +454,7 @@ namespace RBMAI
                     float countedUnits = 0f;
                     //float currentTime = Mission.Current.CurrentTime;
                     float currentTime = MBCommon.GetTotalMissionTime();
-                    if (agent.LastRangedAttackTime > 0f && currentTime - agent.LastRangedAttackTime < 6f && currentTime > agent.LastRangedAttackTime && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
+                    if (agent.LastRangedHitTime > 0f && currentTime - agent.LastRangedHitTime < 6f && currentTime > agent.LastRangedHitTime && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                     {
                         for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                         {
@@ -494,8 +494,8 @@ namespace RBMAI
             {
                 if (agent != null && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                 {
-                    float lastMeleeAttackTime = agent.LastMeleeAttackTime;
-                    float lastMeleeHitTime = agent.LastMeleeHitTime;
+                    float lastMeleeAttackTime = agent.LastMeleeHitTime;
+                    float lastMeleeHitTime = agent.LastRecievedMeleeHitTime;
                     if ((currentTime - lastMeleeAttackTime < 6f) || (currentTime - lastMeleeHitTime < 6f))
                     {
                         countOfUnitsFightingInMelee++;
@@ -726,7 +726,6 @@ namespace RBMAI
             Formation significantEnemy = null;
             List<Formation> significantFormations = new List<Formation>();
             float dist = 10000f;
-            float significantTreshold = 0.6f;
             List<Formation> allEnemyFormations = new List<Formation>();
 
             if (formation != null)
@@ -934,7 +933,7 @@ namespace RBMAI
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 result = false;
             }

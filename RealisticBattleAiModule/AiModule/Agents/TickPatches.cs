@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using Helpers;
 using JetBrains.Annotations;
 using SandBox.GameComponents;
@@ -94,7 +94,7 @@ namespace RBMAI
                         ___Agent.MovementInputVector = ___Agent.LookDirection.AsVec2 * 2f;
                     }
                 }
-                if (___Agent.GetMorale() > 0f && currentTime - ___Agent.LastMeleeHitTime > 10f)
+                if (___Agent.GetMorale() > 0f && currentTime - ___Agent.LastRecievedMeleeHitTime > 10f)
                 {
                     ___Agent.CommonAIComponent?.StopRetreating();
                 }
@@ -136,7 +136,7 @@ namespace RBMAI
                     __instance.ApplyActionOnEachUnitViaBackupList(action);
                     return false;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     {
                         return true;

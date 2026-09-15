@@ -261,21 +261,6 @@ namespace RBMAI
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 3f, 5f, 200f, 1f);
                     }
                     return;
-                    if (Mission.Current.IsSiegeBattle || Mission.Current.IsSallyOutBattle)
-                    {
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 4f, 3f, 20f, 0.01f);
-                        return;
-                    }
-                    if (___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.FallBack)
-                    {
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 4f, 0f, 20f, 0f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
-                    }
-                    else
-                    {
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 5f, 3f, 20f, 0.01f);
-                    }
-                    return;
                 }
             }
         }

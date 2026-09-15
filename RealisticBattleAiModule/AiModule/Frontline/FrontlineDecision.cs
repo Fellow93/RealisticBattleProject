@@ -1,4 +1,4 @@
-using HarmonyLib;
+﻿using HarmonyLib;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -171,7 +171,7 @@ namespace RBMAI
             public Agent cachedTarget = null;
             public float cachedTargetExpiry = float.MinValue;
 
-            // RBM-side stand-in for the old forged write to Agent.LastRangedAttackTime: records when the
+            // RBM-side stand-in for the old forged write to Agent.LastRangedHitTime: records when the
             // >50s "archer has stalled" reset fired, so the 20s/50s logic keeps its effect without
             // reflecting into engine state from a worker thread.
             public float stallResetTime = float.MinValue;

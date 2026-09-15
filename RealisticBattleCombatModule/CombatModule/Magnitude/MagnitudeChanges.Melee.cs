@@ -219,7 +219,6 @@ namespace RBMCombat
                 float num4 = MathF.Min(1f, impactPointAsPercent + num2);
                 //float originalValue = 0f;
                 float newValue = 0f;
-                int j = 0;
                 //for (int i = 0; i < 5; i++)
                 //{
                 //    //float bladeLength = weapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength;

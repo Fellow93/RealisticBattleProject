@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
@@ -213,25 +213,25 @@ namespace RBMCampaign
             bool meleeSkill = (skill == DefaultSkills.OneHanded || skill == DefaultSkills.TwoHanded || skill == DefaultSkills.Polearm);
             if ((troop.IsInfantry && rangedSkill) || (troop.IsRanged && meleeSkill))
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.FlexibleFighter, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.FlexibleFighter, BattleEnvironment.Land, captain, ref bonuses);
             }
 
             if (skill == DefaultSkills.Bow)
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.DeadAim, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.DeadAim, BattleEnvironment.Land, captain, ref bonuses);
                 if (mounted)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.HorseMaster, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.HorseMaster, BattleEnvironment.Land, captain, ref bonuses);
                 }
             }
             else if (skill == DefaultSkills.Throwing)
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Athletics.StrongArms, captain, ref bonuses);
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.RunningThrow, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Athletics.StrongArms, BattleEnvironment.Land, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.RunningThrow, BattleEnvironment.Land, captain, ref bonuses);
             }
             else if (skill == DefaultSkills.Crossbow)
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Crossbow.DonkeysSwiftness, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Crossbow.DonkeysSwiftness, BattleEnvironment.Land, captain, ref bonuses);
             }
 
             // AND THE MELEE PERKS REACH A FOOT TROOP ONLY. This is not a simplification -- it is where native puts
@@ -244,16 +244,16 @@ namespace RBMCampaign
             {
                 if (skill == DefaultSkills.OneHanded)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.OneHanded.WrappedHandles, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.OneHanded.WrappedHandles, BattleEnvironment.Land, captain, ref bonuses);
                 }
                 else if (skill == DefaultSkills.TwoHanded)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.TwoHanded.StrongGrip, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.TwoHanded.StrongGrip, BattleEnvironment.Land, captain, ref bonuses);
                 }
                 else if (skill == DefaultSkills.Polearm)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.CleanThrust, captain, ref bonuses);
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.CounterWeight, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.CleanThrust, BattleEnvironment.Land, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.CounterWeight, BattleEnvironment.Land, captain, ref bonuses);
                 }
             }
 

@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 using HarmonyLib;
 using SandBox.View.Missions;
@@ -156,7 +157,7 @@ namespace RBMCampaign
     /// watched-side party lands on the one PlayerTeam. Gated on IsSpectating, inert in every real battle, and it
     /// covers the siege fork for free since it splits the player side the same way.
     /// </summary>
-    [HarmonyPatch(typeof(MissionCombatantsLogic), "SupportsAllyTeamOnPlayerSide")]
+    [HarmonyPatch(typeof(MissionCombatantsLogic), "SupportsAllyTeamOnPlayerSide", new Type[] { typeof(IBattleCombatant) }, new ArgumentType[] { ArgumentType.Out })]
     public static class RBMSpectatorSuppressAllyTeamPatch
     {
         public static void Postfix(ref bool __result, ref IBattleCombatant allyCombatant)

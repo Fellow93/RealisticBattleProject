@@ -212,8 +212,16 @@ namespace RBMCampaign
             // Between the two moments is exactly here.
             SetCommandMode(true);
 
-            Mission.Current.OnDeploymentFinished();
+            // v1.5.x made Mission.OnDeploymentFinished internal; reach it reflectively.
+            MethodInfo onDeploymentFinished = _onDeploymentFinished;
+            if (onDeploymentFinished != null && Mission.Current != null)
+            {
+                onDeploymentFinished.Invoke(Mission.Current, null);
+            }
         }
+
+        private static readonly MethodInfo _onDeploymentFinished = typeof(Mission).GetMethod(
+            "OnDeploymentFinished", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public override void OnRemoveBehavior()
         {
