@@ -376,7 +376,9 @@ namespace RBMCampaign
         /// </remarks>
         private static string DayDividerIfChanged()
         {
-            if (Campaign.Current == null)
+            // DaysInYear is zero until CampaignTime.Initialize has run the time model; GetYear divides
+            // by the tick count derived from it, so a line written before then would divide by zero.
+            if (Campaign.Current == null || CampaignTime.DaysInYear <= 0)
             {
                 return null;
             }
