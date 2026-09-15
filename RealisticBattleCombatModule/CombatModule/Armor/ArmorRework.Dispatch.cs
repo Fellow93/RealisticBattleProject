@@ -115,7 +115,79 @@ namespace RBMCombat
                         }
                 }
             }
-            return result;
+            return ApplyDrivenArmorBonus(agent, bodyPart, result);
+        }
+
+        /// <summary>
+        /// Vanilla applies armor perks (Athletics.IgnorePain, Engineering.Metallurgy, Riding.DauntlessSteed,
+        /// Riding.ToughSteed) by rewriting the ArmorHead/Torso/Arms/Legs driven properties on top of the
+        /// plain equipment sums. RBM computes per-body-part armor from equipment directly, so carry the
+        /// perk effect over as the ratio (or, for a bare body part, the flat delta) between the driven
+        /// property and the equipment sum it was built from.
+        /// </summary>
+        private static float ApplyDrivenArmorBonus(Agent agent, BoneBodyPartType bodyPart, float rbmArmor)
+        {
+            AgentDrivenProperties props = agent.AgentDrivenProperties;
+            Equipment equipment = agent.SpawnEquipment;
+            if (props == null || equipment == null)
+            {
+                return rbmArmor;
+            }
+
+            float driven;
+            float vanillaBase;
+            if (!agent.IsHuman)
+            {
+                driven = props.ArmorTorso;
+                vanillaBase = 0f;
+                for (int i = 1; i < 12; i++)
+                {
+                    if (equipment[i].Item != null)
+                    {
+                        vanillaBase += equipment[i].GetModifiedMountBodyArmor();
+                    }
+                }
+            }
+            else
+            {
+                switch (bodyPart)
+                {
+                    case BoneBodyPartType.Head:
+                    case BoneBodyPartType.Neck:
+                        driven = props.ArmorHead;
+                        vanillaBase = equipment.GetHeadArmorSum();
+                        break;
+                    case BoneBodyPartType.Legs:
+                        driven = props.ArmorLegs;
+                        vanillaBase = equipment.GetLegArmorSum();
+                        break;
+                    case BoneBodyPartType.ArmLeft:
+                    case BoneBodyPartType.ArmRight:
+                        driven = props.ArmorArms;
+                        vanillaBase = equipment.GetArmArmorSum();
+                        break;
+                    case BoneBodyPartType.Chest:
+                    case BoneBodyPartType.Abdomen:
+                    case BoneBodyPartType.ShoulderLeft:
+                    case BoneBodyPartType.ShoulderRight:
+                        driven = props.ArmorTorso;
+                        vanillaBase = equipment.GetHumanBodyArmorSum();
+                        break;
+                    default:
+                        return rbmArmor;
+                }
+            }
+
+            if (driven <= 0f)
+            {
+                return rbmArmor;
+            }
+            if (vanillaBase > 0f)
+            {
+                return rbmArmor * (driven / vanillaBase);
+            }
+            // Nothing worn on this part: vanilla's result is the flat perk bonus itself.
+            return rbmArmor + driven;
         }
 
         public static ArmorMaterialTypes GetArmorMaterialForBodyPartRBM(Agent agent, BoneBodyPartType bodyPart)

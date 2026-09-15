@@ -115,11 +115,19 @@ namespace RBMCombat
                 BasicCharacterObject victimCaptainCharacter = attackInformation.VictimCaptainCharacter;
 
                 float armorAmount = 0f;
+                // Ratio of perk-adjusted armor (Piercer, Bodkin, Puncture, Vandal, ChinkInTheArmor,
+                // WeakSpot, bow/crossbow penetration) to raw armor. The face-hit and under-shoulder
+                // branches below rebuild armorAmount from equipment, so they re-apply this ratio.
+                float armorPenetrationFactor = 1f;
 
                 if (!isFallDamage)
                 {
                     float adjustedArmor = MissionGameModels.Current.StrikeMagnitudeModel.CalculateAdjustedArmorForBlow(attackInformation, attackCollisionData, armorAmountFloat, attackerAgentCharacter, attackerCaptainCharacter, victimAgentCharacter, victimCaptainCharacter, attackerWeapon);
                     armorAmount = adjustedArmor;
+                    if (armorAmountFloat > 0f)
+                    {
+                        armorPenetrationFactor = adjustedArmor / armorAmountFloat;
+                    }
                 }
 
                 Agent attacker = attackInformation.AttackerAgent;
@@ -239,7 +247,7 @@ namespace RBMCombat
                 {
                     if (!victim.SpawnEquipment[EquipmentIndex.Head].IsEmpty)
                     {
-                        armorAmount = victim.SpawnEquipment[EquipmentIndex.Head].GetModifiedBodyArmor();
+                        armorAmount = victim.SpawnEquipment[EquipmentIndex.Head].GetModifiedBodyArmor() * armorPenetrationFactor;
 
                         if (victim.SpawnEquipment[EquipmentIndex.Head].Item.ArmorComponent != null)
                         {
@@ -291,6 +299,7 @@ namespace RBMCombat
                     {
                         armorAmount += victim.SpawnEquipment[EquipmentIndex.Cape].GetModifiedArmArmor();
                     }
+                    armorAmount *= armorPenetrationFactor;
                 }
 
                 if (collidedWithShieldOnBack && shieldOnBack != null && victim != null)
