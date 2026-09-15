@@ -49,6 +49,11 @@ namespace RBMAI
         private bool _isInHitStop = false;
         private int _currentPriority = -1;
 
+        // The mission the outstanding time-speed request was actually added to.
+        // Mission.Current may already be a different (or null) mission by the time we remove it,
+        // and Mission.RemoveTimeSpeedRequest throws ArgumentOutOfRangeException if the id is absent.
+        private static Mission _timeRequestMission = null;
+
         // ── Lifecycle ────────────────────────────────────────────────────────
 
         public override void AfterStart()
@@ -123,24 +128,43 @@ namespace RBMAI
                 if (priority <= _currentPriority)
                     return;
 
-                Mission.Current?.RemoveTimeSpeedRequest(TIME_REQUEST_ID);
+                RemoveOutstandingTimeSpeedRequest();
             }
+
+            Mission mission = Mission.Current;
+            if (mission == null)
+                return;
 
             _currentPriority = priority;
             _hitStopDuration = duration;
             _isInHitStop = true;
             _hitStopStart = DateTime.UtcNow;
 
-            Mission.Current?.AddTimeSpeedRequest(new Mission.TimeSpeedRequest(slowFactor, TIME_REQUEST_ID));
+            mission.AddTimeSpeedRequest(new Mission.TimeSpeedRequest(slowFactor, TIME_REQUEST_ID));
+            _timeRequestMission = mission;
         }
 
         private void EndHitStop()
         {
-            if (!_isInHitStop)
-                return;
             _isInHitStop = false;
             _currentPriority = -1;
-            Mission.Current?.RemoveTimeSpeedRequest(TIME_REQUEST_ID);
+            RemoveOutstandingTimeSpeedRequest();
+        }
+
+        private static void RemoveOutstandingTimeSpeedRequest()
+        {
+            Mission mission = _timeRequestMission;
+            _timeRequestMission = null;
+            if (mission == null)
+                return;
+            try
+            {
+                mission.RemoveTimeSpeedRequest(TIME_REQUEST_ID);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                // Request already gone (mission torn down / cleared its requests) - nothing to undo.
+            }
         }
     }
 }

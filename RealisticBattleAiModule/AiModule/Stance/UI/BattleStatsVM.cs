@@ -23,8 +23,12 @@
             }
             set
             {
-                atkarc = value;
-                OnPropertyChanged("Atkarc");
+                if (atkarc == value)
+                {
+                    return;
+                }
+                    atkarc = value;
+                    OnPropertyChanged("Atkarc");
             }
         }
 
@@ -37,8 +41,12 @@
             }
             set
             {
-                atkha = value;
-                OnPropertyChanged("Atkha");
+                if (atkha == value)
+                {
+                    return;
+                }
+                    atkha = value;
+                    OnPropertyChanged("Atkha");
             }
         }
 
@@ -51,8 +59,12 @@
             }
             set
             {
-                atkcav = value;
-                OnPropertyChanged("Atkcav");
+                if (atkcav == value)
+                {
+                    return;
+                }
+                    atkcav = value;
+                    OnPropertyChanged("Atkcav");
             }
         }
 
@@ -65,8 +77,12 @@
             }
             set
             {
-                atkinf = value;
-                OnPropertyChanged("Atkinf");
+                if (atkinf == value)
+                {
+                    return;
+                }
+                    atkinf = value;
+                    OnPropertyChanged("Atkinf");
             }
         }
 
@@ -79,8 +95,12 @@
             }
             set
             {
-                defarc = value;
-                OnPropertyChanged("Defarc");
+                if (defarc == value)
+                {
+                    return;
+                }
+                    defarc = value;
+                    OnPropertyChanged("Defarc");
             }
         }
 
@@ -93,8 +113,12 @@
             }
             set
             {
-                defha = value;
-                OnPropertyChanged("Defha");
+                if (defha == value)
+                {
+                    return;
+                }
+                    defha = value;
+                    OnPropertyChanged("Defha");
             }
         }
 
@@ -107,8 +131,12 @@
             }
             set
             {
-                defcav = value;
-                OnPropertyChanged("Defcav");
+                if (defcav == value)
+                {
+                    return;
+                }
+                    defcav = value;
+                    OnPropertyChanged("Defcav");
             }
         }
 
@@ -121,8 +149,12 @@
             }
             set
             {
-                definf = value;
-                OnPropertyChanged("Definf");
+                if (definf == value)
+                {
+                    return;
+                }
+                    definf = value;
+                    OnPropertyChanged("Definf");
             }
         }
     }

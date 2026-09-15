@@ -113,10 +113,9 @@ namespace RBMAI
                 }
             }
 
-            private static float calculateAttackerStaminaLoss(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MeleeHitType meleeHitType, bool isUnarmedAttack)
+            private static float calculateAttackerStaminaLoss(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon attackerWeapon, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
                 float result = 0f;
-                MissionWeapon attackerWeapon = attackerAgent.WieldedWeapon;
 
                 SkillObject attackerWeaponSkill = null;
                 if (!isUnarmedAttack && !attackerWeapon.IsEmpty && attackerWeapon.CurrentUsageItem != null)
@@ -135,7 +134,7 @@ namespace RBMAI
                 float defaultAttack = 35f;
 
                 //100 skill = 10% reduction
-                float skillModifier = 1f - (effectiveSkill * 0.001f);
+                float skillModifier = Math.Max(0f, 1f - (effectiveSkill * 0.001f));
 
                 if (isUnarmedAttack)
                 {
@@ -191,15 +190,15 @@ namespace RBMAI
                 }
             }
 
-            private static float calculateDefenderPostureDamage(Agent defenderAgent, Agent attackerAgent, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType, bool isUnarmedAttack)
+            // The action type (block / parry / shield block / chamber) is encoded in the PostureDamage
+            // table rows selected by meleeHitType, so there is no separate per-action multiplier.
+            private static float calculateDefenderPostureDamage(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
                 float result = 0f;
-                float defenderPostureDamageModifier = 1f; // terms and conditions may apply
                 float strengthSkillModifier = 500f;
                 float weaponSkillModifier = 500f;
 
                 float basePostureDamage = getDefenderPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, meleeHitType);
-                actionTypeDamageModifier = 1f;
 
                 //SkillObject attackerWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
                 SkillObject attackerWeaponSkill = null;
@@ -236,12 +235,14 @@ namespace RBMAI
                             defenderEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
                         }
                     }
-                    if (defenderAgent.GetOffhandWieldedItemIndex() != EquipmentIndex.None)
+                }
+                // A shield is worth the same bonus whether or not the defender also has a primary
+                // weapon wielded, so this check must sit outside the primary-weapon gate.
+                if (defenderAgent.GetOffhandWieldedItemIndex() != EquipmentIndex.None)
+                {
+                    if (defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()].IsShield())
                     {
-                        if (defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()].IsShield())
-                        {
-                            defenderEffectiveWeaponSkill += 20f;
-                        }
+                        defenderEffectiveWeaponSkill += 20f;
                     }
                 }
                 if (defenderAgent.HasMount)
@@ -268,8 +269,7 @@ namespace RBMAI
                 float additiveSpeedModifier = getRelativeSpeedPostureModifier(attackerAgent, defenderAgent);
                 basePostureDamage = (basePostureDamage + additiveSpeedModifier) * skillModifier;
 
-                //actionTypeDamageModifier += actionTypeDamageModifier * 0.5f * comHitModifier;
-                result = basePostureDamage * actionTypeDamageModifier * defenderPostureDamageModifier * comHitModifier;
+                result = basePostureDamage * comHitModifier;
                 result *= GetDefenderBlockPerkFactor(defenderAgent, meleeHitType);
                 //InformationManager.DisplayMessage(new InformationMessage("Deffender PD: " + result));
                 return result;
@@ -294,13 +294,65 @@ namespace RBMAI
                 {
                     return 1f;
                 }
+
+                bool shieldBlock = meleeHitType == MeleeHitType.ShieldBlock || meleeHitType == MeleeHitType.ShieldIncorrectBlock || meleeHitType == MeleeHitType.ShieldParry;
+                bool incorrectShieldBlock = meleeHitType == MeleeHitType.ShieldIncorrectBlock;
+
+                Agent captainAgent = defenderAgent.Formation?.Captain;
+                EquipmentIndex primaryIndex = defenderAgent.GetPrimaryWieldedItemIndex();
+                EquipmentIndex offhandIndex = defenderAgent.GetOffhandWieldedItemIndex();
+                int usageIndex = defenderAgent.WieldedWeapon.IsEmpty ? -1 : defenderAgent.WieldedWeapon.CurrentUsageIndex;
+
+                Stance stance = null;
+                AgentStances.values.TryGetValue(defenderAgent, out stance);
+                if (stance == null)
+                {
+                    // No stance entry to hang the cache on - fall back to computing it every time.
+                    float weaponOnly;
+                    float shieldOnly;
+                    float shieldIncorrectOnly;
+                    ComputeDefenderBlockPerkFactors(defenderAgent, captainAgent, out weaponOnly, out shieldOnly, out shieldIncorrectOnly);
+                    return shieldBlock ? (incorrectShieldBlock ? shieldIncorrectOnly : shieldOnly) : weaponOnly;
+                }
+
+                if (!stance.blockPerkFactorsValid
+                    || stance.blockPerkCaptain != captainAgent
+                    || stance.blockPerkPrimaryIndex != primaryIndex
+                    || stance.blockPerkOffhandIndex != offhandIndex
+                    || stance.blockPerkUsageIndex != usageIndex)
+                {
+                    ComputeDefenderBlockPerkFactors(defenderAgent, captainAgent,
+                        out stance.blockPerkWeaponFactor, out stance.blockPerkShieldFactor, out stance.blockPerkShieldIncorrectFactor);
+                    stance.blockPerkCaptain = captainAgent;
+                    stance.blockPerkPrimaryIndex = primaryIndex;
+                    stance.blockPerkOffhandIndex = offhandIndex;
+                    stance.blockPerkUsageIndex = usageIndex;
+                    stance.blockPerkFactorsValid = true;
+                }
+
+                return shieldBlock
+                    ? (incorrectShieldBlock ? stance.blockPerkShieldIncorrectFactor : stance.blockPerkShieldFactor)
+                    : stance.blockPerkWeaponFactor;
+            }
+
+            /// <summary>
+            /// The uncached perk math behind <see cref="GetDefenderBlockPerkFactor"/>. Produces the
+            /// factor for each of the three block classes in one pass: weapon block/parry (handling
+            /// perks only), correct shield block/parry, and incorrect shield block (which also gets
+            /// ShieldWall). The arithmetic is identical to the per-blow version it replaced.
+            /// </summary>
+            private static void ComputeDefenderBlockPerkFactors(Agent defenderAgent, Agent captainAgent, out float weaponFactor, out float shieldFactor, out float shieldIncorrectFactor)
+            {
+                weaponFactor = 1f;
+                shieldFactor = 1f;
+                shieldIncorrectFactor = 1f;
+
                 CharacterObject character = defenderAgent.Character as CharacterObject;
                 if (character == null)
                 {
-                    return 1f;
+                    return;
                 }
                 BattleEnvironment env = defenderAgent.CurrentBattleEnvironment;
-                Agent captainAgent = defenderAgent.Formation?.Captain;
                 CharacterObject captain = (captainAgent != null && captainAgent != defenderAgent) ? captainAgent.Character as CharacterObject : null;
                 bool onFoot = !defenderAgent.HasMount;
 
@@ -337,15 +389,17 @@ namespace RBMAI
                     }
                 }
 
-                // Shield: only on shield blocks.
-                bool shieldBlock = meleeHitType == MeleeHitType.ShieldBlock || meleeHitType == MeleeHitType.ShieldIncorrectBlock || meleeHitType == MeleeHitType.ShieldParry;
-                if (shieldBlock)
+                weaponFactor = factor;
+
+                // Shield: only on shield blocks. Computed twice, once without and once with ShieldWall
+                // (which vanilla only grants on an incorrect block).
                 {
+                    float shieldBase = factor;
                     ExplainedNumber shieldHp = new ExplainedNumber(1f);
                     PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Engineering.Scaffolds, env, character, false, ref shieldHp);
                     if (shieldHp.ResultNumber > 0f)
                     {
-                        factor /= shieldHp.ResultNumber;
+                        shieldBase /= shieldHp.ResultNumber;
                     }
 
                     ExplainedNumber shieldDamage = new ExplainedNumber(1f);
@@ -354,17 +408,15 @@ namespace RBMAI
                     {
                         PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.OneHanded.SteelCoreShields, env, captain, ref shieldDamage);
                     }
-                    if (meleeHitType == MeleeHitType.ShieldIncorrectBlock)
-                    {
-                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.OneHanded.ShieldWall, env, character, true, ref shieldDamage);
-                    }
-                    factor *= Math.Max(0f, shieldDamage.ResultNumber);
-                }
+                    ExplainedNumber shieldDamageIncorrect = shieldDamage;
+                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.OneHanded.ShieldWall, env, character, true, ref shieldDamageIncorrect);
 
-                return factor;
+                    shieldFactor = shieldBase * Math.Max(0f, shieldDamage.ResultNumber);
+                    shieldIncorrectFactor = shieldBase * Math.Max(0f, shieldDamageIncorrect.ResultNumber);
+                }
             }
 
-            private static float calculateAttackerPostureDamage(Agent defenderAgent, Agent attackerAgent, float actionTypeDamageModifier, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType, bool isUnarmedAttack)
+            private static float calculateAttackerPostureDamage(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
                 float result = 0f;
 
@@ -372,7 +424,6 @@ namespace RBMAI
                 float weaponSkillModifier = 500f;
 
                 float basePostureDamage = getAttackerPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, meleeHitType);
-                actionTypeDamageModifier = 1f;
 
                 SkillObject attackerWeaponSkill = null;
                 if (!isUnarmedAttack && !weapon.IsEmpty && weapon.CurrentUsageItem != null)
@@ -410,12 +461,14 @@ namespace RBMAI
                             defenderEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
                         }
                     }
-                    if (defenderAgent.GetOffhandWieldedItemIndex() != EquipmentIndex.None)
+                }
+                // A shield is worth the same bonus whether or not the defender also has a primary
+                // weapon wielded, so this check must sit outside the primary-weapon gate.
+                if (defenderAgent.GetOffhandWieldedItemIndex() != EquipmentIndex.None)
+                {
+                    if (defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()].IsShield())
                     {
-                        if (defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()].IsShield())
-                        {
-                            defenderEffectiveWeaponSkill += 20f;
-                        }
+                        defenderEffectiveWeaponSkill += 20f;
                     }
                 }
                 if (defenderAgent.HasMount)
@@ -442,13 +495,93 @@ namespace RBMAI
                 float additiveSpeedModifier = getRelativeSpeedPostureModifier(attackerAgent, defenderAgent);
                 basePostureDamage = (basePostureDamage + additiveSpeedModifier) * skillModifier;
 
-                //actionTypeDamageModifier += actionTypeDamageModifier * 0.5f * comHitModifier;
-                result = basePostureDamage * actionTypeDamageModifier * comHitModifier;
+                result = basePostureDamage * comHitModifier;
                 //InformationManager.DisplayMessage(new InformationMessage("Attacker PD: " + result));
                 return result;
             }
 
+            /// <summary>
+            /// Key for the sweet-spot magnitude cache. The computation reads nothing agent-specific
+            /// beyond <paramref name="relevantSkill"/>: the <c>character</c> parameter is unused, and
+            /// everything else comes off the weapon (item, item modifier via the modified swing speed,
+            /// and the two usage indices).
+            /// </summary>
+            private struct SweetSpotKey : IEquatable<SweetSpotKey>
+            {
+                private readonly ItemObject _item;
+                private readonly ItemModifier _modifier;
+                private readonly int _usageIndex;
+                private readonly int _currentUsageIndex;
+                private readonly int _skill;
+
+                public SweetSpotKey(ItemObject item, ItemModifier modifier, int usageIndex, int currentUsageIndex, int skill)
+                {
+                    _item = item;
+                    _modifier = modifier;
+                    _usageIndex = usageIndex;
+                    _currentUsageIndex = currentUsageIndex;
+                    _skill = skill;
+                }
+
+                public bool Equals(SweetSpotKey other)
+                {
+                    return _item == other._item
+                        && _modifier == other._modifier
+                        && _usageIndex == other._usageIndex
+                        && _currentUsageIndex == other._currentUsageIndex
+                        && _skill == other._skill;
+                }
+
+                public override bool Equals(object obj)
+                {
+                    return obj is SweetSpotKey && Equals((SweetSpotKey)obj);
+                }
+
+                public override int GetHashCode()
+                {
+                    int hash = _item != null ? _item.GetHashCode() : 0;
+                    hash = (hash * 397) ^ (_modifier != null ? _modifier.GetHashCode() : 0);
+                    hash = (hash * 397) ^ _usageIndex;
+                    hash = (hash * 397) ^ _currentUsageIndex;
+                    hash = (hash * 397) ^ _skill;
+                    return hash;
+                }
+            }
+
+            private static readonly Dictionary<SweetSpotKey, float> _sweetSpotMagnitudeCache = new Dictionary<SweetSpotKey, float>();
+
+            public static void ClearSweetSpotMagnitudeCache()
+            {
+                lock (_sweetSpotMagnitudeCache)
+                {
+                    _sweetSpotMagnitudeCache.Clear();
+                }
+            }
+
             public static float CalculateSweetSpotSwingMagnitude(BasicCharacterObject character, MissionWeapon weapon, int weaponUsageIndex, int relevantSkill)
+            {
+                if (weapon.Item != null)
+                {
+                    SweetSpotKey key = new SweetSpotKey(weapon.Item, weapon.ItemModifier, weaponUsageIndex, weapon.CurrentUsageIndex, relevantSkill);
+                    float cached;
+                    lock (_sweetSpotMagnitudeCache)
+                    {
+                        if (_sweetSpotMagnitudeCache.TryGetValue(key, out cached))
+                        {
+                            return cached;
+                        }
+                    }
+                    float computed = CalculateSweetSpotSwingMagnitudeUncached(character, weapon, weaponUsageIndex, relevantSkill);
+                    lock (_sweetSpotMagnitudeCache)
+                    {
+                        _sweetSpotMagnitudeCache[key] = computed;
+                    }
+                    return computed;
+                }
+                return CalculateSweetSpotSwingMagnitudeUncached(character, weapon, weaponUsageIndex, relevantSkill);
+            }
+
+            private static float CalculateSweetSpotSwingMagnitudeUncached(BasicCharacterObject character, MissionWeapon weapon, int weaponUsageIndex, int relevantSkill)
             {
                 float progressEffect = 1f;
                 float sweetSpotMagnitude = -1f;

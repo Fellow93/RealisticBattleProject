@@ -177,7 +177,10 @@ namespace RBMCombat
                         return;
                     }
                     WeaponStatsData weaponStatsData = wieldedStatsData[0];
-                    WeaponData weaponData = __instance.Equipment[wieldedItemIndex].GetWeaponData(true);
+                    // No GetWeaponData(true) here: with needBatchedVersionForMeshes it acquires two native
+                    // PhysicsShape resources per call that vanilla always releases with
+                    // DeinitializeManagedPointers(). This postfix runs on the spawn wield for every agent
+                    // and only ever needed the ItemObject, which MissionWeapon.Item exposes directly.
                     if (weaponStatsData.WeaponClass == (int)WeaponClass.Bow)
                     {
                         isBowWielded = true;
@@ -186,14 +189,14 @@ namespace RBMCombat
                     {
                         if (__instance.Equipment[equipmentIndex].GetWeaponStatsData() != null && __instance.Equipment[equipmentIndex].GetWeaponStatsData().Length > 0)
                         {
-                            WeaponData wd = __instance.Equipment[equipmentIndex].GetWeaponData(true);
+                            ItemObject slotItem = __instance.Equipment[equipmentIndex].Item;
                             WeaponStatsData wsd = __instance.Equipment[equipmentIndex].GetWeaponStatsData()[0];
                             if (wsd.WeaponClass == (int)WeaponClass.Bow)
                             {
                                 MissionWeapon mw = __instance.Equipment[equipmentIndex];
                                 if (isBowWielded)
                                 {
-                                    SkillObject skill = (wd.GetItemObject() == null) ? DefaultSkills.Athletics : wd.GetItemObject().RelevantSkill;
+                                    SkillObject skill = (slotItem == null) ? DefaultSkills.Athletics : slotItem.RelevantSkill;
                                     if (skill != null)
                                     {
                                         int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, skill);

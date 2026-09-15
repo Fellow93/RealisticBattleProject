@@ -17,21 +17,8 @@ namespace RBMAI
 {
     public partial class StanceLogic : MissionLogic
     {
-        [HarmonyPatch(typeof(Agent))]
-        [HarmonyPatch("OnShieldDamaged")]
-        private class OnShieldDamagedPatch
-        {
-            private static bool Prefix(ref Agent __instance, ref EquipmentIndex slotIndex, ref int inflictedDamage)
-            {
-                int num = MathF.Max(0, __instance.Equipment[slotIndex].HitPoints - inflictedDamage);
-                __instance.ChangeWeaponHitPoints(slotIndex, (short)num);
-                if (num == 0)
-                {
-                    __instance.RemoveEquippedWeapon(slotIndex);
-                }
-                return false;
-            }
-        }
+        // (Removed) OnShieldDamagedPatch: it was a byte-identical reimplementation of vanilla
+        // Agent.OnShieldDamaged returning false, i.e. a no-op that only blocked other mods' patches.
 
         [HarmonyPatch(typeof(TournamentRound))]
         [HarmonyPatch("EndMatch")]
@@ -47,18 +34,7 @@ namespace RBMAI
                         if (entry.Key.IsPlayerControlled)
                         {
                             //InformationManager.DisplayMessage(new InformationMessage(entry.Value.stance.ToString()));
-                            if (AgentStances.postureVisual != null && AgentStances.postureVisual._dataSource.ShowPlayerPostureStatus)
-                            {
-                                AgentStances.postureVisual._dataSource.PlayerPosture = (int)entry.Value.posture;
-                                AgentStances.postureVisual._dataSource.PlayerPostureMax = (int)entry.Value.maxPosture;
-                                AgentStances.postureVisual._dataSource.PlayerPostureText = ((int)entry.Value.posture).ToString();
-                                AgentStances.postureVisual._dataSource.PlayerPostureMaxText = ((int)entry.Value.maxPosture).ToString();
-
-                                AgentStances.postureVisual._dataSource.PlayerStamina = (int)entry.Value.stamina;
-                                AgentStances.postureVisual._dataSource.PlayerStaminaMax = (int)entry.Value.maxStamina;
-                                AgentStances.postureVisual._dataSource.PlayerStaminaText = ((int)entry.Value.stamina).ToString();
-                                AgentStances.postureVisual._dataSource.PlayerStaminaMaxText = ((int)entry.Value.maxStamina).ToString();
-                            }
+                            PushPlayerStanceBars(entry.Value);
                         }
 
                         if (AgentStances.postureVisual != null && AgentStances.postureVisual._dataSource.ShowEnemyStatus && AgentStances.postureVisual.affectedAgent == entry.Key)

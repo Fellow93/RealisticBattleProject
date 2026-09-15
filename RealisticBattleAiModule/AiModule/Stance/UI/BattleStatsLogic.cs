@@ -14,6 +14,7 @@ namespace RBMAI
         public BattleStatsVM _dataSource;
 
         private GauntletLayer _gauntletLayer;
+        private MissionScreen _missionScreen;
 
         public bool IsEnabled
         {
@@ -26,14 +27,58 @@ namespace RBMAI
 
         public override void AfterStart()
         {
-            MissionScreen missionScreen = TaleWorlds.ScreenSystem.ScreenManager.TopScreen as MissionScreen;
+            _missionScreen = TaleWorlds.ScreenSystem.ScreenManager.TopScreen as MissionScreen;
+            if (_missionScreen == null)
+            {
+                // No mission screen (headless/spectator/teardown) - run without any UI.
+                return;
+            }
             _dataSource = new BattleStatsVM();
             _gauntletLayer = new GauntletLayer("GauntletLayer" ,- 1);
-            missionScreen.AddLayer(_gauntletLayer);
+            _missionScreen.AddLayer(_gauntletLayer);
             _gauntletLayer.LoadMovie("BattleStats", (ViewModel)_dataSource);
         }
 
-        public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon attackerWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
+        public override void OnRemoveBehavior()
+        {
+            if (_missionScreen != null && _gauntletLayer != null)
+            {
+                _missionScreen.RemoveLayer(_gauntletLayer);
+            }
+            _gauntletLayer = null;
+            _missionScreen = null;
+            if (_dataSource != null)
+            {
+                _dataSource.OnFinalize();
+                _dataSource = null;
+            }
+            base.OnRemoveBehavior();
+        }
+
+        // The aggregation below is a full walk of the damage dictionary plus eight TextObject
+        // allocations, so it runs on a 1s timer instead of on every single hit. Nothing per-hit is
+        // kept here: Tactics.CustomBattleAgentLogicOnAgentHitPatch already records each blow into
+        // agentDamage a frame later, which is what this reads.
+        private const float RefreshInterval = 1f;
+        private float _timeSinceRefresh = RefreshInterval;
+
+        public override void OnMissionTick(float dt)
+        {
+            base.OnMissionTick(dt);
+            if (_dataSource == null)
+            {
+                return;
+            }
+            _timeSinceRefresh += dt;
+            if (_timeSinceRefresh < RefreshInterval)
+            {
+                return;
+            }
+            _timeSinceRefresh = 0f;
+            RefreshStats();
+        }
+
+        private void RefreshStats()
         {
             float atkarc = 0;
             float atkha = 0;
@@ -84,45 +129,6 @@ namespace RBMAI
                     }
                 }
             }
-            // Account for current hit (agentDamage is updated by Harmony postfix which runs after this callback)
-            if (affectedAgent != null && affectorAgent != null && affectedAgent.IsActive() && affectedAgent.IsHuman && !attackCollisionData.AttackBlockedWithShield)
-            {
-                Agent effectiveAffector = affectorAgent;
-                if (!effectiveAffector.IsHuman && effectiveAffector.RiderAgent != null)
-                {
-                    effectiveAffector = effectiveAffector.RiderAgent;
-                }
-                if (effectiveAffector != null && effectiveAffector.IsHuman && effectiveAffector.Team != null)
-                {
-                    float currentDamage = blow.InflictedDamage;
-                    bool isAttacker = effectiveAffector.Team.IsAttacker;
-                    FormationClass cls;
-                    if (effectiveAffector.IsRangedCached && !effectiveAffector.HasMount)
-                        cls = FormationClass.Ranged;
-                    else if (effectiveAffector.IsRangedCached && effectiveAffector.HasMount)
-                        cls = FormationClass.HorseArcher;
-                    else if (effectiveAffector.HasMount)
-                        cls = FormationClass.Cavalry;
-                    else
-                        cls = FormationClass.Infantry;
-
-                    if (isAttacker)
-                    {
-                        if (cls == FormationClass.Ranged) atkarc += currentDamage;
-                        else if (cls == FormationClass.HorseArcher) atkha += currentDamage;
-                        else if (cls == FormationClass.Cavalry) atkcav += currentDamage;
-                        else if (cls == FormationClass.Infantry) atkinf += currentDamage;
-                    }
-                    else
-                    {
-                        if (cls == FormationClass.Ranged) defarc += currentDamage;
-                        else if (cls == FormationClass.HorseArcher) defha += currentDamage;
-                        else if (cls == FormationClass.Cavalry) defcav += currentDamage;
-                        else if (cls == FormationClass.Infantry) definf += currentDamage;
-                    }
-                }
-            }
-
             _dataSource.Atkarc = new TextObject("{=RBM_AI_001}ATK ARC:").ToString() + atkarc;
             _dataSource.Atkha = new TextObject("{=RBM_AI_002}ATK HA :").ToString() + atkha;
             _dataSource.Atkcav = new TextObject("{=RBM_AI_003}ATK CAV:").ToString() + atkcav;

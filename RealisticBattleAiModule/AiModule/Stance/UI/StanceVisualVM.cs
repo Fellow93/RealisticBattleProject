@@ -48,9 +48,13 @@
             }
             set
             {
-                enemyName = value;
-                OnPropertyChanged("EnemyName");
-                //OnPropertyChanged("DisplayText");
+                if (enemyName == value)
+                {
+                    return;
+                }
+                    enemyName = value;
+                    OnPropertyChanged("EnemyName");
+                    //OnPropertyChanged("DisplayText");
             }
         }
 
@@ -63,8 +67,12 @@
             }
             set
             {
-                postureLabel = value;
-                OnPropertyChanged("PostureLabel");
+                if (postureLabel == value)
+                {
+                    return;
+                }
+                    postureLabel = value;
+                    OnPropertyChanged("PostureLabel");
             }
         }
 
@@ -77,8 +85,12 @@
             }
             set
             {
-                staminaLabel = value;
-                OnPropertyChanged("StaminaLabel");
+                if (staminaLabel == value)
+                {
+                    return;
+                }
+                    staminaLabel = value;
+                    OnPropertyChanged("StaminaLabel");
             }
         }
 
@@ -93,10 +105,14 @@
             }
             set
             {
-                showPlayerPostureStatus = value;
-                OnPropertyChanged("ShowPlayerPostureStatus");
-                OnPropertyChanged("ShowPlayerPostureBar");
-                OnPropertyChanged("ShowPlayerStaminaBar");
+                if (showPlayerPostureStatus == value)
+                {
+                    return;
+                }
+                    showPlayerPostureStatus = value;
+                    OnPropertyChanged("ShowPlayerPostureStatus");
+                    OnPropertyChanged("ShowPlayerPostureBar");
+                    OnPropertyChanged("ShowPlayerStaminaBar");
             }
         }
 
@@ -109,10 +125,14 @@
             }
             set
             {
-                showEnemyStatus = value;
-                OnPropertyChanged("ShowEnemyStatus");
-                OnPropertyChanged("ShowEnemyPostureBar");
-                OnPropertyChanged("ShowEnemyStaminaBar");
+                if (showEnemyStatus == value)
+                {
+                    return;
+                }
+                    showEnemyStatus = value;
+                    OnPropertyChanged("ShowEnemyStatus");
+                    OnPropertyChanged("ShowEnemyPostureBar");
+                    OnPropertyChanged("ShowEnemyStaminaBar");
             }
         }
 
@@ -137,9 +157,13 @@
             }
             set
             {
-                enemyHealth = value;
-                OnPropertyChangedWithValue(value, "EnemyHealth");
-                //OnPropertyChanged("DisplayText");
+                if (enemyHealth == value)
+                {
+                    return;
+                }
+                    enemyHealth = value;
+                    OnPropertyChangedWithValue(value, "EnemyHealth");
+                    //OnPropertyChanged("DisplayText");
             }
         }
 
@@ -152,9 +176,13 @@
             }
             set
             {
-                enemyHealthMax = value;
-                OnPropertyChangedWithValue(value, "EnemyHealthMax");
-                //OnPropertyChanged("DisplayText");
+                if (enemyHealthMax == value)
+                {
+                    return;
+                }
+                    enemyHealthMax = value;
+                    OnPropertyChangedWithValue(value, "EnemyHealthMax");
+                    //OnPropertyChanged("DisplayText");
             }
         }
 
@@ -167,9 +195,13 @@
             }
             set
             {
-                enemyPosture = value;
-                OnPropertyChangedWithValue(value, "EnemyPosture");
-                //OnPropertyChanged("DisplayText");
+                if (enemyPosture == value)
+                {
+                    return;
+                }
+                    enemyPosture = value;
+                    OnPropertyChangedWithValue(value, "EnemyPosture");
+                    //OnPropertyChanged("DisplayText");
             }
         }
 
@@ -182,9 +214,13 @@
             }
             set
             {
-                enemyPostureMax = value;
-                OnPropertyChangedWithValue(value, "EnemyPostureMax");
-                //OnPropertyChanged("DisplayText");
+                if (enemyPostureMax == value)
+                {
+                    return;
+                }
+                    enemyPostureMax = value;
+                    OnPropertyChangedWithValue(value, "EnemyPostureMax");
+                    //OnPropertyChanged("DisplayText");
             }
         }
 
@@ -197,9 +233,13 @@
             }
             set
             {
-                enemyStamina = value;
-                OnPropertyChangedWithValue(value, "EnemyStamina");
-                //OnPropertyChanged("DisplayText");
+                if (enemyStamina == value)
+                {
+                    return;
+                }
+                    enemyStamina = value;
+                    OnPropertyChangedWithValue(value, "EnemyStamina");
+                    //OnPropertyChanged("DisplayText");
             }
         }
 
@@ -212,9 +252,13 @@
             }
             set
             {
-                enemyStaminaMax = value;
-                OnPropertyChangedWithValue(value, "EnemyStaminaMax");
-                //OnPropertyChanged("DisplayText");
+                if (enemyStaminaMax == value)
+                {
+                    return;
+                }
+                    enemyStaminaMax = value;
+                    OnPropertyChangedWithValue(value, "EnemyStaminaMax");
+                    //OnPropertyChanged("DisplayText");
             }
         }
 
@@ -227,8 +271,12 @@
             }
             set
             {
-                playerPosture = value;
-                OnPropertyChangedWithValue(value, "PlayerPosture");
+                if (playerPosture == value)
+                {
+                    return;
+                }
+                    playerPosture = value;
+                    OnPropertyChangedWithValue(value, "PlayerPosture");
             }
         }
 
@@ -241,8 +289,12 @@
             }
             set
             {
-                playerPostureMax = value;
-                OnPropertyChangedWithValue(value, "PlayerPostureMax");
+                if (playerPostureMax == value)
+                {
+                    return;
+                }
+                    playerPostureMax = value;
+                    OnPropertyChangedWithValue(value, "PlayerPostureMax");
             }
         }
 
@@ -255,8 +307,12 @@
             }
             set
             {
-                playerPostureText = value;
-                OnPropertyChangedWithValue(value, "PlayerPostureText");
+                if (playerPostureText == value)
+                {
+                    return;
+                }
+                    playerPostureText = value;
+                    OnPropertyChangedWithValue(value, "PlayerPostureText");
             }
         }
 
@@ -269,8 +325,12 @@
             }
             set
             {
-                playerPostureMaxText = value;
-                OnPropertyChangedWithValue(value, "PlayerPostureMaxText");
+                if (playerPostureMaxText == value)
+                {
+                    return;
+                }
+                    playerPostureMaxText = value;
+                    OnPropertyChangedWithValue(value, "PlayerPostureMaxText");
             }
         }
 
@@ -283,8 +343,12 @@
             }
             set
             {
-                playerStamina = value;
-                OnPropertyChangedWithValue(value, "PlayerStamina");
+                if (playerStamina == value)
+                {
+                    return;
+                }
+                    playerStamina = value;
+                    OnPropertyChangedWithValue(value, "PlayerStamina");
             }
         }
 
@@ -297,8 +361,12 @@
             }
             set
             {
-                playerStaminaMax = value;
-                OnPropertyChangedWithValue(value, "PlayerStaminaMax");
+                if (playerStaminaMax == value)
+                {
+                    return;
+                }
+                    playerStaminaMax = value;
+                    OnPropertyChangedWithValue(value, "PlayerStaminaMax");
             }
         }
 
@@ -311,8 +379,12 @@
             }
             set
             {
-                playerStaminaText = value;
-                OnPropertyChangedWithValue(value, "PlayerStaminaText");
+                if (playerStaminaText == value)
+                {
+                    return;
+                }
+                    playerStaminaText = value;
+                    OnPropertyChangedWithValue(value, "PlayerStaminaText");
             }
         }
 
@@ -325,8 +397,12 @@
             }
             set
             {
-                playerStaminaMaxText = value;
-                OnPropertyChangedWithValue(value, "PlayerStaminaMaxText");
+                if (playerStaminaMaxText == value)
+                {
+                    return;
+                }
+                    playerStaminaMaxText = value;
+                    OnPropertyChangedWithValue(value, "PlayerStaminaMaxText");
             }
         }
     }

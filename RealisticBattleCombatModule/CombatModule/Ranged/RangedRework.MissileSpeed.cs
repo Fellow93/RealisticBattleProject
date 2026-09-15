@@ -74,8 +74,12 @@ namespace RBMCombat
                         {
                             // Slings use assignSlingMissileSpeed so skill and equipment weight
                             // (armor/shield) are factored in from the start.
-                            WeaponData slingWd = missionWeapon.GetWeaponData(true);
-                            SkillObject slingSkill = (slingWd.GetItemObject() == null) ? DefaultSkills.Athletics : slingWd.GetItemObject().RelevantSkill;
+                            // Do NOT call missionWeapon.GetWeaponData(true) here: with needBatchedVersionForMeshes
+                            // it acquires two native PhysicsShape resources that vanilla always pairs with
+                            // DeinitializeManagedPointers(), and this prefix runs inside the spawn equip batch.
+                            // Only the ItemObject is needed, which the MissionWeapon exposes directly.
+                            ItemObject slingItem = missionWeapon.Item;
+                            SkillObject slingSkill = (slingItem == null) ? DefaultSkills.Athletics : slingItem.RelevantSkill;
                             int slingEf = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, slingSkill);
                             float slingEffectiveSkillDR = Utilities.GetEffectiveSkillWithDR(slingEf);
 
@@ -216,8 +220,9 @@ namespace RBMCombat
                     if (wsd[0].WeaponClass == (int)WeaponClass.Sling)
                     {
                         // Slings factor in the shooter's skill and equipment weight on every shot.
-                        WeaponData slingWd = missionWeapon.GetWeaponData(true);
-                        SkillObject slingSkill = (slingWd.GetItemObject() == null) ? DefaultSkills.Athletics : slingWd.GetItemObject().RelevantSkill;
+                        // Same as the spawn prefix: never GetWeaponData(true) just for the item (leaks PhysicsShapes).
+                        ItemObject slingItem = missionWeapon.Item;
+                        SkillObject slingSkill = (slingItem == null) ? DefaultSkills.Athletics : slingItem.RelevantSkill;
                         int slingEf = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, slingSkill);
                         float slingEffectiveSkillDR = Utilities.GetEffectiveSkillWithDR(slingEf);
 

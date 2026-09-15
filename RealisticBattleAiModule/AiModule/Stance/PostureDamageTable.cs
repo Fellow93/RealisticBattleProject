@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.Library;
@@ -198,7 +200,7 @@ namespace RBMAI
         {
             switch (wc)
             {
-                case WeaponClass.Dagger:
+                // Dagger has its own DAGGER_* rows; only throwing knives borrow the sword rows.
                 case WeaponClass.ThrowingKnife:
                     {
                         return WeaponClass.OneHandedSword.ToString().ToUpper();
@@ -223,58 +225,80 @@ namespace RBMAI
             }
         }
 
+        // The per-weapon-class rows above are looked up by name. Reflecting on every call was both
+        // slow and wrong (it swallowed a missing row in a bare catch); build the table once instead.
+        private static readonly Dictionary<string, float> _table = BuildTable();
+
+        private static Dictionary<string, float> BuildTable()
+        {
+            Dictionary<string, float> table = new Dictionary<string, float>(StringComparer.Ordinal);
+            foreach (FieldInfo field in typeof(PostureDamage).GetFields(BindingFlags.Public | BindingFlags.Static))
+            {
+                if (field.FieldType == typeof(float))
+                {
+                    table[field.Name] = (float)field.GetValue(null);
+                }
+            }
+            return table;
+        }
+
+        private static string getTableKey(WeaponClass wc)
+        {
+            return wc == WeaponClass.Undefined ? "UNARMED" : getWeaponClassString(wc);
+        }
+
+        // Returns 0 (a no-op offset over the base value) when the row does not exist.
+        private static float lookup(string key)
+        {
+            float value;
+            return _table.TryGetValue(key, out value) ? value : 0f;
+        }
+
         public static float getDefenseCost(WeaponClass wc, MeleeHitType hitType)
         {
             float retVal = BASE_DEFENSE_COST;
-            string weaponClassString = wc == WeaponClass.Undefined ? "UNARMED" : wc.ToString().ToUpper();
-            try
+            string weaponClassString = getTableKey(wc);
+            switch (hitType)
             {
-                switch (hitType)
-                {
-                    case MeleeHitType.WeaponBlock:
-                    case MeleeHitType.ShieldBlock:
+                case MeleeHitType.WeaponBlock:
+                case MeleeHitType.ShieldBlock:
+                    {
+                        retVal += lookup(weaponClassString + "_BLOCK_COST");
+                        break;
+                    }
+                case MeleeHitType.WeaponParry:
+                case MeleeHitType.ShieldParry:
+                    {
+                        retVal += lookup(weaponClassString + "_PARRY_COST");
+                        break;
+                    }
+                case MeleeHitType.AgentHit:
+                    {
+                        retVal += AGENT_HIT_COST;
+                        break;
+                    }
+                case MeleeHitType.ShieldIncorrectBlock:
+                    {
+                        if (wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
                         {
-                            retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_BLOCK_COST").GetValue(null);
-                            break;
+                            retVal += lookup(weaponClassString + "_INCORRECT_BLOCK_COST");
                         }
-                    case MeleeHitType.WeaponParry:
-                    case MeleeHitType.ShieldParry:
+                        else
                         {
-                            retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_PARRY_COST").GetValue(null);
-                            break;
+                            retVal += SHIELD_ON_BACK_HIT_COST;
                         }
-                    case MeleeHitType.AgentHit:
-                        {
-                            retVal += AGENT_HIT_COST;
-                            break;
-                        }
-                    case MeleeHitType.ShieldIncorrectBlock:
-                        {
-                            if (wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
-                            {
-                                retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_INCORRECT_BLOCK_COST").GetValue(null);
-                            }
-                            else
-                            {
-                                retVal += SHIELD_ON_BACK_HIT_COST;
-                            }
-                            break;
-                        }
-                    case MeleeHitType.ChamberBlock:
-                        {
-                            retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_PARRY_COST").GetValue(null) * 0.5f;
-                            break;
-                        }
-                    default:
-                        {
-                            retVal += 0f;
-                            break;
-                        }
-                }
-            }
-            catch
-            {
-                return retVal;
+                        break;
+                    }
+                case MeleeHitType.ChamberBlock:
+                    {
+                        retVal += lookup(weaponClassString + "_PARRY_COST") * 0.5f;
+                        break;
+                    }
+                default:
+                    {
+                        retVal += 0f;
+                        break;
+                    }
             }
             return retVal;
         }
@@ -282,28 +306,21 @@ namespace RBMAI
         public static float getAttackDrain(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
         {
             float retVal = BASE_DRAIN;
-            string weaponClassString = wc == WeaponClass.Undefined ? "UNARMED" : wc.ToString().ToUpper();
-            try
+            string weaponClassString = getTableKey(wc);
+            if (strikeType == StrikeType.Swing)
             {
-                if (strikeType == StrikeType.Swing)
+                if (attackDirection == Agent.UsageDirection.AttackUp)
                 {
-                    if (attackDirection == Agent.UsageDirection.AttackUp)
-                    {
-                        retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_OVERHEAD_DRAIN").GetValue(null);
-                    }
-                    else
-                    {
-                        retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_SWING_DRAIN").GetValue(null);
-                    }
+                    retVal += lookup(weaponClassString + "_OVERHEAD_DRAIN");
                 }
                 else
                 {
-                    retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_THRUST_DRAIN").GetValue(null);
+                    retVal += lookup(weaponClassString + "_SWING_DRAIN");
                 }
             }
-            catch
+            else
             {
-                return retVal;
+                retVal += lookup(weaponClassString + "_THRUST_DRAIN");
             }
             return retVal;
         }
@@ -311,28 +328,21 @@ namespace RBMAI
         public static float getAttackCost(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
         {
             float retVal = BASE_DEFENSE_COST;
-            string weaponClassString = wc == WeaponClass.Undefined ? "UNARMED" : wc.ToString().ToUpper();
-            try
+            string weaponClassString = getTableKey(wc);
+            if (strikeType == StrikeType.Swing)
             {
-                if (strikeType == StrikeType.Swing)
+                if (attackDirection == Agent.UsageDirection.AttackUp)
                 {
-                    if (attackDirection == Agent.UsageDirection.AttackUp)
-                    {
-                        retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_OVERHEAD_COST").GetValue(null);
-                    }
-                    else
-                    {
-                        retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_SWING_COST").GetValue(null);
-                    }
+                    retVal += lookup(weaponClassString + "_OVERHEAD_COST");
                 }
                 else
                 {
-                    retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_THRUST_COST").GetValue(null);
+                    retVal += lookup(weaponClassString + "_SWING_COST");
                 }
             }
-            catch
+            else
             {
-                return retVal;
+                retVal += lookup(weaponClassString + "_THRUST_COST");
             }
             return retVal;
         }
@@ -340,56 +350,49 @@ namespace RBMAI
         public static float getDefenseReflect(WeaponClass wc, MeleeHitType hitType)
         {
             float retVal = BASE_REFLECT;
-            string weaponClassString = wc == WeaponClass.Undefined ? "UNARMED" : wc.ToString().ToUpper();
-            try
+            string weaponClassString = getTableKey(wc);
+            switch (hitType)
             {
-                switch (hitType)
-                {
-                    case MeleeHitType.WeaponBlock:
-                    case MeleeHitType.ShieldBlock:
+                case MeleeHitType.WeaponBlock:
+                case MeleeHitType.ShieldBlock:
+                    {
+                        retVal += lookup(weaponClassString + "_BLOCK_REFLECT");
+                        break;
+                    }
+                case MeleeHitType.WeaponParry:
+                case MeleeHitType.ShieldParry:
+                    {
+                        retVal += lookup(weaponClassString + "_PARRY_REFLECT");
+                        break;
+                    }
+                case MeleeHitType.ShieldIncorrectBlock:
+                    {
+                        if (wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
                         {
-                            retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_BLOCK_REFLECT").GetValue(null);
-                            break;
+                            retVal += lookup(weaponClassString + "_INCORRECT_BLOCK_REFLECT");
                         }
-                    case MeleeHitType.WeaponParry:
-                    case MeleeHitType.ShieldParry:
+                        else
                         {
-                            retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_PARRY_REFLECT").GetValue(null);
-                            break;
+                            retVal += SHIELD_ON_BACK_HIT_REFLECT;
                         }
-                    case MeleeHitType.ShieldIncorrectBlock:
-                        {
-                            if (wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
-                            {
-                                retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_INCORRECT_BLOCK_REFLECT").GetValue(null);
-                            }
-                            else
-                            {
-                                retVal += SHIELD_ON_BACK_HIT_REFLECT;
-                            }
-                            break;
-                        }
-                    case MeleeHitType.ChamberBlock:
-                        {
-                            //TODO: decide chamber block posture damage
-                            retVal += (float)typeof(PostureDamage).GetField(weaponClassString + "_PARRY_REFLECT").GetValue(null) * 2f;
-                            break;
-                        }
-                    case MeleeHitType.AgentHit:
-                        {
-                            retVal += AGENT_HIT_REFLECT;
-                            break;
-                        }
-                    default:
-                        {
-                            retVal += 0f;
-                            break;
-                        }
-                }
-            }
-            catch
-            {
-                return retVal;
+                        break;
+                    }
+                case MeleeHitType.ChamberBlock:
+                    {
+                        //TODO: decide chamber block posture damage
+                        retVal += lookup(weaponClassString + "_PARRY_REFLECT") * 2f;
+                        break;
+                    }
+                case MeleeHitType.AgentHit:
+                    {
+                        retVal += AGENT_HIT_REFLECT;
+                        break;
+                    }
+                default:
+                    {
+                        retVal += 0f;
+                        break;
+                    }
             }
             return retVal;
         }
@@ -440,7 +443,9 @@ namespace RBMAI
             float defenseCost = getDefenseCost(defenderWC, hitType);
             float attackDrain = getAttackDrain(attackerWC, attackDirection, strikeType);
 
-            return defenseCost + attackDrain;
+            // Per-class costs are negative offsets from the base; a large-shield parry against a
+            // zero-drain attack sums below zero, which would heal the defender past maxPosture.
+            return Math.Max(0f, defenseCost + attackDrain);
         }
 
         public static float getAttackerPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType)
@@ -451,7 +456,7 @@ namespace RBMAI
             float attackCost = getAttackCost(attackerWC, attackDirection, strikeType);
             float defenseReflect = getDefenseReflect(defenderWC, hitType);
 
-            return attackCost + defenseReflect;
+            return Math.Max(0f, attackCost + defenseReflect);
         }
     }
 }

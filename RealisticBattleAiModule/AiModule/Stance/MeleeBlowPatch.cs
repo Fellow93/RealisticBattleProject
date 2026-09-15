@@ -50,17 +50,16 @@ namespace RBMAI
 
             public static void handleDefender(Stance stance, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData,
                 MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission,
-                float actionModifier, float staggerActionSpeed, bool dropWeapon, bool dropShield,
+                float staggerActionSpeed, bool dropWeapon, bool dropShield,
                 bool damageShield, bool stagger, bool resetPosture, MeleeHitType meleeHitType, bool crushThrough, bool isUnarmedAttack)
             {
                 if (stance != null)
                 {
-                    float postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, actionModifier, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
-
-                    if (meleeHitType == MeleeHitType.AgentHit)
-                    {
-                        postureDmg = blow.InflictedDamage;
-                    }
+                    // A direct hit costs posture equal to the damage it dealt; the table-driven
+                    // calculator is only meaningful for blocks/parries, so don't run it for AgentHit.
+                    float postureDmg = (meleeHitType == MeleeHitType.AgentHit)
+                        ? blow.InflictedDamage
+                        : calculateDefenderPostureDamage(victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
 
                     if (RBMConfig.RBMConfig.staminaEnabled)
                     {
@@ -73,12 +72,8 @@ namespace RBMAI
 
                     if (RBMConfig.RBMConfig.staminaEnabled)
                     {
-                        int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(victimAgent, DefaultSkills.Athletics);
-                        float athlethicModifier = effectiveAthleticSkill / 20;
-                        float victimAgentArmorWeight = Math.Max(0f, victimAgent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
                         float staminaLoss = calculateDefenderStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
-                        staminaLoss *= (1f + victimAgentArmorWeight / 50f);
-                        stance.reduceStamina(staminaLoss);
+                        applyArmorWeightedStaminaLoss(stance, victimAgent, staminaLoss);
                     }
 
                     addPosturedamageVisual(attackerAgent, victimAgent);
@@ -137,11 +132,11 @@ namespace RBMAI
 
             public static void handleAttacker(Stance stance, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData,
                 MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission,
-                float actionModifier, float staggerActionSpeed, bool dropWeapon, bool stagger, bool resetPosture, bool tired, MeleeHitType meleeHitType, bool isUnarmedAttack)
+                float staggerActionSpeed, bool dropWeapon, bool stagger, bool resetPosture, bool tired, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
                 if (stance != null)
                 {
-                    float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, actionModifier, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
+                    float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
 
                     if (RBMConfig.RBMConfig.staminaEnabled)
                     {
@@ -154,12 +149,8 @@ namespace RBMAI
 
                     if (RBMConfig.RBMConfig.staminaEnabled)
                     {
-                        int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Athletics);
-                        float athlethicModifier = effectiveAthleticSkill / 20;
-                        float attackerAgentArmorWeight = Math.Max(0f, attackerAgent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
-                        float staminaLoss = calculateAttackerStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
-                        staminaLoss *= (1f + attackerAgentArmorWeight / 50f);
-                        stance.reduceStamina(staminaLoss);
+                        float staminaLoss = calculateAttackerStaminaLoss(victimAgent, attackerAgent, ref collisionData, attackerWeapon, meleeHitType, isUnarmedAttack);
+                        applyArmorWeightedStaminaLoss(stance, attackerAgent, staminaLoss);
                     }
 
                     addPosturedamageVisual(attackerAgent, victimAgent);
@@ -200,10 +191,32 @@ namespace RBMAI
                 }
             }
 
+            /// <summary>
+            /// Heavier armour costs more stamina per action, offset by Athletics. Shared by the
+            /// defender, attacker and chamber-block handlers so the term stays identical everywhere.
+            /// </summary>
+            private static void applyArmorWeightedStaminaLoss(Stance stance, Agent agent, float staminaLoss)
+            {
+                int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, DefaultSkills.Athletics);
+                float athlethicModifier = effectiveAthleticSkill / 20f;
+                float agentArmorWeight = Math.Max(0f, agent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
+                stance.reduceStamina(staminaLoss * (1f + agentArmorWeight / 50f));
+            }
+
             public static void handleDefenderChamberBlock(Stance defenderPosture, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission, MeleeHitType meleeHitType)
             {
-                float defenderChamberBlockAction = 0.25f;
-                defenderPosture.posture = defenderPosture.posture - calculateDefenderPostureDamage(victimAgent, attackerAgent, defenderChamberBlockAction, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, false);
+                float postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, false);
+                if (RBMConfig.RBMConfig.staminaEnabled)
+                {
+                    float staminaLevel = defenderPosture.stamina / defenderPosture.maxStamina;
+                    postureDmg *= MBMath.Lerp(1.25f, 1f, staminaLevel);
+                }
+                defenderPosture.posture = Math.Max(0f, defenderPosture.posture - postureDmg);
+                if (RBMConfig.RBMConfig.staminaEnabled)
+                {
+                    float staminaLoss = calculateDefenderStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, false);
+                    applyArmorWeightedStaminaLoss(defenderPosture, victimAgent, staminaLoss);
+                }
                 addPosturedamageVisual(attackerAgent, victimAgent);
                 if (defenderPosture.posture <= 0f)
                 {
@@ -223,34 +236,40 @@ namespace RBMAI
 
             public static void handleAttackerChamberBlock(Stance attackerPosture, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission, MeleeHitType meleeHitType)
             {
-                float attackerChamberBlockAction = 2f;
-                float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, attackerChamberBlockAction, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, false);
-                attackerPosture.posture = attackerPosture.posture - postureDmg;
+                float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, false);
+                if (RBMConfig.RBMConfig.staminaEnabled)
+                {
+                    float staminaLevel = attackerPosture.stamina / attackerPosture.maxStamina;
+                    postureDmg *= MBMath.Lerp(1.25f, 1f, staminaLevel);
+                }
+                attackerPosture.posture = Math.Max(0f, attackerPosture.posture - postureDmg);
+                if (RBMConfig.RBMConfig.staminaEnabled)
+                {
+                    float staminaLoss = calculateAttackerStaminaLoss(victimAgent, attackerAgent, ref collisionData, attackerWeapon, meleeHitType, false);
+                    applyArmorWeightedStaminaLoss(attackerPosture, attackerAgent, staminaLoss);
+                }
                 addPosturedamageVisual(attackerAgent, victimAgent);
                 if (attackerPosture.posture <= 0f)
                 {
+                    // The victim chambered this attack, so the broken posture belongs to the
+                    // attacker: register the stagger blow on the attacker, not on the chamberer.
+                    MBTextManager.SetTextVariable("DMG", 0);
                     if (attackerAgent.IsPlayerControlled)
                     {
                         InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_019}Posture break: Posture depleted, chamber block {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
                     }
-                    makePostureCrashThroughBlow(ref mission, blow, attackerAgent, victimAgent, 0, ref collisionData, attackerWeapon);
+                    makePostureRiposteBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, BlowFlags.None);
                     ResetPostureForAgent(ref attackerPosture, postureResetModifier);
                     addPosturedamageVisual(attackerAgent, victimAgent);
-                }
-                else
-                {
-                    if (attackerAgent.IsPlayerControlled)
-                    {
-                        InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_020}Chamber block {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
-                    }
-                    makePostureCrashThroughBlow(ref mission, blow, attackerAgent, victimAgent, 0, ref collisionData, attackerWeapon);
                 }
             }
 
             private static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
             {
                 //sanity gate
-                if (!_inMeleeHitContext || victimAgent == null || !victimAgent.IsHuman ||
+                // cancelDamage means vanilla discarded this blow entirely (invulnerable victim,
+                // tutorial/training rules); no posture or stamina may be spent on it either.
+                if (!_inMeleeHitContext || cancelDamage || victimAgent == null || !victimAgent.IsHuman ||
                     !RBMConfig.RBMConfig.postureEnabled || attackerAgent == null || attackerAgent.IsFriendOf(victimAgent))
                 {
                     return;
@@ -263,7 +282,9 @@ namespace RBMAI
 
                 bool isUnarmedAttack = false;
                 //detect unarmed attack
-                if (attackerWeapon.IsEmpty && attackerAgent != null && victimAgent != null && collisionData.DamageType == (int)DamageTypes.Blunt && !collisionData.IsFallDamage && !collisionData.IsHorseCharge)
+                // A shield bash / pommel strike is an alternative attack: it uses the body's row, not
+                // the wielded weapon's, even though a weapon is equipped.
+                if ((attackerWeapon.IsEmpty || collisionData.IsAlternativeAttack) && attackerAgent != null && victimAgent != null && collisionData.DamageType == (int)DamageTypes.Blunt && !collisionData.IsFallDamage && !collisionData.IsHorseCharge)
                 {
                     isUnarmedAttack = true;
                 }
@@ -296,7 +317,6 @@ namespace RBMAI
                         {
                             //handleDefenderWeaponBlock(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
                             handleDefender(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
-                                actionModifier: 0.85f,
                                 stagger: true,
                                 crushThrough: true,
                                 resetPosture: true,
@@ -312,7 +332,6 @@ namespace RBMAI
                         {
                             //handleAttackerWeaponBlock(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
                             handleAttacker(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
-                                actionModifier: 0.6f,
                                 stagger: true,
                                 resetPosture: true,
                                 staggerActionSpeed: 0.95f,
@@ -330,7 +349,6 @@ namespace RBMAI
                         {
                             //handleDefenderWeaponParry(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
                             handleDefender(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
-                                actionModifier: 0.5f,
                                 stagger: true,
                                 crushThrough: true,
                                 resetPosture: true,
@@ -346,7 +364,6 @@ namespace RBMAI
                         {
                             //handleAttackerWeaponParry(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
                             handleAttacker(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
-                                actionModifier: 0.75f,
                                 stagger: true,
                                 resetPosture: true,
                                 staggerActionSpeed: 0.85f,
@@ -369,7 +386,6 @@ namespace RBMAI
                         {
                             //handleDefenderDirectHit(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission);
                             handleDefender(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
-                                actionModifier: 0.75f,
                                 stagger: false,
                                 crushThrough: false,
                                 resetPosture: false,
@@ -385,7 +401,6 @@ namespace RBMAI
                         {
                             //handleAttackerDirectHit(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
                             handleAttacker(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
-                                actionModifier: 0.5f,
                                 stagger: false,
                                 resetPosture: true,
                                 staggerActionSpeed: 1f,
@@ -407,7 +422,6 @@ namespace RBMAI
                         {
                             //handleDefenderShieldBlockBad(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
                             handleDefender(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
-                                actionModifier: 1f,
                                 stagger: true,
                                 resetPosture: true,
                                 crushThrough: false,
@@ -423,7 +437,6 @@ namespace RBMAI
                         {
                             //handleAttackerShieldBlockBad(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
                             handleAttacker(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
-                                actionModifier: 0.4f,
                                 stagger: false,
                                 resetPosture: true,
                                 staggerActionSpeed: 1f,
@@ -441,7 +454,6 @@ namespace RBMAI
                         {
                             //handleDefenderShieldBlockNormal(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
                             handleDefender(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
-                                actionModifier: 0.9f,
                                 stagger: true,
                                 crushThrough: false,
                                 resetPosture: true,
@@ -457,7 +469,6 @@ namespace RBMAI
                         {
                             //handleAttackerShieldBlockNormal(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
                             handleAttacker(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
-                                actionModifier: 0.5f,
                                 stagger: true,
                                 resetPosture: true,
                                 staggerActionSpeed: 0.9f,
@@ -475,7 +486,6 @@ namespace RBMAI
                         {
                             //handleDefenderShieldBlockParry(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
                             handleDefender(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
-                                actionModifier: 0.8f,
                                 stagger: true,
                                 crushThrough: false,
                                 resetPosture: true,
@@ -491,7 +501,6 @@ namespace RBMAI
                         {
                             //handleAttackerShieldBlockParry(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
                             handleAttacker(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
-                                actionModifier: 0.8f,
                                 stagger: true,
                                 resetPosture: true,
                                 staggerActionSpeed: 0.85f,

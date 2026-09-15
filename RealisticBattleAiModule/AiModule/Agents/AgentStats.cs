@@ -24,7 +24,6 @@ namespace RBMAI
         private class OverrideSetAiRelatedProperties
         {
             private static readonly MethodInfo _getMeleeSkillMethod = typeof(AgentStatCalculateModel).GetMethod("GetMeleeSkill", BindingFlags.NonPublic | BindingFlags.Instance);
-            private static readonly MBList<Agent> _nearbyEnemiesBuffer = new MBList<Agent>();
 
             /// <summary>
             /// Mirrors the Throwing branch of SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent:
@@ -248,19 +247,14 @@ namespace RBMAI
                     agent.SetScriptedCombatFlags(agent.GetScriptedCombatFlags() | Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
                     //agent.ResetAiWaitBeforeShootFactor();
                 }
-                if (agent != null && agent.IsActive() && Mission.Current != null && Mission.Current.IsDeploymentFinished)
-                {
-                    _nearbyEnemiesBuffer.Clear();
-                    Mission.Current.GetNearbyEnemyAgents(agent.GetWorldPosition().AsVec2, 2.5f, agent.Team, _nearbyEnemiesBuffer);
-                    if (_nearbyEnemiesBuffer.Count > 0)
-                    {
-                        agent.AgentDrivenProperties.AiWeaponFavorMultiplierMelee = 55f;
-                    }
-                    else
-                    {
-                        agent.AgentDrivenProperties.AiWeaponFavorMultiplierPolearm = 35f;
-                    }
-                }
+                // REMOVED (2026-09-15): this used to run Mission.GetNearbyEnemyAgents(agent.GetWorldPosition())
+                // here, gated on IsDeploymentFinished. SetAiRelatedProperties is invoked from inside
+                // Agent.Build, before the agent is equipped, has visuals, or is registered in the mission's
+                // agent lists, and vanilla never touches the proximity map during construction. The query
+                // takes the process-wide GetNearbyAgentsAuxLock and then calls native, which - against the
+                // parallel formation-movement job that holds the same lock - deadlocked the engine's job
+                // system on every reinforcement wave (the only time the gate was true). Weapon-favor
+                // biasing by nearby enemies belongs in a tick, not in the stat pipeline.
 
                 agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 1f);
                 //agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 0f);
@@ -278,7 +272,9 @@ namespace RBMAI
                 }
 
                 //stamina effects
-                if (RBMConfig.RBMConfig.postureEnabled)
+                // Stamina is only tracked/regenerated while the posture system runs, so this needs
+                // both toggles: staminaEnabled alone would read a frozen stamina value.
+                if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.staminaEnabled)
                 {
                     Stance stance = null;
                     AgentStances.values.TryGetValue(agent, out stance);
