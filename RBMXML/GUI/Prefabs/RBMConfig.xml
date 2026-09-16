@@ -1066,14 +1066,14 @@
 
 											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
 											  <Children>
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@CampaignStartingGoldt"/>
-												<HintWidget DataSource="{CampaignStartingGoldHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@CampaignStartingGoldMultipliert"/>
+												<HintWidget DataSource="{CampaignStartingGoldMultiplierHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
 											  </Children>
 											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="HorizontalLeftToRight" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.Slider.MarginLeft" VerticalAlignment="Center">
 											  <Children>
-												<SliderWidget Id="CampaignStartingGoldSlider" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Slider.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center" DoNotUpdateHandleSize="true" Filler="Filler" Handle="SliderHandle" IsDiscrete="true" DiscreteIncrementInterval="500" MinValueFloat="1000" MaxValueFloat="100000" ValueFloat="@CampaignStartingGold">
+												<SliderWidget Id="CampaignStartingGoldMultiplierSlider" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Slider.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center" DoNotUpdateHandleSize="true" Filler="Filler" Handle="SliderHandle" IsDiscrete="true" DiscreteIncrementInterval="0.5" MinValueFloat="1" MaxValueFloat="50" ValueFloat="@CampaignStartingGoldMultiplier">
 												  <Children>
 													<Widget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" SuggestedWidth="362" HeightSizePolicy="Fixed" SuggestedHeight="38" HorizontalAlignment="Center" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_canvas" />
 													<Widget Id="Filler" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="35" VerticalAlignment="Center" Sprite="SPGeneral\SPOptions\standart_slider_fill" ClipContents="true" />
@@ -1082,7 +1082,7 @@
 												  </Children>
 												</SliderWidget>
 
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.DefaultValue.MarginLeft" VerticalAlignment="Center" Brush="SPOptions.Slider.Value.Text" Text="@CampaignStartingGoldValue"/>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="!AT.Slider.DefaultValue.MarginLeft" VerticalAlignment="Center" Brush="SPOptions.Slider.Value.Text" Text="@CampaignStartingGoldMultiplierValue"/>
 											  </Children>
 											</ListPanel>
 

@@ -51,49 +51,49 @@ namespace RBMConfig
         public TextViewModel TroopUpgradeChargeMountValueText { get; }
         public SelectorVM<SelectorItemVM> TroopUpgradeChargeMountValue { get; }
 
-        private float _campaignStartingGold;
+        private float _campaignStartingGoldMultiplier;
 
         [DataSourceProperty]
-        public float CampaignStartingGold
+        public float CampaignStartingGoldMultiplier
         {
             get
             {
-                return _campaignStartingGold;
+                return _campaignStartingGoldMultiplier;
             }
             set
             {
-                // Slider reports continuous values; snap to whole 500-denar steps.
-                float snapped = MathF.Round(value / 500f) * 500f;
-                snapped = MathF.Clamp(snapped, 1000f, 100000f);
-                if (snapped != _campaignStartingGold)
+                // Slider reports continuous values; snap to 0.5x steps.
+                float snapped = MathF.Round(value * 2f) / 2f;
+                snapped = MathF.Clamp(snapped, 1f, 50f);
+                if (snapped != _campaignStartingGoldMultiplier)
                 {
-                    _campaignStartingGold = snapped;
-                    OnPropertyChangedWithValue(snapped, "CampaignStartingGold");
-                    OnPropertyChanged("CampaignStartingGoldValue");
+                    _campaignStartingGoldMultiplier = snapped;
+                    OnPropertyChangedWithValue(snapped, "CampaignStartingGoldMultiplier");
+                    OnPropertyChanged("CampaignStartingGoldMultiplierValue");
                 }
             }
         }
 
         [DataSourceProperty]
-        public string CampaignStartingGoldValue
+        public string CampaignStartingGoldMultiplierValue
         {
             get
             {
-                return _campaignStartingGold.ToString("0");
+                return _campaignStartingGoldMultiplier.ToString("0.0") + "x";
             }
         }
 
         [DataSourceProperty]
-        public string CampaignStartingGoldt
+        public string CampaignStartingGoldMultipliert
         {
             get
             {
-                return new TextObject("{=RBM_CON_109}Starting Gold").ToString();
+                return new TextObject("{=RBM_CON_109}Starting Gold Multiplier").ToString();
             }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel CampaignStartingGoldHint { get; } = Hint("{=RBM_CON_110}The purse a new campaign opens with, replacing whatever character creation handed out. Only applies to a new game; a loaded save keeps its own gold. Default 5000.");
+        public BasicTooltipViewModel CampaignStartingGoldMultiplierHint { get; } = Hint("{=RBM_CON_110}Multiplies the gold character creation hands out at the start of a new campaign. Only applies to a new game; a loaded save keeps its own gold. Default 5.0x.");
 
         private float _troopUpgradeCostMultiplier;
 

@@ -459,7 +459,7 @@ namespace RBMConfig
                 RBMCampaignEnabled.SelectedIndex = 0;
             }
 
-            _campaignStartingGold = MathF.Clamp(RBMConfig.campaignStartingGold, 1000f, 100000f);
+            _campaignStartingGoldMultiplier = MathF.Clamp(RBMConfig.campaignStartingGoldMultiplier, 1f, 50f);
             _troopUpgradeCostMultiplier = MathF.Clamp(RBMConfig.troopUpgradeCostMultiplier, 0f, 2f);
             _villageProductionMultiplier = MathF.Clamp(RBMConfig.villageProductionMultiplier, 0.01f, 2f);
             _workshopProductionMultiplier = MathF.Clamp(RBMConfig.workshopProductionMultiplier, 0.01f, 2f);
@@ -686,7 +686,7 @@ namespace RBMConfig
                 RBMConfig.rbmCampaignEnabled = true;
             }
 
-            RBMConfig.campaignStartingGold = (int)MathF.Round(_campaignStartingGold);
+            RBMConfig.campaignStartingGoldMultiplier = _campaignStartingGoldMultiplier;
             RBMConfig.troopUpgradeCostMultiplier = _troopUpgradeCostMultiplier;
             RBMConfig.villageProductionMultiplier = _villageProductionMultiplier;
             RBMConfig.workshopProductionMultiplier = _workshopProductionMultiplier;
@@ -776,7 +776,7 @@ namespace RBMConfig
             RBMCampaignEnabled.SelectedIndex = 1;
 
             // Campaign / spoils
-            CampaignStartingGold = 5000f;
+            CampaignStartingGoldMultiplier = 5f;
             TroopUpgradeCostMultiplier = 1f;
             VillageProductionMultiplier = 0.5f;
             WorkshopProductionMultiplier = 1f;

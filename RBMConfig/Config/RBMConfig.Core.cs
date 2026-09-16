@@ -146,7 +146,7 @@ namespace RBMConfig
             stewardProvisioningXpPerSpoils = float.Parse(ReadOrCreate("/Config/RBMCampaign", "StewardProvisioningXpPerSpoils", "0.05"), CultureInfo.InvariantCulture);
             stewardFoodReserveXpPerTier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "StewardFoodReserveXpPerTier", "3.0"), CultureInfo.InvariantCulture);
             stewardMountedFootmanXpPerHorse = float.Parse(ReadOrCreate("/Config/RBMCampaign", "StewardMountedFootmanXpPerHorse", "0.25"), CultureInfo.InvariantCulture);
-            campaignStartingGold = int.Parse(ReadOrCreate("/Config/RBMCampaign", "CampaignStartingGold", "5000"), CultureInfo.InvariantCulture);
+            campaignStartingGoldMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "CampaignStartingGoldMultiplier", "5.0"), CultureInfo.InvariantCulture);
             rbmDaysOfSupplyAiSignal = ReadOrCreate("/Config/RBMCampaign", "DaysOfSupplyAiSignal", "1").Equals("1");
             workshopHeadroomGateEnabled = ReadOrCreate("/Config/RBMCampaign", "WorkshopHeadroomGate", "1").Equals("1");
             villageProductionMultiplier = float.Parse(ReadOrCreate("/Config/RBMCampaign", "VillageProductionMultiplier", "0.5"), CultureInfo.InvariantCulture);
@@ -306,7 +306,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/StewardProvisioningXpPerSpoils"), stewardProvisioningXpPerSpoils.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/StewardFoodReserveXpPerTier"), stewardFoodReserveXpPerTier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/StewardMountedFootmanXpPerHorse"), stewardMountedFootmanXpPerHorse.ToString(CultureInfo.InvariantCulture));
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/CampaignStartingGold"), campaignStartingGold.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/CampaignStartingGoldMultiplier"), campaignStartingGoldMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/DaysOfSupplyAiSignal"), rbmDaysOfSupplyAiSignal);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/WorkshopHeadroomGate"), workshopHeadroomGateEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/VillageProductionMultiplier"), villageProductionMultiplier.ToString(CultureInfo.InvariantCulture));

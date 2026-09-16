@@ -165,8 +165,9 @@ namespace RBMConfig
         // The purse the player opens a new campaign with, replacing whatever his backstory choices added
         // up to. RBM prices most of the campaign well above vanilla -- kit, trade goods, upgrades paid out
         // of a spoils purse -- so the few hundred denars character creation hands out leaves none of the
-        // opening decisions affordable. New games only; a loaded save keeps the gold it was saved with.
-        public static int campaignStartingGold = 5000;
+        // opening decisions affordable. Multiplier on whatever character creation handed out. New games
+        // only; a loaded save keeps the gold it was saved with.
+        public static float campaignStartingGoldMultiplier = 5f;
 
         // When on, the AI navigates by RBM's days-of-supply scarcity instead of vanilla's parallel demand
         // EMA: TownMarketData.GetPriceFactor is overridden with the same signal the retail price is built

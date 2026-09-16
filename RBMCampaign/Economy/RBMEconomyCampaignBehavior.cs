@@ -178,8 +178,8 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Sets the player's opening purse to a flat <see cref="RBMConfig.RBMConfig.campaignStartingGold"/>
-        /// instead of whatever the backstory choices happened to add up to. RBM reprices most of the campaign --
+        /// Scales the player's opening purse by <see cref="RBMConfig.RBMConfig.campaignStartingGoldMultiplier"/>
+        /// on top of whatever the backstory choices added up to. RBM reprices most of the campaign --
         /// troop upgrades are paid out of a spoils purse, gear and trade goods cost several times the
         /// vanilla figure -- so vanilla's few hundred denars leaves the player unable to take any of
         /// the opening decisions the economy is built around.
@@ -196,7 +196,8 @@ namespace RBMCampaign
                 return;
             }
 
-            player.ChangeHeroGold(RBMConfig.RBMConfig.campaignStartingGold - player.Gold);
+            int target = (int)MathF.Round(player.Gold * RBMConfig.RBMConfig.campaignStartingGoldMultiplier);
+            player.ChangeHeroGold(target - player.Gold);
         }
 
         public override void SyncData(IDataStore dataStore)
