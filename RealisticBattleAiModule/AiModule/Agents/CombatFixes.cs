@@ -45,6 +45,35 @@ namespace RBMAI
             }
         }
 
+        /// <summary>
+        /// True when the unit carries a melee weapon it can hold together with a shield. A troop whose
+        /// only melee weapon is two-handed (e.g. imperial "Flame") cannot raise the shield without
+        /// sheathing its weapon, so forcing a shield stance on it would leave it fighting bare-handed.
+        /// </summary>
+        private static bool HasShieldCompatibleMeleeWeapon(Agent unit)
+        {
+            MissionEquipment equipment = unit.Equipment;
+            if (equipment == null)
+            {
+                return false;
+            }
+            for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
+            {
+                MissionWeapon weapon = equipment[i];
+                if (weapon.IsEmpty)
+                {
+                    continue;
+                }
+                WeaponComponentData usage = weapon.CurrentUsageItem;
+                if (usage != null && usage.IsMeleeWeapon && !usage.IsShield &&
+                    !usage.WeaponFlags.HasAnyFlag(WeaponFlags.NotUsableWithOneHand))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         [HarmonyPatch(typeof(ArrangementOrder))]
         [HarmonyPatch("GetShieldDirectionOfUnit")]
         internal class HoldTheDoor
@@ -57,7 +86,8 @@ namespace RBMAI
                     return;
                 }
                 if (Mission.Current != null && Mission.Current.IsSiegeBattle && unit.Team != null && unit.IsActive() &&
-                    unit.Team.IsAttacker && !unit.IsRangedCached && unit.HasShieldCached && !IsActivelyAttacking(unit))
+                    unit.Team.IsAttacker && !unit.IsRangedCached && unit.HasShieldCached && !IsActivelyAttacking(unit) &&
+                    HasShieldCompatibleMeleeWeapon(unit))
                 {
                     if (__result == Agent.UsageDirection.None)
                     {
