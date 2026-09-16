@@ -320,6 +320,78 @@ namespace RBMAI
             return fixedWidth;
         }
 
+        // Rounds a line-type width so the resulting file count divides the unit count, i.e. the last rank is
+        // full. Native LineFormation.AlignLastRank re-centres a PARTIAL last rank every formation-frame change
+        // (every tick under a Move order) by relocating its outermost man from one flank to the other; with
+        // navmesh availability flickering on the rear edge cells the margin test flips sign frame to frame and
+        // the same few men get bounced far-left <-> far-right for the whole advance (logged 2026-09-16: 500 men,
+        // 124 files, the 4 men of the 5th rank never closed a 45 m gap). A full last rank has nothing to
+        // re-centre. Only ever widens (so an EnforceMinFileWidth result stays valid), by at most ~15% of the
+        // files; if no divisor lies in that window, picks the file count that leaves the fullest last rank.
+        // Main-thread only, same caveat as EnforceMinFileWidth.
+        public static float RoundWidthToFullRanks(Formation formation, float width)
+        {
+            if (formation == null || width <= 0f)
+            {
+                return width;
+            }
+            ArrangementOrder.ArrangementOrderEnum arrangement = formation.ArrangementOrder.OrderEnum;
+            if (arrangement != ArrangementOrder.ArrangementOrderEnum.Line
+                && arrangement != ArrangementOrder.ArrangementOrderEnum.ShieldWall
+                && arrangement != ArrangementOrder.ArrangementOrderEnum.Loose)
+            {
+                return width;
+            }
+            int n = formation.CountOfUnitsWithoutDetachedOnes;
+            float unitDiameter = formation.UnitDiameter;
+            float spacing = formation.Interval + unitDiameter;
+            if (n <= 2 || spacing <= 0.01f)
+            {
+                return width;
+            }
+
+            int files = MathF.Max(1, (int)((width - unitDiameter) / spacing) + 1);
+            if (files >= n || n % files == 0)
+            {
+                return width;
+            }
+
+            int maxFiles = MathF.Min(n, files + MathF.Max(2, (int)(files * 0.15f)));
+            float maximumWidth = formation.MaximumWidth;
+            if (maximumWidth > 0f)
+            {
+                int filesAtMax = (int)((maximumWidth - unitDiameter) / spacing) + 1;
+                maxFiles = MathF.Min(maxFiles, filesAtMax);
+            }
+            if (maxFiles <= files)
+            {
+                return width;
+            }
+
+            int bestFiles = files;
+            int bestRemainder = n % files;
+            for (int f = files + 1; f <= maxFiles; f++)
+            {
+                int remainder = n % f;
+                if (remainder == 0)
+                {
+                    bestFiles = f;
+                    break;
+                }
+                if (remainder > bestRemainder)
+                {
+                    bestRemainder = remainder;
+                    bestFiles = f;
+                }
+            }
+            if (bestFiles <= files)
+            {
+                return width;
+            }
+            // Inverse of the engine's file-count formula, nudged up so float truncation can't drop a file.
+            return (bestFiles - 1) * spacing + unitDiameter + 0.01f;
+        }
+
         public static void FixCharge(ref Formation formation)
         {
             if (formation != null)

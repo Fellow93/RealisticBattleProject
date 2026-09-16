@@ -233,6 +233,18 @@ namespace RBMAI
             if (snapshot)
             {
                 AiBehaviorLog.Write(FormationLine(team, formation, behaviorName, orderName, now));
+                List<Agent> tracked;
+                if (_trackedStragglers.TryGetValue(formation, out tracked) && tracked.Count > 0)
+                {
+                    try
+                    {
+                        AiBehaviorLog.Write(SlotsLine(team, formation, tracked, now));
+                    }
+                    catch (Exception e)
+                    {
+                        ReportOnce("slots", e);
+                    }
+                }
             }
 
             if (agentsSnapshot && IsInfantry(formation))
@@ -280,6 +292,105 @@ namespace RBMAI
             public bool SameFormation;
             public string Flags;
             public string Action;
+            /// <summary>Grid cell (LineFormation._units2D indices); -1/-1 = unpositioned.</summary>
+            public int FileIndex;
+            public int RankIndex;
+        }
+
+        /// <summary>The stragglers named by the last LAG line per formation, re-sampled every snapshot in a SLOTS
+        /// line so a slot that flips between two cells inside the 5 s AGENTS window is visible.</summary>
+        private readonly Dictionary<Formation, List<Agent>> _trackedStragglers = new Dictionary<Formation, List<Agent>>();
+
+        private static readonly PropertyInfo _pFileCount = AccessTools.Property(typeof(LineFormation), "FileCount");
+
+        private static readonly FieldInfo _fUnpositionedUnits = AccessTools.Field(typeof(LineFormation), "_unpositionedUnits");
+
+        private static readonly FieldInfo _fAvailabilities = AccessTools.Field(typeof(LineFormation), "UnitPositionAvailabilities");
+
+        /// <summary>files/ranks/unpositioned/unavailable-cell counts of a line arrangement, or "-" when not a line.</summary>
+        private string GridStats(Formation formation)
+        {
+            try
+            {
+                LineFormation line = formation.Arrangement as LineFormation;
+                if (line == null)
+                {
+                    return "grid=-";
+                }
+                int files = (_pFileCount != null) ? (int)_pFileCount.GetValue(line, null) : -1;
+                int ranks = line.RankCount;
+                int unpositioned = -1;
+                if (_fUnpositionedUnits != null && _fUnpositionedUnits.GetValue(line) is System.Collections.ICollection list)
+                {
+                    unpositioned = list.Count;
+                }
+                int unavailable = -1;
+                if (_fAvailabilities != null && _fAvailabilities.GetValue(line) is MBList2D<int> avail)
+                {
+                    unavailable = 0;
+                    for (int f = 0; f < avail.Count1; f++)
+                    {
+                        for (int r = 0; r < avail.Count2; r++)
+                        {
+                            if (avail[f, r] != 2)
+                            {
+                                unavailable++;
+                            }
+                        }
+                    }
+                }
+                return "files=" + files + "\tranks=" + ranks + "\tunpos=" + unpositioned + "\tunavail=" + unavailable;
+            }
+            catch (Exception e)
+            {
+                ReportOnce("gridStats", e);
+                return "grid=?";
+            }
+        }
+
+        /// <summary>SLOTS line: cell + slot distance + velocity of the tracked stragglers, every snapshot.</summary>
+        private string SlotsLine(Team team, Formation formation, List<Agent> tracked, float now)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("t=").Append(AiBehaviorLog.Fmt(now)).Append("\tSLOTS");
+            sb.Append('\t').Append(TeamName(team));
+            sb.Append('\t').Append(formation.FormationIndex);
+            foreach (Agent agent in tracked)
+            {
+                if (agent == null || !agent.IsActive())
+                {
+                    continue;
+                }
+                sb.Append('\t').Append(AgentId(agent));
+                IFormationUnit unit = agent;
+                sb.Append("|f").Append(unit.FormationFileIndex).Append("r").Append(unit.FormationRankIndex);
+                float dist = -1f;
+                try
+                {
+                    WorldPosition slot = formation.GetOrderPositionOfUnit(agent);
+                    if (slot.IsValid)
+                    {
+                        dist = agent.Position.AsVec2.Distance(slot.AsVec2);
+                        // Signed lateral offset of the slot from the formation centre line: negative = left flank.
+                        Vec2 rel = slot.AsVec2 - formation.OrderPosition;
+                        Vec2 dir = formation.Direction;
+                        float lateral = rel.x * dir.y - rel.y * dir.x;
+                        sb.Append("|lat").Append(AiBehaviorLog.Fmt(lateral));
+                    }
+                    else
+                    {
+                        sb.Append("|lat-");
+                    }
+                }
+                catch (Exception e)
+                {
+                    ReportOnce("slotsLine", e);
+                    sb.Append("|lat?");
+                }
+                sb.Append("|d").Append((dist >= 0f) ? AiBehaviorLog.Fmt(dist) : "-");
+                sb.Append("|v").Append(AiBehaviorLog.Fmt(agent.MovementVelocity.Length));
+            }
+            return sb.ToString();
         }
 
         private static bool IsInfantry(Formation formation)
@@ -331,6 +442,9 @@ namespace RBMAI
         {
             AgentSample s = new AgentSample();
             s.Agent = agent;
+            IFormationUnit unit = agent;
+            s.FileIndex = unit.FormationFileIndex;
+            s.RankIndex = unit.FormationRankIndex;
 
             // Slot: the world position the formation currently wants this man to stand on.
             s.SlotDist = -1f;
@@ -610,7 +724,15 @@ namespace RBMAI
                 sb.Append('|').Append(s.Flags ?? "-");
                 sb.Append('|').Append(s.Action ?? "-");
                 sb.Append('|').Append("sameForm").Append(s.SameFormation ? "1" : "0");
+                sb.Append('|').Append("f").Append(s.FileIndex).Append("r").Append(s.RankIndex);
             }
+
+            List<Agent> tracked = new List<Agent>();
+            for (int i = 0; i < worst.Count && i < LagCount; i++)
+            {
+                tracked.Add(worst[i].Agent);
+            }
+            _trackedStragglers[formation] = tracked;
             return sb.ToString();
         }
 
@@ -706,6 +828,7 @@ namespace RBMAI
             sb.Append('\t').Append("form=").Append(Safe(() => formation.FormOrder.OrderEnum.ToString()));
             sb.Append('\t').Append("w=").Append(SafeFloat(() => formation.Width));
             sb.Append('\t').Append("d=").Append(SafeFloat(() => formation.Depth));
+            sb.Append('\t').Append(GridStats(formation));
             sb.Append('\t').Append("spd=").Append(SafeFloat(() => formation.CachedMovementSpeed));
             sb.Append('\t').Append("spdMax=").Append(SafeFloat(() =>
                 (formation.QuerySystem != null) ? formation.QuerySystem.MovementSpeedMaximum : 0f));
@@ -1011,7 +1134,11 @@ namespace RBMAI
             sb.Append("#          distance first, each one pipe separated:").Append("\n");
             sb.Append("#             charStringId#agentIndex | slotDist | maxSpeedMultiplier | maximumSpeedLimit").Append("\n");
             sb.Append("#             | fwdUnlimitedSpeed | wWalkMode | vVelocity | detDetached | catchCatchUp").Append("\n");
-            sb.Append("#             | fdFrameDisabled | aiStateFlags | currentActionType(0) | sameFormFlag").Append("\n");
+            sb.Append("#             | fdFrameDisabled | aiStateFlags | currentActionType(0) | sameFormFlag | f<file>r<rank> grid cell").Append("\n");
+            sb.Append("#").Append("\n");
+            sb.Append("#   SLOTS  t  SLOTS  team  formationIndex  then the men named by the last LAG line, every snapshot:").Append("\n");
+            sb.Append("#             charStringId#agentIndex | f<file>r<rank> | lat<signed lateral offset of slot, -=left> | d<slotDist> | v<velocity>").Append("\n");
+            sb.Append("#          FORM also carries files/ranks (LineFormation grid), unpos (men with no cell), unavail (cells != 2).").Append("\n");
             sb.Append("#").Append("\n");
             sb.Append("# Snapshots every ").Append(AiBehaviorLog.Fmt(SnapshotInterval)).Append("s; AGENTS/LAG every ")
                 .Append(AiBehaviorLog.Fmt(AgentsInterval)).Append("s.").Append("\n");

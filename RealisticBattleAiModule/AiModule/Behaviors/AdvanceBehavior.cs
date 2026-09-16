@@ -212,25 +212,42 @@ namespace RBMAI
             __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
             if (__instance.Formation.QuerySystem.IsInfantryFormation)
             {
+                float widthBefore = __instance.Formation.Width;
                 switch (__instance.Formation.ArrangementOrder.OrderType)
                 {
                     case OrderType.ArrangementLine:
                         {
                             // Divisor is effectively the rank count (width in metres = units / ranks). Lower = wider
                             // line, fewer ranks. Widen the advancing line a touch (4.5 -> 4.0 ranks).
-                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 4.0f)), true);
+                            // RoundWidthToFullRanks: a partial last rank gets re-centred by native every tick
+                            // on a Move order and bounces its men flank to flank -- see the helper.
+                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(RBMAI.Utilities.RoundWidthToFullRanks(__instance.Formation,
+                                RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 4.0f))), true);
                             break;
                         }
                     case OrderType.ArrangementLoose:
                         {
-                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 2.75f)), true);
+                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(RBMAI.Utilities.RoundWidthToFullRanks(__instance.Formation,
+                                RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 2.75f))), true);
                             break;
                         }
                     case OrderType.ArrangementCloseOrder:
                         {
-                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 7f)), true);
+                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(RBMAI.Utilities.RoundWidthToFullRanks(__instance.Formation,
+                                RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 7f))), true);
                             break;
                         }
+                }
+
+                // Widening the line (e.g. 41x13 -> 73x7 on the first advance tick) re-lays the grid BY INDEX, so
+                // men from the deep middle ranks are handed cells on the far flanks, ~100 m diagonally from where
+                // they stand. Logged 2026-09-16: those men lag the line for the whole advance at full speed
+                // (and in some runs get bounced flank to flank by the native last-rank re-centring). Native's
+                // dispersal routine reassigns every cell to the closest man, which is exactly what a re-shaped
+                // line needs. Main thread, once per width change, O(n^2) distance checks -- cheap at 500.
+                if (MathF.Abs(__instance.Formation.Width - widthBefore) > 0.01f)
+                {
+                    __instance.Formation.OnFormationDispersed();
                 }
 
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
