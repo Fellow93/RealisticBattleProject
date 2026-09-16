@@ -1,17 +1,17 @@
 ﻿<Module>
   <Name value="(RBM) Realistic Battle Mod Bannerlord"/>
   <Id value="RBM"/>
-  <Version value="v4.4.8"/>
+  <Version value="v4.5.1"/>
   <DefaultModule value="true"/>
   <ModuleCategory value="Singleplayer"/>
   <DependedModules>
 
-    <DependedModule Id="Native" DependentVersion="v1.4.8" Optional="false"/>
-    <DependedModule Id="SandBoxCore" DependentVersion="v1.4.8" Optional="false"/>
-    <DependedModule Id="Sandbox" DependentVersion="v1.4.8" Optional="false"/>
-    <DependedModule Id="StoryMode" DependentVersion="v1.4.8" Optional="false"/>
-	<DependedModule Id="CustomBattle" DependentVersion="v1.4.8" Optional="false"/>
-	<DependedModule Id="BirthAndDeath" DependentVersion="v1.4.8" Optional="true"/>
+    <DependedModule Id="Native" DependentVersion="v1.5.3" Optional="false"/>
+    <DependedModule Id="SandBoxCore" DependentVersion="v1.5.3" Optional="false"/>
+    <DependedModule Id="Sandbox" DependentVersion="v1.5.3" Optional="false"/>
+    <DependedModule Id="StoryMode" DependentVersion="v1.5.3" Optional="false"/>
+	<DependedModule Id="CustomBattle" DependentVersion="v1.5.3" Optional="false"/>
+	<DependedModule Id="BirthAndDeath" DependentVersion="v1.5.3" Optional="true"/>
 	<DependedModule Id="RTSCamera" Optional="true"/>
 	<DependedModule Id="RTSCamera.CommandSystem" Optional="true"/>
 
