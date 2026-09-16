@@ -56,7 +56,9 @@ namespace RBMAI
                             Agent bannerBearer = ___Agent;
                             MBList<Agent> bannerNearbyAllies = new MBList<Agent>();
                             bannerNearbyAllies = Mission.Current.GetNearbyAllyAgents(bannerBearer.GetWorldPosition().AsVec2, 10f, bannerBearer.Team, bannerNearbyAllies);
-                            Agent bannerFriendlyTarget = bannerNearbyAllies.FirstOrDefault((Agent a) => a != bannerBearer && a.IsHuman && a.IsActive() && a.Formation == bannerBearer.Formation);
+                            // Never park on another banner bearer: two bearers targeting each other drift together
+                            // and lag behind the formation instead of following it.
+                            Agent bannerFriendlyTarget = bannerNearbyAllies.FirstOrDefault((Agent a) => a != bannerBearer && a.IsHuman && a.IsActive() && a.Formation == bannerBearer.Formation && !RBMAI.Utilities.IsBannerBearer(a));
                             if (bannerFriendlyTarget != null)
                             {
                                 ___Agent.SetAutomaticTargetSelection(false);
