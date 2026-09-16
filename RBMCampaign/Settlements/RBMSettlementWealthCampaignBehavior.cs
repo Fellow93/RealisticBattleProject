@@ -149,7 +149,7 @@ namespace RBMCampaign
         {
             InformationManager.ShowInquiry(new InquiryData(
                 new TextObject("{=RBM_CAMP_001}RBM Campaign: incompatible save").ToString(),
-                new TextObject("{=RBM_CAMP_002}This save was not started with RBM Campaign features enabled.{newline}{newline}The one-time economy setup (settlement treasuries, citizen wealth, village purses and starting prosperity) only runs when a campaign is CREATED with RBM Campaign on, and it cannot be applied to an existing save. This campaign will run with a half-built, unbalanced economy -- markets stuck poor, treasuries and prosperity wrong, spoils and upkeep skewed.{newline}{newline}To get the intended experience, start a NEW campaign with RBM Campaign enabled. You can keep playing this save, but the economy will not behave correctly.").ToString(),
+                new TextObject("{=RBM_CAMP_002}This save was not started with RBM Campaign features enabled.{newline}{newline}The one-time economy setup (settlement treasuries, citizen wealth, village purses and starting prosperity) only runs when a campaign is CREATED with RBM Campaign on, and it cannot be applied to an existing save. This campaign will run with a half-built, unbalanced economy -- markets stuck poor, treasuries and prosperity wrong, spoils and upkeep skewed.{newline}{newline}To get the intended experience, start a NEW campaign with RBM Campaign enabled. If you want to continue playing THIS save, disable the RBM Campaign module in the RBM configuration menu and reload the save.").ToString(),
                 true, false, "OK", null, null, null),
                 false, true);
         }
