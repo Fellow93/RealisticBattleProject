@@ -45,9 +45,9 @@ namespace RBMAI
             {
                 return;
             }
-            // Regroup is the "close the line up" interlude Advance keeps flipping into; pace it too.
+            // Regroup is deliberately NOT paced: regrouping men run at full speed (AgentSpeedAndParams).
             BehaviorComponent activeBehavior = __instance.AI?.ActiveBehavior;
-            if (activeBehavior == null || !(activeBehavior is BehaviorAdvance || activeBehavior is BehaviorRegroup))
+            if (activeBehavior == null || !(activeBehavior is BehaviorAdvance))
             {
                 return;
             }

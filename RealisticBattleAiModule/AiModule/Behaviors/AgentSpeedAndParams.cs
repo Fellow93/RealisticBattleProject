@@ -75,12 +75,12 @@ namespace RBMAI
             }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorRegroup))
             {
+                // Regrouping men run flat out: the point of a regroup is to close up before the enemy
+                // arrives, and a paced regroup (native applies the line's cached pace here too) is what let
+                // a pursuing line catch stragglers. Full personal max, no formation pacing.
                 if (limitIsMultiplier)
                 {
-                    if (desiredSpeed < 0.6f && isFormationUnderRangedAttack)
-                    {
-                        desiredSpeed = 0.6f;
-                    }
+                    desiredSpeed = 1f;
                 }
             }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge))

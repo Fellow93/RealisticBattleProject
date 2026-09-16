@@ -179,6 +179,7 @@
     <Compile Include="AiModule\Behaviors\DefenseBehaviors.cs" />
     <Compile Include="AiModule\Behaviors\FlankBehaviors.cs" />
     <Compile Include="AiModule\Behaviors\AdvanceBehavior.cs" />
+    <Compile Include="AiModule\Behaviors\RallyLogic.cs" />
     <Compile Include="AiModule\Behaviors\AgentSpeedAndParams.cs" />
     <Compile Include="AiModule\Behaviors\MiscBehaviorPatches.cs" />
     <Compile Include="AiModule\Orders\MovementOrderPatches.cs" />

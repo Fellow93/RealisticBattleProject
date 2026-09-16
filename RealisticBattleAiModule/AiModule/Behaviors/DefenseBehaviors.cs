@@ -147,8 +147,20 @@ namespace RBMAI
                     __result = 0f;
                     return false;
                 }
+                // Rally: a chunk of the formation is far from the main body (reinforcement wave + surviving
+                // veterans). Native's deviation-based weight excludes exactly those men; force Regroup to win.
+                if (RallyLogic.NeedsRally(__instance.Formation))
+                {
+                    __result = RallyLogic.RallyWeight;
+                    return false;
+                }
                 float coherence = __instance.Formation.AI.ActiveBehavior?.BehaviorCoherence ?? __instance.BehaviorCoherence;
                 __result = MBMath.Lerp(0.1f, 1.2f, MBMath.ClampFloat(coherence * (querySystem.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents + 1f) / (querySystem.IdealAverageDisplacement + 1f), 0f, 3f) / 3f);
+                // For a while after a reinforcement wave lands, lean toward closing up before pressing on.
+                if (RallyLogic.RecentlyReinforced(__instance.Formation))
+                {
+                    __result *= RallyLogic.ReinforcedWeightScale;
+                }
                 return false;
             }
             return true;
@@ -165,6 +177,15 @@ namespace RBMAI
                 if (significantEnemy != null)
                 {
                     WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
+                    if (RallyLogic.IsRallying(__instance.Formation))
+                    {
+                        // Hold at the MAIN BODY, not the average (which the far men drag toward the enemy).
+                        Vec2 mainBody = RallyLogic.MainBodyCenter(__instance.Formation);
+                        if (mainBody.IsValid)
+                        {
+                            medianPosition.SetVec2(mainBody);
+                        }
+                    }
                     ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
                     Vec2 direction = (RBMAI.Utilities.GetFormationCenter(significantEnemy) - RBMAI.Utilities.GetFormationCenter(__instance.Formation)).Normalized();
@@ -181,6 +202,11 @@ namespace RBMAI
         private static void PrefixTickOccasionally(ref BehaviorRegroup __instance)
         {
             __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+            if (RallyLogic.NeedsRally(__instance.Formation))
+            {
+                // Give each far man the nearest cell so he runs straight at the body, not a flank diagonal.
+                RallyLogic.PullFarMenToNearestCells(__instance.Formation);
+            }
         }
     }
 }

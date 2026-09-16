@@ -212,6 +212,17 @@ namespace RBMAI
             __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
             if (__instance.Formation.QuerySystem.IsInfantryFormation)
             {
+                // A tactic that zeroed Regroup's weight factor would keep it out of the behavior race entirely;
+                // make it eligible while a rally is needed so RallyLogic's weight can take over.
+                if (RallyLogic.NeedsRally(__instance.Formation) && __instance.Formation.AI != null)
+                {
+                    BehaviorRegroup regroup = __instance.Formation.AI.GetBehavior<BehaviorRegroup>();
+                    if (regroup != null && regroup.WeightFactor < 1E-06f)
+                    {
+                        regroup.WeightFactor = 1f;
+                    }
+                }
+
                 float widthBefore = __instance.Formation.Width;
                 switch (__instance.Formation.ArrangementOrder.OrderType)
                 {

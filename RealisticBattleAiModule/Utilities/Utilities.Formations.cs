@@ -216,6 +216,43 @@ namespace RBMAI
             return;
         }
 
+        private static readonly PropertyInfo _lineFileCount =
+            typeof(LineFormation).GetProperty("FileCount", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+        // Bounds-checked slot lookup. Native Formation.GetOrderPositionOfUnit indexes LineFormation._units2D with
+        // the unit's FormationFileIndex/RankIndex and nothing else; an agent that has just left the formation, or
+        // whose grid shrank under him, still carries the old indices and native throws IndexOutOfRange
+        // (seen 2026-09-16 from the AI log's SLOTS line). Main thread only.
+        public static bool TryGetUnitSlot(Formation formation, Agent agent, out WorldPosition slot)
+        {
+            slot = WorldPosition.Invalid;
+            if (formation == null || agent == null || !agent.IsActive() || agent.Formation != formation)
+            {
+                return false;
+            }
+            IFormationUnit unit = agent;
+            int file = unit.FormationFileIndex;
+            int rank = unit.FormationRankIndex;
+            if (file < 0 || rank < 0)
+            {
+                return false;
+            }
+            LineFormation line = formation.Arrangement as LineFormation;
+            if (line != null)
+            {
+                if (rank >= line.RankCount)
+                {
+                    return false;
+                }
+                if (_lineFileCount != null && file >= (int)_lineFileCount.GetValue(line, null))
+                {
+                    return false;
+                }
+            }
+            slot = formation.GetOrderPositionOfUnit(agent);
+            return slot.IsValid;
+        }
+
         public static bool HasBattleBeenJoined(Formation mainInfantry, bool hasBattleBeenJoined, float battleJoinRange = 75f)
         {
             bool isOnlyCavReamining = CheckIfOnlyCavRemaining(mainInfantry);
@@ -234,8 +271,15 @@ namespace RBMAI
                     Formation enemyForamtion = RBMAI.Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
                     {
-                        float distance = GetFormationDistance(mainInfantry, enemyForamtion) + mainInfantry.Depth / 2f + enemyForamtion.Depth / 2f;
-                        return (distance <= (battleJoinRange + (hasBattleBeenJoined ? 10f : 0f)));
+                        // Edge-to-edge gap: the front ranks meet when the centre distance has shrunk to the sum
+                        // of the half depths, so those are SUBTRACTED. (Adding them, as before, made deep
+                        // formations join later, the opposite of what depth means here.)
+                        float edgeGap = GetFormationDistance(mainInfantry, enemyForamtion) - mainInfantry.Depth / 2f - enemyForamtion.Depth / 2f;
+                        if (edgeGap < 0f)
+                        {
+                            edgeGap = 0f;
+                        }
+                        return (edgeGap <= (battleJoinRange + (hasBattleBeenJoined ? 10f : 0f)));
                     }
                 }
             }

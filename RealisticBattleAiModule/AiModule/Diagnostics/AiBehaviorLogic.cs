@@ -357,7 +357,7 @@ namespace RBMAI
             sb.Append('\t').Append(formation.FormationIndex);
             foreach (Agent agent in tracked)
             {
-                if (agent == null || !agent.IsActive())
+                if (agent == null || !agent.IsActive() || agent.Formation != formation)
                 {
                     continue;
                 }
@@ -367,8 +367,8 @@ namespace RBMAI
                 float dist = -1f;
                 try
                 {
-                    WorldPosition slot = formation.GetOrderPositionOfUnit(agent);
-                    if (slot.IsValid)
+                    WorldPosition slot;
+                    if (RBMAI.Utilities.TryGetUnitSlot(formation, agent, out slot))
                     {
                         dist = agent.Position.AsVec2.Distance(slot.AsVec2);
                         // Signed lateral offset of the slot from the formation centre line: negative = left flank.
@@ -376,6 +376,10 @@ namespace RBMAI
                         Vec2 dir = formation.Direction;
                         float lateral = rel.x * dir.y - rel.y * dir.x;
                         sb.Append("|lat").Append(AiBehaviorLog.Fmt(lateral));
+                        // Man relative to his slot, along facing (+ = ahead of slot) and across it.
+                        Vec2 off = agent.Position.AsVec2 - slot.AsVec2;
+                        sb.Append("|fwd").Append(AiBehaviorLog.Fmt(off.DotProduct(dir)));
+                        sb.Append("|side").Append(AiBehaviorLog.Fmt(off.x * dir.y - off.y * dir.x));
                     }
                     else
                     {
@@ -450,8 +454,8 @@ namespace RBMAI
             s.SlotDist = -1f;
             try
             {
-                WorldPosition slot = formation.GetOrderPositionOfUnit(agent);
-                if (slot.IsValid)
+                WorldPosition slot;
+                if (RBMAI.Utilities.TryGetUnitSlot(formation, agent, out slot))
                 {
                     s.SlotDist = agent.Position.AsVec2.Distance(slot.AsVec2);
                 }
@@ -829,6 +833,9 @@ namespace RBMAI
             sb.Append('\t').Append("w=").Append(SafeFloat(() => formation.Width));
             sb.Append('\t').Append("d=").Append(SafeFloat(() => formation.Depth));
             sb.Append('\t').Append(GridStats(formation));
+            sb.Append('\t').Append("rally=").Append(RallyLogic.IsRallying(formation) ? "1" : "0")
+                .Append('/').Append(RallyLogic.FarCount(formation))
+                .Append(RallyLogic.RecentlyReinforced(formation) ? "/reinf" : "");
             sb.Append('\t').Append("spd=").Append(SafeFloat(() => formation.CachedMovementSpeed));
             sb.Append('\t').Append("spdMax=").Append(SafeFloat(() =>
                 (formation.QuerySystem != null) ? formation.QuerySystem.MovementSpeedMaximum : 0f));
@@ -1137,8 +1144,10 @@ namespace RBMAI
             sb.Append("#             | fdFrameDisabled | aiStateFlags | currentActionType(0) | sameFormFlag | f<file>r<rank> grid cell").Append("\n");
             sb.Append("#").Append("\n");
             sb.Append("#   SLOTS  t  SLOTS  team  formationIndex  then the men named by the last LAG line, every snapshot:").Append("\n");
-            sb.Append("#             charStringId#agentIndex | f<file>r<rank> | lat<signed lateral offset of slot, -=left> | d<slotDist> | v<velocity>").Append("\n");
-            sb.Append("#          FORM also carries files/ranks (LineFormation grid), unpos (men with no cell), unavail (cells != 2).").Append("\n");
+            sb.Append("#             charStringId#agentIndex | f<file>r<rank> | lat<signed lateral offset of slot, -=left>").Append("\n");
+            sb.Append("#             | fwd<man ahead(+)/behind(-) of his slot along facing> | side<man left(-)/right(+) of slot> | d<slotDist> | v<velocity>").Append("\n");
+            sb.Append("#          FORM also carries files/ranks (LineFormation grid), unpos (men with no cell), unavail (cells != 2),").Append("\n");
+            sb.Append("#          rally=<1 while RallyLogic holds the formation for its far men>/<count of far men>.").Append("\n");
             sb.Append("#").Append("\n");
             sb.Append("# Snapshots every ").Append(AiBehaviorLog.Fmt(SnapshotInterval)).Append("s; AGENTS/LAG every ")
                 .Append(AiBehaviorLog.Fmt(AgentsInterval)).Append("s.").Append("\n");
