@@ -28,32 +28,31 @@ namespace RBMCombat
                 return extraLinearSpeed;
             }
             CharacterObject captain = attackInformation.AttackerCaptainCharacter as CharacterObject;
-            BattleEnvironment env = attackInformation.AttackerBattleEnvironment;
             bool mounted = attackInformation.DoesAttackerHaveMountAgent;
             SkillObject relevantSkill = usage.RelevantSkill;
 
             ExplainedNumber bonuses = new ExplainedNumber(extraLinearSpeed);
             if (mounted)
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Riding.NomadicTraditions, env, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Riding.NomadicTraditions, captain, ref bonuses);
             }
             else
             {
                 if (relevantSkill == DefaultSkills.TwoHanded)
                 {
-                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.TwoHanded.RecklessCharge, env, character, true, ref bonuses);
+                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.TwoHanded.RecklessCharge, character, true, ref bonuses);
                 }
-                PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Roguery.DashAndSlash, env, character, true, ref bonuses);
-                PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Athletics.SurgingBlow, env, character, true, ref bonuses);
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Athletics.SurgingBlow, env, captain, ref bonuses);
+                PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Roguery.DashAndSlash, character, true, ref bonuses);
+                PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Athletics.SurgingBlow, character, true, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Athletics.SurgingBlow, captain, ref bonuses);
             }
             if (relevantSkill == DefaultSkills.Polearm)
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.Lancer, env, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.Lancer, captain, ref bonuses);
                 if (mounted)
                 {
-                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Polearm.Lancer, env, character, true, ref bonuses);
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.UnstoppableForce, env, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Polearm.Lancer, character, true, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.UnstoppableForce, captain, ref bonuses);
                 }
             }
             return bonuses.ResultNumber;
@@ -71,7 +70,7 @@ namespace RBMCombat
             }
             ExplainedNumber bonuses = new ExplainedNumber(magnitude);
             PerkObject perk = isThrust ? DefaultPerks.Crafting.SharpenedTip : DefaultPerks.Crafting.SharpenedEdge;
-            PerkHelper.AddPerkBonusForCharacter(perk, attackInformation.AttackerBattleEnvironment, character, true, ref bonuses);
+            PerkHelper.AddPerkBonusForCharacter(perk, character, true, ref bonuses);
             return bonuses.ResultNumber;
         }
 
@@ -99,7 +98,7 @@ namespace RBMCombat
                 return missileSpeed;
             }
             ExplainedNumber bonuses = new ExplainedNumber(0f, false, null);
-            PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Throwing.RunningThrow, attackInformation.AttackerBattleEnvironment, character, true, ref bonuses);
+            PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Throwing.RunningThrow, character, true, ref bonuses);
             return missileSpeed + excess * bonuses.ResultNumber;
         }
     }

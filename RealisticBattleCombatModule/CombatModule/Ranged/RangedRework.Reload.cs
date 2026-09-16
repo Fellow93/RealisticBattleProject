@@ -50,7 +50,6 @@ namespace RBMCombat
                 {
                     return 1f;
                 }
-                BattleEnvironment env = agent.CurrentBattleEnvironment;
                 Agent captainAgent = agent.Formation?.Captain;
                 CharacterObject captain = (captainAgent != null && captainAgent != agent) ? captainAgent.Character as CharacterObject : null;
                 int epicMinSkill = Campaign.Current.Models.CharacterDevelopmentModel.MinSkillRequiredForEpicPerkBonus;
@@ -58,21 +57,21 @@ namespace RBMCombat
                 ExplainedNumber bonuses = new ExplainedNumber(1f);
                 if (relevantSkill == DefaultSkills.Bow)
                 {
-                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Bow.RapidFire, env, agentCharacter, true, ref bonuses);
+                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Bow.RapidFire, agentCharacter, true, ref bonuses);
                     if (captain != null)
                     {
-                        PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.RapidFire, env, captain, ref bonuses);
+                        PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.RapidFire, captain, ref bonuses);
                     }
-                    PerkHelper.AddEpicPerkBonusForCharacter(DefaultPerks.Bow.Deadshot, env, agentCharacter, DefaultSkills.Bow, true, ref bonuses, epicMinSkill);
+                    PerkHelper.AddEpicPerkBonusForCharacter(DefaultPerks.Bow.Deadshot, agentCharacter, DefaultSkills.Bow, true, ref bonuses, epicMinSkill);
                 }
                 else
                 {
-                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Crossbow.WindWinder, env, agentCharacter, true, ref bonuses);
+                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Crossbow.WindWinder, agentCharacter, true, ref bonuses);
                     if (captain != null)
                     {
-                        PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Crossbow.WindWinder, env, captain, ref bonuses);
+                        PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Crossbow.WindWinder, captain, ref bonuses);
                     }
-                    PerkHelper.AddEpicPerkBonusForCharacter(DefaultPerks.Crossbow.MightyPull, env, agentCharacter, DefaultSkills.Crossbow, true, ref bonuses, epicMinSkill);
+                    PerkHelper.AddEpicPerkBonusForCharacter(DefaultPerks.Crossbow.MightyPull, agentCharacter, DefaultSkills.Crossbow, true, ref bonuses, epicMinSkill);
                 }
                 return bonuses.ResultNumber;
             }

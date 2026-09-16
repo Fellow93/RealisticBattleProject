@@ -40,17 +40,16 @@ namespace RBMAI
                 {
                     return 1f;
                 }
-                BattleEnvironment env = agent.CurrentBattleEnvironment;
                 Agent captainAgent = agent.Formation?.Captain;
                 CharacterObject captain = (captainAgent != null && captainAgent != agent) ? captainAgent.Character as CharacterObject : null;
 
                 ExplainedNumber bonuses = new ExplainedNumber(1f);
-                PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Throwing.PerfectTechnique, env, agentCharacter, true, ref bonuses);
+                PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Throwing.PerfectTechnique, agentCharacter, true, ref bonuses);
                 if (captain != null)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.PerfectTechnique, env, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.PerfectTechnique, captain, ref bonuses);
                 }
-                PerkHelper.AddEpicPerkBonusForCharacter(DefaultPerks.Throwing.UnstoppableForce, env, agentCharacter, DefaultSkills.Throwing, true, ref bonuses, Campaign.Current.Models.CharacterDevelopmentModel.MinSkillRequiredForEpicPerkBonus);
+                PerkHelper.AddEpicPerkBonusForCharacter(DefaultPerks.Throwing.UnstoppableForce, agentCharacter, DefaultSkills.Throwing, true, ref bonuses, Campaign.Current.Models.CharacterDevelopmentModel.MinSkillRequiredForEpicPerkBonus);
                 return bonuses.ResultNumber;
             }
 
