@@ -83,6 +83,169 @@ namespace RBMAI.AiModule
             }
         }
 
+        /// <summary>
+        /// Field battles: when one side's reinforcement wave triggers, the other side's wave triggers too.
+        ///
+        /// Vanilla checks both sides on the same global timer tick, but the Wave method's per-side gate
+        /// (ComputeWaveBatch) only fires once THAT side has lost ReinforcementWavePercentage of its initial spawn.
+        /// The side taking fewer losses therefore never gets its wave while the other keeps refilling.
+        ///
+        /// Two patches:
+        ///  - Postfix on DefaultBattleMissionAgentSpawnLogic.CheckGlobalReinforcementBatch: after vanilla's loop, if
+        ///    exactly one side became active and the other still has remaining spawns and an empty reserve, re-run the
+        ///    other side's CheckReinforcementBatch with the force flag set, then recompute _spawningReinforcements the
+        ///    way vanilla does (agent-cap quota still applies).
+        ///  - Postfix on MissionBattleSideSpawnContext.ComputeWaveBatch: with the force flag set and a zero result,
+        ///    return the side's normal wave size so the casualty gate is bypassed for that single call.
+        /// Siege, sally-out and naval use other spawn methods and are excluded.
+        /// </summary>
+        internal static class SyncedReinforcementWaves
+        {
+            [ThreadStatic]
+            internal static bool ForceWave;
+
+            private static readonly AccessTools.FieldRef<DefaultBattleMissionAgentSpawnLogic, MissionBattleSideSpawnContext[]> Contexts =
+                AccessTools.FieldRefAccess<DefaultBattleMissionAgentSpawnLogic, MissionBattleSideSpawnContext[]>("_battleSideSpawnContexts");
+            private static readonly AccessTools.FieldRef<DefaultBattleMissionAgentSpawnLogic, bool> SpawningReinforcements =
+                AccessTools.FieldRefAccess<DefaultBattleMissionAgentSpawnLogic, bool>("_spawningReinforcements");
+            private static readonly AccessTools.FieldRef<DefaultBattleMissionAgentSpawnLogic, BasicMissionTimer> GlobalTimer =
+                AccessTools.FieldRefAccess<DefaultBattleMissionAgentSpawnLogic, BasicMissionTimer>("_globalReinforcementSpawnTimer");
+            private static readonly AccessTools.FieldRef<DefaultBattleMissionAgentSpawnLogic, float> GlobalInterval =
+                AccessTools.FieldRefAccess<DefaultBattleMissionAgentSpawnLogic, float>("_globalReinforcementInterval");
+
+            private static readonly System.Reflection.MethodInfo CheckMinimumBatchQuotaRequirement =
+                AccessTools.Method(typeof(DefaultBattleMissionAgentSpawnLogic), "CheckMinimumBatchQuotaRequirement");
+
+            private static bool IsFieldBattle()
+            {
+                Mission mission = Mission.Current;
+                return mission != null && mission.IsFieldBattle && !mission.IsSiegeBattle && !mission.IsSallyOutBattle && !mission.IsNavalBattle;
+            }
+
+            [HarmonyPatch(typeof(DefaultBattleMissionAgentSpawnLogic), "CheckGlobalReinforcementBatch")]
+            private static class CheckGlobalReinforcementBatchPatch
+            {
+                // Vanilla resets the timer inside the method, so the prefix records whether this call is the tick
+                // that actually evaluated the batches.
+                private static bool Prefix(DefaultBattleMissionAgentSpawnLogic __instance, out bool __state)
+                {
+                    __state = false;
+                    try
+                    {
+                        BasicMissionTimer timer = GlobalTimer(__instance);
+                        __state = timer != null && timer.ElapsedTime >= GlobalInterval(__instance);
+                    }
+                    catch (Exception) { }
+                    return true;
+                }
+
+                private static void Postfix(DefaultBattleMissionAgentSpawnLogic __instance, bool __state)
+                {
+                    if (!__state || !IsFieldBattle())
+                    {
+                        return;
+                    }
+                    try
+                    {
+                        MissionSpawnSettings settings = __instance.SpawnSettings;
+                        if (settings.ReinforcementTroopsSpawnMethod != MissionSpawnSettings.ReinforcementSpawnMethod.Wave)
+                        {
+                            return;
+                        }
+                        MissionBattleSideSpawnContext[] contexts = Contexts(__instance);
+                        if (contexts == null || contexts.Length < 2 || contexts[0] == null || contexts[1] == null)
+                        {
+                            return;
+                        }
+                        bool defenderActive = contexts[0].ReinforcementSpawnActive;
+                        bool attackerActive = contexts[1].ReinforcementSpawnActive;
+                        if (defenderActive == attackerActive)
+                        {
+                            return;
+                        }
+
+                        int laggingIndex = defenderActive ? 1 : 0;
+                        MissionBattleSideSpawnContext lagging = contexts[laggingIndex];
+                        MissionSpawnPhase phase = laggingIndex == 0 ? __instance.DefenderActivePhase : __instance.AttackerActivePhase;
+                        if (phase == null || phase.RemainingSpawnNumber <= 0 || lagging.ReservedTroopsCount > 0)
+                        {
+                            return;
+                        }
+
+                        bool forced;
+                        ForceWave = true;
+                        try
+                        {
+                            forced = lagging.CheckReinforcementBatch();
+                        }
+                        finally
+                        {
+                            ForceWave = false;
+                        }
+
+                        if (forced)
+                        {
+                            bool quotaOk = (bool)CheckMinimumBatchQuotaRequirement.Invoke(__instance, null);
+                            SpawningReinforcements(__instance) = quotaOk;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // Any surprise in the spawn internals: keep vanilla's per-side behaviour.
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Two jobs, both at reservation time so a wave arrives as one burst and the reserve empties:
+            ///  - with the force flag set and a zero result, return the side's wave size (casualty gate bypassed);
+            ///  - clamp the batch so the side never exceeds half the battle size. Vanilla only checks the total agent
+            ///    cap; clamping here (rather than at spawn time) avoids a leftover reserve that trickles in one man at
+            ///    a time as losses free room. The next wave then needs the side to fall below half again.
+            /// </summary>
+            [HarmonyPatch(typeof(MissionBattleSideSpawnContext), "ComputeWaveBatch")]
+            private static class ComputeWaveBatchPatch
+            {
+                private static readonly AccessTools.FieldRef<MissionBattleSideSpawnContext, int> BatchSize =
+                    AccessTools.FieldRefAccess<MissionBattleSideSpawnContext, int>("_reinforcementBatchSize");
+                private static readonly AccessTools.FieldRef<MissionBattleSideSpawnContext, IBattleMissionAgentSpawnLogic> SpawnLogic =
+                    AccessTools.FieldRefAccess<MissionBattleSideSpawnContext, IBattleMissionAgentSpawnLogic>("_spawnLogic");
+
+                private static void Postfix(MissionBattleSideSpawnContext __instance, MissionSpawnPhase activePhase, ref int __result)
+                {
+                    if (activePhase == null || activePhase.RemainingSpawnNumber <= 0 || __instance.ReservedTroopsCount > 0)
+                    {
+                        return;
+                    }
+                    try
+                    {
+                        if (ForceWave && __result <= 0)
+                        {
+                            // Vanilla already recomputed _reinforcementBatchSize (and its quota) before applying the
+                            // casualty gate, so the field holds the correct wave size for this side.
+                            int size = BatchSize(__instance);
+                            if (size > 0)
+                            {
+                                __result = size;
+                            }
+                        }
+                        if (__result > 0 && IsFieldBattle() && SpawnLogic(__instance) is DefaultBattleMissionAgentSpawnLogic logic)
+                        {
+                            int sideCap = logic.BattleSize / 2;
+                            if (sideCap > 0)
+                            {
+                                __result = Math.Max(0, Math.Min(__result, sideCap - __instance.NumberOfActiveTroops));
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // Keep vanilla's result on any surprise.
+                    }
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(SandBoxSiegeMissionSpawnHandler))]
         private class OverrideSandBoxSiegeMissionSpawnHandler
         {
