@@ -21,6 +21,8 @@
 		<Constant Name="AT.Check.Box.MarginLeft.Header" Value="6" />
 
 
+		<Constant Name="AT.Section.Indent" Value="40" />
+
 		<Constant Name="AT.Heading.MarginTop" Value="20" />
 		<Constant Name="AT.Heading.MarginBottom" Value="12" />
 		<Constant Name="AT.Heading.Divider.Width" Value="500" />
@@ -94,7 +96,7 @@
 										<!-- Campaign section (collapsible) -->
 										<ListPanel Id="CampaignSection" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
 										  <Children>
-										    <ListPanel Id="CampaignOptions" DoNotAcceptEvents="true" IsVisible="false" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
+										    <ListPanel Id="CampaignOptions" DoNotAcceptEvents="true" IsVisible="false" PositionXOffset="!AT.Section.Indent" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
 										      <Children>
 
 									<!-- CampaignCatLoggingt category (collapsible, collapsed by default) -->
@@ -1142,20 +1144,6 @@
 
 										  </Children>
 										</ListPanel>
-<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
-										  <Children>
-
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ModuleStatust"/>
-
-											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
-											  <Children>
-												<RichTextWidget DataSource="{RBMCampaignEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
-												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{RBMCampaignEnabled}" />
-											  </Children>
-											</ListPanel>
-
-										  </Children>
-										</ListPanel>
 								      </Children>
 								    </ListPanel>
 								    <PartyHeaderToggleWidget DoNotPassEventsToChildren="true" UpdateChildrenStates="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Center" MarginTop="!AT.Heading.MarginTop" MarginBottom="!AT.Heading.MarginBottom" WidgetToClose="..\CampaignModuleOptions" CollapseIndicator="CampaignModuleSectionTitle\CollapseIndicator">
@@ -1167,6 +1155,22 @@
 								        </TextWidget>
 								      </Children>
 								    </PartyHeaderToggleWidget>
+								  </Children>
+								</ListPanel>
+
+								<!-- RBM Campaign module enable/disable: last child of a VerticalBottomToTop list = rendered first, directly under the section header -->
+								<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+								  <Children>
+
+									<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ModuleStatust"/>
+
+									<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
+									  <Children>
+										<RichTextWidget DataSource="{RBMCampaignEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+										<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{RBMCampaignEnabled}" />
+									  </Children>
+									</ListPanel>
+
 								  </Children>
 								</ListPanel>
 							</Children>
