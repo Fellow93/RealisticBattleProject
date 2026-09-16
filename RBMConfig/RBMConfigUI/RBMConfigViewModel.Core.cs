@@ -415,7 +415,7 @@ namespace RBMConfig
 
             // RecruitSupply draw: Enabled is the default, so its option carries the "(Default)" tag.
             List<string> recruitDrawsFromSettlementStockOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            RecruitDrawsFromSettlementStockText = new TextViewModel(new TextObject("{=RBM_CON_110}Recruits Kitted From Market"));
+            RecruitDrawsFromSettlementStockText = new TextViewModel(new TextObject("{=RBM_CON_116}Recruits Kitted From Market"));
             RecruitDrawsFromSettlementStock = new SelectorVM<SelectorItemVM>(recruitDrawsFromSettlementStockOptions, 0, null);
 
             // Charge mount in gold: Enabled is the default, so its option carries the "(Default)" tag.

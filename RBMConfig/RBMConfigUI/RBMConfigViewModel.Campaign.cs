@@ -783,14 +783,14 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel RecruitDrawsFromSettlementStockHint { get; } = Hint("{=RBM_CON_109}A man recruited in a town is outfitted from that town's market; one recruited in a village is outfitted from the town it trades with. Gear of the right kind and tier leaves that market. It draws what the market has and never blocks a recruitment. Default on.");
+        public BasicTooltipViewModel RecruitDrawsFromSettlementStockHint { get; } = Hint("{=RBM_CON_117}A man recruited in a town is outfitted from that town's market; one recruited in a village is outfitted from the town it trades with. Gear of the right kind and tier leaves that market. It draws what the market has and never blocks a recruitment. Default on.");
 
         [DataSourceProperty]
         public string RecruitDrawsFromSettlementStockt
         {
             get
             {
-                return new TextObject("{=RBM_CON_110}Recruits Kitted From Market").ToString();
+                return new TextObject("{=RBM_CON_116}Recruits Kitted From Market").ToString();
             }
         }
 
