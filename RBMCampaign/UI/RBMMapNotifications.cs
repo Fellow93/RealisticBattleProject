@@ -13,6 +13,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.ImageIdentifiers;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace RBMCampaign
 {
@@ -101,29 +102,31 @@ namespace RBMCampaign
 
         private static readonly string[] Flavors =
         {
-            "drinks away {AMT} denars",
-            "spends {AMT} on ale and dice",
-            "empties {AMT} into the tavern",
-            "toasts away {AMT} denars",
-            "carouses — {AMT} gone",
-            "stands a round: {AMT} denars",
-            "pours {AMT} down their throats",
-            "gambles and drinks: {AMT}",
-            "keeps the taverns rich by {AMT}",
-            "roars through {AMT} in drink",
-            "wets their whistle for {AMT}",
-            "leaves {AMT} on the counter",
-            "drinks the town's health — {AMT} denars",
-            "blows {AMT} on wine and song",
-            "sinks {AMT} into their cups",
-            "makes merry for {AMT} denars"
+            "{=RBM_SPOILS_DRUNK_01}drinks away {AMT} denars",
+            "{=RBM_SPOILS_DRUNK_02}spends {AMT} on ale and dice",
+            "{=RBM_SPOILS_DRUNK_03}empties {AMT} into the tavern",
+            "{=RBM_SPOILS_DRUNK_04}toasts away {AMT} denars",
+            "{=RBM_SPOILS_DRUNK_05}carouses — {AMT} gone",
+            "{=RBM_SPOILS_DRUNK_06}stands a round: {AMT} denars",
+            "{=RBM_SPOILS_DRUNK_07}pours {AMT} down their throats",
+            "{=RBM_SPOILS_DRUNK_08}gambles and drinks: {AMT}",
+            "{=RBM_SPOILS_DRUNK_09}keeps the taverns rich by {AMT}",
+            "{=RBM_SPOILS_DRUNK_10}roars through {AMT} in drink",
+            "{=RBM_SPOILS_DRUNK_11}wets their whistle for {AMT}",
+            "{=RBM_SPOILS_DRUNK_12}leaves {AMT} on the counter",
+            "{=RBM_SPOILS_DRUNK_13}drinks the town's health — {AMT} denars",
+            "{=RBM_SPOILS_DRUNK_14}blows {AMT} on wine and song",
+            "{=RBM_SPOILS_DRUNK_15}sinks {AMT} into their cups",
+            "{=RBM_SPOILS_DRUNK_16}makes merry for {AMT} denars"
         };
 
         public SpoilsDrunkNotificationItemVM(Action<SettlementNotificationItemBaseVM> onRemove, MobileParty party, int amount, int createdTick)
             : base(onRemove, createdTick)
         {
             IsPlayerParty = (party == MobileParty.MainParty);
-            base.Text = Flavors[MBRandom.RandomInt(Flavors.Length)].Replace("{AMT}", amount.ToString());
+            base.Text = new TextObject(Flavors[MBRandom.RandomInt(Flavors.Length)])
+                .SetTextVariable("AMT", amount)
+                .ToString();
             base.CharacterName = (party != null) ? party.Name.ToString() : "";
             base.CharacterVisual = new CharacterImageIdentifierVM(RBMMapNotificationHelper.PartyFaceCode(party));
             base.RelationType = RBMMapNotificationHelper.PartyRelation(party);
@@ -142,20 +145,21 @@ namespace RBMCampaign
 
         private static readonly string[] Flavors =
         {
-            "buys {LIST} — {AMT} denars",
-            "lays in {LIST} for {AMT} denars",
-            "provisions {LIST} — {AMT} denars",
-            "stocks up: {LIST} ({AMT} denars)",
-            "fills the packs — {LIST} for {AMT} denars"
+            "{=RBM_TROOP_FOOD_01}buys {LIST} — {AMT} denars",
+            "{=RBM_TROOP_FOOD_02}lays in {LIST} for {AMT} denars",
+            "{=RBM_TROOP_FOOD_03}provisions {LIST} — {AMT} denars",
+            "{=RBM_TROOP_FOOD_04}stocks up: {LIST} ({AMT} denars)",
+            "{=RBM_TROOP_FOOD_05}fills the packs — {LIST} for {AMT} denars"
         };
 
         public TroopFoodNotificationItemVM(Action<SettlementNotificationItemBaseVM> onRemove, MobileParty party, List<(ItemObject Item, int Count)> items, int amount, int createdTick)
             : base(onRemove, createdTick)
         {
             IsPlayerParty = (party == MobileParty.MainParty);
-            base.Text = Flavors[MBRandom.RandomInt(Flavors.Length)]
-                .Replace("{LIST}", RBMMapNotificationHelper.FoodList(items))
-                .Replace("{AMT}", amount.ToString());
+            base.Text = new TextObject(Flavors[MBRandom.RandomInt(Flavors.Length)])
+                .SetTextVariable("LIST", RBMMapNotificationHelper.FoodList(items))
+                .SetTextVariable("AMT", amount)
+                .ToString();
             base.CharacterName = (party != null) ? party.Name.ToString() : "";
             base.CharacterVisual = new CharacterImageIdentifierVM(RBMMapNotificationHelper.PartyFaceCode(party));
             base.RelationType = 1;
@@ -173,20 +177,21 @@ namespace RBMCampaign
 
         private static readonly string[] Flavors =
         {
-            "indulge in {LIST} — {AMT} denars",
-            "treat themselves to {LIST} for {AMT} denars",
-            "splash out on {LIST} — {AMT} denars",
-            "fancy {LIST} ({AMT} denars)",
-            "buy themselves {LIST} for {AMT} denars"
+            "{=RBM_TROOP_LUX_01}indulge in {LIST} — {AMT} denars",
+            "{=RBM_TROOP_LUX_02}treat themselves to {LIST} for {AMT} denars",
+            "{=RBM_TROOP_LUX_03}splash out on {LIST} — {AMT} denars",
+            "{=RBM_TROOP_LUX_04}fancy {LIST} ({AMT} denars)",
+            "{=RBM_TROOP_LUX_05}buy themselves {LIST} for {AMT} denars"
         };
 
         public TroopLuxuryNotificationItemVM(Action<SettlementNotificationItemBaseVM> onRemove, MobileParty party, List<(ItemObject Item, int Count)> items, int amount, int createdTick)
             : base(onRemove, createdTick)
         {
             IsPlayerParty = (party == MobileParty.MainParty);
-            base.Text = Flavors[MBRandom.RandomInt(Flavors.Length)]
-                .Replace("{LIST}", RBMMapNotificationHelper.ItemNameList(items))
-                .Replace("{AMT}", amount.ToString());
+            base.Text = new TextObject(Flavors[MBRandom.RandomInt(Flavors.Length)])
+                .SetTextVariable("LIST", RBMMapNotificationHelper.ItemNameList(items))
+                .SetTextVariable("AMT", amount)
+                .ToString();
             base.CharacterName = (party != null) ? party.Name.ToString() : "";
             base.CharacterVisual = new CharacterImageIdentifierVM(RBMMapNotificationHelper.PartyFaceCode(party));
             base.RelationType = 1;
