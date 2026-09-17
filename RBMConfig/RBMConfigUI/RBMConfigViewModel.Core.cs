@@ -106,7 +106,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("RBM Campaign").ToString();
+                return new TextObject("{=RBM_CFG_CAT_CAMPAIGN}RBM Campaign").ToString();
             }
         }
 
