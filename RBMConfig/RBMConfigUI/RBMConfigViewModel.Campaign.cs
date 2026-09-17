@@ -697,38 +697,38 @@ namespace RBMConfig
         [DataSourceProperty]
         public string KingdomCaravansEnabledt
         {
-            get { return new TextObject("Kingdom Supply Caravans").ToString(); }
+            get { return new TextObject("{=RBM_CFG_KINGDOM_CARAVANS}Kingdom Supply Caravans").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel KingdomCaravansEnabledHint { get; } = Hint("Spawns caravans that carry a surplus good from one of a kingdom's towns to another town of the same kingdom that is short of it -- real goods and money move, and the caravan can be raided. Off leaves the map on vanilla caravans alone. Default on.");
+        public BasicTooltipViewModel KingdomCaravansEnabledHint { get; } = Hint("{=RBM_CFG_KINGDOM_CARAVANS_HINT}Spawns caravans that carry a surplus good from one of a kingdom's towns to another town of the same kingdom that is short of it -- real goods and money move, and the caravan can be raided. Off leaves the map on vanilla caravans alone. Default on.");
 
         [DataSourceProperty]
         public string CaravanInvestmentEnabledt
         {
-            get { return new TextObject("Caravan Investment").ToString(); }
+            get { return new TextObject("{=RBM_CFG_CARAVAN_INVEST}Caravan Investment").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel CaravanInvestmentEnabledHint { get; } = Hint("On a wealthy→struggling route, a caravan also injects capital into the struggling town so it can afford the goods, booked as a debt the town repays out of its hoard tax once it recovers. Needs Kingdom Supply Caravans on. Default on.");
+        public BasicTooltipViewModel CaravanInvestmentEnabledHint { get; } = Hint("{=RBM_CFG_CARAVAN_INVEST_HINT}On a wealthy→struggling route, a caravan also injects capital into the struggling town so it can afford the goods, booked as a debt the town repays out of its hoard tax once it recovers. Needs Kingdom Supply Caravans on. Default on.");
 
         [DataSourceProperty]
         public string CaravanLoggingEnabledt
         {
-            get { return new TextObject("Caravan Logging").ToString(); }
+            get { return new TextObject("{=RBM_CFG_CARAVAN_LOG}Caravan Logging").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel CaravanLoggingEnabledHint { get; } = Hint("Writes the supply-caravan system to logs/caravans next to the config: each caravan dispatched, its arrival and sale, capital injected and repaid, and any lost on the road. Needs Kingdom Supply Caravans on. Default on.");
+        public BasicTooltipViewModel CaravanLoggingEnabledHint { get; } = Hint("{=RBM_CFG_CARAVAN_LOG_HINT}Writes the supply-caravan system to logs/caravans next to the config: each caravan dispatched, its arrival and sale, capital injected and repaid, and any lost on the road. Needs Kingdom Supply Caravans on. Default on.");
 
         [DataSourceProperty]
         public string DeserterRaidersEnabledt
         {
-            get { return new TextObject("Deserter Raiders").ToString(); }
+            get { return new TextObject("{=RBM_CFG_DESERTER_RAIDERS}Deserter Raiders").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel DeserterRaidersEnabledHint { get; } = Hint("Gives deserter parties initiative: they actively hunt nearby villager convoys and caravans and raid weakly-held villages when they out-match the target, instead of aimlessly patrolling their spawn point. Off leaves deserters on vanilla behavior. Default on.");
+        public BasicTooltipViewModel DeserterRaidersEnabledHint { get; } = Hint("{=RBM_CFG_DESERTER_RAIDERS_HINT}Gives deserter parties initiative: they actively hunt nearby villager convoys and caravans and raid weakly-held villages when they out-match the target, instead of aimlessly patrolling their spawn point. Off leaves deserters on vanilla behavior. Default on.");
 
         // SupplyTown gate: radius slider (whole map units) + the toggle's row label.
         private float _troopUpgradeSupplyRadius;
@@ -883,12 +883,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Building Cost Multiplier").ToString();
+                return new TextObject("{=RBM_CFG_BUILD_COST}Building Cost Multiplier").ToString();
             }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel BuildingCostMultiplierHint { get; } = Hint("What a building project costs, as a multiple of vanilla's price. A point of construction is a coin in RBM, so vanilla's prices amount to a week's tax and have to be multiplied up for a project to be the years-long undertaking it should be. 1 leaves vanilla's prices alone. Default 250.");
+        public BasicTooltipViewModel BuildingCostMultiplierHint { get; } = Hint("{=RBM_CFG_BUILD_COST_HINT}What a building project costs, as a multiple of vanilla's price. A point of construction is a coin in RBM, so vanilla's prices amount to a week's tax and have to be multiplied up for a project to be the years-long undertaking it should be. 1 leaves vanilla's prices alone. Default 250.");
 
         private float _constructionBudgetShare;
 
@@ -925,12 +925,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Construction Budget Share").ToString();
+                return new TextObject("{=RBM_CFG_BUILD_BUDGET}Construction Budget Share").ToString();
             }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel ConstructionBudgetShareHint { get; } = Hint("The share of a fief's treasury tipped into its construction reserve every day. Besides the owner's own purse this is the only thing that funds building, so it sets how fast a fief builds on its own account. Zero stops it. Default 0.01.");
+        public BasicTooltipViewModel ConstructionBudgetShareHint { get; } = Hint("{=RBM_CFG_BUILD_BUDGET_HINT}The share of a fief's treasury tipped into its construction reserve every day. Besides the owner's own purse this is the only thing that funds building, so it sets how fast a fief builds on its own account. Zero stops it. Default 0.01.");
 
         private float _troopSpoilsCapDays;
 
@@ -1210,7 +1210,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Module & Simulation").ToString();
+                return new TextObject("{=RBM_CFG_CAT_MODULE}Module & Simulation").ToString();
             }
         }
 
@@ -1219,7 +1219,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Logging").ToString();
+                return new TextObject("{=RBM_CFG_CAT_LOGGING}Logging").ToString();
             }
         }
 
@@ -1228,7 +1228,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Troop Upgrades").ToString();
+                return new TextObject("{=RBM_CFG_CAT_UPGRADES}Troop Upgrades").ToString();
             }
         }
 
@@ -1237,7 +1237,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Battle & Raid Spoils").ToString();
+                return new TextObject("{=RBM_CFG_CAT_SPOILS}Battle & Raid Spoils").ToString();
             }
         }
 
@@ -1246,7 +1246,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Wages & Maintenance").ToString();
+                return new TextObject("{=RBM_CFG_CAT_WAGES}Wages & Maintenance").ToString();
             }
         }
 
@@ -1255,7 +1255,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Settlement Upkeep").ToString();
+                return new TextObject("{=RBM_CFG_CAT_UPKEEP}Settlement Upkeep").ToString();
             }
         }
 

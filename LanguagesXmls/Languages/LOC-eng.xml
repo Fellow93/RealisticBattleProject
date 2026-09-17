@@ -717,5 +717,43 @@
 	<string id="rbm_mil_base_cap" text="Base (soft cap {CAP})" />
 	<string id="rbm_villager_convoy_carry" text="Trade convoy" />
 
+
+	<!-- Other strings the code uses that this file never listed -->
+	<string id="RBM_CFG_BUILD_BUDGET" text="Construction Budget Share" />
+	<string id="RBM_CFG_BUILD_BUDGET_HINT" text="The share of a fief's treasury tipped into its construction reserve every day. Besides the owner's own purse this is the only thing that funds building, so it sets how fast a fief builds on its own account. Zero stops it. Default 0.01." />
+	<string id="RBM_CFG_BUILD_COST" text="Building Cost Multiplier" />
+	<string id="RBM_CFG_BUILD_COST_HINT" text="What a building project costs, as a multiple of vanilla's price. A point of construction is a coin in RBM, so vanilla's prices amount to a week's tax and have to be multiplied up for a project to be the years-long undertaking it should be. 1 leaves vanilla's prices alone. Default 250." />
+	<string id="RBM_CFG_CARAVAN_INVEST" text="Caravan Investment" />
+	<string id="RBM_CFG_CARAVAN_INVEST_HINT" text="On a wealthy→struggling route, a caravan also injects capital into the struggling town so it can afford the goods, booked as a debt the town repays out of its hoard tax once it recovers. Needs Kingdom Supply Caravans on. Default on." />
+	<string id="RBM_CFG_CARAVAN_LOG" text="Caravan Logging" />
+	<string id="RBM_CFG_CARAVAN_LOG_HINT" text="Writes the supply-caravan system to logs/caravans next to the config: each caravan dispatched, its arrival and sale, capital injected and repaid, and any lost on the road. Needs Kingdom Supply Caravans on. Default on." />
+	<string id="RBM_CFG_CAT_CAMPAIGN" text="RBM Campaign" />
+	<string id="RBM_CFG_CAT_LOGGING" text="Logging" />
+	<string id="RBM_CFG_CAT_MODULE" text="Module &amp; Simulation" />
+	<string id="RBM_CFG_CAT_SPOILS" text="Battle &amp; Raid Spoils" />
+	<string id="RBM_CFG_CAT_UPGRADES" text="Troop Upgrades" />
+	<string id="RBM_CFG_CAT_UPKEEP" text="Settlement Upkeep" />
+	<string id="RBM_CFG_CAT_WAGES" text="Wages &amp; Maintenance" />
+	<string id="RBM_CFG_DESERTER_RAIDERS" text="Deserter Raiders" />
+	<string id="RBM_CFG_DESERTER_RAIDERS_HINT" text="Gives deserter parties initiative: they actively hunt nearby villager convoys and caravans and raid weakly-held villages when they out-match the target, instead of aimlessly patrolling their spawn point. Off leaves deserters on vanilla behavior. Default on." />
+	<string id="RBM_CFG_FL_ATTACK" text="Frontline Attack Weight" />
+	<string id="RBM_CFG_FL_ATTACK_HINT" text="Multiplier on the 'press forward at my target' score. Above 1 makes lines more aggressive and thinner; below 1 makes them hang back. Default 1.00." />
+	<string id="RBM_CFG_FL_BACKSTEP" text="Frontline Back Step Weight" />
+	<string id="RBM_CFG_FL_BACKSTEP_HINT" text="Multiplier on the 'give ground and let a fresh man through' score. Above 1 gives more rotation out of the front rank. Default 1.00." />
+	<string id="RBM_CFG_FL_CLOSE" text="Frontline Close Ranks Weight" />
+	<string id="RBM_CFG_FL_CLOSE_HINT" text="Multiplier on the 'close the gap to my nearest neighbour' score. Above 1 makes lines huddle tighter and shield walls hold better; below 1 lets them spread. Default 1.00." />
+	<string id="RBM_CFG_FL_HOLD" text="Frontline Decision Hold" />
+	<string id="RBM_CFG_FL_HOLD_HINT" text="Once a man picks a move he sticks with it for a random 0 to this many seconds before reconsidering. Higher is steadier and cheaper; lower makes the line twitchier. Default 2.00." />
+	<string id="RBM_CFG_FL_MIN_SIZE" text="Frontline Min Formation Size" />
+	<string id="RBM_CFG_FL_MIN_SIZE_HINT" text="Formations smaller than this (undetached men) skip the frontline system entirely and charge normally -- there is no rank to hold in a handful of men. Default 25." />
+	<string id="RBM_CFG_FL_SIDESTEP" text="Frontline Sidestep Weight" />
+	<string id="RBM_CFG_FL_SIDESTEP_HINT" text="Multiplier on both the left and right 'slide sideways past the man in front' scores. Above 1 makes lines spread wide around a stalled front rank. Default 1.00." />
+	<string id="RBM_CFG_FL_SYSTEM" text="Frontline System" />
+	<string id="RBM_CFG_FL_SYSTEM_HINT" text="Per-soldier jostling inside a charging infantry or archer line: each man decides every couple of seconds whether to press in, step back, close on a neighbour, slide around a flank or hold his rank. Off leaves melee lines on RBM's plain charge. Cavalry/archer free-charge rules and unit facing are unaffected either way. Default on." />
+	<string id="RBM_CFG_KINGDOM_CARAVANS" text="Kingdom Supply Caravans" />
+	<string id="RBM_CFG_KINGDOM_CARAVANS_HINT" text="Spawns caravans that carry a surplus good from one of a kingdom's towns to another town of the same kingdom that is short of it -- real goods and money move, and the caravan can be raided. Off leaves the map on vanilla caravans alone. Default on." />
+	<string id="RBM_CFG_POWER_LOG" text="Troop Power Logging" />
+	<string id="RBM_CFG_SIM_HIT_DETAIL" text="Auto Resolve Per-Hit Detail" />
+
   </strings>
 </base>

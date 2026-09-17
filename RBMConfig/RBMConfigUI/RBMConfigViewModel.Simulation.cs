@@ -99,7 +99,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Auto Resolve Per-Hit Detail").ToString();
+                return new TextObject("{=RBM_CFG_SIM_HIT_DETAIL}Auto Resolve Per-Hit Detail").ToString();
             }
         }
 
@@ -108,7 +108,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Troop Power Logging").ToString();
+                return new TextObject("{=RBM_CFG_POWER_LOG}Troop Power Logging").ToString();
             }
         }
 
