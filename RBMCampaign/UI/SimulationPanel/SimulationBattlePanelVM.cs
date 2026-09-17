@@ -5,6 +5,7 @@ using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace RBMCampaign
 {
@@ -1117,6 +1118,14 @@ namespace RBMCampaign
         }
 
         // ── Formatted text properties ───────────────────────────────────
+
+        // Panel headings. They used to be literal Text="..." in SimulationBattlePanel.xml,
+        // which no language file can reach.
+        [DataSourceProperty]
+        public string PanelTitle => new TextObject("{=RBM_SIM_TITLE}RBM Campaign — Detailed Auto-Resolve").ToString();
+
+        [DataSourceProperty]
+        public string ChronicleTitle => new TextObject("{=RBM_SIM_CHRONICLE}Battle Chronicle").ToString();
 
         [DataSourceProperty]
         public string AttackerInfantryText => "Inf: " + _attackerInfantry;
