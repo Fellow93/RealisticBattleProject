@@ -530,5 +530,192 @@
 	<string id="RBM_E_002" text="Decorated Pottery"	/>	
 	<string id="RBM_E_003" text="Ale"	/>		
 	<string id="RBM_E_004" text="Herd of Sheep"	/>	
+
+	<!-- Ledger: table column headings (used to be literal text in RBMLedger.xml) -->
+	<string id="RBM_LEDGER_H_CARAV" text="Carav" />
+	<string id="RBM_LEDGER_H_CITIZEN" text="Citizen" />
+	<string id="RBM_LEDGER_H_CIT_IN" text="Cit In" />
+	<string id="RBM_LEDGER_H_CIT_OUT" text="Cit Out" />
+	<string id="RBM_LEDGER_H_CONSUMED_DAY" text="Consumed/day" />
+	<string id="RBM_LEDGER_H_DAY" text="Day" />
+	<string id="RBM_LEDGER_H_DAYS" text="Days" />
+	<string id="RBM_LEDGER_H_DELIV" text="Deliv" />
+	<string id="RBM_LEDGER_H_DEMAND" text="Demand" />
+	<string id="RBM_LEDGER_H_DEMAND_DAY" text="Demand/day" />
+	<string id="RBM_LEDGER_H_EATEN" text="Eaten" />
+	<string id="RBM_LEDGER_H_EQUIPMENT" text="Equipment &amp; materials" />
+	<string id="RBM_LEDGER_H_EVENTS" text="Events" />
+	<string id="RBM_LEDGER_H_FILLED" text="Filled" />
+	<string id="RBM_LEDGER_H_FOOD" text="Food" />
+	<string id="RBM_LEDGER_H_GARR" text="Garr" />
+	<string id="RBM_LEDGER_H_GARRISON" text="Garrison" />
+	<string id="RBM_LEDGER_H_GOODS" text="Goods (demand vs stock)" />
+	<string id="RBM_LEDGER_H_HEARTH" text="Hearth" />
+	<string id="RBM_LEDGER_H_MIL" text="Mil" />
+	<string id="RBM_LEDGER_H_MILITIA" text="Militia" />
+	<string id="RBM_LEDGER_H_PARTY" text="Party" />
+	<string id="RBM_LEDGER_H_PROD" text="Prod" />
+	<string id="RBM_LEDGER_H_PRODUCED_DAY" text="Produced/day" />
+	<string id="RBM_LEDGER_H_PRODUCTION" text="Production" />
+	<string id="RBM_LEDGER_H_PROSP" text="Prosp" />
+	<string id="RBM_LEDGER_H_PROSPERITY" text="Prosperity" />
+	<string id="RBM_LEDGER_H_STOCK" text="Stock" />
+	<string id="RBM_LEDGER_H_TOWN" text="Town" />
+	<string id="RBM_LEDGER_H_TREAS" text="Treas" />
+	<string id="RBM_LEDGER_H_TREASURY" text="Treasury" />
+	<string id="RBM_LEDGER_H_TRS_IN" text="Trs In" />
+	<string id="RBM_LEDGER_H_TRS_OUT" text="Trs Out" />
+	<string id="RBM_LEDGER_H_VALUE" text="Value" />
+	<string id="RBM_LEDGER_H_VILLAGE" text="Village" />
+	<string id="RBM_LEDGER_H_WANTED_DAY" text="Wanted/day" />
+	<string id="RBM_LEDGER_H_WEALTH" text="Wealth" />
+	<string id="RBM_LEDGER_H_WORKSHOPS" text="Workshops" />
+
+	<!-- Ledger: strings the code has always used but this file never listed -->
+	<string id="RBM_LEDGER_CLOSE" text="Close" />
+	<string id="RBM_LEDGER_CONSUMED" text="Consumed" />
+	<string id="RBM_LEDGER_DAY" text="day" />
+	<string id="RBM_LEDGER_DELIVERED_HDR" text="Delivered by villagers" />
+	<string id="RBM_LEDGER_DEMAND" text="demand" />
+	<string id="RBM_LEDGER_EATEN_HDR" text="Food eaten / day" />
+	<string id="RBM_LEDGER_EV_ARRIVE" text="Dispatch arrived" />
+	<string id="RBM_LEDGER_EV_CAPTURED" text="Changed hands" />
+	<string id="RBM_LEDGER_EV_DISPATCH" text="Dispatch sent" />
+	<string id="RBM_LEDGER_EV_LOOTED" text="Looted" />
+	<string id="RBM_LEDGER_EV_RAID" text="Raided" />
+	<string id="RBM_LEDGER_EV_SIEGE" text="Besieged" />
+	<string id="RBM_LEDGER_EXPENSE" text="Expense" />
+	<string id="RBM_LEDGER_FOOD_HINT_HDR" text="Food in market" />
+	<string id="RBM_LEDGER_HEARTH" text="Hearth" />
+	<string id="RBM_LEDGER_HIST_OLDNEW" text="oldest→newest" />
+	<string id="RBM_LEDGER_INCOME" text="Income" />
+	<string id="RBM_LEDGER_INDEPENDENT" text="Independent" />
+	<string id="RBM_LEDGER_MISSING" text="Missing" />
+	<string id="RBM_LEDGER_M_HEARTH" text="Hearth" />
+	<string id="RBM_LEDGER_M_MILITIA" text="Militia" />
+	<string id="RBM_LEDGER_M_PROD" text="Prod" />
+	<string id="RBM_LEDGER_M_WEALTH" text="Wealth" />
+	<string id="RBM_LEDGER_NONE" text="(none)" />
+	<string id="RBM_LEDGER_OG_AMMO" text="Ammo" />
+	<string id="RBM_LEDGER_OG_ARMOR" text="Armor" />
+	<string id="RBM_LEDGER_OG_HARNESS" text="Horse harness" />
+	<string id="RBM_LEDGER_OG_HORSES" text="Horses" />
+	<string id="RBM_LEDGER_OG_LIVESTOCK" text="Livestock" />
+	<string id="RBM_LEDGER_OG_MATERIALS" text="Materials" />
+	<string id="RBM_LEDGER_OG_MELEE" text="Melee weapons" />
+	<string id="RBM_LEDGER_OG_OTHER" text="Other" />
+	<string id="RBM_LEDGER_OG_PACK" text="Pack animals" />
+	<string id="RBM_LEDGER_OG_RANGED" text="Ranged weapons" />
+	<string id="RBM_LEDGER_OG_SHIELDS" text="Shields" />
+	<string id="RBM_LEDGER_OG_THROWN" text="Thrown" />
+	<string id="RBM_LEDGER_PLACEHOLDER" text="This tab is not implemented yet. Statistics will appear here." />
+	<string id="RBM_LEDGER_PROD_HINT_HALTED" text="(production halted)" />
+	<string id="RBM_LEDGER_PROD_HINT_HDR" text="Daily production" />
+	<string id="RBM_LEDGER_PROD_HINT_TOTAL" text="Total" />
+	<string id="RBM_LEDGER_SUPPLY" text="stock" />
+	<string id="RBM_LEDGER_TAB_OVERVIEW" text="Overview" />
+	<string id="RBM_LEDGER_TAB_TOWNS" text="Towns" />
+	<string id="RBM_LEDGER_TAB_VILLAGES" text="Villages" />
+	<string id="RBM_LEDGER_TIER_BASIC" text="Basic" />
+	<string id="RBM_LEDGER_TIER_INACTIVE" text="(tier not demanded yet)" />
+	<string id="RBM_LEDGER_TIER_LUXURY" text="Luxury" />
+	<string id="RBM_LEDGER_TIER_MEDIUM" text="Medium" />
+	<string id="RBM_LEDGER_TITLE" text="RBM Ledger" />
+	<string id="RBM_LEDGER_TODAY" text="Today" />
+	<string id="RBM_LEDGER_TOTAL" text="Total" />
+	<string id="RBM_LEDGER_T_CARAVAN" text="Caravan buys" />
+	<string id="RBM_LEDGER_T_CITIZEN" text="Citizen" />
+	<string id="RBM_LEDGER_T_EATEN" text="Eaten" />
+	<string id="RBM_LEDGER_T_FOOD" text="Food" />
+	<string id="RBM_LEDGER_T_GARRISON" text="Garrison" />
+	<string id="RBM_LEDGER_T_MILITIA" text="Militia" />
+	<string id="RBM_LEDGER_T_PARTY" text="Party buys" />
+	<string id="RBM_LEDGER_T_PRISONERS" text="Prisoners" />
+	<string id="RBM_LEDGER_T_PROSPERITY" text="Prosperity" />
+	<string id="RBM_LEDGER_T_TREASURY" text="Treasury" />
+	<string id="RBM_LEDGER_T_VILLAGER" text="Delivered" />
+	<string id="RBM_LEDGER_UNBOUND" text="Unbound" />
+	<string id="RBM_LEDGER_UNITS_GOLD" text="{UNITS} ({GOLD}g)" />
+	<string id="RBM_LEDGER_WANTED" text="Wanted" />
+	<string id="RBM_LEDGER_WS_CONSUMED_HDR" text="Consumed / day" />
+	<string id="RBM_LEDGER_WS_PRODUCED_HDR" text="Produced / day" />
+
+	<!-- Settlement spending bubbles on the campaign map -->
+	<string id="RBM_SPOILS_DRUNK_01" text="drinks away {AMT} denars" />
+	<string id="RBM_SPOILS_DRUNK_02" text="spends {AMT} on ale and dice" />
+	<string id="RBM_SPOILS_DRUNK_03" text="empties {AMT} into the tavern" />
+	<string id="RBM_SPOILS_DRUNK_04" text="toasts away {AMT} denars" />
+	<string id="RBM_SPOILS_DRUNK_05" text="carouses — {AMT} gone" />
+	<string id="RBM_SPOILS_DRUNK_06" text="stands a round: {AMT} denars" />
+	<string id="RBM_SPOILS_DRUNK_07" text="pours {AMT} down their throats" />
+	<string id="RBM_SPOILS_DRUNK_08" text="gambles and drinks: {AMT}" />
+	<string id="RBM_SPOILS_DRUNK_09" text="keeps the taverns rich by {AMT}" />
+	<string id="RBM_SPOILS_DRUNK_10" text="roars through {AMT} in drink" />
+	<string id="RBM_SPOILS_DRUNK_11" text="wets their whistle for {AMT}" />
+	<string id="RBM_SPOILS_DRUNK_12" text="leaves {AMT} on the counter" />
+	<string id="RBM_SPOILS_DRUNK_13" text="drinks the town's health — {AMT} denars" />
+	<string id="RBM_SPOILS_DRUNK_14" text="blows {AMT} on wine and song" />
+	<string id="RBM_SPOILS_DRUNK_15" text="sinks {AMT} into their cups" />
+	<string id="RBM_SPOILS_DRUNK_16" text="makes merry for {AMT} denars" />
+	<string id="RBM_TROOP_FOOD_01" text="buys {LIST} — {AMT} denars" />
+	<string id="RBM_TROOP_FOOD_02" text="lays in {LIST} for {AMT} denars" />
+	<string id="RBM_TROOP_FOOD_03" text="provisions {LIST} — {AMT} denars" />
+	<string id="RBM_TROOP_FOOD_04" text="stocks up: {LIST} ({AMT} denars)" />
+	<string id="RBM_TROOP_FOOD_05" text="fills the packs — {LIST} for {AMT} denars" />
+	<string id="RBM_TROOP_LUX_01" text="indulge in {LIST} — {AMT} denars" />
+	<string id="RBM_TROOP_LUX_02" text="treat themselves to {LIST} for {AMT} denars" />
+	<string id="RBM_TROOP_LUX_03" text="splash out on {LIST} — {AMT} denars" />
+	<string id="RBM_TROOP_LUX_04" text="fancy {LIST} ({AMT} denars)" />
+	<string id="RBM_TROOP_LUX_05" text="buy themselves {LIST} for {AMT} denars" />
+
+	<!-- Auto-resolve panel and custom battle -->
+	<string id="RBM_CB_PRESET_HINT" text="Ctrl+S: Save Preset   |   Ctrl+L: Load Preset" />
+	<string id="RBM_SIM_CHRONICLE" text="Battle Chronicle" />
+	<string id="RBM_SIM_TITLE" text="RBM Campaign — Detailed Auto-Resolve" />
+
+	<!-- Other strings the code uses that this file never listed -->
+	<string id="RBMArtisanStanding" text="Artisan Standing" />
+	<string id="RBM_ARTISAN_SCALE" text="Town crafts" />
+	<string id="RBM_CASTLE_SELF_SUFFICIENCY" text="Castle self-sufficiency" />
+	<string id="RBM_CON_022" text="Slow Motion in Combat" />
+	<string id="RBM_CON_023" text="Sneak Attack Insta-Kill" />
+	<string id="RBM_CON_030" text="Stamina System (requires Posture)" />
+	<string id="RBM_CON_111" text="Enlistment" />
+	<string id="RBM_CON_112" text="Village Production" />
+	<string id="RBM_CON_113" text="Multiplier on every village's daily output -- its production, warehouse size and production tooltip together. Below 1 throttles the countryside, above 1 floods it. Default 0.50." />
+	<string id="RBM_CON_114" text="Workshop Production" />
+	<string id="RBM_CON_115" text="Multiplier on every workshop's conversion speed -- how fast it turns inputs into outputs -- on top of RBM's prosperity-driven scale. Below 1 slows shops, above 1 speeds them. Default 1.00." />
+	<string id="RBM_FOOD_FARMLANDS" text="Farmlands" />
+	<string id="RBM_FOOD_MARKET" text="Market food" />
+	<string id="RBM_FOOD_PRISONERS" text="Prisoners" />
+	<string id="RBM_FOOD_SHORTAGE" text="Unmet rations" />
+	<string id="RBM_PROSPERITY_HEARTH" text="Countryside support" />
+	<string id="RBM_PROSPERITY_HUNGER" text="Hunger" />
+	<string id="RBM_STARVE_001" text="" />
+	<string id="RBM_VILLAGE_WAREHOUSE" text="Warehouse" />
+	<string id="RBM_WORKSHOP_SCALE" text="Workshop share" />
+	<string id="RBM_construction_reserve" text="Construction reserve" />
+	<string id="RBM_construction_spend" text="Construction spend (daily)" />
+	<string id="RBM_garr_size" text="Town wealth (RBM)" />
+	<string id="RBM_militia_hardcap" text="Full muster" />
+	<string id="RBM_militia_prosperous" text="Prosperous citizens" />
+	<string id="RBM_militia_understrength" text="Mustering the levy" />
+	<string id="RBM_spoils_tt" text="Spoils" />
+	<string id="RBM_wealth_castle" text="Castle wealth" />
+	<string id="RBM_wsPayroll" text="Production Wages" />
+	<string id="RBM_wsPayrollHint" text="Paid to the townspeople who work the shop as {RATE}% of every sale, while its capital is above {THRESHOLD}. Last day: {CYCLES} batches, {PAID} denars. This is on top of the daily wage above." />
+	<string id="RBM_wsPayrollHintIdle" text="Paid to the townspeople who work the shop as {RATE}% of every sale, while its capital is above {THRESHOLD}, on top of the daily wage above. No batch has run yet this session." />
+	<string id="rbm_garr_full" text="Garrison near capacity" />
+	<string id="rbm_garr_rate" text="Wealth recruitment" />
+	<string id="rbm_garr_rate_capped" text="Wealth recruitment (max {MAX}/day)" />
+	<string id="rbm_garr_res" text="Held — treasury below reserve ({RES})" />
+	<string id="rbm_garr_shed" text="Over-strength — reducing (upkeep reserve {KEEP})" />
+	<string id="rbm_garr_subsidy" text="Held — upkeep subsidised by {WHO}" />
+	<string id="rbm_garr_subsidy_line" text="Garrison subsidies" />
+	<string id="rbm_garr_subsidy_town" text="the town reserve" />
+	<string id="rbm_garrison_drill" text="Garrison drill" />
+	<string id="rbm_mil_base_cap" text="Base (soft cap {CAP})" />
+	<string id="rbm_villager_convoy_carry" text="Trade convoy" />
+
   </strings>
 </base>
