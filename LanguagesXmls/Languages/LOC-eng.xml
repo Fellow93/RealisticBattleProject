@@ -691,7 +691,7 @@
 	<string id="RBM_FOOD_SHORTAGE" text="Unmet rations" />
 	<string id="RBM_PROSPERITY_HEARTH" text="Countryside support" />
 	<string id="RBM_PROSPERITY_HUNGER" text="Hunger" />
-	<string id="RBM_STARVE_001" text="" />
+	<string id="RBM_STARVE_001" text="{DEAD} of your wounded have died of hunger." />
 	<string id="RBM_VILLAGE_WAREHOUSE" text="Warehouse" />
 	<string id="RBM_WORKSHOP_SCALE" text="Workshop share" />
 	<string id="RBM_construction_reserve" text="Construction reserve" />
