@@ -31,10 +31,12 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
             _mainInfantry.AI.Side = FormationAI.BehaviorSide.Middle;
 
             List<Formation> flankingSlots = FormationsIncludingEmpty
-            .Where((Formation f) => f != _mainInfantry && f.QuerySystem.IsInfantryFormation)
+            .Where((Formation f) => f != _mainInfantry && f.IsAIControlled && f.QuerySystem.IsInfantryFormation)
             .ToList();
 
-            if (flankingSlots.Count >= 2)
+            // ChooseAndSortByPriority only PREFERS AI-controlled formations, it does not exclude
+            // player-controlled ones — never reshuffle men the player commands.
+            if (_mainInfantry.IsAIControlled && flankingSlots.Count >= 2)
             {
                 Formation leftSlot = flankingSlots[0];
                 Formation rightSlot = flankingSlots[1];

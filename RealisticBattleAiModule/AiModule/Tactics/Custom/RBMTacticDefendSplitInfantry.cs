@@ -36,10 +36,12 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
             _mainInfantry.AI.Side = FormationAI.BehaviorSide.Middle;
 
             List<Formation> flankingSlots = FormationsIncludingEmpty
-            .Where((Formation f) => f != _mainInfantry && f.QuerySystem.IsInfantryFormation)
+            .Where((Formation f) => f != _mainInfantry && f.IsAIControlled && f.QuerySystem.IsInfantryFormation)
             .ToList();
 
-            if (flankingSlots.Count >= 2)
+            // ChooseAndSortByPriority only PREFERS AI-controlled formations, it does not exclude
+            // player-controlled ones — never reshuffle men the player commands.
+            if (_mainInfantry.IsAIControlled && flankingSlots.Count >= 2)
             {
                 Formation leftSlot = flankingSlots[0];
                 Formation rightSlot = flankingSlots[1];
@@ -151,11 +153,11 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
         {
             foreach (Formation formation in nonEmptyFormations)
             {
-                if (formation.CountOfUnits == 1)
+                if (formation.CountOfUnits == 1 && formation.IsAIControlled)
                 {
                     formation.ApplyActionOnEachUnitViaBackupList((Agent agent) =>
                     {
-                        if (!agent.IsRangedCached && !agent.HasMount && _mainInfantry != null)
+                        if (!agent.IsRangedCached && !agent.HasMount && _mainInfantry != null && _mainInfantry.IsAIControlled)
                             agent.Formation = _mainInfantry;
                     });
                 }

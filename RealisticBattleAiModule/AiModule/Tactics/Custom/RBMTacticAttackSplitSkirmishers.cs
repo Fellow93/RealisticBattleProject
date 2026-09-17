@@ -42,7 +42,9 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             // We must search FormationsIncludingEmpty — not just non-empty formations — to find it.
             Formation skirmisherSlot = FormationsIncludingEmpty.FirstOrDefault((Formation f) => f != _mainInfantry && f.IsAIControlled && f.QuerySystem.IsInfantryFormation);
 
-            if (skirmisherSlot != null)
+            // ChooseAndSortByPriority only PREFERS AI-controlled formations, it does not exclude
+            // player-controlled ones — never reshuffle men the player commands.
+            if (skirmisherSlot != null && _mainInfantry.IsAIControlled)
             {
                 // Collect agents from the two known infantry slots directly.
                 // Avoid IsInfantryFormation check — QuerySystem can be stale right after
