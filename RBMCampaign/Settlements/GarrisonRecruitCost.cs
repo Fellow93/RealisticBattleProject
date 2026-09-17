@@ -216,6 +216,9 @@ namespace RBMCampaign
                     }
                 }
 
+                // The day's intake comes off the fief's population in one charge (and one log line).
+                ManpowerCost.Charge(settlement, armed, "garrison recruits armed");
+
                 if (EconomyLog.IsEnabled && armed > 0)
                 {
                     EconomyLog.Log("GARRISON", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,

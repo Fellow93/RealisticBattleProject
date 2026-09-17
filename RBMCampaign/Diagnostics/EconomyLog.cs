@@ -30,6 +30,9 @@ namespace RBMCampaign
     /// biased it (<see cref="WorkshopVillageBias"/>).</item>
     /// <item>BUILD    -- a fief's building day: the project, its labour ceiling, the points free labour,
     /// bought materials and wages each paid for, and the reserve left (<see cref="Construction"/>).</item>
+    /// <item>MANPOWER -- men drawn off a settlement's population: villagers leaving, volunteers raised
+    /// and garrison recruits armed, with the hearth or prosperity before and after
+    /// (<see cref="ManpowerCost"/>).</item>
     /// </list>
     ///
     /// Enabled by the EconomyLogging config flag. One file per play session, opened lazily on the first

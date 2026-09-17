@@ -316,7 +316,7 @@ namespace RBMCampaign
             }
 
             MobileParty convoy = VillagerPartyComponent.CreateVillagerParty(culture.VillagerPartyTemplate.StringId + "_1", village);
-            village.Hearth = MathF.Max(0f, village.Hearth - (convoy.MemberRoster.TotalManCount + 1) / 2);
+            ManpowerCost.Charge(village.Settlement, convoy.MemberRoster.TotalManCount, "second convoy raised");
             EnterSettlementAction.ApplyForParty(convoy, village.Settlement);
 
             if (EconomyLog.IsEnabled)
