@@ -760,6 +760,11 @@
 	<string id="RBM_CARAVAN_RELIEF_ROUTE" text="{FROM} → {TO} Relief Caravan" />
 	<string id="RBM_CARAVAN_RELIEF_FROM" text="{FROM} Relief Caravan" />
 	<string id="RBM_CARAVAN_RELIEF" text="Relief Caravan" />
+	<string id="RBM_CB_SAVE_TITLE" text="Save Battle Preset" />
+	<string id="RBM_CB_LOAD_TITLE" text="Load Battle Preset" />
+	<string id="RBM_CB_PRESET_FILTER" text="XML Preset" />
+	<string id="RBM_CB_SAVED" text="Preset saved: '{NAME}'." />
+	<string id="RBM_CB_LOADED" text="Preset loaded: '{NAME}'." />
 
   </strings>
 </base>

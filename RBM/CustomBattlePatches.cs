@@ -9,6 +9,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.CustomBattle;
 using TaleWorlds.MountAndBlade.CustomBattle.CustomBattle;
@@ -71,12 +72,16 @@ namespace RBM
             string result = null;
             Directory.CreateDirectory(RBMConfig.Utilities.GetConfigFolderPath());
             Directory.CreateDirectory(RBMConfig.Utilities.GetCustomGamePresetFolderPath());
+            // Resolved here rather than inside the lambda: the dialog runs on its own STA thread.
+            // The "|*.xml" half is filter syntax, so it stays in code where a translation cannot break it.
+            string title = new TextObject("{=RBM_CB_SAVE_TITLE}Save Battle Preset").ToString();
+            string filter = new TextObject("{=RBM_CB_PRESET_FILTER}XML Preset").ToString() + "|*.xml";
             var thread = new Thread(() =>
             {
                 using (var dlg = new SaveFileDialog())
                 {
-                    dlg.Title = "Save Battle Preset";
-                    dlg.Filter = "XML Preset|*.xml";
+                    dlg.Title = title;
+                    dlg.Filter = filter;
                     dlg.DefaultExt = "xml";
                     try { dlg.InitialDirectory = RBMConfig.Utilities.GetCustomGamePresetFolderPath(); } catch { }
                     if (dlg.ShowDialog() == DialogResult.OK)
@@ -94,12 +99,15 @@ namespace RBM
             string result = null;
             Directory.CreateDirectory(RBMConfig.Utilities.GetConfigFolderPath());
             Directory.CreateDirectory(RBMConfig.Utilities.GetCustomGamePresetFolderPath());
+            // Same as the save dialog: resolved on this thread, filter syntax kept out of the language file.
+            string title = new TextObject("{=RBM_CB_LOAD_TITLE}Load Battle Preset").ToString();
+            string filter = new TextObject("{=RBM_CB_PRESET_FILTER}XML Preset").ToString() + "|*.xml";
             var thread = new Thread(() =>
             {
                 using (var dlg = new OpenFileDialog())
                 {
-                    dlg.Title = "Load Battle Preset";
-                    dlg.Filter = "XML Preset|*.xml";
+                    dlg.Title = title;
+                    dlg.Filter = filter;
                     try { dlg.InitialDirectory = RBMConfig.Utilities.GetCustomGamePresetFolderPath(); } catch { }
                     if (dlg.ShowDialog() == DialogResult.OK)
                         result = dlg.FileName;
@@ -120,7 +128,9 @@ namespace RBM
                 string name = Path.GetFileNameWithoutExtension(path);
                 var preset = CustomBattlePreset.CaptureFromVM(_battleVM, name);
                 CustomBattlePreset.SavePresetToFile(preset, path);
-                InformationManager.DisplayMessage(new InformationMessage($"Preset saved: '{Path.GetFileName(path)}'."));
+                InformationManager.DisplayMessage(new InformationMessage(
+                    new TextObject("{=RBM_CB_SAVED}Preset saved: '{NAME}'.")
+                        .SetTextVariable("NAME", Path.GetFileName(path)).ToString()));
             }
             catch (Exception) { }
         }
@@ -135,7 +145,9 @@ namespace RBM
                 if (preset != null)
                 {
                     CustomBattlePreset.ApplyNamedToVM(preset, _battleVM);
-                    InformationManager.DisplayMessage(new InformationMessage($"Preset loaded: '{Path.GetFileName(path)}'."));
+                    InformationManager.DisplayMessage(new InformationMessage(
+                        new TextObject("{=RBM_CB_LOADED}Preset loaded: '{NAME}'.")
+                            .SetTextVariable("NAME", Path.GetFileName(path)).ToString()));
                 }
             }
             catch (Exception) { }
