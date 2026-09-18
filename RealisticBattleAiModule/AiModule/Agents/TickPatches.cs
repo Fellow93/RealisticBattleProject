@@ -52,12 +52,8 @@ namespace RBMAI
                         bannerNearbyEnemies.RemoveAll((Agent a) => a.IsRunningAway);
                         if (bannerNearbyEnemies.Count == 0 && ___Agent.Formation != null)
                         {
-                            // ___Agent is a ref parameter and cannot be captured by the lambda below.
-                            Agent bannerBearer = ___Agent;
-                            MBList<Agent> bannerNearbyAllies = new MBList<Agent>();
-                            bannerNearbyAllies = Mission.Current.GetNearbyAllyAgents(bannerBearer.GetWorldPosition().AsVec2, 10f, bannerBearer.Team, bannerNearbyAllies);
-                            Agent bannerFriendlyTarget = bannerNearbyAllies.FirstOrDefault((Agent a) => a != bannerBearer && a.IsHuman && a.IsActive() && a.Formation == bannerBearer.Formation);
-                            if (bannerFriendlyTarget != null)
+                            Agent bannerFriendlyTarget = (Agent)(___Agent.Formation.Arrangement.GetNeighborUnitOfLeftSide(___Agent) ?? ___Agent.Formation.Arrangement.GetNeighborUnitOfRightSide(___Agent));
+                            if (bannerFriendlyTarget != null && ___Agent.GetDistanceTo(bannerFriendlyTarget) > 5f)
                             {
                                 ___Agent.SetAutomaticTargetSelection(false);
                                 ___Agent.SetTargetAgent(bannerFriendlyTarget);
