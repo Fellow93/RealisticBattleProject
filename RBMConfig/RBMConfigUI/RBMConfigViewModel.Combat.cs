@@ -233,11 +233,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineEnabledt
         {
-            get { return new TextObject("Frontline System").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_SYSTEM}Frontline System").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineEnabledHint { get; } = Hint("Per-soldier jostling inside a charging infantry or archer line: each man decides every couple of seconds whether to press in, step back, close on a neighbour, slide around a flank or hold his rank. Off leaves melee lines on RBM's plain charge. Cavalry/archer free-charge rules and unit facing are unaffected either way. Default on.");
+        public BasicTooltipViewModel FrontlineEnabledHint { get; } = Hint("{=RBM_CFG_FL_SYSTEM_HINT}Per-soldier jostling inside a charging infantry or archer line: each man decides every couple of seconds whether to press in, step back, close on a neighbour, slide around a flank or hold his rank. Off leaves melee lines on RBM's plain charge. Cavalry/archer free-charge rules and unit facing are unaffected either way. Default on.");
 
         private float _frontlineMinFormationSize;
 
@@ -266,11 +266,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineMinFormationSizet
         {
-            get { return new TextObject("Frontline Min Formation Size").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_MIN_SIZE}Frontline Min Formation Size").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineMinFormationSizeHint { get; } = Hint("Formations smaller than this (undetached men) skip the frontline system entirely and charge normally -- there is no rank to hold in a handful of men. Default 25.");
+        public BasicTooltipViewModel FrontlineMinFormationSizeHint { get; } = Hint("{=RBM_CFG_FL_MIN_SIZE_HINT}Formations smaller than this (undetached men) skip the frontline system entirely and charge normally -- there is no rank to hold in a handful of men. Default 25.");
 
         private float _frontlineDecisionTimerMax;
 
@@ -299,11 +299,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineDecisionTimerMaxt
         {
-            get { return new TextObject("Frontline Decision Hold").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_HOLD}Frontline Decision Hold").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineDecisionTimerMaxHint { get; } = Hint("Once a man picks a move he sticks with it for a random 0 to this many seconds before reconsidering. Higher is steadier and cheaper; lower makes the line twitchier. Default 2.00.");
+        public BasicTooltipViewModel FrontlineDecisionTimerMaxHint { get; } = Hint("{=RBM_CFG_FL_HOLD_HINT}Once a man picks a move he sticks with it for a random 0 to this many seconds before reconsidering. Higher is steadier and cheaper; lower makes the line twitchier. Default 2.00.");
 
         private float _frontlineAttackWeight;
 
@@ -332,11 +332,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineAttackWeightt
         {
-            get { return new TextObject("Frontline Attack Weight").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_ATTACK}Frontline Attack Weight").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineAttackWeightHint { get; } = Hint("Multiplier on the 'press forward at my target' score. Above 1 makes lines more aggressive and thinner; below 1 makes them hang back. Default 1.00.");
+        public BasicTooltipViewModel FrontlineAttackWeightHint { get; } = Hint("{=RBM_CFG_FL_ATTACK_HINT}Multiplier on the 'press forward at my target' score. Above 1 makes lines more aggressive and thinner; below 1 makes them hang back. Default 1.00.");
 
         private float _frontlineBackStepWeight;
 
@@ -365,11 +365,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineBackStepWeightt
         {
-            get { return new TextObject("Frontline Back Step Weight").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_BACKSTEP}Frontline Back Step Weight").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineBackStepWeightHint { get; } = Hint("Multiplier on the 'give ground and let a fresh man through' score. Above 1 gives more rotation out of the front rank. Default 1.00.");
+        public BasicTooltipViewModel FrontlineBackStepWeightHint { get; } = Hint("{=RBM_CFG_FL_BACKSTEP_HINT}Multiplier on the 'give ground and let a fresh man through' score. Above 1 gives more rotation out of the front rank. Default 1.00.");
 
         private float _frontlineFindAllyWeight;
 
@@ -398,11 +398,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineFindAllyWeightt
         {
-            get { return new TextObject("Frontline Close Ranks Weight").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_CLOSE}Frontline Close Ranks Weight").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineFindAllyWeightHint { get; } = Hint("Multiplier on the 'close the gap to my nearest neighbour' score. Above 1 makes lines huddle tighter and shield walls hold better; below 1 lets them spread. Default 1.00.");
+        public BasicTooltipViewModel FrontlineFindAllyWeightHint { get; } = Hint("{=RBM_CFG_FL_CLOSE_HINT}Multiplier on the 'close the gap to my nearest neighbour' score. Above 1 makes lines huddle tighter and shield walls hold better; below 1 lets them spread. Default 1.00.");
 
         private float _frontlineFlankWeight;
 
@@ -431,11 +431,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineFlankWeightt
         {
-            get { return new TextObject("Frontline Sidestep Weight").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_SIDESTEP}Frontline Sidestep Weight").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineFlankWeightHint { get; } = Hint("Multiplier on both the left and right 'slide sideways past the man in front' scores. Above 1 makes lines spread wide around a stalled front rank. Default 1.00.");
+        public BasicTooltipViewModel FrontlineFlankWeightHint { get; } = Hint("{=RBM_CFG_FL_SIDESTEP_HINT}Multiplier on both the left and right 'slide sideways past the man in front' scores. Above 1 makes lines spread wide around a stalled front rank. Default 1.00.");
 
     }
 }

@@ -121,6 +121,16 @@ namespace RBMCampaign
             SelectMetric("prod");
         }
 
+        // Column headings for this row's history table. The text never changes, but it has
+        // to be reachable from here: a widget nested inside a row can only bind to that
+        // row's own data source.
+        [DataSourceProperty] public string WealthHeader => RBMLedgerHeaders.Wealth;
+        [DataSourceProperty] public string HearthHeader => RBMLedgerHeaders.Hearth;
+        [DataSourceProperty] public string MilitiaHeader => RBMLedgerHeaders.Militia;
+        [DataSourceProperty] public string DayHeader => RBMLedgerHeaders.Day;
+        [DataSourceProperty] public string ProdHeader => RBMLedgerHeaders.Prod;
+        [DataSourceProperty] public string EventsHeader => RBMLedgerHeaders.Events;
+
         [DataSourceProperty] public string VillageName { get; }
         [DataSourceProperty] public string Production { get; }
 
