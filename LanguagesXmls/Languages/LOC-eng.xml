@@ -754,6 +754,12 @@
 	<string id="RBM_CFG_KINGDOM_CARAVANS_HINT" text="Spawns caravans that carry a surplus good from one of a kingdom's towns to another town of the same kingdom that is short of it -- real goods and money move, and the caravan can be raided. Off leaves the map on vanilla caravans alone. Default on." />
 	<string id="RBM_CFG_POWER_LOG" text="Troop Power Logging" />
 	<string id="RBM_CFG_SIM_HIT_DETAIL" text="Auto Resolve Per-Hit Detail" />
+	<string id="RBM_CARAVAN_SUPPLY_ROUTE" text="{FROM} → {TO} Supply Caravan" />
+	<string id="RBM_CARAVAN_SUPPLY_FROM" text="{FROM} Supply Caravan" />
+	<string id="RBM_CARAVAN_SUPPLY" text="Supply Caravan" />
+	<string id="RBM_CARAVAN_RELIEF_ROUTE" text="{FROM} → {TO} Relief Caravan" />
+	<string id="RBM_CARAVAN_RELIEF_FROM" text="{FROM} Relief Caravan" />
+	<string id="RBM_CARAVAN_RELIEF" text="Relief Caravan" />
 
   </strings>
 </base>
