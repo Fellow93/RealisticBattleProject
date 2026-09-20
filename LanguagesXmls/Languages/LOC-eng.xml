@@ -374,10 +374,10 @@
 	<string id="RBM_RAN_028" text="60 Pound Composite Bow" />
 	
 	<string id="RBM_RAN_029" text="100 Pound Eastern Crossbow" />
-	<string id="RBM_RAN_030" text="80 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_030" text="Light 80 Pound Eastern Crossbow" />
 	<string id="RBM_RAN_031" text="Heavy 80 Pound Repeating Crossbow" />
-	<string id="RBM_RAN_032" text="Heavy 60 Pound Repeating Crossbow" />
-	<string id="RBM_RAN_033" text="Heavy 45 Pound Repeating Crossbow" />
+	<string id="RBM_RAN_032" text="Medium 60 Pound Repeating Crossbow" />
+	<string id="RBM_RAN_033" text="Light 45 Pound Repeating Crossbow" />
 	<string id="RBM_RAN_034" text="Stone Sling Pebbles 35 grams" />
 	<string id="RBM_RAN_035" text="Stone Sling Pebbles 50 grams" />
 	<string id="RBM_RAN_036" text="Stone Sling Pebbles 80 grams" />
@@ -526,9 +526,9 @@
 	<string id="RBM_WS_003" text="Master Assassin Cape" />
 	<string id="RBM_WS_004" text="Calradian Liquid Fire" />
 	<!-- RBMEconomy_trade_goods.xml Strings -->
-	<string id="RBM_E_001" text="Plain Ceramic"	/>
-	<string id="RBM_E_002" text="Decorated Pottery"	/>	
-	<string id="RBM_E_003" text="Ale"	/>		
-	<string id="RBM_E_004" text="Herd of Sheep"	/>	
+	<string id="RBM_E_001" text="Plain Ceramic{@Plural}plain ceramics{\@}"	/>
+	<string id="RBM_E_002" text="Decorated Pottery{@Plural}crates of decorated pottery{\@}"	/>	
+	<string id="RBM_E_003" text="Ale{@Plural}casks of ale{\@}"	/>		
+	<string id="RBM_E_004" text="Herd of Sheep{@Plural}herds of sheep{\@}"	/>	
   </strings>
 </base>
