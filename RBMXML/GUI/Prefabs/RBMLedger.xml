@@ -1,4 +1,4 @@
-<Prefab>
+﻿<Prefab>
 	<Constants>
 		<!-- Shared column widths so the header row and the data rows always line up. -->
 		<Constant Name="RBML.Prod" Value="150" />
@@ -83,11 +83,11 @@
 												   VerticalAlignment="Top" MarginLeft="12" MarginRight="42"
 												   StackLayout.LayoutMethod="HorizontalLeftToRight">
 											<Children>
-												<TextWidget Text="Village" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
-												<TextWidget Text="Production" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.Prod" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-												<TextWidget Text="Wealth" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.Wealth" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-												<TextWidget Text="Hearth" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.Hearth" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-												<TextWidget Text="Militia" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.Militia" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="@HdrVillage" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="@HdrProduction" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.Prod" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="@HdrWealth" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.Wealth" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="@HdrHearth" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.Hearth" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="@HdrMilitia" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.Militia" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 											</Children>
 										</ListPanel>
 
@@ -206,12 +206,12 @@
 																														<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBML.RowH"
 																																   StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="2">
 																															<Children>
-																																<TextWidget Text="Day" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.H.Day" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
-																																<TextWidget Text="Prod" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																<TextWidget Text="Wealth" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																<TextWidget Text="Hearth" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																<TextWidget Text="Militia" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																<TextWidget Text="Events" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.H.Events" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+																																<TextWidget Text="@HdrDay" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.H.Day" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																<TextWidget Text="@HdrProd" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																<TextWidget Text="@HdrWealth" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																<TextWidget Text="@HdrHearth" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																<TextWidget Text="@HdrMilitia" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																<TextWidget Text="@HdrEvents" WidthSizePolicy="Fixed" SuggestedWidth="!RBML.H.Events" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
 																															</Children>
 																														</ListPanel>
 																														<!-- History rows (newest first) -->
@@ -281,13 +281,13 @@
 										<!-- Column header row. -->
 										<ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" VerticalAlignment="Top" MarginLeft="12" MarginRight="42" StackLayout.LayoutMethod="HorizontalLeftToRight">
 											<Children>
-												<TextWidget Text="Town" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
-												<TextWidget Text="Prosperity" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Prosp" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-												<TextWidget Text="Citizen" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Citizen" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-												<TextWidget Text="Treasury" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Treasury" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-												<TextWidget Text="Food" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Food" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-												<TextWidget Text="Garrison" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Garrison" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-												<TextWidget Text="Militia" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Militia" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="@HdrTown" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="@HdrProsperity" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Prosp" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="@HdrCitizen" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Citizen" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="@HdrTreasury" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Treasury" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="@HdrFood" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Food" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="@HdrGarrison" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Garrison" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+												<TextWidget Text="@HdrMilitia" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.Militia" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 											</Children>
 										</ListPanel>
 										<!-- Scrollable faction -> town -> detail tree. -->
@@ -401,22 +401,22 @@
 																															<Children>
 																																<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH" StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="2">
 																																	<Children>
-																																		<TextWidget Text="Day" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Day" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Prosp" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Citizen" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Cit In" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Cit Out" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Treas" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Trs In" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Trs Out" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Food" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Eaten" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Garr" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Mil" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Deliv" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Party" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Carav" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Events" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Events" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrDay" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Day" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrProsp" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrCitizen" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrCitIn" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrCitOut" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrTreas" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrTrsIn" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrTrsOut" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrFood" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrEaten" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrGarr" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrMil" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrDeliv" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrParty" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrCarav" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Num" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrEvents" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.H.Events" HeightSizePolicy="StretchToParent" Brush="CustomBattle.Value.Text" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
 																																	</Children>
 																																</ListPanel>
 																																<ListPanel DataSource="{History}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
@@ -483,9 +483,9 @@
 																														<!-- Citizen demand by tier: units wanted vs fraction filled; hover for consumed/missing. -->
 																														<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH" StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="2">
 																															<Children>
-																																<TextWidget Text="Demand" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.D.Tier" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
-																																<TextWidget Text="Wanted/day" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.D.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																<TextWidget Text="Filled" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.D.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																<TextWidget Text="@HdrDemand" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.D.Tier" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																<TextWidget Text="@HdrWantedPerDay" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.D.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																<TextWidget Text="@HdrFilled" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.D.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																															</Children>
 																														</ListPanel>
 																														<ListPanel DataSource="{DemandTiers}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" MarginBottom="10">
@@ -509,9 +509,9 @@
 																															<Children>
 																																<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH" StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="2">
 																																	<Children>
-																																		<TextWidget Text="Workshops" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.W.Name" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Consumed/day" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.W.Rate" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Produced/day" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.W.Rate" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrWorkshops" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.W.Name" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrConsumedPerDay" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.W.Rate" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrProducedPerDay" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.W.Rate" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																	</Children>
 																																</ListPanel>
 																																<ListPanel DataSource="{Workshops}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" MarginBottom="10">
@@ -542,10 +542,10 @@
 																															<Children>
 																																<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH" StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="2">
 																																	<Children>
-																																		<TextWidget Text="Goods (demand vs stock)" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Name" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Demand/day" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Stock" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Days" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrGoods" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Name" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrDemandPerDay" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrStock" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrDays" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																	</Children>
 																																</ListPanel>
 																																<ListPanel DataSource="{Goods}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" MarginBottom="10">
@@ -571,9 +571,9 @@
 																															<Children>
 																																<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="!RBMT.RowH" StackLayout.LayoutMethod="HorizontalLeftToRight" MarginBottom="2">
 																																	<Children>
-																																		<TextWidget Text="Equipment &amp; materials" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Name" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Stock" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
-																																		<TextWidget Text="Value" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrEquipment" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Name" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrStock" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																																		<TextWidget Text="@HdrValue" WidthSizePolicy="Fixed" SuggestedWidth="!RBMT.G.Num" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
 																																	</Children>
 																																</ListPanel>
 																																<ListPanel DataSource="{OtherGoods}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom" MarginBottom="10">

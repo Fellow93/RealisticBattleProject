@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Core.ViewModelCollection.Selector;
@@ -692,43 +692,42 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel EconomyLoggingEnabledHint { get; } = Hint("{=RBM_CON_108}Writes the village-to-town goods and food chain to logs/economy next to the config: each village's daily production, every villager party sent out with its size, composition and cargo, each town's rations, and the end-of-day state of every settlement. Verbose, and only useful for tuning the economy.");
 
-        // Caravan toggle labels and hints. Plain literal TextObjects (no {=KEY}) to sidestep the
-        // LOC-eng.xml key-collision issue, like the category headers below.
+        // Caravan toggle labels and hints.
         [DataSourceProperty]
         public string KingdomCaravansEnabledt
         {
-            get { return new TextObject("Kingdom Supply Caravans").ToString(); }
+            get { return new TextObject("{=RBM_CFG_001}Kingdom Supply Caravans").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel KingdomCaravansEnabledHint { get; } = Hint("Spawns caravans that carry a surplus good from one of a kingdom's towns to another town of the same kingdom that is short of it -- real goods and money move, and the caravan can be raided. Off leaves the map on vanilla caravans alone. Default on.");
+        public BasicTooltipViewModel KingdomCaravansEnabledHint { get; } = Hint("{=RBM_CFG_002}Spawns caravans that carry a surplus good from one of a kingdom's towns to another town of the same kingdom that is short of it -- real goods and money move, and the caravan can be raided. Off leaves the map on vanilla caravans alone. Default on.");
 
         [DataSourceProperty]
         public string CaravanInvestmentEnabledt
         {
-            get { return new TextObject("Caravan Investment").ToString(); }
+            get { return new TextObject("{=RBM_CFG_003}Caravan Investment").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel CaravanInvestmentEnabledHint { get; } = Hint("On a wealthy→struggling route, a caravan also injects capital into the struggling town so it can afford the goods, booked as a debt the town repays out of its hoard tax once it recovers. Needs Kingdom Supply Caravans on. Default on.");
+        public BasicTooltipViewModel CaravanInvestmentEnabledHint { get; } = Hint("{=RBM_CFG_004}On a wealthy→struggling route, a caravan also injects capital into the struggling town so it can afford the goods, booked as a debt the town repays out of its hoard tax once it recovers. Needs Kingdom Supply Caravans on. Default on.");
 
         [DataSourceProperty]
         public string CaravanLoggingEnabledt
         {
-            get { return new TextObject("Caravan Logging").ToString(); }
+            get { return new TextObject("{=RBM_CFG_005}Caravan Logging").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel CaravanLoggingEnabledHint { get; } = Hint("Writes the supply-caravan system to logs/caravans next to the config: each caravan dispatched, its arrival and sale, capital injected and repaid, and any lost on the road. Needs Kingdom Supply Caravans on. Default on.");
+        public BasicTooltipViewModel CaravanLoggingEnabledHint { get; } = Hint("{=RBM_CFG_006}Writes the supply-caravan system to logs/caravans next to the config: each caravan dispatched, its arrival and sale, capital injected and repaid, and any lost on the road. Needs Kingdom Supply Caravans on. Default on.");
 
         [DataSourceProperty]
         public string DeserterRaidersEnabledt
         {
-            get { return new TextObject("Deserter Raiders").ToString(); }
+            get { return new TextObject("{=RBM_CFG_007}Deserter Raiders").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel DeserterRaidersEnabledHint { get; } = Hint("Gives deserter parties initiative: they actively hunt nearby villager convoys and caravans and raid weakly-held villages when they out-match the target, instead of aimlessly patrolling their spawn point. Off leaves deserters on vanilla behavior. Default on.");
+        public BasicTooltipViewModel DeserterRaidersEnabledHint { get; } = Hint("{=RBM_CFG_008}Gives deserter parties initiative: they actively hunt nearby villager convoys and caravans and raid weakly-held villages when they out-match the target, instead of aimlessly patrolling their spawn point. Off leaves deserters on vanilla behavior. Default on.");
 
         // SupplyTown gate: radius slider (whole map units) + the toggle's row label.
         private float _troopUpgradeSupplyRadius;
@@ -883,12 +882,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Building Cost Multiplier").ToString();
+                return new TextObject("{=RBM_CFG_009}Building Cost Multiplier").ToString();
             }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel BuildingCostMultiplierHint { get; } = Hint("What a building project costs, as a multiple of vanilla's price. A point of construction is a coin in RBM, so vanilla's prices amount to a week's tax and have to be multiplied up for a project to be the years-long undertaking it should be. 1 leaves vanilla's prices alone. Default 250.");
+        public BasicTooltipViewModel BuildingCostMultiplierHint { get; } = Hint("{=RBM_CFG_010}What a building project costs, as a multiple of vanilla's price. A point of construction is a coin in RBM, so vanilla's prices amount to a week's tax and have to be multiplied up for a project to be the years-long undertaking it should be. 1 leaves vanilla's prices alone. Default 250.");
 
         private float _constructionBudgetShare;
 
@@ -925,12 +924,12 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Construction Budget Share").ToString();
+                return new TextObject("{=RBM_CFG_011}Construction Budget Share").ToString();
             }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel ConstructionBudgetShareHint { get; } = Hint("The share of a fief's treasury tipped into its construction reserve every day. Besides the owner's own purse this is the only thing that funds building, so it sets how fast a fief builds on its own account. Zero stops it. Default 0.01.");
+        public BasicTooltipViewModel ConstructionBudgetShareHint { get; } = Hint("{=RBM_CFG_012}The share of a fief's treasury tipped into its construction reserve every day. Besides the owner's own purse this is the only thing that funds building, so it sets how fast a fief builds on its own account. Zero stops it. Default 0.01.");
 
         private float _troopSpoilsCapDays;
 
@@ -1203,14 +1202,13 @@ namespace RBMConfig
             }
         }
 
-        // Campaign config category headers. Plain literal TextObjects (no {=KEY}) to sidestep
-        // the LOC-eng.xml key-collision issue; these are collapsible sub-section titles.
+        // Campaign config category headers -- the collapsible sub-section titles.
         [DataSourceProperty]
         public string CampaignCatModulet
         {
             get
             {
-                return new TextObject("Module & Simulation").ToString();
+                return new TextObject("{=RBM_CFG_013}Module & Simulation").ToString();
             }
         }
 
@@ -1219,7 +1217,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Logging").ToString();
+                return new TextObject("{=RBM_CFG_014}Logging").ToString();
             }
         }
 
@@ -1228,7 +1226,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Troop Upgrades").ToString();
+                return new TextObject("{=RBM_CFG_015}Troop Upgrades").ToString();
             }
         }
 
@@ -1237,7 +1235,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Battle & Raid Spoils").ToString();
+                return new TextObject("{=RBM_CFG_016}Battle & Raid Spoils").ToString();
             }
         }
 
@@ -1246,7 +1244,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Wages & Maintenance").ToString();
+                return new TextObject("{=RBM_CFG_017}Wages & Maintenance").ToString();
             }
         }
 
@@ -1255,7 +1253,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Settlement Upkeep").ToString();
+                return new TextObject("{=RBM_CFG_018}Settlement Upkeep").ToString();
             }
         }
 

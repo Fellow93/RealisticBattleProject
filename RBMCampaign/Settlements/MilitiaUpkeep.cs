@@ -234,7 +234,7 @@ namespace RBMCampaign
         private static readonly TextObject CannotArmText = new TextObject("{=RBM_militia_unarmed}Cannot be armed");
 
         /// <summary>The extra intake a fief's Barracks lodgings allow.</summary>
-        private static readonly TextObject BarracksText = new TextObject("{=!}Barracks");
+        private static readonly TextObject BarracksText = new TextObject("{=RBM_BARRACKS}Barracks");
 
         /// <summary>The pay factor for a militiaman of this settlement -- see the wage-factor table.</summary>
         private static float MilitiaWageFactor(Settlement settlement)

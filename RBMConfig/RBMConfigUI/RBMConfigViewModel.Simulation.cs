@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Core.ViewModelCollection.Selector;
@@ -99,7 +99,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Auto Resolve Per-Hit Detail").ToString();
+                return new TextObject("{=RBM_CFG_037}Auto Resolve Per-Hit Detail").ToString();
             }
         }
 
@@ -108,7 +108,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("Troop Power Logging").ToString();
+                return new TextObject("{=RBM_CFG_036}Troop Power Logging").ToString();
             }
         }
 

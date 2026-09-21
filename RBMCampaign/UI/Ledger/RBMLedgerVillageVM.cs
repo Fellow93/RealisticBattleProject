@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
@@ -140,6 +140,15 @@ namespace RBMCampaign
         [DataSourceProperty] public string WealthButtonText { get; }
         [DataSourceProperty] public string HearthButtonText { get; }
         [DataSourceProperty] public string MilitiaButtonText { get; }
+
+        // Column headings for this village's history table -- bound from the prefab, which cannot
+        // resolve a {=id} marker in Text= itself.
+        [DataSourceProperty] public string HdrDay => RBMLedgerHeadings.Day.ToString();
+        [DataSourceProperty] public string HdrProd => RBMLedgerHeadings.Prod.ToString();
+        [DataSourceProperty] public string HdrWealth => RBMLedgerHeadings.Wealth.ToString();
+        [DataSourceProperty] public string HdrHearth => RBMLedgerHeadings.Hearth.ToString();
+        [DataSourceProperty] public string HdrMilitia => RBMLedgerHeadings.Militia.ToString();
+        [DataSourceProperty] public string HdrEvents => RBMLedgerHeadings.Events.ToString();
 
         [DataSourceProperty]
         public MBBindingList<RBMLedgerBarVM> Bars

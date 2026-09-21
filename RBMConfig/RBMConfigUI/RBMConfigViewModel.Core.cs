@@ -106,7 +106,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("RBM Campaign").ToString();
+                return new TextObject("{=RBM_CFG_033}RBM Campaign").ToString();
             }
         }
 
@@ -114,34 +114,34 @@ namespace RBMConfig
         {
             RefreshValues();
             List<string> troopOverhaulOnOff = new List<string> { new TextObject("{=RBM_CON_001}Inactive").ToString(), new TextObject("{=RBM_CON_002}Active (Recommended)").ToString(), };
-            ActiveTroopOverhaulText = new TextViewModel(new TextObject("Troop Overhaul"));
+            ActiveTroopOverhaulText = new TextViewModel(new TextObject("{=RBM_CON_003}Troop Overhaul"));
             ActiveTroopOverhaul = new SelectorVM<SelectorItemVM>(troopOverhaulOnOff, 0, null);
 
             List<string> rangedReloadSpeed = new List<string> { new TextObject("{=RBM_CON_004}Vanilla").ToString(), new TextObject("{=RBM_CON_005}Realistic").ToString(), new TextObject("{=RBM_CON_006}Semi-realistic").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            RangedReloadSpeedText = new TextViewModel(new TextObject("Ranged reload speed"));
+            RangedReloadSpeedText = new TextViewModel(new TextObject("{=RBM_CON_007}Ranged reload speed"));
             RangedReloadSpeed = new SelectorVM<SelectorItemVM>(rangedReloadSpeed, 0, null);
 
             List<string> passiveShoulderShields = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
-            PassiveShoulderShieldsText = new TextViewModel(new TextObject("Passive Shoulder Shields"));
+            PassiveShoulderShieldsText = new TextViewModel(new TextObject("{=RBM_CON_008}Passive Shoulder Shields"));
             PassiveShoulderShields = new SelectorVM<SelectorItemVM>(passiveShoulderShields, 0, null);
 
             List<string> betterArrowVisuals = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            BetterArrowVisualsText = new TextViewModel(new TextObject("Better Arrow Visuals"));
+            BetterArrowVisualsText = new TextViewModel(new TextObject("{=RBM_CON_009}Better Arrow Visuals"));
             BetterArrowVisuals = new SelectorVM<SelectorItemVM>(betterArrowVisuals, 0, null);
 
             List<string> sneakAttackInstaKill = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
-            SneakAttackInstaKillText = new TextViewModel(new TextObject("Sneak Attack Insta-Kill"));
+            SneakAttackInstaKillText = new TextViewModel(new TextObject("{=RBM_CON_023}Sneak Attack Insta-Kill"));
             SneakAttackInstaKill = new SelectorVM<SelectorItemVM>(sneakAttackInstaKill, 0, null);
 
             List<string> armorStatusUIEnabled = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", };
-            ArmorStatusUIEnabledText = new TextViewModel(new TextObject("Armor Status GUI"));
+            ArmorStatusUIEnabledText = new TextViewModel(new TextObject("{=RBM_CON_010}Armor Status GUI"));
             ArmorStatusUIEnabled = new SelectorVM<SelectorItemVM>(armorStatusUIEnabled, 0, null);
 
             List<string> realisticArrowArc = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString(), };
-            RealisticArrowArcText = new TextViewModel(new TextObject("Realistic Arrow Arc"));
+            RealisticArrowArcText = new TextViewModel(new TextObject("{=RBM_CON_011}Realistic Arrow Arc"));
             RealisticArrowArc = new SelectorVM<SelectorItemVM>(realisticArrowArc, 0, null);
 
-            ThrustModifierText = new TextViewModel(new TextObject("Thrust Modifier"));
+            ThrustModifierText = new TextViewModel(new TextObject("{=RBM_CFG_034}Thrust Modifier"));
             ThrustModifier = new SelectorVM<SelectorItemVM>(thrustModifierList, 0, null);
 
             int i = 0;
@@ -216,35 +216,35 @@ namespace RBMConfig
             }
 
             List<string> hitStopOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            HitStopEnabledText = new TextViewModel(new TextObject("Slow Motion in Combat"));
+            HitStopEnabledText = new TextViewModel(new TextObject("{=RBM_CON_022}Slow Motion in Combat"));
             HitStopEnabled = new SelectorVM<SelectorItemVM>(hitStopOptions, 0, null);
 
             List<string> postureOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            PostureSystemEnabledText = new TextViewModel(new TextObject("Posture System"));
+            PostureSystemEnabledText = new TextViewModel(new TextObject("{=RBM_CON_012}Posture System"));
             PostureSystemEnabled = new SelectorVM<SelectorItemVM>(postureOptions, 0, OnPostureSystemChanged);
 
             List<string> staminaOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            StaminaSystemEnabledText = new TextViewModel(new TextObject("Stamina System"));
+            StaminaSystemEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_035}Stamina System"));
             StaminaSystemEnabled = new SelectorVM<SelectorItemVM>(staminaOptions, 0, null);
 
             List<string> playerPostureMultiplierOptions = new List<string> { "1x (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", "1.5x", "2x" };
-            PlayerPostureMultiplierText = new TextViewModel(new TextObject("Player Posture Multiplier"));
+            PlayerPostureMultiplierText = new TextViewModel(new TextObject("{=RBM_CON_013}Player Posture Multiplier"));
             PlayerPostureMultiplier = new SelectorVM<SelectorItemVM>(playerPostureMultiplierOptions, 0, null);
 
             List<string> postureGUIOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            PostureGUIEnabledText = new TextViewModel(new TextObject("Posture GUI"));
+            PostureGUIEnabledText = new TextViewModel(new TextObject("{=RBM_CON_014}Posture GUI"));
             PostureGUIEnabled = new SelectorVM<SelectorItemVM>(postureGUIOptions, 0, null);
 
             List<string> vanillaCombatAiOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
-            VanillaCombatAiText = new TextViewModel(new TextObject("Vanilla AI Block/Parry/Attack"));
+            VanillaCombatAiText = new TextViewModel(new TextObject("{=RBM_CON_015}Vanilla AI Block/Parry/Attack"));
             VanillaCombatAi = new SelectorVM<SelectorItemVM>(vanillaCombatAiOptions, 0, null);
 
             List<string> keepBattleOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
-            KeepBattleEnabledText = new TextViewModel(new TextObject("Keep Battle (Last Stand)"));
+            KeepBattleEnabledText = new TextViewModel(new TextObject("{=RBM_CON_031}Keep Battle (Last Stand)"));
             KeepBattleEnabled = new SelectorVM<SelectorItemVM>(keepBattleOptions, 0, null);
 
             List<string> frontlineOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            FrontlineEnabledText = new TextViewModel(new TextObject("Frontline System"));
+            FrontlineEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_019}Frontline System"));
             FrontlineEnabled = new SelectorVM<SelectorItemVM>(frontlineOptions, 0, OnFrontlineEnabledChanged);
             FrontlineEnabled.SelectedIndex = RBMConfig.frontlineEnabled ? 1 : 0;
             _frontlineMinFormationSize = MathF.Clamp(RBMConfig.frontlineMinFormationSize, 0f, 200f);
@@ -321,7 +321,7 @@ namespace RBMConfig
 
             // No LOC key, matching the RBMCampaignt section title this name is shared with.
             List<string> rbmCampaignEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            RBMCampaignEnabledText = new TextViewModel(new TextObject("RBM Campaign"));
+            RBMCampaignEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_033}RBM Campaign"));
             RBMCampaignEnabled = new SelectorVM<SelectorItemVM>(rbmCampaignEnabledOptions, 0, null);
 
             List<string> spoilsLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
@@ -345,20 +345,20 @@ namespace RBMConfig
             // Intra-kingdom supply caravans and their two sub-toggles: all on by default, so Enabled
             // carries the "(Default)" tag.
             List<string> kingdomCaravansOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            KingdomCaravansEnabledText = new TextViewModel(new TextObject("Kingdom Supply Caravans"));
+            KingdomCaravansEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_001}Kingdom Supply Caravans"));
             KingdomCaravansEnabled = new SelectorVM<SelectorItemVM>(kingdomCaravansOptions, 0, null);
 
             List<string> caravanInvestmentOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            CaravanInvestmentEnabledText = new TextViewModel(new TextObject("Caravan Investment"));
+            CaravanInvestmentEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_003}Caravan Investment"));
             CaravanInvestmentEnabled = new SelectorVM<SelectorItemVM>(caravanInvestmentOptions, 0, null);
 
             List<string> caravanLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
-            CaravanLoggingEnabledText = new TextViewModel(new TextObject("Caravan Logging"));
+            CaravanLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_005}Caravan Logging"));
             CaravanLoggingEnabled = new SelectorVM<SelectorItemVM>(caravanLoggingOptions, 0, null);
 
             // Deserter raider AI: on by default, so Enabled carries the "(Default)" tag.
             List<string> deserterRaidersOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            DeserterRaidersEnabledText = new TextViewModel(new TextObject("Deserter Raiders"));
+            DeserterRaidersEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_007}Deserter Raiders"));
             DeserterRaidersEnabled = new SelectorVM<SelectorItemVM>(deserterRaidersOptions, 0, null);
 
             // Equipment simulation: Enabled is the default, so its option carries the "(Default)" tag.
@@ -378,7 +378,7 @@ namespace RBMConfig
 
             // Troop power logging: on by default, so its option carries the "(Default)" tag.
             List<string> strategicPowerLoggingOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
-            StrategicPowerLoggingEnabledText = new TextViewModel(new TextObject("Troop Power Logging"));
+            StrategicPowerLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_036}Troop Power Logging"));
             StrategicPowerLoggingEnabled = new SelectorVM<SelectorItemVM>(strategicPowerLoggingOptions, 0, null);
 
             // Auto resolve perks: on by default, so its option carries the "(Default)" tag.
@@ -393,7 +393,7 @@ namespace RBMConfig
 
             // Auto resolve per-hit detail: on by default, so its option carries the "(Default)" tag.
             List<string> simulationLogHitsOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
-            SimulationLogHitsText = new TextViewModel(new TextObject("Auto Resolve Per-Hit Detail"));
+            SimulationLogHitsText = new TextViewModel(new TextObject("{=RBM_CFG_037}Auto Resolve Per-Hit Detail"));
             SimulationLogHits = new SelectorVM<SelectorItemVM>(simulationLogHitsOptions, 0, null);
 
             // Field battle logging: off by default -- a diagnostic for comparing a fought battle to the sim trace,

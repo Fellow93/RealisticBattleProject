@@ -1,14 +1,16 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace RBMCampaign
 {
-    internal class SimulationBattlePanelVM : ViewModel
+    // The chronicle's sentence templates live in SimulationBattlePanelVM.Chronicle.cs.
+    internal partial class SimulationBattlePanelVM : ViewModel
     {
         private const int RoundDividerInterval = 10;
 
@@ -81,8 +83,8 @@ namespace RBMCampaign
             _attackerStart = _attackerStartCount;
             _defenderStart = _defenderStartCount;
 
-            _phaseName = "DEPLOYING";
-            _phaseDescription = "Forces marshal on the field";
+            _phaseName = new TextObject(PhaseDeploying).ToString();
+            _phaseDescription = new TextObject(DeployDescription).ToString();
             _roundText = "";
         }
 
@@ -130,11 +132,12 @@ namespace RBMCampaign
                 _heroEventThisRound = false;
 
                 _lastRound = state.Round;
-                RoundText = "Round " + state.Round;
+                RoundText = new TextObject(RoundLine).SetTextVariable("NUM", state.Round).ToString();
 
                 if (state.Round > 1 && state.Round % RoundDividerInterval == 0)
                 {
-                    AddEvent("──── Round " + state.Round + " ────", "divider");
+                    AddEvent(new TextObject(RoundDivider)
+                        .SetTextVariable("NUM", state.Round).ToString(), "divider");
                 }
 
                 ScanArtillery(state);
@@ -147,122 +150,8 @@ namespace RBMCampaign
 
         // ── Phase tracking with flavor ──────────────────────────────────
 
-        private static readonly string[] VolleyFlavor = new[]
-        {
-            "Arrows darken the sky",
-            "Bowstrings sing across the field",
-            "The first shafts find their mark",
-            "A storm of arrows descends on the enemy",
-            "Volleys arc high and fall like rain",
-            "The air hums with feathered death",
-            "Shafts whistle overhead in thick waves",
-            "Archers loose in unison — the sky goes dark",
-            "A thousand bowstrings snap as one",
-            "The arrow storm begins its grim harvest",
-            "Quivers empty into the massed ranks ahead",
-            "Flights of arrows blot out the sun",
-        };
-
-        private static readonly string[] SkirmishFlavor = new[]
-        {
-            "Javelins fly as the cavalry rides out",
-            "Horsemen clash between the closing lines",
-            "Riders spur forward, javelins in hand",
-            "The skirmish opens as the gap narrows",
-            "Light horse wheel and strike at the flanks",
-            "Cavalry thunder across the open ground",
-            "Lances dip as the horsemen charge into the fray",
-            "Javelins arc through the dust between the lines",
-            "Outriders trade blows at the edges of the fight",
-            "The ground shakes as mounted warriors collide",
-            "Skirmishers dart forward and hurl their darts",
-            "Hooves pound and javelins flash in the sun",
-        };
-
-        private static readonly string[] MeleeFlavor = new[]
-        {
-            "Steel meets steel as the lines crash together",
-            "The shieldwall buckles under the press",
-            "Infantry close to sword's length at last",
-            "The lines meet with a thunderous crash",
-            "Men hack and shove in the press of bodies",
-            "The melee is a heaving mass of iron and flesh",
-            "Shields splinter under the weight of the charge",
-            "Swords ring out and men fall screaming",
-            "The battle becomes a brutal close-quarters brawl",
-            "Blades flash and blood slicks the trampled earth",
-            "The two sides grind against each other in the mud",
-            "Warriors grapple in the dust, fighting for their lives",
-            "The front line is a wall of shields, blood and iron",
-            "Axes and swords bite through armour and bone",
-        };
-
-        private static readonly string[] SiegeApproachFlavor = new[]
-        {
-            "Men sprint across the killing ground",
-            "The besiegers advance under a hail of arrows",
-            "Bodies pile before the gates",
-            "The open ground before the walls is a death trap",
-            "Defenders rain fire on the approaching columns",
-            "Arrows hammer down from the battlements",
-            "The assault columns push through a storm of bolts",
-            "Men fall by the dozen crossing the open ground",
-            "Hot sand and stones cascade from the ramparts",
-            "The advance is a slow crawl under murderous fire",
-            "Siege towers creak forward under a hail of missiles",
-        };
-
-        private static readonly string[] SiegeAssaultFlavor = new[]
-        {
-            "Ladders strike the walls!",
-            "The storm begins at the breaches",
-            "Men pour through the openings",
-            "Fighting is hand-to-hand at the parapets",
-            "The besiegers claw their way onto the walls",
-            "Defenders shove ladders back — but more come",
-            "The gatehouse is a slaughterhouse",
-            "Blood runs down the stone steps of the battlements",
-            "Swords clash on the narrow walkways of the wall",
-            "The breach is choked with the dead of both sides",
-            "Attackers flood the parapet despite fearful losses",
-        };
-
-        private static readonly string[] RoutFlavor = new[]
-        {
-            "Their courage breaks!",
-            "The line shatters and men flee!",
-            "Panic spreads through the ranks!",
-            "They throw down their arms and run!",
-            "The rout is on — nothing can stop it!",
-            "Their nerve fails — men turn and flee!",
-            "The retreat becomes a stampede!",
-            "Officers shout but no one listens — they run!",
-            "The formation dissolves into a fleeing mob!",
-            "Banners fall as men scatter in every direction!",
-        };
-
-        private static readonly string[] HalfStrengthFlavor = new[]
-        {
-            "have lost half their strength — the field is littered with their dead",
-            "are at half strength and wavering",
-            "have taken grievous losses — half their men are down",
-            "bleed freely — barely half still stand",
-            "have paid a terrible price — half their number lie fallen",
-            "thin visibly — the gaps in their line grow wider",
-            "stagger under the weight of their casualties",
-        };
-
-        private static readonly string[] QuarterStrengthFlavor = new[]
-        {
-            "are being destroyed — barely a quarter remain",
-            "are on the verge of annihilation",
-            "cling to the field with a handful of survivors",
-            "have lost three quarters of their men",
-            "fight on in desperate knots — most of their comrades are fallen",
-            "are a broken remnant, still fighting but doomed",
-            "barely hold together — the end is near for them",
-        };
-
+        // Returns the raw {=id}English template so the caller can resolve it; the flavor
+        // counter advances exactly as it did when these were plain English strings.
         private string PickFlavor(string[] pool)
         {
             return pool[_flavorCounter++ % pool.Length];
@@ -271,7 +160,7 @@ namespace RBMCampaign
         private void UpdatePhase(SimulationBattleState.BattleState state)
         {
             string phaseKey;
-            string phaseName;
+            string phaseTemplate;
             string[] flavorPool;
 
             if (state.SiegeAssaultBattle)
@@ -279,13 +168,13 @@ namespace RBMCampaign
                 if (SimulationSiege.IsApproach(state))
                 {
                     phaseKey = "siege_approach";
-                    phaseName = "APPROACH";
+                    phaseTemplate = PhaseApproach;
                     flavorPool = SiegeApproachFlavor;
                 }
                 else
                 {
                     phaseKey = "siege_assault";
-                    phaseName = "ASSAULT";
+                    phaseTemplate = PhaseAssault;
                     flavorPool = SiegeAssaultFlavor;
                     UpdateSiegeInfo(state);
                 }
@@ -293,39 +182,43 @@ namespace RBMCampaign
             else if (SimulationBattleState.IsVolleyPhase(state))
             {
                 phaseKey = "volley";
-                phaseName = "VOLLEY";
+                phaseTemplate = PhaseVolley;
                 flavorPool = VolleyFlavor;
             }
             else if (SimulationBattleState.IsSkirmishPhase(state))
             {
                 phaseKey = "skirmish";
-                phaseName = "SKIRMISH";
+                phaseTemplate = PhaseSkirmish;
                 flavorPool = SkirmishFlavor;
             }
             else
             {
                 phaseKey = "melee";
-                phaseName = "MELEE";
+                phaseTemplate = PhaseMelee;
                 flavorPool = MeleeFlavor;
             }
 
             if (state.AttackerRouted > 0 || state.DefenderRouted > 0)
             {
                 phaseKey = "rout";
-                phaseName = "ROUT";
+                phaseTemplate = PhaseRout;
                 flavorPool = RoutFlavor;
             }
+
+            string phaseName = new TextObject(phaseTemplate).ToString();
 
             if (phaseKey != _lastPhaseKey && state.Round > 0)
             {
                 _lastPhaseKey = phaseKey;
 
-                string flavor = PickFlavor(flavorPool);
-                AddEvent(phaseName + " — " + flavor, "phase");
+                string flavor = new TextObject(PickFlavor(flavorPool)).ToString();
+                AddEvent(new TextObject(PhaseBannerLine)
+                    .SetTextVariable("PHASE", phaseName)
+                    .SetTextVariable("FLAVOR", flavor).ToString(), "phase");
             }
 
             PhaseName = phaseName;
-            PhaseDescription = PickFlavorStable(flavorPool, state.Round / 3);
+            PhaseDescription = new TextObject(PickFlavorStable(flavorPool, state.Round / 3)).ToString();
         }
 
         private static string PickFlavorStable(string[] pool, int seed)
@@ -337,8 +230,10 @@ namespace RBMCampaign
         {
             if (state.AttackWidth > 0 || state.DefendWidth > 0)
             {
-                SiegeInfo = "Frontage: " + state.AttackWidth + " vs " + state.DefendWidth
-                    + " · Wall: " + ((int)(state.SiegeWallFactor * 100)) + "%";
+                SiegeInfo = new TextObject(SiegeInfoLine)
+                    .SetTextVariable("ATK", state.AttackWidth)
+                    .SetTextVariable("DEF", state.DefendWidth)
+                    .SetTextVariable("PCT", (int)(state.SiegeWallFactor * 100)).ToString();
             }
         }
 
@@ -370,71 +265,6 @@ namespace RBMCampaign
             }
         }
 
-        private static string VerbForWeapon(string weaponClass, string phase, int counter)
-        {
-            string[] verbs;
-            switch (weaponClass)
-            {
-                case "OneHandedSword":
-                case "TwoHandedSword":
-                    verbs = new[] { "cut down", "slashed", "ran through", "slew" };
-                    break;
-                case "Dagger":
-                    verbs = new[] { "stabbed", "knifed", "gutted" };
-                    break;
-                case "OneHandedAxe":
-                case "TwoHandedAxe":
-                    verbs = new[] { "cleaved", "hewed down", "hacked apart", "split open" };
-                    break;
-                case "Mace":
-                case "TwoHandedMace":
-                case "Pick":
-                    verbs = new[] { "battered down", "hammered down", "crushed", "smashed" };
-                    break;
-                case "OneHandedPolearm":
-                case "TwoHandedPolearm":
-                case "LowGripPolearm":
-                    verbs = new[] { "pierced", "impaled", "speared", "skewered" };
-                    break;
-                case "Arrow":
-                case "Bow":
-                    verbs = new[] { "shot down", "pierced with an arrow", "pinned with a shaft", "dropped with a shot" };
-                    break;
-                case "Bolt":
-                case "Crossbow":
-                    verbs = new[] { "shot down with a bolt", "pinned with a crossbow bolt", "dropped with a bolt" };
-                    break;
-                case "Javelin":
-                    verbs = new[] { "speared with a javelin", "impaled with a thrown spear", "skewered at range" };
-                    break;
-                case "ThrowingAxe":
-                    verbs = new[] { "hit with a thrown axe", "split open with a hurled axe", "struck down with a thrown axe" };
-                    break;
-                case "ThrowingKnife":
-                    verbs = new[] { "hit with a thrown knife", "struck down with a thrown blade" };
-                    break;
-                case "Stone":
-                case "SlingStone":
-                case "Sling":
-                    verbs = new[] { "brained with a sling stone", "felled with a stone", "struck down with a sling" };
-                    break;
-                default:
-                    if (phase == "shoot")
-                        verbs = new[] { "shot down", "pierced", "struck at range" };
-                    else if (phase == "throw")
-                        verbs = new[] { "struck at range", "hit with a thrown weapon" };
-                    else
-                        verbs = new[] { "struck down", "felled", "cut down" };
-                    break;
-            }
-            return verbs[Math.Abs(counter) % verbs.Length];
-        }
-
-        private static string SideLabel(bool isAttacker)
-        {
-            return isAttacker ? "[ATK] " : "[DEF] ";
-        }
-
         private void EmitRoundHardestHit()
         {
             if (_phaseHardestStriker == null || _phaseHardestStruck == null || _phaseHardestDamage < 10f)
@@ -442,96 +272,18 @@ namespace RBMCampaign
                 return;
             }
 
-            string verb = VerbForWeapon(_phaseHardestWeapon, _phaseHardestAttack, _flavorCounter++);
-            string strikerName = TroopName(_phaseHardestStriker);
-            string struckName = TroopName(_phaseHardestStruck);
-            string strikerSide = SideLabel(_phaseHardestStrikerIsAttacker);
-            string struckSide = SideLabel(!_phaseHardestStrikerIsAttacker);
-            int dmg = (int)_phaseHardestDamage;
+            string template = KillTemplateForWeapon(_phaseHardestWeapon, _phaseHardestAttack,
+                _flavorCounter++);
 
-            AddEvent(strikerSide + strikerName + " " + verb + " " + struckSide + struckName
-                + " (" + dmg + " dmg)", "hardhit");
+            AddEvent(new TextObject(template)
+                .SetTextVariable("ATTACKER",
+                    SidedName(TroopName(_phaseHardestStriker), _phaseHardestStrikerIsAttacker))
+                .SetTextVariable("VICTIM",
+                    SidedName(TroopName(_phaseHardestStruck), !_phaseHardestStrikerIsAttacker))
+                .SetTextVariable("DMG", DmgText(_phaseHardestDamage)).ToString(), "hardhit");
         }
 
         // ── Trace scanning (heroes + hard hits) ────────────────────────
-
-        private static readonly string[] HeroFellVerbs_Charge = new[]
-        {
-            "was ridden down by",
-            "was trampled under the hooves of",
-            "was unhorsed and crushed by",
-            "was broken by the lance of",
-            "was swept from the saddle by",
-            "was smashed aside by the charge of",
-        };
-
-        private static readonly string[] HeroFellVerbs_Brace = new[]
-        {
-            "was impaled on the braced spear of",
-            "charged into the waiting lance of",
-            "rode onto the set pike of",
-            "was skewered on the levelled polearm of",
-        };
-
-        private static string HeroVerbForWeapon(string weaponClass, string phase, int counter)
-        {
-            string[] verbs;
-            switch (weaponClass)
-            {
-                case "OneHandedSword":
-                case "TwoHandedSword":
-                    verbs = new[] { "was cut down by", "was slain by the blade of", "fell to the sword of", "was run through by" };
-                    break;
-                case "Dagger":
-                    verbs = new[] { "was stabbed down by", "was knifed by", "fell to the dagger of" };
-                    break;
-                case "OneHandedAxe":
-                case "TwoHandedAxe":
-                    verbs = new[] { "was cleaved apart by", "was hewn down by", "fell to the axe of", "was split open by" };
-                    break;
-                case "Mace":
-                case "TwoHandedMace":
-                case "Pick":
-                    verbs = new[] { "was battered down by", "was crushed by", "had their skull caved in by", "was hammered to the ground by" };
-                    break;
-                case "OneHandedPolearm":
-                case "TwoHandedPolearm":
-                case "LowGripPolearm":
-                    verbs = new[] { "was pierced by the spear of", "was impaled by", "was run through by the lance of", "fell to the polearm of" };
-                    break;
-                case "Arrow":
-                case "Bow":
-                    verbs = new[] { "was felled by an arrow from", "was shot down by", "took a fatal shaft from", "was pierced by an arrow from" };
-                    break;
-                case "Bolt":
-                case "Crossbow":
-                    verbs = new[] { "was dropped by a bolt from", "was pinned by a crossbow bolt from", "took a killing bolt from" };
-                    break;
-                case "Javelin":
-                    verbs = new[] { "was speared by a javelin from", "was impaled at range by", "took a hurled spear from" };
-                    break;
-                case "ThrowingAxe":
-                    verbs = new[] { "was struck by a thrown axe from", "was split open by a hurled axe from" };
-                    break;
-                case "ThrowingKnife":
-                    verbs = new[] { "was struck down by a thrown knife from", "took a thrown blade from" };
-                    break;
-                case "Stone":
-                case "SlingStone":
-                case "Sling":
-                    verbs = new[] { "was brained by a sling stone from", "was felled by a stone from" };
-                    break;
-                default:
-                    if (phase == "shoot")
-                        verbs = new[] { "was shot down by", "was struck at range by", "was felled by a missile from" };
-                    else if (phase == "throw")
-                        verbs = new[] { "was struck down at range by", "was felled by a thrown weapon from" };
-                    else
-                        verbs = new[] { "was struck down by", "was felled by", "fell in combat with" };
-                    break;
-            }
-            return verbs[Math.Abs(counter) % verbs.Length];
-        }
 
         private static bool HitInvolvesPlayer(HitRecord hit)
         {
@@ -621,52 +373,27 @@ namespace RBMCampaign
 
         // ── Player hero: every blow they're involved in ─────────────
 
-        private static readonly string[] PlayerHitVerbs = new[]
-        {
-            " strikes ", " lands a blow on ", " hits ", " connects with ",
-        };
-
-        private static readonly string[] PlayerTakeHitVerbs = new[]
-        {
-            " takes a hit from ", " is struck by ", " is hit by ", " absorbs a blow from ",
-        };
-
-        private static readonly string[] PlayerMissVerbs = new[]
-        {
-            " dodges a shot from ", " evades ", " sidesteps a blow from ",
-        };
-
-        private static readonly string[] PlayerMissedShotVerbs = new[]
-        {
-            " misses a shot at ", " sends a shaft wide of ", " looses at ",
-        };
-
         private void EmitPlayerHitEvent(HitRecord hit)
         {
             bool playerIsStriker = hit.Striker != null && hit.Striker.IsPlayerCharacter;
             bool playerIsStruck = hit.Struck != null && hit.Struck.IsPlayerCharacter;
 
-            string playerName = playerIsStriker
-                ? (hit.Striker.Name != null ? hit.Striker.Name.ToString() : "You")
-                : (hit.Struck.Name != null ? hit.Struck.Name.ToString() : "You");
-            string playerSide = SideLabel(playerIsStriker ? hit.StrikerIsAttacker : !hit.StrikerIsAttacker);
+            string rawPlayerName = playerIsStriker
+                ? (hit.Striker.Name != null ? hit.Striker.Name.ToString() : new TextObject(NameYou).ToString())
+                : (hit.Struck.Name != null ? hit.Struck.Name.ToString() : new TextObject(NameYou).ToString());
+            string playerName = SidedName(rawPlayerName,
+                playerIsStriker ? hit.StrikerIsAttacker : !hit.StrikerIsAttacker);
             CharacterObject playerChar = playerIsStriker ? hit.Striker : hit.Struck;
 
-            string otherName = playerIsStriker ? TroopName(hit.Struck) : TroopName(hit.Striker);
-            string otherSide = SideLabel(playerIsStriker ? !hit.StrikerIsAttacker : hit.StrikerIsAttacker);
+            string otherName = SidedName(
+                playerIsStriker ? TroopName(hit.Struck) : TroopName(hit.Striker),
+                playerIsStriker ? !hit.StrikerIsAttacker : hit.StrikerIsAttacker);
 
             if (hit.Evaded || hit.Closing)
             {
-                if (playerIsStruck)
-                {
-                    AddHeroEvent(playerSide + playerName,
-                        PickFlavor(PlayerMissVerbs) + otherSide + otherName, "hero", playerChar);
-                }
-                else
-                {
-                    AddHeroEvent(playerSide + playerName,
-                        PickFlavor(PlayerMissedShotVerbs) + otherSide + otherName, "hero", playerChar);
-                }
+                string[] pool = playerIsStruck ? PlayerMissFlavor : PlayerMissedShotFlavor;
+                AddHeroSentence(new TextObject(PickFlavor(pool)).SetTextVariable("FOE", otherName),
+                    playerName, "hero", playerChar);
                 return;
             }
 
@@ -678,17 +405,19 @@ namespace RBMCampaign
                 }
                 else
                 {
-                    string defenseDesc;
+                    string template;
                     switch (hit.Defense)
                     {
-                        case "riposte":     defenseDesc = "'s blow is parried and countered by "; break;
-                        case "parry":       defenseDesc = "'s attack is parried by "; break;
-                        case "shield-block": defenseDesc = "'s strike is blocked by "; break;
-                        case "weapon-block": defenseDesc = "'s blow is deflected by "; break;
-                        default:            defenseDesc = "'s attack is defended by "; break;
+                        case "riposte":      template = PlayerAttackRiposted; break;
+                        case "parry":        template = PlayerAttackParried; break;
+                        case "shield-block": template = PlayerAttackShieldBlocked; break;
+                        case "weapon-block": template = PlayerAttackWeaponBlocked; break;
+                        default:             template = PlayerAttackDefended; break;
                     }
-                    AddHeroEvent(playerSide + playerName,
-                        defenseDesc + otherSide + otherName + DmgSuffix(hit.FinalDamage), "hero", playerChar);
+                    AddHeroSentence(new TextObject(template)
+                        .SetTextVariable("FOE", otherName)
+                        .SetTextVariable("DMG", DmgText(hit.FinalDamage)),
+                        playerName, "hero", playerChar);
                 }
                 return;
             }
@@ -701,184 +430,120 @@ namespace RBMCampaign
                 }
                 else
                 {
-                    AddHeroEvent(playerSide + playerName,
-                        PickFlavor(PlayerHitVerbs) + otherSide + otherName + DmgSuffix(hit.FinalDamage),
-                        "hero", playerChar);
+                    AddHeroSentence(new TextObject(PickFlavor(PlayerHitFlavor))
+                        .SetTextVariable("FOE", otherName)
+                        .SetTextVariable("DMG", DmgText(hit.FinalDamage)),
+                        playerName, "hero", playerChar);
                 }
             }
             else
             {
-                AddHeroEvent(playerSide + playerName,
-                    PickFlavor(PlayerTakeHitVerbs) + otherSide + otherName + DmgSuffix(hit.FinalDamage),
-                    "hero", playerChar);
+                AddHeroSentence(new TextObject(PickFlavor(PlayerTakeHitFlavor))
+                    .SetTextVariable("FOE", otherName)
+                    .SetTextVariable("DMG", DmgText(hit.FinalDamage)),
+                    playerName, "hero", playerChar);
             }
         }
 
         private void EmitHeroCasualty(HitRecord hit)
         {
-            string victimName = hit.Struck.Name != null ? hit.Struck.Name.ToString() : "A lord";
-            string killerName = hit.Striker != null
-                ? TroopName(hit.Striker)
-                : "an unknown assailant";
-            string victimSide = SideLabel(!hit.StrikerIsAttacker);
-            string killerSide = SideLabel(hit.StrikerIsAttacker);
+            string victimName = SidedName(
+                hit.Struck.Name != null ? hit.Struck.Name.ToString() : new TextObject(NameLordCap).ToString(),
+                !hit.StrikerIsAttacker);
+            string killerName = SidedName(
+                hit.Striker != null ? TroopName(hit.Striker) : new TextObject(NameUnknownAssailant).ToString(),
+                hit.StrikerIsAttacker);
 
-            string verb;
+            string template;
             if (hit.Braced)
             {
-                verb = PickFlavor(HeroFellVerbs_Brace);
+                template = PickFlavor(HeroFell_Brace);
             }
             else if (hit.ChargeBonus > 5f)
             {
-                verb = PickFlavor(HeroFellVerbs_Charge);
+                template = PickFlavor(HeroFell_Charge);
             }
             else
             {
-                verb = HeroVerbForWeapon(hit.Weapon, hit.Phase, _flavorCounter++);
+                template = HeroFellTemplateForWeapon(hit.Weapon, hit.Phase, _flavorCounter++);
             }
 
-            AddHeroEvent(victimSide + victimName,
-                " " + verb + " " + killerSide + killerName + DmgSuffix(hit.FinalDamage), "hero",
-                hit.Struck);
+            AddHeroSentence(new TextObject(template)
+                .SetTextVariable("FOE", killerName)
+                .SetTextVariable("DMG", DmgText(hit.FinalDamage)),
+                victimName, "hero", hit.Struck);
         }
-
-        private static string DmgSuffix(float damage)
-        {
-            int dmg = (int)damage;
-            return dmg > 0 ? " (" + dmg + " dmg)" : "";
-        }
-
-        private static readonly string[] RiposteFlavor = new[]
-        {
-            " parries a blow from {0} and strikes back",
-            " deflects {0}'s attack and counters",
-            " turns aside {0}'s blade and ripostes",
-            " catches {0}'s strike and drives their own home",
-            " sidesteps {0} and delivers a vicious counterstrike",
-        };
-
-        private static readonly string[] ParryFlavor = new[]
-        {
-            " blocks a blow from {0}",
-            " catches {0}'s strike on their shield",
-            " turns aside a blow from {0}",
-            " deflects {0}'s attack",
-        };
 
         private void EmitHeroDefense(HitRecord hit)
         {
-            string heroName = hit.Struck.Name != null ? hit.Struck.Name.ToString() : "A lord";
-            string attackerName = hit.Striker != null ? TroopName(hit.Striker) : "an attacker";
-            string heroSide = SideLabel(!hit.StrikerIsAttacker);
-            string attackerSide = SideLabel(hit.StrikerIsAttacker);
-            string attackerFull = attackerSide + attackerName;
+            string heroName = SidedName(
+                hit.Struck.Name != null ? hit.Struck.Name.ToString() : new TextObject(NameLordCap).ToString(),
+                !hit.StrikerIsAttacker);
+            string attackerName = SidedName(
+                hit.Striker != null ? TroopName(hit.Striker) : new TextObject(NameAnAttacker).ToString(),
+                hit.StrikerIsAttacker);
 
+            string[] pool;
             if (hit.Defense == "riposte")
             {
-                string flavor = string.Format(PickFlavor(RiposteFlavor), attackerFull);
-                AddHeroEvent(heroSide + heroName, flavor + DmgSuffix(hit.FinalDamage), "hero", hit.Struck);
+                pool = RiposteFlavor;
             }
             else if (hit.Defense == "parry" || hit.Defense == "weapon-block" || hit.Defense == "shield-block")
             {
-                string flavor = string.Format(PickFlavor(ParryFlavor), attackerFull);
-                AddHeroEvent(heroSide + heroName, flavor + DmgSuffix(hit.FinalDamage), "hero", hit.Struck);
+                pool = ParryFlavor;
             }
+            else
+            {
+                return;
+            }
+
+            AddHeroSentence(new TextObject(PickFlavor(pool))
+                .SetTextVariable("FOE", attackerName)
+                .SetTextVariable("DMG", DmgText(hit.FinalDamage)),
+                heroName, "hero", hit.Struck);
         }
-
-        private static readonly string[] HeroKillFlavor_Melee = new[]
-        {
-            " cuts down ",
-            " strikes down ",
-            " slays ",
-            " fells ",
-            " sends another to the grave — ",
-        };
-
-        private static readonly string[] HeroKillFlavor_Ranged = new[]
-        {
-            " picks off ",
-            " drops ",
-            " shoots down ",
-            " finds their mark — ",
-        };
 
         private void EmitHeroKill(HitRecord hit)
         {
-            string heroName = hit.Striker.Name != null ? hit.Striker.Name.ToString() : "A lord";
-            string victimName = TroopName(hit.Struck);
-            string heroSide = SideLabel(hit.StrikerIsAttacker);
-            string victimSide = SideLabel(!hit.StrikerIsAttacker);
+            string heroName = SidedName(
+                hit.Striker.Name != null ? hit.Striker.Name.ToString() : new TextObject(NameLordCap).ToString(),
+                hit.StrikerIsAttacker);
+            string victimName = SidedName(TroopName(hit.Struck), !hit.StrikerIsAttacker);
 
             bool ranged = hit.Phase == "shoot" || hit.Phase == "throw";
             string[] pool = ranged ? HeroKillFlavor_Ranged : HeroKillFlavor_Melee;
-            string verb = PickFlavor(pool);
 
-            AddHeroEvent(heroSide + heroName, verb + victimSide + victimName
-                + DmgSuffix(hit.FinalDamage), "hero", hit.Striker);
+            AddHeroSentence(new TextObject(PickFlavor(pool))
+                .SetTextVariable("VICTIM", victimName)
+                .SetTextVariable("DMG", DmgText(hit.FinalDamage)),
+                heroName, "hero", hit.Striker);
         }
-
-        private static readonly string[] HeadshotFlavor = new[]
-        {
-            " takes an arrow to the head!",
-            " is struck in the face by a missile!",
-            " catches a bolt in the skull!",
-            " is hit square in the head at range!",
-            " takes a shot clean through the helm!",
-        };
 
         private void EmitHeroHeadshot(HitRecord hit)
         {
-            string heroName = hit.Struck.Name != null ? hit.Struck.Name.ToString() : "A lord";
-            string heroSide = SideLabel(!hit.StrikerIsAttacker);
-            int dmg = (int)hit.FinalDamage;
-            AddHeroEvent(heroSide + heroName, PickFlavor(HeadshotFlavor) + " (" + dmg + " dmg)", "hero",
-                hit.Struck);
-        }
+            string heroName = SidedName(
+                hit.Struck.Name != null ? hit.Struck.Name.ToString() : new TextObject(NameLordCap).ToString(),
+                !hit.StrikerIsAttacker);
 
-        private static readonly string[] HeroSnipeFlavor = new[]
-        {
-            " lands a perfect headshot on ",
-            " puts an arrow clean through the helm of ",
-            " nails a shot to the head of ",
-            " finds the gap in the visor of ",
-            " sends a bolt straight through the skull of ",
-        };
+            AddHeroSentence(new TextObject(PickFlavor(HeadshotFlavor))
+                .SetTextVariable("DMG", DmgText(hit.FinalDamage)),
+                heroName, "hero", hit.Struck);
+        }
 
         private void EmitHeroSniped(HitRecord hit)
         {
-            string heroName = hit.Striker.Name != null ? hit.Striker.Name.ToString() : "A lord";
-            string victimName = TroopName(hit.Struck);
-            string heroSide = SideLabel(hit.StrikerIsAttacker);
-            string victimSide = SideLabel(!hit.StrikerIsAttacker);
-            int dmg = (int)hit.FinalDamage;
-            AddHeroEvent(heroSide + heroName,
-                PickFlavor(HeroSnipeFlavor) + victimSide + victimName + " (" + dmg + " dmg)", "hero",
-                hit.Striker);
+            string heroName = SidedName(
+                hit.Striker.Name != null ? hit.Striker.Name.ToString() : new TextObject(NameLordCap).ToString(),
+                hit.StrikerIsAttacker);
+            string victimName = SidedName(TroopName(hit.Struck), !hit.StrikerIsAttacker);
+
+            AddHeroSentence(new TextObject(PickFlavor(HeroSnipeFlavor))
+                .SetTextVariable("VICTIM", victimName)
+                .SetTextVariable("DMG", DmgText(hit.FinalDamage)),
+                heroName, "hero", hit.Striker);
         }
 
         // ── Artillery ───────────────────────────────────────────────────
-
-        private static readonly string[] ArtilleryFlavor = new[]
-        {
-            "Stones crash into the defenders",
-            "A boulder smashes through the ranks",
-            "The engines hurl death at the walls",
-            "Siege stones tear men apart",
-            "A catapult stone carves a path through the crowd",
-            "Trebuchet fire hammers the fortifications",
-            "The ground shakes as heavy stones find their targets",
-            "Engine crews heave and another stone arcs skyward",
-            "A volley of stones rains down from the siege line",
-        };
-
-        private static readonly string[] ArtilleryDestroyFlavor = new[]
-        {
-            "An enemy engine is shattered to splinters!",
-            "A direct hit reduces an engine to kindling!",
-            "A well-aimed stone destroys an enemy machine!",
-            "An engine erupts into flying timber and rope!",
-            "The crew dives clear as their machine is wrecked!",
-        };
 
         private void ScanArtillery(SimulationBattleState.BattleState state)
         {
@@ -912,18 +577,20 @@ namespace RBMCampaign
 
             if (killed > 0 || wounded > 0)
             {
-                string flavor = PickFlavor(ArtilleryFlavor);
-                string msg = flavor + " — " + killed + " killed";
+                string flavor = new TextObject(PickFlavor(ArtilleryFlavor)).ToString();
+                TextObject line = new TextObject(wounded > 0 ? ArtilleryTallyWounded : ArtilleryTally)
+                    .SetTextVariable("FLAVOR", flavor)
+                    .SetTextVariable("KILLED", killed);
                 if (wounded > 0)
                 {
-                    msg += ", " + wounded + " wounded";
+                    line.SetTextVariable("WOUNDED", wounded);
                 }
-                AddEvent(msg, "artillery");
+                AddEvent(line.ToString(), "artillery");
             }
 
             if (destroyed > 0)
             {
-                AddEvent(PickFlavor(ArtilleryDestroyFlavor), "artillery");
+                AddEvent(new TextObject(PickFlavor(ArtilleryDestroyFlavor)).ToString(), "artillery");
             }
 
             _lastArtilleryCount = count;
@@ -940,15 +607,20 @@ namespace RBMCampaign
             if (state.AttackerRouted > 0)
             {
                 _hadRout = true;
-                string flavor = PickFlavor(RoutFlavor);
-                AddEvent("The attackers " + flavor.ToLower() + " (" + state.AttackerRouted + " fled)", "rout");
+                EmitRoutLine(true, state.AttackerRouted);
             }
             else if (state.DefenderRouted > 0)
             {
                 _hadRout = true;
-                string flavor = PickFlavor(RoutFlavor);
-                AddEvent("The defenders " + flavor.ToLower() + " (" + state.DefenderRouted + " fled)", "rout");
+                EmitRoutLine(false, state.DefenderRouted);
             }
+        }
+
+        private void EmitRoutLine(bool attackers, int fled)
+        {
+            AddEvent(new TextObject(PickFlavor(RoutLineFlavor))
+                .SetTextVariable("SIDE", SideNoun(attackers))
+                .SetTextVariable("COUNT", fled).ToString(), "rout");
         }
 
         private void CheckMilestones()
@@ -958,12 +630,12 @@ namespace RBMCampaign
                 if (!_attackerHalfReported && _attackerTotal <= _attackerStartCount / 2)
                 {
                     _attackerHalfReported = true;
-                    AddEvent("The attackers " + PickFlavor(HalfStrengthFlavor), "milestone");
+                    EmitMilestone(HalfStrengthFlavor, true);
                 }
                 else if (!_attackerQuarterReported && _attackerTotal <= _attackerStartCount / 4)
                 {
                     _attackerQuarterReported = true;
-                    AddEvent("The attackers " + PickFlavor(QuarterStrengthFlavor), "milestone");
+                    EmitMilestone(QuarterStrengthFlavor, true);
                 }
             }
             if (_defenderStartCount > 0)
@@ -971,14 +643,20 @@ namespace RBMCampaign
                 if (!_defenderHalfReported && _defenderTotal <= _defenderStartCount / 2)
                 {
                     _defenderHalfReported = true;
-                    AddEvent("The defenders " + PickFlavor(HalfStrengthFlavor), "milestone");
+                    EmitMilestone(HalfStrengthFlavor, false);
                 }
                 else if (!_defenderQuarterReported && _defenderTotal <= _defenderStartCount / 4)
                 {
                     _defenderQuarterReported = true;
-                    AddEvent("The defenders " + PickFlavor(QuarterStrengthFlavor), "milestone");
+                    EmitMilestone(QuarterStrengthFlavor, false);
                 }
             }
+        }
+
+        private void EmitMilestone(string[] pool, bool attackers)
+        {
+            AddEvent(new TextObject(PickFlavor(pool))
+                .SetTextVariable("SIDE", SideNoun(attackers)).ToString(), "milestone");
         }
 
         // ── Troop counts ────────────────────────────────────────────────
@@ -1009,38 +687,51 @@ namespace RBMCampaign
             _events.Add(new SimulationEventItemVM(message, eventType));
         }
 
-        private void AddHeroEvent(string heroName, string rest, string eventType,
+        // Resolves a hero sentence and splits it around the hero's name, which the chronicle
+        // draws in its own coloured widget: whatever the translation puts before the name
+        // becomes the prefix, whatever follows it becomes the rest.
+        private void AddHeroSentence(TextObject sentence, string heroName, string eventType,
             CharacterObject heroCharacter = null)
         {
+            sentence.SetTextVariable("HERO", HeroMarker);
+            string full = sentence.ToString();
+
+            int at = full.IndexOf(HeroMarker, StringComparison.Ordinal);
+            string prefix = at >= 0 ? full.Substring(0, at) : string.Empty;
+            string rest = at >= 0 ? full.Substring(at + HeroMarker.Length) : full;
+
             bool isPlayer = heroCharacter != null && heroCharacter.IsPlayerCharacter;
-            _events.Add(new SimulationEventItemVM(heroName + rest, eventType, heroName, rest, isPlayer));
+            _events.Add(new SimulationEventItemVM(prefix + heroName + rest, eventType,
+                heroName, rest, isPlayer, prefix));
         }
 
         private static string TroopName(CharacterObject troop)
         {
             if (troop == null)
             {
-                return "an unknown soldier";
+                return new TextObject(NameUnknownSoldier).ToString();
             }
             if (troop.Name != null)
             {
                 return troop.Name.ToString();
             }
-            return troop.IsHero ? "a lord" : "a soldier";
+            return new TextObject(troop.IsHero ? NameALord : NameASoldier).ToString();
         }
 
         private static string GetSideName(MapEventSide side)
         {
             if (side == null || side.LeaderParty == null)
             {
-                return "Unknown";
+                return new TextObject(NameUnknownSide).ToString();
             }
             PartyBase leader = side.LeaderParty;
             if (leader.MapFaction != null && leader.MapFaction.Name != null)
             {
                 return leader.MapFaction.Name.ToString();
             }
-            return leader.Name != null ? leader.Name.ToString() : "Unknown";
+            return leader.Name != null
+                ? leader.Name.ToString()
+                : new TextObject(NameUnknownSide).ToString();
         }
 
         private static int CountSide(MapEventSide side)
@@ -1118,29 +809,50 @@ namespace RBMCampaign
 
         // ── Formatted text properties ───────────────────────────────────
 
+        // The panel's two fixed captions. Gauntlet cannot resolve a {=id} marker inside a prefab's
+        // Text=, so the prefab binds these instead.
         [DataSourceProperty]
-        public string AttackerInfantryText => "Inf: " + _attackerInfantry;
+        public string PanelTitle =>
+            new TextObject("{=RBM_SIMPANEL_TITLE}RBM Campaign — Detailed Auto-Resolve").ToString();
 
         [DataSourceProperty]
-        public string AttackerRangedText => "Ran: " + _attackerRanged;
+        public string ChronicleTitle => new TextObject("{=RBM_SIMPANEL_CHRONICLE}Battle Chronicle").ToString();
 
         [DataSourceProperty]
-        public string AttackerCavalryText => "Cav: " + _attackerCavalry;
+        public string AttackerInfantryText =>
+            new TextObject(StatInfantry).SetTextVariable("VALUE", _attackerInfantry).ToString();
 
         [DataSourceProperty]
-        public string AttackerTotalText => "Total: " + _attackerTotal + " / " + _attackerStart;
+        public string AttackerRangedText =>
+            new TextObject(StatRanged).SetTextVariable("VALUE", _attackerRanged).ToString();
 
         [DataSourceProperty]
-        public string DefenderInfantryText => "Inf: " + _defenderInfantry;
+        public string AttackerCavalryText =>
+            new TextObject(StatCavalry).SetTextVariable("VALUE", _attackerCavalry).ToString();
 
         [DataSourceProperty]
-        public string DefenderRangedText => "Ran: " + _defenderRanged;
+        public string AttackerTotalText =>
+            new TextObject(StatTotal)
+                .SetTextVariable("VALUE", _attackerTotal)
+                .SetTextVariable("START", _attackerStart).ToString();
 
         [DataSourceProperty]
-        public string DefenderCavalryText => "Cav: " + _defenderCavalry;
+        public string DefenderInfantryText =>
+            new TextObject(StatInfantry).SetTextVariable("VALUE", _defenderInfantry).ToString();
 
         [DataSourceProperty]
-        public string DefenderTotalText => "Total: " + _defenderTotal + " / " + _defenderStart;
+        public string DefenderRangedText =>
+            new TextObject(StatRanged).SetTextVariable("VALUE", _defenderRanged).ToString();
+
+        [DataSourceProperty]
+        public string DefenderCavalryText =>
+            new TextObject(StatCavalry).SetTextVariable("VALUE", _defenderCavalry).ToString();
+
+        [DataSourceProperty]
+        public string DefenderTotalText =>
+            new TextObject(StatTotal)
+                .SetTextVariable("VALUE", _defenderTotal)
+                .SetTextVariable("START", _defenderStart).ToString();
 
         // ── DataSource Properties ───────────────────────────────────────
 

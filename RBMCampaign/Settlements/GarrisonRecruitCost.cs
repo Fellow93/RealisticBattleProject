@@ -492,7 +492,7 @@ namespace RBMCampaign
                 en.Add(baseCap, recruit);
                 if (barracksPart > 0)
                 {
-                    en.Add(barracksPart, new TextObject("{=!}Barracks"));
+                    en.Add(barracksPart, new TextObject("{=RBM_BARRACKS}Barracks"));
                 }
 
                 // Fewer than the cap when the garrison is near its size ceiling.

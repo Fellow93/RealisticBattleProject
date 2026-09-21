@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.MapEvents;
@@ -182,8 +182,9 @@ namespace RBMCampaign
                 }
                 catch (Exception exception)
                 {
-                    InformationManager.DisplayMessage(new InformationMessage(
-                        "RBM: could not open the spectated battle. " + exception.Message));
+                    TextObject failed = new TextObject("{=RBM_SPECTATE_FAILED}RBM: could not open the spectated battle. {REASON}");
+                    failed.SetTextVariable("REASON", exception.Message);
+                    InformationManager.DisplayMessage(new InformationMessage(failed.ToString()));
                 }
             };
         }

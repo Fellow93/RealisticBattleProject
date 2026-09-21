@@ -73,7 +73,7 @@ namespace RBMCampaign
         private static class DrillXpPatch
         {
             private static readonly TextObject DrillText = new TextObject("{=rbm_garrison_drill}Garrison drill");
-            private static readonly TextObject TrainingFieldText = new TextObject("{=!}Training field");
+            private static readonly TextObject TrainingFieldText = new TextObject("{=RBM_TRAINING_FIELD}Training field");
 
             private static void Postfix(MobileParty mobileParty, TroopRosterElement troop, ref ExplainedNumber __result)
             {

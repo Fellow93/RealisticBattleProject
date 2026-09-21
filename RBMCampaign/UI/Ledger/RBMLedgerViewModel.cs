@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Roster;
@@ -1057,6 +1057,20 @@ namespace RBMCampaign
         {
             ScreenManager.PopScreen();
         }
+
+        // Column headings for the two list headers. Gauntlet cannot resolve a {=id} marker inside a
+        // prefab's Text=, so the prefab binds these instead; they re-resolve on every read.
+        [DataSourceProperty] public string HdrVillage => RBMLedgerHeadings.Village.ToString();
+        [DataSourceProperty] public string HdrProduction => RBMLedgerHeadings.Production.ToString();
+        [DataSourceProperty] public string HdrWealth => RBMLedgerHeadings.Wealth.ToString();
+        [DataSourceProperty] public string HdrHearth => RBMLedgerHeadings.Hearth.ToString();
+        [DataSourceProperty] public string HdrMilitia => RBMLedgerHeadings.Militia.ToString();
+        [DataSourceProperty] public string HdrTown => RBMLedgerHeadings.Town.ToString();
+        [DataSourceProperty] public string HdrProsperity => RBMLedgerHeadings.Prosperity.ToString();
+        [DataSourceProperty] public string HdrCitizen => RBMLedgerHeadings.Citizen.ToString();
+        [DataSourceProperty] public string HdrTreasury => RBMLedgerHeadings.Treasury.ToString();
+        [DataSourceProperty] public string HdrFood => RBMLedgerHeadings.Food.ToString();
+        [DataSourceProperty] public string HdrGarrison => RBMLedgerHeadings.Garrison.ToString();
 
         [DataSourceProperty]
         public MBBindingList<RBMLedgerTabVM> Tabs

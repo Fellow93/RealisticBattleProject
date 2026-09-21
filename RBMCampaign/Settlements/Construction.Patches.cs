@@ -167,7 +167,7 @@ namespace RBMCampaign
                     return;
                 }
                 Town town = ____settlement.Town;
-                TextObject text = new TextObject("{=!}The reserve pays for all building work at one denar per point of construction. Up to {CAP} points of labour are available a day; the fief adds {SHARE}% of its treasury to the reserve daily.");
+                TextObject text = new TextObject("{=RBM_CONSTR_RESERVE_HINT}The reserve pays for all building work at one denar per point of construction. Up to {CAP} points of labour are available a day; the fief adds {SHARE}% of its treasury to the reserve daily.");
                 text.SetTextVariable("CAP", (int)Construction.DailyCapacity(town));
                 text.SetTextVariable("SHARE", (RBMConfig.RBMConfig.constructionBudgetShare * 100f).ToString("0.#"));
                 __instance.ReserveBonusText = text.ToString();

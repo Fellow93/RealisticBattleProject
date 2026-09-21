@@ -1,4 +1,4 @@
-<Prefab>
+﻿<Prefab>
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" IsVisible="@IsVisible"
             DoNotAcceptEvents="true" DoNotPassEventsToChildren="false">
@@ -28,7 +28,7 @@
                             Brush.TextAlphaFactor="0.40"
                             Brush.TextHorizontalAlignment="Center"
                             MarginBottom="6"
-                            Text="RBM Campaign — Detailed Auto-Resolve" />
+                            Text="@PanelTitle" />
 
                 <!-- Phase Banner -->
                 <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
@@ -127,7 +127,7 @@
                             Brush="ScoreboardTitleFontBrush" Brush.FontSize="18"
                             Brush.TextAlphaFactor="0.75"
                             MarginBottom="4"
-                            Text="Battle Chronicle" />
+                            Text="@ChronicleTitle" />
 
                 <!-- ═══ SCROLLABLE CHRONICLE (fills remaining space) ═══ -->
                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
@@ -168,6 +168,10 @@
                                           <Children>
                                             <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
                                                         Brush="ScoreboardDefaultFontBrush" Brush.FontSize="15"
+                                                        Brush.TextAlphaFactor="0.85"
+                                                        Text="@HeroPrefix" />
+                                            <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
+                                                        Brush="ScoreboardDefaultFontBrush" Brush.FontSize="15"
                                                         Brush.FontColor="#8CDBB5FF"
                                                         Text="@HeroName" />
                                             <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
@@ -181,6 +185,10 @@
                                                    LayoutImp.LayoutMethod="HorizontalLeftToRight"
                                                    IsVisible="@IsOtherHero">
                                           <Children>
+                                            <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
+                                                        Brush="ScoreboardDefaultFontBrush" Brush.FontSize="15"
+                                                        Brush.TextAlphaFactor="0.85"
+                                                        Text="@HeroPrefix" />
                                             <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
                                                         Brush="ScoreboardDefaultFontBrush" Brush.FontSize="15"
                                                         Brush.FontColor="#E8D174FF"

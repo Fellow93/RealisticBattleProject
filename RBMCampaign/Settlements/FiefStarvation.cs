@@ -184,8 +184,10 @@ namespace RBMCampaign
             int dead = KillWounded(party.MemberRoster);
             if (dead > 0 && party.IsMainParty)
             {
-                MBInformationManager.AddQuickInformation(new TaleWorlds.Localization.TextObject(
-                    "{=RBM_STARVE_001}" + dead + " of your wounded have died of hunger."));
+                TaleWorlds.Localization.TextObject starved = new TaleWorlds.Localization.TextObject(
+                    "{=RBM_STARVE_001}{DEAD} of your wounded have died of hunger.");
+                starved.SetTextVariable("DEAD", dead);
+                MBInformationManager.AddQuickInformation(starved);
             }
         }
 

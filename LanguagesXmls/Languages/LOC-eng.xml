@@ -15,8 +15,8 @@
 	<string id="RBM_AI_008" text="DEF INF:" />
 	<string id="RBM_AI_009" text="Posture break: Posture depleted, {DMG} damage crushed through" />
 	<string id="RBM_AI_010" text="Enemy Posture break: Posture depleted, {DMG} damage crushed through" />
-	<string id="RBM_AI_011" text="Posture break: Posture depleted, perfect parry, {DMG} damage crushed through" />
-	<string id="RBM_AI_012" text="Enemy Posture break: Posture depleted, perfect parry, {DMG} damage crushed through" />
+	<string id="RBM_AI_011" text="Posture break: Posture depleted, {DMG} damage crushed through" />
+	<string id="RBM_AI_012" text="Enemy Posture break: Posture depleted, {DMG} damage crushed through" />
 	<string id="RBM_AI_013" text="Posture break: Posture depleted, perfect parry" />
 	<string id="RBM_AI_014" text="Posture break: Posture depleted, incorrect side block" />
 	<string id="RBM_AI_015" text="Posture break: Posture depleted, correct side block" />
@@ -36,8 +36,8 @@
 	<string id="RBM_COM_004" text="Pommel" />
 	<string id="RBM_COM_005" text="Face hit!" />
 	<string id="RBM_COM_006" text="Face hit!" />
-	<string id="RBM_COM_007" text="Under shoulder hit" />
-	<string id="RBM_COM_008" text="Under shoulder hit" />
+	<string id="RBM_COM_007" text="Under shoulder hit!" />
+	<string id="RBM_COM_008" text="Under shoulder hit!" />
 	<string id="RBM_COM_009" text="Ideal Ammo Weight Range/Damage, grams: " />
 	<string id="RBM_COM_010" text="Initial Missile Speed, m/s: " />
 	<string id="RBM_COM_011" text="Draw weight with modifier: " />
@@ -152,7 +152,6 @@
 		<string id="RBM_SPOILS_016" text="You take a leader's cut of {AMOUNT} gold from the spoils." />
 		<string id="RBM_SPOILS_017" text="Troop maintenance" />
 		<string id="RBM_SPOILS_018" text="Spoils Reserve" />
-		<string id="RBM_SPOILS_019" text="{TOTAL} ({PER} / man)" />
 		<string id="RBM_SPOILS_019" text="{TOTAL} ({PER} / man)" />
 		<string id="RBM_SPOILS_020" text="Maintenance paid from troop spoils" />
 	<string id="RBM_SPOILS_021" text="Includes mount: {AMOUNT}" />
@@ -337,7 +336,7 @@
 	<string id="RBM_LAN_011" text="Vlandian Light Lance" />
 	<string id="RBM_LAN_012" text="Imperial Light Lance" />
 	<string id="RBM_LAN_013" text="Khuzait Light Lance" />
-	<string id="RBM_LAN_014" text="Vlandia Lance" />
+	<string id="RBM_LAN_014" text="Vlandian Lance" />
 	<string id="RBM_LAN_015" text="Imperial Lance" />
 	<string id="RBM_LAN_016" text="Eastern Noble Lance" />
 	<string id="RBM_LAN_017" text="Eastern Polesword" />
@@ -374,10 +373,10 @@
 	<string id="RBM_RAN_028" text="60 Pound Composite Bow" />
 	
 	<string id="RBM_RAN_029" text="100 Pound Eastern Crossbow" />
-	<string id="RBM_RAN_030" text="80 Pound Eastern Crossbow" />
+	<string id="RBM_RAN_030" text="Light 80 Pound Eastern Crossbow" />
 	<string id="RBM_RAN_031" text="Heavy 80 Pound Repeating Crossbow" />
-	<string id="RBM_RAN_032" text="Heavy 60 Pound Repeating Crossbow" />
-	<string id="RBM_RAN_033" text="Heavy 45 Pound Repeating Crossbow" />
+	<string id="RBM_RAN_032" text="Medium 60 Pound Repeating Crossbow" />
+	<string id="RBM_RAN_033" text="Light 45 Pound Repeating Crossbow" />
 	<string id="RBM_RAN_034" text="Stone Sling Pebbles 35 grams" />
 	<string id="RBM_RAN_035" text="Stone Sling Pebbles 50 grams" />
 	<string id="RBM_RAN_036" text="Stone Sling Pebbles 80 grams" />
@@ -516,8 +515,8 @@
 	<string id="RBM_SPECTATE_002" text="Two armies have met in the field. You may watch the fight from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the battle on the map resolves on its own, and nothing you see here changes it." />
 	<string id="RBM_SPECTATE_003" text="Watch" />
 	<string id="RBM_SPECTATE_004" text="Ignore" />
-	<string id="RBM_SPECTATE_005" text="Attackers: {NAME} ({COUNT} men Â· power {POWER})" />
-	<string id="RBM_SPECTATE_006" text="Defenders: {NAME} ({COUNT} men Â· power {POWER})" />
+	<string id="RBM_SPECTATE_005" text="Attackers: {NAME} ({COUNT} men · power {POWER})" />
+	<string id="RBM_SPECTATE_006" text="Defenders: {NAME} ({COUNT} men · power {POWER})" />
 	<string id="RBM_SPECTATE_007" text="Watch this assault?" />
 	<string id="RBM_SPECTATE_008" text="An army is storming the walls. You may watch the assault from a free camera, with both sides under their own commanders. Choose whose lines to watch it from.{newline}{newline}This is an observation only: the siege on the map resolves on its own, and nothing you see here changes it." />
 	<string id="RBM_CAMP_001" text="RBM Campaign: incompatible save" />
@@ -528,9 +527,575 @@
 	<string id="RBM_WS_003" text="Master Assassin Cape" />
 	<string id="RBM_WS_004" text="Calradian Liquid Fire" />
 	<!-- RBMEconomy_trade_goods.xml Strings -->
-	<string id="RBM_E_001" text="Plain Ceramic"	/>
-	<string id="RBM_E_002" text="Decorated Pottery"	/>	
-	<string id="RBM_E_003" text="Ale"	/>		
-	<string id="RBM_E_004" text="Herd of Sheep"	/>	
+	<string id="RBM_E_001" text="Plain Ceramic{@Plural}plain ceramics{\@}"	/>
+	<string id="RBM_E_002" text="Decorated Pottery{@Plural}crates of decorated pottery{\@}"	/>	
+	<string id="RBM_E_003" text="Ale{@Plural}casks of ale{\@}"	/>		
+	<string id="RBM_E_004" text="Herd of Sheep{@Plural}herds of sheep{\@}"	/>	
+	<!-- RBM Ledger screen : headings the prefab binds and the values its view models build -->
+	<string id="RBM_LEDGER_CLOSE" text="Close" />
+	<string id="RBM_LEDGER_CONSUMED" text="Consumed" />
+	<string id="RBM_LEDGER_DAY" text="day" />
+	<string id="RBM_LEDGER_DELIVERED_HDR" text="Delivered by villagers" />
+	<string id="RBM_LEDGER_DEMAND" text="demand" />
+	<string id="RBM_LEDGER_EATEN_HDR" text="Food eaten / day" />
+	<string id="RBM_LEDGER_EV_ARRIVE" text="Dispatch arrived" />
+	<string id="RBM_LEDGER_EV_CAPTURED" text="Changed hands" />
+	<string id="RBM_LEDGER_EV_DISPATCH" text="Dispatch sent" />
+	<string id="RBM_LEDGER_EV_LOOTED" text="Looted" />
+	<string id="RBM_LEDGER_EV_RAID" text="Raided" />
+	<string id="RBM_LEDGER_EV_SIEGE" text="Besieged" />
+	<string id="RBM_LEDGER_EXPENSE" text="Expense" />
+	<string id="RBM_LEDGER_FOOD_HINT_HDR" text="Food in market" />
+	<string id="RBM_LEDGER_HEARTH" text="Hearth" />
+	<string id="RBM_LEDGER_HIST_OLDNEW" text="oldest→newest" />
+	<string id="RBM_LEDGER_H_CARAV" text="Carav" />
+	<string id="RBM_LEDGER_H_CITIN" text="Cit In" />
+	<string id="RBM_LEDGER_H_CITIZEN" text="Citizen" />
+	<string id="RBM_LEDGER_H_CITOUT" text="Cit Out" />
+	<string id="RBM_LEDGER_H_CONSUMEDDAY" text="Consumed/day" />
+	<string id="RBM_LEDGER_H_DAY" text="Day" />
+	<string id="RBM_LEDGER_H_DAYS" text="Days" />
+	<string id="RBM_LEDGER_H_DELIV" text="Deliv" />
+	<string id="RBM_LEDGER_H_DEMAND" text="Demand" />
+	<string id="RBM_LEDGER_H_DEMANDDAY" text="Demand/day" />
+	<string id="RBM_LEDGER_H_EATEN" text="Eaten" />
+	<string id="RBM_LEDGER_H_EQUIPMENT" text="Equipment &amp; materials" />
+	<string id="RBM_LEDGER_H_EVENTS" text="Events" />
+	<string id="RBM_LEDGER_H_FILLED" text="Filled" />
+	<string id="RBM_LEDGER_H_FOOD" text="Food" />
+	<string id="RBM_LEDGER_H_GARR" text="Garr" />
+	<string id="RBM_LEDGER_H_GARRISON" text="Garrison" />
+	<string id="RBM_LEDGER_H_GOODS" text="Goods (demand vs stock)" />
+	<string id="RBM_LEDGER_H_HEARTH" text="Hearth" />
+	<string id="RBM_LEDGER_H_MIL" text="Mil" />
+	<string id="RBM_LEDGER_H_MILITIA" text="Militia" />
+	<string id="RBM_LEDGER_H_PARTY" text="Party" />
+	<string id="RBM_LEDGER_H_PROD" text="Prod" />
+	<string id="RBM_LEDGER_H_PRODUCEDDAY" text="Produced/day" />
+	<string id="RBM_LEDGER_H_PRODUCTION" text="Production" />
+	<string id="RBM_LEDGER_H_PROSP" text="Prosp" />
+	<string id="RBM_LEDGER_H_PROSPERITY" text="Prosperity" />
+	<string id="RBM_LEDGER_H_STOCK" text="Stock" />
+	<string id="RBM_LEDGER_H_TOWN" text="Town" />
+	<string id="RBM_LEDGER_H_TREAS" text="Treas" />
+	<string id="RBM_LEDGER_H_TREASURY" text="Treasury" />
+	<string id="RBM_LEDGER_H_TRSIN" text="Trs In" />
+	<string id="RBM_LEDGER_H_TRSOUT" text="Trs Out" />
+	<string id="RBM_LEDGER_H_VALUE" text="Value" />
+	<string id="RBM_LEDGER_H_VILLAGE" text="Village" />
+	<string id="RBM_LEDGER_H_WANTEDDAY" text="Wanted/day" />
+	<string id="RBM_LEDGER_H_WEALTH" text="Wealth" />
+	<string id="RBM_LEDGER_H_WORKSHOPS" text="Workshops" />
+	<string id="RBM_LEDGER_INCOME" text="Income" />
+	<string id="RBM_LEDGER_INDEPENDENT" text="Independent" />
+	<string id="RBM_LEDGER_MISSING" text="Missing" />
+	<string id="RBM_LEDGER_M_HEARTH" text="Hearth" />
+	<string id="RBM_LEDGER_M_MILITIA" text="Militia" />
+	<string id="RBM_LEDGER_M_PROD" text="Prod" />
+	<string id="RBM_LEDGER_M_WEALTH" text="Wealth" />
+	<string id="RBM_LEDGER_NONE" text="(none)" />
+	<string id="RBM_LEDGER_OG_AMMO" text="Ammo" />
+	<string id="RBM_LEDGER_OG_ARMOR" text="Armor" />
+	<string id="RBM_LEDGER_OG_HARNESS" text="Horse harness" />
+	<string id="RBM_LEDGER_OG_HORSES" text="Horses" />
+	<string id="RBM_LEDGER_OG_LIVESTOCK" text="Livestock" />
+	<string id="RBM_LEDGER_OG_MATERIALS" text="Materials" />
+	<string id="RBM_LEDGER_OG_MELEE" text="Melee weapons" />
+	<string id="RBM_LEDGER_OG_OTHER" text="Other" />
+	<string id="RBM_LEDGER_OG_PACK" text="Pack animals" />
+	<string id="RBM_LEDGER_OG_RANGED" text="Ranged weapons" />
+	<string id="RBM_LEDGER_OG_SHIELDS" text="Shields" />
+	<string id="RBM_LEDGER_OG_THROWN" text="Thrown" />
+	<string id="RBM_LEDGER_PLACEHOLDER" text="This tab is not implemented yet. Statistics will appear here." />
+	<string id="RBM_LEDGER_PROD_HINT_HALTED" text="(production halted)" />
+	<string id="RBM_LEDGER_PROD_HINT_HDR" text="Daily production" />
+	<string id="RBM_LEDGER_PROD_HINT_TOTAL" text="Total" />
+	<string id="RBM_LEDGER_SUPPLY" text="stock" />
+	<string id="RBM_LEDGER_TAB_OVERVIEW" text="Overview" />
+	<string id="RBM_LEDGER_TAB_TOWNS" text="Towns" />
+	<string id="RBM_LEDGER_TAB_VILLAGES" text="Villages" />
+	<string id="RBM_LEDGER_TIER_BASIC" text="Basic" />
+	<string id="RBM_LEDGER_TIER_INACTIVE" text="(tier not demanded yet)" />
+	<string id="RBM_LEDGER_TIER_LUXURY" text="Luxury" />
+	<string id="RBM_LEDGER_TIER_MEDIUM" text="Medium" />
+	<string id="RBM_LEDGER_TITLE" text="RBM Ledger" />
+	<string id="RBM_LEDGER_TODAY" text="Today" />
+	<string id="RBM_LEDGER_TOTAL" text="Total" />
+	<string id="RBM_LEDGER_T_CARAVAN" text="Caravan buys" />
+	<string id="RBM_LEDGER_T_CITIZEN" text="Citizen" />
+	<string id="RBM_LEDGER_T_EATEN" text="Eaten" />
+	<string id="RBM_LEDGER_T_FOOD" text="Food" />
+	<string id="RBM_LEDGER_T_GARRISON" text="Garrison" />
+	<string id="RBM_LEDGER_T_MILITIA" text="Militia" />
+	<string id="RBM_LEDGER_T_PARTY" text="Party buys" />
+	<string id="RBM_LEDGER_T_PRISONERS" text="Prisoners" />
+	<string id="RBM_LEDGER_T_PROSPERITY" text="Prosperity" />
+	<string id="RBM_LEDGER_T_TREASURY" text="Treasury" />
+	<string id="RBM_LEDGER_T_VILLAGER" text="Delivered" />
+	<string id="RBM_LEDGER_UNBOUND" text="Unbound" />
+	<string id="RBM_LEDGER_UNITS_GOLD" text="{UNITS} ({GOLD}g)" />
+	<string id="RBM_LEDGER_WANTED" text="Wanted" />
+	<string id="RBM_LEDGER_WS_CONSUMED_HDR" text="Consumed / day" />
+	<string id="RBM_LEDGER_WS_PRODUCED_HDR" text="Produced / day" />
+	<!-- RBM configuration screen : option labels and their hints -->
+	<string id="RBM_CFG_001" text="Kingdom Supply Caravans" />
+	<string id="RBM_CFG_002" text="Spawns caravans that carry a surplus good from one of a kingdom's towns to another town of the same kingdom that is short of it -- real goods and money move, and the caravan can be raided. Off leaves the map on vanilla caravans alone. Default on." />
+	<string id="RBM_CFG_003" text="Caravan Investment" />
+	<string id="RBM_CFG_004" text="On a wealthy→struggling route, a caravan also injects capital into the struggling town so it can afford the goods, booked as a debt the town repays out of its hoard tax once it recovers. Needs Kingdom Supply Caravans on. Default on." />
+	<string id="RBM_CFG_005" text="Caravan Logging" />
+	<string id="RBM_CFG_006" text="Writes the supply-caravan system to logs/caravans next to the config: each caravan dispatched, its arrival and sale, capital injected and repaid, and any lost on the road. Needs Kingdom Supply Caravans on. Default on." />
+	<string id="RBM_CFG_007" text="Deserter Raiders" />
+	<string id="RBM_CFG_008" text="Gives deserter parties initiative: they actively hunt nearby villager convoys and caravans and raid weakly-held villages when they out-match the target, instead of aimlessly patrolling their spawn point. Off leaves deserters on vanilla behavior. Default on." />
+	<string id="RBM_CFG_009" text="Building Cost Multiplier" />
+	<string id="RBM_CFG_010" text="What a building project costs, as a multiple of vanilla's price. A point of construction is a coin in RBM, so vanilla's prices amount to a week's tax and have to be multiplied up for a project to be the years-long undertaking it should be. 1 leaves vanilla's prices alone. Default 250." />
+	<string id="RBM_CFG_011" text="Construction Budget Share" />
+	<string id="RBM_CFG_012" text="The share of a fief's treasury tipped into its construction reserve every day. Besides the owner's own purse this is the only thing that funds building, so it sets how fast a fief builds on its own account. Zero stops it. Default 0.01." />
+	<string id="RBM_CFG_013" text="Module &amp; Simulation" />
+	<string id="RBM_CFG_014" text="Logging" />
+	<string id="RBM_CFG_015" text="Troop Upgrades" />
+	<string id="RBM_CFG_016" text="Battle &amp; Raid Spoils" />
+	<string id="RBM_CFG_017" text="Wages &amp; Maintenance" />
+	<string id="RBM_CFG_018" text="Settlement Upkeep" />
+	<string id="RBM_CFG_019" text="Frontline System" />
+	<string id="RBM_CFG_020" text="Per-soldier jostling inside a charging infantry or archer line: each man decides every couple of seconds whether to press in, step back, close on a neighbour, slide around a flank or hold his rank. Off leaves melee lines on RBM's plain charge. Cavalry/archer free-charge rules and unit facing are unaffected either way. Default on." />
+	<string id="RBM_CFG_021" text="Frontline Min Formation Size" />
+	<string id="RBM_CFG_022" text="Formations smaller than this (undetached men) skip the frontline system entirely and charge normally -- there is no rank to hold in a handful of men. Default 25." />
+	<string id="RBM_CFG_023" text="Frontline Decision Hold" />
+	<string id="RBM_CFG_024" text="Once a man picks a move he sticks with it for a random 0 to this many seconds before reconsidering. Higher is steadier and cheaper; lower makes the line twitchier. Default 2.00." />
+	<string id="RBM_CFG_025" text="Frontline Attack Weight" />
+	<string id="RBM_CFG_026" text="Multiplier on the 'press forward at my target' score. Above 1 makes lines more aggressive and thinner; below 1 makes them hang back. Default 1.00." />
+	<string id="RBM_CFG_027" text="Frontline Back Step Weight" />
+	<string id="RBM_CFG_028" text="Multiplier on the 'give ground and let a fresh man through' score. Above 1 gives more rotation out of the front rank. Default 1.00." />
+	<string id="RBM_CFG_029" text="Frontline Close Ranks Weight" />
+	<string id="RBM_CFG_030" text="Multiplier on the 'close the gap to my nearest neighbour' score. Above 1 makes lines huddle tighter and shield walls hold better; below 1 lets them spread. Default 1.00." />
+	<string id="RBM_CFG_031" text="Frontline Sidestep Weight" />
+	<string id="RBM_CFG_032" text="Multiplier on both the left and right 'slide sideways past the man in front' scores. Above 1 makes lines spread wide around a stalled front rank. Default 1.00." />
+	<string id="RBM_CFG_033" text="RBM Campaign" />
+	<string id="RBM_CFG_034" text="Thrust Modifier" />
+	<string id="RBM_CFG_035" text="Stamina System" />
+	<string id="RBM_CFG_036" text="Troop Power Logging" />
+	<string id="RBM_CFG_037" text="Auto Resolve Per-Hit Detail" />
+	<string id="RBM_CON_022" text="Slow Motion in Combat" />
+	<string id="RBM_CON_023" text="Sneak Attack Insta-Kill" />
+	<string id="RBM_CON_030" text="Stamina System (requires Posture)" />
+	<string id="RBM_CON_111" text="Enlistment" />
+	<string id="RBM_CON_112" text="Village Production" />
+	<string id="RBM_CON_113" text="Multiplier on every village's daily output -- its production, warehouse size and production tooltip together. Below 1 throttles the countryside, above 1 floods it. Default 0.50." />
+	<string id="RBM_CON_114" text="Workshop Production" />
+	<string id="RBM_CON_115" text="Multiplier on every workshop's conversion speed -- how fast it turns inputs into outputs -- on top of RBM's prosperity-driven scale. Below 1 slows shops, above 1 speeds them. Default 1.00." />
+	<!-- Map nameplate bubbles : carousing, provisioning and keepsakes -->
+	<string id="RBM_FOOD_BUY_01" text="buys {LIST} — {AMT} denars" />
+	<string id="RBM_FOOD_BUY_02" text="lays in {LIST} for {AMT} denars" />
+	<string id="RBM_FOOD_BUY_03" text="provisions {LIST} — {AMT} denars" />
+	<string id="RBM_FOOD_BUY_04" text="stocks up: {LIST} ({AMT} denars)" />
+	<string id="RBM_FOOD_BUY_05" text="fills the packs — {LIST} for {AMT} denars" />
+	<string id="RBM_LUXURY_BUY_01" text="indulge in {LIST} — {AMT} denars" />
+	<string id="RBM_LUXURY_BUY_02" text="treat themselves to {LIST} for {AMT} denars" />
+	<string id="RBM_LUXURY_BUY_03" text="splash out on {LIST} — {AMT} denars" />
+	<string id="RBM_LUXURY_BUY_04" text="fancy {LIST} ({AMT} denars)" />
+	<string id="RBM_LUXURY_BUY_05" text="buy themselves {LIST} for {AMT} denars" />
+	<string id="RBM_SPOILS_DRUNK_01" text="drinks away {AMT} denars" />
+	<string id="RBM_SPOILS_DRUNK_02" text="spends {AMT} on ale and dice" />
+	<string id="RBM_SPOILS_DRUNK_03" text="empties {AMT} into the tavern" />
+	<string id="RBM_SPOILS_DRUNK_04" text="toasts away {AMT} denars" />
+	<string id="RBM_SPOILS_DRUNK_05" text="carouses — {AMT} gone" />
+	<string id="RBM_SPOILS_DRUNK_06" text="stands a round: {AMT} denars" />
+	<string id="RBM_SPOILS_DRUNK_07" text="pours {AMT} down their throats" />
+	<string id="RBM_SPOILS_DRUNK_08" text="gambles and drinks: {AMT}" />
+	<string id="RBM_SPOILS_DRUNK_09" text="keeps the taverns rich by {AMT}" />
+	<string id="RBM_SPOILS_DRUNK_10" text="roars through {AMT} in drink" />
+	<string id="RBM_SPOILS_DRUNK_11" text="wets their whistle for {AMT}" />
+	<string id="RBM_SPOILS_DRUNK_12" text="leaves {AMT} on the counter" />
+	<string id="RBM_SPOILS_DRUNK_13" text="drinks the town's health — {AMT} denars" />
+	<string id="RBM_SPOILS_DRUNK_14" text="blows {AMT} on wine and song" />
+	<string id="RBM_SPOILS_DRUNK_15" text="sinks {AMT} into their cups" />
+	<string id="RBM_SPOILS_DRUNK_16" text="makes merry for {AMT} denars" />
+	<!-- Spoils purse and starvation messages -->
+	<string id="RBM_SPOILS_031" text="Your men squeeze {SETTLEMENT} for supplies and pocket {AMOUNT} in spoils." />
+	<string id="RBM_SPOILS_032" text="Your men pick over the battle site and pocket {AMOUNT} in spoils." />
+	<string id="RBM_SPOILS_033" text="Your men strip the executed captive's kit and split {AMOUNT} in spoils." />
+	<string id="RBM_STARVE_001" text="{DEAD} of your wounded have died of hunger." />
+	<!-- Supply caravans and villager convoys -->
+	<string id="RBM_CARAVAN_RELIEF" text="Relief Caravan" />
+	<string id="RBM_CARAVAN_RELIEF_FROM" text="{FROM} Relief Caravan" />
+	<string id="RBM_CARAVAN_RELIEF_ROUTE" text="{FROM} → {TO} Relief Caravan" />
+	<string id="RBM_CARAVAN_SUPPLY" text="Supply Caravan" />
+	<string id="RBM_CARAVAN_SUPPLY_FROM" text="{FROM} Supply Caravan" />
+	<string id="RBM_CARAVAN_SUPPLY_ROUTE" text="{FROM} → {TO} Supply Caravan" />
+	<string id="rbm_villager_convoy_carry" text="Trade convoy" />
+	<!-- Lord switcher (debug hotkey) -->
+	<string id="RBM_SWITCH_CANCEL" text="Cancel" />
+	<string id="RBM_SWITCH_DONE" text="Switched from {OLD} ({OLDCLAN}) to {NEW} ({NEWCLAN})" />
+	<string id="RBM_SWITCH_GROUP" text="--- {KINGDOM} ({COUNT}) ---" />
+	<string id="RBM_SWITCH_GROUP_HINT" text="{KINGDOM}: {COUNT} lords with active parties" />
+	<string id="RBM_SWITCH_HINT" text="Age: {AGE} | Clan: {CLAN} | Kingdom: {KINGDOM} | {PARTY}" />
+	<string id="RBM_SWITCH_LORD" text="{LORD} ({CLAN})" />
+	<string id="RBM_SWITCH_NOCAMPAIGN" text="Not in a campaign." />
+	<string id="RBM_SWITCH_NOFIELDPARTY" text="{LORD} has no field party to switch into." />
+	<string id="RBM_SWITCH_NOKINGDOM" text="No Kingdom" />
+	<string id="RBM_SWITCH_NONE" text="None" />
+	<string id="RBM_SWITCH_NOPARTY" text="No party" />
+	<string id="RBM_SWITCH_OK" text="Switch" />
+	<string id="RBM_SWITCH_PARTY" text="{PARTY} ({TROOPS} troops)" />
+	<string id="RBM_SWITCH_TEXT" text="All lords with active parties, grouped by kingdom:" />
+	<string id="RBM_SWITCH_TITLE" text="Switch Lord" />
+	<!-- Spectated battles -->
+	<string id="RBM_SPECTATE_FAILED" text="RBM: could not open the spectated battle. {REASON}" />
+	<!-- Custom battle presets and the auto-resolve panel -->
+	<string id="RBM_CB_FILTER" text="XML Preset" />
+	<string id="RBM_CB_HOTKEY_HINT" text="Ctrl+S: Save Preset   |   Ctrl+L: Load Preset" />
+	<string id="RBM_CB_LOAD_TITLE" text="Load Battle Preset" />
+	<string id="RBM_CB_PRESET_LOADED" text="Preset loaded: '{NAME}'." />
+	<string id="RBM_CB_PRESET_SAVED" text="Preset saved: '{NAME}'." />
+	<string id="RBM_CB_SAVE_TITLE" text="Save Battle Preset" />
+	<string id="RBM_SIMPANEL_CHRONICLE" text="Battle Chronicle" />
+	<string id="RBM_SIMPANEL_TITLE" text="RBM Campaign — Detailed Auto-Resolve" />
+	<!-- Construction, garrison, militia and settlement wealth tooltips -->
+	<string id="RBM_BARRACKS" text="Barracks" />
+	<string id="RBM_CONSTR_CAP" text="Labour available" />
+	<string id="RBM_CONSTR_FREE" text="Prisoners" />
+	<string id="RBM_CONSTR_LOYALTY" text="Loyalty" />
+	<string id="RBM_CONSTR_MASON" text="Masons" />
+	<string id="RBM_CONSTR_MATERIAL" text="Materials" />
+	<string id="RBM_CONSTR_PERK" text="Governor, perks and market" />
+	<string id="RBM_CONSTR_RESERVE_HINT" text="The reserve pays for all building work at one denar per point of construction. Up to {CAP} points of labour are available a day; the fief adds {SHARE}% of its treasury to the reserve daily." />
+	<string id="RBM_CONSTR_TOOLS" text="Tools shortage" />
+	<string id="RBM_CONSTR_WAGE" text="Reserve" />
+	<string id="RBM_TRAINING_FIELD" text="Training field" />
+	<string id="RBM_construction_reserve" text="Construction reserve" />
+	<string id="RBM_construction_spend" text="Construction spend (daily)" />
+	<string id="RBM_garr_size" text="Town wealth (RBM)" />
+	<string id="RBM_militia_hardcap" text="Full muster" />
+	<string id="RBM_militia_prosperous" text="Prosperous citizens" />
+	<string id="RBM_militia_understrength" text="Mustering the levy" />
+	<string id="RBM_wealth_castle" text="Castle wealth" />
+	<string id="rbm_garr_full" text="Garrison near capacity" />
+	<string id="rbm_garr_rate" text="Wealth recruitment" />
+	<string id="rbm_garr_rate_capped" text="Wealth recruitment (max {MAX}/day)" />
+	<string id="rbm_garr_res" text="Held — treasury below reserve ({RES})" />
+	<string id="rbm_garr_shed" text="Over-strength — reducing (upkeep reserve {KEEP})" />
+	<string id="rbm_garr_subsidy" text="Held — upkeep subsidised by {WHO}" />
+	<string id="rbm_garr_subsidy_line" text="Garrison subsidies" />
+	<string id="rbm_garr_subsidy_town" text="the town reserve" />
+	<string id="rbm_garrison_drill" text="Garrison drill" />
+	<string id="rbm_mil_base_cap" text="Base (soft cap {CAP})" />
+	<!-- Economy tooltips : production, food, prosperity, workshops and clan finance -->
+	<string id="RBMArtisanStanding" text="Artisan Standing" />
+	<string id="RBM_ARTISAN_SCALE" text="Town crafts" />
+	<string id="RBM_CASTLE_SELF_SUFFICIENCY" text="Castle self-sufficiency" />
+	<string id="RBM_FOOD_FARMLANDS" text="Farmlands" />
+	<string id="RBM_FOOD_MARKET" text="Market food" />
+	<string id="RBM_FOOD_PRISONERS" text="Prisoners" />
+	<string id="RBM_FOOD_SHORTAGE" text="Unmet rations" />
+	<string id="RBM_PROSPERITY_HEARTH" text="Countryside support" />
+	<string id="RBM_PROSPERITY_HUNGER" text="Hunger" />
+	<string id="RBM_VILLAGE_WAREHOUSE" text="Warehouse" />
+	<string id="RBM_WORKSHOP_SCALE" text="Workshop share" />
+	<string id="RBM_fin_blood_money" text="Blood money paid to end feuds ({DAYS}-day avg.)" />
+	<string id="RBM_fin_ship_scrap" text="Ships recovered from disbanded parties ({DAYS}-day avg.)" />
+	<string id="RBM_spoils_tt" text="Spoils" />
+	<string id="RBM_wsPayroll" text="Production Wages" />
+	<string id="RBM_wsPayrollHint" text="Paid to the townspeople who work the shop as {RATE}% of every sale, while its capital is above {THRESHOLD}. Last day: {CYCLES} batches, {PAID} denars. This is on top of the daily wage above." />
+	<string id="RBM_wsPayrollHintIdle" text="Paid to the townspeople who work the shop as {RATE}% of every sale, while its capital is above {THRESHOLD}, on top of the daily wage above. No batch has run yet this session." />
+	<!-- RBM item and crafting-piece names -->
+	<string id="160aqzPm" text="Warrazor" />
+	<string id="18ZFPXsO" text="Huscarl Plated Boots" />
+	<string id="1RpDRgLe" text="Berserker Reinforced Cloak" />
+	<string id="DMciP5z3" text="Tartan Long Dress" />
+	<string id="GdM7iaV9" text="Lordly Steel Cap" />
+	<string id="K2xGw3Oo" text="Dummy Lower Average" />
+	<string id="QELt180J" text="Gilded Noble Armor" />
+	<string id="SHZ0P7Iu" text="Padded Leather Cape" />
+	<string id="Zx4h7jDy" text="Dummy Min Armor" />
+	<string id="dpHDIwKz" text="Mariner Leather Gambeson" />
+	<string id="eHyxxxoK" text="Huscarl Hauberk" />
+	<string id="gT8WENO3" text="Dummy Higher Average" />
+	<string id="noqT1MMC" text="Ornate Steel Cap" />
+	<string id="wSUN0Dmo" text="Dummy Max Armor" />
+	<!-- Auto-resolve battle chronicle: whole-sentence templates, named variables -->
+	<string id="RBM_CHR_SIDED_ATK" text="[ATK] {NAME}" />
+	<string id="RBM_CHR_SIDED_DEF" text="[DEF] {NAME}" />
+	<string id="RBM_CHR_SIDE_ATTACKERS" text="The attackers" />
+	<string id="RBM_CHR_SIDE_DEFENDERS" text="The defenders" />
+	<string id="RBM_CHR_UNKNOWN_SOLDIER" text="an unknown soldier" />
+	<string id="RBM_CHR_A_LORD" text="a lord" />
+	<string id="RBM_CHR_A_SOLDIER" text="a soldier" />
+	<string id="RBM_CHR_LORD_CAP" text="A lord" />
+	<string id="RBM_CHR_YOU" text="You" />
+	<string id="RBM_CHR_UNKNOWN_ASSAILANT" text="an unknown assailant" />
+	<string id="RBM_CHR_AN_ATTACKER" text="an attacker" />
+	<string id="RBM_CHR_UNKNOWN_SIDE" text="Unknown" />
+	<string id="RBM_CHR_DMG" text=" ({DMG} dmg)" />
+	<string id="RBM_CHR_PHASE_DEPLOYING" text="DEPLOYING" />
+	<string id="RBM_CHR_PHASE_APPROACH" text="APPROACH" />
+	<string id="RBM_CHR_PHASE_ASSAULT" text="ASSAULT" />
+	<string id="RBM_CHR_PHASE_VOLLEY" text="VOLLEY" />
+	<string id="RBM_CHR_PHASE_SKIRMISH" text="SKIRMISH" />
+	<string id="RBM_CHR_PHASE_MELEE" text="MELEE" />
+	<string id="RBM_CHR_PHASE_ROUT" text="ROUT" />
+	<string id="RBM_CHR_DEPLOY_DESC" text="Forces marshal on the field" />
+	<string id="RBM_CHR_PHASE_LINE" text="{PHASE} — {FLAVOR}" />
+	<string id="RBM_CHR_ROUND" text="Round {NUM}" />
+	<string id="RBM_CHR_DIVIDER" text="──── Round {NUM} ────" />
+	<string id="RBM_CHR_SIEGE_INFO" text="Frontage: {ATK} vs {DEF} · Wall: {PCT}%" />
+	<string id="RBM_CHR_STAT_INF" text="Inf: {VALUE}" />
+	<string id="RBM_CHR_STAT_RAN" text="Ran: {VALUE}" />
+	<string id="RBM_CHR_STAT_CAV" text="Cav: {VALUE}" />
+	<string id="RBM_CHR_STAT_TOTAL" text="Total: {VALUE} / {START}" />
+	<string id="RBM_CHR_VOLLEY_01" text="Arrows darken the sky" />
+	<string id="RBM_CHR_VOLLEY_02" text="Bowstrings sing across the field" />
+	<string id="RBM_CHR_VOLLEY_03" text="The first shafts find their mark" />
+	<string id="RBM_CHR_VOLLEY_04" text="A storm of arrows descends on the enemy" />
+	<string id="RBM_CHR_VOLLEY_05" text="Volleys arc high and fall like rain" />
+	<string id="RBM_CHR_VOLLEY_06" text="The air hums with feathered death" />
+	<string id="RBM_CHR_VOLLEY_07" text="Shafts whistle overhead in thick waves" />
+	<string id="RBM_CHR_VOLLEY_08" text="Archers loose in unison — the sky goes dark" />
+	<string id="RBM_CHR_VOLLEY_09" text="A thousand bowstrings snap as one" />
+	<string id="RBM_CHR_VOLLEY_10" text="The arrow storm begins its grim harvest" />
+	<string id="RBM_CHR_VOLLEY_11" text="Quivers empty into the massed ranks ahead" />
+	<string id="RBM_CHR_VOLLEY_12" text="Flights of arrows blot out the sun" />
+	<string id="RBM_CHR_SKIRM_01" text="Javelins fly as the cavalry rides out" />
+	<string id="RBM_CHR_SKIRM_02" text="Horsemen clash between the closing lines" />
+	<string id="RBM_CHR_SKIRM_03" text="Riders spur forward, javelins in hand" />
+	<string id="RBM_CHR_SKIRM_04" text="The skirmish opens as the gap narrows" />
+	<string id="RBM_CHR_SKIRM_05" text="Light horse wheel and strike at the flanks" />
+	<string id="RBM_CHR_SKIRM_06" text="Cavalry thunder across the open ground" />
+	<string id="RBM_CHR_SKIRM_07" text="Lances dip as the horsemen charge into the fray" />
+	<string id="RBM_CHR_SKIRM_08" text="Javelins arc through the dust between the lines" />
+	<string id="RBM_CHR_SKIRM_09" text="Outriders trade blows at the edges of the fight" />
+	<string id="RBM_CHR_SKIRM_10" text="The ground shakes as mounted warriors collide" />
+	<string id="RBM_CHR_SKIRM_11" text="Skirmishers dart forward and hurl their darts" />
+	<string id="RBM_CHR_SKIRM_12" text="Hooves pound and javelins flash in the sun" />
+	<string id="RBM_CHR_MELEE_01" text="Steel meets steel as the lines crash together" />
+	<string id="RBM_CHR_MELEE_02" text="The shieldwall buckles under the press" />
+	<string id="RBM_CHR_MELEE_03" text="Infantry close to sword's length at last" />
+	<string id="RBM_CHR_MELEE_04" text="The lines meet with a thunderous crash" />
+	<string id="RBM_CHR_MELEE_05" text="Men hack and shove in the press of bodies" />
+	<string id="RBM_CHR_MELEE_06" text="The melee is a heaving mass of iron and flesh" />
+	<string id="RBM_CHR_MELEE_07" text="Shields splinter under the weight of the charge" />
+	<string id="RBM_CHR_MELEE_08" text="Swords ring out and men fall screaming" />
+	<string id="RBM_CHR_MELEE_09" text="The battle becomes a brutal close-quarters brawl" />
+	<string id="RBM_CHR_MELEE_10" text="Blades flash and blood slicks the trampled earth" />
+	<string id="RBM_CHR_MELEE_11" text="The two sides grind against each other in the mud" />
+	<string id="RBM_CHR_MELEE_12" text="Warriors grapple in the dust, fighting for their lives" />
+	<string id="RBM_CHR_MELEE_13" text="The front line is a wall of shields, blood and iron" />
+	<string id="RBM_CHR_MELEE_14" text="Axes and swords bite through armour and bone" />
+	<string id="RBM_CHR_SAPPR_01" text="Men sprint across the killing ground" />
+	<string id="RBM_CHR_SAPPR_02" text="The besiegers advance under a hail of arrows" />
+	<string id="RBM_CHR_SAPPR_03" text="Bodies pile before the gates" />
+	<string id="RBM_CHR_SAPPR_04" text="The open ground before the walls is a death trap" />
+	<string id="RBM_CHR_SAPPR_05" text="Defenders rain fire on the approaching columns" />
+	<string id="RBM_CHR_SAPPR_06" text="Arrows hammer down from the battlements" />
+	<string id="RBM_CHR_SAPPR_07" text="The assault columns push through a storm of bolts" />
+	<string id="RBM_CHR_SAPPR_08" text="Men fall by the dozen crossing the open ground" />
+	<string id="RBM_CHR_SAPPR_09" text="Hot sand and stones cascade from the ramparts" />
+	<string id="RBM_CHR_SAPPR_10" text="The advance is a slow crawl under murderous fire" />
+	<string id="RBM_CHR_SAPPR_11" text="Siege towers creak forward under a hail of missiles" />
+	<string id="RBM_CHR_SASLT_01" text="Ladders strike the walls!" />
+	<string id="RBM_CHR_SASLT_02" text="The storm begins at the breaches" />
+	<string id="RBM_CHR_SASLT_03" text="Men pour through the openings" />
+	<string id="RBM_CHR_SASLT_04" text="Fighting is hand-to-hand at the parapets" />
+	<string id="RBM_CHR_SASLT_05" text="The besiegers claw their way onto the walls" />
+	<string id="RBM_CHR_SASLT_06" text="Defenders shove ladders back — but more come" />
+	<string id="RBM_CHR_SASLT_07" text="The gatehouse is a slaughterhouse" />
+	<string id="RBM_CHR_SASLT_08" text="Blood runs down the stone steps of the battlements" />
+	<string id="RBM_CHR_SASLT_09" text="Swords clash on the narrow walkways of the wall" />
+	<string id="RBM_CHR_SASLT_10" text="The breach is choked with the dead of both sides" />
+	<string id="RBM_CHR_SASLT_11" text="Attackers flood the parapet despite fearful losses" />
+	<string id="RBM_CHR_ROUT_01" text="Their courage breaks!" />
+	<string id="RBM_CHR_ROUT_02" text="The line shatters and men flee!" />
+	<string id="RBM_CHR_ROUT_03" text="Panic spreads through the ranks!" />
+	<string id="RBM_CHR_ROUT_04" text="They throw down their arms and run!" />
+	<string id="RBM_CHR_ROUT_05" text="The rout is on — nothing can stop it!" />
+	<string id="RBM_CHR_ROUT_06" text="Their nerve fails — men turn and flee!" />
+	<string id="RBM_CHR_ROUT_07" text="The retreat becomes a stampede!" />
+	<string id="RBM_CHR_ROUT_08" text="Officers shout but no one listens — they run!" />
+	<string id="RBM_CHR_ROUT_09" text="The formation dissolves into a fleeing mob!" />
+	<string id="RBM_CHR_ROUT_10" text="Banners fall as men scatter in every direction!" />
+	<string id="RBM_CHR_ROUTLINE_01" text="{SIDE} lose their courage — {COUNT} flee the field" />
+	<string id="RBM_CHR_ROUTLINE_02" text="{SIDE} shatter and run — {COUNT} flee the field" />
+	<string id="RBM_CHR_ROUTLINE_03" text="Panic spreads through {SIDE} — {COUNT} flee the field" />
+	<string id="RBM_CHR_ROUTLINE_04" text="{SIDE} throw down their arms — {COUNT} flee the field" />
+	<string id="RBM_CHR_ROUTLINE_05" text="The rout of {SIDE} cannot be stopped — {COUNT} flee the field" />
+	<string id="RBM_CHR_ROUTLINE_06" text="The nerve of {SIDE} fails — {COUNT} flee the field" />
+	<string id="RBM_CHR_ROUTLINE_07" text="The retreat of {SIDE} becomes a stampede — {COUNT} flee the field" />
+	<string id="RBM_CHR_ROUTLINE_08" text="No one heeds the officers of {SIDE} — {COUNT} flee the field" />
+	<string id="RBM_CHR_ROUTLINE_09" text="{SIDE} dissolve into a fleeing mob — {COUNT} flee the field" />
+	<string id="RBM_CHR_ROUTLINE_10" text="The banners of {SIDE} fall — {COUNT} flee the field" />
+	<string id="RBM_CHR_HALF_01" text="{SIDE} have lost half their strength — the field is littered with their dead" />
+	<string id="RBM_CHR_HALF_02" text="{SIDE} are at half strength and wavering" />
+	<string id="RBM_CHR_HALF_03" text="{SIDE} have taken grievous losses — half their men are down" />
+	<string id="RBM_CHR_HALF_04" text="{SIDE} bleed freely — barely half still stand" />
+	<string id="RBM_CHR_HALF_05" text="{SIDE} have paid a terrible price — half their number lie fallen" />
+	<string id="RBM_CHR_HALF_06" text="{SIDE} thin visibly — the gaps in their line grow wider" />
+	<string id="RBM_CHR_HALF_07" text="{SIDE} stagger under the weight of their casualties" />
+	<string id="RBM_CHR_QUARTER_01" text="{SIDE} are being destroyed — barely a quarter remain" />
+	<string id="RBM_CHR_QUARTER_02" text="{SIDE} are on the verge of annihilation" />
+	<string id="RBM_CHR_QUARTER_03" text="{SIDE} cling to the field with a handful of survivors" />
+	<string id="RBM_CHR_QUARTER_04" text="{SIDE} have lost three quarters of their men" />
+	<string id="RBM_CHR_QUARTER_05" text="{SIDE} fight on in desperate knots — most of their comrades are fallen" />
+	<string id="RBM_CHR_QUARTER_06" text="{SIDE} are a broken remnant, still fighting but doomed" />
+	<string id="RBM_CHR_QUARTER_07" text="{SIDE} barely hold together — the end is near for them" />
+	<string id="RBM_CHR_ARTY_01" text="Stones crash into the defenders" />
+	<string id="RBM_CHR_ARTY_02" text="A boulder smashes through the ranks" />
+	<string id="RBM_CHR_ARTY_03" text="The engines hurl death at the walls" />
+	<string id="RBM_CHR_ARTY_04" text="Siege stones tear men apart" />
+	<string id="RBM_CHR_ARTY_05" text="A catapult stone carves a path through the crowd" />
+	<string id="RBM_CHR_ARTY_06" text="Trebuchet fire hammers the fortifications" />
+	<string id="RBM_CHR_ARTY_07" text="The ground shakes as heavy stones find their targets" />
+	<string id="RBM_CHR_ARTY_08" text="Engine crews heave and another stone arcs skyward" />
+	<string id="RBM_CHR_ARTY_09" text="A volley of stones rains down from the siege line" />
+	<string id="RBM_CHR_ARTYDEST_01" text="An enemy engine is shattered to splinters!" />
+	<string id="RBM_CHR_ARTYDEST_02" text="A direct hit reduces an engine to kindling!" />
+	<string id="RBM_CHR_ARTYDEST_03" text="A well-aimed stone destroys an enemy machine!" />
+	<string id="RBM_CHR_ARTYDEST_04" text="An engine erupts into flying timber and rope!" />
+	<string id="RBM_CHR_ARTYDEST_05" text="The crew dives clear as their machine is wrecked!" />
+	<string id="RBM_CHR_ARTY_TALLY" text="{FLAVOR} — {KILLED} killed" />
+	<string id="RBM_CHR_ARTY_TALLY_W" text="{FLAVOR} — {KILLED} killed, {WOUNDED} wounded" />
+	<string id="RBM_CHR_KILL_SWORD_01" text="{ATTACKER} cut down {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_SWORD_02" text="{ATTACKER} slashed {VICTIM} open{DMG}" />
+	<string id="RBM_CHR_KILL_SWORD_03" text="{ATTACKER} ran {VICTIM} through{DMG}" />
+	<string id="RBM_CHR_KILL_SWORD_04" text="{ATTACKER} slew {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_DAGGER_01" text="{ATTACKER} stabbed {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_DAGGER_02" text="{ATTACKER} knifed {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_DAGGER_03" text="{ATTACKER} gutted {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_AXE_01" text="{ATTACKER} cleaved {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_AXE_02" text="{ATTACKER} hewed down {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_AXE_03" text="{ATTACKER} hacked {VICTIM} apart{DMG}" />
+	<string id="RBM_CHR_KILL_AXE_04" text="{ATTACKER} split {VICTIM} open{DMG}" />
+	<string id="RBM_CHR_KILL_MACE_01" text="{ATTACKER} battered down {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_MACE_02" text="{ATTACKER} hammered down {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_MACE_03" text="{ATTACKER} crushed {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_MACE_04" text="{ATTACKER} smashed {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_POLE_01" text="{ATTACKER} pierced {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_POLE_02" text="{ATTACKER} impaled {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_POLE_03" text="{ATTACKER} speared {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_POLE_04" text="{ATTACKER} skewered {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_BOW_01" text="{ATTACKER} shot down {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_BOW_02" text="{ATTACKER} pierced {VICTIM} with an arrow{DMG}" />
+	<string id="RBM_CHR_KILL_BOW_03" text="{ATTACKER} pinned {VICTIM} with a shaft{DMG}" />
+	<string id="RBM_CHR_KILL_BOW_04" text="{ATTACKER} dropped {VICTIM} with a shot{DMG}" />
+	<string id="RBM_CHR_KILL_XBOW_01" text="{ATTACKER} shot down {VICTIM} with a bolt{DMG}" />
+	<string id="RBM_CHR_KILL_XBOW_02" text="{ATTACKER} pinned {VICTIM} with a crossbow bolt{DMG}" />
+	<string id="RBM_CHR_KILL_XBOW_03" text="{ATTACKER} dropped {VICTIM} with a bolt{DMG}" />
+	<string id="RBM_CHR_KILL_JAV_01" text="{ATTACKER} speared {VICTIM} with a javelin{DMG}" />
+	<string id="RBM_CHR_KILL_JAV_02" text="{ATTACKER} impaled {VICTIM} with a thrown spear{DMG}" />
+	<string id="RBM_CHR_KILL_JAV_03" text="{ATTACKER} skewered {VICTIM} at range{DMG}" />
+	<string id="RBM_CHR_KILL_TAXE_01" text="{ATTACKER} hit {VICTIM} with a thrown axe{DMG}" />
+	<string id="RBM_CHR_KILL_TAXE_02" text="{ATTACKER} split {VICTIM} open with a hurled axe{DMG}" />
+	<string id="RBM_CHR_KILL_TAXE_03" text="{ATTACKER} struck down {VICTIM} with a thrown axe{DMG}" />
+	<string id="RBM_CHR_KILL_TKNIFE_01" text="{ATTACKER} hit {VICTIM} with a thrown knife{DMG}" />
+	<string id="RBM_CHR_KILL_TKNIFE_02" text="{ATTACKER} struck down {VICTIM} with a thrown blade{DMG}" />
+	<string id="RBM_CHR_KILL_SLING_01" text="{ATTACKER} brained {VICTIM} with a sling stone{DMG}" />
+	<string id="RBM_CHR_KILL_SLING_02" text="{ATTACKER} felled {VICTIM} with a stone{DMG}" />
+	<string id="RBM_CHR_KILL_SLING_03" text="{ATTACKER} struck down {VICTIM} with a sling{DMG}" />
+	<string id="RBM_CHR_KILL_SHOOT_01" text="{ATTACKER} shot down {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_SHOOT_02" text="{ATTACKER} pierced {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_SHOOT_03" text="{ATTACKER} struck {VICTIM} at range{DMG}" />
+	<string id="RBM_CHR_KILL_THROW_01" text="{ATTACKER} struck {VICTIM} at range{DMG}" />
+	<string id="RBM_CHR_KILL_THROW_02" text="{ATTACKER} hit {VICTIM} with a thrown weapon{DMG}" />
+	<string id="RBM_CHR_KILL_MELEE_01" text="{ATTACKER} struck down {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_MELEE_02" text="{ATTACKER} felled {VICTIM}{DMG}" />
+	<string id="RBM_CHR_KILL_MELEE_03" text="{ATTACKER} cut down {VICTIM}{DMG}" />
+	<string id="RBM_CHR_HFELL_CHARGE_01" text="{HERO} was ridden down by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_CHARGE_02" text="{HERO} was trampled under the hooves of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_CHARGE_03" text="{HERO} was unhorsed and crushed by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_CHARGE_04" text="{HERO} was broken by the lance of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_CHARGE_05" text="{HERO} was swept from the saddle by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_CHARGE_06" text="{HERO} was smashed aside by the charge of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_BRACE_01" text="{HERO} was impaled on the braced spear of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_BRACE_02" text="{HERO} charged into the waiting lance of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_BRACE_03" text="{HERO} rode onto the set pike of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_BRACE_04" text="{HERO} was skewered on the levelled polearm of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_SWORD_01" text="{HERO} was cut down by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_SWORD_02" text="{HERO} was slain by the blade of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_SWORD_03" text="{HERO} fell to the sword of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_SWORD_04" text="{HERO} was run through by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_DAGGER_01" text="{HERO} was stabbed down by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_DAGGER_02" text="{HERO} was knifed by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_DAGGER_03" text="{HERO} fell to the dagger of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_AXE_01" text="{HERO} was cleaved apart by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_AXE_02" text="{HERO} was hewn down by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_AXE_03" text="{HERO} fell to the axe of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_AXE_04" text="{HERO} was split open by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_MACE_01" text="{HERO} was battered down by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_MACE_02" text="{HERO} was crushed by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_MACE_03" text="{HERO} had their skull caved in by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_MACE_04" text="{HERO} was hammered to the ground by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_POLE_01" text="{HERO} was pierced by the spear of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_POLE_02" text="{HERO} was impaled by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_POLE_03" text="{HERO} was run through by the lance of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_POLE_04" text="{HERO} fell to the polearm of {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_BOW_01" text="{HERO} was felled by an arrow from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_BOW_02" text="{HERO} was shot down by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_BOW_03" text="{HERO} took a fatal shaft from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_BOW_04" text="{HERO} was pierced by an arrow from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_XBOW_01" text="{HERO} was dropped by a bolt from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_XBOW_02" text="{HERO} was pinned by a crossbow bolt from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_XBOW_03" text="{HERO} took a killing bolt from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_JAV_01" text="{HERO} was speared by a javelin from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_JAV_02" text="{HERO} was impaled at range by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_JAV_03" text="{HERO} took a hurled spear from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_TAXE_01" text="{HERO} was struck by a thrown axe from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_TAXE_02" text="{HERO} was split open by a hurled axe from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_TKNIFE_01" text="{HERO} was struck down by a thrown knife from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_TKNIFE_02" text="{HERO} took a thrown blade from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_SLING_01" text="{HERO} was brained by a sling stone from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_SLING_02" text="{HERO} was felled by a stone from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_SHOOT_01" text="{HERO} was shot down by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_SHOOT_02" text="{HERO} was struck at range by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_SHOOT_03" text="{HERO} was felled by a missile from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_THROW_01" text="{HERO} was struck down at range by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_THROW_02" text="{HERO} was felled by a thrown weapon from {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_MELEE_01" text="{HERO} was struck down by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_MELEE_02" text="{HERO} was felled by {FOE}{DMG}" />
+	<string id="RBM_CHR_HFELL_MELEE_03" text="{HERO} fell in combat with {FOE}{DMG}" />
+	<string id="RBM_CHR_PHIT_01" text="{HERO} strikes {FOE}{DMG}" />
+	<string id="RBM_CHR_PHIT_02" text="{HERO} lands a blow on {FOE}{DMG}" />
+	<string id="RBM_CHR_PHIT_03" text="{HERO} hits {FOE}{DMG}" />
+	<string id="RBM_CHR_PHIT_04" text="{HERO} connects with {FOE}{DMG}" />
+	<string id="RBM_CHR_PTAKE_01" text="{HERO} takes a hit from {FOE}{DMG}" />
+	<string id="RBM_CHR_PTAKE_02" text="{HERO} is struck by {FOE}{DMG}" />
+	<string id="RBM_CHR_PTAKE_03" text="{HERO} is hit by {FOE}{DMG}" />
+	<string id="RBM_CHR_PTAKE_04" text="{HERO} absorbs a blow from {FOE}{DMG}" />
+	<string id="RBM_CHR_PMISS_01" text="{HERO} dodges a shot from {FOE}" />
+	<string id="RBM_CHR_PMISS_02" text="{HERO} evades {FOE}" />
+	<string id="RBM_CHR_PMISS_03" text="{HERO} sidesteps a blow from {FOE}" />
+	<string id="RBM_CHR_PMISSSHOT_01" text="{HERO} misses a shot at {FOE}" />
+	<string id="RBM_CHR_PMISSSHOT_02" text="{HERO} sends a shaft wide of {FOE}" />
+	<string id="RBM_CHR_PMISSSHOT_03" text="{HERO} looses at {FOE}" />
+	<string id="RBM_CHR_PDEF_RIPOSTE" text="{HERO}'s blow is parried and countered by {FOE}{DMG}" />
+	<string id="RBM_CHR_PDEF_PARRY" text="{HERO}'s attack is parried by {FOE}{DMG}" />
+	<string id="RBM_CHR_PDEF_SHIELD" text="{HERO}'s strike is blocked by {FOE}{DMG}" />
+	<string id="RBM_CHR_PDEF_WEAPON" text="{HERO}'s blow is deflected by {FOE}{DMG}" />
+	<string id="RBM_CHR_PDEF_OTHER" text="{HERO}'s attack is defended by {FOE}{DMG}" />
+	<string id="RBM_CHR_RIPOSTE_01" text="{HERO} parries a blow from {FOE} and strikes back{DMG}" />
+	<string id="RBM_CHR_RIPOSTE_02" text="{HERO} deflects {FOE}'s attack and counters{DMG}" />
+	<string id="RBM_CHR_RIPOSTE_03" text="{HERO} turns aside {FOE}'s blade and ripostes{DMG}" />
+	<string id="RBM_CHR_RIPOSTE_04" text="{HERO} catches {FOE}'s strike and drives their own home{DMG}" />
+	<string id="RBM_CHR_RIPOSTE_05" text="{HERO} sidesteps {FOE} and delivers a vicious counterstrike{DMG}" />
+	<string id="RBM_CHR_PARRY_01" text="{HERO} blocks a blow from {FOE}{DMG}" />
+	<string id="RBM_CHR_PARRY_02" text="{HERO} catches {FOE}'s strike on their shield{DMG}" />
+	<string id="RBM_CHR_PARRY_03" text="{HERO} turns aside a blow from {FOE}{DMG}" />
+	<string id="RBM_CHR_PARRY_04" text="{HERO} deflects {FOE}'s attack{DMG}" />
+	<string id="RBM_CHR_HKILL_MELEE_01" text="{HERO} cuts down {VICTIM}{DMG}" />
+	<string id="RBM_CHR_HKILL_MELEE_02" text="{HERO} strikes down {VICTIM}{DMG}" />
+	<string id="RBM_CHR_HKILL_MELEE_03" text="{HERO} slays {VICTIM}{DMG}" />
+	<string id="RBM_CHR_HKILL_MELEE_04" text="{HERO} fells {VICTIM}{DMG}" />
+	<string id="RBM_CHR_HKILL_MELEE_05" text="{HERO} sends another to the grave — {VICTIM}{DMG}" />
+	<string id="RBM_CHR_HKILL_RANGED_01" text="{HERO} picks off {VICTIM}{DMG}" />
+	<string id="RBM_CHR_HKILL_RANGED_02" text="{HERO} drops {VICTIM}{DMG}" />
+	<string id="RBM_CHR_HKILL_RANGED_03" text="{HERO} shoots down {VICTIM}{DMG}" />
+	<string id="RBM_CHR_HKILL_RANGED_04" text="{HERO} finds their mark — {VICTIM}{DMG}" />
+	<string id="RBM_CHR_HEADSHOT_01" text="{HERO} takes an arrow to the head!{DMG}" />
+	<string id="RBM_CHR_HEADSHOT_02" text="{HERO} is struck in the face by a missile!{DMG}" />
+	<string id="RBM_CHR_HEADSHOT_03" text="{HERO} catches a bolt in the skull!{DMG}" />
+	<string id="RBM_CHR_HEADSHOT_04" text="{HERO} is hit square in the head at range!{DMG}" />
+	<string id="RBM_CHR_HEADSHOT_05" text="{HERO} takes a shot clean through the helm!{DMG}" />
+	<string id="RBM_CHR_SNIPE_01" text="{HERO} lands a perfect headshot on {VICTIM}{DMG}" />
+	<string id="RBM_CHR_SNIPE_02" text="{HERO} puts an arrow clean through the helm of {VICTIM}{DMG}" />
+	<string id="RBM_CHR_SNIPE_03" text="{HERO} nails a shot to the head of {VICTIM}{DMG}" />
+	<string id="RBM_CHR_SNIPE_04" text="{HERO} finds the gap in the visor of {VICTIM}{DMG}" />
+	<string id="RBM_CHR_SNIPE_05" text="{HERO} sends a bolt straight through the skull of {VICTIM}{DMG}" />
   </strings>
 </base>

@@ -708,14 +708,14 @@ namespace RBMCampaign
 
         // ---------------------------------------------------------------- projection for the UI
 
-        private static readonly TextObject CapText = new TextObject("{=!}Labour available");
-        private static readonly TextObject FreeText = new TextObject("{=!}Prisoners");
-        private static readonly TextObject MaterialText = new TextObject("{=!}Materials");
-        private static readonly TextObject WageText = new TextObject("{=!}Reserve");
-        private static readonly TextObject MasonText = new TextObject("{=!}Masons");
-        private static readonly TextObject ToolsText = new TextObject("{=!}Tools shortage");
-        private static readonly TextObject LoyaltyText = new TextObject("{=!}Loyalty");
-        private static readonly TextObject PerkText = new TextObject("{=!}Governor, perks and market");
+        private static readonly TextObject CapText = new TextObject("{=RBM_CONSTR_CAP}Labour available");
+        private static readonly TextObject FreeText = new TextObject("{=RBM_CONSTR_FREE}Prisoners");
+        private static readonly TextObject MaterialText = new TextObject("{=RBM_CONSTR_MATERIAL}Materials");
+        private static readonly TextObject WageText = new TextObject("{=RBM_CONSTR_WAGE}Reserve");
+        private static readonly TextObject MasonText = new TextObject("{=RBM_CONSTR_MASON}Masons");
+        private static readonly TextObject ToolsText = new TextObject("{=RBM_CONSTR_TOOLS}Tools shortage");
+        private static readonly TextObject LoyaltyText = new TextObject("{=RBM_CONSTR_LOYALTY}Loyalty");
+        private static readonly TextObject PerkText = new TextObject("{=RBM_CONSTR_PERK}Governor, perks and market");
 
         /// <summary>
         /// What the town screen and the days-to-complete estimate should read: today's funded work, by

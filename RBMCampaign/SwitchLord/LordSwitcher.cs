@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,6 +8,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace RBMCampaign
 {
@@ -41,7 +42,8 @@ namespace RBMCampaign
         {
             if (Campaign.Current == null)
             {
-                InformationManager.DisplayMessage(new InformationMessage("Not in a campaign.", Colors.Red));
+                InformationManager.DisplayMessage(new InformationMessage(
+                    new TextObject("{=RBM_SWITCH_NOCAMPAIGN}Not in a campaign.").ToString(), Colors.Red));
                 return;
             }
 
@@ -54,21 +56,34 @@ namespace RBMCampaign
 
             foreach (var group in lordsByKingdom)
             {
-                string kingdomName = group.Key != null ? group.Key.Name.ToString() : "No Kingdom";
+                string kingdomName = group.Key != null
+                    ? group.Key.Name.ToString()
+                    : new TextObject("{=RBM_SWITCH_NOKINGDOM}No Kingdom").ToString();
                 int count = group.Count();
+
+                TextObject header = new TextObject("{=RBM_SWITCH_GROUP}--- {KINGDOM} ({COUNT}) ---");
+                header.SetTextVariable("KINGDOM", kingdomName);
+                header.SetTextVariable("COUNT", count);
+                TextObject headerHint = new TextObject("{=RBM_SWITCH_GROUP_HINT}{KINGDOM}: {COUNT} lords with active parties");
+                headerHint.SetTextVariable("KINGDOM", kingdomName);
+                headerHint.SetTextVariable("COUNT", count);
 
                 elements.Add(new InquiryElement(
                     null,
-                    "--- " + kingdomName + " (" + count + ") ---",
+                    header.ToString(),
                     null,
                     false,
-                    kingdomName + ": " + count + " lords with active parties"));
+                    headerHint.ToString()));
 
                 foreach (Hero h in group.OrderBy(h => h.Name.ToString()))
                 {
+                    TextObject lordLabel = new TextObject("{=RBM_SWITCH_LORD}{LORD} ({CLAN})");
+                    lordLabel.SetTextVariable("LORD", h.Name);
+                    lordLabel.SetTextVariable("CLAN", h.Clan != null ? h.Clan.Name.ToString() : "?");
+
                     elements.Add(new InquiryElement(
                         h,
-                        h.Name + " (" + (h.Clan != null ? h.Clan.Name.ToString() : "?") + ")",
+                        lordLabel.ToString(),
                         null,
                         true,
                         BuildHint(h)));
@@ -76,14 +91,14 @@ namespace RBMCampaign
             }
 
             MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
-                "Switch Lord",
-                "All lords with active parties, grouped by kingdom:",
+                new TextObject("{=RBM_SWITCH_TITLE}Switch Lord").ToString(),
+                new TextObject("{=RBM_SWITCH_TEXT}All lords with active parties, grouped by kingdom:").ToString(),
                 elements,
                 true,
                 1,
                 1,
-                "Switch",
-                "Cancel",
+                new TextObject("{=RBM_SWITCH_OK}Switch").ToString(),
+                new TextObject("{=RBM_SWITCH_CANCEL}Cancel").ToString(),
                 selected => OnLordSelected(selected),
                 null,
                 "",
@@ -92,12 +107,29 @@ namespace RBMCampaign
 
         private static string BuildHint(Hero h)
         {
-            string clan = h.Clan != null ? h.Clan.Name.ToString() : "None";
-            string kingdom = h.Clan != null && h.Clan.Kingdom != null ? h.Clan.Kingdom.Name.ToString() : "None";
-            string party = h.PartyBelongedTo != null
-                ? h.PartyBelongedTo.Name + " (" + h.PartyBelongedTo.MemberRoster.TotalManCount + " troops)"
-                : "No party";
-            return "Age: " + (int)h.Age + " | Clan: " + clan + " | Kingdom: " + kingdom + " | " + party;
+            string none = new TextObject("{=RBM_SWITCH_NONE}None").ToString();
+            string clan = h.Clan != null ? h.Clan.Name.ToString() : none;
+            string kingdom = h.Clan != null && h.Clan.Kingdom != null ? h.Clan.Kingdom.Name.ToString() : none;
+
+            string party;
+            if (h.PartyBelongedTo != null)
+            {
+                TextObject partyText = new TextObject("{=RBM_SWITCH_PARTY}{PARTY} ({TROOPS} troops)");
+                partyText.SetTextVariable("PARTY", h.PartyBelongedTo.Name);
+                partyText.SetTextVariable("TROOPS", h.PartyBelongedTo.MemberRoster.TotalManCount);
+                party = partyText.ToString();
+            }
+            else
+            {
+                party = new TextObject("{=RBM_SWITCH_NOPARTY}No party").ToString();
+            }
+
+            TextObject hint = new TextObject("{=RBM_SWITCH_HINT}Age: {AGE} | Clan: {CLAN} | Kingdom: {KINGDOM} | {PARTY}");
+            hint.SetTextVariable("AGE", (int)h.Age);
+            hint.SetTextVariable("CLAN", clan);
+            hint.SetTextVariable("KINGDOM", kingdom);
+            hint.SetTextVariable("PARTY", party);
+            return hint.ToString();
         }
 
         private static void OnLordSelected(List<InquiryElement> selected)
@@ -122,8 +154,9 @@ namespace RBMCampaign
             // never what a "switch to this lord" is asking for.
             if (targetHero.PartyBelongedTo == null || targetHero.IsPrisoner)
             {
-                InformationManager.DisplayMessage(new InformationMessage(
-                    targetHero.Name + " has no field party to switch into.", Colors.Red));
+                TextObject noParty = new TextObject("{=RBM_SWITCH_NOFIELDPARTY}{LORD} has no field party to switch into.");
+                noParty.SetTextVariable("LORD", targetHero.Name);
+                InformationManager.DisplayMessage(new InformationMessage(noParty.ToString(), Colors.Red));
                 return;
             }
 
@@ -188,9 +221,12 @@ namespace RBMCampaign
                 CampaignEventDispatcher.Instance.OnPartyVisibilityChanged(oldParty.Party);
             }
 
-            string msg = "Switched from " + oldHero.Name + " (" + (oldClan != null ? oldClan.Name.ToString() : "?") +
-                         ") to " + targetHero.Name + " (" + (newClan != null ? newClan.Name.ToString() : "?") + ")";
-            InformationManager.DisplayMessage(new InformationMessage(msg, Colors.Green));
+            TextObject msg = new TextObject("{=RBM_SWITCH_DONE}Switched from {OLD} ({OLDCLAN}) to {NEW} ({NEWCLAN})");
+            msg.SetTextVariable("OLD", oldHero.Name);
+            msg.SetTextVariable("OLDCLAN", oldClan != null ? oldClan.Name.ToString() : "?");
+            msg.SetTextVariable("NEW", targetHero.Name);
+            msg.SetTextVariable("NEWCLAN", newClan != null ? newClan.Name.ToString() : "?");
+            InformationManager.DisplayMessage(new InformationMessage(msg.ToString(), Colors.Green));
         }
 
         /// <summary>

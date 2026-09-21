@@ -265,6 +265,37 @@ namespace RBMCampaign
         [DataSourceProperty] public bool HasWorkshops { get; }
         [DataSourceProperty] public MBBindingList<RBMLedgerWorkshopVM> Workshops { get; }
 
+        // Column headings for this town's history table and its demand/workshop/goods sub-tables.
+        // Gauntlet cannot resolve a {=id} marker inside a prefab's Text=, so the prefab binds these.
+        [DataSourceProperty] public string HdrDay => RBMLedgerHeadings.Day.ToString();
+        [DataSourceProperty] public string HdrProsp => RBMLedgerHeadings.Prosp.ToString();
+        [DataSourceProperty] public string HdrCitizen => RBMLedgerHeadings.Citizen.ToString();
+        [DataSourceProperty] public string HdrCitIn => RBMLedgerHeadings.CitIn.ToString();
+        [DataSourceProperty] public string HdrCitOut => RBMLedgerHeadings.CitOut.ToString();
+        [DataSourceProperty] public string HdrTreas => RBMLedgerHeadings.Treas.ToString();
+        [DataSourceProperty] public string HdrTrsIn => RBMLedgerHeadings.TrsIn.ToString();
+        [DataSourceProperty] public string HdrTrsOut => RBMLedgerHeadings.TrsOut.ToString();
+        [DataSourceProperty] public string HdrFood => RBMLedgerHeadings.Food.ToString();
+        [DataSourceProperty] public string HdrEaten => RBMLedgerHeadings.Eaten.ToString();
+        [DataSourceProperty] public string HdrGarr => RBMLedgerHeadings.Garr.ToString();
+        [DataSourceProperty] public string HdrMil => RBMLedgerHeadings.Mil.ToString();
+        [DataSourceProperty] public string HdrDeliv => RBMLedgerHeadings.Deliv.ToString();
+        [DataSourceProperty] public string HdrParty => RBMLedgerHeadings.Party.ToString();
+        [DataSourceProperty] public string HdrCarav => RBMLedgerHeadings.Carav.ToString();
+        [DataSourceProperty] public string HdrEvents => RBMLedgerHeadings.Events.ToString();
+        [DataSourceProperty] public string HdrDemand => RBMLedgerHeadings.Demand.ToString();
+        [DataSourceProperty] public string HdrWantedPerDay => RBMLedgerHeadings.WantedPerDay.ToString();
+        [DataSourceProperty] public string HdrFilled => RBMLedgerHeadings.Filled.ToString();
+        [DataSourceProperty] public string HdrWorkshops => RBMLedgerHeadings.Workshops.ToString();
+        [DataSourceProperty] public string HdrConsumedPerDay => RBMLedgerHeadings.ConsumedPerDay.ToString();
+        [DataSourceProperty] public string HdrProducedPerDay => RBMLedgerHeadings.ProducedPerDay.ToString();
+        [DataSourceProperty] public string HdrGoods => RBMLedgerHeadings.Goods.ToString();
+        [DataSourceProperty] public string HdrDemandPerDay => RBMLedgerHeadings.DemandPerDay.ToString();
+        [DataSourceProperty] public string HdrStock => RBMLedgerHeadings.Stock.ToString();
+        [DataSourceProperty] public string HdrDays => RBMLedgerHeadings.Days.ToString();
+        [DataSourceProperty] public string HdrEquipment => RBMLedgerHeadings.Equipment.ToString();
+        [DataSourceProperty] public string HdrValue => RBMLedgerHeadings.Value.ToString();
+
         [DataSourceProperty] public string ProsperityButtonText { get; }
         [DataSourceProperty] public string CitizenButtonText { get; }
         [DataSourceProperty] public string SettlementButtonText { get; }

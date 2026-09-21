@@ -1,4 +1,4 @@
-<Prefab>
+﻿<Prefab>
   <Constants>
     <Constant Name="Mission.MainAgentHUD.HeroHealthBar.Icon.Width" BrushName="Mission.MainAgentHUD.HeroHealthBar.Icon" BrushLayer="Default" BrushValueType="Width"/>
     <Constant Name="Mission.MainAgentHUD.HeroHealthBar.Icon.Height" BrushName="Mission.MainAgentHUD.HeroHealthBar.Icon" BrushLayer="Default" BrushValueType="Height"/>
@@ -63,7 +63,7 @@
 		<FillBar WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="210" SuggestedHeight="8"   HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="55"  Brush="PlayerStaminaBarBrush" InitialAmount="@EnemyStamina"  MaxAmount="@EnemyStaminaMax" IsVertical="false" IsVisible="@ShowEnemyStaminaBar" />
 	  
 		<!-- Agent Posture Info -->
-		<TextWidget Brush="RBMLabels" HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="100" MarginBottom="37" MarginRight="235" Text="Posture" IsVisible="@ShowPlayerPostureBar" />
+		<TextWidget Brush="RBMLabels" HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="100" MarginBottom="37" MarginRight="235" Text="@PostureLabel" IsVisible="@ShowPlayerPostureBar" />
 		<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="27" MarginRight="35" Sprite="HintBG@2x_9" IsVisible="@ShowPlayerPostureBar" />
 		<FillBar WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="210" SuggestedHeight="18" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="28" MarginRight="40" Brush="PlayerPostureBarBrush" InitialAmount="@PlayerPosture" MaxAmount="@PlayerPostureMax" IsVertical="false" IsVisible="@ShowPlayerPostureBar" />
 		<TextWidget Brush="RBMLabels" SuggestedWidth="100" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="37" MarginRight="120" IsVisible="@ShowPlayerPostureBar" Text="@PlayerPostureText" />
@@ -71,7 +71,7 @@
 		<TextWidget Brush="RBMLabels" SuggestedWidth="100" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="37" MarginRight="80" IsVisible="@ShowPlayerPostureBar" Text="@PlayerPostureMaxText" />
 
 		<!-- Agent Stamina Info -->
-		<TextWidget Brush="RBMLabels" HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="100" MarginBottom="15" MarginRight="235" Text="Stamina" IsVisible="@ShowPlayerStaminaBar" />
+		<TextWidget Brush="RBMLabels" HorizontalAlignment="Right" VerticalAlignment="Bottom" SuggestedWidth="100" MarginBottom="15" MarginRight="235" Text="@StaminaLabel" IsVisible="@ShowPlayerStaminaBar" />
 		<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="4" MarginRight="35" Sprite="HintBG@2x_9" IsVisible="@ShowPlayerStaminaBar" />
 		<FillBar WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="210" SuggestedHeight="18" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="5" MarginRight="40" Brush="PlayerStaminaBarBrush" InitialAmount="@PlayerStamina" MaxAmount="@PlayerStaminaMax" IsVertical="false" IsVisible="@ShowPlayerStaminaBar" />
 		<TextWidget Brush="RBMLabels" SuggestedWidth="100" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="14" MarginRight="120" IsVisible="@ShowPlayerStaminaBar" Text="@PlayerStaminaText" />

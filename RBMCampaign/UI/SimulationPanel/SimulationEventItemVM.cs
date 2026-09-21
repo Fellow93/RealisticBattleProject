@@ -1,4 +1,4 @@
-using TaleWorlds.Library;
+﻿using TaleWorlds.Library;
 
 namespace RBMCampaign
 {
@@ -10,14 +10,18 @@ namespace RBMCampaign
         private bool _isPlayerHero;
         private string _heroName;
         private string _restMessage;
+        private string _heroPrefix;
 
         public SimulationEventItemVM(string message, string eventType)
-            : this(message, eventType, null, null, false)
+            : this(message, eventType, null, null, false, null)
         {
         }
 
+        // heroPrefix is whatever the translated sentence puts BEFORE the hero's name. English
+        // leaves it empty (the name opens the sentence), but languages that do not front the
+        // subject need somewhere to put those words, and the name keeps its own coloured widget.
         public SimulationEventItemVM(string message, string eventType,
-            string heroName, string restMessage, bool isPlayerHero)
+            string heroName, string restMessage, bool isPlayerHero, string heroPrefix)
         {
             _message = message;
             _eventType = eventType;
@@ -25,6 +29,7 @@ namespace RBMCampaign
             _isPlayerHero = isPlayerHero && heroName != null;
             _heroName = heroName ?? "";
             _restMessage = restMessage ?? "";
+            _heroPrefix = heroPrefix ?? "";
         }
 
         [DataSourceProperty]
@@ -85,6 +90,20 @@ namespace RBMCampaign
                 {
                     _heroName = value;
                     OnPropertyChangedWithValue(value, "HeroName");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string HeroPrefix
+        {
+            get => _heroPrefix;
+            set
+            {
+                if (_heroPrefix != value)
+                {
+                    _heroPrefix = value;
+                    OnPropertyChangedWithValue(value, "HeroPrefix");
                 }
             }
         }

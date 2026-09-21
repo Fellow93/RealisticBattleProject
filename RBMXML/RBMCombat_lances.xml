@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Items>
 <!--RBM_XML_TAG-->
 <!--RBM_COMBAT_XML_TAG-->
@@ -57,7 +57,7 @@
   <!-- #endregion -->
   <!-- #region Tier 4 -->
   <CraftedItem id="vlandia_lance_2_t4"
-               name="{=RBM_LAN_014}Vlandia Lance"
+               name="{=RBM_LAN_014}Vlandian Lance"
                crafting_template="TwoHandedPolearm"
                culture="Culture.vlandia">
     <Pieces>

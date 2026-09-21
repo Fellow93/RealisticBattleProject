@@ -233,7 +233,9 @@ namespace RBMCampaign
             row.ResourceName = name;
             row.ResourceItemStringId = item.StringId;
             row.ResourceMaterialTypeAsStr = ingredient.MaterialState;
-            row.ResourceHint = new HintViewModel(new TextObject("{=!}" + name));
+            // The name is already a resolved item name (or the raw material state as a fallback), so it
+            // rides in as a variable -- concatenating it would let any brace in it be read as markup.
+            row.ResourceHint = new HintViewModel(new TextObject("{=!}{NAME}").SetTextVariable("NAME", name));
 
             __instance.InputMaterials.Add(row);
             // Re-run the availability check now that the ingredient is part of the input list (the ctor ran it without).

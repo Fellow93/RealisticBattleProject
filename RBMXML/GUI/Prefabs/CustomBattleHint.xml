@@ -1,4 +1,4 @@
-<Prefab>
+﻿<Prefab>
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true">
       <Children>
@@ -13,7 +13,7 @@
                 Sprite="BlankWhiteSquare_9"
                 Color="#1A1612E0">
           <Children>
-            <TextWidget Text="Ctrl+S: Save Preset   |   Ctrl+L: Load Preset"
+            <TextWidget Text="@HotkeyHint"
                         Brush="Tooltip.Value.Text"
                         WidthSizePolicy="StretchToParent"
                         HeightSizePolicy="StretchToParent"

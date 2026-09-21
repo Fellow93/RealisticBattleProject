@@ -593,22 +593,33 @@ namespace RBMCampaign
                 string to = (dest != null && dest.Name != null) ? dest.Name.ToString() : null;
 
                 // A relief caravan (empty manifest) carries only investment capital, so it reads as one.
-                string kind = (order.Goods == null || order.Goods.Count == 0) ? " Relief Caravan" : " Supply Caravan";
+                bool relief = (order.Goods == null || order.Goods.Count == 0);
 
-                string label;
+                // One whole-sentence template per form rather than a name glued together from pieces:
+                // the two settlements ride in as variables, so a translation is free to reorder them.
+                TextObject label;
                 if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
                 {
-                    label = from + " → " + to + kind;
+                    label = relief
+                        ? new TextObject("{=RBM_CARAVAN_RELIEF_ROUTE}{FROM} → {TO} Relief Caravan")
+                        : new TextObject("{=RBM_CARAVAN_SUPPLY_ROUTE}{FROM} → {TO} Supply Caravan");
+                    label.SetTextVariable("FROM", from);
+                    label.SetTextVariable("TO", to);
                 }
                 else if (!string.IsNullOrEmpty(from))
                 {
-                    label = from + kind;
+                    label = relief
+                        ? new TextObject("{=RBM_CARAVAN_RELIEF_FROM}{FROM} Relief Caravan")
+                        : new TextObject("{=RBM_CARAVAN_SUPPLY_FROM}{FROM} Supply Caravan");
+                    label.SetTextVariable("FROM", from);
                 }
                 else
                 {
-                    label = kind.Trim();
+                    label = relief
+                        ? new TextObject("{=RBM_CARAVAN_RELIEF}Relief Caravan")
+                        : new TextObject("{=RBM_CARAVAN_SUPPLY}Supply Caravan");
                 }
-                __result = new TextObject(label);
+                __result = label;
             }
         }
 
