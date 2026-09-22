@@ -184,12 +184,20 @@ namespace RBMCampaign
         /// vanilla figure -- so vanilla's few hundred denars leaves the player unable to take any of
         /// the opening decisions the economy is built around.
         ///
-        /// Fires once, when character creation finalizes, which is after the narrative stages have
-        /// applied their own gold; a loaded save never passes through here, so an existing campaign
-        /// keeps the gold it was saved with.
+        /// Vanilla raises this event ten times in a row when character creation finalizes, with
+        /// index 0 through 9, and every native listener keys on a single index. Multiplying on
+        /// every pass compounded the multiplier ten times (4x became 4^10 ≈ a million-fold), so this
+        /// acts on the last pass only, which is also after the advanced-start options behavior has
+        /// applied its own gold on index 8. A loaded save never passes through here, so an existing
+        /// campaign keeps the gold it was saved with.
         /// </summary>
-        private void OnCharacterCreationIsOver(int obj)
+        private void OnCharacterCreationIsOver(int index)
         {
+            if (index != 9)
+            {
+                return;
+            }
+
             Hero player = Hero.MainHero;
             if (player == null)
             {
