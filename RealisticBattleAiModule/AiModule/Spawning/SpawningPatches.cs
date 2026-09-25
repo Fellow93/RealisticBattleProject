@@ -62,7 +62,12 @@ namespace RBMAI.AiModule
                         {
                             BasicCharacterObject troop = troopOrigin.Troop;
                             Team agentTeam = Mission.GetAgentTeam(troopOrigin, isPlayerSide);
-                            Formation formation = agentTeam.GetFormation(troop.GetFormationClass());
+                            FormationClass troopClass = troop.GetFormationClass();
+                            if (troopClass < FormationClass.Infantry || troopClass >= FormationClass.NumberOfRegularFormations)
+                            {
+                                troopClass = troopClass.FallbackClass();
+                            }
+                            Formation formation = agentTeam.GetFormation(troopClass);
                             if (formation.CountOfUnits == 0)
                             {
                                 foreach (Formation allyFormation in agentTeam.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0))
@@ -146,6 +151,24 @@ namespace RBMAI.AiModule
                     }
                 }
                 return true;
+            }
+        }
+
+        // Vanilla ReinforcementFormationData keeps per-class counts in a 4-slot array
+        // (Infantry/Ranged/Cavalry/HorseArcher) and indexes it with the troop's class
+        // unchecked. A troop whose class is outside those four (default_group of
+        // Skirmisher/HeavyInfantry/LightCavalry/HeavyCavalry, or an unparseable group
+        // which loads as -1) throws IndexOutOfRange and kills the reinforcement batch.
+        // Fold such classes onto their basic class before they are counted.
+        [HarmonyPatch(typeof(MissionReinforcementsHelper.ReinforcementFormationData), "AddProspectiveTroop")]
+        private class ReinforcementProspectiveTroopClassPatch
+        {
+            private static void Prefix(ref FormationClass troopClass)
+            {
+                if (troopClass < FormationClass.Infantry || troopClass > FormationClass.HorseArcher)
+                {
+                    troopClass = troopClass.FallbackClass();
+                }
             }
         }
 
