@@ -459,7 +459,15 @@ namespace RBMCampaign
                     ItemRosterElement element = itemRoster.GetElementCopyAtIndex(i);
                     ItemObject item = element.EquipmentElement.Item;
                     int amount = element.Amount;
-                    ItemCategory category = item.GetItemCategory();
+                    ItemCategory category = item?.GetItemCategory();
+
+                    // Items whose category is not in ItemCategories.All (typically a modded item with an
+                    // unregistered category) get no demand entry from UpdateDemandShift. Vanilla would
+                    // throw on them too; skip instead so one bad item cannot kill the daily tick.
+                    if (category == null || !categoryDemand.TryGetValue(category, out float demand))
+                    {
+                        continue;
+                    }
 
                     // Food is not bought here. The population eats by household count, not by how
                     // much gold its demand pool happens to carry -- see FeedPopulation. Leaving food
@@ -475,7 +483,6 @@ namespace RBMCampaign
                         continue;
                     }
 
-                    float demand = categoryDemand[category];
                     float budget = Campaign.Current.Models.SettlementEconomyModel.CalculateDailySettlementBudgetForItemCategory(town, demand, category);
                     if (budget <= 0.01f)
                     {
