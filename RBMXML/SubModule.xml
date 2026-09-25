@@ -257,6 +257,8 @@
 		<IncludedGameTypes>
 			<Gametype value = "Campaign"/>
 			<Gametype value = "CampaignStoryMode"/>
+			<GameType value = "CustomGame"/>
+			<GameType value = "EditorGame"/>
 		</IncludedGameTypes>
 	</XmlNode>
 

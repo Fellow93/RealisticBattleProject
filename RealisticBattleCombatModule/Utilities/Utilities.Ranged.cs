@@ -38,6 +38,7 @@ namespace RBMCombat
                     }
                 case "crossbow": // composite horn-sinew crossbow
                 case "crossbow_fast":
+                case "crossbow_light": // vanilla light crossbows
                     {
                         // Eastern / Chinese style crossbows
                         float powerstroke = (20f * 0.0254f); // in inches then converted to metres
@@ -122,7 +123,9 @@ namespace RBMCombat
 
                 default:
                     {
-                        calculatedMissileSpeed = 10;
+                        // Unknown (vanilla/modded) usage: its missile_speed is already a launch speed
+                        // in m/s, so keep it rather than firing at a crippling 10 m/s.
+                        calculatedMissileSpeed = drawWeight;
                         break;
                     }
             }
