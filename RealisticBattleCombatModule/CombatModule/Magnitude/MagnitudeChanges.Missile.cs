@@ -41,21 +41,17 @@ namespace RBMCombat
                         break;
                     }
                 case WeaponClass.Arrow:
-                    {
-                        missileTotalDamage -= 100f;
-                        missileTotalDamage *= 0.01f;
-                        break;
-                    }
                 case WeaponClass.Bolt:
-                    {
-                        missileTotalDamage -= 100f;
-                        missileTotalDamage *= 0.01f;
-                        break;
-                    }
                 case WeaponClass.SlingStone:
                     {
+                        // missileTotalDamage is expected re-based onto a thrust_damage="100" launcher
+                        // (see RebaseMissileTotalDamageToRbmLauncher), so what survives is the ammo's head.
                         missileTotalDamage -= 100f;
                         missileTotalDamage *= 0.01f;
+                        if (missileTotalDamage < 0f)
+                        {
+                            missileTotalDamage = 0f;
+                        }
                         break;
                     }
             }
@@ -159,6 +155,37 @@ namespace RBMCombat
             return baseMagnitude;
         }
 
+        // The engine's MissileTotalDamage is the launcher's modified thrust damage (Mission.OnAgentShootMissile's
+        // damageBonus) plus the ammo's modified thrust damage. CalculateMissileMagnitude subtracts a flat 100 to
+        // isolate the ammo's head, which only holds for launchers with thrust_damage="100" (all of RBM's own).
+        // Re-base the total onto a 100-damage launcher so bows/crossbows/slings RBM's XML does not cover still
+        // get their ammo's head. The launcher's item-modifier delta is kept, exactly as the flat -100 kept it.
+        // For a thrust_damage="100" launcher this returns missileTotalDamage unchanged.
+        private static float RebaseMissileTotalDamageToRbmLauncher(Agent shooter, MissionWeapon missile, float missileTotalDamage)
+        {
+            float launcherDamage = missileTotalDamage - missile.GetModifiedThrustDamageForCurrentUsage();
+            if (launcherDamage < 0.5f)
+            {
+                // No launcher contribution (AddCustomMissile, e.g. RBM's siege engines): their ammo is authored
+                // against the flat 100, so leave it as is.
+                return missileTotalDamage;
+            }
+            if (shooter != null && shooter.Equipment != null)
+            {
+                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                {
+                    MissionWeapon launcher = shooter.Equipment[equipmentIndex];
+                    if (!launcher.IsEmpty && launcher.CurrentUsageItem != null && launcher.CurrentUsageItem.IsRangedWeapon && !launcher.CurrentUsageItem.IsConsumable &&
+                        Math.Abs(launcher.GetModifiedThrustDamageForCurrentUsage() - launcherDamage) < 0.5f)
+                    {
+                        return missileTotalDamage - launcher.CurrentUsageItem.ThrustDamage + 100f;
+                    }
+                }
+            }
+            // Launcher no longer found (dropped/swapped mid-flight): drop the launcher entirely, keep the ammo.
+            return missileTotalDamage - launcherDamage + 100f;
+        }
+
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("ComputeBlowMagnitudeMissile")]
         private class ComputeBlowMagnitudeMissilePatch
@@ -171,6 +198,10 @@ namespace RBMCombat
                 float missileTotalDamage = collisionData.MissileTotalDamage;
 
                 WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
+                if (currentUsageItem.WeaponClass == WeaponClass.Arrow || currentUsageItem.WeaponClass == WeaponClass.Bolt || currentUsageItem.WeaponClass == WeaponClass.SlingStone)
+                {
+                    missileTotalDamage = RebaseMissileTotalDamageToRbmLauncher(attackInformation.AttackerAgent, weapon, missileTotalDamage);
+                }
                 ItemObject weaponItem;
                 if (weapon.AmmoWeapon.Item != null)
                 {
