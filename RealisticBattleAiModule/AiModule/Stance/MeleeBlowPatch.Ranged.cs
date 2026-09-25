@@ -153,12 +153,55 @@ namespace RBMAI
                             // Shooting drains posture; it never refills it. Regen handles recovery.
                             shooterPosture.posture = Math.Max(0f, shooterPosture.posture - postureLoss);
 
-                            if (RBMConfig.RBMConfig.staminaEnabled)
+                            // Crossbows pay stamina for spanning, not for loosing: see OverrideOnWeaponReloadPhaseChange.
+                            if (RBMConfig.RBMConfig.staminaEnabled && wc != WeaponClass.Crossbow)
                             {
                                 float staminaLoss = calculateShootMissileStaminaLoss(shooterAgent, wc, missionWeapon);
                                 shooterPosture.reduceStamina(staminaLoss);
                             }
                         }
+                    }
+                }
+            }
+
+            // Charges crossbow stamina once per completed reload: only on the transition into the final
+            // reload phase. An interrupted reload never reaches it, so it costs nothing.
+            [HarmonyPatch(typeof(Agent))]
+            [HarmonyPatch("OnWeaponReloadPhaseChange")]
+            [UsedImplicitly]
+            [MBCallback]
+            private class OverrideOnWeaponReloadPhaseChange
+            {
+                private static void Prefix(Agent __instance, EquipmentIndex slotIndex, out short __state)
+                {
+                    __state = -1;
+                    if (__instance?.Equipment != null && slotIndex != EquipmentIndex.None)
+                    {
+                        __state = __instance.Equipment[slotIndex].ReloadPhase;
+                    }
+                }
+
+                private static void Postfix(Agent __instance, EquipmentIndex slotIndex, short reloadPhase, short __state)
+                {
+                    if (!RBMConfig.RBMConfig.postureEnabled || !RBMConfig.RBMConfig.staminaEnabled || __state < 0)
+                    {
+                        return;
+                    }
+                    MissionWeapon missionWeapon = __instance.Equipment[slotIndex];
+                    if (missionWeapon.IsEmpty || missionWeapon.CurrentUsageItem == null || missionWeapon.CurrentUsageItem.WeaponClass != WeaponClass.Crossbow)
+                    {
+                        return;
+                    }
+                    short reloadPhaseCount = missionWeapon.ReloadPhaseCount;
+                    if (__state >= reloadPhaseCount || reloadPhase < reloadPhaseCount)
+                    {
+                        return;
+                    }
+                    Stance shooterPosture = null;
+                    AgentStances.values.TryGetValue(__instance, out shooterPosture);
+                    if (shooterPosture != null)
+                    {
+                        shooterPosture.reduceStamina(calculateShootMissileStaminaLoss(__instance, WeaponClass.Crossbow, missionWeapon));
                     }
                 }
             }
