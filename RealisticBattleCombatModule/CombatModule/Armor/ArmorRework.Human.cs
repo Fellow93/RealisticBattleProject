@@ -99,33 +99,41 @@ namespace RBMCombat
             return num;
         }
 
+        // getShoulderArmor sums the cape (pauldron) and the body armor, so the shoulder takes the
+        // stronger of the two materials. A cape only counts when it actually adds armor, so a
+        // cosmetic cloth cape does not downgrade the cuirass. ArmorMaterialTypes is ordered
+        // None < Cloth < Leather < Chainmail < Plate.
         public static ArmorMaterialTypes getShoulderArmorMaterial(Agent agent)
         {
             ArmorMaterialTypes material = ArmorMaterialTypes.None;
             for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
             {
                 EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                ArmorMaterialTypes slotMaterial = ArmorMaterialTypes.None;
 
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
                 {
-                    if (equipmentElement.Item.ArmorComponent != null)
+                    if (equipmentElement.Item.ArmorComponent != null &&
+                        equipmentElement.GetModifiedBodyArmor() + equipmentElement.GetModifiedArmArmor() > 0)
                     {
-                        return equipmentElement.Item.ArmorComponent.MaterialType;
+                        slotMaterial = equipmentElement.Item.ArmorComponent.MaterialType;
                     }
                 }
                 if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
                 {
                     if (equipmentElement.Item.ArmorComponent != null)
                     {
-                        if (equipmentElement.Item.ArmorComponent.MaterialType == ArmorMaterialTypes.Plate)
+                        slotMaterial = equipmentElement.Item.ArmorComponent.MaterialType;
+                        if (slotMaterial == ArmorMaterialTypes.Plate &&
+                            System.Array.IndexOf(PlateOverMailBodyArmorIds, equipmentElement.Item.StringId) >= 0)
                         {
-                            if (System.Array.IndexOf(PlateOverMailBodyArmorIds, equipmentElement.Item.StringId) >= 0)
-                            {
-                                return ArmorMaterialTypes.Chainmail;
-                            }
+                            slotMaterial = ArmorMaterialTypes.Chainmail;
                         }
-                        return equipmentElement.Item.ArmorComponent.MaterialType;
                     }
+                }
+                if (slotMaterial > material)
+                {
+                    material = slotMaterial;
                 }
             }
             return material;
