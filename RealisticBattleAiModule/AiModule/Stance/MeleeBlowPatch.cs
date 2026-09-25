@@ -267,10 +267,13 @@ namespace RBMAI
             private static void Postfix(ref Mission __instance, ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
             {
                 //sanity gate
-                // cancelDamage means vanilla discarded this blow entirely (invulnerable victim,
-                // tutorial/training rules); no posture or stamina may be spent on it either.
-                if (!_inMeleeHitContext || cancelDamage || victimAgent == null || !victimAgent.IsHuman ||
-                    !RBMConfig.RBMConfig.postureEnabled || attackerAgent == null || attackerAgent.IsFriendOf(victimAgent))
+                // Don't gate on cancelDamage: vanilla MeleeHitCallback also sets it for every
+                // weapon block/parry/chamber block (flag && !AttackBlockedWithShield), which would
+                // skip all non-shield block posture/stamina. Exclude only the cases it was meant
+                // for: invulnerable victims and non-enemy (friendly/neutral) hits.
+                if (!_inMeleeHitContext || victimAgent == null || !victimAgent.IsHuman ||
+                    !RBMConfig.RBMConfig.postureEnabled || attackerAgent == null ||
+                    victimAgent.CurrentMortalityState == MortalityState.Invulnerable || !attackerAgent.IsEnemyOf(victimAgent))
                 {
                     return;
                 }
