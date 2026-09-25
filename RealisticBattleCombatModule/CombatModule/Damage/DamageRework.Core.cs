@@ -17,6 +17,31 @@ namespace RBMCombat
 {
     internal partial class DamageRework
     {
+        // Plate body armors that stay plate below the shoulder. Matched by item id, not display
+        // name, so the check holds in every localization.
+        private static readonly string[] PlateBelowShoulderArmorIds =
+        {
+            "sturgian_fortified_armor", "mp_sturgian_fortified_armor", // Brigandine over Hauberk
+            "khuzait_heavy_armor",                                     // Khan's Coat of Plates
+            "plated_leather_coat", "mp_plated_leather_coat",           // Rough Brigandine
+            "eastern_plated_leather", "mp_eastern_plated_leather",     // Mirrored Brigandine Armor
+            "northman_raider_armor",                                   // Northern Raider Armor
+            "western_scale_mail",                                      // Rough Scale Mail
+        };
+
+        // Closed plate helmets whose face is covered by mail, so a face hit meets mail, not plate.
+        // These are the plate helmets whose English name contains "Closed"; matched by id so the
+        // check holds in every localization.
+        private static readonly string[] ClosedFaceMailHelmetIds =
+        {
+            "closed_desert_helmet", "closed_desert_helmet_with_mail",
+            "brass_aserai_helmet_closed", "brass_aserai_helmet_b_closed",
+            "eastern_vendel_helmet", "nordic_helmet", "decorated_goggled_helmet",
+            "closed_goggled_helmet", "goggled_helmet_over_full_mail", "lendman_helmet_over_full_mail",
+            "sturgian_helmet_closed", "sturgian_helmet_b_close", "imperial_goggled_helmet",
+            "mp_vlandian_faceguard_helmet_a", "mp_sturgian_helmet_b_close", "mp_sturgian_helmet_closed",
+        };
+
         private static readonly MethodInfo UpdateLastAttackAndHitTimesMethod =
             typeof(Agent).GetMethod("UpdateLastAttackAndHitTimes", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -254,7 +279,7 @@ namespace RBMCombat
                             armorMaterial = victim.SpawnEquipment[EquipmentIndex.Head].Item.ArmorComponent.MaterialType;
                             if (victim.SpawnEquipment[EquipmentIndex.Head].Item.ArmorComponent.MaterialType == ArmorMaterialTypes.Plate)
                             {
-                                if (victim.SpawnEquipment[EquipmentIndex.Head].GetModifiedItemName().Contains("Closed"))
+                                if (Array.IndexOf(ClosedFaceMailHelmetIds, victim.SpawnEquipment[EquipmentIndex.Head].Item.StringId) >= 0)
                                 {
                                     armorMaterial = ArmorMaterialTypes.Chainmail;
                                 }
@@ -279,12 +304,7 @@ namespace RBMCombat
                             armorMaterial = victim.SpawnEquipment[EquipmentIndex.Body].Item.ArmorComponent.MaterialType;
                             if (victim.SpawnEquipment[EquipmentIndex.Body].Item.ArmorComponent.MaterialType == ArmorMaterialTypes.Plate)
                             {
-                                if (victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Brigandine over Hauberk") ||
-                                    victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Khan's Coat of Plates") ||
-                                    victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Rough Brigandine") ||
-                                    victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Mirrored Brigandine Armor") ||
-                                    victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Northern Raider Armor") ||
-                                    victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedItemName().Contains("Rough Scale Mail"))
+                                if (Array.IndexOf(PlateBelowShoulderArmorIds, victim.SpawnEquipment[EquipmentIndex.Body].Item.StringId) >= 0)
                                 {
                                     armorMaterial = ArmorMaterialTypes.Plate;
                                 }

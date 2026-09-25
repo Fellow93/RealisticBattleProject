@@ -8,6 +8,19 @@ namespace RBMCombat
 {
     public partial class ArmorRework
     {
+        // Plate body armors worn over mail, whose shoulders count as mail. These are the plate
+        // body armors whose English name contains "mail"; matched by id so the check holds in
+        // every localization.
+        private static readonly string[] PlateOverMailBodyArmorIds =
+        {
+            "desert_lamellar", "desert_scale_armor", "aserai_scale_armor_on_cloth", "western_scale_mail",
+            "battanian_scale_armor_a", "brass_lamellar_over_mail", "coat_of_plates_over_mail",
+            "northern_brass_lamellar_over_mail", "sturgian_lamellar_base", "imperial_scale_armor",
+            "lamellar_with_scale_skirt", "imperial_lamellar", "empire_legion_b",
+            "mp_northern_brass_lamellar_over_mail", "mp_western_scale_mail", "mp_aserai_scale_armor_on_cloth",
+            "mp_empire_legion_b", "mp_imperial_scale_armor", "mp_battanian_scale_armor_a", "mp_sturgian_lamellar_base",
+        };
+
         public static float getHeadArmor(Agent agent)
         {
             float num = 0f;
@@ -106,7 +119,7 @@ namespace RBMCombat
                     {
                         if (equipmentElement.Item.ArmorComponent.MaterialType == ArmorMaterialTypes.Plate)
                         {
-                            if (equipmentElement.GetModifiedItemName().Contains("mail") || equipmentElement.GetModifiedItemName().Contains("Mail"))
+                            if (System.Array.IndexOf(PlateOverMailBodyArmorIds, equipmentElement.Item.StringId) >= 0)
                             {
                                 return ArmorMaterialTypes.Chainmail;
                             }
