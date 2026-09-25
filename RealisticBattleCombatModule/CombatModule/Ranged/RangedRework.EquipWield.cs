@@ -77,7 +77,7 @@ namespace RBMCombat
 
                                 MissionWeapon mw = __instance.Equipment[equipmentSlot];
                                 RangedWeaponStats rws;
-                                if (rangedWeaponStats.TryGetValue(mw.GetModifiedItemName().ToString(), out rws))
+                                if (rangedWeaponStats.TryGetValue(GetRangedWeaponKey(mw), out rws))
                                 {
                                     if ((ef) < rws.getDrawWeight() + 9f) // 70 more skill needed to unlock speed shooting
                                     {
@@ -202,7 +202,7 @@ namespace RBMCombat
                                         int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(__instance, skill);
 
                                         RangedWeaponStats rws;
-                                        if (rangedWeaponStats.TryGetValue(mw.GetModifiedItemName().ToString(), out rws))
+                                        if (rangedWeaponStats.TryGetValue(GetRangedWeaponKey(mw), out rws))
                                         {
                                             if ((effectiveSkill) < rws.getDrawWeight() + 9f) // 70 more skill needed to unlock speed shooting
                                             {

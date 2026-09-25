@@ -39,9 +39,9 @@ namespace RBMCombat
                         {
                             RangedWeaponStats rangedWeaponStatNew = new RangedWeaponStats(missionWeapon.CurrentUsageItem.MissileSpeed);
                             RangedWeaponStats rangedWeaponStatOld;
-                            if (!rangedWeaponStats.TryGetValue(missionWeapon.GetModifiedItemName().ToString(), out rangedWeaponStatOld))
+                            if (!rangedWeaponStats.TryGetValue(GetRangedWeaponKey(missionWeapon), out rangedWeaponStatOld))
                             {
-                                rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()] = rangedWeaponStatNew;
+                                rangedWeaponStats[GetRangedWeaponKey(missionWeapon)] = rangedWeaponStatNew;
                             }
                             stringRangedWeapons.Add(missionWeapon);
                         }
@@ -99,13 +99,13 @@ namespace RBMCombat
                         {
                             calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, missionWeapon.CurrentUsageItem.MissileSpeed + msModifier);
                         }
-                        rangedWeaponMW[missionWeapon.GetModifiedItemName().ToString()] = missionWeapon;
+                        rangedWeaponMW[GetRangedWeaponKey(missionWeapon)] = missionWeapon;
 
                         MissileSpeedProperty.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                     else if (!missionWeapon.Equals(MissionWeapon.Invalid))
                     {
-                        rangedWeaponMW[missionWeapon.GetModifiedItemName().ToString()] = missionWeapon;
+                        rangedWeaponMW[GetRangedWeaponKey(missionWeapon)] = missionWeapon;
                         MissileSpeedProperty.SetValue(missionWeapon.CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                 }
@@ -124,7 +124,7 @@ namespace RBMCombat
 
                         if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))
                         {
-                            MissileSpeedProperty.SetValue(__instance.Equipment[equipmentIndex].CurrentUsageItem, rangedWeaponStats[mw.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            MissileSpeedProperty.SetValue(__instance.Equipment[equipmentIndex].CurrentUsageItem, rangedWeaponStats[GetRangedWeaponKey(mw)].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                         }
                     }
                 }
@@ -202,13 +202,13 @@ namespace RBMCombat
                     }
 
                     RangedWeaponStats rws;
-                    if (!rangedWeaponStats.TryGetValue(missionWeapon.GetModifiedItemName().ToString(), out rws))
+                    if (!rangedWeaponStats.TryGetValue(GetRangedWeaponKey(missionWeapon), out rws))
                     {
-                        rangedWeaponMW[missionWeapon.GetModifiedItemName().ToString()] = missionWeapon;
-                        rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()] = new RangedWeaponStats(missionWeapon.CurrentUsageItem.MissileSpeed);
+                        rangedWeaponMW[GetRangedWeaponKey(missionWeapon)] = missionWeapon;
+                        rangedWeaponStats[GetRangedWeaponKey(missionWeapon)] = new RangedWeaponStats(missionWeapon.CurrentUsageItem.MissileSpeed);
                     }
 
-                    string min = missionWeapon.GetModifiedItemName().ToString();
+                    string min = GetRangedWeaponKey(missionWeapon);
 
                     int msModifier = 0;
                     if (missionWeapon.ItemModifier != null)
@@ -290,7 +290,7 @@ namespace RBMCombat
                 }
                 if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))
                 {
-                    MissileSpeedProperty.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, rangedWeaponStats[missionWeapon.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    MissileSpeedProperty.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, rangedWeaponStats[GetRangedWeaponKey(missionWeapon)].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
             }
         }
@@ -309,12 +309,16 @@ namespace RBMCombat
                     WeaponStatsData[] wsd = mw.Value.GetWeaponStatsData();
                     if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))
                     {
-                        if (rangedWeaponStats.ContainsKey(mw.Value.GetModifiedItemName().ToString()))
+                        if (rangedWeaponStats.ContainsKey(GetRangedWeaponKey(mw.Value)))
                         {
-                            MissileSpeedProperty.SetValue(mw.Value.CurrentUsageItem, rangedWeaponStats[mw.Value.GetModifiedItemName().ToString()].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            MissileSpeedProperty.SetValue(mw.Value.CurrentUsageItem, rangedWeaponStats[GetRangedWeaponKey(mw.Value)].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                         }
                     }
                 }
+                // Every shared WeaponComponentData.MissileSpeed is back at its draw weight now, so the caches
+                // can be dropped; the next mission re-captures them on spawn/shot.
+                rangedWeaponMW.Clear();
+                rangedWeaponStats.Clear();
                 return true;
             }
         }

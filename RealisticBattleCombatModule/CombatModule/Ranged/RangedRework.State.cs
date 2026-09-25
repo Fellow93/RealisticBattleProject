@@ -24,6 +24,14 @@ namespace RBMCombat
         public static Dictionary<string, RangedWeaponStats> rangedWeaponStats = new Dictionary<string, RangedWeaponStats>(new RangedWeaponStatsComparer());
         public static Dictionary<string, MissionWeapon> rangedWeaponMW = new Dictionary<string, MissionWeapon> { };
 
+        // Key for rangedWeaponStats / rangedWeaponMW: item + modifier StringId, never the localized display
+        // name (two different items can share a name, and it changes with the language). Both dictionaries are
+        // cleared at EndMission, after the draw weights have been restored.
+        internal static string GetRangedWeaponKey(MissionWeapon missionWeapon)
+        {
+            return missionWeapon.Item?.StringId + "|" + (missionWeapon.ItemModifier?.StringId ?? "");
+        }
+
         private static readonly PropertyInfo MissileSpeedProperty = typeof(WeaponComponentData).GetProperty("MissileSpeed");
         private static readonly PropertyInfo SwingSpeedProperty = typeof(WeaponComponentData).GetProperty("SwingSpeed");
         private static readonly PropertyInfo ThrustSpeedProperty = typeof(WeaponComponentData).GetProperty("ThrustSpeed");
