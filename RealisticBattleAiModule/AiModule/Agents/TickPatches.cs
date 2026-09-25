@@ -31,6 +31,29 @@ namespace RBMAI
             // and stays permanently passive with its target parked on a squadmate.
             public static HashSet<Agent> bannerBearersWithHeldTarget = new HashSet<Agent>();
 
+            // CommonAIComponent.StopRetreating only clears the retreat/panic flags. Retreat() had dropped the
+            // shield stance (EnforceShieldUsage(None)) and AgentPanicFix cleared the target frame on panic, so a
+            // rallied agent came back with a stale target and no formation behavior - standing idle or swinging
+            // at whoever it last targeted. Rebuild what the formation would have given it.
+            private static void RestoreAiAfterRally(Agent agent)
+            {
+                // Banner bearers holding a parked target keep automatic selection off; the banner block owns that.
+                if (!bannerBearersWithHeldTarget.Contains(agent))
+                {
+                    agent.SetAutomaticTargetSelection(true);
+                }
+                agent.InvalidateTargetAgent();
+                agent.ResetEnemyCaches();
+
+                Formation formation = agent.Formation;
+                HumanAIComponent humanAi = agent.HumanAIComponent;
+                if (formation != null && humanAi != null)
+                {
+                    humanAi.RefreshBehaviorValues(formation.GetReadonlyMovementOrderReference().OrderEnum, formation.ArrangementOrder.OrderEnum);
+                    agent.UpdateFormationOrders();
+                }
+            }
+
             private static void Postfix(ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent)
             {
                 // Banner bearers (Raise Your Banner) lock onto a distant enemy as their melee target and the native
@@ -100,7 +123,12 @@ namespace RBMAI
                 CommonAIComponent rallyAi = ___Agent.CommonAIComponent;
                 if (rallyAi != null && rallyAi.IsPanicked && ___Agent.GetMorale() > 0f && currentTime - ___Agent.LastMeleeHitTime > 10f)
                 {
+                    bool wasRetreating = rallyAi.IsRetreating;
                     rallyAi.StopRetreating();
+                    if (wasRetreating && !rallyAi.IsRetreating)
+                    {
+                        RestoreAiAfterRally(___Agent);
+                    }
                 }
                 //if (___Agent.HasMount)
                 //{
