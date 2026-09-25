@@ -149,7 +149,7 @@ namespace RBMCampaign
                 { "empire_north", new (string, float)[] { ("fur", 0.0055f), ("meat", 0.0055f) } },
                 { "battania",     new (string, float)[] { ("charcoal", 1.027f*0.15f), ("planks", 1.027f*0.05f) } },
                 { "vlandia",      new (string, float)[] { ("grape", 0.006f) } },
-                { "khuzait",      ScaleRates(HorseRanch("khuzait_horse"), 0.1f) },
+                { "khuzait",      ScaleRates(HorseRanch("khuzait_horse"), 0.1f) }, // ako pridat ku konom normalnu produkviu ako je meat, atd
                 { "sturgia",      new (string, float)[] { ("fur", 0.0055f), ("meat", 0.0055f) } },
                 { "nord",         new (string, float)[] { ("walrus_tusk", 0.0008f), ("meat", 0.0055f) } }, // Naval DLC culture
             };
