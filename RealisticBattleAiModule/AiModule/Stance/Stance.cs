@@ -71,6 +71,7 @@ namespace RBMAI
             if (agent.IsPlayerControlled)
             {
                 stance.maxStamina *= RBMConfig.RBMConfig.playerPostureMultiplier;
+                stance.stamina = stance.maxStamina;
                 stance.staminaRegenPerTick *= RBMConfig.RBMConfig.playerPostureMultiplier;
             }
         }
