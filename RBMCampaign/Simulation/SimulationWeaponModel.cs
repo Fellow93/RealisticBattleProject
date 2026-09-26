@@ -16,6 +16,7 @@ namespace RBMCampaign
     ///    and since the skill term alone clears MAX for all but the feeblest blow, damage collapses to the
     ///    skill-borne ceiling: MAX*(1+2*sm)*SCALE, a thing of the weapon's CLASS and the man's TRAINING, and of
     ///    nothing else. A sickle and a longsword swing for the same number if the same man holds them.
+    ///    That table is not copied here: it is RBMConfig.SkillDamage.GetSkillBasedDamage, shared with the live blow.
     ///
     /// 2. SO WHAT MAKES A GOOD WEAPON GOOD IS PENETRATION, NOT FORCE. The item's damage factor has exactly one
     ///    use in the whole of RBM (Utilities.cs:1191): it DIVIDES the armour threshold. A finer blade does not
@@ -134,84 +135,44 @@ namespace RBMCampaign
         // ---------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// The ceiling RBM's damage clamp lands a melee blow on: MAX*(1+2*skillModifier)*SCALE, by weapon class
-        /// and damage kind. Straight out of Utilities.GetSkillBasedDamage. A class RBM's switch does not name
-        /// (a javelin held in the hand, a low-grip polearm) falls through there untouched, and does here too.
+        /// The classes whose swings (and non-Pierce thrusts) this model prices on RBM's skill clamp, which now
+        /// comes straight from the shared table in RBMConfig.SkillDamage.GetSkillBasedDamage -- the same function
+        /// the live blow uses. A class not listed here (a javelin held in the hand, a low-grip polearm, a bastard
+        /// axe) is left out, as the old hand copy of the table left it out: its swing is not priced at all.
         /// </summary>
-        private static bool GetMeleeClamp(WeaponClass weaponClass, DamageTypes damageType,
-            out float skillCoefficient, out float min, out float max, out float scale)
+        private static bool IsSkillDamageClass(WeaponClass weaponClass)
         {
-            skillCoefficient = 0f;
-            min = 0f;
-            max = 0f;
-            scale = 0f;
-            bool blunt = damageType == DamageTypes.Blunt;
-
             switch (weaponClass)
             {
                 case WeaponClass.Dagger:
                 case WeaponClass.OneHandedSword:
                 case WeaponClass.ThrowingKnife:
-                    skillCoefficient = blunt ? 0.075f : 0.133f;
-                    min = blunt ? 15f : 5f;
-                    max = blunt ? 20f : 15f;
-                    scale = blunt ? (4f * 0.4f) : 4.6f;
-                    return true;
-
                 case WeaponClass.TwoHandedSword:
-                    skillCoefficient = blunt ? 0.112f : 0.199f;
-                    min = blunt ? 20f : 12f;
-                    max = blunt ? 26f : 20f;
-                    scale = blunt ? (4f * 0.4f) : 4.6f;
-                    return true;
-
                 case WeaponClass.OneHandedAxe:
                 case WeaponClass.ThrowingAxe:
-                    skillCoefficient = blunt ? 0.075f : 0.1f;
-                    min = blunt ? 15f : 10f;
-                    max = blunt ? 20f : 18f;
-                    scale = blunt ? (4f * 0.3f) : 4.6f;
-                    return true;
-
                 case WeaponClass.TwoHandedAxe:
-                    skillCoefficient = blunt ? 0.112f : 0.15f;
-                    min = blunt ? 20f : 15f;
-                    max = blunt ? 26f : 24f;
-                    scale = blunt ? (4f * 0.3f) : 4.6f;
-                    return true;
-
                 case WeaponClass.Mace:
-                    // A mace's Pierce is raw magnitude; everything else it does lands on this clamp.
-                    skillCoefficient = 0.075f;
-                    min = 10f;
-                    max = 15f;
-                    scale = 4.6f;
-                    return true;
-
                 case WeaponClass.TwoHandedMace:
-                    skillCoefficient = 0.1125f;
-                    min = 15f;
-                    max = 22f;
-                    scale = 4.6f;
-                    return true;
-
                 case WeaponClass.OneHandedPolearm:
-                    skillCoefficient = blunt ? 0.075f : 0.1f;
-                    min = blunt ? 15f : 15f;
-                    max = blunt ? 20f : 24f;
-                    scale = blunt ? (4f * 0.3f) : 4f;
-                    return true;
-
                 case WeaponClass.TwoHandedPolearm:
-                    skillCoefficient = blunt ? 0.0975f : 0.1495f;
-                    min = blunt ? 20f : 18f;
-                    max = blunt ? 26f : 28f;
-                    scale = blunt ? (4f * 0.3f) : 4f;
                     return true;
 
                 default:
                     return false;
             }
+        }
+
+        /// <summary>
+        /// A non-Pierce melee blow through RBM's shared skill clamp. Anything not Blunt is priced as a Cut, as the
+        /// old hand copy of the table priced it -- so a stray Pierce or unset swing type lands on the cut clamp
+        /// rather than the shared function's raw-magnitude Pierce branch.
+        /// </summary>
+        private static float GetSkillClampedMagnitude(WeaponClass weaponClass, float magnitude, DamageTypes damageType,
+            float skillDR, float skillModifier, StrikeType strikeType, float weaponWeight)
+        {
+            DamageTypes clampType = damageType == DamageTypes.Blunt ? DamageTypes.Blunt : DamageTypes.Cut;
+            return SkillDamage.GetSkillBasedDamage(magnitude, false, weaponClass.ToString(), clampType,
+                skillDR, skillModifier, strikeType, weaponWeight);
         }
 
         /// <summary>
@@ -608,15 +569,15 @@ namespace RBMCampaign
 
             // The swing: its real physics, then RBM's clamp -- which is the point. A blow lands where the clamp
             // lets it, and that is somewhere BETWEEN the floor and the ceiling for anything but the very best or
-            // the very worst weapon. Assuming the ceiling made every sword in Calradia swing identically.
+            // the very worst weapon. Assuming the ceiling made every sword in Calradia swing identically. The clamp
+            // is RBMConfig.SkillDamage's, the one the live blow runs through.
             if (weapon.SwingDamage > 0)
             {
-                float c, min, max, scale;
-                if (GetMeleeClamp(weapon.WeaponClass, weapon.SwingDamageType, out c, out min, out max, out scale))
+                if (IsSkillDamageClass(weapon.WeaponClass))
                 {
                     float physics = GetSwingMagnitude(weapon, item.Weight, skill);
-                    float value = physics + (skillDR * c);
-                    float swing = MBMath.ClampFloat(value, min * (1f + skillModifier), max * (1f + (2f * skillModifier))) * scale;
+                    float swing = GetSkillClampedMagnitude(weapon.WeaponClass, physics, weapon.SwingDamageType,
+                        skillDR, skillModifier, StrikeType.Swing, item.Weight);
                     if (swing > best)
                     {
                         best = swing;
@@ -626,8 +587,10 @@ namespace RBMCampaign
                 }
             }
 
-            // The thrust. A Pierce thrust is raw energy and no clamp at all; anything else goes through the same
-            // clamp a swing does, on the thrust's own physics.
+            // The thrust. A Pierce thrust is raw energy and no clamp at all (the live ×0.05 and ×20 cancel);
+            // anything else goes through the same shared clamp a swing does, on the thrust's own physics -- scaled
+            // by ThrustMagnitudeModifier first, as the live thrust magnitude is. Feeding the raw energy (up to
+            // 180-250) into the clamp pinned every blunt or cutting thrust at its ceiling.
             if (weapon.ThrustDamage > 0)
             {
                 float thrust = 0f;
@@ -635,15 +598,11 @@ namespace RBMCampaign
                 {
                     thrust = GetThrustEnergy(weapon, item.Weight, skill);
                 }
-                else
+                else if (IsSkillDamageClass(weapon.WeaponClass))
                 {
-                    float c, min, max, scale;
-                    if (GetMeleeClamp(weapon.WeaponClass, weapon.ThrustDamageType, out c, out min, out max, out scale))
-                    {
-                        float physics = GetThrustEnergy(weapon, item.Weight, skill);
-                        float value = physics + (skillDR * c);
-                        thrust = MBMath.ClampFloat(value, min * (1f + skillModifier), max * (1f + (2f * skillModifier))) * scale;
-                    }
+                    float physics = GetThrustEnergy(weapon, item.Weight, skill) * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
+                    thrust = GetSkillClampedMagnitude(weapon.WeaponClass, physics, weapon.ThrustDamageType,
+                        skillDR, skillModifier, StrikeType.Thrust, item.Weight);
                 }
                 if (thrust > best)
                 {
