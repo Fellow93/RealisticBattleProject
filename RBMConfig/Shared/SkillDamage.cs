@@ -149,20 +149,6 @@ namespace RBMConfig
                         }
                         break;
                     }
-                case "OneHandedBastardAxe":
-                    {
-                        skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.13f), 12f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4.6f);
-                        if (damageType == DamageTypes.Blunt)
-                        {
-                            //skillBasedDamage = magnitude * 1.15f + 0.5f * ((60f + (effectiveSkill * 0.4f)) * 1.15f);
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.09375f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
-                        }
-                        if (magnitude > 1f)
-                        {
-                            magnitude = skillBasedDamage;
-                        }
-                        break;
-                    }
                 case "TwoHandedAxe":
                     {
                         float value = magnitude + (effectiveSkill * 0.15f);

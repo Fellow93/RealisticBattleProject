@@ -542,14 +542,6 @@ namespace RBMCombat
                                 }
                                 break;
                             }
-                        case "OneHandedBastardAxe":
-                            {
-                                if (blowMagnitude > 1f)
-                                {
-                                    blowMagnitude = blowMagnitude + 60f * 1.15f;
-                                }
-                                break;
-                            }
                         case "TwoHandedAxe":
                             {
                                 if (blowMagnitude > 1f)
@@ -699,7 +691,6 @@ namespace RBMCombat
                         {
                             case "OneHandedAxe":
                             case "TwoHandedAxe":
-                            case "OneHandedBastardAxe":
                             case "TwoHandedPolearm":
                                 {
                                     if (attackCollisionData.DamageType == (int)DamageTypes.Pierce)

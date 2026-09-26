@@ -4455,7 +4455,6 @@ namespace RBMCampaign
             {
                 case "OneHandedAxe":
                 case "TwoHandedAxe":
-                case "OneHandedBastardAxe":
                 case "TwoHandedPolearm":
                     return true;
 

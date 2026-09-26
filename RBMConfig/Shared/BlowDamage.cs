@@ -80,11 +80,6 @@ namespace RBMConfig
                         damage = WeaponTypeDamage(RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
                     }
-                case "OneHandedBastardAxe":
-                    {
-                        damage = WeaponTypeDamage(RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
-                        break;
-                    }
                 case "TwoHandedAxe":
                     {
                         damage = WeaponTypeDamage(RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);

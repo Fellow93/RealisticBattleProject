@@ -72,7 +72,6 @@ namespace RBMCombat
                     {
                         case "TwoHandedAxe":
                         case "OneHandedAxe":
-                        case "OneHandedBastardAxe":
                         case "TwoHandedPolearm":
                         case "TwoHandedMace":
                             {
