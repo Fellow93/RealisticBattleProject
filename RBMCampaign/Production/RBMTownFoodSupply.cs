@@ -484,7 +484,9 @@ namespace RBMCampaign
                     }
 
                     float budget = Campaign.Current.Models.SettlementEconomyModel.CalculateDailySettlementBudgetForItemCategory(town, demand, category);
-                    if (budget <= 0.01f)
+                    // NaN compares false here, so it would otherwise reach RoundRandomized below and
+                    // become an invalid inventory removal. A non-finite budget cannot fund a purchase.
+                    if (float.IsNaN(budget) || float.IsInfinity(budget) || budget <= 0.01f)
                     {
                         continue;
                     }
