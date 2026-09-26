@@ -58,7 +58,7 @@ No test suite exists — testing is manual via in-game verification.
 - `RBMCombatPatcher.cs` — bootstrap, at `CombatModule/` root.
 - `Utilities/` (project root) — `public static partial class Utilities` split into `.Collision.cs` / `.Physics.cs` / `.Skill.cs` / `.Ranged.cs` / `.ArmorDurability.cs` / `.Damage.cs` / `.VisualStats.cs` / `.WeaponProps.cs` / `.Config.cs` (root `Utilities.cs` holds the shared tuning fields).
 
-**RBMConfig** — Configuration system with no project dependencies. Static fields in `RBMConfig.RBMConfig` loaded from user XML config. Includes Gauntlet-based in-game settings UI (`RBMConfigScreen`/`RBMConfigViewModel`). As of 2026-07-19 the two monoliths were split by config category via `partial class` (flat namespace `RBMConfig`; explicit `<Compile Include>` csproj — **update it on add/move**): the store `partial static class RBMConfig` lives in `Config/` (`.Core.cs` holds the module toggles + all XML `LoadConfig`/`parseXmlConfig`/`saveXmlConfig` methods, which reference fields across the sibling `.Combat.cs`/`.Campaign.cs`/`.Simulation.cs`); the settings ViewModel is split the same way under `RBMConfigUI/` (`RBMConfigViewModel.Core.cs` keeps the ctor + `ExecuteDone`/`ExecuteResetToDefault`/`ExecuteCancel` + `Hint`/`RefreshValues`, the `.Combat`/`.Campaign`/`.Simulation.cs` files hold only the `[DataSourceProperty]` declarations). Completeness is compiler-enforced — the retained Core methods reference every field/property, so a dropped or duplicated declaration fails the build.
+**RBMConfig** — Configuration system with no project dependencies. Static fields in `RBMConfig.RBMConfig` loaded from user XML config. Includes Gauntlet-based in-game settings UI (`RBMConfigScreen`/`RBMConfigViewModel`). As of 2026-07-19 the two monoliths were split by config category via `partial class` (flat namespace `RBMConfig`; explicit `<Compile Include>` csproj — **update it on add/move**): the store `partial static class RBMConfig` lives in `Config/` (`.Core.cs` holds the module toggles + all XML `LoadConfig`/`parseXmlConfig`/`saveXmlConfig` methods, which reference fields across the sibling `.Combat.cs`/`.Campaign.cs`/`.Simulation.cs`); the settings ViewModel is split the same way under `RBMConfigUI/` (`RBMConfigViewModel.Core.cs` keeps the ctor + `ExecuteDone`/`ExecuteResetToDefault`/`ExecuteCancel` + `Hint`/`RefreshValues`, the `.Combat`/`.Campaign`/`.Simulation.cs` files hold only the `[DataSourceProperty]` declarations). Completeness is compiler-enforced — the retained Core methods reference every field/property, so a dropped or duplicated declaration fails the build. `Shared/` holds the damage math used by RBMCombat, RBMAI and RBMCampaign (see "Large Utility Files" below).
 
 **RBMTournament** — Optional tournament mode enhancements. No project dependencies. As of 2026-07-19 `RBMTournament.cs` was split into `Tournament/` via `internal partial class RBMTournament`: `.Core.cs` (shared `calculatePlayerTournamentTier`), `.FightSimulation.cs`, `.Participants.cs`, `.Prizes.cs`. Patches are attribute-discovered by `PatchAll`.
 
@@ -100,7 +100,13 @@ Settings are static fields on `RBMConfig.RBMConfig`, persisted to user XML at `U
 
 ### Large Utility Files
 
-`Utilities.cs` exists in RBMAI (~120KB), RBMCombat (~88KB), and RBMConfig (~17KB). These contain extensive helper functions for combat math, physics calculations, and config management. They are not shared — each module has its own.
+RBMAI, RBMCombat and RBMConfig each have their own `Utilities` (partial static files in RBMAI/RBMCombat, see above) with helpers for combat math, physics and config management.
+
+**Shared damage math lives in `RBMConfig/Shared/`** (2026-09-26), because RBMAI does not reference RBMCombat and RBMConfig is the one module both reference:
+- `SkillDamage.cs`: `GetSkillBasedDamage` (the per-weapon-class skill coefficient/clamp table) and the punch magnitude helpers (`GetPunchMaterialFactor`/`GetPunchMagnitude`).
+- `BlowDamage.cs`: `RBMComputeDamage` (armor, penetration and blunt trauma).
+
+RBMCombat's `Utilities.GetSkillBasedDamage`/`RBMComputeDamage` are thin forwarders to these, so live combat, RBMAI's posture crush-through estimate (`MeleeBlowPatch.Math.cs` `calculateHealthDamage`) and auto-resolve (`RBMCampaign/Simulation/SimulationWeaponModel.cs`) all use one table. **Retune damage there, never re-copy it into a module** (the AI copy drifted for three years before this). The weapon-type factors (`RBMCombatConfigWeaponType`) were already in RBMConfig.
 
 ## Key Conventions
 
