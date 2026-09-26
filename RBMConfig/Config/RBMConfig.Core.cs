@@ -153,6 +153,7 @@ namespace RBMConfig
             caravanInvestmentEnabled = ReadOrCreate("/Config/RBMCampaign", "CaravanInvestmentEnabled", "1").Equals("1");
             caravanLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "CaravanLoggingEnabled", "0").Equals("1");
             deserterRaidersEnabled = ReadOrCreate("/Config/RBMCampaign", "DeserterRaidersEnabled", "1").Equals("1");
+            lordEquipmentUpgradeEnabled = ReadOrCreate("/Config/RBMCampaign", "LordEquipmentUpgradeEnabled", "1").Equals("1");
             simulationEquipmentEnabled = ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentEnabled", "1").Equals("1");
             simulationEquipmentPowerWeight = float.Parse(ReadOrCreate("/Config/RBMCampaign", "SimulationEquipmentPowerWeight", "1"), CultureInfo.InvariantCulture);
             strategicPowerEnabled = ReadOrCreate("/Config/RBMCampaign", "StrategicPowerEnabled", "1").Equals("1");
@@ -313,6 +314,7 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/CaravanInvestmentEnabled"), caravanInvestmentEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/CaravanLoggingEnabled"), caravanLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/DeserterRaidersEnabled"), deserterRaidersEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/LordEquipmentUpgradeEnabled"), lordEquipmentUpgradeEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationEquipmentEnabled"), simulationEquipmentEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SimulationEquipmentPowerWeight"), simulationEquipmentPowerWeight.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/StrategicPowerEnabled"), strategicPowerEnabled);

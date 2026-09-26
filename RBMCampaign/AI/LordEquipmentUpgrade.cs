@@ -45,7 +45,7 @@ namespace RBMCampaign
     /// it properly (gold-capped, keeping food and clean mounts). Spending is bounded by a per-visit gold
     /// fraction and a reserve, so a lord upgrades gradually over many town visits and never spends out of wages.
     ///
-    /// Gated on <c>rbmCampaignEnabled</c> and hung off a Postfix of
+    /// Gated on <c>rbmCampaignEnabled</c> and <c>lordEquipmentUpgradeEnabled</c>, and hung off a Postfix of
     /// <c>PartiesBuyHorseCampaignBehavior.OnSettlementEntered</c> (a Postfix runs independently of whether
     /// <see cref="LordPackTrain"/>'s Prefix took over that handler, so the two never entangle). AI lords only;
     /// the player's own party and the player clan's heroes are left to the player.
@@ -409,7 +409,7 @@ namespace RBMCampaign
         {
             private static void Postfix(MobileParty mobileParty, Settlement settlement, Hero hero)
             {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !IsManaged(mobileParty, settlement))
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !RBMConfig.RBMConfig.lordEquipmentUpgradeEnabled || !IsManaged(mobileParty, settlement))
                 {
                     return;
                 }

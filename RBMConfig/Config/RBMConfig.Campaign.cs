@@ -231,5 +231,10 @@ namespace RBMConfig
         // and caravans and raiding weakly-held villages when they out-match the target, instead of vanilla's
         // aimless patrol around their spawn point. Off leaves deserters on vanilla behavior.
         public static bool deserterRaidersEnabled = true;
+
+        // Whether AI lords spend gold in towns to upgrade their own battle gear to culture-matched items
+        // (LordEquipmentUpgrade). Off leaves lord equipment to vanilla or another mod. Does not affect
+        // the lord pack train.
+        public static bool lordEquipmentUpgradeEnabled = true;
     }
 }

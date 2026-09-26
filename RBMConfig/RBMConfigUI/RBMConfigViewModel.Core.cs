@@ -342,6 +342,11 @@ namespace RBMConfig
             EconomyLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_107}Economy Logging"));
             EconomyLoggingEnabled = new SelectorVM<SelectorItemVM>(economyLoggingOptions, 0, null);
 
+            // AI lord equipment purchasing: on by default, so Enabled carries the "(Default)" tag.
+            List<string> lordEquipmentUpgradeOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            LordEquipmentUpgradeEnabledText = new TextViewModel(new TextObject("AI Lords Buy Equipment"));
+            LordEquipmentUpgradeEnabled = new SelectorVM<SelectorItemVM>(lordEquipmentUpgradeOptions, 0, null);
+
             // Intra-kingdom supply caravans and their two sub-toggles: all on by default, so Enabled
             // carries the "(Default)" tag.
             List<string> kingdomCaravansOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
@@ -481,6 +486,7 @@ namespace RBMConfig
             SpoilsLoggingEnabled.SelectedIndex = RBMConfig.spoilsLoggingEnabled ? 1 : 0;
             SpoilsVerboseLoggingEnabled.SelectedIndex = RBMConfig.spoilsVerboseLoggingEnabled ? 1 : 0;
             EconomyLoggingEnabled.SelectedIndex = RBMConfig.economyLoggingEnabled ? 1 : 0;
+            LordEquipmentUpgradeEnabled.SelectedIndex = RBMConfig.lordEquipmentUpgradeEnabled ? 1 : 0;
             KingdomCaravansEnabled.SelectedIndex = RBMConfig.kingdomCaravansEnabled ? 1 : 0;
             CaravanInvestmentEnabled.SelectedIndex = RBMConfig.caravanInvestmentEnabled ? 1 : 0;
             CaravanLoggingEnabled.SelectedIndex = RBMConfig.caravanLoggingEnabled ? 1 : 0;
@@ -708,6 +714,7 @@ namespace RBMConfig
             RBMConfig.spoilsLoggingEnabled = SpoilsLoggingEnabled.SelectedIndex == 1;
             RBMConfig.spoilsVerboseLoggingEnabled = SpoilsVerboseLoggingEnabled.SelectedIndex == 1;
             RBMConfig.economyLoggingEnabled = EconomyLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.lordEquipmentUpgradeEnabled = LordEquipmentUpgradeEnabled.SelectedIndex == 1;
             RBMConfig.kingdomCaravansEnabled = KingdomCaravansEnabled.SelectedIndex == 1;
             RBMConfig.caravanInvestmentEnabled = CaravanInvestmentEnabled.SelectedIndex == 1;
             RBMConfig.caravanLoggingEnabled = CaravanLoggingEnabled.SelectedIndex == 1;
@@ -803,6 +810,7 @@ namespace RBMConfig
             SpoilsLoggingEnabled.SelectedIndex = 0;
             SpoilsVerboseLoggingEnabled.SelectedIndex = 0;
             EconomyLoggingEnabled.SelectedIndex = 0;
+            LordEquipmentUpgradeEnabled.SelectedIndex = 1;
             KingdomCaravansEnabled.SelectedIndex = 1;
             CaravanInvestmentEnabled.SelectedIndex = 1;
             CaravanLoggingEnabled.SelectedIndex = 0;

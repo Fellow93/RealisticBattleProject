@@ -23,6 +23,10 @@ namespace RBMConfig
         public TextViewModel EconomyLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> EconomyLoggingEnabled { get; }
 
+        // AI lords buying their own battle gear in towns: on/off.
+        public TextViewModel LordEquipmentUpgradeEnabledText { get; }
+        public SelectorVM<SelectorItemVM> LordEquipmentUpgradeEnabled { get; }
+
         // Intra-kingdom supply caravans: master on/off.
         public TextViewModel KingdomCaravansEnabledText { get; }
         public SelectorVM<SelectorItemVM> KingdomCaravansEnabled { get; }
@@ -691,6 +695,16 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel EconomyLoggingEnabledHint { get; } = Hint("{=RBM_CON_108}Writes the village-to-town goods and food chain to logs/economy next to the config: each village's daily production, every villager party sent out with its size, composition and cargo, each town's rations, and the end-of-day state of every settlement. Verbose, and only useful for tuning the economy.");
+
+        // Lord equipment toggle label and hint. Plain literal TextObjects (no {=KEY}), like the caravan ones.
+        [DataSourceProperty]
+        public string LordEquipmentUpgradeEnabledt
+        {
+            get { return new TextObject("AI Lords Buy Equipment").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel LordEquipmentUpgradeEnabledHint { get; } = Hint("AI lords spend gold in towns to upgrade their own battle gear to culture-matched items. Disable if another mod manages lord equipment.");
 
         // Caravan toggle labels and hints. Plain literal TextObjects (no {=KEY}) to sidestep the
         // LOC-eng.xml key-collision issue, like the category headers below.
