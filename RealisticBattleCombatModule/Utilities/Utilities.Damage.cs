@@ -477,7 +477,7 @@ namespace RBMCombat
                     }
                 case "Mace":
                     {
-                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor, 0f);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), mag_1h_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
                     }
                 case "TwoHandedMace":
@@ -487,12 +487,12 @@ namespace RBMCombat
                     }
                 case "Arrow":
                     {
-                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor, 0f);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
                     }
                 case "Bolt":
                     {
-                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor, 0f);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
                     }
                 case "Javelin":
@@ -507,7 +507,7 @@ namespace RBMCombat
                     }
                 case "SlingStone":
                     {
-                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor, 0f);
+                        damage = WeaponTypeDamage(RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
                     }
                 default:
@@ -521,7 +521,7 @@ namespace RBMCombat
             return damage * absorbedDamageRatio;
         }
 
-        private static float WeaponTypeDamage(RBMCombatConfigWeaponType weaponTypeFactors, float magnitude, float armorReduction, DamageTypes damageType, float armorEffectiveness, BasicCharacterObject player, bool isPlayerVictim, float weaponDamageFactor, out float penetratedDamage, out float bluntTraumaAfterArmor, float partialPenetrationThreshold = 2f)
+        private static float WeaponTypeDamage(RBMCombatConfigWeaponType weaponTypeFactors, float magnitude, float armorReduction, DamageTypes damageType, float armorEffectiveness, BasicCharacterObject player, bool isPlayerVictim, float weaponDamageFactor, out float penetratedDamage, out float bluntTraumaAfterArmor)
         {
             float damage = 0f;
             float armorThresholdModifier = RBMConfig.RBMConfig.armorThresholdModifier / weaponDamageFactor;
@@ -595,18 +595,12 @@ namespace RBMCombat
                     }
                 case DamageTypes.Pierce:
                     {
-                        float partialPenetration = Math.Max(0f, magnitude - armorEffectiveness * partialPenetrationThreshold * armorThresholdModifier);
-                        if (partialPenetration > 15f)
-                        {
-                            partialPenetration = 15f;
-                        }
-                        penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * extraArmorThresholdFactorPierce * armorThresholdModifier) - partialPenetration;
+                        penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * extraArmorThresholdFactorPierce * armorThresholdModifier);
                         float bluntFraction = 0f;
                         if (magnitude > 0f)
                         {
-                            bluntFraction = (magnitude - (penetratedDamage + partialPenetration)) / magnitude;
+                            bluntFraction = (magnitude - penetratedDamage) / magnitude;
                         }
-                        penetratedDamage += partialPenetration;
                         damage += penetratedDamage;
 
                         float bluntTrauma = magnitude * (extraBluntFactorPierce + RBMConfig.RBMConfig.bluntTraumaBonus) * bluntFraction;
