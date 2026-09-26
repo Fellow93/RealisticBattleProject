@@ -593,22 +593,33 @@ namespace RBMCampaign
                 string to = (dest != null && dest.Name != null) ? dest.Name.ToString() : null;
 
                 // A relief caravan (empty manifest) carries only investment capital, so it reads as one.
-                string kind = (order.Goods == null || order.Goods.Count == 0) ? " Relief Caravan" : " Supply Caravan";
+                bool relief = (order.Goods == null || order.Goods.Count == 0);
 
-                string label;
+                // Each form is a whole template rather than assembled from parts: a translator has to be
+                // able to move the settlement names and the connector, which concatenation does not allow.
+                TextObject label;
                 if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
                 {
-                    label = from + " → " + to + kind;
+                    label = new TextObject(relief
+                        ? "{=RBM_CARAVAN_RELIEF_ROUTE}{FROM} → {TO} Relief Caravan"
+                        : "{=RBM_CARAVAN_SUPPLY_ROUTE}{FROM} → {TO} Supply Caravan");
+                    label.SetTextVariable("FROM", from);
+                    label.SetTextVariable("TO", to);
                 }
                 else if (!string.IsNullOrEmpty(from))
                 {
-                    label = from + kind;
+                    label = new TextObject(relief
+                        ? "{=RBM_CARAVAN_RELIEF_FROM}{FROM} Relief Caravan"
+                        : "{=RBM_CARAVAN_SUPPLY_FROM}{FROM} Supply Caravan");
+                    label.SetTextVariable("FROM", from);
                 }
                 else
                 {
-                    label = kind.Trim();
+                    label = new TextObject(relief
+                        ? "{=RBM_CARAVAN_RELIEF}Relief Caravan"
+                        : "{=RBM_CARAVAN_SUPPLY}Supply Caravan");
                 }
-                __result = new TextObject(label);
+                __result = label;
             }
         }
 

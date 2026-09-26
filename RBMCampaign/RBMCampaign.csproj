@@ -344,6 +344,7 @@
     <Compile Include="UI\SimulationPanel\SimulationBattlePanelVM.cs" />
     <Compile Include="UI\SimulationPanel\SimulationEventItemVM.cs" />
     <Compile Include="UI\SimulationPanel\SimulationBattlePanelPatch.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerHeaders.cs" />
     <Compile Include="UI\Ledger\RBMLedgerTabVM.cs" />
     <Compile Include="UI\Ledger\RBMLedgerViewModel.cs" />
     <Compile Include="UI\Ledger\RBMLedgerScreen.cs" />
