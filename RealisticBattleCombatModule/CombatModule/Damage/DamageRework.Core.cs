@@ -166,38 +166,9 @@ namespace RBMCombat
                 }
                 if (isUnarmedAttack)
                 {
-                    magnitude = 1f;
                     ArmorMaterialTypes gauntletMaterial = ArmorRework.GetArmorMaterialForBodyPartRBM(attacker, BoneBodyPartType.ArmRight);
-                    switch (gauntletMaterial)
-                    {
-                        case ArmorMaterialTypes.None:
-                            {
-                                magnitude *= 0.4f;
-                                break;
-                            }
-                        case ArmorMaterialTypes.Cloth:
-                            {
-                                magnitude *= 0.3f;
-                                break;
-                            }
-                        case ArmorMaterialTypes.Leather:
-                            {
-                                magnitude *= 0.3f;
-                                break;
-                            }
-                        case ArmorMaterialTypes.Chainmail:
-                            {
-                                magnitude *= 0.75f;
-                                break;
-                            }
-                        case ArmorMaterialTypes.Plate:
-                            {
-                                magnitude *= 1f;
-                                break;
-                            }
-                    }
                     float gauntletWeight = ArmorRework.getGauntletWeight(attacker);
-                    magnitude += gauntletWeight;
+                    magnitude = RBMConfig.SkillDamage.GetPunchMagnitude(gauntletMaterial, gauntletWeight);
                 }
 
                 ArmorMaterialTypes armorMaterial = ArmorRework.GetArmorMaterialForBodyPartRBM(victim, attackCollisionData.VictimHitBodyPart);
@@ -371,17 +342,17 @@ namespace RBMCombat
                         int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgent, skill);
                         float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
                         float skillModifier = Utilities.CalculateSkillModifier(ef);
-                        if (attacker != null && attacker.Equipment != null && attacker.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
-                        {
-                            itemModifier = attacker.Equipment[attacker.GetPrimaryWieldedItemIndex()].ItemModifier;
-                            magnitude = Utilities.GetSkillBasedDamage(magnitude, attackInformation.IsAttackerAgentDoingPassiveAttack, weaponType, damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetPrimaryWieldedItemIndex()].GetWeight());
-                        }
-                        else
-                        {
-                        }
+                        // Unarmed runs the skill formula exactly once; the wielded-item branch would
+                        // otherwise apply it a second time when the attacker holds something.
+                        // (itemModifier is only read when attackerWeapon != null, never for a punch.)
                         if (isUnarmedAttack)
                         {
                             magnitude = Utilities.GetSkillBasedDamage(magnitude, attackInformation.IsAttackerAgentDoingPassiveAttack, weaponType, damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, 5f);
+                        }
+                        else if (attacker != null && attacker.Equipment != null && attacker.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
+                        {
+                            itemModifier = attacker.Equipment[attacker.GetPrimaryWieldedItemIndex()].ItemModifier;
+                            magnitude = Utilities.GetSkillBasedDamage(magnitude, attackInformation.IsAttackerAgentDoingPassiveAttack, weaponType, damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetPrimaryWieldedItemIndex()].GetWeight());
                         }
                     }
                 }

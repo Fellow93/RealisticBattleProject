@@ -726,6 +726,10 @@ namespace RBMAI
                 return thrustMagnitude;
             }
 
+            // Crush-through reuses RBMCombat's full sweet-spot blow (shared SkillDamage/BlowDamage), which runs
+            // ~15-25% above the old AI-side table it replaced; this brings it back to roughly the old level.
+            private const float CrushThroughDamageMultiplier = 0.85f;
+
             public static float calculateHealthDamage(MissionWeapon targetWeapon, Agent attacker, Agent victimAgent, float overPostureDamage, Blow b, bool isUnarmedAttack)
             {
                 float armorSumPosture = victimAgent.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.Head);
@@ -765,42 +769,15 @@ namespace RBMAI
                         if (isUnarmedAttack)
                         {
                             ArmorMaterialTypes gauntletMaterial = Utilities.getArmArmorMaterial(attacker);
-                            switch (gauntletMaterial)
-                            {
-                                case ArmorMaterialTypes.None:
-                                    {
-                                        magnitude *= 0.25f;
-                                        break;
-                                    }
-                                case ArmorMaterialTypes.Cloth:
-                                    {
-                                        magnitude *= 0.4f;
-                                        break;
-                                    }
-                                case ArmorMaterialTypes.Leather:
-                                    {
-                                        magnitude *= 0.5f;
-                                        break;
-                                    }
-                                case ArmorMaterialTypes.Chainmail:
-                                    {
-                                        magnitude *= 0.75f;
-                                        break;
-                                    }
-                                case ArmorMaterialTypes.Plate:
-                                    {
-                                        magnitude *= 1f;
-                                        break;
-                                    }
-                            }
                             float gauntletWeight = Utilities.getGauntletWeight(attacker);
-                            magnitude += gauntletWeight;
+                            magnitude = RBMConfig.SkillDamage.GetPunchMagnitude(gauntletMaterial, gauntletWeight);
                         }
 
-                        float skillBasedDamage = Utilities.GetSkillBasedDamage(magnitude, false, "unarmedAttack", DamageTypes.Blunt, effectiveSkillDR, skillModifier, StrikeType.Swing, 5f);
+                        float skillBasedDamage = RBMConfig.SkillDamage.GetSkillBasedDamage(magnitude, false, "unarmedAttack", DamageTypes.Blunt, effectiveSkillDR, skillModifier, StrikeType.Swing, 5f);
 
-                        realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage("unarmedAttack", DamageTypes.Blunt, skillBasedDamage, armorSumPosture, 1f, out float penetratedDamage, out float bluntForce, swingDamageFactor, null, false)), 0, 2000);
-                        realDamage = MathF.Floor(realDamage * 1f);
+                        // A punch has no weapon, so RBMCombat's blow uses weaponDamageFactor = 1 (DamageRework.Core).
+                        realDamage = MBMath.ClampInt(MathF.Floor(RBMConfig.BlowDamage.RBMComputeDamage("unarmedAttack", DamageTypes.Blunt, skillBasedDamage, armorSumPosture, 1f, out float penetratedDamage, out float bluntForce, 1f, null, false)), 0, 2000);
+                        realDamage = MathF.Floor(realDamage * CrushThroughDamageMultiplier);
                         if (overPostureDamage > threshold)
                         {
                             return realDamage;
@@ -834,26 +811,26 @@ namespace RBMAI
                             {
                                 float sweetSpotMagnitude = CalculateSweetSpotSwingMagnitude(currentSelectedChar, targetWeapon, targetWeaponUsageIndex, effectiveSkill);
 
-                                float skillBasedDamage = Utilities.GetSkillBasedDamage(sweetSpotMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                float skillBasedDamage = RBMConfig.SkillDamage.GetSkillBasedDamage(sweetSpotMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
                                     targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, targetWeapon.Item.Weight);
 
                                 swingDamageFactor = (float)Math.Sqrt(Utilities.getSwingDamageFactor(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), targetWeapon.ItemModifier));
 
-                                realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(), targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, armorSumPosture, 1f, out float penetratedDamage, out float bluntForce, swingDamageFactor, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
+                                realDamage = MBMath.ClampInt(MathF.Floor(RBMConfig.BlowDamage.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(), targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).SwingDamageType, skillBasedDamage, armorSumPosture, 1f, out float penetratedDamage, out float bluntForce, swingDamageFactor, null, false)), 0, 2000);
+                                realDamage = MathF.Floor(realDamage * CrushThroughDamageMultiplier);
                             }
                             else
                             {
                                 float thrustMagnitude = CalculateThrustMagnitude(currentSelectedChar, targetWeapon, targetWeaponUsageIndex, effectiveSkill);
 
-                                float skillBasedDamage = Utilities.GetSkillBasedDamage(thrustMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                float skillBasedDamage = RBMConfig.SkillDamage.GetSkillBasedDamage(thrustMagnitude, false, targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
                                     targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, effectiveSkillDR, skillModifier, StrikeType.Thrust, targetWeapon.Item.Weight);
 
                                 thrustDamageFactor = (float)Math.Sqrt(Utilities.getThrustDamageFactor(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex), targetWeapon.ItemModifier));
 
-                                realDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
+                                realDamage = MBMath.ClampInt(MathF.Floor(RBMConfig.BlowDamage.RBMComputeDamage(targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).WeaponClass.ToString(),
                                 targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).ThrustDamageType, skillBasedDamage, armorSumPosture, 1f, out float penetratedDamage, out float bluntForce, thrustDamageFactor, null, false)), 0, 2000);
-                                realDamage = MathF.Floor(realDamage * 1f);
+                                realDamage = MathF.Floor(realDamage * CrushThroughDamageMultiplier);
                             }
                             if (overPostureDamage > threshold)
                             {

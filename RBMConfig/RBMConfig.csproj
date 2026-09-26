@@ -285,6 +285,9 @@
     <!-- Config data types -->
     <Compile Include="RBMCombatConfigPriceMultipliers.cs" />
     <Compile Include="RBMCombatConfigWeaponType.cs" />
+    <!-- Damage math shared by RBMCombat and RBMAI -->
+    <Compile Include="Shared\BlowDamage.cs" />
+    <Compile Include="Shared\SkillDamage.cs" />
     <!-- Helpers -->
     <Compile Include="Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
