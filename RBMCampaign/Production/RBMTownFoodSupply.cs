@@ -87,7 +87,10 @@ namespace RBMCampaign
 
         // Per-roster-version memo for the food count. get_FoodStocks is read constantly (town UI,
         // tooltips, AI target scoring, siege checks) and the uncached form is a full roster scan.
+        // Guarded by _foodCountCacheLock: the FoodStocks getter reaches it from the save system's
+        // TWParallel collect workers as well as the main thread.
         private static readonly Dictionary<Town, KeyValuePair<int, int>> _foodCountCache = new Dictionary<Town, KeyValuePair<int, int>>();
+        private static readonly object _foodCountCacheLock = new object();
 
         internal static void ResetForNewSession()
         {
@@ -96,7 +99,10 @@ namespace RBMCampaign
             _unmetRations.Clear();
             _rationSatisfaction.Clear();
             _hungerPressure.Clear();
-            _foodCountCache.Clear();
+            lock (_foodCountCacheLock)
+            {
+                _foodCountCache.Clear();
+            }
         }
 
         /// <summary>
@@ -180,9 +186,12 @@ namespace RBMCampaign
                 return 0;
             }
             int version = itemRoster.VersionNo;
-            if (_foodCountCache.TryGetValue(town, out KeyValuePair<int, int> cached) && cached.Key == version)
+            lock (_foodCountCacheLock)
             {
-                return cached.Value;
+                if (_foodCountCache.TryGetValue(town, out KeyValuePair<int, int> cached) && cached.Key == version)
+                {
+                    return cached.Value;
+                }
             }
 
             int units = 0;
@@ -196,7 +205,10 @@ namespace RBMCampaign
                 }
             }
 
-            _foodCountCache[town] = new KeyValuePair<int, int>(version, units);
+            lock (_foodCountCacheLock)
+            {
+                _foodCountCache[town] = new KeyValuePair<int, int>(version, units);
+            }
             return units;
         }
 
@@ -225,7 +237,7 @@ namespace RBMCampaign
             // Castles included: their food is vanilla's abstract figure rather than a real market, but the
             // mouths are real -- a keep's garrison and its watch eat exactly as a town's do -- and the
             // granary cap below is sized off this figure for both kinds of fief.
-            if (town == null || !(town.IsTown || town.IsCastle) || Campaign.Current == null)
+            if (town == null || !(town.IsTown || town.IsCastle) || town.Owner == null || Campaign.Current == null)
             {
                 return breakdown;
             }
@@ -313,7 +325,7 @@ namespace RBMCampaign
             private static void Postfix(Town __instance, ref int __result)
             {
                 if (!RBMConfig.RBMConfig.rbmCampaignEnabled || __instance == null
-                    || !(__instance.IsTown || __instance.IsCastle))
+                    || !(__instance.IsTown || __instance.IsCastle) || __instance.Owner == null)
                 {
                     return;
                 }

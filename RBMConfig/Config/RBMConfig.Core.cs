@@ -39,14 +39,6 @@ namespace RBMConfig
                 Directory.CreateDirectory(configFolderPath);
             }
 
-            // Migrate from legacy versioned config file if new one doesn't exist yet
-            if (!File.Exists(configFilePath))
-            {
-                string legacyPath = System.IO.Path.Combine(configFolderPath, "config5.xml");
-                if (File.Exists(legacyPath))
-                    File.Copy(legacyPath, configFilePath);
-            }
-
             if (File.Exists(configFilePath))
             {
                 xmlConfig.Load(configFilePath);
@@ -54,6 +46,8 @@ namespace RBMConfig
                 string storedStr = root?.GetAttribute("version") ?? "0";
                 if (!int.TryParse(storedStr, out int storedVersion) || storedVersion != CONFIG_VERSION)
                 {
+                    // Runs from OnSubModuleLoad, before any UI exists, so log rather than InformationManager.
+                    TaleWorlds.Library.Debug.Print("[RBM] Config version " + storedStr + " != " + CONFIG_VERSION + "; settings reset to defaults.");
                     xmlConfig = new XmlDocument();
                     Utilities.createXmlConfig(ref xmlConfig);
                 }

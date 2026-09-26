@@ -189,7 +189,7 @@ namespace RBMCampaign
                     return true;
 
                 case WeaponClass.TwoHandedMace:
-                    skillCoefficient = 1.125f;
+                    skillCoefficient = 0.1125f;
                     min = 15f;
                     max = 22f;
                     scale = 4.6f;

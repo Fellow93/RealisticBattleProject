@@ -634,7 +634,7 @@ namespace RBMCampaign
             {
                 return false;
             }
-            stock.AddToCounts(item, -1);
+            stock.AddToCounts(stock.GetElementCopyAtIndex(index).EquipmentElement, -1);
             // A price signal, not a payment: the town restocks what its recruits keep walking off with.
             if (market.Town != null && item.ItemCategory != null)
             {

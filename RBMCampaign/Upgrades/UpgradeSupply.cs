@@ -513,7 +513,7 @@ namespace RBMCampaign
                 return false;
             }
             int price = TroopMarketFeedback.UnitPrice(town.Settlement, item, market, index);
-            market.AddToCounts(item, -1);
+            market.AddToCounts(market.GetElementCopyAtIndex(index).EquipmentElement, -1);
             drawnValue += price;
             if (item.ItemCategory != null)
             {

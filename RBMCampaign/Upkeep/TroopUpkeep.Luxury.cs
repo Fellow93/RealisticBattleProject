@@ -113,7 +113,7 @@ namespace RBMCampaign
             int index = affordable[MBRandom.RandomInt(affordable.Count)];
             ItemObject chosen = market.GetItemAtIndex(index);
             int cost = TroopMarketFeedback.UnitPrice(settlement, chosen, market, index);
-            market.AddToCounts(chosen, -1);
+            market.AddToCounts(market.GetElementCopyAtIndex(index).EquipmentElement, -1);
             SpoilsPool.AddSpoils(party, element.Character, -cost);
             TroopMarketFeedback.RegisterPurchase(settlement, chosen.ItemCategory, cost);
             SetLuxuryCooldown(party, element.Character);

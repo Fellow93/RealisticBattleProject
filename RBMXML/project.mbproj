@@ -5,5 +5,4 @@
   <ModuleAssemblyDirectory>../WOTS/bin/</ModuleAssemblyDirectory>
   <file id="soln_combat_system" name="ModuleData/RBM_native_parameters_tweaks.xml" type="native_parameters" />
   <file id="soln_combat_system" name="ModuleData/RBM_spear_combat_parameters.xml" type="animation_combat_parameters" />
-  <file id="soln_managed_core_paramaters" name="ModuleData/RBM_spear_managed_core_paramaters.xml" type="managed_core_parameters" />
 </base>
