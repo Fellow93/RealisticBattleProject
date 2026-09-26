@@ -68,15 +68,68 @@ namespace RBMCombat
             return ArmorComponent.ArmorMaterialTypes.None;
         }
 
+        // Same shield lookup as vanilla AttackInformation: the wielded off-hand item, or the first non-wielded shield slot for the back.
+        private static bool IsHitShieldMetal(Agent victim, bool onBack)
+        {
+            if ((victim.GetAgentFlags() & AgentFlag.CanWieldWeapon) == AgentFlag.None)
+            {
+                return false;
+            }
+            EquipmentIndex offhandIndex = victim.GetOffhandWieldedItemIndex();
+            WeaponComponentData shield = null;
+            if (!onBack)
+            {
+                if (offhandIndex != EquipmentIndex.None)
+                {
+                    shield = victim.Equipment[offhandIndex].CurrentUsageItem;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    WeaponComponentData item = victim.Equipment[i].CurrentUsageItem;
+                    if (i != (int)offhandIndex && item != null && item.IsShield)
+                    {
+                        shield = item;
+                        break;
+                    }
+                }
+            }
+            return shield != null && shield.PhysicsMaterial == "metal_shield";
+        }
+
         [HarmonyPostfix]
         [HarmonyPatch("DecideAgentHitParticles")]
-        private static void DecideAgentHitParticlesMOD(Blow blow, Agent victim, ref AttackCollisionData collisionData, ref HitParticleResultData hprd)
+        private static void DecideAgentHitParticlesMOD(Mission __instance, Blow blow, Agent victim, ref AttackCollisionData collisionData, ref HitParticleResultData hprd)
         {
+            // Shield blocks carry the shield's damage in InflictedDamage, so without this they'd get body-hit particles.
+            // The engine doesn't draw hit particles for shield collisions, so burst the effect at the impact point ourselves.
+            // Native impact effects carry dust/smoke emitters, so only dust-free systems: sparks off a metal_shield item on
+            // every block, splinters off a wooden one when the blow bites deep.
+            if (victim != null && (collisionData.AttackBlockedWithShield || collisionData.CollidedWithShieldOnBack))
+            {
+                hprd.Reset();
+                string effect = null;
+                if (IsHitShieldMetal(victim, collisionData.CollidedWithShieldOnBack))
+                {
+                    effect = "psys_game_sparkle_a";
+                }
+                else if (blow.InflictedDamage > 20)
+                {
+                    effect = "psys_game_wood_splinter_a";
+                }
+                if (effect != null)
+                {
+                    __instance.AddParticleSystemBurstByName(effect, new MatrixFrame(Mat3.Identity, collisionData.CollisionGlobalPosition), false);
+                }
+                return;
+            }
             if (victim == null || (blow.InflictedDamage <= 0 && !(victim.Health <= 0f)))
             {
                 return;
             }
-            if (!blow.WeaponRecord.HasWeapon() || blow.WeaponRecord.WeaponFlags.HasFlag(WeaponFlags.NoBlood) || collisionData.IsAlternativeAttack || collisionData.CollidedWithShieldOnBack)
+            if (!blow.WeaponRecord.HasWeapon() || blow.WeaponRecord.WeaponFlags.HasFlag(WeaponFlags.NoBlood) || collisionData.IsAlternativeAttack)
             {
                 hprd.StartHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
                 hprd.ContinueHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
@@ -84,7 +137,7 @@ namespace RBMCombat
                 return;
             }
             ArmorComponent.ArmorMaterialTypes mateirialTypeofHitBodyPart = GetMateirialTypeofHitBodyPart(victim, collisionData.VictimHitBodyPart);
-            if ((mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Chainmail || mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Plate) && ((sbyte)collisionData.DamageType == 0 || (sbyte)collisionData.DamageType == 2) || blow.InflictedDamage <= 20)
+            if ((mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Chainmail || mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Plate) && (blow.DamageType == DamageTypes.Cut || blow.DamageType == DamageTypes.Blunt) || blow.InflictedDamage <= 20)
             {
                 hprd.StartHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
                 hprd.ContinueHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_inside");
@@ -101,7 +154,7 @@ namespace RBMCombat
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPostfix]
         [HarmonyPatch("DecideWeaponCollisionReaction")]
-        private static void DecideWeaponCollisionReactionMOD(Blow registeredBlow, in AttackCollisionData collisionData, Agent attacker, Agent defender, in MissionWeapon attackerWeapon, bool isFatalHit, bool isShruggedOff, out MeleeCollisionReaction colReaction)
+        private static void DecideWeaponCollisionReactionMOD(Blow registeredBlow, in AttackCollisionData collisionData, Agent attacker, Agent defender, in MissionWeapon attackerWeapon, bool isFatalHit, bool isShruggedOff, float momentumRemaining, out MeleeCollisionReaction colReaction)
         {
             if (collisionData.IsColliderAgent && collisionData.StrikeType == 1 && collisionData.CollisionHitResultFlags.HasAnyFlag(CombatHitResultFlags.HitWithStartOfTheAnimation))
             {
@@ -123,22 +176,40 @@ namespace RBMCombat
                 colReaction = MeleeCollisionReaction.Stuck;
                 return;
             }
+            // Couched lance / braced polearm: only take vanilla's pass-through roll on a mounted kill (5% + Skewer perk);
+            // otherwise fall through so kills stick and weak hits bounce off armor like any other thrust.
+            if (collisionData.StrikeType == 1 && attacker.IsDoingPassiveAttack &&
+                MissionGameModels.Current.AgentApplyDamageModel.DecidePassiveAttackCollisionReaction(attacker, defender, isFatalHit) == MeleeCollisionReaction.SlicedThrough)
+            {
+                colReaction = MeleeCollisionReaction.SlicedThrough;
+                return;
+            }
+            // Vanilla cases the armor thresholds below don't model: kicks and bashes that still have momentum,
+            // hits with the hilt or arm, shrugged-off blows and body punches.
+            if (collisionData.IsAlternativeAttack && momentumRemaining > 0f)
+            {
+                colReaction = MeleeCollisionReaction.ContinueChecking;
+                return;
+            }
+            if (MissionCombatMechanicsHelper.HitWithAnotherBone(in collisionData, attacker, in attackerWeapon))
+            {
+                colReaction = MeleeCollisionReaction.Bounced;
+                return;
+            }
+            if ((!attackerWeapon.IsEmpty && !isFatalHit && isShruggedOff) || (attackerWeapon.IsEmpty && defender != null && defender.IsHuman && !collisionData.IsAlternativeAttack && (collisionData.VictimHitBodyPart == BoneBodyPartType.Chest || collisionData.VictimHitBodyPart == BoneBodyPartType.ShoulderLeft || collisionData.VictimHitBodyPart == BoneBodyPartType.ShoulderRight || collisionData.VictimHitBodyPart == BoneBodyPartType.Abdomen || collisionData.VictimHitBodyPart == BoneBodyPartType.Legs)))
+            {
+                colReaction = MeleeCollisionReaction.Bounced;
+                return;
+            }
             if (collisionData.AttackBlockedWithShield || collisionData.CollidedWithShieldOnBack)
             {
                 colReaction = MeleeCollisionReaction.Bounced;
                 return;
             }
             MissionWeapon missionWeapon = attackerWeapon;
-            if (missionWeapon.IsEmpty)
-            {
-                WeaponClass weaponClass = WeaponClass.Undefined;
-            }
-            else
-            {
-                missionWeapon = attackerWeapon;
-                WeaponClass weaponClass = missionWeapon.CurrentUsageItem.WeaponClass;
-            }
-            if (!missionWeapon.IsEmpty && isFatalHit && defender != null && defender.IsHuman && !collisionData.IsAlternativeAttack && (sbyte)collisionData.DamageType == 0 && (collisionData.VictimHitBodyPart == BoneBodyPartType.Neck || collisionData.VictimHitBodyPart == BoneBodyPartType.ArmLeft || collisionData.VictimHitBodyPart == BoneBodyPartType.ArmRight || collisionData.VictimHitBodyPart == BoneBodyPartType.Legs))
+            // The blow's type, not the collision's: off-blade swings were turned blunt in CreateMeleeBlow.
+            DamageTypes damageType = registeredBlow.DamageType;
+            if (!missionWeapon.IsEmpty && isFatalHit && defender != null && defender.IsHuman && !collisionData.IsAlternativeAttack && damageType == DamageTypes.Cut && (collisionData.VictimHitBodyPart == BoneBodyPartType.Neck || collisionData.VictimHitBodyPart == BoneBodyPartType.ArmLeft || collisionData.VictimHitBodyPart == BoneBodyPartType.ArmRight || collisionData.VictimHitBodyPart == BoneBodyPartType.Legs))
             {
                 colReaction = MeleeCollisionReaction.SlicedThrough;
                 return;
@@ -150,15 +221,15 @@ namespace RBMCombat
             }
             ArmorComponent.ArmorMaterialTypes mateirialTypeofHitBodyPart = GetMateirialTypeofHitBodyPart(defender, collisionData.VictimHitBodyPart);
             float num = collisionData.InflictedDamage;
-            if (!missionWeapon.IsEmpty && defender.IsHuman && !collisionData.IsAlternativeAttack && (sbyte)collisionData.DamageType == 0 && ((mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.None && num < nakedCutStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Cloth && num < clothCutStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Leather && num < leatherCutStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Chainmail && num < mailCutStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Plate && num < plateCutStick)))
+            if (!missionWeapon.IsEmpty && defender.IsHuman && !collisionData.IsAlternativeAttack && damageType == DamageTypes.Cut && ((mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.None && num < nakedCutStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Cloth && num < clothCutStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Leather && num < leatherCutStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Chainmail && num < mailCutStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Plate && num < plateCutStick)))
             {
                 colReaction = MeleeCollisionReaction.Bounced;
             }
-            else if (!missionWeapon.IsEmpty && defender.IsHuman && !collisionData.IsAlternativeAttack && (sbyte)collisionData.DamageType == 1 && ((mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.None && num < nakedPierceStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Cloth && num < clothPierceStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Leather && num < leatherPierceStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Chainmail && num < mailPierceStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Plate && num < platePierceStick)))
+            else if (!missionWeapon.IsEmpty && defender.IsHuman && !collisionData.IsAlternativeAttack && damageType == DamageTypes.Pierce && ((mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.None && num < nakedPierceStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Cloth && num < clothPierceStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Leather && num < leatherPierceStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Chainmail && num < mailPierceStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Plate && num < platePierceStick)))
             {
                 colReaction = MeleeCollisionReaction.Bounced;
             }
-            else if (!missionWeapon.IsEmpty && defender.IsHuman && !collisionData.IsAlternativeAttack && (sbyte)collisionData.DamageType == 2 && ((mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.None && num < nakedBluntStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Cloth && num < clothBluntStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Leather && num < leatherBluntStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Chainmail && num < mailBluntStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Plate && num < plateBluntStick)))
+            else if (!missionWeapon.IsEmpty && defender.IsHuman && !collisionData.IsAlternativeAttack && damageType == DamageTypes.Blunt && ((mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.None && num < nakedBluntStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Cloth && num < clothBluntStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Leather && num < leatherBluntStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Chainmail && num < mailBluntStick) || (mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Plate && num < plateBluntStick)))
             {
                 colReaction = MeleeCollisionReaction.Bounced;
             }
@@ -170,15 +241,15 @@ namespace RBMCombat
 
         [HarmonyPostfix]
         [HarmonyPatch("CreateMeleeBlow")]
-        private static Blow CreateMeleeBlowPostFix(Blow __instance, Agent attackerAgent, Agent victimAgent, in AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
+        private static Blow CreateMeleeBlowPostFix(Blow __result, Agent attackerAgent, Agent victimAgent, in AttackCollisionData collisionData, in MissionWeapon attackerWeapon, CrushThroughState crushThroughState, Vec3 blowDirection, Vec3 swingDirection, bool cancelDamage)
         {
             if (collisionData.StrikeType == 0 && !collisionData.IsHorseCharge && !collisionData.IsAlternativeAttack && !Utilities.HitWithWeaponBlade(in collisionData, in attackerWeapon))
             {
-                __instance.DamageType = DamageTypes.Blunt;
-                //float newDamage = __instance.InflictedDamage * ManagedParameters.Instance.GetManagedParameter(ManagedParametersEnum.OverSwingCombatSpeedGraphZeroProgressValue);
-                //__instance.InflictedDamage = MathF.Ceiling(newDamage);
+                __result.DamageType = DamageTypes.Blunt;
+                //float newDamage = __result.InflictedDamage * ManagedParameters.Instance.GetManagedParameter(ManagedParametersEnum.OverSwingCombatSpeedGraphZeroProgressValue);
+                //__result.InflictedDamage = MathF.Ceiling(newDamage);
             }
-            return __instance;
+            return __result;
         }
     }
 }
