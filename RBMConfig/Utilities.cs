@@ -258,13 +258,13 @@ namespace RBMConfig
             //price modifiers
             XmlElement PriceModifiers = xmlconfig.CreateElement("PriceModifiers");
             XmlElement ArmorPriceModifier = xmlconfig.CreateElement("ArmorPriceModifier");
-            ArmorPriceModifier.InnerText = RBMConfig.priceMultipliers.ArmorPriceModifier.ToString();
+            ArmorPriceModifier.InnerText = RBMConfig.priceMultipliers.ArmorPriceModifier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement WeaponPriceModifier = xmlconfig.CreateElement("WeaponPriceModifier");
-            WeaponPriceModifier.InnerText = RBMConfig.priceMultipliers.WeaponPriceModifier.ToString();
+            WeaponPriceModifier.InnerText = RBMConfig.priceMultipliers.WeaponPriceModifier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement HorsePriceModifier = xmlconfig.CreateElement("HorsePriceModifier");
-            HorsePriceModifier.InnerText = RBMConfig.priceMultipliers.HorsePriceModifier.ToString();
+            HorsePriceModifier.InnerText = RBMConfig.priceMultipliers.HorsePriceModifier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement TradePriceModifier = xmlconfig.CreateElement("TradePriceModifier");
-            TradePriceModifier.InnerText = RBMConfig.priceMultipliers.TradePriceModifier.ToString();
+            TradePriceModifier.InnerText = RBMConfig.priceMultipliers.TradePriceModifier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             PriceModifiers.AppendChild(ArmorPriceModifier);
             PriceModifiers.AppendChild(WeaponPriceModifier);
             PriceModifiers.AppendChild(HorsePriceModifier);
@@ -273,7 +273,7 @@ namespace RBMConfig
             //RBM combat global
             XmlElement Global = xmlconfig.CreateElement("Global");
             XmlElement ArmorMultiplier = xmlconfig.CreateElement("ArmorMultiplier");
-            ArmorMultiplier.InnerText = RBMConfig.armorMultiplier.ToString();
+            ArmorMultiplier.InnerText = RBMConfig.armorMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement ArmorPenetrationMessage = xmlconfig.CreateElement("ArmorPenetrationMessage");
             ArmorPenetrationMessage.InnerText = RBMConfig.armorPenetrationMessage ? "1" : "0";
             XmlElement BetterArrowVisuals = xmlconfig.CreateElement("BetterArrowVisuals");
@@ -287,17 +287,17 @@ namespace RBMConfig
             XmlElement RealisticRangedReload = xmlconfig.CreateElement("RealisticRangedReload");
             RealisticRangedReload.InnerText = RBMConfig.realisticRangedReload;
             XmlElement MaceBluntModifier = xmlconfig.CreateElement("MaceBluntModifier");
-            MaceBluntModifier.InnerText = RBMConfig.maceBluntModifier.ToString();
+            MaceBluntModifier.InnerText = RBMConfig.maceBluntModifier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement ArmorThresholdModifier = xmlconfig.CreateElement("ArmorThresholdModifier");
-            ArmorThresholdModifier.InnerText = RBMConfig.armorThresholdModifier.ToString();
+            ArmorThresholdModifier.InnerText = RBMConfig.armorThresholdModifier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement BluntTraumaBonus = xmlconfig.CreateElement("BluntTraumaBonus");
-            BluntTraumaBonus.InnerText = RBMConfig.bluntTraumaBonus.ToString();
+            BluntTraumaBonus.InnerText = RBMConfig.bluntTraumaBonus.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement ArmorStatusUIEnabled = xmlconfig.CreateElement("ArmorStatusUIEnabled");
             ArmorStatusUIEnabled.InnerText = RBMConfig.armorStatusUIEnabled ? "1" : "0";
             XmlElement RealisticArrowArc = xmlconfig.CreateElement("RealisticArrowArc");
             RealisticArrowArc.InnerText = RBMConfig.realisticArrowArc ? "1" : "0";
             XmlElement ThrustMagnitudeModifier = xmlconfig.CreateElement("ThrustMagnitudeModifier");
-            ThrustMagnitudeModifier.InnerText = RBMConfig.ThrustMagnitudeModifier.ToString();
+            ThrustMagnitudeModifier.InnerText = RBMConfig.ThrustMagnitudeModifier.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             Global.AppendChild(ArmorMultiplier);
             Global.AppendChild(ArmorPenetrationMessage);
@@ -319,17 +319,17 @@ namespace RBMConfig
             {
                 XmlElement WeaponType = xmlconfig.CreateElement(weaponTypesFactor.weaponType);
                 XmlElement ExtraBluntFactorCut = xmlconfig.CreateElement("ExtraBluntFactorCut");
-                ExtraBluntFactorCut.InnerText = weaponTypesFactor.ExtraBluntFactorCut.ToString();
+                ExtraBluntFactorCut.InnerText = weaponTypesFactor.ExtraBluntFactorCut.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 XmlElement ExtraBluntFactorPierce = xmlconfig.CreateElement("ExtraBluntFactorPierce");
-                ExtraBluntFactorPierce.InnerText = weaponTypesFactor.ExtraBluntFactorPierce.ToString();
+                ExtraBluntFactorPierce.InnerText = weaponTypesFactor.ExtraBluntFactorPierce.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 XmlElement ExtraBluntFactorBlunt = xmlconfig.CreateElement("ExtraBluntFactorBlunt");
-                ExtraBluntFactorBlunt.InnerText = weaponTypesFactor.ExtraBluntFactorBlunt.ToString();
+                ExtraBluntFactorBlunt.InnerText = weaponTypesFactor.ExtraBluntFactorBlunt.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 XmlElement ExtraArmorThresholdFactorPierce = xmlconfig.CreateElement("ExtraArmorThresholdFactorPierce");
-                ExtraArmorThresholdFactorPierce.InnerText = weaponTypesFactor.ExtraArmorThresholdFactorPierce.ToString();
+                ExtraArmorThresholdFactorPierce.InnerText = weaponTypesFactor.ExtraArmorThresholdFactorPierce.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 XmlElement ExtraArmorThresholdFactorCut = xmlconfig.CreateElement("ExtraArmorThresholdFactorCut");
-                ExtraArmorThresholdFactorCut.InnerText = weaponTypesFactor.ExtraArmorThresholdFactorCut.ToString();
+                ExtraArmorThresholdFactorCut.InnerText = weaponTypesFactor.ExtraArmorThresholdFactorCut.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 XmlElement ExtraArmorSkillDamageAbsorb = xmlconfig.CreateElement("ExtraArmorSkillDamageAbsorb");
-                ExtraArmorSkillDamageAbsorb.InnerText = weaponTypesFactor.ExtraArmorSkillDamageAbsorb.ToString();
+                ExtraArmorSkillDamageAbsorb.InnerText = weaponTypesFactor.ExtraArmorSkillDamageAbsorb.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
                 WeaponType.AppendChild(ExtraBluntFactorCut);
                 WeaponType.AppendChild(ExtraBluntFactorPierce);

@@ -147,7 +147,7 @@ namespace RBMConfig
             int i = 0;
             foreach (var item in thrustModifierList)
             {
-                if(float.Parse(item) == RBMConfig.ThrustMagnitudeModifier)
+                if(RBMConfig.ParseFloat(item) == RBMConfig.ThrustMagnitudeModifier)
                 {
                     ThrustModifier.SelectedIndex = i;
                     break;
@@ -590,7 +590,7 @@ namespace RBMConfig
                 RBMConfig.realisticArrowArc = true;
             }
 
-            var newThrustModifier = float.Parse(thrustModifierList[ThrustModifier.SelectedIndex]);
+            var newThrustModifier = RBMConfig.ParseFloat(thrustModifierList[ThrustModifier.SelectedIndex]);
             RBMConfig.ThrustMagnitudeModifier = newThrustModifier;
             RBMConfig.OneHandedThrustDamageBonus = 1f / newThrustModifier;
             RBMConfig.TwoHandedThrustDamageBonus = 1f / newThrustModifier;

@@ -89,6 +89,15 @@ namespace RBMConfig
             return defaultValue;
         }
 
+        // Culture-independent float parse. Older builds wrote the combat and price values with the
+        // current culture, so a comma-decimal locale left "0,05" in the file; the invariant culture
+        // would read that as 5, and the current culture reads the "0.05" defaults as 5 too. None of
+        // these values carry a thousands separator, so either decimal mark is read as a point.
+        internal static float ParseFloat(string value)
+        {
+            return float.Parse(value.Trim().Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture);
+        }
+
         public static void parseXmlConfig()
         {
             // Ensure root and all structural nodes exist before reading any values.
@@ -203,17 +212,17 @@ namespace RBMConfig
             armorStatusUIEnabled = ReadOrCreate("/Config/RBMCombat/Global", "ArmorStatusUIEnabled", "1").Equals("1");
             battleHitLoggingEnabled = ReadOrCreate("/Config/RBMCombat/Global", "BattleHitLoggingEnabled", "0").Equals("1");
             realisticArrowArc = ReadOrCreate("/Config/RBMCombat/Global", "RealisticArrowArc", "0").Equals("1");
-            armorMultiplier = float.Parse(ReadOrCreate("/Config/RBMCombat/Global", "ArmorMultiplier", "2"));
+            armorMultiplier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "ArmorMultiplier", "2"));
             armorPenetrationMessage = ReadOrCreate("/Config/RBMCombat/Global", "ArmorPenetrationMessage", "0").Equals("1");
             betterArrowVisuals = ReadOrCreate("/Config/RBMCombat/Global", "BetterArrowVisuals", "1").Equals("1");
             passiveShoulderShields = ReadOrCreate("/Config/RBMCombat/Global", "PassiveShoulderShields", "0").Equals("1");
             troopOverhaulActive = ReadOrCreate("/Config/RBMCombat/Global", "TroopOverhaulActive", "1").Equals("1");
             sneakAttackInstaKill = ReadOrCreate("/Config/RBMCombat/Global", "SneakAttackInstaKill", "0").Equals("1");
             realisticRangedReload = ReadOrCreate("/Config/RBMCombat/Global", "RealisticRangedReload", "2");
-            maceBluntModifier = float.Parse(ReadOrCreate("/Config/RBMCombat/Global", "MaceBluntModifier", "1"));
-            armorThresholdModifier = float.Parse(ReadOrCreate("/Config/RBMCombat/Global", "ArmorThresholdModifier", "1"));
-            bluntTraumaBonus = float.Parse(ReadOrCreate("/Config/RBMCombat/Global", "BluntTraumaBonus", "0"));
-            ThrustMagnitudeModifier = float.Parse(ReadOrCreate("/Config/RBMCombat/Global", "ThrustMagnitudeModifier", "0.05"));
+            maceBluntModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "MaceBluntModifier", "1"));
+            armorThresholdModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "ArmorThresholdModifier", "1"));
+            bluntTraumaBonus = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "BluntTraumaBonus", "0"));
+            ThrustMagnitudeModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "ThrustMagnitudeModifier", "0.05"));
             OneHandedThrustDamageBonus = 1f / ThrustMagnitudeModifier;
             TwoHandedThrustDamageBonus = 1f / ThrustMagnitudeModifier;
 
@@ -231,20 +240,20 @@ namespace RBMConfig
                         wt.weaponType = name;
                         weaponTypesFactors.Add(wt);
                     }
-                    wt.ExtraBluntFactorCut = float.Parse(weaponTypeNode["ExtraBluntFactorCut"]?.InnerText ?? "0.25");
-                    wt.ExtraBluntFactorPierce = float.Parse(weaponTypeNode["ExtraBluntFactorPierce"]?.InnerText ?? "0.35");
-                    wt.ExtraBluntFactorBlunt = float.Parse(weaponTypeNode["ExtraBluntFactorBlunt"]?.InnerText ?? "1");
-                    wt.ExtraArmorThresholdFactorPierce = float.Parse(weaponTypeNode["ExtraArmorThresholdFactorPierce"]?.InnerText ?? "3");
-                    wt.ExtraArmorThresholdFactorCut = float.Parse(weaponTypeNode["ExtraArmorThresholdFactorCut"]?.InnerText ?? "5");
-                    wt.ExtraArmorSkillDamageAbsorb = float.Parse(weaponTypeNode["ExtraArmorSkillDamageAbsorb"]?.InnerText ?? "1");
+                    wt.ExtraBluntFactorCut = ParseFloat(weaponTypeNode["ExtraBluntFactorCut"]?.InnerText ?? "0.25");
+                    wt.ExtraBluntFactorPierce = ParseFloat(weaponTypeNode["ExtraBluntFactorPierce"]?.InnerText ?? "0.35");
+                    wt.ExtraBluntFactorBlunt = ParseFloat(weaponTypeNode["ExtraBluntFactorBlunt"]?.InnerText ?? "1");
+                    wt.ExtraArmorThresholdFactorPierce = ParseFloat(weaponTypeNode["ExtraArmorThresholdFactorPierce"]?.InnerText ?? "3");
+                    wt.ExtraArmorThresholdFactorCut = ParseFloat(weaponTypeNode["ExtraArmorThresholdFactorCut"]?.InnerText ?? "5");
+                    wt.ExtraArmorSkillDamageAbsorb = ParseFloat(weaponTypeNode["ExtraArmorSkillDamageAbsorb"]?.InnerText ?? "1");
                 }
             }
 
             // Price modifiers
-            priceMultipliers.ArmorPriceModifier = float.Parse(ReadOrCreate("/Config/RBMCombat/PriceModifiers", "ArmorPriceModifier", "1"));
-            priceMultipliers.WeaponPriceModifier = float.Parse(ReadOrCreate("/Config/RBMCombat/PriceModifiers", "WeaponPriceModifier", "1"));
-            priceMultipliers.HorsePriceModifier = float.Parse(ReadOrCreate("/Config/RBMCombat/PriceModifiers", "HorsePriceModifier", "0.2"));
-            priceMultipliers.TradePriceModifier = float.Parse(ReadOrCreate("/Config/RBMCombat/PriceModifiers", "TradePriceModifier", "1"));
+            priceMultipliers.ArmorPriceModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/PriceModifiers", "ArmorPriceModifier", "1"));
+            priceMultipliers.WeaponPriceModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/PriceModifiers", "WeaponPriceModifier", "1"));
+            priceMultipliers.HorsePriceModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/PriceModifiers", "HorsePriceModifier", "0.2"));
+            priceMultipliers.TradePriceModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/PriceModifiers", "TradePriceModifier", "1"));
 
             saveXmlConfig();
         }
@@ -375,17 +384,17 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorStatusUIEnabled"), armorStatusUIEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BattleHitLoggingEnabled"), battleHitLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RealisticArrowArc"), realisticArrowArc);
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorMultiplier"), armorMultiplier.ToString());
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorMultiplier"), armorMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorPenetrationMessage"), armorPenetrationMessage);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BetterArrowVisuals"), betterArrowVisuals);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/PassiveShoulderShields"), passiveShoulderShields);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/TroopOverhaulActive"), troopOverhaulActive);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/SneakAttackInstaKill"), sneakAttackInstaKill);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RealisticRangedReload"), realisticRangedReload.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/MaceBluntModifier"), maceBluntModifier.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorThresholdModifier"), armorThresholdModifier.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BluntTraumaBonus"), bluntTraumaBonus.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ThrustMagnitudeModifier"), ThrustMagnitudeModifier.ToString());
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/MaceBluntModifier"), maceBluntModifier.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorThresholdModifier"), armorThresholdModifier.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BluntTraumaBonus"), bluntTraumaBonus.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ThrustMagnitudeModifier"), ThrustMagnitudeModifier.ToString(CultureInfo.InvariantCulture));
 
             // Rebuild WeaponTypes section from scratch to handle any additions or missing nodes
             XmlNode weaponTypesNode = xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes");
@@ -395,20 +404,20 @@ namespace RBMConfig
                 foreach (RBMCombatConfigWeaponType wt in weaponTypesFactors)
                 {
                     XmlElement wtNode = xmlConfig.CreateElement(wt.weaponType);
-                    XmlElement cut = xmlConfig.CreateElement("ExtraBluntFactorCut"); cut.InnerText = wt.ExtraBluntFactorCut.ToString(); wtNode.AppendChild(cut);
-                    XmlElement pierce = xmlConfig.CreateElement("ExtraBluntFactorPierce"); pierce.InnerText = wt.ExtraBluntFactorPierce.ToString(); wtNode.AppendChild(pierce);
-                    XmlElement blunt = xmlConfig.CreateElement("ExtraBluntFactorBlunt"); blunt.InnerText = wt.ExtraBluntFactorBlunt.ToString(); wtNode.AppendChild(blunt);
-                    XmlElement atPierce = xmlConfig.CreateElement("ExtraArmorThresholdFactorPierce"); atPierce.InnerText = wt.ExtraArmorThresholdFactorPierce.ToString(); wtNode.AppendChild(atPierce);
-                    XmlElement atCut = xmlConfig.CreateElement("ExtraArmorThresholdFactorCut"); atCut.InnerText = wt.ExtraArmorThresholdFactorCut.ToString(); wtNode.AppendChild(atCut);
-                    XmlElement absorb = xmlConfig.CreateElement("ExtraArmorSkillDamageAbsorb"); absorb.InnerText = wt.ExtraArmorSkillDamageAbsorb.ToString(); wtNode.AppendChild(absorb);
+                    XmlElement cut = xmlConfig.CreateElement("ExtraBluntFactorCut"); cut.InnerText = wt.ExtraBluntFactorCut.ToString(CultureInfo.InvariantCulture); wtNode.AppendChild(cut);
+                    XmlElement pierce = xmlConfig.CreateElement("ExtraBluntFactorPierce"); pierce.InnerText = wt.ExtraBluntFactorPierce.ToString(CultureInfo.InvariantCulture); wtNode.AppendChild(pierce);
+                    XmlElement blunt = xmlConfig.CreateElement("ExtraBluntFactorBlunt"); blunt.InnerText = wt.ExtraBluntFactorBlunt.ToString(CultureInfo.InvariantCulture); wtNode.AppendChild(blunt);
+                    XmlElement atPierce = xmlConfig.CreateElement("ExtraArmorThresholdFactorPierce"); atPierce.InnerText = wt.ExtraArmorThresholdFactorPierce.ToString(CultureInfo.InvariantCulture); wtNode.AppendChild(atPierce);
+                    XmlElement atCut = xmlConfig.CreateElement("ExtraArmorThresholdFactorCut"); atCut.InnerText = wt.ExtraArmorThresholdFactorCut.ToString(CultureInfo.InvariantCulture); wtNode.AppendChild(atCut);
+                    XmlElement absorb = xmlConfig.CreateElement("ExtraArmorSkillDamageAbsorb"); absorb.InnerText = wt.ExtraArmorSkillDamageAbsorb.ToString(CultureInfo.InvariantCulture); wtNode.AppendChild(absorb);
                     weaponTypesNode.AppendChild(wtNode);
                 }
             }
 
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/ArmorPriceModifier"), priceMultipliers.ArmorPriceModifier.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/WeaponPriceModifier"), priceMultipliers.WeaponPriceModifier.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/HorsePriceModifier"), priceMultipliers.HorsePriceModifier.ToString());
-            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/TradePriceModifier"), priceMultipliers.TradePriceModifier.ToString());
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/ArmorPriceModifier"), priceMultipliers.ArmorPriceModifier.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/WeaponPriceModifier"), priceMultipliers.WeaponPriceModifier.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/HorsePriceModifier"), priceMultipliers.HorsePriceModifier.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/TradePriceModifier"), priceMultipliers.TradePriceModifier.ToString(CultureInfo.InvariantCulture));
 
             xmlConfig.Save(Utilities.GetConfigFilePath());
         }
