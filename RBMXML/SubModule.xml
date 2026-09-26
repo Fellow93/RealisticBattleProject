@@ -29,6 +29,9 @@
   </SubModules>
   <Xmls>
 	<XmlNode>
+		<XmlName id="CoreParameters" path="RBM_spear_managed_core_parameters"/>
+	</XmlNode>
+	<XmlNode>
 		<XmlName id="Items" path="RBMCombat_ranged"/>
 		<IncludedGameTypes>
 			<Gametype value = "Campaign"/>

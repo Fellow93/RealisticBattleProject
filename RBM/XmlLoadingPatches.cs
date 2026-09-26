@@ -168,6 +168,13 @@ namespace RBM
                     __result = MBObjectManager.ToXmlDocument(originalXml);
                     return false;
                 }
+                // Core parameters merge per @id (CoreParameters.xsd: AlwaysPreferMerge + unique id). The append below
+                // would add a second <managed_core_parameters> block that ManagedParameters never reads (it takes the
+                // first one), so hand these to the vanilla keyed merge.
+                if (isRbmXml && mergedXml.Root?.Element("managed_core_parameters") != null)
+                {
+                    return true;
+                }
 
                 if (RBMConfig.RBMConfig.rbmCombatEnabled || (RBMConfig.RBMConfig.rbmCampaignEnabled && isRbmCampaignXml))
                 {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="combat_parameters">
 <!--RBM_XML_TAG-->
+<!--RBM_COMBAT_XML_TAG-->
   <managed_core_parameters>
     <!-- campaign related-->
     <!-- Set 1 for activating tutorials at the campaign-->
@@ -41,7 +42,7 @@
     <!--While mounted fall speed will be multiplied with this value for rider's damage calculation. Mount's speed will not be effected.-->
     <managed_core_parameter id="FistFightDamageMultiplier" value="4.0" />
 
-    <managed_core_parameter id="SwingHitWithArmDamageMultiplier" value="1.0" />
+    <managed_core_parameter id="SwingHitWithArmDamageMultiplier" value="0.5" />
     <managed_core_parameter id="ThrustHitWithArmDamageMultiplier" value="0.034" />
     <managed_core_parameter id="NonTipThrustHitDamageMultiplier" value="1.0" />
 
