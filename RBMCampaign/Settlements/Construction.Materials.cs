@@ -159,23 +159,28 @@ namespace RBMCampaign
             {
                 return 0;
             }
-            return town.Owner.ItemRoster.GetItemNumber(item) - StockFloor;
+            // The plain stack, the same one Take removes from.
+            return RosterStock.Count(town.Owner.ItemRoster, new EquipmentElement(item)) - StockFloor;
         }
 
         /// <summary>
         /// Carries out a planned day of buying: the goods leave the shelves and their price leaves the
-        /// reserve for the merchants who sold them.
+        /// reserve for the merchants who sold them. Returns what was actually spent -- the planned cost
+        /// of every piece that came off the shelf.
         /// </summary>
-        internal static void Execute(Settlement market, List<Purchase> purchases)
+        internal static int Execute(Settlement market, List<Purchase> purchases)
         {
             if (purchases == null)
             {
-                return;
+                return 0;
             }
+            int spent = 0;
             foreach (Purchase purchase in purchases)
             {
-                Take(market, purchase.From, purchase.Item, purchase.Count, purchase.Cost, SettlementWealth.Source.BuildMaterials);
+                int taken = Take(market, purchase.From, purchase.Item, purchase.Count, purchase.Cost, SettlementWealth.Source.BuildMaterials);
+                spent += (taken >= purchase.Count) ? purchase.Cost : (int)((long)purchase.Cost * taken / purchase.Count);
             }
+            return spent;
         }
 
         /// <summary>
@@ -204,7 +209,10 @@ namespace RBMCampaign
                 // The reserve cannot afford a replacement set; the debt stands and the site works short.
                 return false;
             }
-            Take(market, from, item, 1, price, SettlementWealth.Source.ConstructionTools);
+            if (Take(market, from, item, 1, price, SettlementWealth.Source.ConstructionTools) <= 0)
+            {
+                return false;
+            }
             town.BoostBuildingProcess -= price;
             if (town.BoostBuildingProcess < 0)
             {
@@ -215,24 +223,30 @@ namespace RBMCampaign
 
         /// <summary>
         /// The one place goods move from a market onto a building site: off the roster, price to the
-        /// merchants, demand registered, fee levied.
+        /// merchants, demand registered, fee levied. Returns how many pieces actually came off; the
+        /// merchants are paid for those only.
         /// </summary>
-        private static void Take(Settlement market, Town from, ItemObject item, int count, int cost, string source)
+        private static int Take(Settlement market, Town from, ItemObject item, int count, int cost, string source)
         {
             if (count <= 0 || from == null || from.Owner == null)
             {
-                return;
+                return 0;
             }
-            from.Owner.ItemRoster.AddToCounts(item, -count);
+            int taken = RosterStock.Take(from.Owner.ItemRoster, new EquipmentElement(item), count);
+            if (taken < count)
+            {
+                cost = (int)((long)cost * taken / count);
+            }
             if (cost <= 0 || market == null)
             {
-                return;
+                return taken;
             }
             // Paid and taxed where the fief transacts -- its own market, or a castle's market town -- while
             // the demand is registered where the goods actually left the shelf.
             SettlementWealth.CreditCitizens(market, cost, source);
             RBMTownFoodSupply.RegisterPurchaseDemand(from.MarketData, item.ItemCategory, cost);
             TradeTariff.Levy(market, cost);
+            return taken;
         }
     }
 }

@@ -266,11 +266,7 @@ namespace RBMCampaign
             {
                 return;
             }
-            int take = Math.Min(roster.GetItemNumber(item), ingredient.Count);
-            if (take > 0)
-            {
-                roster.AddToCounts(item, -take);
-            }
+            RosterStock.Take(roster, new EquipmentElement(item), ingredient.Count);
         }
     }
 }

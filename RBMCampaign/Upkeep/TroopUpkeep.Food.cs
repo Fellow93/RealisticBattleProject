@@ -85,6 +85,9 @@ namespace RBMCampaign
         /// <summary>One kind of food on sale: what it is, what a unit costs, how much is left.</summary>
         private struct FoodStall
         {
+            // The exact stack, modifier included: priced off it and bought out of it, never out of a
+            // sibling stack of the same item.
+            public EquipmentElement Element;
             public ItemObject Item;
             public int UnitSpoils;
             public int Available;
@@ -108,6 +111,7 @@ namespace RBMCampaign
                 }
                 stalls.Add(new FoodStall
                 {
+                    Element = market.GetElementCopyAtIndex(i).EquipmentElement,
                     Item = item,
                     UnitSpoils = TroopMarketFeedback.UnitPrice(settlement, item, market, i),
                     Available = market.GetElementNumber(i)
@@ -190,7 +194,14 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                market.AddToCounts(stall.Item, -take);
+                // Paid on what actually came off, so the stack is never charged for food it did not get.
+                take = RosterStock.Take(market, stall.Element, take);
+                if (take <= 0)
+                {
+                    stall.Available = 0;
+                    stalls[i] = stall;
+                    continue;
+                }
                 stall.Available -= take;
                 stalls[i] = stall;
                 bought += take;

@@ -588,9 +588,11 @@ namespace RBMCampaign
             int reserveBefore = town.BoostBuildingProcess;
 
             // Materials leave the shelves and their price leaves the reserve for the merchants' purses.
+            // The reserve pays for what actually came off the shelves, which is the plan unless the stock
+            // moved under it.
             if (plan.Purchases != null)
             {
-                ConstructionMaterials.Execute(market, plan.Purchases);
+                plan.MaterialSpend = ConstructionMaterials.Execute(market, plan.Purchases);
             }
 
             // Wages: the whole coin leaves the reserve, half of it reaching the townsmen and the rest

@@ -486,7 +486,16 @@ namespace RBMCampaign
                     ItemObject good = RBMCaravanRegister.FindItem(lot.GoodId);
                     if (good != null && lot.Qty > 0)
                     {
-                        src.Settlement.ItemRoster.AddToCounts(new EquipmentElement(good), -lot.Qty);
+                        EquipmentElement element = new EquipmentElement(good);
+                        int taken = RosterStock.Take(src.Settlement.ItemRoster, element, lot.Qty);
+                        // Whatever the market could not supply comes back off the caravan, so no good is
+                        // carried -- and later sold -- that never left the source.
+                        int shortfall = RosterStock.Take(caravan.ItemRoster, element, lot.Qty - taken);
+                        if (shortfall > 0)
+                        {
+                            CaravanLog.Log("SHORT", CaravanLog.Name(src.Settlement),
+                                good.StringId + ": source held " + taken + " of " + lot.Qty + ", trimmed from the cargo");
+                        }
                     }
                 }
             }
@@ -664,7 +673,8 @@ namespace RBMCampaign
             {
                 return 0;
             }
-            int stock = town.Owner.ItemRoster.GetItemNumber(good);
+            // The plain stack, which is the one the buy leg takes the lot out of.
+            int stock = RosterStock.Count(town.Owner.ItemRoster, new EquipmentElement(good));
             float spareFraction = 1f - (KeepDays / days);
             return (int)(stock * spareFraction);
         }

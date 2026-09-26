@@ -159,11 +159,12 @@ namespace RBMCampaign
                     {
                         continue;
                     }
-                    int back = caravan.ItemRoster.GetItemNumber(good);
+                    // Off the caravan first, and only what came off goes back on the shelf.
+                    EquipmentElement element = new EquipmentElement(good);
+                    int back = RosterStock.Take(caravan.ItemRoster, element, RosterStock.Count(caravan.ItemRoster, element));
                     if (back > 0)
                     {
-                        source.ItemRoster.AddToCounts(new EquipmentElement(good), back);
-                        caravan.ItemRoster.AddToCounts(new EquipmentElement(good), -back);
+                        source.ItemRoster.AddToCounts(element, back);
                         returned += back;
                     }
                 }
@@ -204,7 +205,9 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                int carried = roster.GetItemNumber(good);
+                // The plain stack the dispatcher loaded, read and sold alike.
+                EquipmentElement element = new EquipmentElement(good);
+                int carried = RosterStock.Count(roster, element);
                 if (carried <= 0)
                 {
                     continue;
@@ -215,7 +218,7 @@ namespace RBMCampaign
                 // villager, so the price patch prices this at the live days-of-supply rate, not the flat
                 // wholesale floor -- a caravan relieving a shortage is paid the scarcity price the shortage
                 // has earned, and the destination pays it out of its own citizen wealth (bounded below).
-                int price = town.GetItemPrice(new EquipmentElement(good), caravan, isSelling: true);
+                int price = town.GetItemPrice(element, caravan, isSelling: true);
                 if (price <= 0)
                 {
                     continue;
@@ -234,7 +237,9 @@ namespace RBMCampaign
 
                 int cost = affordable * price;
                 int moved = SettlementWealth.DebitCitizens(dst, cost, SettlementWealth.Source.Caravan);
-                int units = moved / price;
+                // Off the caravan before the price is settled, so the town pays for exactly the units that
+                // actually changed hands.
+                int units = RosterStock.Take(roster, element, moved / price);
                 if (units <= 0)
                 {
                     if (moved > 0)
@@ -252,8 +257,7 @@ namespace RBMCampaign
                     SettlementWealth.CreditCitizens(dst, refund, SettlementWealth.Source.Caravan);
                 }
 
-                dst.ItemRoster.AddToCounts(new EquipmentElement(good), units);
-                roster.AddToCounts(new EquipmentElement(good), -units);
+                dst.ItemRoster.AddToCounts(element, units);
                 TradeTariff.Levy(dst, actualCost);
 
                 spent += actualCost;

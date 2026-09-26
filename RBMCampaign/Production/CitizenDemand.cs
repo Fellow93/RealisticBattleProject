@@ -527,8 +527,10 @@ namespace RBMCampaign
             {
                 return 0;
             }
-            int available = itemRoster.GetItemNumber(item);
-            int taken = (available < wanted) ? available : wanted;
+            // Priced before the goods leave, as it always was; bought out of the plain stack, the one
+            // that price quotes.
+            int unitPrice = town.MarketData.GetPrice(item);
+            int taken = RosterStock.Take(itemRoster, new EquipmentElement(item), wanted);
             if (taken < wanted)
             {
                 Record(itemId, wanted - taken);
@@ -538,8 +540,7 @@ namespace RBMCampaign
                 return 0;
             }
 
-            int cost = taken * town.MarketData.GetPrice(item);
-            itemRoster.AddToCounts(item, -taken);
+            int cost = taken * unitPrice;
             spend += cost;
 
             RBMTownFoodSupply.RegisterPurchaseDemand(town.MarketData, item.ItemCategory, cost);

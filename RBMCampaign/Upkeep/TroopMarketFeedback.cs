@@ -88,6 +88,11 @@ namespace RBMCampaign
         /// besieged city's last grain finds it priced like the last grain; anywhere else the good is
         /// worth what it is worth.
         /// </summary>
+        /// <remarks>
+        /// Priced off the element at <paramref name="index"/>, modifier included, through the same
+        /// <see cref="EquipmentElement"/> overload the trade screen uses -- so a rusty spear costs what a
+        /// rusty spear costs, and the price always belongs to the unit the caller then removes.
+        /// </remarks>
         public static int UnitPrice(Settlement settlement, ItemObject item, ItemRoster roster, int index)
         {
             Town town = settlement != null ? settlement.Town : null;
@@ -95,7 +100,7 @@ namespace RBMCampaign
             {
                 return MathF.Max(1, roster.GetElementUnitCost(index));
             }
-            return MathF.Max(1, town.MarketData.GetPrice(item));
+            return MathF.Max(1, town.MarketData.GetPrice(roster.GetElementCopyAtIndex(index).EquipmentElement));
         }
 
         /// <summary>
@@ -258,15 +263,14 @@ namespace RBMCampaign
                         continue;
                     }
 
-                    int available = roster.GetItemNumber(item);
-                    int taken = (available < wanted) ? available : wanted;
+                    // The plain stack only: that is the one priced above.
+                    int taken = RosterStock.Take(roster, new EquipmentElement(item), wanted);
                     if (taken <= 0)
                     {
                         continue;
                     }
 
                     int cost = taken * price;
-                    roster.AddToCounts(item, -taken);
                     poured += taken;
                     spentOnGoods += cost;
 

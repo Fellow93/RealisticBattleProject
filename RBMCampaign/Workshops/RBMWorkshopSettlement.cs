@@ -203,8 +203,9 @@ namespace RBMCampaign
                 // leave one stack negative. Priced this way, what the shop pays is what the gate approved.
                 ItemRoster itemRoster = town.Owner.ItemRoster;
                 int remaining = productionInputCount;
-                int cost = 0;
-                List<KeyValuePair<ItemObject, int>> taken = new List<KeyValuePair<ItemObject, int>>();
+                // Keyed by the exact stack walked, modifier included: removing by ItemObject would charge
+                // every one of an item's stacks against its unmodified one.
+                List<(EquipmentElement Element, int Count, int UnitPrice)> planned = new List<(EquipmentElement, int, int)>();
                 for (int i = 0; i < itemRoster.Count && remaining > 0; i++)
                 {
                     ItemObject entry = itemRoster.GetItemAtIndex(i);
@@ -218,13 +219,27 @@ namespace RBMCampaign
                     {
                         continue;
                     }
-                    cost += town.GetItemPrice(entry) * take;
-                    taken.Add(new KeyValuePair<ItemObject, int>(entry, take));
+                    planned.Add((itemRoster.GetElementCopyAtIndex(i).EquipmentElement, take, town.GetItemPrice(entry)));
                     remaining -= take;
                 }
-                if (taken.Count == 0)
+                if (planned.Count == 0)
                 {
                     return false;
+                }
+
+                // Removed after the price walk: taking a stack to zero drops its roster entry, which would
+                // shift the indices the walk depends on. The shop then pays for what actually came off.
+                int cost = 0;
+                List<KeyValuePair<ItemObject, int>> taken = new List<KeyValuePair<ItemObject, int>>();
+                foreach (var line in planned)
+                {
+                    int got = RosterStock.Take(itemRoster, line.Element, line.Count);
+                    if (got <= 0)
+                    {
+                        continue;
+                    }
+                    cost += line.UnitPrice * got;
+                    taken.Add(new KeyValuePair<ItemObject, int>(line.Element.Item, got));
                 }
 
                 if (Campaign.Current.GameStarted && cost > 0)
@@ -242,11 +257,8 @@ namespace RBMCampaign
                     }
                 }
 
-                // Removed after pricing: taking a stack to zero drops its roster entry, which would shift
-                // the indices the price walk depends on.
                 for (int i = 0; i < taken.Count; i++)
                 {
-                    itemRoster.AddToCounts(taken[i].Key, -taken[i].Value);
                     CampaignEventDispatcher.Instance.OnItemConsumed(taken[i].Key, town.Owner.Settlement, taken[i].Value);
                 }
                 return false;

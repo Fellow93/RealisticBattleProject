@@ -81,7 +81,9 @@ namespace RBMCampaign
                 return;
             }
 
-            int stock = roster.GetItemNumber(silver);
+            // The plain stack, read and struck alike.
+            EquipmentElement ore = new EquipmentElement(silver);
+            int stock = RosterStock.Count(roster, ore);
             // Nothing is struck until the stock stands above the reserve floor -- the seed ore below it
             // is never touched.
             int mintable = stock - ReserveOre;
@@ -105,7 +107,12 @@ namespace RBMCampaign
                 minted = mintable;
             }
 
-            roster.AddToCounts(silver, -minted);
+            // Coin is struck only from ore that actually came off the shelf.
+            minted = RosterStock.Take(roster, ore, minted);
+            if (minted <= 0)
+            {
+                return;
+            }
 
             int totalValue = minted * CoinsPerOre;
             // Tax Office: the same clerks who assess the wealth tax weigh the mint's output, so all three
