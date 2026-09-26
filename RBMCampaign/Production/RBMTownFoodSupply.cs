@@ -514,6 +514,10 @@ namespace RBMCampaign
                     {
                         bought = amount;
                     }
+                    if (bought < 0)
+                    {
+                        bought = 0;
+                    }
 
                     itemRoster.AddToCounts(element.EquipmentElement, -bought);
                     // Vanilla writes the leftover budget back into the demand dictionary (not the
@@ -812,7 +816,10 @@ namespace RBMCampaign
             rations.Add(soldiers.ResultNumber);
             town.AddEffectOfBuildings(BuildingEffectEnum.FoodConsumption, ref rations);
 
-            int units = MBRandom.RoundRandomized(rations.ResultNumber);
+            // A NaN ration (poisoned prosperity or militia) rounds to int.MinValue, which would zero
+            // `wanted` below and book the town as fully fed. Treat it as no modelled eaters instead.
+            float rationTotal = rations.ResultNumber;
+            int units = (rationTotal > 0f && !float.IsInfinity(rationTotal)) ? MBRandom.RoundRandomized(rationTotal) : 0;
 
             // The town's standing administration eats a fixed ration on top of the modelled population,
             // provisioned out of the treasury exactly like the garrison's -- see AdministrativeUpkeep,
@@ -825,7 +832,8 @@ namespace RBMCampaign
             // and out of the same city stores, for free, exactly as the garrison and the officials do. A
             // gaoler does not shop for his prisoners. Added alongside the administration's ration for that
             // reason, rather than folded into the modelled population above.
-            int prisonerUnits = MBRandom.RoundRandomized(PrisonLabour.DailyFood(town.Settlement));
+            float prisonerFood = PrisonLabour.DailyFood(town.Settlement);
+            int prisonerUnits = (prisonerFood > 0f && !float.IsInfinity(prisonerFood)) ? MBRandom.RoundRandomized(prisonerFood) : 0;
 
             wanted = (units + adminUnits + prisonerUnits > 0) ? units + adminUnits + prisonerUnits : 0;
             if (wanted <= 0)

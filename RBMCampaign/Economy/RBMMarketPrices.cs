@@ -852,8 +852,21 @@ namespace RBMCampaign
             private static void Postfix(TownMarketData __instance, Town ____town,
                 ItemCategory itemCategory, ref float __result)
             {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !RBMConfig.RBMConfig.rbmDaysOfSupplyAiSignal
-                    || ____town == null)
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled)
+                {
+                    return;
+                }
+
+                // Vanilla's factor, kept below for every category RBM does not model, is a Pow over the
+                // saved Supply/Demand EMA and turns NaN for good once that EMA is poisoned (MathF.Clamp
+                // passes NaN through). Every caller of the price index -- the consumption budget, caravan
+                // routing, trade AI -- would then read NaN. Fall back to neutral.
+                if (float.IsNaN(__result) || float.IsInfinity(__result) || __result <= 0f)
+                {
+                    __result = 1f;
+                }
+
+                if (!RBMConfig.RBMConfig.rbmDaysOfSupplyAiSignal || ____town == null)
                 {
                     return;
                 }

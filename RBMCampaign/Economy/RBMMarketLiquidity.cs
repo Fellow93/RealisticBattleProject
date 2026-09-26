@@ -130,6 +130,11 @@ namespace RBMCampaign
                 }
 
                 float prosperity = RBMProsperityEquilibrium.EconomicProsperity(town);
+                // MathF.Max passes NaN through, and a NaN pool here is saved into the demand EMA.
+                if (float.IsNaN(prosperity) || float.IsInfinity(prosperity))
+                {
+                    prosperity = 0f;
+                }
                 float baseline = MathF.Max(0f, prosperity + extraProsperity);
                 float luxury = MathF.Max(0f, prosperity - 3000f);
 
@@ -140,6 +145,41 @@ namespace RBMCampaign
                     : category.BaseDemand * baseline + category.LuxuryDemand * luxury;
 
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Heals a poisoned market EMA. Vanilla blends <c>old*0.85 + new*0.15</c> each day, so one NaN
+        /// never decays, and its <c>MathF.Max(0.1f, supply)</c> floor passes NaN through. <c>ItemData</c>
+        /// is saved with the game, so without this a single bad day makes that town's category price
+        /// index NaN for the rest of the campaign. Non-finite inputs are reset before the blend.
+        /// </summary>
+        [HarmonyPatch(typeof(DefaultSettlementEconomyModel), "GetSupplyDemandForCategory")]
+        private static class SupplyDemandSanitizePatch
+        {
+            private static void Prefix(ref float dailySupply, ref float dailyDemand, ref float oldSupply, ref float oldDemand)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled)
+                {
+                    return;
+                }
+
+                if (float.IsNaN(dailySupply) || float.IsInfinity(dailySupply))
+                {
+                    dailySupply = 0f;
+                }
+                if (float.IsNaN(dailyDemand) || float.IsInfinity(dailyDemand))
+                {
+                    dailyDemand = 0f;
+                }
+                if (float.IsNaN(oldSupply) || float.IsInfinity(oldSupply))
+                {
+                    oldSupply = MathF.Max(0.1f, dailySupply);
+                }
+                if (float.IsNaN(oldDemand) || float.IsInfinity(oldDemand))
+                {
+                    oldDemand = dailyDemand;
+                }
             }
         }
 
