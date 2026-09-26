@@ -75,8 +75,27 @@ namespace RBMAI
                         bannerNearbyEnemies.RemoveAll((Agent a) => a.IsRunningAway);
                         if (bannerNearbyEnemies.Count == 0 && ___Agent.Formation != null)
                         {
-                            Agent bannerFriendlyTarget = (Agent)(___Agent.Formation.Arrangement.GetNeighborUnitOfLeftSide(___Agent) ?? ___Agent.Formation.Arrangement.GetNeighborUnitOfRightSide(___Agent));
-                            if (bannerFriendlyTarget != null && ___Agent.GetDistanceTo(bannerFriendlyTarget) > 5f)
+                            // Park on a grid neighbour rather than the nearest ally so bearers don't pull toward each other.
+                            // Detached / removed units carry file-rank index -1 and the arrangement's neighbour lookup would
+                            // index _units2D[i, -1], so only query the grid for a positioned unit. Skipping neighbours that
+                            // are banner bearers themselves stops two bearers from targeting (and following) each other.
+                            Agent bannerFriendlyTarget = null;
+                            IFormationUnit bannerUnit = ___Agent;
+                            if (___Agent.Detachment == null && bannerUnit.FormationFileIndex >= 0 && bannerUnit.FormationRankIndex >= 0)
+                            {
+                                IFormationArrangement arrangement = ___Agent.Formation.Arrangement;
+                                Agent left = arrangement.GetNeighborUnitOfLeftSide(bannerUnit) as Agent;
+                                Agent right = arrangement.GetNeighborUnitOfRightSide(bannerUnit) as Agent;
+                                if (left != null && !RBMAI.Utilities.IsBannerBearer(left))
+                                {
+                                    bannerFriendlyTarget = left;
+                                }
+                                else if (right != null && !RBMAI.Utilities.IsBannerBearer(right))
+                                {
+                                    bannerFriendlyTarget = right;
+                                }
+                            }
+                            if (bannerFriendlyTarget != null)
                             {
                                 ___Agent.SetAutomaticTargetSelection(false);
                                 ___Agent.SetTargetAgent(bannerFriendlyTarget);
