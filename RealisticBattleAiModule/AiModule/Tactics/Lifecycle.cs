@@ -47,6 +47,7 @@ namespace RBMAI
                 //RBMAiPatcher.DoPatching();
                 agentDamage.Clear();
                 AgentAi.OnTickPatch.bannerBearersWithHeldTarget.Clear();
+                AgentAi.OnTickPatch.chargeRoutedAgents.Clear();
             }
         }
 
@@ -64,6 +65,7 @@ namespace RBMAI
                 //RBMAiPatcher.DoPatching();
                 AgentAi.OnTickPatch.itemPickupDistanceStorage.Clear();
                 AgentAi.OnTickPatch.bannerBearersWithHeldTarget.Clear();
+                AgentAi.OnTickPatch.chargeRoutedAgents.Clear();
                 StanceLogic.agentsToChangeFormation.Clear();
                 StanceLogic.agentsToDropWeapon.Clear();
                 StanceLogic.agentsToDropShield.Clear();

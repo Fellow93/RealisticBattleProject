@@ -238,18 +238,21 @@ namespace RBMAI
         internal class ChargeDamageCallbackPatch
         {
             /// <summary>
-            /// Route a charge-induced rout through vanilla's panic path instead of calling Retreat()
-            /// directly. Panic() respects CanPanic() (BattleMoraleModel.CanPanicDueToMorale, so
-            /// Leadership.LoyaltyAndHonor and the siege-ladder exemption apply) and is turned into the
-            /// actual retreat by MissionAgentPanicHandler on the next pre-tick, which also fires
-            /// Mission.OnAgentFleeing so the flee-contagion morale wave and its perks run.
+            /// A charge knockdown/knockback is a short shock rout, not a morale rout: the victim flees but
+            /// stays in his formation, and the HumanAIComponent tick rallies him once he is clear of melee.
+            /// CanPanic() still gates it (Leadership.LoyaltyAndHonor, siege-ladder exemption).
+            /// Deliberately NOT routed through Panic(): vanilla's flee path (Mission.OnAgentFleeing ->
+            /// Agent.OnFleeing) removes the agent from his formation, so a rallied agent came back
+            /// formationless - charging on his own and ignoring orders - and it also fires the
+            /// flee-contagion morale wave and its perks, which a charge shock should not trigger.
             /// </summary>
             private static void PanicFromCharge(Agent victim)
             {
                 CommonAIComponent ai = victim.CommonAIComponent;
                 if (ai != null && !ai.IsRetreating && !ai.IsPanicked && ai.CanPanic())
                 {
-                    ai.Panic();
+                    ai.Retreat();
+                    OnTickPatch.chargeRoutedAgents.Add(victim);
                 }
             }
 

@@ -31,10 +31,13 @@ namespace RBMAI
             // and stays permanently passive with its target parked on a squadmate.
             public static HashSet<Agent> bannerBearersWithHeldTarget = new HashSet<Agent>();
 
-            // CommonAIComponent.StopRetreating only clears the retreat/panic flags. Retreat() had dropped the
-            // shield stance (EnforceShieldUsage(None)) and AgentPanicFix cleared the target frame on panic, so a
-            // rallied agent came back with a stale target and no formation behavior - standing idle or swinging
-            // at whoever it last targeted. Rebuild what the formation would have given it.
+            // Agents routed by a cavalry charge (ChargeDamageCallbackPatch). Only these are rallied below: an ordered
+            // retreat or RBM's keep fallback must not be un-retreated, and a vanilla morale rout stays a rout.
+            public static HashSet<Agent> chargeRoutedAgents = new HashSet<Agent>();
+
+            // CommonAIComponent.StopRetreating only clears the retreat flags. Retreat() had dropped the shield
+            // stance (EnforceShieldUsage(None)) and the flee left a stale target, so a rallied agent came back
+            // standing idle or swinging at whoever it last targeted. Rebuild what the formation would have given it.
             private static void RestoreAiAfterRally(Agent agent)
             {
                 // Banner bearers holding a parked target keep automatic selection off; the banner block owns that.
@@ -132,12 +135,13 @@ namespace RBMAI
                         ___Agent.MovementInputVector = ___Agent.LookDirection.AsVec2 * 2f;
                     }
                 }
-                // Rally only agents whose retreat came from a morale panic. An agent obeying a Retreat
-                // order (or RBM's keep-battle fallback) has IsRetreating set with full morale and takes no
-                // melee hits, so without the IsPanicked gate it was un-retreated every tick.
+                // Rally only agents routed by a cavalry charge. An agent obeying a Retreat order (or RBM's
+                // keep-battle fallback) has IsRetreating set with full morale and takes no melee hits, so an
+                // ungated rally un-retreated it every tick.
                 CommonAIComponent rallyAi = ___Agent.CommonAIComponent;
-                if (rallyAi != null && rallyAi.IsPanicked && ___Agent.GetMorale() > 0f && currentTime - ___Agent.LastMeleeHitTime > 10f)
+                if (rallyAi != null && chargeRoutedAgents.Contains(___Agent) && ___Agent.GetMorale() > 0f && currentTime - ___Agent.LastMeleeHitTime > 10f)
                 {
+                    chargeRoutedAgents.Remove(___Agent);
                     bool wasRetreating = rallyAi.IsRetreating;
                     rallyAi.StopRetreating();
                     if (wasRetreating && !rallyAi.IsRetreating)
