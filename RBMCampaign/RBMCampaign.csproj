@@ -323,6 +323,8 @@
     <Compile Include="Upkeep\TroopUpkeep.Stewardship.cs" />
     <Compile Include="Upkeep\RBMTroopUpkeepCampaignBehavior.cs" />
     <Compile Include="Recruitment\TavernMercenaryTroopsPatch.cs" />
+    <Compile Include="Recruitment\RecruitPool.cs" />
+    <Compile Include="Recruitment\RBMRecruitPoolCampaignBehavior.cs" />
     <Compile Include="Upgrades\RBMCampaignPatches.cs" />
     <Compile Include="Wages\TierBasedWageModel.cs" />
     <Compile Include="Upgrades\SpoilsUpgradePatches.cs" />

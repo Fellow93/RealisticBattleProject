@@ -120,6 +120,20 @@ namespace RBMCampaign
             return Tier(town, null, DefaultBuildingTypes.CastleFarmlands);
         }
 
+        /// <summary>
+        /// Whether the fief is running this daily project today. Vanilla runs the default (daily) project only
+        /// while nothing is queued for construction -- <c>Town.CurrentDefaultBuilding</c> is null otherwise.
+        /// </summary>
+        public static bool IsDailyProjectActive(Town town, BuildingType dailyType)
+        {
+            if (town == null || town.Buildings == null || dailyType == null)
+            {
+                return false;
+            }
+            Building current = town.CurrentDefaultBuilding;
+            return current != null && current.BuildingType == dailyType;
+        }
+
         // ------------------------------------------------------------------ derived rates
 
         /// <summary>Fortifications: what a fief pays to keep its garrison and watch, 1 / 0.95 / 0.9.</summary>
@@ -245,6 +259,60 @@ namespace RBMCampaign
                 return 0f;
             }
             return 0.1f * FarmlandsTier(town);
+        }
+
+        // ------------------------------------------------------------------ manpower (see RecruitPool)
+
+        /// <summary>
+        /// Daily projects that call men up: Train Militia in a town +25%, Raise Troops in a castle +50%, and
+        /// Housing in a town +25% (more settlers). Vanilla's garrison auto-recruitment on the first two does
+        /// nothing under RBM, whose own garrison growth replaced it, so this is what they now raise. Only one
+        /// daily project runs at a time, so these never stack.
+        /// </summary>
+        public static float RecruitPoolDailyProjectGrowthBonus(Town town)
+        {
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled || town == null)
+            {
+                return 0f;
+            }
+            if (IsDailyProjectActive(town, DefaultBuildingTypes.CastleDailyRaiseTroops))
+            {
+                return 0.5f;
+            }
+            if (IsDailyProjectActive(town, DefaultBuildingTypes.SettlementDailyTrainMilitia)
+                || IsDailyProjectActive(town, DefaultBuildingTypes.SettlementDailyHousing))
+            {
+                return 0.25f;
+            }
+            return 0f;
+        }
+
+        /// <summary>
+        /// Castellan's Office: the castle's recruit pool ceiling, +10/20/30%. The castellan keeps the rolls of
+        /// every family in the valley, so more men can be called on.
+        /// </summary>
+        public static float CastellanRecruitPoolMaxBonus(Town town)
+        {
+            return RBMConfig.RBMConfig.rbmCampaignEnabled ? 0.1f * CastellanTier(town) : 0f;
+        }
+
+        /// <summary>
+        /// Barracks: men added to the garrison's diminishing-returns soft size, +20/40/60. Lodgings push back
+        /// the point where each new recruit gets expensive -- vanilla's "garrison capacity", in RBM's terms.
+        /// </summary>
+        public static float BarracksGarrisonSoftSizeBonus(Town town)
+        {
+            return RBMConfig.RBMConfig.rbmCampaignEnabled ? 20f * Barracks(town) : 0f;
+        }
+
+        /// <summary>
+        /// Roads and Paths of a village's bound town or castle: that village's recruit pool growth, +10/20/30%.
+        /// A village builds nothing of its own, so this is its one upgrade -- vanilla's roads already speed
+        /// the villages' hearth growth.
+        /// </summary>
+        public static float RoadsVillageRecruitGrowthBonus(Town boundTown)
+        {
+            return RBMConfig.RBMConfig.rbmCampaignEnabled ? 0.1f * Roads(boundTown) : 0f;
         }
 
         /// <summary>The days of eating a fief with no granary at all can keep. Thirty, because this cap gates

@@ -547,6 +547,25 @@ public class MyVM : ViewModel                     // TaleWorlds.Library.ViewMode
 - Hints are a **one-shot hover snapshot** — to live-update a tooltip's text you must replay
   hide/show on the widget.
 
+### 5c. Map hover tooltips (`PropertyBasedTooltipVM`) — adding lines
+
+- Map-object tooltips (settlement, party, hero…) are **not prefabs you edit**: each type is
+  registered once via `InformationManager.RegisterTooltip<T, PropertyBasedTooltipVM>(refresher, "PropertyBasedTooltip")`
+  (SandBox.View `MapScreen.RegisterTooltipTypes`), and the refresher fills rows with
+  `vm.AddProperty(definition, value, textHeight, flags)` (`TaleWorlds.Core.ViewModelCollection.Information`).
+- Row shapes vanilla uses: `AddProperty(label, value)` for a label/value pair;
+  `AddProperty("", text)` for a single free-text line (empty *definition*, text in *value*);
+  `AddProperty("", "", -1)` for a blank separator; `TooltipPropertyFlags.Title`/`MultiLine` for headings/wrapped text.
+- **Settlement tooltip:** do NOT Harmony-patch `TooltipRefresherCollection.RefreshSettlementTooltip`
+  (early patch crashes save load, late patch never fires — the delegate was captured at startup).
+  Re-register a wrapper instead: read `InformationManager.RegisteredTypes[typeof(Settlement)]`,
+  chain its `OnRefreshData`, re-register with the same `MovieName`. RBM does this once in
+  `RBMCampaign/Settlements/SettlementWealthTooltip.cs` (`Install()`, from `OnSessionLaunched`) —
+  **add new settlement rows to its `Append`**, don't install a second wrapper. (Memory: `settlement-hover-tooltip-hook`.)
+- **`ExplainedNumber`-driven tooltips** (garrison/militia change, finance lines) drop any line whose
+  value is ~0, so a purely informational figure must ride in the **label** of a non-zero line
+  (e.g. `GarrisonRecruitCost.GetGarrisonChangeExplained` embeds the recruit pool in its recruitment line).
+
 ---
 
 ## 6. Screen / Layer architecture

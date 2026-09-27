@@ -70,6 +70,7 @@ namespace RBMCampaign
                 propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_wealth_castle}Castle wealth").ToString(),
                     SettlementWealth.GetSettlementWealth(settlement).ToString(), 0);
                 AppendConstruction(propertyBasedTooltipVM, settlement);
+                AppendRecruitPool(propertyBasedTooltipVM, settlement);
                 return;
             }
             if (settlement.IsTown)
@@ -82,6 +83,38 @@ namespace RBMCampaign
             if (settlement.IsTown)
             {
                 AppendConstruction(propertyBasedTooltipVM, settlement);
+            }
+            AppendRecruitPool(propertyBasedTooltipVM, settlement);
+        }
+
+        /// <summary>
+        /// The settlement's manpower: men left to come forward as new soldiers, its ceiling and daily refill,
+        /// and -- for a fortification -- a note when the pool is down to the reserve the garrison leaves for
+        /// volunteers. See <see cref="RecruitPool"/>.
+        /// </summary>
+        private static void AppendRecruitPool(PropertyBasedTooltipVM propertyBasedTooltipVM, Settlement settlement)
+        {
+            if (!RecruitPool.IsEnabled)
+            {
+                return;
+            }
+            propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_pool_label}Recruit pool").ToString(),
+                RecruitPool.FormatPool(settlement), 0);
+            string bonus = RecruitPool.FormatBuildingBonus(settlement);
+            if (bonus != null)
+            {
+                propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_pool_bonus_label}Recruit pool buildings").ToString(), bonus, 0);
+            }
+            string cost = RecruitPool.FormatGarrisonManCost(settlement);
+            if (cost != null)
+            {
+                propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_pool_cost_label}Garrison recruit cost").ToString(), cost, 0);
+            }
+            string paused = RecruitPool.FormatGarrisonPaused(settlement);
+            if (paused != null)
+            {
+                // Empty definition + value: vanilla's shape for a single free-text line.
+                propertyBasedTooltipVM.AddProperty(string.Empty, paused, 0);
             }
         }
 

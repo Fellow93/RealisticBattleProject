@@ -107,6 +107,7 @@ namespace RBMCampaign
         private void OnSessionLaunched(CampaignGameStarter starter)
         {
             SettlementWealth.InitializeAll();
+            BuildingEffectTooltips.ApplyDescriptions();
 
             // Deliberately NOT on the new-game hook beside the village purses, even though both are just as
             // much new-game-only steps. RBMEconomyCampaignBehavior re-seeds every town's prosperity on that

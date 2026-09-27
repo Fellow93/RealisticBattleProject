@@ -173,6 +173,7 @@ Serialized via `SyncData`:
 - `RBM_troopLuxuryCooldown` — when each stack may indulge again (`TroopUpkeep`).
 - `RBM_townTroopTrade` — what troops have spent in each town (`TroopMarketFeedback`).
 - `RBM_settlementWealth` — the settlement treasury pot (`SettlementWealth`).
+- `RBM_settlementRecruitPool` — each settlement's manpower pool (`RecruitPool`); a settlement with no entry starts full.
 
 ⚠️ A persisted store must be reset in its behavior's **constructor**, not from `OnSessionLaunched`:
 `LoadBehaviorData` runs before `RegisterEvents` on load, and an absent key leaves the field
@@ -358,6 +359,7 @@ separate, untouched set.
 values by the same 90/110 factor (caption `MarginTop`, progress strip, hammer cluster, level plate, overlay
 buttons). They are split by file because each redirects to `%TEMP%\RBM\Prefabs\<name>.xml` and would collide
 otherwise. `DevelopmentItem.xml` has exactly one call site (this grid), so scaling the file is safe.
+| `Recruitment/` | `RecruitPool` — each settlement's finite **manpower pool** (towns/castles off Prosperity, villages off Hearth): +0.03/point a day, ceiling 0.2/point, persisted as `RBM_settlementRecruitPool` by `RBMRecruitPoolCampaignBehavior` (daily refill + one `MANPOWER` economy-log summary line). Every NEW soldier draws one man: `GarrisonRecruitCost.GrowGarrison` (clamped in `Compute`, and never below a 0.07/point reserve kept for volunteers) and each volunteer slot the vanilla daily roll fills (`VolunteerSpawnPatch`, a before/after occupied-slot diff on `RecruitmentCampaignBehavior.UpdateVolunteersOfNotablesInSettlement`, clearing over-budget fills; `Priority.First` so `RecruitSupply`'s kit draw sees only admitted men). Promotions, transfers, prisoners, the defence muster and militia are not charged. Growth/ceiling are one method each (`GetDailyGrowth`/`GetMax`) for a later building multiplier. Also `TavernMercenaryTroopsPatch`. |
 | `Production/` | Village production, villager convoys and deliveries, town food supply and storage, citizen and workshop demand. |
 | `Workshops/` | RBM's ownership of the workshop rules. `RBMWorkshopModel` — a `WorkshopModel` decorator registered in `OnGameStart`; it owns `InitialCapital` (60,000), `CapitalLowLimit` (half of it) and `DailyExpense` (250, the standing overhead only), and applies `ArtisanOutput.Scale` inside `GetEffectiveConversionSpeedOfProduction`. Everything else delegates to `BaseModel`, so NavalDLC's own workshop-model decoration survives whichever order the two are registered in. `RBMWorkshopCycle` — the produce-or-not decision, as skip-prefixes on both `Can*WorkshopProduceThisCycle` gates: storage glut (folded in from the deleted `WorkshopHeadroomGate`), then a proportional margin (`inputCost x 1.15 + wage`, replacing vanilla's speed-inverted floor), shop solvency and town cash, all judged on the payout `RBMWorkshopSettlement` will actually pay. Also the single `SettlesInGold` predicate (the artisans settle in kind). `RBMWorkshopSettlement` — the money and goods legs, as skip-prefixes on `ProduceAnOutputToTown` and `ConsumeInputFromTownMarket`: one sell-side valuation ceilinged at 10% of town gold (min 500) serves gate and payment alike, and inputs are priced on the whole draw rather than vanilla's one unit. `RBMWorkshopExpense` — the daily bill, as one skip-prefix on `HandleDailyExpense` replacing vanilla's three methods: overhead plus a per-batch payroll (75/batch), paid down vanilla's ladder (capital while above `CapitalLowLimit`, else a player owner's gold, else capital, else what capital there is, else vanilla's own `ChangeWorkshopOwnerByBankruptcy`), with every denar credited to citizen wealth as `Source.WorkshopWages`. It also counts the day's batches off the two `TickOneProductionCycleFor*Workshop` methods. `WorkshopCardPayrollLine` — the clan-card "Production Wages" row, reading its last payroll. See `WORKSHOP_RULES_PLAN.md` for the phases that follow. |
 | `Economy/` | Market prices and liquidity, caravan capital and trade volume, recruit supply, trade-good values, prosperity equilibrium. |
@@ -377,7 +379,8 @@ otherwise. `DevelopmentItem.xml` has exactly one call site (this grid), so scali
   `OnGameStart`. `ApplyEarly` also calls `SpoilsLog.Reset()`.
 - `OnGameStart()` (Campaign only) → adds six behaviors: `RBMSpoilsCampaignBehavior`,
   `RBMTroopUpkeepCampaignBehavior`, `RBMSimulationCampaignBehavior`, `RBMSpectateCampaignBehavior`,
-  `RBMEconomyCampaignBehavior`, `RBMSettlementWealthCampaignBehavior`.
+  `RBMEconomyCampaignBehavior`, `RBMSettlementWealthCampaignBehavior` (plus the later additions listed
+  in `RBM/SubModule.cs`, the last being `RBMRecruitPoolCampaignBehavior`).
 
 ### Campaign event listeners
 

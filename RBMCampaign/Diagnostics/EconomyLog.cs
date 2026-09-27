@@ -114,6 +114,7 @@ namespace RBMCampaign
                     header.Append("  DAILY     end-of-day settlement state: prosperity, hearth, food").Append(Environment.NewLine);
                     header.Append("  PROSPER   a fief against its countryside equilibrium: gap, rate, and every term moving it").Append(Environment.NewLine);
                     header.Append("  WORKSHOP  a town's initial/re-rolled workshop pick and the bound-village types biasing it").Append(Environment.NewLine);
+                    header.Append("  MANPOWER  daily world summary: new volunteers/garrison men drawn from the recruit pools, refusals, pool fill").Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
                     header.Append("Settings:").Append(Environment.NewLine);
                     header.Append("  rbmCampaignEnabled          = ").Append(RC.rbmCampaignEnabled).Append(Environment.NewLine);

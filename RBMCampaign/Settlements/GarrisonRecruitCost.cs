@@ -208,6 +208,14 @@ namespace RBMCampaign
                     {
                         break;
                     }
+                    // ...and the same for the manpower pool: Final is already clamped to it, this keeps
+                    // the stop man by man as the pool drains.
+                    if (RecruitPool.GarrisonAvailable(settlement) < 1)
+                    {
+                        break;
+                    }
+                    // Charge the pool before he joins: the per-man cost is priced on the garrison he joins.
+                    RecruitPool.ConsumeGarrison(settlement);
                     ArmOneGarrisonTroop(settlement, troop, spawnCost);
                     armed++;
                     if (troop != SpawnTroop(settlement))
@@ -319,7 +327,9 @@ namespace RBMCampaign
             public int Barracks;        // extra men a day the Barracks lets through the cap
             public int Capped;          // rate clamped to the daily maximum
             public int Headroom;        // room left under the garrison's size ceiling
-            public int AfterHeadroom;   // capped, clamped to headroom -- the grow amount
+            public int AfterHeadroom;   // capped, clamped to headroom
+            public int Manpower;        // men the recruit pool can spare above its volunteer reserve
+            public int AfterManpower;   // after headroom, clamped to manpower -- the grow amount
             public int KeepThreshold;   // garrison's own daily bill × GarrisonKeepDays -- the shed floor
             public int Shed;            // men leaving today when too poor to keep the garrison
             public bool Subsidized;     // the trim was called off: somebody outside the treasury is paying
@@ -367,6 +377,10 @@ namespace RBMCampaign
             {
                 c.AfterHeadroom = 0;
             }
+            // Every recruit is a new man out of the fief's manpower pool, and the garrison stops short of
+            // the reserve kept for volunteers. See RecruitPool.
+            c.Manpower = RecruitPool.GarrisonAvailable(settlement);
+            c.AfterManpower = c.AfterHeadroom < c.Manpower ? c.AfterHeadroom : c.Manpower;
 
             int garrisonBill = GarrisonUpkeep.EstimateDailyBill(settlement);
             c.KeepThreshold = garrisonBill * GarrisonKeepDays;
@@ -374,7 +388,7 @@ namespace RBMCampaign
             if (!c.Held)
             {
                 // Enough reserve over the whole settlement's bill: recruit.
-                c.Final = c.AfterHeadroom;
+                c.Final = c.AfterManpower;
             }
             else if (garrisonBill > 0 && wealth < c.KeepThreshold && manCount > 0)
             {
@@ -486,7 +500,13 @@ namespace RBMCampaign
                 {
                     recruit = new TextObject("{=rbm_garr_rate}Wealth recruitment");
                 }
-                en.Add(baseCap, recruit);
+                // The fief's manpower rides in this line's label: a zero-valued row never renders (see
+                // ExplainedNumber.Add), and this is the one line present whenever the fief is recruiting.
+                TextObject withPool = new TextObject("{=rbm_garr_rate_pool_cost}{RECRUIT} · recruit pool {POOL} · {COST}");
+                withPool.SetTextVariable("RECRUIT", recruit);
+                withPool.SetTextVariable("POOL", RecruitPool.FormatPool(town.Settlement));
+                withPool.SetTextVariable("COST", RecruitPool.FormatGarrisonManCost(town.Settlement));
+                en.Add(baseCap, withPool);
                 if (barracksPart > 0)
                 {
                     en.Add(barracksPart, new TextObject("{=!}Barracks"));
@@ -498,12 +518,20 @@ namespace RBMCampaign
                     en.Add(c.AfterHeadroom - c.Capped, new TextObject("{=rbm_garr_full}Garrison near capacity"));
                 }
 
+                // Fewer again when the fief's manpower is down to the men it keeps back for volunteers.
+                if (c.AfterHeadroom > c.AfterManpower)
+                {
+                    TextObject manpower = new TextObject("{=rbm_garr_manpower}Few men left to recruit (garrison stops at {RES})");
+                    manpower.SetTextVariable("RES", (int)System.Math.Ceiling(RecruitPool.GetGarrisonReserve(town.Settlement)));
+                    en.Add(c.AfterManpower - c.AfterHeadroom, manpower);
+                }
+
                 // Held at zero until the treasury clears its reserve (its whole daily bill, many times over).
-                if (c.Held && c.AfterHeadroom > 0)
+                if (c.Held && c.AfterManpower > 0)
                 {
                     TextObject resText = new TextObject("{=rbm_garr_res}Held — treasury below reserve ({RES})");
                     resText.SetTextVariable("RES", c.Reserve);
-                    en.Add(0 - c.AfterHeadroom, resText);
+                    en.Add(0 - c.AfterManpower, resText);
                 }
             }
 
