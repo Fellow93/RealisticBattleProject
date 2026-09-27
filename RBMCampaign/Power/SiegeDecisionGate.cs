@@ -33,8 +33,18 @@ namespace RBMCampaign
     [HarmonyPatch(typeof(DefaultTargetScoreCalculatingModel), nameof(DefaultTargetScoreCalculatingModel.GetTargetScoreForFaction))]
     internal static class SiegeDecisionGate
     {
-        /// <summary>Vanilla fresh-siege factor is 2f; this multiplies it. 1.5 => the AI needs 3x defensive strength.</summary>
-        private const float SiegeStrengthGateMultiplier = 1.5f;
+        /// <summary>
+        /// Vanilla fresh-siege factor is 2f; this multiplies it (1.5 => the AI needs 3x defensive strength).
+        /// Reset to 1 (vanilla 2x, patch skipped) on 2026-09-27: with RBM's large garrisons the 3x bar made every
+        /// fortification score 0, and vanilla only ever gathers an army for a siege target, so AI kingdoms never
+        /// formed armies or took a fief. Raise it again only once garrison size is bounded.
+        /// </summary>
+        private const float SiegeStrengthGateMultiplier = 1f;
+
+        private static bool Prepare()
+        {
+            return SiegeStrengthGateMultiplier != 1f;
+        }
 
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {

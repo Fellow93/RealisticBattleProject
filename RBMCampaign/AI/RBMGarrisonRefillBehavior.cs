@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using HarmonyLib;
 using Helpers;
@@ -34,6 +35,11 @@ namespace RBMCampaign
         // three-quarters full still has real room, so send him home to top up rather than waiting until
         // he is nearly wiped out (the old 0.4 fired only under ~24% of the *raw* size cap).
         private const float DepletedFractionOfAffordableLimit = 0.75f;
+
+        // Vanilla's army-eligibility gate (DefaultArmyManagementCalculationModel: leader and every called
+        // member need PartySizeRatio > 0.6). Never divert a lord who already clears it -- he is army
+        // material, and a pull home would compete with the kingdom's gather-army decision.
+        private const float ArmyEligiblePartySizeRatio = 0.6f;
 
         // Vanilla's hard garrison floors (GarrisonTroopsCampaignBehavior). A garrison at or below its
         // floor never releases troops, so anything above it is the surplus we can actually draw on.
@@ -117,7 +123,7 @@ namespace RBMCampaign
                 return;
             }
             float affordableLimit = PartyBaseHelper.FindPartySizeNormalLimit(mobileParty);
-            if (mobileParty.PartySizeRatio >= affordableLimit * DepletedFractionOfAffordableLimit)
+            if (mobileParty.PartySizeRatio >= MathF.Min(affordableLimit * DepletedFractionOfAffordableLimit, ArmyEligiblePartySizeRatio))
             {
                 return;
             }
@@ -371,6 +377,55 @@ namespace RBMCampaign
                     "took " + moved + " from " + GarrisonRefillLog.Name(settlement) + " garrison"
                     + "  ·  garrison " + __state + " -> " + after
                     + "  ·  party now " + mobileParty.Party.NumberOfRegularMembers + "/" + mobileParty.Party.PartySizeLimit);
+            }
+        }
+
+        /// <summary>
+        /// Lets an AI lord visiting his own clan's fortification fill up from its surplus garrison in one visit.
+        ///
+        /// Vanilla's party/garrison transfer splits the combined men in proportion to the two "ideal" sizes, and
+        /// under RBM the garrison's ideal (wealth-driven) is large, so a lord only walks off with a slice of what
+        /// he could hold -- lords sat at ~0.5 PartySizeRatio beside garrisons of 400+, under the 0.6 vanilla
+        /// requires to lead or join an army. After vanilla's own transfer this tops the lord up to his vanilla
+        /// size-with-food-and-wage limit, never taking the garrison below vanilla's floor (125 town / 75 castle).
+        /// The men move through vanilla's own TakeTroopsFromGarrison, so the REFILL log above records them too.
+        /// </summary>
+        [HarmonyPatch(typeof(GarrisonTroopsCampaignBehavior), "ManageGarrisonForParty")]
+        private class TopUpLordFromSurplusGarrison
+        {
+            private static readonly Func<GarrisonTroopsCampaignBehavior, MobileParty, int> CalculatePartyLimit =
+                AccessTools.MethodDelegate<Func<GarrisonTroopsCampaignBehavior, MobileParty, int>>(
+                    AccessTools.Method(typeof(GarrisonTroopsCampaignBehavior), "CalculateMobilePartySizeLimitWithFoodAndWage"));
+
+            private static readonly Action<GarrisonTroopsCampaignBehavior, MobileParty, Settlement, int, bool> TakeTroops =
+                AccessTools.MethodDelegate<Action<GarrisonTroopsCampaignBehavior, MobileParty, Settlement, int, bool>>(
+                    AccessTools.Method(typeof(GarrisonTroopsCampaignBehavior), "TakeTroopsFromGarrison"));
+
+            private static void Prefix(Settlement settlement, out int __state)
+            {
+                __state = settlement?.Town?.GarrisonParty?.Party.NumberOfRegularMembers ?? 0;
+            }
+
+            private static void Postfix(GarrisonTroopsCampaignBehavior __instance, MobileParty mobileParty, Settlement settlement, int __state)
+            {
+                if (!IsEligibleParty(mobileParty) || settlement?.Town?.GarrisonParty == null
+                    || mobileParty.LeaderHero.Clan != settlement.OwnerClan || mobileParty.IsWageLimitExceeded())
+                {
+                    return;
+                }
+                int garrison = settlement.Town.GarrisonParty.Party.NumberOfRegularMembers;
+                // Vanilla just handed men TO the garrison (it was below its ideal): don't take them straight back.
+                if (garrison > __state)
+                {
+                    return;
+                }
+                int floor = settlement.IsTown ? MinGarrisonForTown : MinGarrisonForCastle;
+                int room = CalculatePartyLimit(__instance, mobileParty) - mobileParty.Party.NumberOfRegularMembers;
+                int take = Math.Min(room, garrison - floor);
+                if (take > 0)
+                {
+                    TakeTroops(__instance, mobileParty, settlement, take, false);
+                }
             }
         }
     }
