@@ -15,142 +15,234 @@ namespace RBMAI.AiModule
 {
     internal class SpawningPatches
     {
-        [HarmonyPatch(typeof(Mission))]
-        private class SpawnTroopPatch
+        /// <summary>
+        /// Reinforcements arrive along vanilla's reinforcement spawn paths, but a safe distance in from the
+        /// map border rather than right at it.
+        ///
+        /// Vanilla resolves the reinforcement frame with GetSpawnFrame(offset, searchNearestValidFrame: true, Forward):
+        /// it starts at the path's map-edge end and walks toward the centre until the first frame that is inside the
+        /// playable area, and spawns there -- i.e. on the boundary line. That is the only call site with that argument
+        /// pair (DefaultDeploymentPlan.PlanFieldBattleDeploymentFromSpawnPath), so keying on it isolates reinforcements.
+        ///
+        /// Relative path offsets run from -half (map edge) through 0 (path centre) to +half; the pivot is the path's
+        /// midpoint for every reinforcement path (BattleSideSpawnPathSelector). So we find the first valid offset the
+        /// way vanilla does, push it ReinforcementInsetMeters further toward the centre, and cap it so it never
+        /// crosses into the middle of the field.
+        /// </summary>
+        [HarmonyPatch(typeof(SpawnPathData), "GetSpawnFrame")]
+        private class ReinforcementSpawnInsetPatch
         {
-            public static Vec2 ComputePolygonCentroid(IReadOnlyList<Vec2> vertices)
+            private const float ReinforcementInsetMeters = 50f;
+            private const float MinDistanceFromPathCentreMeters = 40f;
+            private const float SearchStepMeters = 2f;
+
+            private static void Postfix(SpawnPathData __instance, float relativePathOffset, bool searchNearestValidFrame, SpawnPathData.SearchDirection searchDirection, ref MatrixFrame __result)
             {
-                if (vertices == null || vertices.Count < 3)
-                    throw new ArgumentException("Polygon must have at least 3 vertices.");
-
-                float signedArea = 0f;
-                float cx = 0f;
-                float cy = 0f;
-
-                for (int i = 0; i < vertices.Count; i++)
+                if (!searchNearestValidFrame || searchDirection != SpawnPathData.SearchDirection.Forward)
                 {
-                    Vec2 p0 = vertices[i];
-                    Vec2 p1 = vertices[(i + 1) % vertices.Count];
-
-                    float cross = p0.X * p1.Y - p1.X * p0.Y;
-
-                    signedArea += cross;
-                    cx += (p0.X + p1.X) * cross;
-                    cy += (p0.Y + p1.Y) * cross;
+                    return;
                 }
+                if (Mission.Current == null || Mission.Current.MissionTeamAIType != Mission.MissionTeamAITypeEnum.FieldBattle)
+                {
+                    return;
+                }
+                try
+                {
+                    float centreOffset = __instance.PathLength * 0.5f - __instance.PivotOffset;
+                    float cap = centreOffset - MinDistanceFromPathCentreMeters;
+                    float firstValid = relativePathOffset;
+                    float limit = __instance.PathLength - __instance.PivotOffset;
+                    while (firstValid < limit && !__instance.IsPathOffsetValid(firstValid))
+                    {
+                        firstValid += SearchStepMeters;
+                    }
+                    if (firstValid >= cap)
+                    {
+                        // Path too short (or boundary already near the centre): leave vanilla's frame alone.
+                        return;
+                    }
+                    float target = MathF.Min(firstValid + ReinforcementInsetMeters, cap);
+                    // The one-argument GetSpawnFrame below does no alpha/navmesh check, so the inset
+                    // offset must be validated here: if the path leaves the playable area again within
+                    // the inset, walk back toward firstValid (which is known-valid) until it is inside.
+                    // Never call the searchNearestValidFrame overload here - it re-enters this postfix.
+                    while (target > firstValid && !__instance.IsPathOffsetValid(target))
+                    {
+                        target -= SearchStepMeters;
+                    }
+                    if (target <= firstValid || !__instance.IsPathOffsetValid(target))
+                    {
+                        return;
+                    }
+                    __result = __instance.GetSpawnFrame(target);
+                }
+                catch (Exception)
+                {
+                    // Any surprise in the path data: keep vanilla's frame.
+                }
+            }
+        }
 
-                signedArea *= 0.5f;
+        /// <summary>
+        /// Field battles: when one side's reinforcement wave triggers, the other side's wave triggers too.
+        ///
+        /// Vanilla checks both sides on the same global timer tick, but the Wave method's per-side gate
+        /// (ComputeWaveBatch) only fires once THAT side has lost ReinforcementWavePercentage of its initial spawn.
+        /// The side taking fewer losses therefore never gets its wave while the other keeps refilling.
+        ///
+        /// Two patches:
+        ///  - Postfix on DefaultBattleMissionAgentSpawnLogic.CheckGlobalReinforcementBatch: after vanilla's loop, if
+        ///    exactly one side became active and the other still has remaining spawns and an empty reserve, re-run the
+        ///    other side's CheckReinforcementBatch with the force flag set, then recompute _spawningReinforcements the
+        ///    way vanilla does (agent-cap quota still applies).
+        ///  - Postfix on MissionBattleSideSpawnContext.ComputeWaveBatch: with the force flag set and a zero result,
+        ///    return the side's normal wave size so the casualty gate is bypassed for that single call.
+        /// Siege, sally-out and naval use other spawn methods and are excluded.
+        /// </summary>
+        internal static class SyncedReinforcementWaves
+        {
+            [ThreadStatic]
+            internal static bool ForceWave;
 
-                if (Math.Abs(signedArea) < float.Epsilon)
-                    throw new InvalidOperationException("Degenerate polygon with zero area.");
+            private static readonly AccessTools.FieldRef<DefaultBattleMissionAgentSpawnLogic, MissionBattleSideSpawnContext[]> Contexts =
+                AccessTools.FieldRefAccess<DefaultBattleMissionAgentSpawnLogic, MissionBattleSideSpawnContext[]>("_battleSideSpawnContexts");
+            private static readonly AccessTools.FieldRef<DefaultBattleMissionAgentSpawnLogic, bool> SpawningReinforcements =
+                AccessTools.FieldRefAccess<DefaultBattleMissionAgentSpawnLogic, bool>("_spawningReinforcements");
+            private static readonly AccessTools.FieldRef<DefaultBattleMissionAgentSpawnLogic, BasicMissionTimer> GlobalTimer =
+                AccessTools.FieldRefAccess<DefaultBattleMissionAgentSpawnLogic, BasicMissionTimer>("_globalReinforcementSpawnTimer");
+            private static readonly AccessTools.FieldRef<DefaultBattleMissionAgentSpawnLogic, float> GlobalInterval =
+                AccessTools.FieldRefAccess<DefaultBattleMissionAgentSpawnLogic, float>("_globalReinforcementInterval");
 
-                cx /= (6f * signedArea);
-                cy /= (6f * signedArea);
+            private static readonly System.Reflection.MethodInfo CheckMinimumBatchQuotaRequirement =
+                AccessTools.Method(typeof(DefaultBattleMissionAgentSpawnLogic), "CheckMinimumBatchQuotaRequirement");
 
-                return new Vec2(cx, cy);
+            private static bool IsFieldBattle()
+            {
+                Mission mission = Mission.Current;
+                return mission != null && mission.IsFieldBattle && !mission.IsSiegeBattle && !mission.IsSallyOutBattle && !mission.IsNavalBattle;
             }
 
-            [HarmonyPrefix]
-            [HarmonyPatch("SpawnTroop")]
-            private static bool PrefixSpawnTroop(ref Mission __instance, IAgentOriginBase troopOrigin, bool isPlayerSide, bool hasFormation, bool spawnWithHorse, bool isReinforcement, int formationTroopCount, int formationTroopIndex, bool isAlarmed, bool wieldInitialWeapons, ref Vec3? initialPosition, ref Vec2? initialDirection, string specialActionSetSuffix = null)
+            [HarmonyPatch(typeof(DefaultBattleMissionAgentSpawnLogic), "CheckGlobalReinforcementBatch")]
+            private static class CheckGlobalReinforcementBatchPatch
             {
-                if (Mission.Current != null && Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
+                // Vanilla resets the timer inside the method, so the prefix records whether this call is the tick
+                // that actually evaluated the batches.
+                private static bool Prefix(DefaultBattleMissionAgentSpawnLogic __instance, out bool __state)
                 {
-                    if (isReinforcement)
+                    __state = false;
+                    try
                     {
-                        if (hasFormation)
+                        BasicMissionTimer timer = GlobalTimer(__instance);
+                        __state = timer != null && timer.ElapsedTime >= GlobalInterval(__instance);
+                    }
+                    catch (Exception) { }
+                    return true;
+                }
+
+                private static void Postfix(DefaultBattleMissionAgentSpawnLogic __instance, bool __state)
+                {
+                    if (!__state || !IsFieldBattle())
+                    {
+                        return;
+                    }
+                    try
+                    {
+                        MissionSpawnSettings settings = __instance.SpawnSettings;
+                        if (settings.ReinforcementTroopsSpawnMethod != MissionSpawnSettings.ReinforcementSpawnMethod.Wave)
                         {
-                            BasicCharacterObject troop = troopOrigin.Troop;
-                            Team agentTeam = Mission.GetAgentTeam(troopOrigin, isPlayerSide);
-                            FormationClass troopClass = troop.GetFormationClass();
-                            if (troopClass < FormationClass.Infantry || troopClass >= FormationClass.NumberOfRegularFormations)
-                            {
-                                troopClass = troopClass.FallbackClass();
-                            }
-                            Formation formation = agentTeam.GetFormation(troopClass);
-                            if (formation.CountOfUnits == 0)
-                            {
-                                foreach (Formation allyFormation in agentTeam.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0))
-                                {
-                                    if (allyFormation.CountOfUnits > 0)
-                                    {
-                                        formation = allyFormation;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (formation.CountOfUnits == 0)
-                            {
-                                return true;
-                            }
-                            WorldPosition tempWorldPosition = agentTeam.GetMedianPosition(agentTeam.GetAveragePosition());
-                            Vec2 playerDirection;
-                            MBReadOnlyList<Vec2> deploymentBoundaries = new MBReadOnlyList<Vec2>();
-                            foreach (var item in __instance.DeploymentPlan.GetDeploymentBoundaries(agentTeam))
-                            {
-                                foreach (var item1 in item.points)
-                                {
-                                    deploymentBoundaries.Add(item1);
-                                }
-                            }
-                            Vec2 centerOfDeployment = ComputePolygonCentroid(deploymentBoundaries);
-                            //Vec3 closestBoundaryPosition = __instance.DeploymentPlan.GetClosestDeploymentBoundaryPosition(agentTeam, tempWorldPosition.AsVec2).ToVec3();
-                            //Vec3 furthestBoundaryPosition = __instance.DeploymentPlan.GetClosestDeploymentBoundaryPosition(agentTeam, centerOfDeployment).ToVec3();
-                            //float maxDistance = 0f;
-                            //foreach (var item in __instance.DeploymentPlan.GetDeploymentBoundaries(agentTeam))
-                            //{
-                            //    foreach (var item1 in item.points)
-                            //    {
-                            //        float distance = item1.Distance(agentTeam.GetAveragePosition());
-                            //        if (distance > maxDistance)
-                            //        {
-                            //            maxDistance = distance;
-                            //            furthestBoundaryPosition = item1.ToVec3();
-                            //        }
-                            //    }
-                            //}
-                            //MBReadOnlyList<FleePosition> fleePositions = __instance.GetFleePositionsForSide(BattleSideEnum.Defender);
-                            //fleePositions.AddRange(__instance.GetFleePositionsForSide(BattleSideEnum.Attacker));
-                            //fleePositions.AddRange(__instance.GetFleePositionsForSide(BattleSideEnum.None));
-                            //float minDistance = 10000f;
-                            //foreach (var position in fleePositions)
-                            //{
-                            //    float distance = position.GameEntity.GlobalPosition.Distance(furthestBoundaryPosition);
-                            //    if (distance == -1f)
-                            //    {
-                            //        distance = minDistance;
-                            //    }
-                            //    else
-                            //    {
-                            //        if (distance < minDistance)
-                            //        {
-                            //            minDistance = distance;
-                            //            centerOfDeployment = position.GameEntity.GlobalPosition.AsVec2;
-                            //        }
-                            //    }
+                            return;
+                        }
+                        MissionBattleSideSpawnContext[] contexts = Contexts(__instance);
+                        if (contexts == null || contexts.Length < 2 || contexts[0] == null || contexts[1] == null)
+                        {
+                            return;
+                        }
+                        bool defenderActive = contexts[0].ReinforcementSpawnActive;
+                        bool attackerActive = contexts[1].ReinforcementSpawnActive;
+                        if (defenderActive == attackerActive)
+                        {
+                            return;
+                        }
 
-                            //}
-                            //Vec2 tempPos = centerOfDeployment;
-                            //tempPos.x = tempPos.x + MBRandom.RandomInt(20);
-                            //tempPos.y = tempPos.y + MBRandom.RandomInt(20);
+                        int laggingIndex = defenderActive ? 1 : 0;
+                        MissionBattleSideSpawnContext lagging = contexts[laggingIndex];
+                        MissionSpawnPhase phase = laggingIndex == 0 ? __instance.DefenderActivePhase : __instance.AttackerActivePhase;
+                        if (phase == null || phase.RemainingSpawnNumber <= 0 || lagging.ReservedTroopsCount > 0)
+                        {
+                            return;
+                        }
 
-                            //if (!__instance.IsPositionInsideHardBoundaries(tempPos))
-                            //{
-                            //    tempPos = centerOfDeployment;
-                            //}
-                            //float waterLevel = Mission.Current.Scene.GetWaterLevelAtPosition(centerOfDeployment, false, false);
-                            tempWorldPosition.SetVec2(centerOfDeployment);
-                            float positionPenalty = 0f;
-                            if (Mission.Current.IsPositionInsideAnyBlockerNavMeshFace2D(centerOfDeployment))
-                            {
-                                return true;
-                            }
-                            initialPosition = Mission.Current.GetAlternatePositionForNavmeshlessOrOutOfBoundsPosition(agentTeam.GetAveragePosition(), tempWorldPosition, ref positionPenalty).GetGroundVec3();
-                            initialDirection = centerOfDeployment - formation.CurrentPosition;
+                        bool forced;
+                        ForceWave = true;
+                        try
+                        {
+                            forced = lagging.CheckReinforcementBatch();
+                        }
+                        finally
+                        {
+                            ForceWave = false;
+                        }
+
+                        if (forced)
+                        {
+                            bool quotaOk = (bool)CheckMinimumBatchQuotaRequirement.Invoke(__instance, null);
+                            SpawningReinforcements(__instance) = quotaOk;
                         }
                     }
+                    catch (Exception)
+                    {
+                        // Any surprise in the spawn internals: keep vanilla's per-side behaviour.
+                    }
                 }
-                return true;
+            }
+
+            /// <summary>
+            /// Two jobs, both at reservation time so a wave arrives as one burst and the reserve empties:
+            ///  - with the force flag set and a zero result, return the side's wave size (casualty gate bypassed);
+            ///  - clamp the batch so the side never exceeds half the battle size. Vanilla only checks the total agent
+            ///    cap; clamping here (rather than at spawn time) avoids a leftover reserve that trickles in one man at
+            ///    a time as losses free room. The next wave then needs the side to fall below half again.
+            /// </summary>
+            [HarmonyPatch(typeof(MissionBattleSideSpawnContext), "ComputeWaveBatch")]
+            private static class ComputeWaveBatchPatch
+            {
+                private static readonly AccessTools.FieldRef<MissionBattleSideSpawnContext, int> BatchSize =
+                    AccessTools.FieldRefAccess<MissionBattleSideSpawnContext, int>("_reinforcementBatchSize");
+                private static readonly AccessTools.FieldRef<MissionBattleSideSpawnContext, IBattleMissionAgentSpawnLogic> SpawnLogic =
+                    AccessTools.FieldRefAccess<MissionBattleSideSpawnContext, IBattleMissionAgentSpawnLogic>("_spawnLogic");
+
+                private static void Postfix(MissionBattleSideSpawnContext __instance, MissionSpawnPhase activePhase, ref int __result)
+                {
+                    if (activePhase == null || activePhase.RemainingSpawnNumber <= 0 || __instance.ReservedTroopsCount > 0)
+                    {
+                        return;
+                    }
+                    try
+                    {
+                        if (ForceWave && __result <= 0)
+                        {
+                            // Vanilla already recomputed _reinforcementBatchSize (and its quota) before applying the
+                            // casualty gate, so the field holds the correct wave size for this side.
+                            int size = BatchSize(__instance);
+                            if (size > 0)
+                            {
+                                __result = size;
+                            }
+                        }
+                        if (__result > 0 && IsFieldBattle() && SpawnLogic(__instance) is DefaultBattleMissionAgentSpawnLogic logic)
+                        {
+                            int sideCap = logic.BattleSize / 2;
+                            if (sideCap > 0)
+                            {
+                                __result = Math.Max(0, Math.Min(__result, sideCap - __instance.NumberOfActiveTroops));
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // Keep vanilla's result on any surprise.
+                    }
+                }
             }
         }
 
