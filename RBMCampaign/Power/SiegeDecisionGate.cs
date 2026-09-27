@@ -35,11 +35,12 @@ namespace RBMCampaign
     {
         /// <summary>
         /// Vanilla fresh-siege factor is 2f; this multiplies it (1.5 => the AI needs 3x defensive strength).
-        /// Reset to 1 (vanilla 2x, patch skipped) on 2026-09-27: with RBM's large garrisons the 3x bar made every
-        /// fortification score 0, and vanilla only ever gathers an army for a siege target, so AI kingdoms never
-        /// formed armies or took a fief. Raise it again only once garrison size is bounded.
+        /// Lowered to 1.25 (2.5x) on 2026-09-27: with RBM's uncapped garrisons the 3x bar made every fortification
+        /// score 0, and vanilla only ever gathers an army for a siege target, so AI kingdoms never formed armies
+        /// or took a fief. Garrison growth is now bounded by the recruit pool's diminishing returns (RecruitPool).
+        /// At 1 the patch is skipped entirely (vanilla 2x).
         /// </summary>
-        private const float SiegeStrengthGateMultiplier = 1f;
+        private const float SiegeStrengthGateMultiplier = 1.25f;
 
         private static bool Prepare()
         {
