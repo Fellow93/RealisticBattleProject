@@ -262,9 +262,13 @@ namespace RBM
                                                                         {
                                                                             if (equipmentNode.Name == "equipment")
                                                                             {
-                                                                                if (equipmentNode.Attribute("id") != null && equipmentNode.Attribute("id").Value.Contains("shield_shoulder") && !RBMConfig.RBMConfig.passiveShoulderShields)
+                                                                                // Shoulder variants are "<shield id>_shoulder"; most base ids end in "shield", but not all
+                                                                                // (battania_shield_targe_a_shoulder), so strip the suffix rather than matching "shield_shoulder".
+                                                                                // Requiring "shield" keeps shoulder armour (nord_fur_shoulder, ...) untouched.
+                                                                                string equipmentId = equipmentNode.Attribute("id")?.Value;
+                                                                                if (equipmentId != null && equipmentId.Contains("shield") && equipmentId.EndsWith("_shoulder") && !RBMConfig.RBMConfig.passiveShoulderShields)
                                                                                 {
-                                                                                    equipmentNode.Attribute("id").Value = equipmentNode.Attribute("id").Value.Replace("shield_shoulder", "shield");
+                                                                                    equipmentNode.Attribute("id").Value = equipmentId.Substring(0, equipmentId.Length - "_shoulder".Length);
                                                                                 }
                                                                             }
                                                                         }
