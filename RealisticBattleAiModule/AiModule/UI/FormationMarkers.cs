@@ -59,24 +59,79 @@ namespace RBMAI
         // currently closest to the formation's centroid (GetMedianAgent). As units shuffle that
         // "median" soldier flips, so the banner snaps erratically from man to man; the cached
         // position also only refreshes on a ~75-125ms timer, which makes it step. We re-anchor
-        // to SmoothedAverageUnitPosition, which the engine already lerps toward the formation's
-        // true centroid every tick, so it neither jumps between soldiers nor steps. The median
-        // is still used as the navmesh carrier for the ground height, matching the idiom native
-        // uses in FormationQuerySystem. Distance/DistanceText and the count are left to native.
+        // to our own smoothed centroid, so it neither jumps between soldiers nor steps. The engine's
+        // SmoothedAverageUnitPosition lerps at only dt*3 toward a timer-cached average, which trails
+        // a charging cavalry formation by several metres; we instead extrapolate the cached average
+        // with the cached velocity over the cache's age and lerp toward that much faster. The engine
+        // field is left untouched because AI code reads it. The median is still used as the navmesh
+        // carrier for the ground height, matching the idiom native uses in FormationQuerySystem.
+        // Distance/DistanceText and the count are left to native.
         [HarmonyPatch(typeof(MissionGauntletFormationMarker))]
         [HarmonyPatch("UpdateMarkerPositions")]
         private class OverrideMarkerPositions
         {
             private static readonly Vec3 heightOffset = new Vec3(0f, 0f, 3f, -1f);
 
+            // per-second lerp rate toward the predicted centroid (engine uses 3)
+            private const float SmoothingRate = 12f;
+            // cap on how far ahead the cached velocity is extrapolated
+            private const float MaxExtrapolation = 0.25f;
+            // jumps larger than this snap instead of gliding (e.g. formation reassignment)
+            private const float SnapDistanceSq = 40f * 40f;
+
+            private static readonly AccessTools.FieldRef<Formation, float> lastCacheTime =
+                AccessTools.FieldRefAccess<Formation, float>("_lastAveragePositionCacheTime");
+
+            private static readonly Dictionary<Formation, Vec2> smoothed = new Dictionary<Formation, Vec2>();
+            private static Mission smoothedMission;
+            private static float lastTickTime;
+
+            private static Vec2 GetMarkerAnchor(Formation f, float now, float dt)
+            {
+                Vec2 cached = f.CachedAveragePosition;
+                if (!cached.IsValid)
+                {
+                    return f.SmoothedAverageUnitPosition;
+                }
+                Vec2 target = cached;
+                Vec2 velocity = f.CachedCurrentVelocity;
+                if (velocity.IsValid)
+                {
+                    float age = MBMath.ClampFloat(now - lastCacheTime(f), 0f, MaxExtrapolation);
+                    target += velocity * age;
+                }
+
+                if (!smoothed.TryGetValue(f, out Vec2 current) || !current.IsValid || current.DistanceSquared(target) > SnapDistanceSq)
+                {
+                    current = target;
+                }
+                else
+                {
+                    current = Vec2.Lerp(current, target, MBMath.ClampFloat(dt * SmoothingRate, 0f, 1f));
+                }
+                smoothed[f] = current;
+                return current;
+            }
+
             private static void Postfix(MissionGauntletFormationMarker __instance)
             {
                 var camera = __instance.MissionScreen?.CombatCamera;
                 MissionFormationMarkerVM ds = Traverse.Create(__instance).Field("_dataSource").GetValue<MissionFormationMarkerVM>();
-                if (camera == null || ds == null)
+                Mission mission = Mission.Current;
+                if (camera == null || ds == null || mission == null)
                 {
                     return;
                 }
+
+                float now = mission.CurrentTime;
+                if (smoothedMission != mission)
+                {
+                    smoothed.Clear();
+                    smoothedMission = mission;
+                    lastTickTime = now;
+                }
+                float dt = MBMath.ClampFloat(now - lastTickTime, 0f, 0.1f);
+                lastTickTime = now;
 
                 foreach (MissionFormationMarkerTargetVM target in ds.Targets)
                 {
@@ -90,8 +145,7 @@ namespace RBMAI
                     {
                         continue;
                     }
-                    // invalid until the formation's first tick has run
-                    Vec2 anchor = f.SmoothedAverageUnitPosition.IsValid ? f.SmoothedAverageUnitPosition : f.CachedAveragePosition;
+                    Vec2 anchor = GetMarkerAnchor(f, now, dt);
                     if (!anchor.IsValid)
                     {
                         continue;
