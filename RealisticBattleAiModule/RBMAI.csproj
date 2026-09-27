@@ -225,6 +225,7 @@
     <Compile Include="AiModule\Tactics\Custom\TacticFullScaleAttackPatch.cs" />
     <Compile Include="AiModule\Siege\SiegeArcherPoints\SiegeArcherPoints.cs" />
     <Compile Include="AiModule\Siege\SiegePatches.cs" />
+    <Compile Include="AiModule\Spawning\ReinforcementAnchor.cs" />
     <Compile Include="AiModule\Spawning\SpawningPatches.cs" />
     <Compile Include="AiModule\Tactics\TacticsState.cs" />
     <Compile Include="AiModule\Tactics\DamageTracking.cs" />
