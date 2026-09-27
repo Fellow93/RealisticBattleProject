@@ -82,9 +82,11 @@ namespace RBMAI
                             // Detached / removed units carry file-rank index -1 and the arrangement's neighbour lookup would
                             // index _units2D[i, -1], so only query the grid for a positioned unit. Skipping neighbours that
                             // are banner bearers themselves stops two bearers from targeting (and following) each other.
+                            // Mounted bearers are never parked: a mounted agent's combat AI lines up attack runs on its
+                            // target, and a target a couple of metres away has it riding out and back in endlessly.
                             Agent bannerFriendlyTarget = null;
                             IFormationUnit bannerUnit = ___Agent;
-                            if (___Agent.Detachment == null && bannerUnit.FormationFileIndex >= 0 && bannerUnit.FormationRankIndex >= 0)
+                            if (!___Agent.HasMount && ___Agent.Detachment == null && bannerUnit.FormationFileIndex >= 0 && bannerUnit.FormationRankIndex >= 0)
                             {
                                 IFormationArrangement arrangement = ___Agent.Formation.Arrangement;
                                 Agent left = arrangement.GetNeighborUnitOfLeftSide(bannerUnit) as Agent;
@@ -107,7 +109,7 @@ namespace RBMAI
                             }
                             else
                             {
-                                // No squadmate to park on - fall back to the one-shot clear.
+                                // Mounted, or no squadmate to park on - fall back to the one-shot clear.
                                 ___Agent.InvalidateTargetAgent();
                             }
                         }
