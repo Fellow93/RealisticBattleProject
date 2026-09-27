@@ -124,6 +124,7 @@ namespace RBMAI
                 }
                 //___Agent.MovementInputVector = new Vec2(30f, 30f);
                 float currentTime = MBCommon.GetTotalMissionTime();
+                WeaponPreference.TickWeaponPreference(___Agent, currentTime);
                 if (___Agent.IsActive() && ___Agent.HasMount)
                 {
                     MBList<Agent> enemiesClose = new MBList<Agent>();

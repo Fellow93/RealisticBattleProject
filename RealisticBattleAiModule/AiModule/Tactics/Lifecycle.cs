@@ -48,6 +48,8 @@ namespace RBMAI
                 agentDamage.Clear();
                 AgentAi.OnTickPatch.bannerBearersWithHeldTarget.Clear();
                 AgentAi.OnTickPatch.chargeRoutedAgents.Clear();
+                AgentAi.WeaponPreference.enemyClose.Clear();
+                AgentAi.WeaponPreference.nextCheck.Clear();
             }
         }
 
@@ -66,6 +68,8 @@ namespace RBMAI
                 AgentAi.OnTickPatch.itemPickupDistanceStorage.Clear();
                 AgentAi.OnTickPatch.bannerBearersWithHeldTarget.Clear();
                 AgentAi.OnTickPatch.chargeRoutedAgents.Clear();
+                AgentAi.WeaponPreference.enemyClose.Clear();
+                AgentAi.WeaponPreference.nextCheck.Clear();
                 StanceLogic.agentsToChangeFormation.Clear();
                 StanceLogic.agentsToDropWeapon.Clear();
                 StanceLogic.agentsToDropShield.Clear();

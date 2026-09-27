@@ -254,6 +254,8 @@ namespace RBMAI
                 // parallel formation-movement job that holds the same lock - deadlocked the engine's job
                 // system on every reinforcement wave (the only time the gate was true). Weapon-favor
                 // biasing by nearby enemies belongs in a tick, not in the stat pipeline.
+                // It now lives in WeaponPreference: the tick records whether an enemy is close, this only reads it.
+                WeaponPreference.ApplyWeaponPreference(agent, agentDrivenProperties);
 
                 agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 1f);
                 //agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 0f);
