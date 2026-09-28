@@ -53,6 +53,18 @@ namespace RBMAI
             Vec2 averageAllyFormationPosition = base.Formation.QuerySystem.Team.AveragePosition;
             WorldPosition medianTargetFormationPosition = base.Formation.QuerySystem.Team.MedianTargetFormationPosition;
             Vec2 enemyDirection = (medianTargetFormationPosition.AsVec2 - averagePosition).Normalized();
+            // With no infantry to flank, stand off 150m on OUR side of the enemy. enemyDirection points from us to
+            // them, so this is minus: the old plus put the order 150m behind the enemy and the archers marched
+            // straight through the enemy line to reach it.
+            Vec2 noAllyStandOff = medianTargetFormationPosition.AsVec2 - enemyDirection * 150f;
+            // Backing off can leave the map where pushing past the enemy rarely did; hold in place if it does, the
+            // same fallback idea as the ally branches below.
+            WorldPosition standOffProbe = position;
+            standOffProbe.SetVec2(noAllyStandOff);
+            if (!Mission.Current.IsPositionInsideBoundaries(noAllyStandOff) || standOffProbe.GetNavMesh() == UIntPtr.Zero)
+            {
+                noAllyStandOff = position.AsVec2;
+            }
 
             if (_behaviorSide == FormationAI.BehaviorSide.Right || FlankSide == FormationAI.BehaviorSide.Right)
             {
@@ -70,7 +82,7 @@ namespace RBMAI
                 }
                 else
                 {
-                    position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+                    position.SetVec2(noAllyStandOff);
                 }
             }
             else if (_behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
@@ -88,7 +100,7 @@ namespace RBMAI
                 }
                 else
                 {
-                    position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+                    position.SetVec2(noAllyStandOff);
                 }
             }
             else
@@ -99,7 +111,7 @@ namespace RBMAI
                 }
                 else
                 {
-                    position.SetVec2(medianTargetFormationPosition.AsVec2 + enemyDirection.Normalized() * 150f);
+                    position.SetVec2(noAllyStandOff);
                 }
             }
             base.CurrentOrder = MovementOrder.MovementOrderMove(position);
