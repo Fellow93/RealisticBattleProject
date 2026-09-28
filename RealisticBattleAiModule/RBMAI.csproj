@@ -177,6 +177,7 @@
     <Compile Include="AiModule\Agents\WeaponPreference.cs" />
     <Compile Include="AiModule\Agents\SignatureWeaponGrip.cs" />
     <Compile Include="AiModule\Misc\HitStopLogic.cs" />
+    <Compile Include="AiModule\Misc\MissionStartReset.cs" />
     <Compile Include="AiModule\Behaviors\SkirmishBehaviors.cs" />
     <Compile Include="AiModule\Behaviors\DefenseBehaviors.cs" />
     <Compile Include="AiModule\Behaviors\FlankBehaviors.cs" />

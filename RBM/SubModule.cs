@@ -230,6 +230,14 @@ namespace RBM
             ApplyHarmonyPatches();
         }
 
+        public override void OnBeforeMissionBehaviorInitialize(Mission mission)
+        {
+            // Unconditional: turning the AI module off mid-session must still release the previous mission's
+            // formations, or Formation._simulationFormationTemp outlives its scene.
+            MissionStartReset.Reset();
+            base.OnBeforeMissionBehaviorInitialize(mission);
+        }
+
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
             mission.AddMissionBehavior(new UnitStatusMissionView());

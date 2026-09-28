@@ -34,46 +34,17 @@ namespace RBMAI
             }
         }
 
-        [HarmonyPatch(typeof(CampaignMissionComponent))]
-        [HarmonyPatch("EarlyStart")]
-        public class CampaignMissionComponentPatch
-        {
-            public static void Postfix()
-            {
-                AgentStances.values.Clear();
-                StanceLogic.agentsToDropShield.Clear();
-                StanceLogic.agentsToDropWeapon.Clear();
-                StanceLogic.agentsToChangeFormation.Clear();
-                //RBMAiPatcher.DoPatching();
-                agentDamage.Clear();
-                AgentAi.OnTickPatch.bannerBearersWithHeldTarget.Clear();
-                AgentAi.OnTickPatch.chargeRoutedAgents.Clear();
-                AgentAi.WeaponPreference.enemyClose.Clear();
-                AgentAi.WeaponPreference.nextCheck.Clear();
-            }
-        }
-
         //private static float originalDefenderPower = 0f;
         //private static float originalAttackerPower = 0f;
 
+        // Per-mission static state is cleared in MissionStartReset, which runs before this.
         [HarmonyPatch(typeof(MissionCombatantsLogic))]
         [HarmonyPatch("EarlyStart")]
         public class EarlyStartPatch
         {
             public static void Postfix(ref IBattleCombatant ___AttackerLeaderBattleCombatant, ref IBattleCombatant ___DefenderLeaderBattleCombatant)
             {
-                Frontline.aiDecisionCooldownDict.Clear();
-                agentDamage.Clear();
                 //RBMAiPatcher.DoPatching();
-                AgentAi.OnTickPatch.itemPickupDistanceStorage.Clear();
-                AgentAi.OnTickPatch.bannerBearersWithHeldTarget.Clear();
-                AgentAi.OnTickPatch.chargeRoutedAgents.Clear();
-                AgentAi.WeaponPreference.enemyClose.Clear();
-                AgentAi.WeaponPreference.nextCheck.Clear();
-                StanceLogic.agentsToChangeFormation.Clear();
-                StanceLogic.agentsToDropWeapon.Clear();
-                StanceLogic.agentsToDropShield.Clear();
-                AgentStances.values.Clear();
                 //originalDefenderPower = 0f;
                 //originalAttackerPower = 0f;
                 if (Mission.Current.Teams.Any())
