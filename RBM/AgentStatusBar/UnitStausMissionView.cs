@@ -71,6 +71,14 @@ namespace RBM.AgentStatusBar
             }
         }
 
+        // Removed agents keep their bar (fade-out after a hit), but once the engine deletes the agent its native
+        // position pointer is freed, so the entry must go now (NavalDLC deletes the live crews of lost ships).
+        public override void OnAgentDeleted(Agent affectedAgent)
+        {
+            base.OnAgentDeleted(affectedAgent);
+            _dataSource?.OnAgentDeleted(affectedAgent);
+        }
+
         public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon affectorWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
         {
             base.OnAgentHit(affectedAgent, affectorAgent, affectorWeapon, blow, attackCollisionData);

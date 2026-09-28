@@ -4,6 +4,7 @@ using RBMAI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -79,6 +80,11 @@ namespace RBM.AgentStatusBar
                 float num2;
                 Vec3 pos;
                 Vec3 playerPos;
+                // Never read a deleted agent's position (freed native pointer); the entry is dropped below.
+                if (entry2.Key.State == AgentState.Deleted)
+                {
+                    continue;
+                }
                 if (entry2.Value.IsEnabled)
                 {
                     num0 = 0f;
@@ -131,13 +137,26 @@ namespace RBM.AgentStatusBar
                     entry2.Value.IsHidden = true;
                 }
             }
-            foreach (KeyValuePair<Agent, AgentStatusVM> entry in _agentDictionary.Where((KeyValuePair<Agent, AgentStatusVM> e) => e.Value._isRemoved && !e.Value._isHit))
+            foreach (KeyValuePair<Agent, AgentStatusVM> entry in _agentDictionary.Where((KeyValuePair<Agent, AgentStatusVM> e) => e.Key.State == AgentState.Deleted || (e.Value._isRemoved && !e.Value._isHit)))
             {
-                _agentStatusMap[entry.Key].IsEnabled = false;
-                _agentStatusMap[entry.Key] = null;
-                _agentStatusMap.Remove(entry.Key);
-                _agentStatusList.Remove(entry.Value);
+                RemoveEntry(entry.Key, entry.Value);
             }
+        }
+
+        private void RemoveEntry(Agent agent, AgentStatusVM status)
+        {
+            status.IsEnabled = false;
+            _agentStatusMap.Remove(agent);
+            _agentStatusList.Remove(status);
+        }
+
+        public void OnAgentDeleted(Agent agent)
+        {
+            if (_agentStatusMap != null && _agentStatusMap.TryGetValue(agent, out AgentStatusVM status))
+            {
+                RemoveEntry(agent, status);
+            }
+            _newAgents.Remove(agent);
         }
 
         public void OnAgentHit(Agent agent, bool isMainAgent)
