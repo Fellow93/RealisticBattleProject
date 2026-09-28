@@ -860,6 +860,29 @@
 	<string id="RBM_CB_PRESET_FILTER" text="XML Preset" />
 	<string id="RBM_CB_SAVED" text="Preset saved: '{NAME}'." />
 	<string id="RBM_CB_LOADED" text="Preset loaded: '{NAME}'." />
+	<!-- Recruit pool strings the code uses that this file never listed -->
+	<string id="rbm_garr_rate_pool_cost" text="{RECRUIT} · recruit pool {POOL} · {COST}" />
+	<string id="rbm_garr_manpower" text="Few men left to recruit (garrison stops at {RES})" />
+	<!-- Config screen: AI lords buy equipment -->
+	<string id="RBM_CFG_LORD_EQUIP" text="AI Lords Buy Equipment" />
+	<string id="RBM_CFG_LORD_EQUIP_HINT" text="AI lords spend gold in towns to upgrade their own battle gear to culture-matched items. Disable if another mod manages lord equipment." />
+	<!-- Building tooltips: the RBM line under each building (used to be literal text in BuildingEffectTooltips.cs) -->
+	<string id="RBM_BLD_FORT" text="RBM: siege defence +10/20/30% · garrison &amp; militia maintenance -0/5/10%" />
+	<string id="RBM_BLD_BARRACKS" text="RBM: cost of arming garrison &amp; militia recruits -5/10/15% · garrison and militia intake +1/2/3 per day when the treasury can fund them · garrison soft size +20/40/60 men (recruits get dearer from the recruit pool later)" />
+	<string id="RBM_BLD_TRAINING" text="RBM: garrison promotions -5/10/15% · garrison and militia gain +10/20/30 experience a day (replaces the 1/2/3 above)" />
+	<string id="RBM_BLD_GUARD_TOWN" text="RBM: tariff on caravan and traveller trade +0.3/0.6/1.0 percentage points · convicts kept at work on the fief's building projects" />
+	<string id="RBM_BLD_GUARD_CASTLE" text="RBM: tariff on caravan and traveller trade +0.3/0.6/1.0 percentage points · convicts kept at work on the fief's building projects · the watch is raised by the barracks instead, so this no longer musters militia" />
+	<string id="RBM_BLD_CASTELLAN" text="RBM: 10/20/30% of garrison recruits enlist as the culture's elite soldier rather than its common one · upkeep of the mounted garrison -10/20/30% · recruit pool max +10/20/30%" />
+	<string id="RBM_BLD_CRAFTSMEN" text="RBM: the castle's daily income from its lands +10/20/30%" />
+	<string id="RBM_BLD_FARMLANDS" text="RBM: the castle's own food production +10/20/30% (replaces the flat 6/12/18 food a day)" />
+	<string id="RBM_BLD_TAX_OFFICE" text="RBM: wealth tax and minting cuts +5/10/15%, to the fief and its lord alike" />
+	<string id="RBM_BLD_MARKET" text="RBM: tariff on every trade in the settlement +10/20/30%" />
+	<string id="RBM_BLD_GRANARY" text="RBM: the granary holds 40/50/60 days of the fief's own eating (30 days with no granary), replacing the fixed food limit; a town's market refuses food beyond it" />
+	<string id="RBM_BLD_MASON" text="RBM: construction efficiency +5/10/15% · labour ceiling +10/20/30% (replaces construction per day)" />
+	<string id="RBM_BLD_WATERWORKS" text="RBM: everything else the town has built is worth +10/20/30% more prosperity" />
+	<string id="RBM_BLD_ROADS" text="RBM: bound villages produce +5/10/15% more goods · bound villages' recruit pool growth +10/20/30%" />
+	<string id="RBM_BLD_DAILY_MILITIA_HOUSING" text="RBM: recruit pool growth +25% while running" />
+	<string id="RBM_BLD_DAILY_RAISE_TROOPS" text="RBM: recruit pool growth +50% while running" />
 
   </strings>
 </base>
