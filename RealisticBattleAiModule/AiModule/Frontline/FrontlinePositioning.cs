@@ -113,7 +113,14 @@ namespace RBMAI
                 {
                     return true;
                 }
-                if (mission.IsSiegeBattle)
+                // Only AI formations, and never out of a shieldwall/square/circle: releasing every man with an enemy
+                // within reach dissolved a player's gate shieldwall into a chase and pulled wall defenders off their
+                // posts after skirmishers. Player formations hold as vanilla does; AI formations still brawl.
+                ArrangementOrder.ArrangementOrderEnum siegeArrangement = __instance.ArrangementOrder.OrderEnum;
+                if (mission.IsSiegeBattle && __instance.IsAIControlled
+                    && siegeArrangement != ArrangementOrder.ArrangementOrderEnum.ShieldWall
+                    && siegeArrangement != ArrangementOrder.ArrangementOrderEnum.Square
+                    && siegeArrangement != ArrangementOrder.ArrangementOrderEnum.Circle)
                 {
                     if (unit.Position == null)
                     {
