@@ -476,6 +476,9 @@
         <xsl:attribute name="id">nord_spear_pommel_7</xsl:attribute>
       </xsl:element>
       <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_spear_blade_13</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
         <xsl:attribute name="id">nord_spear_blade_2_blunt</xsl:attribute>
       </xsl:element>
       <xsl:element name="AvailablePiece">
@@ -1149,6 +1152,225 @@
       </xsl:element>
       <xsl:element name="AvailablePiece">
         <xsl:attribute name="id">nord_spear_blade_2</xsl:attribute>
+      </xsl:element>
+    </xsl:copy>
+  </xsl:template>
+  <xsl:template match="/WeaponDescriptions[1]/WeaponDescription[@id='OneHandedBastardSword']/AvailablePieces[1]">
+    <xsl:copy>
+      <xsl:copy-of select="@*" />
+      <xsl:apply-templates select="node()" />
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_10</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_09</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_08</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_07</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_06</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_05</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_04</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_03</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_02</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_01</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_02_blunt</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_01</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_02</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_03</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_04</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_05</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_06</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_07</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_08</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_09</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_10</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_11</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_12</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_13</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_14</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_01</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_02</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_03</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_04</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_05</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_06</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_07</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_08</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_09</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_10</xsl:attribute>
+      </xsl:element>
+    </xsl:copy>
+  </xsl:template>
+  <xsl:template match="/WeaponDescriptions[1]/WeaponDescription[@id='OneHandedBastardSwordAlternative']/AvailablePieces[1]">
+    <xsl:copy>
+      <xsl:copy-of select="@*" />
+      <xsl:apply-templates select="node()" />
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_01</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_02</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_03</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_04</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_05</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_06</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_07</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_08</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_09</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_guard_10</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_02_blunt</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_01</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_02</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_03</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_04</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_05</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_06</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_07</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_08</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_09</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_10</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_11</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_12</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_13</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_blade_14</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_01</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_02</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_03</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_04</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_05</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_06</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_07</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_08</xsl:attribute>
+      </xsl:element>
+      <xsl:element name="AvailablePiece">
+        <xsl:attribute name="id">nord_sword_pommel_10</xsl:attribute>
       </xsl:element>
     </xsl:copy>
   </xsl:template>
