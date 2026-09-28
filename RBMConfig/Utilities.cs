@@ -436,7 +436,7 @@ namespace RBMConfig
             Config.AppendChild(RBMCampaign);
 
             xmlconfig.AppendChild(Config);
-            xmlconfig.Save(GetConfigFilePath());
+            RBMConfig.TrySaveConfig(xmlconfig);
         }
     }
 }

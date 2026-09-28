@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -38,31 +39,64 @@ namespace RBMConfig
             string configFolderPath = Utilities.GetConfigFolderPath();
             string configFilePath = Utilities.GetConfigFilePath();
 
-            if (!Directory.Exists(configFolderPath))
+            // Runs from OnSubModuleLoad, where an exception kills the game before the menu. Users hit this with a
+            // redirected/OneDrive Documents folder, Controlled Folder Access, or a stray FILE named RBM where the
+            // folder belongs. A config we cannot read or write is not worth a crash: fall back to the in-memory
+            // defaults and log it.
+            try
             {
-                Directory.CreateDirectory(configFolderPath);
+                if (!Directory.Exists(configFolderPath))
+                {
+                    Directory.CreateDirectory(configFolderPath);
+                }
+            }
+            catch (Exception e)
+            {
+                TaleWorlds.Library.Debug.Print("[RBM] Could not create config folder " + configFolderPath + ": " + e.Message + "; using defaults.");
             }
 
-            if (File.Exists(configFilePath))
+            bool loaded = false;
+            try
             {
-                xmlConfig.Load(configFilePath);
-                XmlElement root = xmlConfig.SelectSingleNode("/Config") as XmlElement;
-                string storedStr = root?.GetAttribute("version") ?? "0";
-                if (!int.TryParse(storedStr, out int storedVersion) || storedVersion != CONFIG_VERSION)
+                if (File.Exists(configFilePath))
                 {
-                    // Runs from OnSubModuleLoad, before any UI exists, so log rather than InformationManager.
-                    TaleWorlds.Library.Debug.Print("[RBM] Config version " + storedStr + " != " + CONFIG_VERSION + "; settings reset to defaults.");
-                    xmlConfig = new XmlDocument();
-                    Utilities.createXmlConfig(ref xmlConfig);
-                }
-                else
-                {
-                    parseXmlConfig();
+                    xmlConfig.Load(configFilePath);
+                    XmlElement root = xmlConfig.SelectSingleNode("/Config") as XmlElement;
+                    string storedStr = root?.GetAttribute("version") ?? "0";
+                    if (!int.TryParse(storedStr, out int storedVersion) || storedVersion != CONFIG_VERSION)
+                    {
+                        // Runs from OnSubModuleLoad, before any UI exists, so log rather than InformationManager.
+                        TaleWorlds.Library.Debug.Print("[RBM] Config version " + storedStr + " != " + CONFIG_VERSION + "; settings reset to defaults.");
+                    }
+                    else
+                    {
+                        parseXmlConfig();
+                        loaded = true;
+                    }
                 }
             }
-            else
+            catch (Exception e)
             {
+                TaleWorlds.Library.Debug.Print("[RBM] Could not read config " + configFilePath + ": " + e.Message + "; settings reset to defaults.");
+            }
+            if (!loaded)
+            {
+                xmlConfig = new XmlDocument();
                 Utilities.createXmlConfig(ref xmlConfig);
+            }
+        }
+
+        // Every config write goes through here so an unwritable Documents folder degrades to "settings not
+        // saved" instead of an exception out of the settings screen or startup.
+        internal static void TrySaveConfig(XmlDocument document)
+        {
+            try
+            {
+                document.Save(Utilities.GetConfigFilePath());
+            }
+            catch (Exception e)
+            {
+                TaleWorlds.Library.Debug.Print("[RBM] Could not save config " + Utilities.GetConfigFilePath() + ": " + e.Message);
             }
         }
 
@@ -425,7 +459,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/HorsePriceModifier"), priceMultipliers.HorsePriceModifier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/PriceModifiers/TradePriceModifier"), priceMultipliers.TradePriceModifier.ToString(CultureInfo.InvariantCulture));
 
-            xmlConfig.Save(Utilities.GetConfigFilePath());
+            TrySaveConfig(xmlConfig);
         }
 
         public static RBMCombatConfigWeaponType getWeaponTypeFactors(string weaponType)
