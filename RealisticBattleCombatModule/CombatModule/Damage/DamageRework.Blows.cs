@@ -140,9 +140,15 @@ namespace RBMCombat
                     if (!collisionData.IsAlternativeAttack)
                     {
                         float attackerArmArmor = attacker.GetBaseArmorEffectivenessForBodyPart(BoneBodyPartType.ArmLeft);
-                        b.SelfInflictedDamage = MBMath.ClampInt(MathF.Ceiling(MissionGameModels.Current.StrikeMagnitudeModel.ComputeRawDamage(DamageTypes.Blunt, b.BaseMagnitude / 2f, attackerArmArmor, 1f)), 0, 2000);
-                        attacker.CreateBlowFromBlowAsReflection(in b, in collisionData, out var outBlow, out var outCollisionData);
-                        attacker.RegisterBlow(outBlow, in outCollisionData);
+                        int recoilDamage = MBMath.ClampInt(MathF.Ceiling(MissionGameModels.Current.StrikeMagnitudeModel.ComputeRawDamage(DamageTypes.Blunt, b.BaseMagnitude / 2f, attackerArmArmor, 1f)), 0, 2000);
+                        // Taken straight off health rather than registered as a reflected blow: a registered blow
+                        // plays a full hit reaction on the puncher, stunning him on every landed punch. Kept out of
+                        // b.SelfInflictedDamage too, which vanilla reflects as a blow for friendly fire. Floored at
+                        // 1 so the recoil can hurt but never kill.
+                        if (recoilDamage > 0 && attacker.IsActive())
+                        {
+                            attacker.Health = Math.Max(1f, attacker.Health - recoilDamage);
+                        }
                     }
 
                 }
