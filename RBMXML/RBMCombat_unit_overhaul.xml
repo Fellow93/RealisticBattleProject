@@ -4654,6 +4654,8 @@
                  id="Item.fine_pike_t4" />
       <equipment slot="Item1"
                  id="Item.highland_riders_shield_shoulder" />
+      <equipment slot="Item2"
+                 id="Item.battania_sword_4_t4" />
       <equipment slot="Body"
                  id="Item.battania_warlord_armor" />
       <equipment slot="Leg"
