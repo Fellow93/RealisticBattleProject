@@ -15244,8 +15244,6 @@
                  id="Item.highland_leg_wrappings" />
       <equipment slot="Gloves"
                  id="Item.reinforced_padded_mitten" />
-      <equipment slot="Cape"
-                 id="Item.brass" />
       </EquipmentRoster>
       <EquipmentSet id="sturgia_troop_civilian_template_t1"
                     civilian="true" />

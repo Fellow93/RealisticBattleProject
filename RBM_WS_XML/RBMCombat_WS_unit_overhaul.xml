@@ -6130,7 +6130,7 @@
       <equipment slot="Gloves"
                  id="Item.studded_arm_guards" />
       <equipment slot="Cape"
-                 id="Item.assassin_cape" />
+                 id="Item.a_pauldron_cape_c" />
       </EquipmentRoster>
       <EquipmentSet id="empire_troop_civilian_template_t1"
                     civilian="true" />
