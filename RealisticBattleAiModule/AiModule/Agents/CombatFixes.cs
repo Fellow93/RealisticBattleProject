@@ -263,7 +263,13 @@ namespace RBMAI
                     attacker.RiderAgent.EventControlFlags &= ~Agent.EventControlFlag.DoubleTapToDirectionMask;
                     attacker.RiderAgent.EventControlFlags |= Agent.EventControlFlag.DoubleTapToDirectionUp;
                 }
-                if (attacker.RiderAgent != null && victim != null && victim.Character != null && Mission.Current != null && (Mission.Current.IsFieldBattle || Mission.Current.IsSallyOutBattle) && attacker.IsEnemyOf(victim))
+                // Vanilla has already registered the charge blow by the time this postfix runs, so the charge
+                // may have killed the victim. Retreat() and RegisterBlow on a removed agent reach native code.
+                if (victim == null || !victim.IsActive())
+                {
+                    return;
+                }
+                if (attacker.RiderAgent != null && victim.Character != null && Mission.Current != null && (Mission.Current.IsFieldBattle || Mission.Current.IsSallyOutBattle) && attacker.IsEnemyOf(victim))
                 {
                     bool isKnockDown = blow.BlowFlag.HasFlag(BlowFlags.KnockDown);
                     bool isKnockBack = blow.BlowFlag.HasFlag(BlowFlags.KnockBack);
