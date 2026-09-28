@@ -97,6 +97,16 @@ namespace RBMAI
                 {
                     return true;
                 }
+                // Release a pending frontline pin before ANY early return. SetTargetPosition leaves the agent
+                // PositionLocked until ClearTargetFrame; this clear used to sit below the siege/cavalry/ranged gates,
+                // so an agent pinned while charging who then met one of them (e.g. an archer with an enemy at arm's
+                // length) stayed rooted to the spot for as long as it held. TryGetValue: units never pinned (most
+                // cavalry) get no decision state.
+                if (aiDecisionCooldownDict.TryGetValue(unit, out AIDecisionState pendingClear) && pendingClear != null && pendingClear.AIMindset.shouldClearTargetFrame)
+                {
+                    unit.ClearTargetFrame();
+                    pendingClear.AIMindset.shouldClearTargetFrame = false;
+                }
                 // Every branch below feeds unit.Team into Mission.GetNearby*Agents, which dereferences it.
                 // A teamless agent (spawning, or just detached) would NRE on the worker thread.
                 if (unit.Team == null)
@@ -225,13 +235,15 @@ namespace RBMAI
                     }
                 }
 
-                AIDecisionState aiDecision = GetOrCreateDecisionState(unit);
-
-                if (aiDecision.AIMindset.shouldClearTargetFrame)
+                // Never pin a man who is getting away. A charge rout retreats him but keeps him in his formation (so
+                // the rally can bring him back), so he still reaches the mindset block below, which would lock him
+                // in place mid-flight: the "router stands still" bug again.
+                if (unit.IsRunningAway || (unit.CommonAIComponent != null && unit.CommonAIComponent.IsRetreating))
                 {
-                    unit.ClearTargetFrame();
-                    aiDecision.AIMindset.shouldClearTargetFrame = false;
+                    return true;
                 }
+
+                AIDecisionState aiDecision = GetOrCreateDecisionState(unit);
 
                 // The mindset/decision block below is the configurable "frontline system". The cavalry and
                 // ranged free-charge gates above, and the GetDirectionOfUnit facing postfix, stay on
