@@ -202,6 +202,11 @@ namespace RBMAI
             private volatile bool _throwingWeaponInHandOutOfWindow;
             private volatile bool _inThrowWindow;
             private volatile int _throwingSlotMask;
+            // Swimming (NavalDLC sheathes both hands and clears CanAttack when a man goes overboard), climbing a
+            // ladder/climbing machine (ClimbingMachineDetachment also clears CanAttack) or otherwise driven by a game
+            // object: native input passes through untouched,
+            // so the filter never re-wields the two-hander in a swim or climb state.
+            private volatile bool _suspended;
 
             // Throwing weapons are only allowed out while the current target is at throwing distance; otherwise the
             // engine periodically draws the axe with nothing to throw at.
@@ -219,7 +224,7 @@ namespace RBMAI
             public override void OnAIInputSet(ref Agent.EventControlFlag eventFlag, ref Agent.MovementControlFlag movementFlag, ref Vec2 inputVector)
             {
                 // Signature weapon broken or lost: fight with whatever is left, as normal.
-                if (!_hasMainWeapon)
+                if (!_hasMainWeapon || _suspended)
                 {
                     return;
                 }
@@ -263,6 +268,8 @@ namespace RBMAI
 
             public override void OnTick(float dt)
             {
+                _suspended = !Agent.IsOnLand() || Agent.IsUsingGameObject || (Agent.GetAgentFlags() & AgentFlag.CanAttack) == 0;
+
                 MissionWeapon main = Agent.Equipment[(EquipmentIndex)_mainSlot];
                 _hasMainWeapon = !main.IsEmpty && main.Item == _mainWeapon;
                 _enemyClose = WeaponPreference.enemyClose.TryGetValue(Agent, out bool close) && close;
