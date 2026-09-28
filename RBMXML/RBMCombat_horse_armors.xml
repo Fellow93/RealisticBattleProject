@@ -85,6 +85,7 @@
              mane_cover_type="none"
              maneuver_bonus="0"
              speed_bonus="0"
+             reins_mesh="horse_harness_b_rein"
              charge_bonus="0"
              family_type="1"
              modifier_group="leather"
