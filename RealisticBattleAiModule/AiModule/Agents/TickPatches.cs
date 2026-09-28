@@ -151,9 +151,12 @@ namespace RBMAI
                 }
                 // Rally only agents routed by a cavalry charge. An agent obeying a Retreat order (or RBM's
                 // keep-battle fallback) has IsRetreating set with full morale and takes no melee hits, so an
-                // ungated rally un-retreated it every tick.
+                // ungated rally un-retreated it every tick. A charge-routed agent whose formation has since been
+                // ordered to retreat is left alone too: the Retreat order is applied once and never re-applied,
+                // so rallying it would leave it standing with no movement target.
                 CommonAIComponent rallyAi = ___Agent.CommonAIComponent;
-                if (rallyAi != null && chargeRoutedAgents.Contains(___Agent) && ___Agent.GetMorale() > 0f && currentTime - ___Agent.LastMeleeHitTime > 10f)
+                if (rallyAi != null && chargeRoutedAgents.Contains(___Agent) && ___Agent.GetMorale() > 0f && currentTime - ___Agent.LastMeleeHitTime > 10f
+                    && ___Agent.Formation?.GetReadonlyMovementOrderReference().OrderEnum != MovementOrder.MovementOrderEnum.Retreat)
                 {
                     chargeRoutedAgents.Remove(___Agent);
                     bool wasRetreating = rallyAi.IsRetreating;
