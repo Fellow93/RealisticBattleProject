@@ -26,6 +26,11 @@ namespace RBMAI
         [HarmonyPatch("CalculateCurrentOrder")]
         private static bool PrefixCalculateCurrentOrder(ref BehaviorAdvance __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
+            // Runs for player-led formations too (see OverrideBehaviorCharge) -- don't force ShieldWall onto them.
+            if (__instance.Formation != null && !__instance.Formation.IsAIControlled)
+            {
+                return true;
+            }
             if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);

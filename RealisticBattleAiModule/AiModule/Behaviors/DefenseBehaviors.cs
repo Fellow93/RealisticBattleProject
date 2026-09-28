@@ -158,6 +158,11 @@ namespace RBMAI
         [HarmonyPatch("CalculateCurrentOrder")]
         private static bool PrefixCalculateCurrentOrder(ref BehaviorRegroup __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
+            // Runs for player-led formations too (see OverrideBehaviorCharge) -- don't force Line onto them.
+            if (__instance.Formation != null && !__instance.Formation.IsAIControlled)
+            {
+                return true;
+            }
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
                 __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);

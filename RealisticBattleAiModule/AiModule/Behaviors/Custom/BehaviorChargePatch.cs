@@ -21,6 +21,14 @@ namespace RBMAI.AiModule.RbmBehaviors
         [HarmonyPatch("CalculateCurrentOrder")]
         private static bool PrefixCalculateCurrentOrder(ref BehaviorCharge __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
+            // FormationAI.FindBestBehavior calls CalculateCurrentOrder (via PrecalculateMovementOrder) on every
+            // weighted behavior of EVERY formation, including one the player leads as a non-general captain.
+            // The branches below write orders straight onto the formation, so for a player-owned formation they
+            // overrode the player's shieldwall/square with charge + line. Vanilla's version is side-effect free.
+            if (__instance.Formation != null && !__instance.Formation.IsAIControlled)
+            {
+                return true;
+            }
             if (__instance.Formation != null && __instance.Formation.Team != null &&
                 !(__instance.Formation.Team.IsPlayerTeam || __instance.Formation.Team.IsPlayerAlly) &&
                 Campaign.Current != null && MobileParty.MainParty != null && MobileParty.MainParty.MapEvent != null &&

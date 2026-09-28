@@ -371,7 +371,11 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
             return;
         }
-        base.Formation.SetFormOrder(FormOrder.FormOrderCustom(_lastTarget.Formation.Width));
+        // Reached from CalculateCurrentOrder, which also runs for player-led formations.
+        if (base.Formation.IsAIControlled)
+        {
+            base.Formation.SetFormOrder(FormOrder.FormOrderCustom(_lastTarget.Formation.Width));
+        }
         Vec2 chargeDirection = (RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)).Normalized();
         base.CurrentOrder = MovementOrder.MovementOrderChargeToTarget(_lastTarget.Formation);
         CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(chargeDirection);
