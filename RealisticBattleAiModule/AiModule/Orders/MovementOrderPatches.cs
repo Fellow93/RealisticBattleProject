@@ -177,6 +177,37 @@ namespace RBMAI
                 return true;
             }
         }
+
+        // A player's "charge that formation" order is SetMovementOrder(Charge) followed by SetTargetFormation(pick)
+        // (OrderController.SetOrderWithFormation). The prefix above has already turned that Charge into a charge at
+        // the NEAREST large enemy formation, and SetMovementOrder clears the target at its end, so the pick only
+        // landed in Formation.TargetFormation while the movement order kept chasing the nearest formation -- the
+        // player's cavalry rode for the enemy infantry whatever he selected. Once the pick arrives, re-issue the
+        // charge at it. Player-controlled formations only; AI formations keep choosing for themselves.
+        [HarmonyPostfix]
+        [HarmonyPatch("SetTargetFormation")]
+        private static void PostfixSetTargetFormation(Formation __instance, Formation targetFormation)
+        {
+            try
+            {
+                if (targetFormation == null || __instance == null || __instance.IsAIControlled || Mission.Current == null || !Mission.Current.IsFieldBattle)
+                {
+                    return;
+                }
+                MovementOrder current = __instance.GetReadonlyMovementOrderReference();
+                if (current.OrderType != OrderType.ChargeWithTarget || current.TargetFormation == targetFormation || targetFormation.CountOfUnits <= 0)
+                {
+                    return;
+                }
+                // SetMovementOrder ends by clearing the target (Formation.cs), so set the pick again after it. That
+                // nested SetTargetFormation lands here with the order already aimed at the pick and returns above.
+                __instance.SetMovementOrder(MovementOrder.MovementOrderChargeToTarget(targetFormation));
+                __instance.SetTargetFormation(targetFormation);
+            }
+            catch (Exception)
+            {
+            }
+        }
     }
 
     [HarmonyPatch(typeof(Agent))]
