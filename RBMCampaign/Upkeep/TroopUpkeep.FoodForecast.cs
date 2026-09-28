@@ -182,6 +182,17 @@ namespace RBMCampaign
         [HarmonyPatch("GetPartyFoodTooltip")]
         private class ForecastPartyFoodTooltip
         {
+            // Only patched once a game's texts are loaded. GetPartyFoodTooltip reads one of
+            // CampaignUIHelper's static fields directly, so compiling Harmony's replacement runs the
+            // class's static initializer -- and that calls GameTexts.FindText, which throws before
+            // Game.Initialize. ApplyHarmonyPatches also runs at module load and on the main menu, and a
+            // failed static initializer is never retried: the type stays broken for the whole session
+            // and the map screen crashes on the next load. OnGameStart re-patches with the texts in place.
+            private static bool Prepare()
+            {
+                return Game.Current?.GameTextManager != null;
+            }
+
             private static void Postfix(MobileParty mainParty, List<TooltipProperty> __result)
             {
                 if (mainParty == null || __result == null)
