@@ -84,6 +84,24 @@ namespace RBM
             }
         }
 
+        // A crafted weapon saved with RBMCombat's crafting pieces can't be rebuilt once those pieces are gone (combat
+        // module disabled): vanilla GenerateCraftedItem returns null and CraftingCampaignBehavior.InitializeCraftedItemData
+        // unregisters the item. Postfixes from other mods (BetterSmithingContinued's InitAsPlayerCraftedItem) dereference
+        // that null and NRE the load. The finalizer wraps those postfixes too, so hand the null back to vanilla.
+        [HarmonyPatch(typeof(TaleWorlds.Core.Crafting))]
+        [HarmonyPatch("InitializePreCraftedWeaponOnLoad")]
+        public class PreCraftedWeaponOnLoadPatch
+        {
+            private static Exception Finalizer(Exception __exception, TaleWorlds.Core.ItemObject __result)
+            {
+                if (__exception is NullReferenceException && __result == null)
+                {
+                    return null;
+                }
+                return __exception;
+            }
+        }
+
         [HarmonyPatch(typeof(MBObjectManager))]
         [HarmonyPatch("CreateMergedXmlFile")]
         private class CreateMergedXmlFilePatch
