@@ -444,20 +444,18 @@ namespace RBMCampaign
                 {
                     return;
                 }
-                // The base is negative, so a negative factor shrinks how much is eaten. The unfed fraction
-                // is measured over the member roster only, but the base also feeds the party's prisoners
-                // (NumberOfPrisoners/2, see DefaultMobilePartyFoodConsumptionModel). Scaling the whole base
-                // by the members' provisioning would stop feeding the prisoners too, so their portion is
-                // added back at the share the factor just removed from it.
-                __result.AddFactor(unfed - 1f, _ownRations);
-                int prisonerFood = (party?.Party != null) ? party.Party.NumberOfPrisoners / 2 : 0;
-                if (prisonerFood > 0)
+                // Take the fed men's share off the BASE rather than adding a factor. ExplainedNumber sums its
+                // factors, and vanilla then applies the food perks (Spartan -0.2, Warrior's Diet -0.1, ...) as
+                // factors on this same number, so a "provisioned" factor of e.g. -0.9 plus -0.3 of perks went
+                // past -1, flipped the sign and was clamped to the model's -0.01 floor: a well-provisioned party
+                // with those perks ate almost nothing. Shrinking the base lets the perks scale what is left.
+                // Only members are covered by the unfed fraction; the prisoners' NumberOfPrisoners/2 share of
+                // the base is untouched, so they keep eating from the stores.
+                int members = (party?.Party != null) ? party.Party.NumberOfAllMembers : 0;
+                if (members > 0)
                 {
-                    // Prisoners eat regardless of how the soldiers are provisioned. AddFactor multiplied the
-                    // base -- prisoners included -- by unfed, so restore prisonerBase * (1 - unfed), the part
-                    // of their ration the members' factor wrongly cancelled. Negative: it is consumption.
-                    float prisonerBase = -(float)prisonerFood / MenPerFoodPerDay;
-                    __result.Add(prisonerBase * (1f - unfed), _ownRations);
+                    // The base is negative (consumption), so the fed men's portion is added back as a positive.
+                    __result.Add(members * (1f - unfed) / MenPerFoodPerDay, _ownRations);
                 }
             }
         }
