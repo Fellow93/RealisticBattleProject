@@ -19,11 +19,41 @@ namespace RBMAI
         [HarmonyPatch(typeof(TacticComponent))]
         private class ManageFormationCountsPatch
         {
+            // Ranged = carries a bow/crossbow/sling with more than 5 rounds left for it. Judged by the launcher's
+            // slot, NOT the wielded one: the old test read the ammo of whatever was in hand, so an archer who had
+            // drawn his sidearm counted as 0 ammo and was moved to Infantry, and moving him back (on the next call,
+            // which the emptied or reclassified formation itself triggers) re-laid-out both formations each time.
+            // Native classes him by what he carries, so this also stops the two disagreeing.
+            private static bool HasLauncherWithAmmo(Agent agent)
+            {
+                for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
+                {
+                    MissionWeapon weapon = agent.Equipment[i];
+                    if (weapon.IsEmpty)
+                    {
+                        continue;
+                    }
+                    WeaponComponentData usage = weapon.CurrentUsageItem;
+                    if (usage != null && usage.IsRangedWeapon
+                        && (usage.AmmoClass == WeaponClass.Arrow || usage.AmmoClass == WeaponClass.Bolt || usage.AmmoClass == WeaponClass.SlingStone)
+                        && agent.Equipment.GetAmmoAmount(i) > 5)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             [HarmonyPrefix]
             [HarmonyPatch("ManageFormationCounts", new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) })]
             private static bool PrefixSetDefaultBehaviorWeights(ref TacticComponent __instance, ref int infantryCount, ref int rangedCount, ref int cavalryCount, ref int rangedCavalryCount)
             {
-                if (Mission.Current != null && Mission.Current.IsFieldBattle)
+                // Every reassignment below needs AI-controlled formations on both ends, so a team with none (the
+                // player's, when he commands) would only pay for the scan. And like every other RBM reshuffle it
+                // stays off when an RTS/minimap mod drives the parallel formation path (IsFormationReshufflingUnsafe);
+                // the TacticsState docs always said this prefix did, but the check was never added here.
+                if (Mission.Current != null && Mission.Current.IsFieldBattle && !IsFormationReshufflingUnsafe
+                    && __instance.Team != null && __instance.Team.GetAIControlledFormationCount() > 0)
                 {
                     foreach (Agent agent in __instance.Team.ActiveAgents)
                     {
@@ -35,10 +65,7 @@ namespace RBMAI
                                 agent.FormationPositionPreference = FormationPositionPreference.Back;
                                 continue;
                             }
-                            EquipmentIndex wieldedItemIndex = agent.GetPrimaryWieldedItemIndex();
-                            bool isRanged = (wieldedItemIndex != EquipmentIndex.None && agent.Equipment.HasRangedWeapon(WeaponClass.Arrow) && agent.Equipment.GetAmmoAmount(wieldedItemIndex) > 5) ||
-                                (wieldedItemIndex != EquipmentIndex.None && agent.Equipment.HasRangedWeapon(WeaponClass.Bolt) && agent.Equipment.GetAmmoAmount(wieldedItemIndex) > 5) ||
-                                (wieldedItemIndex != EquipmentIndex.None && agent.Equipment.HasRangedWeapon(WeaponClass.SlingStone) && agent.Equipment.GetAmmoAmount(wieldedItemIndex) > 5);
+                            bool isRanged = HasLauncherWithAmmo(agent);
                             if (agent.HasMount && isRanged)
                             {
                                 if (__instance.Team.GetFormation(FormationClass.HorseArcher) != null && __instance.Team.GetFormation(FormationClass.HorseArcher).IsAIControlled && agent.Formation != null && agent.Formation.IsAIControlled)
