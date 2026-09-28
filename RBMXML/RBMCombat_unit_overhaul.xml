@@ -6339,7 +6339,7 @@
     <Equipments>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="woodland_longbow" />
+                 id="Item.woodland_longbow" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_125_gr_arrows" />
       <equipment slot="Item2"
@@ -6359,7 +6359,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="woodland_longbow" />
+                 id="Item.woodland_longbow" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_125_gr_arrows" />
       <equipment slot="Item2"
@@ -6379,7 +6379,7 @@
       </EquipmentRoster>
       <EquipmentRoster>
       <equipment slot="Item0"
-                 id="noble_long_bow" />
+                 id="Item.noble_long_bow" />
       <equipment slot="Item1"
                  id="Item.GRE_hardened_125_gr_arrows" />
       <equipment slot="Item2"
@@ -15290,7 +15290,7 @@
       <equipment slot="Item3"
                  id="Item.sturgia_axe_4_t4" />
       <equipment slot="Head"
-                 id="sturgian_helmet_b_close" />
+                 id="Item.sturgian_helmet_b_close" />
       <equipment slot="Body"
                  id="Item.sturgian_lamellar_base" />
       <equipment slot="Leg"
@@ -15343,7 +15343,7 @@
       <equipment slot="Item3"
                  id="Item.sturgia_axe_5_t5" />
       <equipment slot="Head"
-                 id="lendman_helmet_over_full_mail" />
+                 id="Item.lendman_helmet_over_full_mail" />
       <equipment slot="Body"
                  id="Item.sturgian_lamellar_fortified" />
       <equipment slot="Leg"
