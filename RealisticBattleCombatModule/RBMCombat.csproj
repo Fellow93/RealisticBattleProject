@@ -209,6 +209,7 @@
     <Compile Include="CombatModule\Ranged\RangedRework.Reload.cs" />
     <Compile Include="CombatModule\Ranged\RangedRework.Siege.cs" />
     <Compile Include="CombatModule\Ranged\RangedRework.Collision.cs" />
+    <Compile Include="CombatModule\Ranged\RangedRework.Crosshair.cs" />
     <Compile Include="CombatModule\Ranged\RangedWeaponStats.cs" />
     <Compile Include="CombatModule\Ranged\RealisticWeaponCollision.cs" />
     <!-- Horse -->
