@@ -132,8 +132,12 @@ namespace RBMAI
             {
                 if (___Agent != null && ___Agent.Equipment != null && ___Agent.IsRangedCached)
                 {
-                    __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 5f, 5f, 15f, 0.01f);
-                    __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0.02f, 5f, 0.04f, 15f, 0.03f);
+                    // Siege shooters draw a sidearm only for a man actually on them. Melee used to fade out at 15m,
+                    // and attackers at a ladder's foot are about that far from the wall walk once height is counted,
+                    // so defenders dropped their bows after the first shot. Now melee holds within 3m and is gone by
+                    // 6m: a climber topping the wall, not the crowd below it.
+                    __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 3f, 5f, 6f, 0.01f);
+                    __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0.02f, 3f, 0.04f, 6f, 0.03f);
                     return;
                 }
             }
