@@ -116,7 +116,9 @@ namespace RBMAI
                     while (searchStruct.LastFoundAgent != null)
                     {
                         Agent lastFoundAgent = searchStruct.LastFoundAgent;
-                        if (lastFoundAgent.CurrentMortalityState != Agent.MortalityState.Invulnerable && !lastFoundAgent.HasMount)
+                        // IsHuman: a riderless horse also has HasMount == false, and act_stagger_backward_3
+                        // is not in as_horse — the action resolves to -1 and the engine CTDs.
+                        if (lastFoundAgent.IsHuman && lastFoundAgent.CurrentMortalityState != Agent.MortalityState.Invulnerable && !lastFoundAgent.HasMount)
                         {
                             list.Add(lastFoundAgent);
                         }
