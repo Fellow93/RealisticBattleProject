@@ -11,8 +11,17 @@ namespace RBMCombat
 {
     public static partial class Utilities
     {
+        // Per-projectile weight is weight/amount, so a zero-amount stack or weightless ammo gives
+        // NaN/Infinity/0 here. The speed math then divides by it and (int)NaN/(int)Infinity is
+        // int.MinValue, which ends up in the weapon stats the native engine reads.
+        private static float SanitizeAmmoWeight(float ammoWeight)
+        {
+            return (ammoWeight > 0f && !float.IsInfinity(ammoWeight)) ? ammoWeight : 0.07f;
+        }
+
         public static int calculateMissileSpeed(float ammoWeight, string rangedWeaponType, int drawWeight)
         {
+            ammoWeight = SanitizeAmmoWeight(ammoWeight);
             int calculatedMissileSpeed = 10;
             switch (rangedWeaponType)
             {
@@ -134,6 +143,12 @@ namespace RBMCombat
 
         public static int calculateThrowableSpeed(float ammoWeight, float effectiveSkill)
         {
+            // Melee usages reach here with weight/0 = +Infinity, which already yields 0; treat a
+            // weightless item (0 or 0/0 = NaN) the same instead of letting it become int.MinValue.
+            if (!(ammoWeight > 0f) || float.IsInfinity(ammoWeight))
+            {
+                return 0;
+            }
             int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt((MBMath.ClampFloat(ammoWeight * 70f, 60f, 250f) + (effectiveSkill * 0.75f)) * 2f / ammoWeight));
             return calculatedThrowingSpeed;
         }
@@ -182,6 +197,7 @@ namespace RBMCombat
 
         public static int assignSlingMissileSpeed(float ammoWeight, int drawWeight, float effectiveSkill, float armorModifier, WeaponClass shieldType)
         {
+            ammoWeight = SanitizeAmmoWeight(ammoWeight);
             // Shield penalty: a shield on the arm restricts the slinging motion.
             float shieldTypeModifier = 1f;
             switch (shieldType)
