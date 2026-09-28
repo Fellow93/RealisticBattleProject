@@ -179,6 +179,17 @@ namespace RBMCombat
                 return true;
             }
 
+            // This postfix runs inside the engine's missile-hit callback, and the engine goes on to attach or drop
+            // the missile against that same shield once it returns. Removing the shield right here pulled the entity
+            // out from under that step (reported crashes on missiles passing through a shield on the back), so the
+            // removal is queued for the next mission tick, the way vanilla defers weapon removal from callbacks.
+            // Callers queue only on the hit that takes the shield from above 0 to 0: until the tick runs, the 0-HP
+            // shield stays in the slot and a second missile in the same frame must not queue it again.
+            private static void RemoveBrokenShieldNextTick(Mission mission, Agent victim, EquipmentIndex equipmentIndex)
+            {
+                mission.AddTickActionMT(Mission.MissionTickAction.RemoveEquippedWeapon, victim, (int)equipmentIndex, 0);
+            }
+
             [HarmonyPostfix]
             [HarmonyPatch("MissileHitCallback")]
             private static void Postfix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
@@ -199,11 +210,12 @@ namespace RBMCombat
                                     {
                                         if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
                                         {
-                                            int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - collisionData.InflictedDamage);
+                                            int previousHitPoints = victim.Equipment[equipmentIndex].HitPoints;
+                                            int num = MathF.Max(0, previousHitPoints - collisionData.InflictedDamage);
                                             victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
-                                            if (num == 0)
+                                            if (num == 0 && previousHitPoints > 0)
                                             {
-                                                victim.RemoveEquippedWeapon(equipmentIndex);
+                                                RemoveBrokenShieldNextTick(__instance, victim, equipmentIndex);
                                             }
                                             break;
                                         }
@@ -224,11 +236,12 @@ namespace RBMCombat
                             {
                                 if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
                                 {
-                                    int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - collisionData.InflictedDamage);
+                                    int previousHitPoints = victim.Equipment[equipmentIndex].HitPoints;
+                                    int num = MathF.Max(0, previousHitPoints - collisionData.InflictedDamage);
                                     victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
-                                    if (num == 0)
+                                    if (num == 0 && previousHitPoints > 0)
                                     {
-                                        victim.RemoveEquippedWeapon(equipmentIndex);
+                                        RemoveBrokenShieldNextTick(__instance, victim, equipmentIndex);
                                     }
                                     break;
                                 }
