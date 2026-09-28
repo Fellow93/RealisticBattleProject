@@ -359,7 +359,7 @@
              damage_factor="0.5" />
     </BladeData>
 		<BuildData
-			previous_piece_offset="-5" />
+			piece_offset="-5" />
 
     <Materials>
       <Material id="Iron3"
