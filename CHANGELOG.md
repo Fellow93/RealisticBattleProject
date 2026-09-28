@@ -16,19 +16,29 @@
 - Repeating crossbows keep their reticle while bolts are still loaded.
 - Troop equipment fixes: the Fian Champion's bows, the Skolder tier 2/3 helmets, two broken cape entries, and the missing reins on the light harness.
 - Passive shoulder shields: every `_shoulder` shield (e.g. the Falxman's targe) is swapped back when the option is off.
+- War Sails ship ballista ammo (stones, boulders, grapeshot) uses vanilla damage again. It dealt about 2000 damage per hit and sank ships in one shot.
+- Armwraps and the Leather Coat regain their vanilla stealth values, and the Leather Coat counts as stealth gear again.
+- Fifteen arrow visual entries with broken Empire/Vlandia culture references now resolve.
+- With Campaign off, junk weapons no longer sell for 400+ denars. The legacy weapon price floor is lower: tier-0 weapons are worth about 105, while tier 3 and above barely change.
+- Hardening against reported crashes when a missile breaks a shield.
 
 ### Ranged
 - The "Vanilla" reload setting now also gives the player vanilla bow draw speed, not only vanilla reload speed.
 - New option: "Ranged reload applies to AI" (off by default). When on, the AI follows the reload setting for both reload and draw speed.
 - Fixed arrows being returned twice, or quivers overfilling, when a bow is sheathed with an arrow nocked.
 - Ammo with zero weight or count no longer produces a broken missile speed.
+- With Combat off and AI on, the player's bow and crossbow aiming is vanilla again. AI shooters keep RBM's tuning.
 
 ### Posture / AI
 - Heavy posture breaks dismount riders again. A single hit that deals at least 33% of a rider's max posture can unseat him, including through a shield block, and a mounted attacker whose blocked attack breaks his own posture can be dismounted too.
 - **Signature two-handed weapons.** Eastern heavy lancers keep the lance in both hands with the shield slung on the back, and draw mace and shield only once an enemy is within 2.5 m. Falxmen, shock troops, two-handed axemen and atgeir infantry never draw a shield, and throw only at 6–25 m.
+- Eastern heavy lancers no longer swirl the lance between grips after a couch, or flip between lance and mace while hovering near an enemy.
 - Troops carrying a polearm prefer it until an enemy is within 2.5 m.
 - **Reinforcements** enter from the map border behind their own side, on dry ground, instead of spawning in one mid-field blob. Waves on both sides are paired, and each side's reinforcements are capped at half the battle size.
-- Player horse archers stay in formation under Move/Stop and in column under Follow.
+- Player horse archers stay in formation under Move/Stop and in column under Follow. Those who lose their horse fight in melee instead of holding their bow.
+- A player's charge at a selected enemy formation now goes for that formation, instead of the nearest large enemy formation.
+- In sieges, player formations and shieldwall, square or circle formations keep their slots when an enemy gets close, so a gate shieldwall no longer dissolves into chases.
+- Archers flanking with no infantry to support hold a stand-off on their own side of the enemy, instead of marching through the enemy line.
 - AI order calculations no longer overwrite the formation of a player leading as a captain (e.g. shieldwall replaced by charge + line every tick).
 - AI infantry only braces against enemy cavalry that is actually charging within 150 m. Parked cavalry no longer freezes the attacker at its spawn.
 - Infantry under the split-archers tactic waits at most 30 s for its archers.
@@ -43,9 +53,11 @@
 - Days-of-food forecasts account for troop rations running out. 31 food no longer shows as lasting thousands of days, and AI army and siege decisions use the corrected figure.
 - Saves carrying troop stacks broken by another mod are repaired on load instead of crashing in the daily training tick.
 - Fixed the Escort Merchant Caravan quest crashing on accept with the troop overhaul.
+- Well-provisioned parties with food perks (e.g. Spartan, Warrior's Diet) no longer eat almost nothing. The perks now scale what the party actually eats.
 
 ### Tournament
 - Top-tier tournaments apply vanilla's eligibility checks again, so children, wounded and non-combatant heroes no longer join.
+- The Self Promoter perk's renown bonus is granted for tournament wins again.
 
 ### Stability / fixes
 - Fixed several crashes to desktop: fast horse deaths near riderless horses, charge blows that killed their victim, forced stagger animations on swimmers, climbers and siege-engine users, health bars reading deleted agents (War Sails), and native writes from worker threads.
@@ -53,6 +65,7 @@
 - Fixed a crash on save load caused by the party food tooltip patch being applied before game texts were loaded.
 - Per-battle AI data is cleared at the start of every mission, so old battles are no longer kept in memory. This also fixes a crash when reloading.
 - A redirected, protected or unwritable Documents folder, or a corrupt config.xml, no longer crashes the game at startup. RBM uses the defaults and logs the problem.
+- Code cleanup: removed unused variables, fields and dead code so the mod builds without compiler warnings. No gameplay change.
 
 ## v4.5.1 (changes since v4.5.0.2)
 
