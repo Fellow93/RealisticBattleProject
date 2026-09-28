@@ -335,7 +335,4 @@ xcopy /d /y "$(SolutionDir)RBMXML\RBM_custom_battle_skill_sets.xml" "$(SolutionD
     <StartupObject />
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\DefaultConfigDONOTEDIT.xml" "$(SolutionDir)..\RBM\"</PreBuildEvent>
-  </PropertyGroup>
 </Project>
