@@ -177,6 +177,13 @@ namespace RBMAI
                         {
                             forceTiredAnimation(attackerAgent, collisionData, staggerActionSpeed, false);
                         }
+                        // A rider whose blow is blocked or parried hard enough to break his posture is unseated, as a
+                        // defender is. This path registers no blow of its own, so a zero-damage riposte carries
+                        // CanDismount. Not on a direct hit: there the posture cost is his own strike landing.
+                        if (meleeHitType != MeleeHitType.AgentHit && DismountFlags(attackerAgent, stance, postureDmg) == BlowFlags.CanDismount)
+                        {
+                            makePostureRiposteBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, BlowFlags.CanDismount);
+                        }
                         if (resetPosture)
                         {
                             if (meleeHitType == MeleeHitType.AgentHit)
