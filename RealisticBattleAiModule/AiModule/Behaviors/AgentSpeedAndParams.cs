@@ -210,7 +210,10 @@ namespace RBMAI
                 }
                 if (behaviorValueSet == BehaviorValueSet.Follow)
                 {
-                    if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
+                    // AI only: Column arrangement maps to Follow, and Melee 35 / ChargeHorseback 8 peel a player's
+                    // horse archers out of column at any nearby enemy. Player-held formations keep vanilla Follow
+                    // (ChargeHorseback 0).
+                    if (___Agent.Formation.IsAIControlled && ___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                     {
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 35f, 4f, 20f, 6f, 0.55f);
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0.5f, 10f, 1f, 30f, 30f);
