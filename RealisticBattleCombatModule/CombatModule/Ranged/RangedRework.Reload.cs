@@ -79,7 +79,9 @@ namespace RBMCombat
             private static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
             {
                 float perkFactor = GetReloadPerkFactor(agent, equippedItem);
-                if (agent.IsPlayerControlled)
+                // The reload setting is player-only unless "Ranged reload applies to AI" is on; then AI
+                // takes the same path (so "0" leaves AI on vanilla ReloadSpeed, "1"/"2" use these curves).
+                if (agent.IsPlayerControlled || RBMConfig.RBMConfig.rangedReloadAffectsAi)
                 {
                     if (RBMConfig.RBMConfig.realisticRangedReload.Equals("1"))
                     {

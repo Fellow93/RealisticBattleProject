@@ -72,7 +72,10 @@ namespace RBMCombat
                                 }
                                 if (RBMConfig.RBMConfig.realisticRangedReload.Equals("0"))
                                 {
-                                    weaponStatsData[i].ThrustSpeed = MathF.Ceiling(thrustSpeed * 0.45f);
+                                    // "Vanilla" means the bow's own draw speed for the player. The flat 0.45 cut
+                                    // stays AI-only unless "Ranged reload applies to AI" is on, in which case AI
+                                    // follows the setting too and gets the bow's own draw speed like the player.
+                                    weaponStatsData[i].ThrustSpeed = (__instance.IsPlayerControlled || RBMConfig.RBMConfig.rangedReloadAffectsAi) ? thrustSpeed : MathF.Ceiling(thrustSpeed * 0.45f);
                                 }
 
                                 MissionWeapon mw = __instance.Equipment[equipmentSlot];

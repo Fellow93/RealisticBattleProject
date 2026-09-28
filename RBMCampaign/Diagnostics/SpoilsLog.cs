@@ -191,6 +191,7 @@ namespace RBMCampaign
                     Field("bluntTraumaBonus", RC.bluntTraumaBonus),
                     Field("thrustMagnitudeModifier", RC.ThrustMagnitudeModifier),
                     Field("realisticRangedReload", RC.realisticRangedReload),
+                    Field("rangedReloadAffectsAi", RC.rangedReloadAffectsAi),
                     Field("realisticArrowArc", RC.realisticArrowArc),
                     Field("betterArrowVisuals", RC.betterArrowVisuals),
                     Field("passiveShoulderShields", RC.passiveShoulderShields),

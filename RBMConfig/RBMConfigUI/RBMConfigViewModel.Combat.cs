@@ -51,6 +51,9 @@ namespace RBMConfig
         public TextViewModel RangedReloadSpeedText { get; }
         public SelectorVM<SelectorItemVM> RangedReloadSpeed { get; }
 
+        public TextViewModel RangedReloadAffectsAiText { get; }
+        public SelectorVM<SelectorItemVM> RangedReloadAffectsAi { get; }
+
         public TextViewModel PassiveShoulderShieldsText { get; }
         public SelectorVM<SelectorItemVM> PassiveShoulderShields { get; }
 
@@ -83,6 +86,16 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_007}Ranged reload speed").ToString();
             }
         }
+
+        // Plain-text label/hint (no {=RBM_CON_xxx} id) for the same reason as the Frontline rows below.
+        [DataSourceProperty]
+        public string RangedReloadAffectsAit
+        {
+            get { return new TextObject("Ranged reload applies to AI").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel RangedReloadAffectsAiHint { get; } = Hint("When enabled, AI archers and crossbowmen follow the Ranged reload speed setting too (Vanilla / Realistic / Semi-realistic) instead of their fixed AI reload. Off keeps that setting player-only. Default off.");
 
         [DataSourceProperty]
         public string PassiveShieldt

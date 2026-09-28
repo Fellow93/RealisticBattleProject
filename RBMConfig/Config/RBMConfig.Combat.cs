@@ -44,6 +44,8 @@ namespace RBMConfig
         public static bool passiveShoulderShields = false;
         public static bool troopOverhaulActive = true;
         public static string realisticRangedReload = "2";
+        // When true, AI agents follow realisticRangedReload too (otherwise that setting is player-only).
+        public static bool rangedReloadAffectsAi = false;
         public static float maceBluntModifier = 1f;
         public static float armorThresholdModifier = 1f;
         public static float bluntTraumaBonus = 0f;

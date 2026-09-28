@@ -121,6 +121,10 @@ namespace RBMConfig
             RangedReloadSpeedText = new TextViewModel(new TextObject("Ranged reload speed"));
             RangedReloadSpeed = new SelectorVM<SelectorItemVM>(rangedReloadSpeed, 0, null);
 
+            List<string> rangedReloadAffectsAi = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString(), };
+            RangedReloadAffectsAiText = new TextViewModel(new TextObject("Ranged reload applies to AI"));
+            RangedReloadAffectsAi = new SelectorVM<SelectorItemVM>(rangedReloadAffectsAi, 0, null);
+
             List<string> passiveShoulderShields = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
             PassiveShoulderShieldsText = new TextViewModel(new TextObject("Passive Shoulder Shields"));
             PassiveShoulderShields = new SelectorVM<SelectorItemVM>(passiveShoulderShields, 0, null);
@@ -176,6 +180,8 @@ namespace RBMConfig
             {
                 RangedReloadSpeed.SelectedIndex = 2;
             }
+
+            RangedReloadAffectsAi.SelectedIndex = RBMConfig.rangedReloadAffectsAi ? 1 : 0;
 
             if (RBMConfig.passiveShoulderShields)
             {
@@ -552,6 +558,8 @@ namespace RBMConfig
                 RBMConfig.realisticRangedReload = "2";
             }
 
+            RBMConfig.rangedReloadAffectsAi = RangedReloadAffectsAi.SelectedIndex == 1;
+
             if (PassiveShoulderShields.SelectedIndex == 0)
             {
                 RBMConfig.passiveShoulderShields = false;
@@ -758,6 +766,7 @@ namespace RBMConfig
             BetterArrowVisuals.SelectedIndex = 1;
             PassiveShoulderShields.SelectedIndex = 0;
             RangedReloadSpeed.SelectedIndex = 2;
+            RangedReloadAffectsAi.SelectedIndex = 0;
             ActiveTroopOverhaul.SelectedIndex = 1;
             RBMCombatEnabled.SelectedIndex = 1;
 
