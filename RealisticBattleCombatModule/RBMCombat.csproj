@@ -220,6 +220,7 @@
     <Compile Include="CombatModule\Campaign\CampaignChanges.TrainingField.cs" />
     <Compile Include="CombatModule\Campaign\CampaignChanges.TroopPower.cs" />
     <Compile Include="CombatModule\Campaign\CampaignChanges.Spawn.cs" />
+    <Compile Include="CombatModule\Campaign\CampaignChanges.Quests.cs" />
     <!-- Items -->
     <Compile Include="CombatModule\Items\ItemValuesTiers.Pricing.cs" />
     <Compile Include="CombatModule\Items\ItemValuesTiers.Tiers.cs" />
