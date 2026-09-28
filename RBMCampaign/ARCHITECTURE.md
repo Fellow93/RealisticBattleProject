@@ -115,6 +115,10 @@ notionally went (kit maintenance). Applies to every party in the world.
   anything rather than starve; limited by market stock and purse.
 - Patches `DefaultMobilePartyFoodConsumptionModel.CalculateDailyBaseFoodConsumptionf`: men
   carrying their own rations **stop eating party food stores**. Heroes always eat from stores.
+- `TroopUpkeep.FoodForecast.cs` postfixes `MobileParty.GetNumDaysForFoodToLast` (AI army/siege
+  decisions, map-bar warning) and the party/army food tooltips so "days until food runs out" walks
+  forward over each stack's ration expiry instead of dividing by today's near-zero consumption. It
+  re-asks `FoodChange` with the fed-check clock moved forward, so it cannot drift from the patch above.
 
 ### 3. Carousing (`TroopUpkeep.SpendOnFun`)
 
@@ -253,7 +257,7 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Upgrades/RBMCampaignPatches.cs` | `GetGoldCostForUpgrade` + the `GetUpgradeHint` tooltip breakdown. |
 | `Upgrades/UpgradeSupply.cs` | The supply-town gate, the market draw, and the payment leg. |
 | `Upgrades/MountValueUpgrade.cs` | Pricing the horse instead of consuming one. |
-| `Upkeep/TroopUpkeep.cs` (+ `.Food.cs` / `.Healing.cs` / `.Luxury.cs`) | Settlement food, carousing, paid healing, luxuries. |
+| `Upkeep/TroopUpkeep.cs` (+ `.Food.cs` / `.FoodForecast.cs` / `.Healing.cs` / `.Luxury.cs`) | Settlement food, carousing, paid healing, luxuries; days-of-food forecast. |
 | `Upkeep/TroopMarketFeedback.cs` | Where troop spending lands in a settlement's purse. |
 | `Upkeep/RBMTroopUpkeepCampaignBehavior.cs` | Event subscriptions and `SyncData`. |
 | `Wages/TierBasedWageModel.cs` | The per-tier wage table. |

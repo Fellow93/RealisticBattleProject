@@ -23,8 +23,9 @@ namespace RBMCampaign
     /// upgrade is only one of the things it can be spent on. A garrison that sits in a town long
     /// enough will drink its way out of ever affording better armour.
     ///
-    /// Split across two files: TroopUpkeep.cs holds the shared state, the carousing, and the food
-    /// consumption patch; TroopUpkeep.Food.cs holds the buying of rations off a settlement's market.
+    /// Split across files: TroopUpkeep.cs holds the shared state, the carousing, and the food
+    /// consumption patch; TroopUpkeep.Food.cs holds the buying of rations off a settlement's market;
+    /// TroopUpkeep.FoodForecast.cs holds the days-of-food estimate that accounts for rations lapsing.
     /// </remarks>
     public static partial class TroopUpkeep
     {
@@ -111,7 +112,8 @@ namespace RBMCampaign
         public static bool IsFed(PartyBase party, CharacterObject character)
         {
             int fedUntil;
-            return _fedUntilHours.TryGetValue(SpoilsPool.Key(party, character), out fedUntil) && fedUntil > NowHours;
+            return _fedUntilHours.TryGetValue(SpoilsPool.Key(party, character), out fedUntil)
+                && fedUntil > (_forecastHours ?? NowHours);
         }
 
         /// <summary>

@@ -318,6 +318,7 @@
     <Compile Include="Upkeep\TroopMarketFeedback.cs" />
     <Compile Include="Upkeep\TroopUpkeep.cs" />
     <Compile Include="Upkeep\TroopUpkeep.Food.cs" />
+    <Compile Include="Upkeep\TroopUpkeep.FoodForecast.cs" />
     <Compile Include="Upkeep\TroopUpkeep.Healing.cs" />
     <Compile Include="Upkeep\TroopUpkeep.Luxury.cs" />
     <Compile Include="Upkeep\TroopUpkeep.Stewardship.cs" />
