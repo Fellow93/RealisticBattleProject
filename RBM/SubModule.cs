@@ -86,6 +86,8 @@ namespace RBM
         {
             RBMConfig.RBMConfig.LoadConfig();
             CustomBattlePreset.LoadPreset();
+            // Must run here: the engine reads project.mbproj right after OnSubModuleLoad, and only once.
+            CombatParameterGate.Apply();
 
             // Gauntlet parses and caches the party screen prefab before OnGameStart runs, so this
             // one hook cannot wait for ApplyHarmonyPatches like the rest of RBMCampaign does.
@@ -189,6 +191,8 @@ namespace RBM
         {
             RBMConfig.RBMConfig.LoadConfig();
             ApplyHarmonyPatches();
+            // RBM's native parameters load with the module regardless of the Combat toggle; revert them here.
+            NativeParameterGate.Apply();
             if (RBMConfig.RBMConfig.rbmCampaignEnabled && game.GameType is Campaign)
             {
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSpoilsCampaignBehavior());

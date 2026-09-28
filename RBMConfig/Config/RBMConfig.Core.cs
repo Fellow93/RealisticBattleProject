@@ -17,6 +17,10 @@ namespace RBMConfig
 
         public static bool rbmAiEnabled = true;
         public static bool rbmCombatEnabled = true;
+        // What rbmCombatEnabled was when the engine read RBM's startup-only files (set by RBM's
+        // CombatParameterGate); null if that gate did not run. The config screen compares against it to
+        // tell the player a restart is needed for those files to follow a changed toggle.
+        public static bool? rbmCombatEnabledAtLaunch = null;
         public static bool rbmCampaignEnabled = true;
         public static bool developerMode = false;
 

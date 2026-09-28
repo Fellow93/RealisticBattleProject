@@ -749,6 +749,18 @@ namespace RBMConfig
 
             RBMConfig.saveXmlConfig();
             TaleWorlds.ScreenSystem.ScreenManager.PopScreen();
+
+            // RBM's spear combat parameters are read by the engine once per launch, so they alone lag the
+            // Combat toggle until a restart; everything else follows it at the next game start.
+            if (RBMConfig.rbmCombatEnabledAtLaunch.HasValue && RBMConfig.rbmCombatEnabledAtLaunch.Value != RBMConfig.rbmCombatEnabled)
+            {
+                InformationManager.ShowInquiry(new InquiryData(
+                    new TextObject("{=RBM_RESTART_001}Restart Required").ToString(),
+                    new TextObject("{=RBM_RESTART_002}RBM Combat was changed. Everything else takes effect the next time you start or load a game, but RBM's spear and weapon animation parameters are only read when Bannerlord starts. Restart the game for them to match the new setting.").ToString(),
+                    true, false,
+                    new TextObject("{=RBM_RESTART_003}OK").ToString(), null,
+                    null, null));
+            }
         }
 
         /// <summary>
