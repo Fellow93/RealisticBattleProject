@@ -426,28 +426,32 @@ namespace RBMCombat
                     weaponDamageFactor *= 3f;
                 }
 
-                inflictedDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, magnitude, armorAmount, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor, player, isPlayerVictim, armorMaterial)), 0, 2000);
-                inflictedDamage = MathF.Floor(inflictedDamage * dmgMultiplier);
-
                 //stealth calculation
-                float stealthDmgMultiplier = 1f;
+                // Vanilla multiplies the sneak bonus onto damage AFTER armor, which works with its gentle armor
+                // model. Under RBM's armor threshold a dagger's post-armor damage against even a padded guard is
+                // near zero, and multiplying near zero left stealth kills impossible (the stealth tutorial and the
+                // War Sails stealth quests). So the bonus goes onto the blow itself, before armor, letting a
+                // knife in the back actually get through.
+                float stealthMagnitude = magnitude;
                 if (!attackBlockedWithShield && !isFallDamage)
                 {
                     if (MissionGameModels.Current.AgentApplyDamageModel.CanWeaponDealSneakAttack(in attackInformation, attackerWeapon))
                     {
                         float sneakAttackMultiplier = MissionGameModels.Current.AgentStatCalculateModel.GetSneakAttackMultiplier(attackInformation.AttackerAgent, attackerWeapon);
-                        stealthDmgMultiplier *= sneakAttackMultiplier;
+                        stealthMagnitude *= sneakAttackMultiplier;
                         isSneakAttack = true;
                     }
                 }
 
-                inflictedDamage = (int)(inflictedDamage * stealthDmgMultiplier);
+                inflictedDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, stealthMagnitude, armorAmount, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor, player, isPlayerVictim, armorMaterial)), 0, 2000);
+                inflictedDamage = MathF.Floor(inflictedDamage * dmgMultiplier);
+
                 if (isSneakAttack && RBMConfig.RBMConfig.sneakAttackInstaKill)
                 {
                     inflictedDamage = 200;
                 }
 
-                int absoluteDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, magnitude, 0f, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor) * dmgMultiplier), 0, 2000);
+                int absoluteDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, stealthMagnitude, 0f, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor) * dmgMultiplier), 0, 2000);
                 absorbedByArmor = absoluteDamage - inflictedDamage;
 
                 return false;
