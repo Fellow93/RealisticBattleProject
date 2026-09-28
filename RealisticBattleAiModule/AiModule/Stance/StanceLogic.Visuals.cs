@@ -158,13 +158,32 @@ namespace RBMAI
             }
         }
 
+        /// <summary>
+        /// Stagger/tired actions are land animations. Forcing one onto a swimmer (a man fallen overboard in a naval
+        /// battle) or onto an agent driven by a game object (climbing machine, ladder) overrides the swim/climb action
+        /// the engine is running and crashes natively; vanilla's own ship-collision staggers skip both cases.
+        /// IsOnLand, not IsInWater: RBM forces IsInWater false in field battles.
+        /// </summary>
+        public static bool CanForceReaction(Agent agent)
+        {
+            return agent != null && agent.IsActive() && agent.IsOnLand() && !agent.IsUsingGameObject;
+        }
+
         public static void forceStaggerAnimation(Agent agent, AttackCollisionData collisionData, float actionSpeed, bool isAttacker)
         {
+            if (!CanForceReaction(agent))
+            {
+                return;
+            }
             agent.SetActionChannel(agent.HasMount ? 1 : 0, DecideAnimation(collisionData, isAttacker), actionSpeed: actionSpeed);
         }
 
         public static void forceTiredAnimation(Agent agent, AttackCollisionData collisionData, float actionSpeed, bool isAttacker)
         {
+            if (!CanForceReaction(agent))
+            {
+                return;
+            }
             agent.SetActionChannel(agent.HasMount ? 1 : 0, ActionIndexCache.act_pickup_down_begin_left_stance, actionSpeed: actionSpeed);
         }
     }
