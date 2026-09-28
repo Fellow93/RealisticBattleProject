@@ -140,23 +140,36 @@ namespace RBMAI
                 //agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
 
                 float num4 = 1f - effectiveSkillLevel;
+                // The aim-settle time and movement penalty below also reach the player's own shooting. They are
+                // combat tuning, so with the Combat module off the player keeps vanilla's; AI shooters keep RBM's
+                // under the AI module either way.
+                bool playerAimsVanilla = !RBMConfig.RBMConfig.rbmCombatEnabled && agent.IsPlayerControlled;
                 if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Crossbow)
                 {
                     agentDrivenProperties.AiShooterError = 0.015f - (0.007f * effectiveSkillLevel);
-                    agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
-                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 1f - (0.75f * effectiveSkillLevel);
+                    if (!playerAimsVanilla)
+                    {
+                        agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
+                        agentDrivenProperties.WeaponBestAccuracyWaitTime = 1f - (0.75f * effectiveSkillLevel);
+                    }
                 }
                 else if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Bow)
                 {
                     agentDrivenProperties.AiShooterError = 0.015f - (0.015f * effectiveSkillLevel);
-                    agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
-                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 2f - (1.5f * effectiveSkillLevel);
+                    if (!playerAimsVanilla)
+                    {
+                        agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
+                        agentDrivenProperties.WeaponBestAccuracyWaitTime = 2f - (1.5f * effectiveSkillLevel);
+                    }
                 }
                 else
                 {
                     agentDrivenProperties.AiShooterError = 0.01f - (0.010f * effectiveSkillLevel);
-                    agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.1f;
-                    agentDrivenProperties.WeaponBestAccuracyWaitTime = 0.1f;
+                    if (!playerAimsVanilla)
+                    {
+                        agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.1f;
+                        agentDrivenProperties.WeaponBestAccuracyWaitTime = 0.1f;
+                    }
                 }
 
                 if (!agent.IsRangedCached)
