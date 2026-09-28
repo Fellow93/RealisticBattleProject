@@ -128,6 +128,14 @@ namespace RBMTournament
                 return playerTier;
             }
 
+            // Vanilla's CanNpcJoinTournament minus its skill check, which the tier check replaces here. Without it
+            // children, the wounded and noncombatants were drawn into the main tournament.
+            private static bool IsEligibleHero(Hero hero)
+            {
+                return hero != null && !hero.IsWounded && !hero.IsNoncombatant && hero != Hero.MainHero
+                    && hero.Age >= Campaign.Current.Models.AgeModel.HeroComesOfAge && (hero.IsLord || hero.IsWanderer);
+            }
+
             [HarmonyPrefix]
             [HarmonyPatch("GetParticipantCharacters")]
             private static bool GetParticipantCharactersPrefix(ref FightTournamentGame __instance, ref List<CharacterObject> __result, Settlement settlement, bool includePlayer = true)
@@ -145,7 +153,7 @@ namespace RBMTournament
                                 break;
                             }
                             Hero leaderHero = settlement.Parties[i].LeaderHero;
-                            if (leaderHero != null && leaderHero.CharacterObject != null && !leaderHero.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(leaderHero.CharacterObject) >= 5)
+                            if (IsEligibleHero(leaderHero) && leaderHero.CharacterObject != null && !leaderHero.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(leaderHero.CharacterObject) >= 5)
                             {
                                 if (leaderHero.CurrentSettlement != settlement)
                                 {
@@ -164,7 +172,7 @@ namespace RBMTournament
                                 break;
                             }
                             Hero hero = settlement.HeroesWithoutParty[j];
-                            if (hero != null && hero.CharacterObject != null && !hero.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(hero.CharacterObject) >= 5 && hero.IsLord)
+                            if (IsEligibleHero(hero) && hero.CharacterObject != null && !hero.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(hero.CharacterObject) >= 5 && hero.IsLord)
                             {
                                 if (hero.CurrentSettlement != settlement)
                                 {
@@ -183,7 +191,7 @@ namespace RBMTournament
                                 break;
                             }
                             Hero hero2 = settlement.HeroesWithoutParty[k];
-                            if (hero2 != null && hero2.CharacterObject != null && !hero2.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(hero2.CharacterObject) >= 5)
+                            if (IsEligibleHero(hero2) && hero2.CharacterObject != null && !hero2.CharacterObject.IsPlayerCharacter && calculateNpcTournamentTier(hero2.CharacterObject) >= 5 && !hero2.IsLord)
                             {
                                 if (hero2.CurrentSettlement != settlement)
                                 {
@@ -208,7 +216,7 @@ namespace RBMTournament
                                     break;
                                 }
                                 CharacterObject character = item2.Character;
-                                if (character != null && character.IsHero && character.HeroObject.Clan == Clan.PlayerClan && !character.IsPlayerCharacter && calculateNpcTournamentTier(character) >= 5)
+                                if (character != null && character.IsHero && character.HeroObject.Clan == Clan.PlayerClan && IsEligibleHero(character.HeroObject) && !character.IsPlayerCharacter && calculateNpcTournamentTier(character) >= 5)
                                 {
                                     if (character.HeroObject.CurrentSettlement != settlement)
                                     {
