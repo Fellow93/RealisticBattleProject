@@ -121,6 +121,12 @@ namespace RBMTournament
                     {
                         gainedRenown *= 2f;
                     }
+                    // Vanilla's flat Self Promoter bonus, added after Duelist as DefaultTournamentModel does. This
+                    // prefix replaces the vanilla method for the player, so without it the perk gave nothing.
+                    if (winner.GetPerkValue(DefaultPerks.Charm.SelfPromoter))
+                    {
+                        gainedRenown += DefaultPerks.Charm.SelfPromoter.PrimaryBonus;
+                    }
                     __result = MathF.Ceiling(gainedRenown);
                     return false;
                 }
