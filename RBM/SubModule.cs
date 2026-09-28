@@ -227,7 +227,9 @@ namespace RBM
             var isWSActive = ModuleHelper.IsModuleActive("NavalDLC");
             var isRBMActive = ModuleHelper.IsModuleActive("RBM");
             var isRBMWSActive = ModuleHelper.IsModuleActive("RBM_WS");
-            if (isWSActive && isRBMActive && !isRBMWSActive)
+            // With Combat off RBM changes no items or troops, so War Sails needs nothing from RBM_WS (its combat XML
+            // and XSLT are skipped; only the flavour Nord patrols remain). Only nag when it matters.
+            if (isWSActive && isRBMActive && !isRBMWSActive && RBMConfig.RBMConfig.rbmCombatEnabled)
             {
                 InformationManager.ShowInquiry(new InquiryData("RBM War Sails submodule is missing!", "RBM War Sails submod is required when using both RBM and the War Sails DLC. Please install and enable the RBM War Sails submod to avoid potential issues, like Nords having no weapons etc.", true, false, "OK", "OK", null, null), false, true);
             }

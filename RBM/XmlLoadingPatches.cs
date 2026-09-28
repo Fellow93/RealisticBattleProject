@@ -108,6 +108,22 @@ namespace RBM
         {
             private static bool Prefix(List<Tuple<string, string>> toBeMerged, List<string> xsltList, bool skipValidation)
             {
+                // XSLT transforms are applied straight by ApplyXslt and never pass through MergeTwoXmls, so the
+                // RBM_COMBAT_XML_TAG gate below cannot see them. RBM_WS's RBMCombat_WS_*.xslt re-add the Nord pieces
+                // that RBM's own weapon descriptions drop; with Combat off those descriptions never load, NavalDLC's
+                // copy already added the pieces, and the second copy double-counts in Crafting.GenerateCraftedItem --
+                // which is what made every Nord spear throwable. "" is native's own "no transform" entry.
+                if (!RBMConfig.RBMConfig.rbmCombatEnabled && xsltList != null)
+                {
+                    for (int i = 0; i < xsltList.Count; i++)
+                    {
+                        string xslt = xsltList[i];
+                        if (!string.IsNullOrEmpty(xslt) && Path.GetFileName(xslt).StartsWith("RBMCombat_", StringComparison.OrdinalIgnoreCase))
+                        {
+                            xsltList[i] = "";
+                        }
+                    }
+                }
                 return true;
             }
         }
