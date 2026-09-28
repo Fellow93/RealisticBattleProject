@@ -198,6 +198,16 @@ namespace RBMCombat
                 float missileTotalDamage = collisionData.MissileTotalDamage;
 
                 WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
+                // War Sails ship ballista ammo (grapeshot etc.) has no case in CalculateMissileMagnitude, so it fell
+                // through as a raw 1/2*m*v^2 of a 15 kg projectile times its full thrust damage, with none of the
+                // scaling the other classes get -- about 2000 damage a hit, sinking ships in one shot. Leave these
+                // classes to vanilla's missile magnitude.
+                if (currentUsageItem != null && (currentUsageItem.WeaponClass == WeaponClass.BallistaStone || currentUsageItem.WeaponClass == WeaponClass.BallistaBoulder))
+                {
+                    baseMagnitude = 0f;
+                    specialMagnitude = 0f;
+                    return true;
+                }
                 if (currentUsageItem.WeaponClass == WeaponClass.Arrow || currentUsageItem.WeaponClass == WeaponClass.Bolt || currentUsageItem.WeaponClass == WeaponClass.SlingStone)
                 {
                     missileTotalDamage = RebaseMissileTotalDamageToRbmLauncher(attackInformation.AttackerAgent, weapon, missileTotalDamage);
