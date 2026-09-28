@@ -204,7 +204,7 @@ namespace RBMAI
                     __instance.ApplyActionOnEachUnitViaBackupList(action);
                     return false;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     {
                         return true;

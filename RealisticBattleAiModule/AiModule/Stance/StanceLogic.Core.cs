@@ -49,9 +49,6 @@ namespace RBMAI
         //how much posture is regained after posture break
         private static float postureResetModifier = 0.75f;
 
-        //how much posture is regained after posture break while holding shield
-        private static float shieldPostureResetModifier = 0.4f;
-
         public static void ResetPostureForAgent(ref Stance stance, float resetModifier)
         {
             if (stance != null)

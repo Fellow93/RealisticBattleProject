@@ -9,6 +9,7 @@ using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using static TaleWorlds.MountAndBlade.ArrangementOrder;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
+
 namespace RBMAI
 {
     [MBCallback]
@@ -274,7 +275,7 @@ namespace RBMAI
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 5f, 4f, 10f, 0.01f);
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 3f, 5f, 200f, 1f);
                     }
-                    return;
+
                     if (Mission.Current.IsSiegeBattle || Mission.Current.IsSallyOutBattle)
                     {
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 4f, 3f, 20f, 0.01f);

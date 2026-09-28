@@ -13,14 +13,6 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
     private int waitCountMainFormation = 0;
     private int waitCountMainFormationMax = 25;
 
-    // GetTacticWeight() is re-evaluated by the engine's tactic-decision loop every few seconds.
-    // The per-agent skirmisher scan (CheckIfSkirmisherAgent allocates a WeaponStatsData[] per
-    // weapon slot per agent) is far too heavy to run on every evaluation in a large infantry
-    // battle, so cache the count and refresh it at most once per interval.
-    private float _cachedSkirmisherCount = -1f;
-    private float _skirmisherCountRefreshTime = float.MinValue;
-    private const float SkirmisherCountRefreshInterval = 5f;
-
     protected void AssignTacticFormations()
     {
         ManageFormationCounts(2, 1, 2, 1);

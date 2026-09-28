@@ -172,7 +172,7 @@ namespace RBMAI
                 }
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return true;
             }

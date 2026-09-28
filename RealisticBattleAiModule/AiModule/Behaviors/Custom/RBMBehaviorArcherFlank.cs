@@ -15,8 +15,6 @@ namespace RBMAI
 
         public FormationAI.BehaviorSide FlankSide = FormationAI.BehaviorSide.Middle;
 
-        private bool _isEnemyReachable = true;
-
         public RBMBehaviorArcherFlank(Formation formation)
             : base(formation)
         {

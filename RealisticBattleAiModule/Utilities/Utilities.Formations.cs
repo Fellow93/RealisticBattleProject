@@ -726,7 +726,6 @@ namespace RBMAI
             Formation significantEnemy = null;
             List<Formation> significantFormations = new List<Formation>();
             float dist = 10000f;
-            float significantTreshold = 0.6f;
             List<Formation> allEnemyFormations = new List<Formation>();
 
             if (formation != null)
@@ -934,7 +933,7 @@ namespace RBMAI
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 result = false;
             }
