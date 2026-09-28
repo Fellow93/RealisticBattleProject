@@ -193,6 +193,12 @@ namespace RBM
             ApplyHarmonyPatches();
             // RBM's native parameters load with the module regardless of the Combat toggle; revert them here.
             NativeParameterGate.Apply();
+            // Crash guard for saves carrying uninitialized troops (see SaveRosterRepairBehavior); deliberately
+            // outside the campaign toggle, since the corruption comes from other mods, not RBMCampaign.
+            if (game.GameType is Campaign)
+            {
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new SaveRosterRepairBehavior());
+            }
             if (RBMConfig.RBMConfig.rbmCampaignEnabled && game.GameType is Campaign)
             {
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSpoilsCampaignBehavior());

@@ -287,6 +287,7 @@
     <Compile Include="CustomBattlePatches.cs" />
     <Compile Include="CustomBattlePreset.cs" />
     <Compile Include="NativeParameterGate.cs" />
+    <Compile Include="SaveRosterRepair.cs" />
     <Compile Include="XmlLoadingPatches.cs" />
   </ItemGroup>
   <ItemGroup>
