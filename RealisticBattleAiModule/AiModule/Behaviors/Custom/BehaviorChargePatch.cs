@@ -108,7 +108,13 @@ namespace RBMAI.AiModule.RbmBehaviors
                         }
                         else
                         {
-                            if (!(__instance.Formation.AI?.Side == FormationAI.BehaviorSide.Left || __instance.Formation.AI?.Side == FormationAI.BehaviorSide.Right) && enemyCav.TargetFormation == __instance.Formation)
+                            // TargetFormation is sticky (vanilla never clears it after a targeted order), so on its own
+                            // it braced us against cavalry parked on a Move/Stop order for the whole battle -- a stronger
+                            // attacker would never leave its spawn against a handful of idle horse. Brace only while that
+                            // cavalry is actually charging us and close enough to matter, as BehaviorAdvance already does.
+                            OrderType enemyCavOrder = enemyCav.GetReadonlyMovementOrderReference().OrderType;
+                            bool enemyCavCharging = enemyCavOrder == OrderType.ChargeWithTarget || enemyCavOrder == OrderType.Charge;
+                            if (!(__instance.Formation.AI?.Side == FormationAI.BehaviorSide.Left || __instance.Formation.AI?.Side == FormationAI.BehaviorSide.Right) && enemyCav.TargetFormation == __instance.Formation && enemyCavCharging && cavDist < 150f)
                             {
                                 Vec2 vec = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                                 WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
