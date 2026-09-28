@@ -213,6 +213,10 @@ namespace RBMAI
             private const float ThrowWindowMin = 6f;
             private const float ThrowWindowMax = 25f;
 
+            // Once an enemy was close, the soldier counts as in close combat for this long (main thread only).
+            private const float CloseCombatStickiness = 4f;
+            private float _lastEnemyCloseTime = float.MinValue;
+
             public SignatureWeaponGripComponent(Agent agent, SignatureWeaponGrip.Profile profile, EquipmentIndex mainSlot, EquipmentIndex shieldSlot) : base(agent)
             {
                 _profile = profile;
@@ -272,7 +276,14 @@ namespace RBMAI
 
                 MissionWeapon main = Agent.Equipment[(EquipmentIndex)_mainSlot];
                 _hasMainWeapon = !main.IsEmpty && main.Item == _mainWeapon;
-                _enemyClose = WeaponPreference.enemyClose.TryGetValue(Agent, out bool close) && close;
+                // Sticky: after a charge riders hover around the close radius, and a raw flag flipped every half second
+                // between "sidearm allowed" and "signature weapon only", swapping weapons back and forth.
+                float now = MBCommon.GetTotalMissionTime();
+                if (WeaponPreference.enemyClose.TryGetValue(Agent, out bool close) && close)
+                {
+                    _lastEnemyCloseTime = now;
+                }
+                _enemyClose = now - _lastEnemyCloseTime < CloseCombatStickiness;
 
                 EquipmentIndex inHand = Agent.GetPrimaryWieldedItemIndex();
                 _mainHandSlot = (int)inHand;
@@ -376,31 +387,9 @@ namespace RBMAI
             }
         }
 
-        /// <summary>
-        /// The engine sees replaced one-handed grips as copies of the two-handed one, but RBM's damage code reads the
-        /// ItemObject's usage list, where those indices are still one-handed classes. When the engine picks one, move the
-        /// weapon to the real two-handed usage index (identical data for the engine) so the managed side reads the
-        /// two-handed class.
-        /// </summary>
-        [HarmonyPatch(typeof(Agent))]
-        [HarmonyPatch("OnWeaponUsageIndexChange")]
-        internal class SignatureWeaponGripUsagePatch
-        {
-            private static void Postfix(Agent __instance, EquipmentIndex slotIndex, int usageIndex)
-            {
-                if (__instance.GetComponent<SignatureWeaponGripComponent>() == null)
-                {
-                    return;
-                }
-                ItemObject item = __instance.Equipment[slotIndex].Item;
-                int twoHanded = SignatureWeaponGrip.FindTwoHandedGrip(item);
-                if (twoHanded >= 0 && SignatureWeaponGrip.IsReplacedGrip(item, usageIndex, twoHanded))
-                {
-                    __instance.SetUsageIndexOfWeaponInSlotAsClient(slotIndex, twoHanded);
-                    __instance.Equipment.SetUsageIndexOfSlot(slotIndex, twoHanded);
-                    __instance.UpdateAgentProperties();
-                }
-            }
-        }
+        // No usage-index redirect: moving the engine off a replaced one-handed grip onto the real two-handed index (so
+        // RBM's damage code would read the two-handed class) ping-ponged after a couch - the engine drops back to the
+        // first usable grip and the redirect moved it again - and cataphracts visibly switched grips back and forth.
+        // Known cost: a hit made while the engine uses a replaced grip is scored as that grip's one-handed class.
     }
 }
