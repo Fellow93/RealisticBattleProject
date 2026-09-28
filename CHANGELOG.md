@@ -1,5 +1,59 @@
 # Changelog
 
+## v4.5.2 (changes since v4.5.1)
+
+### Combat
+- Disabling RBM Combat now fully disables it. RBM's native and spear combat parameters used to stay active with Combat off: AI archers kept engaging at RBM's range, the slower walk speed stayed, and so on. Native parameters switch back immediately. Spear animation parameters need a restart, and the config screen shows a notice when one is needed.
+- With Combat off, RBM_WS no longer adds the Nord crafting pieces a second time, which had made every Nord spear throwable. The "RBM_WS missing" warning now only shows when Combat is on.
+- RBM_WS weapon descriptions now match NavalDLC's again. Nord atgeirs regain their one-handed usage, and two-handed swords crafted from Nord pieces regain the one-handed grip.
+- The sneak-attack bonus now applies before armor, so stealth kills work again (the stealth tutorial and War Sails stealth quests).
+- Landing a punch no longer stuns the puncher. The recoil damage is still taken, but it can never kill.
+- Smithing: fixed the crash with long two-handed mace handles, and restored the Battanian falx blades. Crafting pieces that a future game patch or DLC adds are now attached to a weapon type automatically, so the smithy no longer crashes on them.
+- Loading a save made with Combat on, with Combat now off, no longer crashes on smithed weapons.
+- The Cloth Banner no longer removes the couch ability from lances.
+- The heavy spiked club head no longer floats above its handle.
+- The Light Menavlion's grip is back on the shaft, and the weapon is now shorter than the Heavy Menavlion.
+- Repeating crossbows keep their reticle while bolts are still loaded.
+- Troop equipment fixes: the Fian Champion's bows, the Skolder tier 2/3 helmets, two broken cape entries, and the missing reins on the light harness.
+- Passive shoulder shields: every `_shoulder` shield (e.g. the Falxman's targe) is swapped back when the option is off.
+
+### Ranged
+- The "Vanilla" reload setting now also gives the player vanilla bow draw speed, not only vanilla reload speed.
+- New option: "Ranged reload applies to AI" (off by default). When on, the AI follows the reload setting for both reload and draw speed.
+- Fixed arrows being returned twice, or quivers overfilling, when a bow is sheathed with an arrow nocked.
+- Ammo with zero weight or count no longer produces a broken missile speed.
+
+### Posture / AI
+- Heavy posture breaks dismount riders again. A single hit that deals at least 33% of a rider's max posture can unseat him, including through a shield block, and a mounted attacker whose blocked attack breaks his own posture can be dismounted too.
+- **Signature two-handed weapons.** Eastern heavy lancers keep the lance in both hands with the shield slung on the back, and draw mace and shield only once an enemy is within 2.5 m. Falxmen, shock troops, two-handed axemen and atgeir infantry never draw a shield, and throw only at 6–25 m.
+- Troops carrying a polearm prefer it until an enemy is within 2.5 m.
+- **Reinforcements** enter from the map border behind their own side, on dry ground, instead of spawning in one mid-field blob. Waves on both sides are paired, and each side's reinforcements are capped at half the battle size.
+- Player horse archers stay in formation under Move/Stop and in column under Follow.
+- AI order calculations no longer overwrite the formation of a player leading as a captain (e.g. shieldwall replaced by charge + line every tick).
+- AI infantry only braces against enemy cavalry that is actually charging within 150 m. Parked cavalry no longer freezes the attacker at its spawn.
+- Infantry under the split-archers tactic waits at most 30 s for its archers.
+- Siege archers switch to melee at 6 m instead of 15 m, so defenders no longer drop their bows after the first shot.
+- Frontline holds are released properly, so troops (e.g. archers with an enemy close by) no longer stay rooted in place. Retreating troops are never held.
+- Archers holding their sidearm are no longer moved to Infantry and back, which re-formed both formations each time.
+- Charge-routed troops are not rallied back out of a Retreat order.
+- Mounted banner bearers no longer ride back and forth at battle start.
+- The formation banner marker keeps up with cavalry.
+
+### Campaign
+- Days-of-food forecasts account for troop rations running out. 31 food no longer shows as lasting thousands of days, and AI army and siege decisions use the corrected figure.
+- Saves carrying troop stacks broken by another mod are repaired on load instead of crashing in the daily training tick.
+- Fixed the Escort Merchant Caravan quest crashing on accept with the troop overhaul.
+
+### Tournament
+- Top-tier tournaments apply vanilla's eligibility checks again, so children, wounded and non-combatant heroes no longer join.
+
+### Stability / fixes
+- Fixed several crashes to desktop: fast horse deaths near riderless horses, charge blows that killed their victim, forced stagger animations on swimmers, climbers and siege-engine users, health bars reading deleted agents (War Sails), and native writes from worker threads.
+- Swimmers in naval battles are left to native formation handling, and the signature-weapon grip stands down while swimming or climbing.
+- Fixed a crash on save load caused by the party food tooltip patch being applied before game texts were loaded.
+- Per-battle AI data is cleared at the start of every mission, so old battles are no longer kept in memory. This also fixes a crash when reloading.
+- A redirected, protected or unwritable Documents folder, or a corrupt config.xml, no longer crashes the game at startup. RBM uses the defaults and logs the problem.
+
 ## v4.5.1 (changes since v4.5.0.2)
 
 ### Combat
