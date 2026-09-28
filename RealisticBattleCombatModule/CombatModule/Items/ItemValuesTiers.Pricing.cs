@@ -193,7 +193,11 @@ namespace RBMCombat
                 }
                 else if (item.ItemComponent is WeaponComponent)
                 {
-                    price = (500f + (tier * 100f)) * 0.7f * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
+                    // tier is 2.75^Tierf (~1 at tier 0, ~430 at tier 6), so the flat term only matters at the cheap end.
+                    // It used to be 500, a 350-denar floor that made every hoe and sickle a looter dropped sell for
+                    // 400+ and let a single bandit fight net thousands. 50 fixes the junk end and leaves good weapons
+                    // where they were (tier 3 ~1500, tier 6 ~30000).
+                    price = (50f + (tier * 100f)) * 0.7f * RBMConfig.RBMConfig.priceMultipliers.WeaponPriceModifier;
                     if (item.ItemType == ItemObject.ItemTypeEnum.Polearm)
                     {
                         price *= 0.3f;
