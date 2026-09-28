@@ -19,6 +19,8 @@ namespace RBMAI
         public static Dictionary<Formation, float> advanceTimerStorage = new Dictionary<Formation, float> { };
         public static Dictionary<Formation, float> advanceScaleStartStorage = new Dictionary<Formation, float> { };
         public static Dictionary<Formation, float> advanceLastTickStorage = new Dictionary<Formation, float> { };
+        public static Dictionary<Formation, float> archerWaitStartStorage = new Dictionary<Formation, float> { };
+        private const float MaxArcherWaitSeconds = 30f;
         private static readonly MethodInfo CalculateCurrentOrderMethod = typeof(BehaviorAdvance).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly FieldInfo CurrentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -42,15 +44,33 @@ namespace RBMAI
                         if (CurrentTacticField.GetValue(__instance.Formation?.Team?.TeamAI) != null && CurrentTacticField.GetValue(__instance.Formation?.Team?.TeamAI).ToString().Contains("SplitArchers"))
                         {
                             Formation allyArchers = Utilities.FindSignificantAlly(__instance.Formation, false, true, false, false, false);
+                            bool archersLagging = false;
                             if (allyArchers != null)
                             {
                                 Vec2 dir = RBMAI.Utilities.GetFormationCenter(allyArchers) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                                 float allyArchersDist = dir.Normalize();
-                                if (allyArchersDist - (allyArchers.Width / 2f) - (__instance.Formation.Width / 2f) > 60f)
+                                archersLagging = allyArchersDist - (allyArchers.Width / 2f) - (__instance.Formation.Width / 2f) > 60f;
+                            }
+                            if (archersLagging)
+                            {
+                                // Wait for the archers to close up, but not forever: archers held back by their own
+                                // behaviour (or skirmishing a flank) never close the gap, and the infantry then sat at
+                                // its spawn for the whole battle. The clock resets once the archers catch up.
+                                float waitNow = Mission.Current.CurrentTime;
+                                if (!archerWaitStartStorage.TryGetValue(__instance.Formation, out float waitStart))
+                                {
+                                    waitStart = waitNow;
+                                    archerWaitStartStorage[__instance.Formation] = waitStart;
+                                }
+                                if (waitNow - waitStart < MaxArcherWaitSeconds)
                                 {
                                     ____currentOrder = MovementOrder.MovementOrderMove(RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation));
                                     return false;
                                 }
+                            }
+                            else
+                            {
+                                archerWaitStartStorage.Remove(__instance.Formation);
                             }
                         }
                     }

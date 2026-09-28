@@ -41,6 +41,7 @@ namespace RBMAI
             OverrideBehaviorAdvance.advanceTimerStorage.Clear();
             OverrideBehaviorAdvance.advanceScaleStartStorage.Clear();
             OverrideBehaviorAdvance.advanceLastTickStorage.Clear();
+            OverrideBehaviorAdvance.archerWaitStartStorage.Clear();
             OverrideBehaviorCautiousAdvance.waitCountShootingStorage.Clear();
             OverrideBehaviorCautiousAdvance.waitCountApproachingStorage.Clear();
             OverrideBehaviorMountedSkirmish.rotationDirectionDictionary.Clear();
