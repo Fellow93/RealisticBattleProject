@@ -36,7 +36,7 @@ namespace RBMCampaign
     /// with no dedup by output), which is how the steel tiers below offer multiple routes.
     ///
     /// Recipes (names: Crude=Iron1, Wrought=Iron2, Iron=Iron3, Steel=Iron4, Fine Steel=Iron5, Thamaskene=Iron6):
-    ///   Hardwood   (Wood) : 1 Planks -> 1 Hardwood                (planks charged out-of-band; always available)
+    ///   Hardwood   (Wood) : 1 Planks -> 10 Hardwood               (planks charged out-of-band; always available)
     ///   Wrought    (Iron2): 1 Crude + 1 Charcoal  -> 1 Wrought
     ///   Iron       (Iron3): 1 Crude + 1 Charcoal  -> 1 Iron
     ///   Steel      (Iron4): 1 Crude + 2 Charcoal  -> 1 Steel  |  1 Iron + 1 Charcoal  |  1 Wrought + 1 Charcoal
@@ -56,6 +56,9 @@ namespace RBMCampaign
     internal static class SteelRefining
     {
         private const string MaterialBrushName = "Crafting.Material.Brush";
+
+        /// <summary>Hardwood minted per plank. Refining XP is held at the one-hardwood rate by <see cref="HardwoodRefiningXp"/>.</summary>
+        internal const int HardwoodPerPlank = 10;
 
         /// <summary>
         /// Ingredients a recipe consumes that aren't <see cref="CraftingMaterials"/> and so can't sit in the formula:
@@ -77,7 +80,7 @@ namespace RBMCampaign
         {
             // Planks -> hardwood. Zero in-formula inputs: the plank is charged out-of-band (see OutOfBandIngredients),
             // so the formula only mints the hardwood and the injected plank tile supplies + gates the cost.
-            yield return new Crafting.RefiningFormula(CraftingMaterials.Wood, 0, CraftingMaterials.Wood, 0, CraftingMaterials.Wood, 1);
+            yield return new Crafting.RefiningFormula(CraftingMaterials.Wood, 0, CraftingMaterials.Wood, 0, CraftingMaterials.Wood, HardwoodPerPlank);
 
             foreach (Crafting.RefiningFormula formula in original)
             {
@@ -174,6 +177,29 @@ namespace RBMCampaign
                 layer.Sprite = sprite;
             }
             brush.AddStyle(style);
+        }
+    }
+
+    /// <summary>
+    /// Vanilla refining XP is 0.3 x output value x OutputCount, so the plank->hardwood recipe's ten-hardwood output
+    /// would pay ten times the XP of one refine. Hold it at the one-hardwood rate: the plank is the real input and
+    /// the batch is cheap wood, not ten separate jobs. Keyed on Output == Wood with no in-formula input, which only
+    /// RBM's plank recipe matches (vanilla has no Wood-output formula).
+    /// </summary>
+    [HarmonyPatch(typeof(DefaultSmithingModel), nameof(DefaultSmithingModel.GetSkillXpForRefining))]
+    internal static class HardwoodRefiningXp
+    {
+        private static void Postfix(DefaultSmithingModel __instance, ref Crafting.RefiningFormula refineFormula, ref int __result)
+        {
+            if (refineFormula.Output != CraftingMaterials.Wood || refineFormula.Input1Count != 0 || refineFormula.OutputCount <= 1)
+            {
+                return;
+            }
+            ItemObject hardwood = __instance.GetCraftingMaterialItem(CraftingMaterials.Wood);
+            if (hardwood != null)
+            {
+                __result = TaleWorlds.Library.MathF.Round(0.3f * hardwood.Value);
+            }
         }
     }
 
