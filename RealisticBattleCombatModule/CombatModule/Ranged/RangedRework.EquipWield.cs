@@ -225,45 +225,114 @@ namespace RBMCombat
                                     __instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags |= WeaponFlags.UnloadWhenSheathed;
                                     __instance.Equipment[equipmentIndex].GetWeaponStatsData()[0].WeaponFlags = (ulong)__instance.Equipment[equipmentIndex].GetWeaponComponentDataForUsage(0).WeaponFlags;
 
-                                    MissionWeapon mwa = mw.AmmoWeapon;
-                                    int ammoInHandCount = mwa.Amount;
-                                    if (mwa.Amount > 0)
+                                    if (mw.AmmoWeapon.Amount > 0)
                                     {
-                                        __instance.Equipment.GetAmmoCountAndIndexOfType(mw.Item.Type, out var ammouCount, out var eIndex);
-                                        if (eIndex != EquipmentIndex.None)
-                                        {
-                                            __instance.SetReloadAmmoInSlot(equipmentIndex, eIndex, Convert.ToInt16(-ammoInHandCount));
-                                            __instance.SetWeaponReloadPhaseAsClient(equipmentIndex, 0);
-                                            if (__instance.Equipment[eIndex].Amount == __instance.Equipment[eIndex].ModifiedMaxAmount)
-                                            {
-                                                for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
-                                                {
-                                                    if (!__instance.Equipment[i].IsEmpty && !__instance.Equipment[eIndex].IsEmpty &&
-                                                        __instance.Equipment[i].Item != null && __instance.Equipment[eIndex].Item != null &&
-                                                        __instance.Equipment[i].Item.PrimaryWeapon != null && __instance.Equipment[eIndex].Item.PrimaryWeapon != null)
-                                                    {
-                                                        if (i != eIndex)
-                                                        {
-                                                            if (__instance.Equipment[i].IsSameType(__instance.Equipment[eIndex]))
-                                                            {
-                                                                __instance.SetWeaponAmountInSlot(i, Convert.ToInt16(__instance.Equipment[i].Amount + ammoInHandCount), enforcePrimaryItem: true);
-                                                                break;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            else
-                                            {
-                                                __instance.SetWeaponAmountInSlot(eIndex, Convert.ToInt16(__instance.Equipment[eIndex].Amount + ammoInHandCount), enforcePrimaryItem: true);
-                                            }
-                                        }
+                                        QueueBowUnload(__instance, equipmentIndex);
                                     }
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+
+        // A sheathed bow keeps its nocked arrow when the skill check cleared UnloadWhenSheathed, so it is
+        // returned to the quiver by hand. That is deferred out of OnWieldedItemIndexChange: it is a native
+        // callback fired mid weapon switch (en masse when deployment ends), and changing ammo from inside
+        // it re-enters the engine. Vanilla defers equipment changes from callbacks the same way (Mission._tickActions).
+        private static readonly List<(Agent agent, EquipmentIndex bowSlot)> PendingBowUnloads = new List<(Agent, EquipmentIndex)>();
+        private static readonly object PendingBowUnloadsLock = new object();
+
+        private static void QueueBowUnload(Agent agent, EquipmentIndex bowSlot)
+        {
+            lock (PendingBowUnloadsLock)
+            {
+                // One entry per bow: a duplicate would return the arrow twice if the managed mirror lags.
+                if (!PendingBowUnloads.Contains((agent, bowSlot)))
+                {
+                    PendingBowUnloads.Add((agent, bowSlot));
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Mission))]
+        [HarmonyPatch("OnTick")]
+        private class ProcessPendingBowUnloadsPatch
+        {
+            private static void Prefix(Mission __instance)
+            {
+                List<(Agent agent, EquipmentIndex bowSlot)> pending;
+                lock (PendingBowUnloadsLock)
+                {
+                    if (PendingBowUnloads.Count == 0)
+                    {
+                        return;
+                    }
+                    pending = new List<(Agent, EquipmentIndex)>(PendingBowUnloads);
+                    PendingBowUnloads.Clear();
+                }
+                foreach ((Agent agent, EquipmentIndex bowSlot) in pending)
+                {
+                    // Entries left over from a previous mission are dropped here.
+                    if (agent.Mission == __instance && agent.IsActive())
+                    {
+                        UnloadSheathedBow(agent, bowSlot);
+                    }
+                }
+            }
+        }
+
+        private static void UnloadSheathedBow(Agent agent, EquipmentIndex bowSlot)
+        {
+            MissionWeapon bow = agent.Equipment[bowSlot];
+            // The bow may have been dropped, swapped or drawn again since the switch was queued.
+            if (bow.IsEmpty || bow.Item == null || bow.CurrentUsageItem.WeaponClass != WeaponClass.Bow || agent.GetPrimaryWieldedItemIndex() == bowSlot)
+            {
+                return;
+            }
+            MissionWeapon nockedAmmo = bow.AmmoWeapon;
+            int toReturn = nockedAmmo.Amount;
+            if (toReturn <= 0 || nockedAmmo.Item == null || nockedAmmo.Item.PrimaryWeapon == null)
+            {
+                return;
+            }
+
+            // Prefer the quiver the arrow came from, then any quiver of the same ammo class; never past its max.
+            List<(EquipmentIndex slot, short newAmount)> returns = new List<(EquipmentIndex, short)>();
+            for (int pass = 0; pass < 2 && toReturn > 0; pass++)
+            {
+                for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots && toReturn > 0; i++)
+                {
+                    MissionWeapon quiver = agent.Equipment[i];
+                    if (i == bowSlot || quiver.IsEmpty || quiver.Item == null || quiver.Item.PrimaryWeapon == null ||
+                        !quiver.IsSameType(nockedAmmo) || (pass == 0) != (quiver.Item == nockedAmmo.Item))
+                    {
+                        continue;
+                    }
+                    int room = quiver.ModifiedMaxAmount - quiver.Amount;
+                    if (room <= 0)
+                    {
+                        continue;
+                    }
+                    int returned = Math.Min(room, toReturn);
+                    returns.Add((i, (short)(quiver.Amount + returned)));
+                    toReturn -= returned;
+                }
+            }
+            // No quiver with room: leave the arrow nocked rather than destroy it.
+            if (returns.Count == 0)
+            {
+                return;
+            }
+
+            // Empty the bow the way a client applies a shot (loaded ammo consumed to 0, no quiver slot), so
+            // the engine has no quiver to hand the arrow back to; the quiver amounts are the only return.
+            agent.SetWeaponAmmoAsClient(bowSlot, EquipmentIndex.None, 0);
+            agent.SetWeaponReloadPhaseAsClient(bowSlot, 0);
+            foreach ((EquipmentIndex slot, short newAmount) in returns)
+            {
+                agent.SetWeaponAmountInSlot(slot, newAmount, enforcePrimaryItem: true);
             }
         }
     }
