@@ -227,6 +227,18 @@ namespace RBMAI
                 }
                 if (behaviorValueSet == BehaviorValueSet.DefaultMove)
                 {
+                    // Player-held Move/Stop: mounted archers hold their slot. Decided per agent as well as per formation,
+                    // because IsRangedCavalryFormation is a 5s cached ratio that flips to IsCavalryFormation once enough
+                    // quivers run dry (or javelin riders are mixed in), and that fell through to vanilla DefaultMove,
+                    // whose ChargeHorseback 100 breaks the rider out of formation at any enemy within ~8m.
+                    if (!___Agent.Formation.IsAIControlled && (___Agent.Formation.QuerySystem.IsRangedCavalryFormation || (___Agent.HasMount && ___Agent.IsRangedCached)))
+                    {
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 0.01f, 2f, 0.01f, 30f, 0.01f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 15f, 0.065f, 30f, 0.065f);
+                        return;
+                    }
                     if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                     {
                         if (___Agent.Formation.IsAIControlled)
@@ -244,13 +256,6 @@ namespace RBMAI
                                     __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 5f, 20f, 30f, 20f, 0.5f);
                                 }
                             }
-                        }
-                        else
-                        {
-                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
-                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
-                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 0.01f, 2f, 0.01f, 30f, 0.01f);
-                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 15f, 0.065f, 30f, 0.065f);
                         }
                         return;
                     }
@@ -278,6 +283,40 @@ namespace RBMAI
                     return;
                 }
             }
+        }
+    }
+
+    // The SetBehaviorValueSet postfix above picks AI or player weights from Formation.IsAIControlled, but vanilla only
+    // refreshes behavior values when an order is applied or a unit joins, never when control changes hands. So weights
+    // chosen while AI-controlled (before the player takes command, after delegating and taking back, or in sergeant
+    // mode) outlived the handover. Re-issuing Stop can't clear them either, since Stop->Stop is "practically the same"
+    // order and skips OnApply. Refresh on every change, mapping the order the same way MovementOrder.OnApply does.
+    [HarmonyPatch(typeof(Formation))]
+    [HarmonyPatch("SetControlledByAI")]
+    internal class RefreshBehaviorValuesOnControlChange
+    {
+        private static void Prefix(Formation __instance, out bool __state)
+        {
+            __state = __instance.IsAIControlled;
+        }
+
+        private static void Postfix(Formation __instance, bool __state)
+        {
+            if (__state == __instance.IsAIControlled || __instance.CountOfUnits == 0)
+            {
+                return;
+            }
+            MovementOrder order = __instance.GetReadonlyMovementOrderReference();
+            MovementOrder.MovementOrderEnum orderEnum = order.OrderEnum;
+            if ((orderEnum == MovementOrder.MovementOrderEnum.Charge || orderEnum == MovementOrder.MovementOrderEnum.ChargeToTarget) && order.GetPosition(__instance).IsValid)
+            {
+                orderEnum = MovementOrder.MovementOrderEnum.Move;
+            }
+            ArrangementOrderEnum arrangementEnum = __instance.ArrangementOrder.OrderEnum;
+            __instance.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+            {
+                agent.RefreshBehaviorValues(orderEnum, arrangementEnum);
+            });
         }
     }
 }
