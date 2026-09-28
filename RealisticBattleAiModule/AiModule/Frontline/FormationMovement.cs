@@ -121,7 +121,9 @@ namespace RBMAI
             if (___Agent != null)
             {
                 var formation = ___Agent.Formation;
-                if (!___Agent.IsMount && formation != null && (formation.QuerySystem.IsCavalryFormation || formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && !(bool)IsUnitDetachedForDebug.Invoke(formation, new object[] { ___Agent }))
+                // IsOnLand: vanilla GetBaseFormationFrame only queries an order position for agents on land; a swimmer
+                // (naval overboard) is left to native.
+                if (!___Agent.IsMount && ___Agent.IsOnLand() && formation != null &&(formation.QuerySystem.IsCavalryFormation || formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && !(bool)IsUnitDetachedForDebug.Invoke(formation, new object[] { ___Agent }))
                 {
                     if (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
                     {
