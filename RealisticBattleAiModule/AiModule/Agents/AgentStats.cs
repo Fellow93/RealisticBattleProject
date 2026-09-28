@@ -235,16 +235,14 @@ namespace RBMAI
 
                 //                GetEffectiveSkill
 
-                if (agent.Formation != null && agent.Formation.QuerySystem.IsInfantryFormation && !agent.IsRangedCached)
+                // This postfix also runs on the parallel agent tick (e.g. NavalDLC's AgentNavalComponent.OnTickParallel
+                // calls UpdateAgentStats when the stepped ship changes, which happens every time a man goes
+                // overboard), so only thread-safe reads here: the ReadOnly query accessor (as vanilla uses off the
+                // main thread), and no native writes. The IgnoreAmmoLimitForRangeCalculation combat flag this used
+                // to set is now applied in the main-thread HumanAIComponent.OnTick postfix (TickPatches.cs).
+                if (agent.Formation != null && agent.Formation.QuerySystem.IsInfantryFormationReadOnly && !agent.IsRangedCached)
                 {
                     agentDrivenProperties.ReloadMovementPenaltyFactor = 0.1f;
-                }
-
-                if (agent.IsRangedCached)
-                {
-                    //agent.SetScriptedCombatFlags(Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
-                    agent.SetScriptedCombatFlags(agent.GetScriptedCombatFlags() | Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
-                    //agent.ResetAiWaitBeforeShootFactor();
                 }
                 // REMOVED (2026-09-15): this used to run Mission.GetNearbyEnemyAgents(agent.GetWorldPosition())
                 // here, gated on IsDeploymentFinished. SetAiRelatedProperties is invoked from inside

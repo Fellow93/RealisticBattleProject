@@ -125,6 +125,17 @@ namespace RBMAI
                 //___Agent.MovementInputVector = new Vec2(30f, 30f);
                 float currentTime = MBCommon.GetTotalMissionTime();
                 WeaponPreference.TickWeaponPreference(___Agent, currentTime);
+                // Ranged AI judges range without its ammo limit. Set here, on the main thread, rather than in the
+                // SetAiRelatedProperties postfix (AgentStats.cs): that one can run on a parallel worker and this is a
+                // native write. Re-checked each tick so a newly picked-up bow or a script resetting the flags is covered.
+                if (___Agent.IsRangedCached && ___Agent.IsActive())
+                {
+                    Agent.AISpecialCombatModeFlags combatFlags = ___Agent.GetScriptedCombatFlags();
+                    if ((combatFlags & Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation) == 0)
+                    {
+                        ___Agent.SetScriptedCombatFlags(combatFlags | Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
+                    }
+                }
                 if (___Agent.IsActive() && ___Agent.HasMount)
                 {
                     MBList<Agent> enemiesClose = new MBList<Agent>();
