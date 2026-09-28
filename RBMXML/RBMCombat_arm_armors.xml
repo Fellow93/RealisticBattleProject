@@ -10,7 +10,7 @@
 	</Item>
 	<Item id="armwraps" name="{=oEJnxsQ1}Armwraps" mesh="battania_armwraps_a" culture="Culture.battania" weight="0.2" appearance="0.3" Type="HandArmor" difficulty="0">
 		<ItemComponent>
-			<Armor arm_armor="22" modifier_group="cloth" material_type="Cloth"/>
+			<Armor arm_armor="22" stealth_factor="5" modifier_group="cloth" material_type="Cloth"/>
 		</ItemComponent>
 		<Flags Civilian="true" Stealth="true"/>
 	</Item>

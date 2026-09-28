@@ -760,9 +760,9 @@
 	</Item>
 	<Item id="leather_coat" name="{=ZqTFQeai}Leather Tunic" mesh="leather_coat" culture="Culture.vlandia" weight="2.3" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="20" leg_armor="20" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="15"/>
+			<Armor body_armor="20" leg_armor="20" covers_body="true" modifier_group="leather" material_type="Leather" has_gender_variations="true" arm_armor="15" stealth_factor="15"/>
 		</ItemComponent>
-		<Flags UseTeamColor="true" Civilian="true"/>
+		<Flags UseTeamColor="true" Civilian="true" Stealth="true"/>
 	</Item>
 	<Item id="battania_light_armor_b" name="{=zG4Ms3f4}Highland Tartan" mesh="battania_light_armor_b" culture="Culture.battania" weight="3.2" Type="BodyArmor" appearance="1.7" difficulty="0" subtype="body_armor">
 		<ItemComponent>
