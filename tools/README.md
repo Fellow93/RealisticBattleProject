@@ -1,5 +1,42 @@
 # tools/
 
+## check_crafting_coverage.py
+
+Finds smithing piece combinations that no weapon description covers — the cause
+of the "game crashes as soon as I pick piece X in the smithy" reports (e.g.
+`battania_blade_6`, `mace_handle_25/26` before `fed0cbb6`).
+
+```powershell
+python tools\check_crafting_coverage.py
+python tools\check_crafting_coverage.py --repo <worktree of an older commit>
+```
+
+Requires Python 3 and `lxml` (`pip install lxml`). Exit code 1 if any RBM setup
+has an unbuildable combination.
+
+**Why it happens:** a crafted item gets one weapon per `WeaponDescription` whose
+`AvailablePieces` lists *all* of its pieces. RBM's
+`RBMCombat_weapon_descriptions.xml` is appended, so its copy of each description
+replaces vanilla's list, while template pieces only accumulate. A piece a game
+patch or DLC adds after RBM's list was written stays selectable but uncovered:
+the item gets zero weapons and the smithy's `RefreshStats` throws.
+
+**What it does:** rebuilds the merged `WeaponDescriptions` / `CraftingTemplates`
+the way `MBObjectManager.CreateMergedXmlFile` does (per module: its XSLT, then
+its XML; Native → NavalDLC → RBM → RBM_WS), for Vanilla / RBM / War Sails /
+War Sails + RBM_WS / War Sails without RBM_WS, both from the XML alone and with
+the runtime heal in `RBM/CraftingCoveragePatches.cs` applied. It reports pieces
+that crash with *any* other parts, then the remaining pairwise conflicts.
+
+"RBM + War Sails, no RBM_WS" is expected to break without healing (RBM's own XML
+never lists War Sails pieces; RBM_WS's XSLT does), so it only fails the check
+once healed. Every other RBM setup must be clean from the XML alone.
+
+Run it after a game patch / DLC update and after touching
+`RBMXML/RBMCombat_weapon_descriptions.xml`, `RBMXML/RBMCombat_no_bastard_axes.xml`
+or the `RBM_WS_XML/*.xslt` crafting files. It reads `Native/` and `NavalDLC/`
+from the Modules folder this repo sits in (`--modules` to override).
+
 ## Decompile-Bannerlord.ps1
 
 Decompiles the Bannerlord game assemblies into `decompiled/` so the real method
