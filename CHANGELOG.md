@@ -16,7 +16,7 @@
 - Repeating crossbows keep their reticle while bolts are still loaded.
 - Troop equipment fixes: the Fian Champion's bows, the Skolder tier 2/3 helmets, two broken cape entries, and the missing reins on the light harness.
 - Passive shoulder shields: every `_shoulder` shield (e.g. the Falxman's targe) is swapped back when the option is off.
-- War Sails ship ballista ammo (stones, boulders, grapeshot) uses vanilla damage again. It dealt about 2000 damage per hit and sank ships in one shot.
+- War Sails grapeshot no longer deals several times vanilla damage to ship hulls, where a single volley could sink a light ship. It stays deadly to crew.
 - Armwraps and the Leather Coat regain their vanilla stealth values, and the Leather Coat counts as stealth gear again.
 - Fifteen arrow visual entries with broken Empire/Vlandia culture references now resolve.
 - With Campaign off, junk weapons no longer sell for 400+ denars. The legacy weapon price floor is lower: tier-0 weapons are worth about 105, while tier 3 and above barely change.
