@@ -238,7 +238,9 @@ namespace RBMAI
                     // because IsRangedCavalryFormation is a 5s cached ratio that flips to IsCavalryFormation once enough
                     // quivers run dry (or javelin riders are mixed in), and that fell through to vanilla DefaultMove,
                     // whose ChargeHorseback 100 breaks the rider out of formation at any enemy within ~8m.
-                    if (!___Agent.Formation.IsAIControlled && (___Agent.Formation.QuerySystem.IsRangedCavalryFormation || (___Agent.HasMount && ___Agent.IsRangedCached)))
+                    // HasMount on both sides: a rider who has lost his horse is foot, and the zero Melee weight below
+                    // would leave him holding his bow while infantry cut him down.
+                    if (!___Agent.Formation.IsAIControlled && ___Agent.HasMount && (___Agent.Formation.QuerySystem.IsRangedCavalryFormation || ___Agent.IsRangedCached))
                     {
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 2f, 0f, 20f, 0f);
