@@ -102,7 +102,7 @@ namespace RBMAI
                                 rawHpDamage = MissionGameModels.Current.AgentApplyDamageModel.CalculateDamage(in attackInformation, in collisionData, rawHpDamage);
                             }
                             int hpDamage = (int)Math.Floor(rawHpDamage);
-                            makePostureCrashThroughBlow(ref mission, blow, attackerAgent, victimAgent, hpDamage, ref collisionData, attackerWeapon);
+                            makePostureCrashThroughBlow(ref mission, blow, attackerAgent, victimAgent, hpDamage, ref collisionData, attackerWeapon, DismountFlags(victimAgent, stance, postureDmg));
                             MBTextManager.SetTextVariable("DMG", hpDamage);
                             if (victimAgent.IsPlayerControlled)
                             {
@@ -112,6 +112,12 @@ namespace RBMAI
                             {
                                 InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_012}Enemy Posture break: Posture depleted, {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
                             }
+                        }
+                        else if (DismountFlags(victimAgent, stance, postureDmg) == BlowFlags.CanDismount)
+                        {
+                            // Shield-block breaks register no blow of their own, so a rider needs a zero-damage one
+                            // to carry CanDismount.
+                            makePostureBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, BlowFlags.CanDismount);
                         }
                         if (stagger)
                         {
@@ -227,7 +233,7 @@ namespace RBMAI
                         {
                             InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_018}Posture break: Posture depleted, chamber block").ToString(), Color.FromUint(4282569842u)));
                         }
-                        makePostureBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, BlowFlags.NonTipThrust);
+                        makePostureBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, DismountFlags(victimAgent, defenderPosture, postureDmg));
                     }
                     ResetPostureForAgent(ref defenderPosture, postureResetModifier);
                     addPosturedamageVisual(attackerAgent, victimAgent);
@@ -258,7 +264,7 @@ namespace RBMAI
                     {
                         InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_019}Posture break: Posture depleted, chamber block {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
                     }
-                    makePostureRiposteBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, BlowFlags.None);
+                    makePostureRiposteBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, DismountFlags(attackerAgent, attackerPosture, postureDmg));
                     ResetPostureForAgent(ref attackerPosture, postureResetModifier);
                     addPosturedamageVisual(attackerAgent, victimAgent);
                 }
@@ -582,6 +588,20 @@ namespace RBMAI
                 return retVal;
             }
 
+            // Share of a rider's max posture that the breaking hit alone must deal for the break to unseat him, so a
+            // heavy blow knocks him out of the saddle but chip damage that happens to empty the bar does not.
+            private const float DismountPostureShare = 0.33f;
+
+            // The posture rework reset every posture blow's flags to None (dropping the old knockback flags in
+            // favour of forced stagger animations), which took CanDismount with it, so broken riders stayed
+            // mounted. Native HandleBlowAux dismounts on this flag.
+            private static BlowFlags DismountFlags(Agent target, Stance stance, float postureDmg)
+            {
+                return target != null && target.HasMount && stance != null && postureDmg >= stance.maxPosture * DismountPostureShare
+                    ? BlowFlags.CanDismount
+                    : BlowFlags.None;
+            }
+
             private static void makePostureRiposteBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag)
             {
                 Blow newBLow = blow;
@@ -598,14 +618,13 @@ namespace RBMAI
                 newBLow.NoIgnore = collisionData.IsAlternativeAttack;
                 newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
                 newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
-                newBLow.BlowFlag = BlowFlags.None;
+                newBLow.BlowFlag = addedBlowFlag;
                 newBLow.GlobalPosition = collisionData.CollisionGlobalPosition;
                 newBLow.BoneIndex = collisionData.CollisionBoneIndex;
                 newBLow.Direction = blow.Direction;
                 newBLow.SwingDirection = blow.SwingDirection;
                 //blow.InflictedDamage = 1;
                 newBLow.VictimBodyPart = collisionData.VictimHitBodyPart;
-                //newBLow.BlowFlag |= addedBlowFlag;
                 attackerAgent.RegisterBlow(newBLow, collisionData);
                 foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {
@@ -632,13 +651,12 @@ namespace RBMAI
                 newBLow.NoIgnore = collisionData.IsAlternativeAttack;
                 newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
                 newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
-                newBLow.BlowFlag = BlowFlags.None;
+                newBLow.BlowFlag = addedBlowFlag;
                 newBLow.GlobalPosition = collisionData.CollisionGlobalPosition;
                 newBLow.BoneIndex = collisionData.CollisionBoneIndex;
                 newBLow.Direction = blow.Direction;
                 newBLow.SwingDirection = blow.SwingDirection;
                 newBLow.VictimBodyPart = collisionData.VictimHitBodyPart;
-                //newBLow.BlowFlag |= addedBlowFlag;
                 victimAgent.RegisterBlow(newBLow, collisionData);
                 foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {
@@ -650,7 +668,7 @@ namespace RBMAI
                 }
             }
 
-            private static void makePostureCrashThroughBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, int hpDamage, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
+            private static void makePostureCrashThroughBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, int hpDamage, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag)
             {
                 Blow newBLow = blow;
                 newBLow.BaseMagnitude = collisionData.BaseMagnitude;
@@ -665,7 +683,7 @@ namespace RBMAI
                 newBLow.NoIgnore = collisionData.IsAlternativeAttack;
                 newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod / 5f;
                 newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod * 5f;
-                newBLow.BlowFlag = BlowFlags.None;
+                newBLow.BlowFlag = addedBlowFlag;
                 newBLow.GlobalPosition = collisionData.CollisionGlobalPosition;
                 newBLow.BoneIndex = collisionData.CollisionBoneIndex;
                 newBLow.Direction = blow.Direction;
