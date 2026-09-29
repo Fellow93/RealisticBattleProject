@@ -146,11 +146,14 @@ namespace RBMAI
                 bool playerAimsVanilla = !RBMConfig.RBMConfig.rbmCombatEnabled && agent.IsPlayerControlled;
                 if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Crossbow)
                 {
-                    agentDrivenProperties.AiShooterError = 0.015f - (0.007f * effectiveSkillLevel);
+                    // Bow slope, but never worse than vanilla's flat 0.008: the old 0.007 slope left skilled
+                    // crossbowmen missing everything past short range.
+                    agentDrivenProperties.AiShooterError = Math.Min(0.008f, 0.015f - (0.015f * effectiveSkillLevel));
                     if (!playerAimsVanilla)
                     {
                         agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= 0.33f;
-                        agentDrivenProperties.WeaponBestAccuracyWaitTime = 1f - (0.75f * effectiveSkillLevel);
+                        // A spanned crossbow settles fast (vanilla 0.1s); 0.6s unskilled down to vanilla at full skill.
+                        agentDrivenProperties.WeaponBestAccuracyWaitTime = 0.6f - (0.5f * effectiveSkillLevel);
                     }
                 }
                 else if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem.WeaponClass == WeaponClass.Bow)
