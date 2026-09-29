@@ -213,10 +213,6 @@ namespace RBMAI
             private const float ThrowWindowMin = 6f;
             private const float ThrowWindowMax = 25f;
 
-            // Once an enemy was close, the soldier counts as in close combat for this long (main thread only).
-            private const float CloseCombatStickiness = 4f;
-            private float _lastEnemyCloseTime = float.MinValue;
-
             public SignatureWeaponGripComponent(Agent agent, SignatureWeaponGrip.Profile profile, EquipmentIndex mainSlot, EquipmentIndex shieldSlot) : base(agent)
             {
                 _profile = profile;
@@ -276,14 +272,10 @@ namespace RBMAI
 
                 MissionWeapon main = Agent.Equipment[(EquipmentIndex)_mainSlot];
                 _hasMainWeapon = !main.IsEmpty && main.Item == _mainWeapon;
-                // Sticky: after a charge riders hover around the close radius, and a raw flag flipped every half second
-                // between "sidearm allowed" and "signature weapon only", swapping weapons back and forth.
-                float now = MBCommon.GetTotalMissionTime();
-                if (WeaponPreference.enemyClose.TryGetValue(Agent, out bool close) && close)
-                {
-                    _lastEnemyCloseTime = now;
-                }
-                _enemyClose = now - _lastEnemyCloseTime < CloseCombatStickiness;
+                // Already sticky (WeaponPreference.CloseCombatStickiness): after a charge riders hover around the close
+                // radius, and a raw flag flipped every half second between "sidearm allowed" and "signature weapon
+                // only", swapping weapons back and forth.
+                _enemyClose = WeaponPreference.enemyClose.TryGetValue(Agent, out bool close) && close;
 
                 EquipmentIndex inHand = Agent.GetPrimaryWieldedItemIndex();
                 _mainHandSlot = (int)inHand;

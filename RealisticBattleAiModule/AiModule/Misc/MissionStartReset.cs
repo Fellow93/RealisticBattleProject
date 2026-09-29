@@ -61,6 +61,8 @@ namespace RBMAI
             AgentAi.OnTickPatch.meleePickupNextScan.Clear();
             AgentAi.WeaponPreference.enemyClose.Clear();
             AgentAi.WeaponPreference.nextCheck.Clear();
+            AgentAi.WeaponPreference.enemyCloseSince.Clear();
+            AgentAi.WeaponPreference.lastEnemyCloseTime.Clear();
             AgentAi.RangedReachGate.holding.Clear();
             AgentAi.RangedReachGate.nextCheck.Clear();
             AgentAi.RangedReachGate.checkedTarget.Clear();
