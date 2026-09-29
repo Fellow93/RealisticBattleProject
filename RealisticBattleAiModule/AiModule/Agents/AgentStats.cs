@@ -183,8 +183,11 @@ namespace RBMAI
 
                 //agentDrivenProperties.AiWeaponFavorMultiplierPolearm
 
-                agentDrivenProperties.AiRangerLeadErrorMin = (float)((0.0 - (double)num4) * 0.349999994039536) + 0.3f;
-                agentDrivenProperties.AiRangerLeadErrorMax = num4 * 0.2f + 0.3f;
+                // Vanilla's skill-based lead error. RBM used to add +0.3 to both ends, so every shooter over-led a
+                // moving target by ~0.3 of its travel during flight (measured: bolts landed ~2.4 m short of infantry
+                // walking in, ~12-15 m against charging cavalry).
+                agentDrivenProperties.AiRangerLeadErrorMin = (float)((0.0 - (double)num4) * 0.349999994039536);
+                agentDrivenProperties.AiRangerLeadErrorMax = num4 * 0.2f;
 
                 if (equippedItem != null && equippedItem.RelevantSkill == DefaultSkills.Bow)
                 {
