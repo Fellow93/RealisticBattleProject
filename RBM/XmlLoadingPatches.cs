@@ -84,6 +84,50 @@ namespace RBM
             }
         }
 
+        // Vanilla's validity check only asks that every build-order slot has a valid piece, not that each piece still
+        // belongs to the template, so an order whose weapon uses a piece RBM's (or a previous RBM version's) templates
+        // no longer list passes it, and GenerateCraftedItem then returns null on load. CraftingPatch above keeps the load
+        // alive by swapping in Trash, but vanilla's OnGameLoaded only cancels Trash TOWN orders: a Trash custom order
+        // (gang leader dagger quest) crashes the smithy on GetStatWeapon, and every later load rebuilds the design on top
+        // of the shared DefaultItems.Trash. Failing the check makes OnBeforeNonReadyObjectsDeleted drop the order the
+        // same way it drops other invalid ones, before InitializeCraftingOrderOnLoad ever runs.
+        [HarmonyPatch(typeof(CraftingOrder))]
+        [HarmonyPatch("IsPreCraftedWeaponDesignValid")]
+        public class CraftingOrderValidityPatch
+        {
+            private static readonly System.Reflection.FieldInfo ItemDataField =
+                AccessTools.Field(typeof(CraftingOrder), "_preCraftedWeaponDesignItemData");
+
+            private static readonly System.Reflection.FieldInfo CraftedDataField =
+                AccessTools.Field(AccessTools.Inner(typeof(TaleWorlds.CampaignSystem.CampaignBehaviors.CraftingCampaignBehavior), "CraftedItemInitializationData"), "CraftedData");
+
+            private static void Postfix(CraftingOrder __instance, ref bool __result)
+            {
+                if (!__result || ItemDataField == null || CraftedDataField == null)
+                {
+                    return;
+                }
+                object itemData = ItemDataField.GetValue(__instance);
+                TaleWorlds.Core.WeaponDesign design = itemData == null ? null : CraftedDataField.GetValue(itemData) as TaleWorlds.Core.WeaponDesign;
+                if (design?.Template?.Pieces == null || design.UsedPieces == null)
+                {
+                    return;
+                }
+                foreach (TaleWorlds.Core.WeaponDesignElement element in design.UsedPieces)
+                {
+                    // Same test as Crafting.CraftedItemGenerationHelper.GenerateCraftedItem.
+                    if (element?.CraftingPiece == null
+                        || (element.IsValid && !design.Template.Pieces.Contains(element.CraftingPiece))
+                        || (element.CraftingPiece.IsInitialized && !element.IsValid))
+                    {
+                        TaleWorlds.Library.Debug.Print($"[RBM] Dropping crafting order: piece {element?.CraftingPiece?.StringId} is no longer valid for template {design.Template.StringId}");
+                        __result = false;
+                        return;
+                    }
+                }
+            }
+        }
+
         // A crafted weapon saved with RBMCombat's crafting pieces can't be rebuilt once those pieces are gone (combat
         // module disabled): vanilla GenerateCraftedItem returns null and CraftingCampaignBehavior.InitializeCraftedItemData
         // unregisters the item. Postfixes from other mods (BetterSmithingContinued's InitAsPlayerCraftedItem) dereference
