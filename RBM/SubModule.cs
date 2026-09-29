@@ -335,6 +335,13 @@ namespace RBM
             }
         }
 
+        /// <summary>
+        /// Drops culture-less clans (left by broken XML) so campaign ticks never see them. Mirrors
+        /// vanilla's own invalid-clan cleanup in Clan.OnLoad: DestroyClanAction, then
+        /// CampaignObjectManager.RemoveClan (internal), which takes the clan out of both Clans and
+        /// Factions -- removing it from Clans alone left it in Factions for any faction loop to hit.
+        /// Already-eliminated clans are not destroyed again, which would re-fire OnClanDestroyed.
+        /// </summary>
         public override void OnGameInitializationFinished(Game game)
         {
             if (Campaign.Current != null && Campaign.Current.Clans != null)
@@ -349,8 +356,12 @@ namespace RBM
                 }
                 foreach (var clan in clansToRemove)
                 {
-                    DestroyClanAction.Apply(clan);
-                    Campaign.Current.Clans.Remove(clan);
+                    if (!clan.IsEliminated)
+                    {
+                        DestroyClanAction.Apply(clan);
+                    }
+                    AccessTools.Method(typeof(CampaignObjectManager), "RemoveClan")
+                        .Invoke(Campaign.Current.CampaignObjectManager, new object[] { clan });
                 }
             }
         }
