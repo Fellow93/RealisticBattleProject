@@ -146,7 +146,20 @@ namespace RBMCombat
                             return true;
                         }
 
-                        if (attacker.Character != null)
+                        // Turning this into a shield block sends vanilla down its AttackBlockedWithShield branch, which for a
+                        // CanPenetrateShield missile indexes the victim's off-hand slot - EquipmentIndex.None when the shield is
+                        // on the back. Ask the damage model for the flags vanilla will use (Impale, War Sails' Crew of Spears,
+                        // other mods' models) and leave those hits alone.
+                        WeaponFlags decidedFlags = missile.Weapon.CurrentUsageItem.WeaponFlags;
+                        MissionGameModels.Current.AgentApplyDamageModel.DecideMissileWeaponFlags(attacker, missile.Weapon, ref decidedFlags);
+                        if (decidedFlags.HasAnyFlag(WeaponFlags.CanPenetrateShield))
+                        {
+                            return true;
+                        }
+
+                        // The engine passes a null attacker once the shooter has been removed from the mission (e.g. a
+                        // routed horse archer fading out while its arrow is still in flight).
+                        if (attacker?.Character != null)
                         {
                             TaleWorlds.CampaignSystem.CharacterObject characterObject = attacker.Character as TaleWorlds.CampaignSystem.CharacterObject;
                             if (characterObject != null)
