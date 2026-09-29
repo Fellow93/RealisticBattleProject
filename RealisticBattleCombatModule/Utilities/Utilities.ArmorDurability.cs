@@ -86,7 +86,8 @@ namespace RBMCombat
 
                 ArmorMaterialTypes armorMaterialType = equipmentElement.Item.ArmorComponent.MaterialType;
                 DamageTypes damageType = (DamageTypes)attackCollisionData.DamageType;
-                if (attacker.IsHuman)
+                // attacker is null for a missile whose shooter left the mission mid-flight
+                if (attacker != null && attacker.IsHuman)
                 {
                     EquipmentIndex slotIndex = attacker.GetPrimaryWieldedItemIndex();
                     if (slotIndex != EquipmentIndex.None)
