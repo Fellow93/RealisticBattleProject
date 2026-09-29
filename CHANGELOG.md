@@ -32,6 +32,7 @@
 - Swimmers in field battles (e.g. on river maps) are no longer treated as being on land, so they are no longer ordered to cheer or to pick up weapons while swimming.
 
 ### Campaign
+- Starting gold is now a multiplier on the gold character creation gives you (default 5x, adjustable 1x–50x) instead of a flat 5,000-denar purse, so backstory choices matter again. The setting is renamed "Starting Gold Multiplier" and resets to 5x on existing configs. New campaigns only.
 - Starving a besieged fief works again: paid healing no longer mends starving garrisons, militia or parties faster than starvation wounds them.
 - Artisan quests no longer ask for hardwood or iron ore, which RBM villages don't produce. They ask for planks and tools instead.
 - A plank now refines into 10 hardwood.
