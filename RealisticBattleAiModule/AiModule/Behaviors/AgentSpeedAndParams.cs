@@ -279,29 +279,9 @@ namespace RBMAI
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 5f, 4f, 10f, 0.01f);
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 3f, 5f, 200f, 1f);
                     }
-
-                    if (Mission.Current.IsSiegeBattle || Mission.Current.IsSallyOutBattle)
-                    {
-                        // Siege attackers keep vanilla DefaultMove melee reach (~12 m vs ~4 m). Their wall-top and
-                        // gate-walk orders are plain Moves, and the tight curve left them standing under fire from
-                        // defenders a few metres away.
-                        if (Mission.Current.IsSiegeBattle && ___Agent.Team != null && ___Agent.Team.IsAttacker)
-                        {
-                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 7f, 5f, 20f, 0.01f);
-                            return;
-                        }
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 4f, 3f, 20f, 0.01f);
-                        return;
-                    }
-                    if (___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.FallBack)
-                    {
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 0f, 4f, 0f, 20f, 0f);
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 7f, 0f, 20f, 0f);
-                    }
-                    else
-                    {
-                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 5f, 3f, 20f, 0.01f);
-                    }
+                    // Everything else keeps vanilla DefaultMove (Melee 8,7,5,20,0.01). The tighter infantry melee curves
+                    // that used to follow here sat behind an unconditional return and never ran; 3746497e dropped the
+                    // return instead of the block and made archers step toward any enemy within ~20 m.
                     return;
                 }
             }
