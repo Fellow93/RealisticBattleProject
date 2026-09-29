@@ -3,67 +3,79 @@
 <!--RBM_XML_TAG-->
 <!--RBM_COMBAT_XML_TAG-->
 <!-- #region Used Spear Handle Pieces -->
-  <CraftingPiece id="spear_handle_5" name="{=baQ99nza}Long Ash Shaft" tier="2" piece_type="Handle" mesh="spear_handle_5" length="229" weight="0.595" CraftingCost="110">
+<!-- Holstered weapons hang from their grip, so a lower piece_offset than native (more shaft below the hand)
+     drops the spear down the back and the butt sinks into the ground. Each such shaft carries
+     item_holster_pos_shift z = (native butt - RBM butt) in metres, i.e. (native_offset - native_length/2) - (rbm_offset - rbm_length/2),
+     plus any native shift, which puts it back at the vanilla height. Both terms scale with the handle scale_factor.
+     Javelin items use spear_handle_14_javelin (no shift) so their quiver placement is unchanged. -->
+  <CraftingPiece id="spear_handle_5" name="{=baQ99nza}Long Ash Shaft" tier="2" piece_type="Handle" mesh="spear_handle_5" length="229" weight="0.595" item_holster_pos_shift="0,0,0.344" CraftingCost="110">
     <BuildData piece_offset="-11" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="spear_handle_6" name="{=RXjhTS9s}Long Wrapped Oak Shaft" tier="2" piece_type="Handle" mesh="spear_handle_6" length="250" weight="0.65" CraftingCost="120">
+  <CraftingPiece id="spear_handle_6" name="{=RXjhTS9s}Long Wrapped Oak Shaft" tier="2" piece_type="Handle" mesh="spear_handle_6" length="250" weight="0.65" item_holster_pos_shift="0,0,0.379" CraftingCost="120">
     <BuildData piece_offset="-13" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="spear_handle_25" name="{=nGP3FlHm}Long Mahogany Shaft" tier="3" piece_type="Handle" mesh="spear_handle_25" length="270" weight="0.702">
+  <CraftingPiece id="spear_handle_25" name="{=nGP3FlHm}Long Mahogany Shaft" tier="3" piece_type="Handle" mesh="spear_handle_25" length="270" weight="0.702" item_holster_pos_shift="0,0,0.369">
     <BuildData piece_offset="-14" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="spear_handle_27" name="{=tSQbGb4m}Extra Long Mahogany Shaft" tier="4" piece_type="Handle" mesh="spear_handle_27" length="290" weight="0.754" is_default="true">
+  <CraftingPiece id="spear_handle_27" name="{=tSQbGb4m}Extra Long Mahogany Shaft" tier="4" piece_type="Handle" mesh="spear_handle_27" length="290" weight="0.754" is_default="true" item_holster_pos_shift="0,0,0.379">
     <BuildData piece_offset="-15" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="spear_handle_3" name="{=71588OX7}Bamboo Shaft" tier="2" piece_type="Handle" mesh="spear_handle_3" length="179" weight="0.465" excluded_item_usage_features="long" CraftingCost="100">
+  <CraftingPiece id="spear_handle_3" name="{=71588OX7}Bamboo Shaft" tier="2" piece_type="Handle" mesh="spear_handle_3" length="179" weight="0.465" excluded_item_usage_features="long" item_holster_pos_shift="0,0,0.254" CraftingCost="100">
     <BuildData piece_offset="-8" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="spear_handle_4" name="{=LSOXMCAW}Pine Shaft" tier="4" piece_type="Handle" mesh="spear_handle_4" length="190" weight="0.494" excluded_item_usage_features="long" item_holster_pos_shift="0,0,0.10" CraftingCost="100">
+  <CraftingPiece id="spear_handle_4" name="{=LSOXMCAW}Pine Shaft" tier="4" piece_type="Handle" mesh="spear_handle_4" length="190" weight="0.494" excluded_item_usage_features="long" item_holster_pos_shift="0,0,0.384" CraftingCost="100">
     <BuildData piece_offset="-9" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="spear_handle_18" name="{=ow1aK4DJ}Wrapped Oaken Long Shaft" tier="3" piece_type="Handle" mesh="spear_handle_18" excluded_item_usage_features="long" length="200" weight="0.52">
+  <CraftingPiece id="spear_handle_18" name="{=ow1aK4DJ}Wrapped Oaken Long Shaft" tier="3" piece_type="Handle" mesh="spear_handle_18" excluded_item_usage_features="long" length="200" weight="0.52" item_holster_pos_shift="0,0,0.329">
     <BuildData piece_offset="-10" />
     <Materials>
       <Material id="Wood" count="4" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="spear_handle_22" name="{=HaNPlFBt}Wrapped Hardwood Long Shaft" tier="3" piece_type="Handle" mesh="spear_handle_22" length="240" weight="0.624">
+  <CraftingPiece id="spear_handle_22" name="{=HaNPlFBt}Wrapped Hardwood Long Shaft" tier="3" piece_type="Handle" mesh="spear_handle_22" length="240" weight="0.624" item_holster_pos_shift="0,0,0.349">
     <BuildData piece_offset="-12" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="spear_handle_21" name="{=7EZbFRaG}Reinforced Pine Shaft" tier="3" piece_type="Handle" mesh="spear_handle_21" length="230" weight="0.598">
+  <CraftingPiece id="spear_handle_21" name="{=7EZbFRaG}Reinforced Pine Shaft" tier="3" piece_type="Handle" mesh="spear_handle_21" length="230" weight="0.598" item_holster_pos_shift="0,0,0.349">
     <BuildData piece_offset="-12" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="spear_handle_16" name="{=yD9v5GS0}Decorated Pine Shaft" tier="4" piece_type="Handle" mesh="spear_handle_16" length="180" weight="0.468">
+  <CraftingPiece id="spear_handle_16" name="{=yD9v5GS0}Decorated Pine Shaft" tier="4" piece_type="Handle" mesh="spear_handle_16" length="180" weight="0.468" item_holster_pos_shift="0,0,0.319">
     <BuildData piece_offset="-9" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
-  <CraftingPiece id="spear_handle_14" name="{=AtNVVwTF}Short Pine Shaft" tier="3" piece_type="Handle" mesh="spear_handle_14" length="160" weight="0.416">
+  <CraftingPiece id="spear_handle_14" name="{=AtNVVwTF}Short Pine Shaft" tier="3" piece_type="Handle" mesh="spear_handle_14" length="160" weight="0.416" item_holster_pos_shift="0,0,0.299">
+    <BuildData piece_offset="-7" />
+    <Materials>
+      <Material id="Wood" count="1" />
+    </Materials>
+  </CraftingPiece>
+  <!-- Same shaft for Javelin-template items (pila, throwing spears): no holster shift, keeps their quiver placement -->
+  <CraftingPiece id="spear_handle_14_javelin" name="{=AtNVVwTF}Short Pine Shaft" tier="3" piece_type="Handle" mesh="spear_handle_14" length="160" weight="0.416" is_hidden="true">
     <BuildData piece_offset="-7" />
     <Materials>
       <Material id="Wood" count="1" />
@@ -121,21 +133,21 @@
   </CraftingPiece>
   <!-- 2h cutting polearms -->
   <!-- heavy ones, mostly tier 5 -->  
-    <CraftingPiece id="spear_handle_8" name="{=aQa3tp6Q}Decorated Long Pine Shaft" tier="5" piece_type="Handle" mesh="spear_handle_8" length="230" weight="0.65" CraftingCost="110">
+    <CraftingPiece id="spear_handle_8" name="{=aQa3tp6Q}Decorated Long Pine Shaft" tier="5" piece_type="Handle" mesh="spear_handle_8" length="230" weight="0.65" item_holster_pos_shift="0,0,0.129" CraftingCost="110">
     <BuildData piece_offset="10.0" />
     <Materials>
       <Material id="Wood" count="1" />
     </Materials>
   </CraftingPiece>
   <!-- warrazor and hewing spear -->  
-    <CraftingPiece id="spear_handle_26" name="{=ELpWa0K5}Cured Oaken Pike Shaft" tier="5" piece_type="Handle" mesh="spear_handle_26" length="280" weight="0.75">
+    <CraftingPiece id="spear_handle_26" name="{=ELpWa0K5}Cured Oaken Pike Shaft" tier="5" piece_type="Handle" mesh="spear_handle_26" length="280" weight="0.75" item_holster_pos_shift="0,0,0.129">
     <BuildData piece_offset="10.0" />
     <Materials>
       <Material id="Wood" count="3" />
     </Materials>
   </CraftingPiece>
   <!-- light ones, tier 4 -->  
-    <CraftingPiece id="spear_handle_15" name="{=NQb8boHt}Hardened Ash Shaft" tier="4" piece_type="Handle" mesh="spear_handle_15" length="170" weight="0.55">
+    <CraftingPiece id="spear_handle_15" name="{=NQb8boHt}Hardened Ash Shaft" tier="4" piece_type="Handle" mesh="spear_handle_15" length="170" weight="0.55" item_holster_pos_shift="0,0,0.129">
     <BuildData piece_offset="10.0" />
     <Materials>
       <Material id="Wood" count="1" />

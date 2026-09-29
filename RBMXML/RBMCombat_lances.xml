@@ -598,7 +598,7 @@
     <Pieces>
       <Piece id="spear_blade_38" Type="Blade" scale_factor="280" />
       <Piece id="default_polearm_guard" Type="Guard" scale_factor="100" />
-      <Piece id="spear_handle_14" Type="Handle" scale_factor="81" />
+      <Piece id="spear_handle_14_javelin" Type="Handle" scale_factor="81" />
       <Piece id="default_polearm_pommel" Type="Pommel" scale_factor="100" />
     </Pieces>
   </CraftedItem>
@@ -642,7 +642,7 @@
       <Piece id="spear_guard_7"
              Type="Guard"
              scale_factor="90" />
-      <Piece id="spear_handle_14"
+      <Piece id="spear_handle_14_javelin"
              Type="Handle"
              scale_factor="130" />
       <Piece id="default_polearm_pommel"
@@ -660,7 +660,7 @@
       <Piece id="spear_blade_35"
              Type="Blade"
              scale_factor="110" />
-      <Piece id="spear_handle_14"
+      <Piece id="spear_handle_14_javelin"
              Type="Handle"
              scale_factor="130" />
     </Pieces>
