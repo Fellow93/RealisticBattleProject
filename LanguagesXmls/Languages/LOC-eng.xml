@@ -526,8 +526,8 @@
 	<string id="RBM_CON_106" text="Wt." />
 	<string id="RBM_CON_107" text="Economy Logging" />
 	<string id="RBM_CON_108" text="Writes the village-to-town goods and food chain to logs/economy next to the config: each village's daily production, every villager party sent out with its size, composition and cargo, each town's rations, and the end-of-day state of every settlement. Verbose, and only useful for tuning the economy." />
-	<string id="RBM_CON_109" text="Starting Gold" />
-	<string id="RBM_CON_110" text="The purse a new campaign opens with, replacing whatever character creation handed out. Only applies to a new game; a loaded save keeps its own gold. Default 5000." />
+	<string id="RBM_CON_109" text="Starting Gold Multiplier" />
+	<string id="RBM_CON_110" text="Multiplies the gold character creation hands out at the start of a new campaign. Only applies to a new game; a loaded save keeps its own gold. Default 5.0x." />
 	<!-- Combat Toggle Restart Notice Strings -->
 	<string id="RBM_RESTART_001" text="Restart Required" />
 	<string id="RBM_RESTART_002" text="RBM Combat was changed. Everything else takes effect the next time you start or load a game, but RBM's spear and weapon animation parameters are only read when Bannerlord starts. Restart the game for them to match the new setting." />

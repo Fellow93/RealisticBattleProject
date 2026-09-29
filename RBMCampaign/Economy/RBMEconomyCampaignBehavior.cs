@@ -178,15 +178,16 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Sets the player's opening purse to a flat <see cref="RBMConfig.RBMConfig.campaignStartingGold"/>
-        /// instead of whatever the backstory choices happened to add up to. RBM reprices most of the campaign --
+        /// Scales the player's opening purse by <see cref="RBMConfig.RBMConfig.campaignStartingGoldMultiplier"/>
+        /// on top of whatever the backstory choices added up to. RBM reprices most of the campaign --
         /// troop upgrades are paid out of a spoils purse, gear and trade goods cost several times the
         /// vanilla figure -- so vanilla's few hundred denars leaves the player unable to take any of
         /// the opening decisions the economy is built around.
         ///
         /// Fires once, when character creation finalizes, which is after the narrative stages have
         /// applied their own gold; a loaded save never passes through here, so an existing campaign
-        /// keeps the gold it was saved with.
+        /// keeps the gold it was saved with. (From v1.5 the event is raised ten times with an index
+        /// 0..9 and this must act on the last pass only, or the multiplier compounds.)
         /// </summary>
         private void OnCharacterCreationIsOver()
         {
@@ -196,7 +197,8 @@ namespace RBMCampaign
                 return;
             }
 
-            player.ChangeHeroGold(RBMConfig.RBMConfig.campaignStartingGold - player.Gold);
+            int target = (int)MathF.Round(player.Gold * RBMConfig.RBMConfig.campaignStartingGoldMultiplier);
+            player.ChangeHeroGold(target - player.Gold);
         }
 
         public override void SyncData(IDataStore dataStore)
