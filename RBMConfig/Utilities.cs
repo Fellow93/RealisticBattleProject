@@ -119,7 +119,7 @@ namespace RBMConfig
                 ExtraBluntFactorCut: 0.1f,
                 ExtraBluntFactorPierce: 0.25f,
                 ExtraBluntFactorBlunt: 1f,
-                ExtraArmorThresholdFactorPierce: 2f,
+                ExtraArmorThresholdFactorPierce: 4f,
                 ExtraArmorThresholdFactorCut: 4f,
                 ExtraArmorSkillDamageAbsorb: 1f
                 )
@@ -129,7 +129,7 @@ namespace RBMConfig
                 ExtraBluntFactorCut: 0.1f,
                 ExtraBluntFactorPierce: 0.25f,
                 ExtraBluntFactorBlunt: 1f,
-                ExtraArmorThresholdFactorPierce: 2f,
+                ExtraArmorThresholdFactorPierce: 4f,
                 ExtraArmorThresholdFactorCut: 4f,
                 ExtraArmorSkillDamageAbsorb: 1f
                 )
@@ -300,6 +300,9 @@ namespace RBMConfig
             RealisticArrowArc.InnerText = RBMConfig.realisticArrowArc ? "1" : "0";
             XmlElement ThrustMagnitudeModifier = xmlconfig.CreateElement("ThrustMagnitudeModifier");
             ThrustMagnitudeModifier.InnerText = RBMConfig.ThrustMagnitudeModifier.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            // A fresh config already has the new mace defaults; mark it so the one-time bump in parseXmlConfig skips it.
+            XmlElement MacePierceThresholdMigrated = xmlconfig.CreateElement(RBMConfig.MacePierceThresholdMigratedNode);
+            MacePierceThresholdMigrated.InnerText = "1";
 
             Global.AppendChild(ArmorMultiplier);
             Global.AppendChild(ArmorPenetrationMessage);
@@ -315,6 +318,7 @@ namespace RBMConfig
             Global.AppendChild(ArmorStatusUIEnabled);
             Global.AppendChild(RealisticArrowArc);
             Global.AppendChild(ThrustMagnitudeModifier);
+            Global.AppendChild(MacePierceThresholdMigrated);
 
             //Weapon types
             XmlElement WeaponTypes = xmlconfig.CreateElement("WeaponTypes");

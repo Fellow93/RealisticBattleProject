@@ -11,6 +11,9 @@ namespace RBMConfig
         // Bump this to force all users to reset to defaults on next launch.
         public const int CONFIG_VERSION = 2;
 
+        // Marker leaf under RBMCombat/Global recording that the one-time mace pierce threshold bump has run.
+        internal const string MacePierceThresholdMigratedNode = "MacePierceThresholdMigrated";
+
         public static XmlDocument xmlConfig = new XmlDocument();
 
         //modules
@@ -286,6 +289,21 @@ namespace RBMConfig
                     wt.ExtraArmorThresholdFactorCut = ParseFloat(weaponTypeNode["ExtraArmorThresholdFactorCut"]?.InnerText ?? "5");
                     wt.ExtraArmorSkillDamageAbsorb = ParseFloat(weaponTypeNode["ExtraArmorSkillDamageAbsorb"]?.InnerText ?? "1");
                 }
+            }
+
+            // One-time bump of the mace pierce armor threshold from the old default 2 (arrow level) to 4: at 2 a
+            // spiked club's thrust got through armor far better than a sword point (3.5). Only the old default is
+            // raised so a player's own value is kept; the marker stops a later deliberate 2 being bumped again.
+            if (xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/" + MacePierceThresholdMigratedNode) == null)
+            {
+                foreach (RBMCombatConfigWeaponType wt in weaponTypesFactors)
+                {
+                    if ((wt.weaponType == "Mace" || wt.weaponType == "TwoHandedMace") && wt.ExtraArmorThresholdFactorPierce == 2f)
+                    {
+                        wt.ExtraArmorThresholdFactorPierce = 4f;
+                    }
+                }
+                ReadOrCreate("/Config/RBMCombat/Global", MacePierceThresholdMigratedNode, "1");
             }
 
             // Price modifiers
