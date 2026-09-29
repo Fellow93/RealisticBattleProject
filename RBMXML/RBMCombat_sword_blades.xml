@@ -2570,8 +2570,7 @@
                  piece_type="Blade"
                  mesh="dagger_blade_1"
                  length="39"
-                 weight="0.305"
-                 is_default="true">
+                 weight="0.305">
 
     <BladeData stack_amount="3"
                physics_material="metal_weapon"
