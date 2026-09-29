@@ -11,134 +11,15 @@ namespace RBMCombat
 {
     public static partial class Utilities
     {
-        // Per-projectile weight is weight/amount, so a zero-amount stack or weightless ammo gives
-        // NaN/Infinity/0 here. The speed math then divides by it and (int)NaN/(int)Infinity is
-        // int.MinValue, which ends up in the weapon stats the native engine reads.
         private static float SanitizeAmmoWeight(float ammoWeight)
         {
-            return (ammoWeight > 0f && !float.IsInfinity(ammoWeight)) ? ammoWeight : 0.07f;
+            return MissileBallistics.SanitizeAmmoWeight(ammoWeight);
         }
 
+        // Body lives in RBMConfig.MissileBallistics so RBMAI's crossbow reach gate uses the same launch speed.
         public static int calculateMissileSpeed(float ammoWeight, string rangedWeaponType, int drawWeight)
         {
-            ammoWeight = SanitizeAmmoWeight(ammoWeight);
-            int calculatedMissileSpeed = 10;
-            switch (rangedWeaponType)
-            {
-                case "bow": // composite horn-sinew horsebow
-                    {
-                        float powerstroke = (25f * 0.0254f); // in inches then converted to metres
-                        float materialEfficiency = 0.9f; // composite > wood > steel
-                        double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * materialEfficiency; // draw weight is in pounds and then multiplied to newton metres
-                        float virtualArrow = drawWeight * 0.00015f;// virtual arrow - weight of limbs and string added to the weight of the arrow
-                        ammoWeight += virtualArrow;
-                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
-                        break;
-                    }
-                case "long_bow":
-                    {
-                        float powerstroke = (25f * 0.0254f); // in inches then converted to metres
-                        float materialEfficiency = 0.835f; // composite > wood > steel
-                        double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * materialEfficiency; // draw weight is in pounds and then multiplied to newton metres
-                        float virtualArrow = drawWeight * 0.00018f;// virtual arrow - weight of limbs and string added to the weight of the arrow
-                        ammoWeight += virtualArrow;
-                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
-                        break;
-                    }
-                case "crossbow": // composite horn-sinew crossbow
-                case "crossbow_fast":
-                case "crossbow_light": // vanilla light crossbows
-                    {
-                        // Eastern / Chinese style crossbows
-                        float powerstroke = (20f * 0.0254f); // in inches then converted to metres
-                        float materialEfficiency = 0.88f; // composite bow + bit of drag
-                        double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * materialEfficiency; // draw weight is in pounds and then multiplied to newton metres
-                        float virtualArrow = drawWeight * 0.00015f;// virtual arrow - weight of limbs and string added to the weight of the arrow
-                        ammoWeight += virtualArrow;
-                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
-                        break;
-
-                        //European crossbows
-                        //float powerstroke = (8f * 0.0254f); // in inches then converted to metres
-                        //float materialEfficiency = 0.85f; // composite > wood > steel
-                        //double potentialEnergy = 0.5f * (drawWeight * 4.448f) * powerstroke * materialEfficiency; // draw weight is in pounds and then multiplied to newton metres
-                        //float virtualArrow = drawWeight * 0.00014f;// virtual arrow - weight of limbs and string added to the weight of the arrow
-                        //ammoWeight += virtualArrow;
-                        //calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
-                        //break;
-                    }
-                // case "Sling":
-                // float weightModifier  = 730f * (1f + throwing skill / 100); takze pri 100 skille to bude * 2
-                // float slingLengthModifier  = missile_speed (zo slingu, z tej equipnutej zbrane) * 0.01;
-                // int calculatedThrowingSpeed = (int)Math.Ceiling(Math.Sqrt((MBMath.ClampFloat(ammoWeight * weightModifier * slingLengthModifier, 60f, 350f)) * 2f / ammoWeight));
-                // return calculatedThrowingSpeed;
-                // tie modifiery zo stitu a armoru ktore vplivaju na normalny throw sa mozu aplikovat aj tu
-                case "osa_sling":
-                    {
-                        // 40 grams is added to the weight of projectiles, this results in 60 m/s at 80 grams with good sling, 70 m/s at 50 grams and some 80 ms at 30 grams
-                        double potentialEnergy = 0.5f * (drawWeight * drawWeight) * 0.12f;
-                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight + 0.04f)));
-                        break;
-                    }
-                case "cla_musket":
-                    {
-                        // arquebus , ammo should weight 40g+, kinetic energy should be 1300-1750J
-                        double potentialEnergy = drawWeight;
-                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
-                        break;
-                    }
-                case "cla_flint_rifle":
-                    {
-                        // flintlock musket , ammo should weight 18g-25g, kinetic energy should be 2300-3000J
-                        double potentialEnergy = drawWeight;
-                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
-                        break;
-                    }
-                case "cla_pistol":
-                    {
-                        // early flintlock pistol , ammo should weight 14g, kinetic energy should be 700+J
-                        double potentialEnergy = drawWeight;
-                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
-                        break;
-                    }
-                case "cla_revolver":
-                    {
-                        // wild west revolver , ammo should weight 16.5g, kinetic energy should be 850+J
-                        double potentialEnergy = drawWeight;
-                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
-                        break;
-                    }
-                case "cla_cannon":
-                    {
-                        // early hand cannon , ammo should weight 50g, kinetic energy should be 300-500J
-                        double potentialEnergy = drawWeight;
-                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
-                        break;
-                    }
-                case "cla_bolt_rifle":
-                    {
-                        // early bolt action , ammo should weight 25g, kinetic energy should be 5000J
-                        double potentialEnergy = drawWeight;
-                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / (ammoWeight)));
-                        break;
-                    }
-                case "cla_bomb":
-                    {
-                        // Just a throw
-                        double potentialEnergy = 150f;
-                        calculatedMissileSpeed = (int)Math.Floor(Math.Sqrt((potentialEnergy * 2f) / ammoWeight));
-                        break;
-                    }
-
-                default:
-                    {
-                        // Unknown (vanilla/modded) usage: its missile_speed is already a launch speed
-                        // in m/s, so keep it rather than firing at a crippling 10 m/s.
-                        calculatedMissileSpeed = drawWeight;
-                        break;
-                    }
-            }
-            return calculatedMissileSpeed;
+            return MissileBallistics.CalculateMissileSpeed(ammoWeight, rangedWeaponType, drawWeight);
         }
 
         public static int calculateThrowableSpeed(float ammoWeight, float effectiveSkill)

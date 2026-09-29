@@ -270,6 +270,7 @@ namespace RBMAI
                 // biasing by nearby enemies belongs in a tick, not in the stat pipeline.
                 // It now lives in WeaponPreference: the tick records whether an enemy is close, this only reads it.
                 WeaponPreference.ApplyWeaponPreference(agent, agentDrivenProperties);
+                RangedReachGate.ApplyRangedReach(agent, agentDrivenProperties);
 
                 agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 1f);
                 //agentDrivenProperties.SetStat(DrivenProperty.UseRealisticBlocking, 0f);

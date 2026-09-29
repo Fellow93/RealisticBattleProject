@@ -175,6 +175,7 @@
     <Compile Include="AiModule\Agents\Weather.cs" />
     <Compile Include="AiModule\Agents\TickPatches.cs" />
     <Compile Include="AiModule\Agents\WeaponPreference.cs" />
+    <Compile Include="AiModule\Agents\RangedReachGate.cs" />
     <Compile Include="AiModule\Agents\SignatureWeaponGrip.cs" />
     <Compile Include="AiModule\Misc\HitStopLogic.cs" />
     <Compile Include="AiModule\Misc\MissionStartReset.cs" />
