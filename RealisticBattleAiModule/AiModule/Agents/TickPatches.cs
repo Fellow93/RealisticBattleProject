@@ -35,6 +35,152 @@ namespace RBMAI
             // retreat or RBM's keep fallback must not be un-retreated, and a vanilla morale rout stays a rout.
             public static HashSet<Agent> chargeRoutedAgents = new HashSet<Agent>();
 
+            // Next mission time each agent may scan for a dropped melee weapon (see TrySeekMeleeWeapon).
+            public static Dictionary<Agent, float> meleePickupNextScan = new Dictionary<Agent, float>();
+
+            private const float MeleePickupSearchRadius = 15f;
+            private static readonly WeakGameEntity[] _meleePickupEntities = new WeakGameEntity[64];
+            private static readonly UIntPtr[] _meleePickupIds = new UIntPtr[64];
+
+            private static bool HasMeleeUsage(ItemObject item)
+            {
+                if (item?.Weapons == null)
+                {
+                    return false;
+                }
+                foreach (WeaponComponentData usage in item.Weapons)
+                {
+                    if (usage.IsMeleeWeapon)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // True if the agent still has something to fight with: any melee weapon, a throwing weapon with
+            // ammo left, or a launcher together with ammo.
+            private static bool IsArmed(Agent agent)
+            {
+                bool hasLauncher = false;
+                bool hasAmmo = false;
+                for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.ExtraWeaponSlot; i++)
+                {
+                    MissionWeapon weapon = agent.Equipment[i];
+                    if (weapon.IsEmpty)
+                    {
+                        continue;
+                    }
+                    if (HasMeleeUsage(weapon.Item))
+                    {
+                        return true;
+                    }
+                    WeaponComponentData usage = weapon.CurrentUsageItem;
+                    if (usage == null)
+                    {
+                        continue;
+                    }
+                    if (usage.IsRangedWeapon)
+                    {
+                        if (!usage.IsConsumable)
+                        {
+                            hasLauncher = true;
+                        }
+                        else if (weapon.Amount > 0)
+                        {
+                            return true;
+                        }
+                    }
+                    else if (usage.IsAmmo && weapon.Amount > 0)
+                    {
+                        hasAmmo = true;
+                    }
+                }
+                return hasLauncher && hasAmmo;
+            }
+
+            private static bool SpawnedWithMeleeWeapon(Agent agent)
+            {
+                for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.ExtraWeaponSlot; i++)
+                {
+                    if (HasMeleeUsage(agent.SpawnEquipment[i].Item))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // Vanilla AI only ever picks up shields, banners, stuck missiles and quivers (HumanAIComponent.SelectPickableItem),
+            // and only while its target is over 20m away, so an agent whose weapon the posture system knocked out of its
+            // hands punched for the rest of the fight. RBM 3.8.8 had an OnTickAsAI prefix for this; it was commented out
+            // in 3.8.9 when the method was renamed. This restores it for agents that spawned with a melee weapon and now
+            // have nothing to fight with, ignoring the target-distance gate: the dropped weapon is usually at their feet.
+            // Runs after vanilla's own pickup tick and on its own timer, so vanilla's shield/ammo pickup is untouched.
+            private static void TrySeekMeleeWeapon(HumanAIComponent humanAi, Agent agent, ref SpawnedItemEntity itemToPickUp, bool forceDisableItemPickup, float currentTime)
+            {
+                if (itemToPickUp != null || forceDisableItemPickup || !agent.IsActive() || !agent.IsHuman || !agent.IsAIControlled
+                    || agent.Mission == null || !agent.Mission.AllowAiTicking || agent.Mission.MissionEnded || agent.MountAgent != null)
+                {
+                    return;
+                }
+                if (meleePickupNextScan.TryGetValue(agent, out float nextScan) && currentTime < nextScan)
+                {
+                    return;
+                }
+                meleePickupNextScan[agent] = currentTime + 2f + MBRandom.RandomFloat;
+
+                if (!agent.IsAlarmed() || agent.IsRunningAway || (agent.GetAgentFlags() & AgentFlag.CanAttack) == 0 || !agent.CanBeAssignedForScriptedMovement()
+                    || humanAi.IsInImportantCombatAction() || agent.IsInWater() || IsArmed(agent) || !SpawnedWithMeleeWeapon(agent))
+                {
+                    return;
+                }
+
+                Vec3 bMin = agent.Position - new Vec3(MeleePickupSearchRadius, MeleePickupSearchRadius, 1f);
+                Vec3 bMax = agent.Position + new Vec3(MeleePickupSearchRadius, MeleePickupSearchRadius, 1.8f);
+                int count = agent.Mission.Scene.SelectEntitiesInBoxWithScriptComponent<SpawnedItemEntity>(ref bMin, ref bMax, _meleePickupEntities, _meleePickupIds, isFixedTick: false);
+                SpawnedItemEntity best = null;
+                float bestDistSq = float.MaxValue;
+                for (int i = 0; i < count; i++)
+                {
+                    SpawnedItemEntity item = _meleePickupEntities[i].GetFirstScriptOfType<SpawnedItemEntity>();
+                    if (item == null)
+                    {
+                        continue;
+                    }
+                    MissionWeapon weapon = item.WeaponCopy;
+                    if (weapon.IsEmpty || weapon.IsBanner() || item.IsStuckMissile() || item.IsQuiverAndNotEmpty()
+                        || weapon.Item.ItemFlags.HasAnyFlag(ItemFlags.CannotBePickedUp | ItemFlags.DropOnWeaponChange | ItemFlags.DropOnAnyAction)
+                        || !HasMeleeUsage(weapon.Item))
+                    {
+                        continue;
+                    }
+                    if (item.HasUser || (item.HasAIMovingTo && !item.IsAIMovingTo(agent)) || item.IsDisabledForAgent(agent)
+                        || item.GameEntityWithWorldPosition.GetNavMesh() == UIntPtr.Zero)
+                    {
+                        continue;
+                    }
+                    EquipmentIndex slot = MissionEquipment.SelectWeaponPickUpSlot(agent, weapon, isStuckMissile: false);
+                    if (slot == EquipmentIndex.None || !agent.Equipment[slot].IsEmpty)
+                    {
+                        continue;
+                    }
+                    float distSq = item.GameEntityWithWorldPosition.AsVec2.DistanceSquared(agent.Position.AsVec2);
+                    if (distSq >= bestDistSq || !agent.CanMoveDirectlyToPosition(item.GameEntityWithWorldPosition.AsVec2))
+                    {
+                        continue;
+                    }
+                    best = item;
+                    bestDistSq = distSq;
+                }
+                if (best != null)
+                {
+                    itemToPickUp = best;
+                    best.MovingAgent?.StopUsingGameObject(isSuccessful: false);
+                    humanAi.MoveToUsableGameObject(best, null);
+                }
+            }
+
             // CommonAIComponent.StopRetreating only clears the retreat flags. Retreat() had dropped the shield
             // stance (EnforceShieldUsage(None)) and the flee left a stale target, so a rallied agent came back
             // standing idle or swinging at whoever it last targeted. Rebuild what the formation would have given it.
@@ -57,7 +203,7 @@ namespace RBMAI
                 }
             }
 
-            private static void Postfix(ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent)
+            private static void Postfix(HumanAIComponent __instance, ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent, bool ____forceDisableItemPickup)
             {
                 // Banner bearers (Raise Your Banner) lock onto a distant enemy as their melee target and the native
                 // combat AI swings at it regardless of range - "attacking air". It is not gated by AIAttackOnDecideChance
@@ -169,6 +315,7 @@ namespace RBMAI
                 //if (___Agent.HasMount)
                 //{
                 //}
+                TrySeekMeleeWeapon(__instance, ___Agent, ref ____itemToPickUp, ____forceDisableItemPickup, currentTime);
                 if (____itemToPickUp != null && (___Agent.AIStateFlags & Agent.AIStateFlag.UseObjectMoving) != 0)
                 {
                     float num = MissionGameModels.Current.AgentStatCalculateModel.GetInteractionDistance(___Agent) * 3f;

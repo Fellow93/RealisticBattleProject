@@ -58,6 +58,7 @@ namespace RBMAI
             AgentAi.OnTickPatch.itemPickupDistanceStorage.Clear();
             AgentAi.OnTickPatch.bannerBearersWithHeldTarget.Clear();
             AgentAi.OnTickPatch.chargeRoutedAgents.Clear();
+            AgentAi.OnTickPatch.meleePickupNextScan.Clear();
             AgentAi.WeaponPreference.enemyClose.Clear();
             AgentAi.WeaponPreference.nextCheck.Clear();
             StanceLogic.agentsToChangeFormation.Clear();
