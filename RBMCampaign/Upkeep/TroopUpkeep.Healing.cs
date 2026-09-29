@@ -28,6 +28,17 @@ namespace RBMCampaign
             {
                 return;
             }
+            // No surgeon mends a starving man. A garrison or militia starves with its fief, and
+            // FiefStarvation's daily wounds are meant to bleed the defenders of a starved-out siege --
+            // hourly paid healing mended them faster than they fell, so a siege never starved anyone out.
+            // Any other stack starves on its own empty baggage.
+            bool starving = (mobileParty.IsGarrison || mobileParty.IsMilitia)
+                ? FiefStarvation.IsStarving(settlement.Town)
+                : mobileParty.Party.IsStarving;
+            if (starving)
+            {
+                return;
+            }
             PartyBase party = mobileParty.Party;
             TroopRoster roster = party.MemberRoster;
             int spentTotal = 0;
