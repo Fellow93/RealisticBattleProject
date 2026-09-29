@@ -27,10 +27,13 @@ namespace RBMTournament
             [HarmonyPrefix]
             [HarmonyPatch("Simulate")]
             private static bool SimulatePrefix(ref TournamentFightMissionController __instance, ref TournamentMatch ____match, ref CultureObject ____culture, ref bool ____isSimulated,
-                ref List<TournamentParticipant> ____aliveParticipants, ref List<TournamentTeam> ____aliveTeams)
+                ref List<TournamentParticipant> ____aliveParticipants, ref List<TournamentTeam> ____aliveTeams, List<TaleWorlds.MountAndBlade.Agent> ____currentTournamentAgents)
             {
                 ____isSimulated = false;
-                if (__instance.Mission.Agents.Count == 0)
+                // Vanilla's test. SkipMatch simulates a match that was never spawned, so the alive lists still hold the
+                // previous match; Mission.Agents always has the arena spectators in it and never hit 0, so those stale
+                // lists were simulated and the skipped match got no scores.
+                if (____currentTournamentAgents.Count == 0)
                 {
                     ____aliveParticipants = ____match.Participants.ToList();
                     ____aliveTeams = ____match.Teams.ToList();

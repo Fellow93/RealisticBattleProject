@@ -28,6 +28,12 @@ namespace RBMTournament
             [HarmonyPatch("UpdateTournamentPrize")]
             private static bool UpdateTournamentPrizePrefix(ref TournamentGame __instance, ref bool includePlayer, ref bool removeCurrentPrize)
             {
+                // removeCurrentPrize is how OnGameLoaded replaces a prize that no longer resolves (Trash or an unready
+                // item from a removed mod); keeping it just because its tier still matches left that prize in place.
+                if (removeCurrentPrize || __instance.Prize == DefaultItems.Trash || (__instance.Prize != null && !__instance.Prize.IsReady))
+                {
+                    return true;
+                }
                 if (__instance.Prize != null)
                 {
                     if ((int)__instance.Prize.Tier != calculatePlayerTournamentTier())

@@ -123,7 +123,7 @@ namespace RBMTournament
                 }
                 int playerArmorTier = countOfArmor > 0 ? MathF.Round(armorTierSum / countOfArmor) : 0;
 
-                int playerTier = playerLevelTier > armorTierSum ? playerLevelTier : playerArmorTier;
+                int playerTier = playerLevelTier > playerArmorTier ? playerLevelTier : playerArmorTier;
                 playerTier = MBMath.ClampInt(playerTier, 1, 6);
                 return playerTier;
             }
@@ -240,7 +240,7 @@ namespace RBMTournament
                         InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_TOU_002}Lower tier tournament: Tier {TIER}").ToString()));
                     }
                     //CultureObject cultureMercenaryObject = Game.Current.ObjectManager.GetObject<CultureObject>("neutral");
-                    CultureObject culture = Settlement.CurrentSettlement.Culture;
+                    CultureObject culture = settlement.Culture;
 
                     //List<CharacterObject> troops = FillTroopListUntilTier(culture.BasicTroop, playerTier);
                     //List<CharacterObject> eliteTroops = FillTroopListUntilTier(culture.EliteBasicTroop, playerTier);
@@ -313,9 +313,12 @@ namespace RBMTournament
                 return false;
             }
 
-            [HarmonyPostfix]
+            // A prefix, not a postfix: RBM's pick always replaced vanilla's anyway, and vanilla indexes its reward
+            // lists by range with no empty check, so with overhaul mods that drop its hard-coded elite items it threw
+            // during game load. Vanilla now only runs when no culture item of the player's tier exists.
+            [HarmonyPrefix]
             [HarmonyPatch("GetTournamentPrize")]
-            private static void GetTournamentPrizePostfix(ref FightTournamentGame __instance, ref ItemObject __result, bool includePlayer, int lastRecordedLordCountForTournamentPrize)
+            private static bool GetTournamentPrizePrefix(ref FightTournamentGame __instance, ref ItemObject __result)
             {
                 //if (includePlayer)
                 //{
@@ -338,8 +341,10 @@ namespace RBMTournament
                 if (list.Count > 0)
                 {
                     __result = list.GetRandomElement();
+                    return false;
                 }
                 //}
+                return true;
             }
         }
     }
