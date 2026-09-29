@@ -38,6 +38,7 @@ public class RBMTacticEmbolon : TacticComponent
             _mainInfantry.AI.ResetBehaviorWeights();
             TacticComponent.SetDefaultBehaviorWeights(_mainInfantry);
             _mainInfantry.AI.SetBehaviorWeight<BehaviorAdvance>(1f);
+            _mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
         }
         if (_archers != null)
         {

@@ -336,8 +336,8 @@ namespace RBMAI
             s.SlotDist = -1f;
             try
             {
-                WorldPosition slot = formation.GetOrderPositionOfUnit(agent);
-                if (slot.IsValid)
+                WorldPosition slot;
+                if (RBMAI.Utilities.TryGetUnitSlot(formation, agent, out slot))
                 {
                     s.SlotDist = agent.Position.AsVec2.Distance(slot.AsVec2);
                 }
@@ -706,6 +706,10 @@ namespace RBMAI
             sb.Append('\t').Append("form=").Append(Safe(() => formation.FormOrder.OrderEnum.ToString()));
             sb.Append('\t').Append("w=").Append(SafeFloat(() => formation.Width));
             sb.Append('\t').Append("d=").Append(SafeFloat(() => formation.Depth));
+            sb.Append('\t').Append("rally=").Append(Safe(() =>
+                (RallyLogic.IsRallying(formation) ? "1" : "0") + "/" + RallyLogic.FarCount(formation)
+                + (RallyLogic.RecentlyReinforced(formation) ? "/reinf" : "")
+                + (RallyLogic.IsAnchoredAtSpawn(formation) ? "/spawn" : "")));
             sb.Append('\t').Append("spd=").Append(SafeFloat(() => formation.CachedMovementSpeed));
             sb.Append('\t').Append("spdMax=").Append(SafeFloat(() =>
                 (formation.QuerySystem != null) ? formation.QuerySystem.MovementSpeedMaximum : 0f));
@@ -975,9 +979,11 @@ namespace RBMAI
             sb.Append("#").Append("\n");
             sb.Append("#   FORM   t  FORM  team  formationIndex  primaryClass  units  aiControlled  playerIn").Append("\n");
             sb.Append("#          playerLed  activeBehavior  side  movementOrder  state  arr  form").Append("\n");
-            sb.Append("#          w  d  spd  spdMax  dev  idealDisp  avg  order  distToOrder  distToEnemy  weights").Append("\n");
+            sb.Append("#          w  d  rally  spd  spdMax  dev  idealDisp  avg  order  distToOrder  distToEnemy  weights").Append("\n");
             sb.Append("#             state       = Formation.GetMovementState()").Append("\n");
             sb.Append("#             arr/form    = ArrangementOrder / FormOrder enum").Append("\n");
+            sb.Append("#             rally       = <1 while RallyLogic holds the formation for its far men>/<far men>[/reinf in the").Append("\n");
+            sb.Append("#                           30s after a reinforcement wave][/spawn when holding at the wave's spawn point]").Append("\n");
             sb.Append("#             spd/spdMax  = CachedMovementSpeed / QuerySystem.MovementSpeedMaximum").Append("\n");
             sb.Append("#             dev         = DeviationOfPositionsExcludeFarAgents (how ragged the line is)").Append("\n");
             sb.Append("#             idealDisp   = QuerySystem.IdealAverageDisplacement").Append("\n");

@@ -237,6 +237,7 @@ namespace RBMAI
             __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
             if (__instance.Formation.QuerySystem.IsInfantryFormation)
             {
+                float widthBefore = __instance.Formation.Width;
                 switch (__instance.Formation.ArrangementOrder.OrderType)
                 {
                     case OrderType.ArrangementLine:
@@ -256,6 +257,16 @@ namespace RBMAI
                             __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 7f)), true);
                             break;
                         }
+                }
+
+                // Widening the line (e.g. 41x13 -> 73x7 on the first advance tick) re-lays the grid BY INDEX, so
+                // men from the deep middle ranks are handed cells on the far flanks, ~100 m diagonally from where
+                // they stand, and lag the line for the whole advance. Native's dispersal routine reassigns every
+                // cell to the closest man, which is exactly what a re-shaped line needs. Main thread, once per
+                // width change, O(n^2) distance checks -- cheap at 500.
+                if (MathF.Abs(__instance.Formation.Width - widthBefore) > 0.01f)
+                {
+                    __instance.Formation.OnFormationDispersed();
                 }
 
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);

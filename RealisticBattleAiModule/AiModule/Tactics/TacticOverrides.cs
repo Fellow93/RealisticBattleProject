@@ -133,6 +133,11 @@ namespace RBMAI
             [HarmonyPatch("Advance")]
             private static void PostfixAdvance(ref Formation ____archers, ref Formation ____mainInfantry, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
             {
+                if (____mainInfantry != null)
+                {
+                    // Native leaves Regroup at 0 here, which also locks RallyLogic out. Same weight as the other tactics.
+                    ____mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+                }
                 if (____rightCavalry != null)
                 {
                     ____rightCavalry.AI.ResetBehaviorWeights();

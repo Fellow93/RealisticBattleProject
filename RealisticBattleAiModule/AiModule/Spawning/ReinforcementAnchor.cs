@@ -32,6 +32,10 @@ namespace RBMAI.AiModule
         private const float MaxSearchMeters = 2000f;
         private const float SafeEnemyDistance = 100f;
         private const float WaveGapSeconds = 3f;
+        /// <summary>How far in front of a wave's spawn frame (toward the enemy) RallyLogic gathers the formation.</summary>
+        private const float RallyForwardMeters = 200f;
+        /// <summary>The gathering point keeps at least this far from every enemy formation.</summary>
+        private const float RallyEnemyClearance = 200f;
         private static readonly float[] CandidateAngles = { 0f, 0.44f, -0.44f, 0.87f, -0.87f };
 
         private class Anchor
@@ -44,6 +48,50 @@ namespace RBMAI.AiModule
 
         private static Mission _mission;
         private static readonly Dictionary<Team, Anchor> _anchors = new Dictionary<Team, Anchor>();
+
+        /// <summary>
+        /// Where each (team, formation class)'s latest wave should gather, and when the wave was placed: a little
+        /// in front of its spawn frame, toward the battle. RallyLogic holds a freshly reinforced formation there.
+        /// Written from the spawn logic's mission tick, read from the formation AI tick, so it is never mutated:
+        /// every update swaps in a new map and readers take the reference once.
+        /// </summary>
+        private static Dictionary<(Team, FormationClass), (Vec2 Position, float Time)> _spawnPoints =
+            new Dictionary<(Team, FormationClass), (Vec2, float)>();
+
+        /// <summary>The gathering point of this formation class's latest wave, if the wave is at most <paramref name="maxAge"/> seconds old.</summary>
+        internal static bool TryGetRecentRallyPoint(Team team, FormationClass formationClass, float maxAge, out Vec2 position)
+        {
+            position = Vec2.Invalid;
+            Mission mission = Mission.Current;
+            if (team == null || mission == null || mission != _mission)
+            {
+                return false;
+            }
+            Dictionary<(Team, FormationClass), (Vec2 Position, float Time)> points = _spawnPoints;
+            if (!points.TryGetValue((team, formationClass), out (Vec2 Position, float Time) point)
+                || mission.CurrentTime - point.Time > maxAge || !point.Position.IsValid)
+            {
+                return false;
+            }
+            position = point.Position;
+            return true;
+        }
+
+        /// <summary>Called from MissionStartReset: drops the last mission's teams.</summary>
+        internal static void Reset()
+        {
+            _mission = null;
+            _anchors.Clear();
+            _spawnPoints = new Dictionary<(Team, FormationClass), (Vec2, float)>();
+        }
+
+        private static void PublishSpawnPoint(Team team, FormationClass formationClass, Vec2 position, float time)
+        {
+            Dictionary<(Team, FormationClass), (Vec2 Position, float Time)> next =
+                new Dictionary<(Team, FormationClass), (Vec2, float)>(_spawnPoints);
+            next[(team, formationClass)] = (position, time);
+            _spawnPoints = next;
+        }
 
         [HarmonyPatch(typeof(Mission), nameof(Mission.GetFormationSpawnFrame))]
         private static class GetFormationSpawnFramePatch
@@ -61,6 +109,7 @@ namespace RBMAI.AiModule
                     {
                         _mission = __instance;
                         _anchors.Clear();
+                        _spawnPoints = new Dictionary<(Team, FormationClass), (Vec2, float)>();
                     }
                     float now = __instance.CurrentTime;
                     if (!_anchors.TryGetValue(team, out Anchor anchor) || now - anchor.LastUsed > WaveGapSeconds)
@@ -79,6 +128,10 @@ namespace RBMAI.AiModule
                     {
                         frame = PlaceFormation(__instance, team, anchor, spawnPosition.AsVec2, spawnDirection);
                         anchor.Frames[formationClass] = frame;
+                        if (frame.pos.IsValid)
+                        {
+                            PublishSpawnPoint(team, formationClass, RallyPointInFront(__instance, team, frame.pos.AsVec2, frame.dir), now);
+                        }
                     }
                     if (frame.pos.IsValid)
                     {
@@ -153,6 +206,31 @@ namespace RBMAI.AiModule
                 facing = -away;
             }
             return new Anchor { Position = bestPos, Direction = facing.Normalized() };
+        }
+
+        /// <summary>
+        /// <see cref="RallyForwardMeters"/> in front of the spawn frame along its facing (toward the enemy), stepped
+        /// back toward the frame until it is dry, walkable ground inside the boundary and at least
+        /// <see cref="RallyEnemyClearance"/> from every enemy formation; the frame itself if none is.
+        /// </summary>
+        private static Vec2 RallyPointInFront(Mission mission, Team team, Vec2 spawn, Vec2 facing)
+        {
+            if (facing.LengthSquared < 1e-4f)
+            {
+                return spawn;
+            }
+            facing = facing.Normalized();
+            for (float along = RallyForwardMeters; along > 0f; along -= StepMeters)
+            {
+                Vec2 point = spawn + facing * along;
+                if (mission.IsPositionInsideBoundaries(point)
+                    && NearestEnemyFormationDistance(mission, team, point) >= RallyEnemyClearance
+                    && TryGetDryGround(mission, point, facing, out WorldPosition ground))
+                {
+                    return ground.AsVec2;
+                }
+            }
+            return spawn;
         }
 
         /// <summary>Moves one formation's vanilla reinforcement frame from the plan's mean onto the anchor.</summary>
