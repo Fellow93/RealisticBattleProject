@@ -124,7 +124,7 @@
                      UseHandAsThrowBase="true"
                      LeavesTrail="true"
                      AmmoCanBreakOnBounceBack="true"
-                     AffectsArea="false" 
+                     AffectsArea="true"
 					 MultiplePenetration="true"
 					 CanKillEvenIfBlunt="true"/>
       </Weapon>
@@ -199,7 +199,7 @@
         mesh="projectile_pot"
         holster_mesh=""
         subtype="arrows"
-        weight="5"
+        weight="15"
         difficulty="0"
         appearance="1"
         Type="Thrown"
@@ -214,7 +214,7 @@
               speed_rating="0"
               missile_speed="5"
               weapon_length="95"
-              thrust_damage="5"
+              thrust_damage="33"
               thrust_damage_type="Blunt"
               item_usage="heavy_stone"
               flying_sound_code="event:/mission/combat/boulder/passby"
@@ -230,8 +230,9 @@
                      LeavesTrail="true"
                      Burning="true"
 					 AffectsArea="true"
-                     AffectsAreaBig="false"
-                     AmmoBreaksOnBounceBack="true" />
+                     AffectsAreaBig="true"
+                     AmmoBreaksOnBounceBack="true"
+                     CanKillEvenIfBlunt="true" />
       </Weapon>
     </ItemComponent>
     <Flags QuickFadeOut="true"
