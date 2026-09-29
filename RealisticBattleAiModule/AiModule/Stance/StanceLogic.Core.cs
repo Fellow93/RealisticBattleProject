@@ -444,7 +444,11 @@ namespace RBMAI
                         if (affectedAgentPosture.posture <= 0f)
                         {
                             affectedAgentPosture.posture = 0f;
-                            forceStaggerAnimation(affectedAgent, attackCollisionData, 0.85f, false);
+                            // health is already reduced here but Die() hasn't run yet; don't animate a dying agent
+                            if (affectedAgent.Health >= 1f)
+                            {
+                                forceStaggerAnimation(affectedAgent, attackCollisionData, 0.85f, false);
+                            }
                             ResetPostureForAgent(ref affectedAgentPosture, postureResetModifier);
                         }
 
