@@ -48,7 +48,8 @@
 
 ### Stability / fixes
 - Siege machines no longer crash the mission when a soldier walking to one has lost his formation, and releasing a siege engine no longer crashes on soldiers without an AI component.
-- Arrows hitting a shield worn on the back no longer crash when the shooter has already left the battle.
+- Arrows no longer crash the game when the shooter has already left the battle, whether they hit a shield worn on the back or armor (e.g. a helmet on a headshot).
+- A ranged hit that both breaks posture and kills no longer forces a stagger animation on the dying soldier.
 - Hardening against a reported crash from missile collisions in very large battles. Missiles that stick into a shield the soldier no longer holds are removed instead of left floating.
 - Hiring modded tavern mercenaries in your own fief no longer crashes the hire menu.
 - The smithy no longer crashes on saved crafting orders whose weapon uses a part its template no longer has (e.g. the gang leader dagger quest).
