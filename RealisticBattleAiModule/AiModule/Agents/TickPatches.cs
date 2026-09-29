@@ -321,6 +321,11 @@ namespace RBMAI
                 TrySeekMeleeWeapon(__instance, ___Agent, ref ____itemToPickUp, ____forceDisableItemPickup, currentTime);
                 if (____itemToPickUp != null && (___Agent.AIStateFlags & Agent.AIStateFlag.UseObjectMoving) != 0)
                 {
+                    if (AmmoPickupSafety.AbortIfUnsafe(___Agent, ____itemToPickUp))
+                    {
+                        itemPickupDistanceStorage.Remove(___Agent);
+                        return;
+                    }
                     float num = MissionGameModels.Current.AgentStatCalculateModel.GetInteractionDistance(___Agent) * 3f;
                     WorldFrame userFrameForAgent = ____itemToPickUp.GetUserFrameForAgent(___Agent);
                     ref WorldPosition origin = ref userFrameForAgent.Origin;
