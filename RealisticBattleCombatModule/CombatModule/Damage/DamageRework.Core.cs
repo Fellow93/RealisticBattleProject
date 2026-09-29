@@ -359,8 +359,9 @@ namespace RBMCombat
                 {
                     Stance victimPosture = null;
                     Stance attackerPosture = null;
-                    AgentStances.values.TryGetValue(attacker, out attackerPosture);
-                    AgentStances.values.TryGetValue(victim, out victimPosture);
+                    // ConcurrentDictionary throws on a null key, and the attacker can be null (see above).
+                    if (attacker != null) AgentStances.values.TryGetValue(attacker, out attackerPosture);
+                    if (victim != null) AgentStances.values.TryGetValue(victim, out victimPosture);
 
                     if (RBMConfig.RBMConfig.staminaEnabled)
                     {

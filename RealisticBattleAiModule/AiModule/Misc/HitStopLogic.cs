@@ -100,7 +100,7 @@ namespace RBMAI
                 return;
             if (!affectorAgent.IsPlayerControlled)
                 return;
-            if (affectedAgent.IsPlayerControlled || affectedAgent.IsMount)
+            if (affectedAgent.IsPlayerControlled || !affectedAgent.IsHuman)
                 return;
             if (agentState == AgentState.Killed || agentState == AgentState.Unconscious)
                 TriggerHitStop(KILL_DURATION, KILL_SLOW, KILL_PRIORITY);

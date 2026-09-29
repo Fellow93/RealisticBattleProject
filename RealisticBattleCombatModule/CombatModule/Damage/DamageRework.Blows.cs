@@ -32,7 +32,9 @@ namespace RBMCombat
 
                 if ((attackerAgent.IsDoingPassiveAttack && collisionData.CollisionResult == CombatCollisionResult.StrikeAgent))
                 {
-                    if (attackerAgent.Team != victimAgent.Team)
+                    // Livestock (sheep, cows, chickens... in villages) are neither human nor mount and have no
+                    // team, so the team check alone lets them through; vanilla never knocks them down.
+                    if (attackerAgent.Team != victimAgent.Team && (victimAgent.IsHuman || victimAgent.IsMount))
                     {
                         __result.BlowFlag |= BlowFlags.KnockDown;
                         return;
@@ -117,7 +119,7 @@ namespace RBMCombat
         [HarmonyPatch("RegisterBlow")]
         private class RegisterBlowPatch
         {
-            private static bool Prefix(ref Mission __instance, ref Agent attacker, ref Agent victim, GameEntity realHitEntity, ref Blow b, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, ref CombatLogData combatLogData)
+            private static bool Prefix(ref Mission __instance, ref Agent attacker, ref Agent victim, WeakGameEntity realHitEntity, ref Blow b, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, ref CombatLogData combatLogData)
             {
                 if (victim != null && victim.IsMount && collisionData.IsMissile)
                 {
@@ -159,7 +161,7 @@ namespace RBMCombat
                 }
                 foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
                 {
-                    missionBehaviour.OnRegisterBlow(attacker, victim, realHitEntity.WeakEntity, b, ref collisionData, in attackerWeapon);
+                    missionBehaviour.OnRegisterBlow(attacker, victim, realHitEntity, b, ref collisionData, in attackerWeapon);
                 }
                 return false;
             }
@@ -173,7 +175,9 @@ namespace RBMCombat
             {
                 bool isKnockBack = ((b.BlowFlag & BlowFlags.NonTipThrust) != 0) || ((b.BlowFlag & BlowFlags.KnockDown) != 0) || ((b.BlowFlag & BlowFlags.KnockBack) != 0);
                 bool isBash = b.AttackType == AgentAttackType.Bash || b.AttackType == AgentAttackType.Kick;
-                if ((isKnockBack || isBash) && b.InflictedDamage <= 0)
+                // Vanilla skips HandleBlowAux for 0-damage blows; replaying it on livestock forces hit
+                // reactions their skeletons were never given.
+                if ((isKnockBack || isBash) && b.InflictedDamage <= 0 && (__instance.IsHuman || __instance.IsMount))
                 {
                     b.InflictedDamage = 1;
                     HandleBlowAuxMethod.Invoke(__instance, new object[] { b });
