@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using TaleWorlds.Core;
+using TaleWorlds.MountAndBlade;
 
 namespace RBMConfig
 {
     /// <summary>
-    /// Launcher missile speed and missile reach, shared by RBMCombat (the real launch, and its aim trace log) and
-    /// RBMAI (the crossbow reach gate). Lives here because RBMConfig is the one project both reference; RBMAI does
+    /// Launcher missile speed and missile reach, shared by RBMCombat (the real launch, the launch speed the engine aims
+    /// with, and the aim trace log) and RBMAI (the crossbow reach gate). Lives here because RBMConfig is the one project both reference; RBMAI does
     /// not reference RBMCombat. Retune launch speed here, never re-copy it into a module.
     /// </summary>
     public static class MissileBallistics
@@ -138,6 +140,49 @@ namespace RBMConfig
                     }
             }
             return calculatedMissileSpeed;
+        }
+
+        /// <summary>
+        /// The speed RBMCombat's shot prefix will give a bow/crossbow missile: same formula, draw weight + modifier bonus,
+        /// and the per-missile weight of the loaded arrow/bolt, else of the first stack of the usage's ammo class.
+        /// 0 when the agent carries no ammo for it. drawWeight is passed in because the launcher's own MissileSpeed holds
+        /// the real launch speed, not the draw weight, inside RBMCombat's spawn and shot patches.
+        /// </summary>
+        public static int GetLauncherSpeed(Agent agent, MissionWeapon launcher, WeaponComponentData usage, int drawWeight)
+        {
+            float ammoWeight = GetLauncherAmmoWeight(agent, launcher, usage);
+            if (ammoWeight <= 0f)
+            {
+                return 0;
+            }
+            return CalculateMissileSpeed(ammoWeight, usage.ItemUsage, drawWeight + GetLauncherModifierBonus(launcher));
+        }
+
+        /// <summary>
+        /// Per-missile weight of the loaded arrow/bolt/stone, else of the first stack of the usage's ammo class; 0 if none.
+        /// </summary>
+        public static float GetLauncherAmmoWeight(Agent agent, MissionWeapon launcher, WeaponComponentData usage)
+        {
+            MissionWeapon loaded = launcher.AmmoWeapon;
+            if (!loaded.IsEmpty && loaded.Item != null && loaded.Amount > 0)
+            {
+                return loaded.GetWeight() / loaded.Amount;
+            }
+            for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
+            {
+                MissionWeapon ammo = agent.Equipment[i];
+                if (!ammo.IsEmpty && ammo.Item != null && ammo.Amount > 0 && ammo.CurrentUsageItem != null && ammo.CurrentUsageItem.WeaponClass == usage.AmmoClass)
+                {
+                    return ammo.GetWeight() / ammo.Amount;
+                }
+            }
+            return 0f;
+        }
+
+        /// <summary>The launcher's item modifier as a draw weight bonus, as the shot prefix applies it.</summary>
+        public static int GetLauncherModifierBonus(MissionWeapon launcher)
+        {
+            return launcher.ItemModifier != null ? launcher.ItemModifier.ModifyHitPoints(50) - 50 : 0;
         }
 
         private const float Gravity = 9.806f;

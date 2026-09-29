@@ -91,7 +91,8 @@ namespace RBMAI
                 {
                     return true;
                 }
-                int speed = GetLaunchSpeed(agent, launcher);
+                // Outside RBMCombat's spawn and shot patches the launcher's MissileSpeed holds its draw weight.
+                int speed = RBMConfig.MissileBallistics.GetLauncherSpeed(agent, launcher, launcher.CurrentUsageItem, launcher.CurrentUsageItem.MissileSpeed);
                 if (speed <= 0)
                 {
                     return false;
@@ -102,44 +103,6 @@ namespace RBMAI
                 // Bows, crossbows, arrows and bolts all fly with AirFrictionArrow (ItemObject.GetAirFrictionConstant).
                 float friction = ManagedParameters.Instance.GetManagedParameter(ManagedParametersEnum.AirFrictionArrow);
                 return distance > RBMConfig.MissileBallistics.MaxReach(speed, to.z - from.z, friction) + ReachSlack;
-            }
-
-            /// <summary>
-            /// The speed RBMCombat's shot prefix will give the missile: same formula, same draw weight + modifier bonus,
-            /// same per-missile weight (the loaded arrow/bolt, else the first stack of the launcher's ammo class).
-            /// Outside RBMCombat's spawn and shot patches the launcher's MissileSpeed holds its draw weight.
-            /// </summary>
-            private static int GetLaunchSpeed(Agent agent, MissionWeapon launcher)
-            {
-                float ammoWeight = 0f;
-                MissionWeapon loaded = launcher.AmmoWeapon;
-                if (!loaded.IsEmpty && loaded.Item != null && loaded.Amount > 0)
-                {
-                    ammoWeight = loaded.GetWeight() / loaded.Amount;
-                }
-                else
-                {
-                    WeaponClass ammoClass = launcher.CurrentUsageItem.AmmoClass;
-                    for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
-                    {
-                        MissionWeapon ammo = agent.Equipment[i];
-                        if (!ammo.IsEmpty && ammo.Item != null && ammo.Amount > 0 && ammo.CurrentUsageItem != null && ammo.CurrentUsageItem.WeaponClass == ammoClass)
-                        {
-                            ammoWeight = ammo.GetWeight() / ammo.Amount;
-                            break;
-                        }
-                    }
-                }
-                if (ammoWeight <= 0f)
-                {
-                    return 0;
-                }
-                int msModifier = 0;
-                if (launcher.ItemModifier != null)
-                {
-                    msModifier = launcher.ItemModifier.ModifyHitPoints(50) - 50;
-                }
-                return RBMConfig.MissileBallistics.CalculateMissileSpeed(ammoWeight, launcher.CurrentUsageItem.ItemUsage, launcher.CurrentUsageItem.MissileSpeed + msModifier);
             }
         }
     }

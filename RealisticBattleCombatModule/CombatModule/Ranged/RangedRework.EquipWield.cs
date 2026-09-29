@@ -98,6 +98,19 @@ namespace RBMCombat
                                 }
                             }
 
+                            // The engine aims with the MissileSpeed it is handed here. Outside the spawn patch the
+                            // launcher's shared MissileSpeed holds its draw weight, so a re-equip (sheathed-bow unload,
+                            // pick-up) would have the AI aim with that while the shot prefix launches at the real speed.
+                            // Slings get theirs in the switch below, once armor and shield are known.
+                            if ((WeaponClass)weaponStatsData[i].WeaponClass == WeaponClass.Bow || (WeaponClass)weaponStatsData[i].WeaponClass == WeaponClass.Crossbow)
+                            {
+                                int launchSpeed = RBMConfig.MissileBallistics.GetLauncherSpeed(__instance, missionWeapon, missionWeapon.GetWeaponComponentDataForUsage(i), GetCachedDrawWeight(missionWeapon));
+                                if (launchSpeed > 0)
+                                {
+                                    weaponStatsData[i].MissileSpeed = launchSpeed;
+                                }
+                            }
+
                             //float equipmentWeight = __instance.SpawnEquipment.GetTotalWeightOfArmor(true); //+ __instance.Equipment.GetTotalWeightOfWeapons();
                             float armorModifier = 0;
                             WeaponClass typeOfShieldEquipped = WeaponClass.Undefined;
@@ -159,12 +172,46 @@ namespace RBMCombat
                                         weaponStatsData[i].MissileSpeed = Utilities.assignStoneMissileSpeed(__instance.Equipment[equipmentSlot]);
                                         break;
                                     }
+                                case (int)WeaponClass.Sling:
+                                    {
+                                        // Same inputs as the sling branch of the shot prefix.
+                                        float stoneWeight = RBMConfig.MissileBallistics.GetLauncherAmmoWeight(__instance, missionWeapon, missionWeapon.GetWeaponComponentDataForUsage(i));
+                                        if (stoneWeight > 0f)
+                                        {
+                                            int slingSpeed = Utilities.assignSlingMissileSpeed(
+                                                stoneWeight,
+                                                GetCachedDrawWeight(missionWeapon) + RBMConfig.MissileBallistics.GetLauncherModifierBonus(missionWeapon),
+                                                effectiveSkillDR,
+                                                armorModifier,
+                                                typeOfShieldEquipped
+                                                );
+                                            if (slingSpeed > 0)
+                                            {
+                                                weaponStatsData[i].MissileSpeed = slingSpeed;
+                                            }
+                                        }
+                                        break;
+                                    }
                             }
                         }
                     }
                 }
                 return true;
             }
+        }
+
+        // The launcher's draw weight, caching it the way the shot prefix does. The cache is filled before the spawn
+        // patch overwrites the shared MissileSpeed, so a miss here reads a draw weight, not a launch speed.
+        private static int GetCachedDrawWeight(MissionWeapon launcher)
+        {
+            string key = GetRangedWeaponKey(launcher);
+            if (!rangedWeaponStats.TryGetValue(key, out RangedWeaponStats stats))
+            {
+                stats = new RangedWeaponStats(launcher.CurrentUsageItem.MissileSpeed);
+                rangedWeaponMW[key] = launcher;
+                rangedWeaponStats[key] = stats;
+            }
+            return stats.getDrawWeight();
         }
 
         [HarmonyPatch(typeof(Agent))]
@@ -241,7 +288,7 @@ namespace RBMCombat
         }
 
         // A sheathed bow keeps its nocked arrow when the skill check cleared UnloadWhenSheathed, so it is
-        // returned to the quiver by hand. That is deferred out of OnWieldedItemIndexChange: it is a native
+        // returned to the quiver by hand and the bow entity rebuilt. That is deferred out of OnWieldedItemIndexChange: it is a native
         // callback fired mid weapon switch (en masse when deployment ends), and changing ammo from inside
         // it re-enters the engine. Vanilla defers equipment changes from callbacks the same way (Mission._tickActions).
         private static readonly List<(Agent agent, EquipmentIndex bowSlot)> PendingBowUnloads = new List<(Agent, EquipmentIndex)>();
@@ -337,6 +384,14 @@ namespace RBMCombat
             {
                 agent.SetWeaponAmountInSlot(slot, newAmount, enforcePrimaryItem: true);
             }
+
+            // The engine sheathed the bow loaded, and emptying its ammo does not redraw the entity: the string
+            // stays drawn and a dropped bow carries a phantom arrow. Re-equip an unloaded copy with a new entity
+            // (vanilla's pick-up path) so the holstered bow is rebuilt at rest.
+            MissionWeapon unloadedBow = agent.Equipment[bowSlot];
+            unloadedBow.ConsumeAmmo(0);
+            unloadedBow.ReloadPhase = 0;
+            agent.EquipWeaponWithNewEntity(bowSlot, ref unloadedBow);
         }
     }
 }
