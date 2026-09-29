@@ -6,12 +6,12 @@ using TaleWorlds.MountAndBlade;
 namespace RBMCombat
 {
     /// <summary>
-    /// DIAGNOSTIC: where an AI bow/crossbow shot was aimed, where RBM's launch should have carried it, and where it
+    /// DIAGNOSTIC: where an AI bow/crossbow/sling shot was aimed, where RBM's launch should have carried it, and where it
     /// actually came down. Written into the battle hit log (same toggle) as SHOT / LAND line pairs keyed by missile.
     ///
     /// Reading a pair (all ranges are metres along the shot's horizontal direction from the launch point):
     ///   tgtRange  - the target's chest at the moment of the shot
-    ///   predRange - where a drag model with the CURRENT managed arrow friction says the missile crosses the target's
+    ///   predRange - where a drag model with the flying missile's CURRENT managed friction says it crosses the target's
     ///               chest height. predRange ~ tgtRange means the aim was right for the launch RBM gave it.
     ///   landRange - where it actually collided.
     /// Aim wrong: predRange short of tgtRange. Flight differs from the model: predRange ~ tgtRange, landRange short.
@@ -41,7 +41,7 @@ namespace RBMCombat
         }
 
         /// <summary>Called from the shot prefix after RBM rescaled the launch. engineVelocity is what the AI aimed with.</summary>
-        public static void BeginShot(Agent shooter, WeaponClass launcherClass, Vec3 position, Vec3 engineVelocity, Vec3 finalVelocity, int rbmSpeed, float ammoWeight)
+        public static void BeginShot(Agent shooter, WeaponClass launcherClass, Vec3 position, Vec3 engineVelocity, Vec3 finalVelocity, int rbmSpeed, float ammoWeight, float friction)
         {
             _hasPending = false;
             if (!BattleHitLog.IsEnabled || shooter == null || !shooter.IsAIControlled || Mission.Current == null)
@@ -61,7 +61,6 @@ namespace RBMCombat
             }
             Vec3 chest = target.GetChestGlobalPosition();
             float tgtRange = Vec2.DotProduct(chest.AsVec2 - position.AsVec2, dir);
-            float friction = ManagedParameters.Instance.GetManagedParameter(ManagedParametersEnum.AirFrictionArrow);
             float predRange = PredictRangeAtHeight(position, finalVelocity, chest.z, friction);
 
             float engineSpeed = engineVelocity.Length;

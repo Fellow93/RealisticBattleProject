@@ -42,7 +42,7 @@ namespace RBMCombat
         [HarmonyPatch("WeaponEquipped")]
         private class OverrideWeaponEquipped
         {
-            private static bool Prefix(ref Agent __instance, EquipmentIndex equipmentSlot, in WeaponData weaponData, ref WeaponStatsData[] weaponStatsData, in WeaponData ammoWeaponData, ref WeaponStatsData[] ammoWeaponStatsData, GameEntity weaponEntity, bool removeOldWeaponFromScene, bool isWieldedOnSpawn)
+            private static bool Prefix(ref Agent __instance, EquipmentIndex equipmentSlot, ref WeaponData weaponData, ref WeaponStatsData[] weaponStatsData, in WeaponData ammoWeaponData, ref WeaponStatsData[] ammoWeaponStatsData, GameEntity weaponEntity, bool removeOldWeaponFromScene, bool isWieldedOnSpawn)
             {
                 if (weaponStatsData != null)
                 {
@@ -174,21 +174,18 @@ namespace RBMCombat
                                     }
                                 case (int)WeaponClass.Sling:
                                     {
-                                        // Same inputs as the sling branch of the shot prefix.
-                                        float stoneWeight = RBMConfig.MissileBallistics.GetLauncherAmmoWeight(__instance, missionWeapon, missionWeapon.GetWeaponComponentDataForUsage(i));
-                                        if (stoneWeight > 0f)
+                                        // The engine aims with the launcher's air friction, and vanilla gives a sling
+                                        // AirFrictionStone (0.007) while the stone it throws flies with AirFrictionBullet
+                                        // (0.004) (ItemObject.GetAirFrictionConstant). The AI aimed for the heavier drag and
+                                        // every stone sailed over: ~1 m high at 60 m, 3-7 m at 90 m. Bows and crossbows
+                                        // already aim and fly with the same value, so only the sling needs this.
+                                        weaponData.AirFrictionConstant = ItemObject.GetAirFrictionConstant(missionWeapon.GetWeaponComponentDataForUsage(i).AmmoClass, (WeaponFlags)0);
+
+                                        // Same function as the shot prefix and RBMAI's reach gate.
+                                        int slingSpeed = RBMConfig.MissileBallistics.GetSlingSpeed(__instance, missionWeapon, missionWeapon.GetWeaponComponentDataForUsage(i), GetCachedDrawWeight(missionWeapon));
+                                        if (slingSpeed > 0)
                                         {
-                                            int slingSpeed = Utilities.assignSlingMissileSpeed(
-                                                stoneWeight,
-                                                GetCachedDrawWeight(missionWeapon) + RBMConfig.MissileBallistics.GetLauncherModifierBonus(missionWeapon),
-                                                effectiveSkillDR,
-                                                armorModifier,
-                                                typeOfShieldEquipped
-                                                );
-                                            if (slingSpeed > 0)
-                                            {
-                                                weaponStatsData[i].MissileSpeed = slingSpeed;
-                                            }
+                                            weaponStatsData[i].MissileSpeed = slingSpeed;
                                         }
                                         break;
                                     }

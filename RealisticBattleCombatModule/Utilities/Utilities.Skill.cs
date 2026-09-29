@@ -21,18 +21,10 @@ namespace RBMCombat
             return MBMath.ClampFloat(relevantSkillLevel / 250f, 0f, 1f);
         }
 
+        // Body lives in RBMConfig.MissileBallistics so RBMAI's reach gate uses the same sling speed.
         public static float GetEffectiveSkillWithDR(int effectiveSkill)
         {
-            float effectiveSkillWithDR = 0f;
-            effectiveSkillWithDR = (600f / (600f + effectiveSkill)) * (float)effectiveSkill;
-
-            //float oneskillStep = 25f;
-            //int skillSteps = MathF.Floor(effectiveSkill / 25f);
-            //for(int i = 1; i <= skillSteps; i++)
-            //{
-            //    effectiveSkillWithDR = MathF.Pow(i * oneskillStep, 1f - ((i-1)/100f));
-            //}
-            return effectiveSkillWithDR;
+            return MissileBallistics.EffectiveSkillWithDR(effectiveSkill);
         }
     }
 }

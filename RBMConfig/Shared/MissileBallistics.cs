@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 namespace RBMConfig
 {
     /// <summary>
     /// Launcher missile speed and missile reach, shared by RBMCombat (the real launch, the launch speed the engine aims
-    /// with, and the aim trace log) and RBMAI (the crossbow reach gate). Lives here because RBMConfig is the one project both reference; RBMAI does
-    /// not reference RBMCombat. Retune launch speed here, never re-copy it into a module.
+    /// with, and the aim trace log) and RBMAI (the bow, crossbow and sling reach gate). Lives here because RBMConfig is
+    /// the one project both reference; RBMAI does not reference RBMCombat. Retune launch speed here, never re-copy it
+    /// into a module.
     /// </summary>
     public static class MissileBallistics
     {
@@ -183,6 +185,106 @@ namespace RBMConfig
         public static int GetLauncherModifierBonus(MissionWeapon launcher)
         {
             return launcher.ItemModifier != null ? launcher.ItemModifier.ModifyHitPoints(50) - 50 : 0;
+        }
+
+        public static int SlingSpeed(float ammoWeight, int drawWeight, float effectiveSkillDR, float armorModifier, WeaponClass shieldType)
+        {
+            ammoWeight = SanitizeAmmoWeight(ammoWeight);
+            // Shield penalty: a shield on the arm restricts the slinging motion.
+            float shieldTypeModifier = 1f;
+            switch (shieldType)
+            {
+                case WeaponClass.LargeShield:
+                    shieldTypeModifier = 0.87f;
+                    break;
+                case WeaponClass.SmallShield:
+                    shieldTypeModifier = 0.96f;
+                    break;
+            }
+
+            // Armor on shoulders and arms reduces sling rotation speed, same as for throws.
+            float weightTraining = MBMath.ClampFloat(effectiveSkillDR * 0.001f, 0f, 0.2f);
+            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (armorModifier * 0.005f) + weightTraining, 0.7f, 1f));
+
+            // From the design formula in calculateMissileSpeed:
+            // weightModifier = 730 * (1 + skill/100)  → at 100 skill it doubles
+            // slingLengthModifier = missile_speed * 0.01  (item MissileSpeed stat encodes cord length/quality)
+            // KE = ammoWeight * weightModifier * slingLengthModifier, clamped to [60, 350] J
+            // v = sqrt(2 * KE / ammoWeight)
+            float weightModifier = 730f * (1f + (effectiveSkillDR / 100f));
+            float slingLengthModifier = drawWeight * 0.01f;
+            int calculatedSpeed = (int)Math.Ceiling(Math.Sqrt((MBMath.ClampFloat(ammoWeight * weightModifier * slingLengthModifier, 60f, 350f)) * 2f / ammoWeight));
+
+            return (int)Math.Round(calculatedSpeed * shieldTypeModifier * equipmentWeightModifier);
+        }
+
+        public static float EffectiveSkillWithDR(int effectiveSkill)
+        {
+            return (600f / (600f + effectiveSkill)) * (float)effectiveSkill;
+        }
+
+        public static float ShoulderArmor(Agent agent)
+        {
+            float num = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
+                {
+                    num += (float)equipmentElement.GetModifiedBodyArmor();
+                    num += (float)equipmentElement.GetModifiedArmArmor();
+                }
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
+                {
+                    num += (float)equipmentElement.GetModifiedArmArmor();
+                }
+            }
+            return num;
+        }
+
+        public static float ArmArmor(Agent agent)
+        {
+            float num = 0f;
+            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
+            {
+                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
+                {
+                    num += (float)equipmentElement.GetModifiedArmArmor();
+                }
+            }
+            return num;
+        }
+
+        /// <summary>
+        /// The speed RBMCombat gives a sling stone, at equip (what the engine aims with) and on the shot: the sling
+        /// formula from the per-stone weight (as GetLauncherAmmoWeight), the shooter's effective skill, his shield and his
+        /// shoulder and arm armor, and draw weight + modifier bonus. 0 when the agent carries no stones. drawWeight is
+        /// passed in for the same reason as in GetLauncherSpeed.
+        /// </summary>
+        public static int GetSlingSpeed(Agent agent, MissionWeapon launcher, WeaponComponentData usage, int drawWeight)
+        {
+            float ammoWeight = GetLauncherAmmoWeight(agent, launcher, usage);
+            if (ammoWeight <= 0f)
+            {
+                return 0;
+            }
+            SkillObject skill = launcher.Item == null ? DefaultSkills.Athletics : launcher.Item.RelevantSkill;
+            int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, skill);
+            float effectiveSkillDR = EffectiveSkillWithDR(effectiveSkill);
+
+            WeaponClass shieldType = WeaponClass.Undefined;
+            for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
+            {
+                if (agent.Equipment != null && !agent.Equipment[i].IsEmpty && agent.Equipment[i].IsShield())
+                {
+                    shieldType = agent.Equipment[i].CurrentUsageItem.WeaponClass;
+                }
+            }
+            float armorModifier = MBMath.ClampFloat(ShoulderArmor(agent) - 20f, 0f, 100f) + MBMath.ClampFloat(ArmArmor(agent) - 20f, 0f, 100f);
+
+            return SlingSpeed(ammoWeight, drawWeight + GetLauncherModifierBonus(launcher), effectiveSkillDR, armorModifier, shieldType);
         }
 
         private const float Gravity = 9.806f;

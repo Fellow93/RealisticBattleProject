@@ -8,10 +8,11 @@ namespace RBMAI
     public static partial class AgentAi
     {
         /// <summary>
-        /// AI archers and crossbowmen hold fire while their target is beyond what their missile can reach. The
-        /// engine's own shoot-range judgement overshoots RBM's slow, draggy missiles: crossbowmen opened fire at
-        /// ~255 m on targets their bolts reach only at ~170-210 m and landed 50-75 m short, and 60 m/s bows fired at
-        /// ~217 m with ~208 m of reach (MissileAimTrace log, 2026-09-29).
+        /// AI archers, crossbowmen and slingers hold fire while their target is beyond what their missile can reach.
+        /// The engine's own shoot-range judgement overshoots RBM's slow, draggy missiles: crossbowmen opened fire at
+        /// ~255 m on targets their bolts reach only at ~170-210 m and landed 50-75 m short, 60 m/s bows fired at
+        /// ~217 m with ~208 m of reach, and slingers fired at 200-320 m with 160-250 m of reach and landed 30-95 m
+        /// short (MissileAimTrace log, 2026-09-29).
         /// Same split as WeaponPreference:
         ///  - TickRangedReach (HumanAIComponent tick, main thread) measures, throttled, and refreshes the agent's
         ///    properties when the answer flips.
@@ -81,8 +82,12 @@ namespace RBMAI
             private static bool IsTargetOutOfReach(Agent agent, Agent target)
             {
                 MissionWeapon launcher = agent.WieldedWeapon;
-                if (launcher.IsEmpty || launcher.CurrentUsageItem == null ||
-                    (launcher.CurrentUsageItem.WeaponClass != WeaponClass.Crossbow && launcher.CurrentUsageItem.WeaponClass != WeaponClass.Bow))
+                if (launcher.IsEmpty || launcher.CurrentUsageItem == null)
+                {
+                    return false;
+                }
+                WeaponClass launcherClass = launcher.CurrentUsageItem.WeaponClass;
+                if (launcherClass != WeaponClass.Crossbow && launcherClass != WeaponClass.Bow && launcherClass != WeaponClass.Sling)
                 {
                     return false;
                 }
@@ -92,7 +97,9 @@ namespace RBMAI
                     return true;
                 }
                 // Outside RBMCombat's spawn and shot patches the launcher's MissileSpeed holds its draw weight.
-                int speed = RBMConfig.MissileBallistics.GetLauncherSpeed(agent, launcher, launcher.CurrentUsageItem, launcher.CurrentUsageItem.MissileSpeed);
+                int speed = launcherClass == WeaponClass.Sling
+                    ? RBMConfig.MissileBallistics.GetSlingSpeed(agent, launcher, launcher.CurrentUsageItem, launcher.CurrentUsageItem.MissileSpeed)
+                    : RBMConfig.MissileBallistics.GetLauncherSpeed(agent, launcher, launcher.CurrentUsageItem, launcher.CurrentUsageItem.MissileSpeed);
                 if (speed <= 0)
                 {
                     return false;
@@ -100,8 +107,9 @@ namespace RBMAI
                 Vec3 from = agent.GetEyeGlobalPosition();
                 Vec3 to = target.GetChestGlobalPosition();
                 float distance = (to.AsVec2 - from.AsVec2).Length;
-                // Bows, crossbows, arrows and bolts all fly with AirFrictionArrow (ItemObject.GetAirFrictionConstant).
-                float friction = ManagedParameters.Instance.GetManagedParameter(ManagedParametersEnum.AirFrictionArrow);
+                // The drag the missile flies with is its ammo's (ItemObject.GetAirFrictionConstant): arrows and bolts
+                // AirFrictionArrow, a sling's stone AirFrictionBullet (not the sling's own AirFrictionStone).
+                float friction = ItemObject.GetAirFrictionConstant(launcher.CurrentUsageItem.AmmoClass, (WeaponFlags)0);
                 return distance > RBMConfig.MissileBallistics.MaxReach(speed, to.z - from.z, friction) + ReachSlack;
             }
         }

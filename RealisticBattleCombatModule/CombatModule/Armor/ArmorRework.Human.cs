@@ -79,24 +79,10 @@ namespace RBMCombat
             return material;
         }
 
+        // Body lives in RBMConfig.MissileBallistics so RBMAI's reach gate uses the same sling speed.
         public static float getShoulderArmor(Agent agent)
         {
-            float num = 0f;
-            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
-            {
-                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-
-                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.Cape)
-                {
-                    num += (float)equipmentElement.GetModifiedBodyArmor();
-                    num += (float)equipmentElement.GetModifiedArmArmor();
-                }
-                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.BodyArmor)
-                {
-                    num += (float)equipmentElement.GetModifiedArmArmor();
-                }
-            }
-            return num;
+            return RBMConfig.MissileBallistics.ShoulderArmor(agent);
         }
 
         // getShoulderArmor sums the cape (pauldron) and the body armor, so the shoulder takes the
@@ -200,18 +186,10 @@ namespace RBMCombat
             return material;
         }
 
+        // Body lives in RBMConfig.MissileBallistics so RBMAI's reach gate uses the same sling speed.
         public static float getArmArmor(Agent agent)
         {
-            float num = 0f;
-            for (EquipmentIndex equipmentIndex = EquipmentIndex.NumAllWeaponSlots; equipmentIndex < EquipmentIndex.ArmorItemEndSlot; equipmentIndex++)
-            {
-                EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
-                if (equipmentElement.Item != null && equipmentElement.Item.ItemType == ItemObject.ItemTypeEnum.HandArmor)
-                {
-                    num += (float)equipmentElement.GetModifiedArmArmor();
-                }
-            }
-            return num;
+            return RBMConfig.MissileBallistics.ArmArmor(agent);
         }
 
         public static ArmorMaterialTypes getArmArmorMaterial(Agent agent)

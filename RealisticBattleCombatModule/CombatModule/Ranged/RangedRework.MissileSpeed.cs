@@ -220,24 +220,10 @@ namespace RBMCombat
                     int calculatedMissileSpeed;
                     if (wsd[0].WeaponClass == (int)WeaponClass.Sling)
                     {
-                        // Slings factor in the shooter's skill and equipment weight on every shot.
-                        // Same as the spawn prefix: never GetWeaponData(true) just for the item (leaks PhysicsShapes).
-                        ItemObject slingItem = missionWeapon.Item;
-                        SkillObject slingSkill = (slingItem == null) ? DefaultSkills.Athletics : slingItem.RelevantSkill;
-                        int slingEf = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, slingSkill);
-                        float slingEffectiveSkillDR = Utilities.GetEffectiveSkillWithDR(slingEf);
-
-                        float slingArmorModifier = 0;
-                        WeaponClass slingShieldType = WeaponClass.Undefined;
-                        for (EquipmentIndex ei = EquipmentIndex.WeaponItemBeginSlot; ei < EquipmentIndex.NumAllWeaponSlots; ei++)
-                        {
-                            if (!shooterAgent.Equipment[ei].IsEmpty && shooterAgent.Equipment[ei].IsShield())
-                                slingShieldType = shooterAgent.Equipment[ei].CurrentUsageItem.WeaponClass;
-                        }
-                        slingArmorModifier += MBMath.ClampFloat(ArmorRework.getShoulderArmor(shooterAgent) - 20f, 0f, 100f);
-                        slingArmorModifier += MBMath.ClampFloat(ArmorRework.getArmArmor(shooterAgent) - 20f, 0f, 100f);
-
-                        calculatedMissileSpeed = Utilities.assignSlingMissileSpeed(ammoWeight, rangedWeaponStats[min].getDrawWeight() + msModifier, slingEffectiveSkillDR, slingArmorModifier, slingShieldType);
+                        // Slings factor in the shooter's skill and equipment weight on every shot. Same function as
+                        // the equip patch (what the engine aims with) and RBMAI's reach gate; it adds the modifier
+                        // bonus itself.
+                        calculatedMissileSpeed = RBMConfig.MissileBallistics.GetSlingSpeed(shooterAgent, missionWeapon, missionWeapon.CurrentUsageItem, rangedWeaponStats[min].getDrawWeight());
                     }
                     else
                     {
@@ -265,10 +251,12 @@ namespace RBMCombat
                     velocity.y = myVelocity.y * (calculatedMissileSpeed + shooterAgentSpeed);
                     velocity.z = myVelocity.z * (calculatedMissileSpeed + shooterAgentSpeed);
 
-                    if (wsd[0].WeaponClass != (int)WeaponClass.Sling)
-                    {
-                        MissileAimTrace.BeginShot(shooterAgent, (WeaponClass)wsd[0].WeaponClass, position, engineVelocity, velocity, calculatedMissileSpeed, ammoWeight);
-                    }
+                    // The drag the missile flies with is its ammo's (a sling's stone is AirFrictionBullet, not the
+                    // sling's AirFrictionStone).
+                    float flightFriction = !missionWeapon.AmmoWeapon.IsEmpty && missionWeapon.AmmoWeapon.CurrentUsageItem != null
+                        ? ItemObject.GetAirFrictionConstant(missionWeapon.AmmoWeapon.CurrentUsageItem.WeaponClass, missionWeapon.AmmoWeapon.CurrentUsageItem.WeaponFlags)
+                        : ItemObject.GetAirFrictionConstant(missionWeapon.CurrentUsageItem.AmmoClass, (WeaponFlags)0);
+                    MissileAimTrace.BeginShot(shooterAgent, (WeaponClass)wsd[0].WeaponClass, position, engineVelocity, velocity, calculatedMissileSpeed, ammoWeight, flightFriction);
 
                     MissileSpeedProperty.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
