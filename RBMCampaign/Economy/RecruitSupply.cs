@@ -201,8 +201,13 @@ namespace RBMCampaign
             // on LimitMin(1f)) for the one caller that leans on it: RecruitmentCampaignBehavior's tavern
             // mercenary menu divides the player's gold by the per-man cost, so a zero there is a
             // divide-by-zero crash the moment the player stands in a town he owns.
+            //
+            // Occupation alone is not enough: troop-replacement mods (Adonnay's Troop Changer and the like)
+            // can stock the tavern with their own trees flagged Soldier, which then fell into the free path
+            // and crashed that menu anyway. So whatever the town's tavern is actually selling is paid too.
             bool paidTroop = troop != null && (troop.Occupation == Occupation.Mercenary
-                || troop.Occupation == Occupation.Gangster || troop.Occupation == Occupation.CaravanGuard);
+                || troop.Occupation == Occupation.Gangster || troop.Occupation == Occupation.CaravanGuard
+                || IsTavernMercenary(troop, settlement));
             if (atSettlement && !paidTroop && RecruitsFree(settlement, recruiter))
             {
                 return new ExplainedNumber(0f, describe);
@@ -241,6 +246,20 @@ namespace RBMCampaign
             // lost. Also floors the price at one denar, as vanilla does.
             ApplyRecruitmentPerks(ref cost, troop, recruiter);
             return cost;
+        }
+
+        /// <summary>
+        /// Whether <paramref name="troop"/> is the mercenary this town's tavern is currently hiring out,
+        /// read from vanilla's own tavern ledger rather than from the troop's XML occupation.
+        /// </summary>
+        private static bool IsTavernMercenary(CharacterObject troop, Settlement settlement)
+        {
+            if (settlement == null || !settlement.IsTown || settlement.Town == null || Campaign.Current == null)
+            {
+                return false;
+            }
+            RecruitmentCampaignBehavior recruitment = Campaign.Current.GetCampaignBehavior<RecruitmentCampaignBehavior>();
+            return recruitment != null && recruitment.GetMercenaryData(settlement.Town)?.TroopType == troop;
         }
 
         /// <summary>
