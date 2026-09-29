@@ -1026,7 +1026,7 @@
         <equipment slot="Item2"
                    id="Item.GRE_hardened_80_gr_arrows" />
         <equipment slot="Item3"
-                   id="Item.steppe_guardian_shield_kalkan" />
+                   id="Item.steppe_guardian_shield_kalkan_shoulder" />
         <equipment slot="Cape"
                    id="Item.lamellar_shoulders" />
         <equipment slot="Body"
@@ -1046,7 +1046,7 @@
         <equipment slot="Item2"
                    id="Item.GRE_hardened_80_gr_arrows" />
         <equipment slot="Item3"
-                   id="Item.steppe_guardian_shield_kalkan" />
+                   id="Item.steppe_guardian_shield_kalkan_shoulder" />
         <equipment slot="Cape"
                    id="Item.brass_lamellar_shoulder_white" />
         <equipment slot="Body"
@@ -1066,7 +1066,7 @@
         <equipment slot="Item2"
                    id="Item.GRE_hardened_80_gr_arrows" />
         <equipment slot="Item3"
-                   id="Item.steppe_guardian_shield_kalkan" />
+                   id="Item.steppe_guardian_shield_kalkan_shoulder" />
         <equipment slot="Cape"
                    id="Item.varangian_bra_scale" />
         <equipment slot="Body"
@@ -1504,7 +1504,7 @@
         <equipment slot="Item0"
                    id="Item.sturgia_lance_1_t4" />
         <equipment slot="Item1"
-                   id="Item.decorated_steppe_shield_kalkan" />
+                   id="Item.decorated_steppe_shield_kalkan_shoulder" />
         <equipment slot="Item2"
                    id="Item.composite_bow" />
         <equipment slot="Item3"
@@ -1524,7 +1524,7 @@
         <equipment slot="Item0"
                    id="Item.sturgia_lance_1_t4" />
         <equipment slot="Item1"
-                   id="Item.steppe_guardian_shield_kalkan" />
+                   id="Item.steppe_guardian_shield_kalkan_shoulder" />
         <equipment slot="Item2"
                    id="Item.composite_bow" />
         <equipment slot="Item3"
@@ -1544,7 +1544,7 @@
         <equipment slot="Item0"
                    id="Item.sturgia_lance_1_t4" />
         <equipment slot="Item1"
-                   id="Item.tribal_steppe_shield_kalkan" />
+                   id="Item.tribal_steppe_shield_kalkan_shoulder" />
         <equipment slot="Item2"
                    id="Item.composite_bow" />
         <equipment slot="Item3"
@@ -1602,7 +1602,7 @@
         <equipment slot="Item0"
                    id="Item.sturgia_lance_2_t5" />
         <equipment slot="Item1"
-                   id="Item.noyans_shield_kalkan" />
+                   id="Item.noyans_shield_kalkan_shoulder" />
         <equipment slot="Item2"
                    id="Item.steppe_heavy_bow" />
         <equipment slot="Item3"
@@ -1622,7 +1622,7 @@
         <equipment slot="Item0"
                    id="Item.sturgia_lance_2_t5" />
         <equipment slot="Item1"
-                   id="Item.noyans_shield_kalkan" />
+                   id="Item.noyans_shield_kalkan_shoulder" />
         <equipment slot="Item2"
                    id="Item.nordic_shortbow" />
         <equipment slot="Item3"
@@ -1642,7 +1642,7 @@
         <equipment slot="Item0"
                    id="Item.sturgia_lance_2_t5" />
         <equipment slot="Item1"
-                   id="Item.noyans_shield_kalkan" />
+                   id="Item.noyans_shield_kalkan_shoulder" />
         <equipment slot="Item2"
                    id="Item.steppe_heavy_bow" />
         <equipment slot="Item3"

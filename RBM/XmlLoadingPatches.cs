@@ -299,10 +299,21 @@ namespace RBM
                                                                                 // Shoulder variants are "<shield id>_shoulder"; most base ids end in "shield", but not all
                                                                                 // (battania_shield_targe_a_shoulder), so strip the suffix rather than matching "shield_shoulder".
                                                                                 // Requiring "shield" keeps shoulder armour (nord_fur_shoulder, ...) untouched.
+                                                                                // Other strap styles sit between the base id and the suffix ("<shield id>_kalkan_shoulder",
+                                                                                // "<shield id>_cataphract_shoulder") because "<shield id>_shoulder" is already taken; drop the tag too.
                                                                                 string equipmentId = equipmentNode.Attribute("id")?.Value;
                                                                                 if (equipmentId != null && equipmentId.Contains("shield") && equipmentId.EndsWith("_shoulder") && !RBMConfig.RBMConfig.passiveShoulderShields)
                                                                                 {
-                                                                                    equipmentNode.Attribute("id").Value = equipmentId.Substring(0, equipmentId.Length - "_shoulder".Length);
+                                                                                    string baseId = equipmentId.Substring(0, equipmentId.Length - "_shoulder".Length);
+                                                                                    foreach (string strapStyle in new[] { "_kalkan", "_cataphract" })
+                                                                                    {
+                                                                                        if (baseId.EndsWith(strapStyle))
+                                                                                        {
+                                                                                            baseId = baseId.Substring(0, baseId.Length - strapStyle.Length);
+                                                                                            break;
+                                                                                        }
+                                                                                    }
+                                                                                    equipmentNode.Attribute("id").Value = baseId;
                                                                                 }
                                                                             }
                                                                         }
