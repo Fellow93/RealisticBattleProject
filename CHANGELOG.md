@@ -30,6 +30,10 @@
 - Troops that lose their melee weapon pick up a dropped one again.
 - Polearm troops no longer switch weapons back and forth while an enemy hovers at the edge of range.
 - Swimmers in field battles (e.g. on river maps) are no longer treated as being on land, so they are no longer ordered to cheer or to pick up weapons while swimming.
+- **Rally after reinforcements:** when part of an AI infantry formation is stranded far ahead of or behind the rest (typically first-wave survivors standing in front of a fresh wave), the formation stops and gathers before advancing again. After a reinforcement wave it gathers up to 200 m in front of where the wave entered, but never within 200 m of the enemy. Stragglers run straight to the nearest free place in the line at full speed. Works for both sides and every field tactic until the lines meet.
+- Advancing AI lines no longer leave a few men lagging far behind. When the line widens, each man takes the nearest place in it instead of one on the far flank.
+- Advancing AI lines that are already in formation move at their slower men's full speed instead of being held back further. The formation's speed limit now applies only while the line is ragged.
+- Siege attackers whose only melee weapon is two-handed (e.g. the Imperial Flame line) no longer sheathe it to raise their shield and fight bare-handed.
 
 ### Campaign
 - Starting gold is now a multiplier on the gold character creation gives you (default 5x, adjustable 1x–50x) instead of a flat 5,000-denar purse, so backstory choices matter again. The setting is renamed "Starting Gold Multiplier" and resets to 5x on existing configs. New campaigns only.
