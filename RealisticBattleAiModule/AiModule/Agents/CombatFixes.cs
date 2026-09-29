@@ -202,6 +202,26 @@ namespace RBMAI
             }
         }
 
+        /// <summary>
+        /// Crash guard (report 303BD0): when a siege-engine AI releases its user, vanilla calls
+        /// AIDefendGameObjectEnable, which dereferences HumanAIComponent. An agent flipped to AI control
+        /// by another mod without AgentHumanAILogic adding the component NREs here, killing the mission.
+        /// Drop only the defend step for such agents; the rest of the method runs as vanilla.
+        /// Reached from StopUsingGameObjectMT on worker threads, so this must stay read-only.
+        /// </summary>
+        [HarmonyPatch(typeof(Agent))]
+        [HarmonyPatch("AfterStoppedUsingMissionObject")]
+        internal class AfterStoppedUsingMissionObjectGuard
+        {
+            private static void Prefix(Agent __instance, ref Agent.StopUsingGameObjectFlags flags)
+            {
+                if (__instance.HumanAIComponent == null)
+                {
+                    flags &= ~Agent.StopUsingGameObjectFlags.DefendAfterStoppingUsingGameObject;
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("OnAgentShootMissile")]
         [UsedImplicitly]
