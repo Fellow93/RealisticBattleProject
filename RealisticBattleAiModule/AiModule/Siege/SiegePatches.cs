@@ -487,9 +487,12 @@ namespace RBMAI
         {
             [HarmonyPrefix]
             [HarmonyPatch("StopUsingAllMachines")]
-            private static bool Prefix()
+            private static bool Prefix(TacticComponent __instance)
             {
-                return false;
+                // Defenders keep manning their machines. Attackers run native: TacticBreachWalls calls this when it
+                // gives up on lanes (single-lane shock assault, retreat), and skipping it left men queued at ladders
+                // and towers on abandoned lanes, standing at the foot of the wall.
+                return __instance.Team.IsAttacker;
             }
         }
 

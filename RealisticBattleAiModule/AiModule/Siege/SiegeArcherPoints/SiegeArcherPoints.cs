@@ -338,6 +338,13 @@ public class SiegeArcherPoints : MissionLogic
     {
         private static bool Prefix(ref StrategicArea strategicArea, ref Formation formation, ref ArrangementOrder __instance, ref bool __result)
         {
+            // The 200 m reach is for defenders manning the walls. Attackers keep native: SiegePatches puts the assault
+            // formations in Scatter, and with this check they grabbed every attacker archer point in 200 m -- even
+            // while charging, which native excludes -- so their bowmen stood outside the breach shuffling at the wall.
+            if (formation.Team.IsAttacker)
+            {
+                return true;
+            }
             float distanceToCheck = 200f;
             if (strategicArea.IsUsableBy(formation.Team.Side))
             {
