@@ -21,6 +21,8 @@ namespace RBMAI
         public static Dictionary<Formation, float> advanceLastTickStorage = new Dictionary<Formation, float> { };
         public static Dictionary<Formation, float> archerWaitStartStorage = new Dictionary<Formation, float> { };
         private const float MaxArcherWaitSeconds = 30f;
+        // A width change bigger than this fraction is a re-shape (first advance tick: +78%); casualty drift is ~1-2%.
+        private const float ReshapeWidthFraction = 0.15f;
         private static readonly MethodInfo CalculateCurrentOrderMethod = typeof(BehaviorAdvance).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly FieldInfo CurrentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -262,9 +264,11 @@ namespace RBMAI
                 // Widening the line (e.g. 41x13 -> 73x7 on the first advance tick) re-lays the grid BY INDEX, so
                 // men from the deep middle ranks are handed cells on the far flanks, ~100 m diagonally from where
                 // they stand, and lag the line for the whole advance. Native's dispersal routine reassigns every
-                // cell to the closest man, which is exactly what a re-shaped line needs. Main thread, once per
-                // width change, O(n^2) distance checks -- cheap at 500.
-                if (MathF.Abs(__instance.Formation.Width - widthBefore) > 0.01f)
+                // cell to the closest man, which is exactly what a re-shaped line needs. Main thread.
+                // NOT cheap: it is n^2 Agent.Position engine calls (~125k at 500 men) plus a forced cache update
+                // and a grid reshuffle for every man. The width above is units/4 m, so it drops a file every few
+                // casualties or detachments -- only a real re-shape may disperse, never that per-file drift.
+                if (MathF.Abs(__instance.Formation.Width - widthBefore) > widthBefore * ReshapeWidthFraction)
                 {
                     __instance.Formation.OnFormationDispersed();
                 }
