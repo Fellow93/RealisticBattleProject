@@ -724,6 +724,29 @@ caveat and the `WidgetPrefab.LoadFrom` redirect details.
   styles; sounds via `<SoundProperties>`, motion via `<Animations>`. Use
   `<VisualDefinition>`/`<VisualState>` only when *layout* changes per state.
 
+### RBM's settings screen (`RBMXML/GUI/Prefabs/RBMConfig.xml`) — how a section is built
+
+- The page is one `ListPanel Id="OuterList"` with `LayoutImp.LayoutMethod="VerticalBottomToTop"`, so
+  **children are listed in reverse display order** — the first child is drawn at the bottom. The same
+  holds inside every section and sub-category, so a new row that should appear *first* goes *last*.
+- A collapsible section is a `ListPanel` holding (1) an options `ListPanel Id="XOptions"`
+  (`IsVisible="false"` = starts collapsed) and (2) after it, a game-side
+  `PartyHeaderToggleWidget` with `WidgetToClose="..\XOptions"` and
+  `CollapseIndicator="XTitle\CollapseIndicator"`, whose child `TextWidget Id="XTitle"`
+  (brush `SPOptions.GameKeysGroup.Title.Text`) carries a `BrushWidget Id="CollapseIndicator"`
+  (brush `SPOptions.GameKeysgroup.ExpandIndicator`). Sub-categories nest the same shape.
+- A toggle row is a horizontal `ListPanel`: a label (`RichTextWidget`, brush
+  `SPOptions.OptionName.Text`, width `!AT.Slider.Desc.Width`) — or, for a tooltip, a fixed `Widget`
+  wrapping that label plus a `HintWidget DataSource="{XHint}"` — then a vertical `ListPanel` with a
+  caption `RichTextWidget DataSource="{XText}"` and
+  `<Standard.DropdownWithHorizontalControl Parameter.SelectorDataSource="{X}"/>` bound to a
+  `SelectorVM<SelectorItemVM>`. Section order top→bottom: Combat, AI, Campaign, Tournament,
+  Debug & Logging.
+- C# side: `RBMConfigViewModel` is split by section (`.Core/.Combat/.Campaign/.Simulation/.Debug.cs`);
+  the get-only selector properties can only be assigned in the constructor, so construction, the
+  Done read-back and Reset-to-Default all stay in `.Core.cs`. Values are applied only on Done;
+  Cancel just pops the screen.
+
 ---
 
 ## 10. Where to look

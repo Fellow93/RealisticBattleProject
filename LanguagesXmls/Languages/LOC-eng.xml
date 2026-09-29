@@ -532,6 +532,14 @@
 	<string id="RBM_RESTART_001" text="Restart Required" />
 	<string id="RBM_RESTART_002" text="RBM Combat was changed. Everything else takes effect the next time you start or load a game, but RBM's spear and weapon animation parameters are only read when Bannerlord starts. Restart the game for them to match the new setting." />
 	<string id="RBM_RESTART_003" text="OK" />
+	<!-- Config Screen: RBM Debug & Logging Section Strings -->
+	<string id="RBM_DBG_001" text="RBM Debug &amp; Logging" />
+	<string id="RBM_DBG_002" text="Developer Mode" />
+	<string id="RBM_DBG_003" text="Developer extras: an in-battle stats overlay, an &quot;RBM Developer Stats&quot; block in weapon tooltips and the siege archer-point debug pass. Takes effect from the next battle. Not meant for normal play. Default off." />
+	<string id="RBM_DBG_004" text="AI Behavior Logging" />
+	<string id="RBM_DBG_005" text="Writes, second by second, every team's chosen tactic and every formation's behavior and movement order to logs/ai next to the config. Needs RBM AI on. Takes effect from the next battle. Default off." />
+	<string id="RBM_DBG_006" text="Armor Penetration Messages" />
+	<string id="RBM_DBG_007" text="Prints the blunt trauma and armor penetration damage of every blow you deal or take to the message log. Default off." />
 	<!-- Spectate Strings -->
 	<string id="RBM_CON_099" text="Spectate AI Battles" />
 	<string id="RBM_CON_101" text="Spectate Minimum Troops Per Side" />

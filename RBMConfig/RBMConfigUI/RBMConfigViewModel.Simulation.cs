@@ -23,29 +23,15 @@ namespace RBMConfig
         public TextViewModel StrategicPowerEnabledText { get; }
         public SelectorVM<SelectorItemVM> StrategicPowerEnabled { get; }
 
-        // The troop-power breakdown written to logs/powerCalculation. On/off only; needs Equipment Based Troop Power on.
-        public TextViewModel StrategicPowerLoggingEnabledText { get; }
-        public SelectorVM<SelectorItemVM> StrategicPowerLoggingEnabled { get; }
+        // The troop-power, auto-resolve and field-battle logging toggles are in RBMConfigViewModel.Debug.cs.
 
         // Real captain perks in auto-resolve (in place of vanilla's flat count of the side commander's), plus the
         // commander's hit-point perks restored to his men. On/off only.
         public TextViewModel SimulationPerkSystemText { get; }
         public SelectorVM<SelectorItemVM> SimulationPerkSystem { get; }
 
-        public TextViewModel SimulationLoggingEnabledText { get; }
-        public SelectorVM<SelectorItemVM> SimulationLoggingEnabled { get; }
-
-        // The blow-by-blow detail inside the auto-resolve trace. Off just trims the per-hit lines; the per-round
-        // summary still writes while Detailed Auto Resolve Logging is on. Needs Detailed Auto Resolve Logging on.
-        public TextViewModel SimulationLogHitsText { get; }
-        public SelectorVM<SelectorItemVM> SimulationLogHits { get; }
-
-        // Field-battle blow-by-blow log, the counterpart to the auto-resolve trace, meant to be read against it.
-        public TextViewModel BattleHitLoggingEnabledText { get; }
-        public SelectorVM<SelectorItemVM> BattleHitLoggingEnabled { get; }
-
-        // Watching an AI battle from a free camera: the live counterpart to both logs above, and the only way to see
-        // the field AI fight the same muster auto-resolve is scoring. Needs RTSCamera.
+        // Watching an AI battle from a free camera: the live counterpart to the auto-resolve and field-battle logs,
+        // and the only way to see the field AI fight the same muster auto-resolve is scoring. Needs RTSCamera.
         public TextViewModel SpectateBattlesEnabledText { get; }
         public SelectorVM<SelectorItemVM> SpectateBattlesEnabled { get; }
 
@@ -82,33 +68,6 @@ namespace RBMConfig
             get
             {
                 return new TextObject("{=RBM_CON_097}Auto Resolve Perks").ToString();
-            }
-        }
-
-        [DataSourceProperty]
-        public string SimulationLoggingt
-        {
-            get
-            {
-                return new TextObject("{=RBM_CON_094}Detailed Auto Resolve Logging").ToString();
-            }
-        }
-
-        [DataSourceProperty]
-        public string SimulationLogHitst
-        {
-            get
-            {
-                return new TextObject("Auto Resolve Per-Hit Detail").ToString();
-            }
-        }
-
-        [DataSourceProperty]
-        public string StrategicPowerLoggingt
-        {
-            get
-            {
-                return new TextObject("Troop Power Logging").ToString();
             }
         }
 
@@ -162,14 +121,5 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel SpectateMinTroopsPerSideHint { get; } = Hint("{=RBM_CON_102}How many men both sides must field before a battle between two AI lords is worth being asked about. Two patrols brushing past each other say nothing about how a line holds. Default 100.");
-
-        [DataSourceProperty]
-        public string BattleHitLoggingt
-        {
-            get
-            {
-                return new TextObject("{=RBM_CON_095}Field Battle Logging").ToString();
-            }
-        }
     }
 }

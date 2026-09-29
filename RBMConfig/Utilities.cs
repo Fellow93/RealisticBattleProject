@@ -214,6 +214,10 @@ namespace RBMConfig
             XmlElement Config = xmlconfig.CreateElement("Config");
             Config.SetAttribute("version", RBMConfig.CONFIG_VERSION.ToString());
 
+            XmlElement DeveloperMode = xmlconfig.CreateElement("DeveloperMode");
+            DeveloperMode.InnerText = RBMConfig.developerMode ? "1" : "0";
+            Config.AppendChild(DeveloperMode);
+
             //RBM tournament
             XmlElement RBMTournament = xmlconfig.CreateElement("RBMTournament");
 

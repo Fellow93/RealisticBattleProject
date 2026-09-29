@@ -39,7 +39,6 @@ namespace RBMConfig
         public static bool armorStatusUIEnabled = true;
 
         public static float armorMultiplier = 2f;
-        public static bool armorPenetrationMessage = false;
         public static bool betterArrowVisuals = true;
         public static bool passiveShoulderShields = false;
         public static bool troopOverhaulActive = true;

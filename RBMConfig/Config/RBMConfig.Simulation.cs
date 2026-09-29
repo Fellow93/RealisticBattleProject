@@ -31,11 +31,7 @@ namespace RBMConfig
         // Auto-resolve is untouched either way.
         public static bool strategicPowerEnabled = true;
 
-
-        // Writes every party out as it was priced -- the perks that reached it, then each stack with what one man of
-        // it is worth and what he is made of -- to logs/powerCalculation. None of the model's constants are derived,
-        // so this is how they get tuned. One block per party per in-game day; see StrategicPowerLog for why.
-        public static bool strategicPowerLoggingEnabled = false;
+        // The troop-power, auto-resolve and field-battle log toggles live in RBMConfig.Debug.cs.
 
         // ABSOLUTE DAMAGE. When true, a simulated blow is worth its own real magnitude rather than a ratio to a
         // typical blow of its arm. The model still keeps every one of vanilla's surviving factors -- side
@@ -169,18 +165,6 @@ namespace RBMConfig
         // False (0) restores vanilla's captain-perk count and drops the commander's hit-point perks again.
         public static bool simulationPerkSystem = true;
 
-        // Writes every auto-resolved battle to its own log under logs/simulation, as it was actually fought: who
-        // stood on each side, what they carried, how it ended. Costs nothing while off -- no battle is snapshotted
-        // and no blow is recorded.
-        public static bool simulationLoggingEnabled = false;
-
-        // And the battle itself, BLOW BY BLOW: every man who swung, what he was doing at the time (shooting,
-        // hurling a javelin, charging, setting a spear, or just walking into arrows while the lines closed), what
-        // armour he met, what his shield turned aside, what vanilla alone would have hit for, and what the model
-        // made of it. The matchup table says what a blow would do in the abstract; only this can tell you the
-        // archers ran dry in round fifteen. A large battle runs to several thousand lines. Needs the log above.
-        public static bool simulationLogHits = false;
-
         // Offers to open a battle between two AI lords as a real-time fight you watch and take no part in: both sides
         // under their own commanders, no player agent on the field at all, RTSCamera's free camera the only way to
         // see it. The battle on the map auto-resolves on its own beside it and reaches its own verdict; the fight you
@@ -194,11 +178,5 @@ namespace RBMConfig
         // nothing about how a line holds, and being asked about every looter band on the map would make the thing
         // unusable. Default 100, counted per side.
         public static int spectateMinTroopsPerSide = 100;
-
-        // Writes every blow of a REAL battle -- the one fought on the field -- to logs/battles, in the same columns
-        // the auto-resolve trace uses, so what the simulation CLAIMS a battle is can be held against one that
-        // actually happened: who was shooting, who had reached anybody yet, what armour a blow met, what it did.
-        // Off by default. A real battle lands thousands of blows and each is a line.
-        public static bool battleHitLoggingEnabled = false;
     }
 }

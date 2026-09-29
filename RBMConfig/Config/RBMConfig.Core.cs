@@ -26,14 +26,8 @@ namespace RBMConfig
         // tell the player a restart is needed for those files to follow a changed toggle.
         public static bool? rbmCombatEnabledAtLaunch = null;
         public static bool rbmCampaignEnabled = true;
-        public static bool developerMode = false;
 
-        // Writes, second by second, every team's chosen tactic and every formation's active behavior and
-        // movement order to logs/ai -- the only way to see why the enemy team's infantry and the player's
-        // delegated team, running the same code, do not do the same thing.
-        // Currently defaulted ON so it can be read without touching the config; flip to false once the
-        // question it was built for is answered.
-        public static bool aiBehaviorLogEnabled = false;
+        // developerMode and every logging toggle live in RBMConfig.Debug.cs.
 
         public static void LoadConfig()
         {
@@ -86,6 +80,17 @@ namespace RBMConfig
             {
                 xmlConfig = new XmlDocument();
                 Utilities.createXmlConfig(ref xmlConfig);
+                // createXmlConfig writes only part of the settings. Parse the fresh document straight away so
+                // ReadOrCreate adds every missing node now; otherwise saveXmlConfig (which only fills nodes that
+                // exist) drops settings-screen changes to those options until the next launch.
+                try
+                {
+                    parseXmlConfig();
+                }
+                catch (Exception e)
+                {
+                    TaleWorlds.Library.Debug.Print("[RBM] Could not complete default config: " + e.Message);
+                }
             }
         }
 
@@ -153,7 +158,12 @@ namespace RBMConfig
             EnsureNode("/Config/RBMCombat", "Global");
             EnsureNode("/Config/RBMCombat", "WeaponTypes");
 
-            developerMode = xmlConfig.SelectSingleNode("/Config/DeveloperMode") != null;
+            // A plain "1"/"0" setting (settings screen: RBM Debug & Logging), created as "0" when missing. It used
+            // to be presence-based -- any <DeveloperMode> node switched it on -- but every save since wrote "1" into
+            // such a node, so a real developer config already reads "1". "true" is accepted for hand-edited files;
+            // anything else, an empty node included, is off.
+            string developerModeText = ReadOrCreate("/Config", "DeveloperMode", "0").Trim();
+            developerMode = developerModeText == "1" || developerModeText.Equals("true", StringComparison.OrdinalIgnoreCase);
 
             // Modules
             rbmTournamentEnabled = ReadOrCreate("/Config/RBMTournament", "Enabled", "1").Equals("1");
@@ -331,10 +341,9 @@ namespace RBMConfig
         {
             (xmlConfig.SelectSingleNode("/Config") as XmlElement)?.SetAttribute("version", CONFIG_VERSION.ToString());
             //modules
-            if (xmlConfig.SelectSingleNode("/Config/DeveloperMode") != null && developerMode)
-            {
-                setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/DeveloperMode"), developerMode);
-            }
+            // Always written, creating the node if this document lacks it (a fresh default config, or one saved
+            // before the setting was in the settings screen).
+            setInnerTextBoolean(EnsureNode("/Config", "DeveloperMode"), developerMode);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMTournament/Enabled"), rbmTournamentEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/Enabled"), rbmAiEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Enabled"), rbmCombatEnabled);

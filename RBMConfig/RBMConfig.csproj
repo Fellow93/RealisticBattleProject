@@ -275,12 +275,14 @@
     <Compile Include="Config\RBMConfig.Combat.cs" />
     <Compile Include="Config\RBMConfig.Campaign.cs" />
     <Compile Include="Config\RBMConfig.Simulation.cs" />
+    <Compile Include="Config\RBMConfig.Debug.cs" />
     <!-- Settings UI -->
     <Compile Include="RBMConfigUI\RBMConfigScreen.cs" />
     <Compile Include="RBMConfigUI\RBMConfigViewModel.Core.cs" />
     <Compile Include="RBMConfigUI\RBMConfigViewModel.Combat.cs" />
     <Compile Include="RBMConfigUI\RBMConfigViewModel.Campaign.cs" />
     <Compile Include="RBMConfigUI\RBMConfigViewModel.Simulation.cs" />
+    <Compile Include="RBMConfigUI\RBMConfigViewModel.Debug.cs" />
     <Compile Include="RBMConfigUI\TextViewModel.cs" />
     <!-- Config data types -->
     <Compile Include="RBMCombatConfigPriceMultipliers.cs" />

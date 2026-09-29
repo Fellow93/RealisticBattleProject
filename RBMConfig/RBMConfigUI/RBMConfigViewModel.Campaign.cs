@@ -9,19 +9,11 @@ namespace RBMConfig
 {
     internal partial class RBMConfigViewModel
     {
-        public TextViewModel SpoilsLoggingEnabledText { get; }
-        public SelectorVM<SelectorItemVM> SpoilsLoggingEnabled { get; }
+        // The spoils / economy / caravan logging toggles are in RBMConfigViewModel.Debug.cs.
 
         // Weight column in the inventory / trade item rows: on/off.
         public TextViewModel ShowInventoryItemWeightText { get; }
         public SelectorVM<SelectorItemVM> ShowInventoryItemWeight { get; }
-
-        public TextViewModel SpoilsVerboseLoggingEnabledText { get; }
-        public SelectorVM<SelectorItemVM> SpoilsVerboseLoggingEnabled { get; }
-
-        // Economy logging (village production, villager dispatches, town food): on/off.
-        public TextViewModel EconomyLoggingEnabledText { get; }
-        public SelectorVM<SelectorItemVM> EconomyLoggingEnabled { get; }
 
         // AI lords buying their own battle gear in towns: on/off.
         public TextViewModel LordEquipmentUpgradeEnabledText { get; }
@@ -34,10 +26,6 @@ namespace RBMConfig
         // The repayable wealth injection bundled onto wealthy→struggling caravan routes: on/off.
         public TextViewModel CaravanInvestmentEnabledText { get; }
         public SelectorVM<SelectorItemVM> CaravanInvestmentEnabled { get; }
-
-        // Supply-caravan logging (logs/caravans): on/off.
-        public TextViewModel CaravanLoggingEnabledText { get; }
-        public SelectorVM<SelectorItemVM> CaravanLoggingEnabled { get; }
 
         // Deserter raider AI (hunt villagers/caravans, raid villages): master on/off.
         public TextViewModel DeserterRaidersEnabledText { get; }
@@ -675,27 +663,6 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopRaidSpoilsMultiplierHint { get; } = Hint("{=RBM_CON_059}Share of a raid's plunder its soldiers keep for themselves as spoils. Default 0.25.");
 
-        [DataSourceProperty]
-        public string SpoilsLoggingt
-        {
-            get
-            {
-                return new TextObject("{=RBM_CON_039}Spoils Logging").ToString();
-            }
-        }
-
-        [DataSourceProperty]
-        public string EconomyLoggingt
-        {
-            get
-            {
-                return new TextObject("{=RBM_CON_107}Economy Logging").ToString();
-            }
-        }
-
-        [DataSourceProperty]
-        public BasicTooltipViewModel EconomyLoggingEnabledHint { get; } = Hint("{=RBM_CON_108}Writes the village-to-town goods and food chain to logs/economy next to the config: each village's daily production, every villager party sent out with its size, composition and cargo, each town's rations, and the end-of-day state of every settlement. Verbose, and only useful for tuning the economy.");
-
         // Lord equipment toggle label and hint. Plain literal TextObjects (no {=KEY}), like the caravan ones.
         [DataSourceProperty]
         public string LordEquipmentUpgradeEnabledt
@@ -725,15 +692,6 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel CaravanInvestmentEnabledHint { get; } = Hint("On a wealthy→struggling route, a caravan also injects capital into the struggling town so it can afford the goods, booked as a debt the town repays out of its hoard tax once it recovers. Needs Kingdom Supply Caravans on. Default on.");
-
-        [DataSourceProperty]
-        public string CaravanLoggingEnabledt
-        {
-            get { return new TextObject("Caravan Logging").ToString(); }
-        }
-
-        [DataSourceProperty]
-        public BasicTooltipViewModel CaravanLoggingEnabledHint { get; } = Hint("Writes the supply-caravan system to logs/caravans next to the config: each caravan dispatched, its arrival and sale, capital injected and repaid, and any lost on the road. Needs Kingdom Supply Caravans on. Default on.");
 
         [DataSourceProperty]
         public string DeserterRaidersEnabledt
@@ -1208,15 +1166,6 @@ namespace RBMConfig
             }
         }
 
-        [DataSourceProperty]
-        public string SpoilsVerboseLoggingt
-        {
-            get
-            {
-                return new TextObject("{=RBM_CON_049}Verbose Logging").ToString();
-            }
-        }
-
         // Campaign config category headers. Plain literal TextObjects (no {=KEY}) to sidestep
         // the LOC-eng.xml key-collision issue; these are collapsible sub-section titles.
         [DataSourceProperty]
@@ -1225,15 +1174,6 @@ namespace RBMConfig
             get
             {
                 return new TextObject("Module & Simulation").ToString();
-            }
-        }
-
-        [DataSourceProperty]
-        public string CampaignCatLoggingt
-        {
-            get
-            {
-                return new TextObject("Logging").ToString();
             }
         }
 
