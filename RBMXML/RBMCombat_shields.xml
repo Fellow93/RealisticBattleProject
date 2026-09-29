@@ -1159,5 +1159,46 @@
 			HeldInOffHand="true"
 			ForceAttachOffHandSecondaryItemBone="true" />
 	</Item>
+	
+	<Item id="decorated_steppe_shield_kalkan" name="{=RBM_SHI_059}Kalkan Style Strapped Round Steppe Shield" body_name="bo_cap_shield_khuzait_cavalary_b" shield_body_name="bo_shield_khuzait_cavalary_b" recalculate_body="false" mesh="shield_khuzait_cavalary_b" using_tableau="true" weight="4.7" appearance="0.9" Type="Shield" item_holsters="left_kalkan_shield:shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.05,0.01" is_merchandise="true" culture="Culture.khuzait">
+		<ItemComponent>
+			<Weapon weapon_class="SmallShield" body_armor="10" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="60" center_of_mass="-0.0,0.075,0.05" hit_points="1000">
+				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true" Civilian="true"/>
+	</Item>
+	<Item id="steppe_guardian_shield_kalkan" name="{=RBM_SHI_060}Kalkan Style Strapped Eastern Cavalry Shield" body_name="bo_cap_shield_khuzait_cavalary_d" shield_body_name="bo_shield_khuzait_cavalary_d" recalculate_body="false" mesh="shield_khuzait_cavalary_d" using_tableau="true" weight="2.7" appearance="0.9" Type="Shield" item_holsters="left_kalkan_shield:shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.05,0.01" is_merchandise="true" culture="Culture.khuzait">
+		<ItemComponent>
+			<Weapon weapon_class="SmallShield" body_armor="11" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="60" center_of_mass="-0.0,0.075,0.05" hit_points="1100">
+				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true" Civilian="true"/>
+	</Item>
+	<Item id="tribal_steppe_shield_kalkan" name="{=RBM_SHI_061}Kalkan Style Strapped Tribal Steppe Shield" body_name="bo_cap_shield_khuzait_cavalary_a" shield_body_name="bo_shield_khuzait_cavalary_a" recalculate_body="false" mesh="shield_khuzait_cavalary_a" using_tableau="true" weight="4.7" appearance="0.9" Type="Shield" item_holsters="left_kalkan_shield:shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.05,0.01" is_merchandise="true" culture="Culture.khuzait">
+		<ItemComponent>
+			<Weapon weapon_class="SmallShield" body_armor="9" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="60" center_of_mass="-0.0,0.075,0.05" hit_points="900">
+				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true" Civilian="true"/>
+	</Item>
+	<Item id="noyans_shield_kalkan" name="{=RBM_SHI_062}Kalkan Style Strapped Decorated Eastern Shield" body_name="bo_cap_shield_khuzait_cavalary_c" shield_body_name="bo_shield_khuzait_cavalary_c" recalculate_body="false" mesh="shield_khuzait_cavalary_c" using_tableau="true" weight="4.7" appearance="0.9" Type="Shield" item_holsters="left_kalkan_shield:shield_kite:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.05,0.01" is_merchandise="true" culture="Culture.khuzait">
+		<ItemComponent>
+			<Weapon weapon_class="SmallShield" body_armor="12" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="metal_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="60" center_of_mass="-0.0,0.075,0.05" hit_points="1500">
+				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true" Civilian="true"/>
+	</Item>
+	<Item id="cataphract_targe" name="{=RBM_SHI_063}Cataphract Targe" body_name="bo_cap_battania_shield_targe_a" shield_body_name="bo_battania_shield_targe_a" recalculate_body="false" mesh="battania_shield_targe_a" using_tableau="true" weight="2.5" appearance="1.6" Type="Shield" item_holsters="left_forearm_cataphract_shield:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="0.0,0.0,0" culture="Culture.empire">
+		<ItemComponent>
+			<Weapon weapon_class="SmallShield" body_armor="5" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.12, 0.08, 0.01" rotation="3.40,5.10,25.00" weapon_length="70" center_of_mass="-0.0, 0.12, 0.1" hit_points="580">
+				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
+			</Weapon>
+		</ItemComponent>
+		<Flags WoodenParry="true" HeldInOffHand="true" ForceAttachOffHandSecondaryItemBone="true" Civilian="true"/>
+	</Item>
 
 </Items>

@@ -7092,7 +7092,7 @@
       <equipment slot="Item0"
                  id="Item.empire_lance_2_t4" />
       <equipment slot="Item1"
-                 id="Item.battania_shield_targe_a" />
+                 id="Item.cataphract_targe" />
       <equipment slot="Item2"
                  id="Item.empire_mace_3_t4" />
       <equipment slot="Head"
@@ -7114,7 +7114,7 @@
       <equipment slot="Item0"
                  id="Item.empire_lance_2_t4" />
       <equipment slot="Item1"
-                 id="Item.battania_shield_targe_a" />
+                 id="Item.cataphract_targe" />
       <equipment slot="Item2"
                  id="Item.empire_mace_3_t4" />
       <equipment slot="Head"
@@ -7136,7 +7136,7 @@
       <equipment slot="Item0"
                  id="Item.empire_lance_2_t4" />
       <equipment slot="Item1"
-                 id="Item.battania_shield_targe_a" />
+                 id="Item.cataphract_targe" />
       <equipment slot="Item2"
                  id="Item.empire_mace_3_t4" />
       <equipment slot="Head"
@@ -7191,7 +7191,7 @@
       <equipment slot="Item0"
                  id="Item.empire_lance_2_t4" />
       <equipment slot="Item1"
-                 id="Item.battania_shield_targe_a" />
+                 id="Item.cataphract_targe" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
@@ -7211,7 +7211,7 @@
       <equipment slot="Item0"
                  id="Item.empire_lance_2_t4" />
       <equipment slot="Item1"
-                 id="Item.battania_shield_targe_a" />
+                 id="Item.cataphract_targe" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
@@ -7231,7 +7231,7 @@
       <equipment slot="Item0"
                  id="Item.empire_lance_2_t4" />
       <equipment slot="Item1"
-                 id="Item.battania_shield_targe_a" />
+                 id="Item.cataphract_targe" />
       <equipment slot="Item2"
                  id="Item.empire_mace_5_t5" />
       <equipment slot="Head"
@@ -9525,7 +9525,7 @@
       <equipment slot="Item0"
                  id="Item.khuzait_lance_1_t3" />
       <equipment slot="Item1"
-                 id="Item.decorated_steppe_shield" />
+                 id="Item.decorated_steppe_shield_kalkan" />
       <equipment slot="Item2"
                  id="Item.khuzait_sword_2_t3" />
       <equipment slot="Head"
@@ -9543,7 +9543,7 @@
       <equipment slot="Item0"
                  id="Item.khuzait_lance_1_t3" />
       <equipment slot="Item1"
-                 id="Item.decorated_steppe_shield" />
+                 id="Item.decorated_steppe_shield_kalkan" />
       <equipment slot="Item2"
                  id="Item.light_mace_t3" />
       <equipment slot="Head"
@@ -9561,7 +9561,7 @@
       <equipment slot="Item0"
                  id="Item.khuzait_lance_1_t3" />
       <equipment slot="Item1"
-                 id="Item.decorated_steppe_shield" />
+                 id="Item.decorated_steppe_shield_kalkan" />
       <equipment slot="Item2"
                  id="Item.khuzait_sword_2_t3" />
       <equipment slot="Head"
@@ -10011,7 +10011,7 @@
       <equipment slot="Item0"
                  id="Item.khuzait_lance_2_t4" />
       <equipment slot="Item1"
-                 id="Item.steppe_guardian_shield" />
+                 id="Item.steppe_guardian_shield_kalkan" />
       <equipment slot="Item2"
                  id="Item.khuzait_mace_3_t4" />
       <equipment slot="Body"
@@ -10029,7 +10029,7 @@
       <equipment slot="Item0"
                  id="Item.khuzait_lance_2_t4" />
       <equipment slot="Item1"
-                 id="Item.steppe_guardian_shield" />
+                 id="Item.steppe_guardian_shield_kalkan" />
       <equipment slot="Item2"
                  id="Item.khuzait_mace_2_t4" />
       <equipment slot="Body"
@@ -10047,7 +10047,7 @@
       <equipment slot="Item0"
                  id="Item.khuzait_lance_2_t4" />
       <equipment slot="Item1"
-                 id="Item.steppe_guardian_shield" />
+                 id="Item.steppe_guardian_shield_kalkan" />
       <equipment slot="Item2"
                  id="Item.eastern_steel_mace_t4" />
       <equipment slot="Body"
@@ -10482,7 +10482,7 @@
       <equipment slot="Item0"
                  id="Item.khuzait_lance_3_t5" />
       <equipment slot="Item1"
-                 id="Item.noyans_shield" />
+                 id="Item.noyans_shield_kalkan" />
       <equipment slot="Item2"
                  id="Item.khuzait_mace_4_t5" />
       <equipment slot="Body"
@@ -10504,7 +10504,7 @@
       <equipment slot="Item0"
                  id="Item.khuzait_lance_3_t5" />
       <equipment slot="Item1"
-                 id="Item.noyans_shield" />
+                 id="Item.noyans_shield_kalkan" />
       <equipment slot="Item2"
                  id="Item.khuzait_mace_4_t5" />
       <equipment slot="Body"
@@ -10526,7 +10526,7 @@
       <equipment slot="Item0"
                  id="Item.khuzait_lance_3_t5" />
       <equipment slot="Item1"
-                 id="Item.noyans_shield" />
+                 id="Item.noyans_shield_kalkan" />
       <equipment slot="Item2"
                  id="Item.khuzait_mace_4_t5" />
       <equipment slot="Body"
@@ -17442,7 +17442,7 @@
       <equipment slot="Item1"
                  id="Item.empire_mace_1_t2" />
       <equipment slot="Item2"
-                 id="Item.worn_horsemans_kite_shield" />
+                 id="Item.tribal_steppe_shield_kalkan" />
       <equipment slot="Body"
                  id="Item.studded_steppe_leather" />
       <equipment slot="Leg"
@@ -17500,7 +17500,7 @@
       <equipment slot="Item1"
                  id="Item.light_mace_t3" />
       <equipment slot="Item2"
-                 id="Item.ironrim_kite_shield" />
+                 id="Item.decorated_steppe_shield_kalkan" />
       <equipment slot="Head"
                  id="Item.imperial_mail_coif" />
       <equipment slot="Body"
@@ -17556,7 +17556,7 @@
       <equipment slot="Item1"
                  id="Item.empire_mace_4_t5" />
       <equipment slot="Item2"
-                 id="Item.heavy_horsemans_kite_shield" />
+                 id="Item.steppe_guardian_shield_kalkan" />
       <equipment slot="Head"
                  id="Item.khuzait_noble_helmet_with_fur" />
       <equipment slot="Body"
@@ -17809,7 +17809,7 @@
         <equipment slot="Item2"
                    id="Item.GRE_hardened_80_gr_arrows" />
         <equipment slot="Item3"
-                   id="Item.steppe_guardian_shield" />
+                   id="Item.steppe_guardian_shield_kalkan" />
         <equipment slot="Cape"
                    id="Item.lamellar_shoulders" />
         <equipment slot="Body"
@@ -17829,7 +17829,7 @@
         <equipment slot="Item2"
                    id="Item.GRE_hardened_80_gr_arrows" />
         <equipment slot="Item3"
-                   id="Item.steppe_guardian_shield" />
+                   id="Item.steppe_guardian_shield_kalkan" />
         <equipment slot="Cape"
                    id="Item.brass_lamellar_shoulder_white" />
         <equipment slot="Body"
@@ -17849,7 +17849,7 @@
         <equipment slot="Item2"
                    id="Item.GRE_hardened_80_gr_arrows" />
         <equipment slot="Item3"
-                   id="Item.steppe_guardian_shield" />
+                   id="Item.steppe_guardian_shield_kalkan" />
         <equipment slot="Cape"
                    id="Item.varangian_bra_scale" />
         <equipment slot="Body"
@@ -18288,7 +18288,7 @@
         <equipment slot="Item0"
                    id="Item.sturgia_lance_1_t4" />
         <equipment slot="Item1"
-                   id="Item.decorated_steppe_shield" />
+                   id="Item.decorated_steppe_shield_kalkan" />
         <equipment slot="Item2"
                    id="Item.composite_bow" />
         <equipment slot="Item3"
@@ -18308,7 +18308,7 @@
         <equipment slot="Item0"
                    id="Item.sturgia_lance_1_t4" />
         <equipment slot="Item1"
-                   id="Item.steppe_guardian_shield" />
+                   id="Item.steppe_guardian_shield_kalkan" />
         <equipment slot="Item2"
                    id="Item.composite_bow" />
         <equipment slot="Item3"
@@ -18328,7 +18328,7 @@
         <equipment slot="Item0"
                    id="Item.sturgia_lance_1_t4" />
         <equipment slot="Item1"
-                   id="Item.tribal_steppe_shield" />
+                   id="Item.tribal_steppe_shield_kalkan" />
         <equipment slot="Item2"
                    id="Item.composite_bow" />
         <equipment slot="Item3"
@@ -18386,7 +18386,7 @@
         <equipment slot="Item0"
                    id="Item.sturgia_lance_2_t5" />
         <equipment slot="Item1"
-                   id="Item.noyans_shield" />
+                   id="Item.noyans_shield_kalkan" />
         <equipment slot="Item2"
                    id="Item.steppe_heavy_bow" />
         <equipment slot="Item3"
@@ -18406,7 +18406,7 @@
         <equipment slot="Item0"
                    id="Item.sturgia_lance_2_t5" />
         <equipment slot="Item1"
-                   id="Item.noyans_shield" />
+                   id="Item.noyans_shield_kalkan" />
         <equipment slot="Item2"
                    id="Item.nordic_shortbow" />
         <equipment slot="Item3"
@@ -18426,7 +18426,7 @@
         <equipment slot="Item0"
                    id="Item.sturgia_lance_2_t5" />
         <equipment slot="Item1"
-                   id="Item.noyans_shield" />
+                   id="Item.noyans_shield_kalkan" />
         <equipment slot="Item2"
                    id="Item.steppe_heavy_bow" />
         <equipment slot="Item3"

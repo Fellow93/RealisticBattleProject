@@ -474,6 +474,11 @@
 	<string id="RBM_SHI_056" text="Shoulder Strapped Large Round Shield" />
 	<string id="RBM_SHI_057" text="Shoulder Strapped Heavy Round Shield" />
 	<string id="RBM_SHI_058" text="Shoulder Strapped Reinforced Large Round Shield" />
+	<string id="RBM_SHI_059" text="Kalkan Style Strapped Round Steppe Shield" />
+	<string id="RBM_SHI_060" text="Kalkan Style Strapped Eastern Cavalry Shield" />
+	<string id="RBM_SHI_061" text="Kalkan Style Strapped Tribal Steppe Shield" />
+	<string id="RBM_SHI_062" text="Kalkan Style Strapped Decorated Eastern Shield" />
+	<string id="RBM_SHI_063" text="Cataphract Targe" />
 	<!-- RBMCombat_unit_overhaul.xml Strings -->
 	<string id="RBM_OVH_001" text="Aserai Experienced Archer" />
 	<string id="RBM_OVH_002" text="Vlandian Medium Cavalry" />

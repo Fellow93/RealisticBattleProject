@@ -85,5 +85,29 @@
       holster_bone="biped_upperarm_l"
       holster_position="0.25, 0.0, 0.25"
       holster_rotation_yaw_pitch_roll="10, 0, -105" />
+    <item_holster
+      id="left_kalkan_shield"
+      equip_action="act_equip_shield"
+      equip_action_left_stance="act_equip_shield_left_stance"
+      unequip_action="act_unequip_shield"
+      unequip_action_left_stance="act_unequip_shield_left_stance"
+      show_holster_when_drawn="false"
+      group_name="left_forearm"
+      holster_skeleton="holster_skeleton"
+      holster_bone="biped_upperarm_l"
+      holster_position="0.25, 0.0, 0.1"
+      holster_rotation_yaw_pitch_roll="10, -10, -105" />
+    <item_holster
+      id="left_forearm_cataphract_shield"
+      equip_action="act_equip_shield"
+      equip_action_left_stance="act_equip_shield_left_stance"
+      unequip_action="act_unequip_shield"
+      unequip_action_left_stance="act_unequip_shield_left_stance"
+      show_holster_when_drawn="false"
+      group_name="left_forearm"
+      holster_skeleton="holster_skeleton"
+      holster_bone="biped_forearm1_l"
+      holster_position="0.02, 0.000, 0.05"
+      holster_rotation_yaw_pitch_roll="-17.000, 50.000, 20.000" />
   </item_holsters>
 </base>
