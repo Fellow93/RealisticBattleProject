@@ -187,21 +187,6 @@ namespace RBMAI
             }
         }
 
-        [HarmonyPatch(typeof(Agent))]
-        [HarmonyPatch("IsInWater")]
-        internal class IsInWaterFix
-        {
-            private static bool Prefix(ref Agent __instance, ref bool __result)
-            {
-                if (Mission.Current != null && Mission.Current.IsFieldBattle)
-                {
-                    __result = false;
-                    return false;
-                }
-                return true;
-            }
-        }
-
         /// <summary>
         /// Crash guard (report 303BD0): when a siege-engine AI releases its user, vanilla calls
         /// AIDefendGameObjectEnable, which dereferences HumanAIComponent. An agent flipped to AI control
