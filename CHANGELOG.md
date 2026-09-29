@@ -1,5 +1,58 @@
 # Changelog
 
+## v4.5.3 (changes since v4.5.2)
+
+### Combat
+- **New shields:** four Khuzait kalkan-style strapped shields and a Cataphract Targe, worn strapped to the arm by Khuzait and Imperial cavalry. They swap back to their hand-held versions when the passive shoulder shields option is off.
+- Ship ballista stones and boulders damage hulls and crew again (4.5.2 left them at almost no damage). Grapeshot stays capped at about vanilla's hull damage per pellet, so one volley can no longer sink a light ship.
+- Hand-thrown fire pots and stones kill again: the fire pot is back to full weight and damage, with a large splash. Burning splashes (hand-thrown, siege-engine and War Sails pots) deal full damage in the inner 30% of the radius and fall off to zero at the edge.
+- Spiked mace thrusts no longer pierce armor better than swords (mace pierce threshold 2 → 4). Existing configs still on the old default are updated once.
+- Spears carried on the back no longer hang low and sink into the ground.
+- Armor worn down in battle no longer stays damaged on the saved gear after the War Sails storyline battle, stealth missions or closing the inventory mid-mission.
+- Sheathing a bow with an arrow nocked no longer leaves the string drawn, and a dropped bow no longer carries a phantom arrow.
+- Village livestock no longer get knock-downs or 0-damage hit reactions.
+- The tier-5 Kama dagger blade is no longer unlocked at campaign start.
+- The Battanian Oathsworn now carries a sword.
+
+### Ranged / AI shooting
+- AI arrows and bolts no longer fall short at long range. RBM's arrow drag didn't match the engine's, so the AI aimed with one drag value while missiles flew with another.
+- AI archers, crossbowmen and slingers hold fire until the target is actually within reach, instead of opening fire at 200–300 m and landing tens of metres short.
+- AI slingers aim at the target instead of over it.
+- AI shooters no longer over-lead moving targets, which makes them noticeably better against walking infantry and charging cavalry.
+- Skilled AI crossbowmen are at least as accurate as vanilla ones and settle their aim as fast.
+- AI shooters use the correct launch speed after re-equipping or picking up a bow, crossbow or sling.
+
+### AI
+- Sieges: attackers on the walls fight instead of idling until the gate opens. Attackers no longer stand shuffling outside a breached wall, and troops leave ladders and towers the AI has given up on.
+- Cavalry ordered to dismount now dismounts and holds its formation, including after the formation is delegated to the AI.
+- Retreating riders are no longer held back by RBM's speed limit.
+- Archers no longer walk into the enemy to pick up spent arrows. Ammo lying within 25 m of an enemy (45 m for horsemen) is ignored.
+- Troops that lose their melee weapon pick up a dropped one again.
+- Polearm troops no longer switch weapons back and forth while an enemy hovers at the edge of range.
+
+### Campaign
+- Starving a besieged fief works again: paid healing no longer mends starving garrisons, militia or parties faster than starvation wounds them.
+- Artisan quests no longer ask for hardwood or iron ore, which RBM villages don't produce. They ask for planks and tools instead.
+- A plank now refines into 10 hardwood.
+- Clans without a culture are removed the way vanilla does it, and clans that are already eliminated are no longer destroyed again on every load.
+
+### Tournament
+- Skipping a round simulates the right fighters again, instead of reusing the previous match and scoring nobody.
+- Tournaments no longer crash on load when an overhaul mod removes vanilla's elite prize items. Unready or junk prizes are replaced.
+- Tournament participants use the host town's culture, and NPC tournament tiers compare against average armor tier, as the player's do.
+
+### Config
+- All logging toggles and developer mode are now in one collapsible "RBM Debug & Logging" section. This adds rows for the AI behavior log and armor penetration messages, which had no UI before.
+- A newly created config is read right away, so settings missing from the default file are saved from the first session.
+- With Battle Hit Logging on, every AI bow, crossbow and sling shot is traced in the hit log (aim, predicted range, where it landed).
+
+### Stability / fixes
+- Siege machines no longer crash the mission when a soldier walking to one has lost his formation, and releasing a siege engine no longer crashes on soldiers without an AI component.
+- Arrows hitting a shield worn on the back no longer crash when the shooter has already left the battle.
+- Hardening against a reported crash from missile collisions in very large battles. Missiles that stick into a shield the soldier no longer holds are removed instead of left floating.
+- Hiring modded tavern mercenaries in your own fief no longer crashes the hire menu.
+- The smithy no longer crashes on saved crafting orders whose weapon uses a part its template no longer has (e.g. the gang leader dagger quest).
+
 ## v4.5.2 (changes since v4.5.1)
 
 ### Combat
