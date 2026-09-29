@@ -29,7 +29,9 @@ namespace RBMAI
                 return true;
             }
 
-            if (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation)
+            // A dismounting formation keeps vanilla pacing, which slows riders into their slots so they can get off.
+            if ((agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation)
+                && agent.Formation.RidingOrder.OrderEnum != RidingOrder.RidingOrderEnum.Dismount)
             {
                 // desiredSpeed < 0 is the "clear the limit" call (OnRetreating passes -1): let vanilla lift it
                 // instead of pinning a fleeing rider to MountSpeed. A dying/removed mount goes to vanilla too.

@@ -285,12 +285,20 @@ namespace RBMAI
                         ___Agent.SetScriptedCombatFlags(combatFlags | Agent.AISpecialCombatModeFlags.IgnoreAmmoLimitForRangeCalculation);
                     }
                 }
-                if (___Agent.IsActive() && ___Agent.HasMount)
+                // A rider hemmed in by 3+ foot soldiers (either side, at least one an enemy) pushes forward. Horses,
+                // ridden or not, are agents too and are not counted. A crowd of only friends is left alone, so reserve
+                // cavalry packed against its own infantry holds instead of surging through the line. Not for a
+                // formation ordered to dismount: the engine only lets a rider get off once he has nearly stopped
+                // (Agent.DismountVelocityLimit), so the shove kept the last riders, crowded by the comrades already
+                // on foot, moving and they never dismounted.
+                if (___Agent.IsActive() && ___Agent.HasMount
+                    && ___Agent.Formation?.RidingOrder.OrderEnum != RidingOrder.RidingOrderEnum.Dismount)
                 {
-                    MBList<Agent> enemiesClose = new MBList<Agent>();
-                    enemiesClose = Mission.Current.GetNearbyAgents(___Agent.GetWorldPosition().AsVec2, 1.25f, enemiesClose);
-                    enemiesClose.RemoveAll((Agent a) => a.HasMount);
-                    if (enemiesClose.Count() >= 3)
+                    MBList<Agent> footSoldiersClose = new MBList<Agent>();
+                    footSoldiersClose = Mission.Current.GetNearbyAgents(___Agent.GetWorldPosition().AsVec2, 1.25f, footSoldiersClose);
+                    footSoldiersClose.RemoveAll((Agent a) => !a.IsHuman || a.HasMount);
+                    Agent rider = ___Agent;
+                    if (footSoldiersClose.Count >= 3 && footSoldiersClose.Any((Agent a) => a.IsEnemyOf(rider)))
                     {
                         ___Agent.EventControlFlags &= ~Agent.EventControlFlag.DoubleTapToDirectionMask;
                         ___Agent.EventControlFlags |= Agent.EventControlFlag.DoubleTapToDirectionUp;

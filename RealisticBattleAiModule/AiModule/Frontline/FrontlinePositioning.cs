@@ -136,7 +136,11 @@ namespace RBMAI
                     }
                 }
                 //for cavalry
-                if (mission != null && mission.IsFieldBattle && unit != null && __instance.IsAIControlled && (__instance.QuerySystem.IsCavalryFormation || __instance.QuerySystem.IsRangedCavalryFormation))
+                // Skipped for a formation ordered to dismount (only the player issues that; it survives delegating
+                // command to the AI): its first men off would lose their slot below and charge the nearest enemy.
+                if (mission != null && mission.IsFieldBattle && unit != null && __instance.IsAIControlled
+                    && __instance.RidingOrder.OrderEnum != RidingOrder.RidingOrderEnum.Dismount
+                    && (__instance.QuerySystem.IsCavalryFormation || __instance.QuerySystem.IsRangedCavalryFormation))
                 {
                     //cav cahrge if no mount
                     if (unit != null && unit.MountAgent == null)

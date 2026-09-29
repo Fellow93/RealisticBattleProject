@@ -57,7 +57,10 @@ namespace RBMAI
                 {
                     foreach (Agent agent in __instance.Team.ActiveAgents)
                     {
-                        if (agent != null && agent.IsHuman && !agent.IsRunningAway)
+                        // A formation the player ordered to dismount stays together after he delegates it: sorting by
+                        // HasMount would send its dismounted horse archers to the archers and the rest to the infantry.
+                        if (agent != null && agent.IsHuman && !agent.IsRunningAway
+                            && agent.Formation?.RidingOrder.OrderEnum != RidingOrder.RidingOrderEnum.Dismount)
                         {
                             //banner bearers should stay in their current formation type
                             if (RBMAI.Utilities.IsBannerBearer(agent))
