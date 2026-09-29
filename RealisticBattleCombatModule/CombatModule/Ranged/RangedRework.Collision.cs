@@ -25,43 +25,43 @@ namespace RBMCombat
             [HarmonyPatch("HandleMissileCollisionReaction")]
             private static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, int missileIndex, ref MissileCollisionReaction collisionReaction, MatrixFrame attachLocalFrame, Agent attackerAgent, Agent attachedAgent, bool attachedToShield, sbyte attachedBoneIndex, MissionObject attachedMissionObject, Vec3 bounceBackVelocity, Vec3 bounceBackAngularVelocity, int forcedSpawnIndex, bool isAttachedFrameLocal)
             {
-                Missile missile = ____missilesDictionary[missileIndex];
-                MissileAimTrace.Land(__instance, missileIndex, missile, attachedAgent, attachedToShield);
+                Missile missile;
+                ____missilesDictionary.TryGetValue(missileIndex, out missile);
+                if (missile != null)
+                {
+                    MissileAimTrace.Land(__instance, missileIndex, missile, attachedAgent, attachedToShield);
+                }
                 MissionObjectId missionObjectId = new MissionObjectId(-1, createdAtRuntime: true);
-                switch (collisionReaction)
+                // Big battles with heavy missile volume can hand us a missile whose entity the engine never created
+                // (reported NRE on Entity.Remove below, 1000-unit battle). Vanilla has the same unguarded line; every
+                // branch here needs the entity, so skip the visual handling and still notify network and behaviors.
+                switch (missile?.Entity == null ? MissileCollisionReaction.Invalid : collisionReaction)
                 {
                     case MissileCollisionReaction.BecomeInvisible:
                         missile.Entity.Remove(81);
                         break;
 
                     case MissileCollisionReaction.Stick:
+                        EquipmentIndex shieldIndex = EquipmentIndex.None;
+                        if (attachedAgent != null && attachedToShield)
+                        {
+                            shieldIndex = FindShieldToStickInto(attachedAgent);
+                            if (shieldIndex == EquipmentIndex.None)
+                            {
+                                // Shield hit but the agent holds no shield any more: nothing to attach to, and a missile
+                                // prepared for drop but never attached is left stranded in the world. Vanish it instead,
+                                // the same way vanilla's BecomeInvisible does (before PrepareMissileWeaponForDrop).
+                                missile.Entity.Remove(81);
+                                break;
+                            }
+                        }
                         missile.Entity.SetVisibilityExcludeParents(visible: true);
                         if (attachedAgent != null)
                         {
                             __instance.PrepareMissileWeaponForDrop(missileIndex);
                             if (attachedToShield)
                             {
-                                EquipmentIndex wieldedItemIndex;
-
-                                if (attachedAgent.WieldedOffhandWeapon.IsEmpty)
-                                {
-                                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                                    {
-                                        if (attachedAgent.Equipment != null && !attachedAgent.Equipment[equipmentIndex].IsEmpty)
-                                        {
-                                            if (attachedAgent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
-                                            {
-                                                attachedAgent.AttachWeaponToWeapon(equipmentIndex, missile.Weapon, missile.Entity, ref attachLocalFrame);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    wieldedItemIndex = attachedAgent.GetOffhandWieldedItemIndex();
-                                    attachedAgent.AttachWeaponToWeapon(wieldedItemIndex, missile.Weapon, missile.Entity, ref attachLocalFrame);
-                                }
+                                attachedAgent.AttachWeaponToWeapon(shieldIndex, missile.Weapon, missile.Entity, ref attachLocalFrame);
                             }
                             else
                             {
@@ -96,6 +96,26 @@ namespace RBMCombat
                     missionBehavior.OnMissileCollisionReaction(collisionReaction, attackerAgent, attachedAgent, attachedBoneIndex);
                 }
                 return false;
+            }
+
+            // The wielded off-hand shield, else the first shield in the weapon slots (a shield on the back), else None.
+            private static EquipmentIndex FindShieldToStickInto(Agent agent)
+            {
+                if (!agent.WieldedOffhandWeapon.IsEmpty)
+                {
+                    return agent.GetOffhandWieldedItemIndex();
+                }
+                if (agent.Equipment != null)
+                {
+                    for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
+                    {
+                        if (!agent.Equipment[equipmentIndex].IsEmpty && agent.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield)
+                        {
+                            return equipmentIndex;
+                        }
+                    }
+                }
+                return EquipmentIndex.None;
             }
         }
 
