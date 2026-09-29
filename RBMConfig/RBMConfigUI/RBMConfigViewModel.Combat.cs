@@ -351,11 +351,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string RangedReloadAffectsAit
         {
-            get { return new TextObject("Ranged reload applies to AI").ToString(); }
+            get { return new TextObject("{=RBM_CFG_RELOAD_AI}Ranged reload applies to AI").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel RangedReloadAffectsAiHint { get; } = Hint("When enabled, AI archers and crossbowmen follow the Ranged reload speed setting too (Vanilla / Realistic / Semi-realistic) instead of their fixed AI reload. Off keeps that setting player-only. Default off.");
+        public BasicTooltipViewModel RangedReloadAffectsAiHint { get; } = Hint("{=RBM_CFG_RELOAD_AI_HINT}When enabled, AI archers and crossbowmen follow the Ranged reload speed setting too (Vanilla / Realistic / Semi-realistic) instead of their fixed AI reload. Off keeps that setting player-only. Default off.");
 
         // Plain-text label/hint for the same reason as the row above.
         [DataSourceProperty]

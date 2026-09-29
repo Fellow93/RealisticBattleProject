@@ -883,6 +883,9 @@
 	<string id="RBM_BLD_ROADS" text="RBM: bound villages produce +5/10/15% more goods · bound villages' recruit pool growth +10/20/30%" />
 	<string id="RBM_BLD_DAILY_MILITIA_HOUSING" text="RBM: recruit pool growth +25% while running" />
 	<string id="RBM_BLD_DAILY_RAISE_TROOPS" text="RBM: recruit pool growth +50% while running" />
+	<!-- Config screen: ranged reload applies to AI -->
+	<string id="RBM_CFG_RELOAD_AI" text="Ranged reload applies to AI" />
+	<string id="RBM_CFG_RELOAD_AI_HINT" text="When enabled, AI archers and crossbowmen follow the Ranged reload speed setting too (Vanilla / Realistic / Semi-realistic) instead of their fixed AI reload. Off keeps that setting player-only. Default off." />
 
   </strings>
 </base>
