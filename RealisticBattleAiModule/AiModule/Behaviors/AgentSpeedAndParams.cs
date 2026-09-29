@@ -31,7 +31,9 @@ namespace RBMAI
 
             if (agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation)
             {
-                if (agent.MountAgent != null)
+                // desiredSpeed < 0 is the "clear the limit" call (OnRetreating passes -1): let vanilla lift it
+                // instead of pinning a fleeing rider to MountSpeed. A dying/removed mount goes to vanilla too.
+                if (agent.MountAgent != null && agent.MountAgent.IsActive() && desiredSpeed >= 0f)
                 {
                     float speed = agent.MountAgent.AgentDrivenProperties.MountSpeed;
                     ___Agent.SetMaximumSpeedLimit(speed, false);
@@ -59,7 +61,7 @@ namespace RBMAI
             }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorProtectFlank))
             {
-                if (desiredSpeed < 0.9f)
+                if (limitIsMultiplier && desiredSpeed < 0.9f)
                 {
                     desiredSpeed = 0.9f;
                 }
