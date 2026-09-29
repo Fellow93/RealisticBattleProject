@@ -29,6 +29,7 @@
 - Archers no longer walk into the enemy to pick up spent arrows. Ammo lying within 25 m of an enemy (45 m for horsemen) is ignored.
 - Troops that lose their melee weapon pick up a dropped one again.
 - Polearm troops no longer switch weapons back and forth while an enemy hovers at the edge of range.
+- Swimmers in field battles (e.g. on river maps) are no longer treated as being on land, so they are no longer ordered to cheer or to pick up weapons while swimming.
 
 ### Campaign
 - Starving a besieged fief works again: paid healing no longer mends starving garrisons, militia or parties faster than starvation wounds them.
