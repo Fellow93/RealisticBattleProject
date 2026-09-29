@@ -392,6 +392,7 @@
     <Compile Include="UI\ProjectsGridPrefabPatch.cs" />
     <Compile Include="UI\TownManagementGridPatch.cs" />
     <Compile Include="Production\VillageProductionIconPatch.cs" />
+    <Compile Include="Production\QuestTradeGoods.cs" />
     <Compile Include="Production\CitizenDemand.cs" />
     <Compile Include="Production\RBMTownFoodSupply.cs" />
     <Compile Include="Production\TownStorage.cs" />
