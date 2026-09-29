@@ -1,6 +1,7 @@
 using RBMConfig;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
@@ -256,6 +257,27 @@ namespace RBMCombat
             }
         }
 
+        // Spawn equipment sets this mechanic has made private to an agent. Armor wear is meant to last one
+        // mission: Mission.SpawnAgent clones the character's equipment, so writing into SpawnEquipment is
+        // throwaway. But native code later hands some agents a hero's LIVE set through
+        // UpdateSpawnEquipmentAndRefreshVisuals (closing the inventory mid-mission, hideout/prison-break
+        // stealth gear, the War Sails storyline battles), and wearing that down in place left the hero's
+        // saved gear Scratched for good. Weak keys, so nothing outlives the mission.
+        private static readonly ConditionalWeakTable<Equipment, object> missionOwnedSpawnEquipment = new ConditionalWeakTable<Equipment, object>();
+        private static readonly object missionOwnedMarker = new object();
+
+        private static Equipment GetMissionOwnedSpawnEquipment(Agent agent)
+        {
+            Equipment equipment = agent.SpawnEquipment;
+            if (!missionOwnedSpawnEquipment.TryGetValue(equipment, out _))
+            {
+                equipment = equipment.Clone();
+                missionOwnedSpawnEquipment.Add(equipment, missionOwnedMarker);
+                agent.InitializeSpawnEquipment(equipment);
+            }
+            return equipment;
+        }
+
         public static void lowerArmorQuality(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType)
         {
             string oldItemModifier = " ";
@@ -298,12 +320,12 @@ namespace RBMCombat
                     if (currentModifier > 0 && newIM != null && ((newIM.ModifyArmor(100) - 100) < 0))
                     {
                         equipmentElement.SetModifier(null);
-                        agent.SpawnEquipment[equipmentIndex] = equipmentElement;
+                        GetMissionOwnedSpawnEquipment(agent)[equipmentIndex] = equipmentElement;
                     }
                     else if (newIM != null || equipmentElement.ItemModifier == null)
                     {
                         equipmentElement.SetModifier(newIM);
-                        agent.SpawnEquipment[equipmentIndex] = equipmentElement;
+                        GetMissionOwnedSpawnEquipment(agent)[equipmentIndex] = equipmentElement;
                     }
                     //InformationManager.DisplayMessage(new InformationMessage(agent.Name + ": " + itemType.ToString() + " " + oldItemModifier + " -> " + newIM?.StringId));
                     //InformationManager.DisplayMessage(new InformationMessage(((float)numOfDurabilityDowngrade / (float)numOfHits) + ""));
