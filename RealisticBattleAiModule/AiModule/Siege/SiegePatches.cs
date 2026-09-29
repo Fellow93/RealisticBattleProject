@@ -13,6 +13,12 @@ namespace RBMAI
         [HarmonyPatch(typeof(BehaviorAssaultWalls))]
         private class OverrideBehaviorAssaultWalls
         {
+            // BehaviorAssaultWalls.BehaviorState is a private enum; MoveToGate = 4.
+            private const int MoveToGateState = 4;
+            private const float GateWalkEngageDistance = 30f;
+            private const float GateWalkUnderFireRatio = 0.2f;
+            private static readonly FieldInfo BehaviorStateField = AccessTools.Field(typeof(BehaviorAssaultWalls), "_behaviorState");
+
             [HarmonyPostfix]
             [HarmonyPatch("OnBehaviorActivatedAux")]
             private static void PostfixOnBehaviorActivatedAux(ref BehaviorShootFromCastleWalls __instance)
@@ -26,6 +32,29 @@ namespace RBMAI
             private static void PostfixCalculateCurrentOrder(ref BehaviorAssaultWalls __instance, ref MovementOrder ____wallSegmentMoveOrder, ref MovementOrder ____attackEntityOrderOuterGate, ref ArrangementOrder ___CurrentArrangementOrder, ref MovementOrder ____chargeOrder, ref TeamAISiegeComponent ____teamAISiegeComponent, ref MovementOrder ____currentOrder, ref MovementOrder ____attackEntityOrderInnerGate)
             {
                 ___CurrentArrangementOrder = ArrangementOrder.ArrangementOrderScatter;
+
+                // Vanilla sends a wall formation walking to the gate once its lane holds fewer than 15 defenders, and
+                // only leaves that plain Move when both gates are open. Archers on towers and other lanes don't count
+                // toward the 15, so the men stood on the wall top under fire. Fight whatever is close or shooting at
+                // them instead; _behaviorState is left alone, so the gate detachment (TickOccasionally) still goes and
+                // the switch to Charging still fires once the gates open.
+                if (BehaviorStateField == null || System.Convert.ToInt32(BehaviorStateField.GetValue(__instance)) != MoveToGateState)
+                {
+                    return;
+                }
+                Formation formation = __instance.Formation;
+                FormationQuerySystem closestEnemy = formation.CachedClosestEnemyFormation;
+                if (closestEnemy == null)
+                {
+                    return;
+                }
+                bool enemyClose = formation.CachedAveragePosition.Distance(closestEnemy.Formation.CachedAveragePosition) < GateWalkEngageDistance;
+                bool underFire = formation.QuerySystem.UnderRangedAttackRatioReadOnly > GateWalkUnderFireRatio;
+                if (enemyClose || underFire)
+                {
+                    ____currentOrder = MovementOrder.MovementOrderChargeToTarget(closestEnemy.Formation);
+                    __instance.IsCurrentOrderChanged = true;
+                }
             }
         }
 

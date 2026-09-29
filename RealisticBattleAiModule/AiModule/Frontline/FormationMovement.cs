@@ -41,7 +41,10 @@ namespace RBMAI
             }
             System.Threading.Interlocked.Increment(ref CallCount);
             MovementOrder.MovementOrderEnum orderType = ___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum;
-            if (___Agent.Controller == AgentControllerType.AI && orderType == MovementOrder.MovementOrderEnum.Move && ___Agent.Formation.ArrangementOrder != ArrangementOrder.ArrangementOrderColumn)
+            // Siege attackers keep native's slot rule: their wall-climb and gate-walk orders are Moves, and holding
+            // every man to his slot left them standing on the wall top while defenders cut them down.
+            bool isSiegeAttacker = Mission.Current != null && Mission.Current.IsSiegeBattle && ___Agent.Team != null && ___Agent.Team.IsAttacker;
+            if (___Agent.Controller == AgentControllerType.AI && orderType == MovementOrder.MovementOrderEnum.Move && !isSiegeAttacker && ___Agent.Formation.ArrangementOrder != ArrangementOrder.ArrangementOrderColumn)
             {
                 Vec2 currentGlobalPositionOfUnit = ___Agent.Formation.GetCurrentGlobalPositionOfUnit(___Agent, false);
                 FormationIntegrityDataGroup formationIntegrityData = ___Agent.Formation.CachedFormationIntegrityData;

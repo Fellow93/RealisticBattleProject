@@ -278,6 +278,14 @@ namespace RBMAI
 
                     if (Mission.Current.IsSiegeBattle || Mission.Current.IsSallyOutBattle)
                     {
+                        // Siege attackers keep vanilla DefaultMove melee reach (~12 m vs ~4 m). Their wall-top and
+                        // gate-walk orders are plain Moves, and the tight curve left them standing under fire from
+                        // defenders a few metres away.
+                        if (Mission.Current.IsSiegeBattle && ___Agent.Team != null && ___Agent.Team.IsAttacker)
+                        {
+                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 7f, 5f, 20f, 0.01f);
+                            return;
+                        }
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 4f, 3f, 20f, 0.01f);
                         return;
                     }
