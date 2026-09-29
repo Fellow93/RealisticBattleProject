@@ -26,6 +26,7 @@ namespace RBMCombat
             private static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, int missileIndex, ref MissileCollisionReaction collisionReaction, MatrixFrame attachLocalFrame, Agent attackerAgent, Agent attachedAgent, bool attachedToShield, sbyte attachedBoneIndex, MissionObject attachedMissionObject, Vec3 bounceBackVelocity, Vec3 bounceBackAngularVelocity, int forcedSpawnIndex, bool isAttachedFrameLocal)
             {
                 Missile missile = ____missilesDictionary[missileIndex];
+                MissileAimTrace.Land(__instance, missileIndex, missile, attachedAgent, attachedToShield);
                 MissionObjectId missionObjectId = new MissionObjectId(-1, createdAtRuntime: true);
                 switch (collisionReaction)
                 {

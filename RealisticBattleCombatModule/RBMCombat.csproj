@@ -228,6 +228,7 @@
     <!-- Diagnostics -->
     <Compile Include="CombatModule\Diagnostics\BattleHitLog.cs" />
     <Compile Include="CombatModule\Diagnostics\BattleHitLogic.cs" />
+    <Compile Include="CombatModule\Diagnostics\MissileAimTrace.cs" />
     <!-- UI -->
     <Compile Include="CombatModule\UI\PlayerArmorStatus\PlayerArmorStatus.cs" />
     <Compile Include="CombatModule\UI\PlayerArmorStatus\PlayerArmorStatusVM.cs" />

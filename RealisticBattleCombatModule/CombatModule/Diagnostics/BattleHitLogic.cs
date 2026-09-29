@@ -61,6 +61,7 @@ namespace RBMCombat
         public override void AfterStart()
         {
             _logging = false;
+            MissileAimTrace.Reset();
             if (!BattleHitLog.IsEnabled || !IsRealBattle())
             {
                 return;
@@ -80,6 +81,9 @@ namespace RBMCombat
             header.Append("  raw    = what the blow would have done to a naked man (dealt + absorbed by armour)").Append("\n");
             header.Append("  armor  = the armour standing over the part it actually landed on").Append("\n");
             header.Append("  dealt  = what went through").Append("\n");
+            header.Append("\n");
+            header.Append("  SHOT/LAND = AI bow/crossbow aim trace (see MissileAimTrace): predRange ~ tgtRange means the aim").Append("\n");
+            header.Append("              suited the launch; landRange short of predRange means the flight differs from the model").Append("\n");
             header.Append("\n");
             header.Append("    striker            -> struck                what     weapon           part    armor      raw   absorb    dealt   hp").Append("\n");
 

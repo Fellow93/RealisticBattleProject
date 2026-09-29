@@ -141,6 +141,7 @@ namespace RBMCombat
             {
                 MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
                 WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
+                Vec3 engineLaunchVelocity = velocity;
 
                 if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe))
                 {
@@ -158,7 +159,7 @@ namespace RBMCombat
                                 {
                                     double rotRad = (0.0174533 * shooterRelativeSpeed) / 1.1f;
                                     float vecLength = velocity.Length;
-                                    double currentRad = (double)Math.Acos(velocity.z / vecLength);
+                                    double currentRad = (double)Math.Acos(MBMath.ClampFloat(velocity.z / vecLength, -1f, 1f));
                                     float newZ = velocity.Length * ((float)Math.Cos(currentRad - rotRad));
                                     velocity.z = newZ;
                                 }
@@ -169,7 +170,7 @@ namespace RBMCombat
                             double rotRad;
                             rotRad = 0.0174533 * -5f;
                             float vecLength = velocity.Length;
-                            double currentRad = (double)Math.Acos(velocity.z / vecLength);
+                            double currentRad = (double)Math.Acos(MBMath.ClampFloat(velocity.z / vecLength, -1f, 1f));
                             float newZ = velocity.Length * ((float)Math.Cos(currentRad - rotRad));
                             velocity.z = newZ;
                         }
@@ -243,6 +244,14 @@ namespace RBMCombat
                         calculatedMissileSpeed = Utilities.calculateMissileSpeed(ammoWeight, missionWeapon.CurrentUsageItem.ItemUsage, rangedWeaponStats[min].getDrawWeight() + msModifier);
                     }
 
+                    // A modded launcher whose draw weight plus a negative modifier is <= 0 gives sqrt(negative) = NaN,
+                    // cast to int.MinValue. That would go into the weapon stats AddMissile reads, so keep the engine's shot.
+                    if (calculatedMissileSpeed <= 0)
+                    {
+                        return true;
+                    }
+
+                    Vec3 engineVelocity = velocity;
                     Vec3 shooterAgentVelocity = new Vec3(shooterAgent.Velocity, -1);
                     Vec3 myVelocity = new Vec3(velocity, -1);
 
@@ -256,6 +265,11 @@ namespace RBMCombat
                     velocity.y = myVelocity.y * (calculatedMissileSpeed + shooterAgentSpeed);
                     velocity.z = myVelocity.z * (calculatedMissileSpeed + shooterAgentSpeed);
 
+                    if (wsd[0].WeaponClass != (int)WeaponClass.Sling)
+                    {
+                        MissileAimTrace.BeginShot(shooterAgent, (WeaponClass)wsd[0].WeaponClass, position, engineVelocity, velocity, calculatedMissileSpeed, ammoWeight);
+                    }
+
                     MissileSpeedProperty.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
 
@@ -265,9 +279,16 @@ namespace RBMCombat
 
                     double rotRad = 0.083141f;
                     float vecLength = velocity.Length;
-                    double currentRad = (double)Math.Acos(velocity.z / vecLength);
+                    double currentRad = (double)Math.Acos(MBMath.ClampFloat(velocity.z / vecLength, -1f, 1f));
                     float newZ = velocity.Length * ((float)Math.Cos(currentRad - rotRad));
                     velocity.z = newZ;
+                }
+
+                // A NaN/Infinity or zero launch velocity is handed straight to native AddMissile, which
+                // access-violates on it; fire the engine's own shot instead.
+                if (!velocity.IsValid || velocity.LengthSquared < 1f)
+                {
+                    velocity = engineLaunchVelocity;
                 }
 
                 return true;
@@ -292,6 +313,7 @@ namespace RBMCombat
                 {
                     MissileSpeedProperty.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, rangedWeaponStats[GetRangedWeaponKey(missionWeapon)].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
+                MissileAimTrace.CommitShot(__instance);
             }
         }
 
