@@ -41,6 +41,16 @@
 - Starving a besieged fief works again: paid healing no longer mends starving garrisons, militia or parties faster than starvation wounds them.
 - Artisan quests no longer ask for hardwood or iron ore, which RBM villages don't produce. They ask for planks and tools instead.
 - A plank now refines into 10 hardwood.
+- **Troop upgrade prices on the party screen are honest now.** The price on an upgrade arrow is for the next man after spoils; upgrading a whole stack at once used to charge full price for the men the spoils didn't reach, several times what the arrow suggested. The arrow now only offers as many men as your gold covers, and its tooltip adds an "All N: you pay X" line with the real total.
+- Upgrading a batch the spoils fully cover no longer fails silently when you are low on gold, which also showed a gold gain and paid it out.
+- Cancelling the upgrade popup no longer forgets the spoils already promised to upgrades made before opening it.
+- Splitting one stack between two upgrade branches in one visit no longer spends the same spoils twice.
+- Men taken from a garrison or companion party and upgraded in the same visit pay with the spoils they bring. Men sent the other way take their share with them, and it is no longer spent on the upgrades of the men who stay.
+- Troops donated to a garrison or handed to a new clan party keep their spoils.
+- The troop upgrade cost multiplier now multiplies the price instead of stacking with perk discounts, so a low setting plus perks no longer makes upgrades free.
+- Leaderless parties that belong to someone (patrols) only promote the men their own spoils cover instead of billing the owner, and AI upgrades no longer pay the supplying town more gold than the payer had.
+- Prisoners recruited while in a town or village no longer arrive with a free spoils allowance.
+- War Sails: AI armies that have to sail to a siege no longer board their ships, disembark and board again in an endless loop. A party's strength no longer drops while it is at sea; the landing limit for ship raids now only affects the decision to raid a village through its port.
 - Clans without a culture are removed the way vanilla does it, and clans that are already eliminated are no longer destroyed again on every load.
 
 ### Tournament

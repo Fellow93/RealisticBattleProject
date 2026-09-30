@@ -671,6 +671,9 @@ namespace RBMCampaign
         /// </summary>
         private static bool _inPrisonerRecruitment;
 
+        /// <summary>Whether the recruit event now firing is a prisoner joining the ranks, not a muster.</summary>
+        public static bool InPrisonerRecruitment => _inPrisonerRecruitment;
+
         /// <summary>
         /// Keeps prisoner recruitment from paying a town for men it never raised. A prisoner talked round
         /// to the ranks costs conformity, not coin -- <c>RecruitPrisonersCampaignBehavior</c> moves no

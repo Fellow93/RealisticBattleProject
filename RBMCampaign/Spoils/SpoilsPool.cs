@@ -177,11 +177,17 @@ namespace RBMCampaign
         /// <summary>
         /// The stockpile a stack can spend right now. The party screen stages upgrades without
         /// charging for them until the player confirms, so those must be subtracted here or the
-        /// same spoils would be spent twice within one visit to the screen.
+        /// same spoils would be spent twice within one visit to the screen. Men dragged in from the other
+        /// party this visit bring their purse share only on Done, so that is counted in as well, or men
+        /// fetched from a garrison and promoted on the spot would be quoted as if they owned nothing. Men
+        /// dragged out take their share away on Done, so that is held back in turn.
         /// </summary>
         public static int GetAvailableSpoils(PartyBase party, CharacterObject character)
         {
-            return MathF.Max(0, GetSpoils(party, character) - PartyScreenStagedUpgrades.GetStagedSpoils(party, character));
+            return MathF.Max(0, GetSpoils(party, character)
+                + SpoilsTransferOnPartyScreen.GetIncomingSpoils(party, character)
+                - SpoilsTransferOnPartyScreen.GetOutgoingSpoils(party, character)
+                - PartyScreenStagedUpgrades.GetStagedSpoils(party, character));
         }
 
         public static int GetSpoils(PartyBase party, CharacterObject character)

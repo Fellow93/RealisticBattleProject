@@ -144,7 +144,9 @@ namespace RBMCampaign
         /// </summary>
         public static int CarrySpoilsOnUpgrade(PartyBase party, CharacterObject from, CharacterObject to, int count, int stackSizeBefore)
         {
-            int carried = GetCarriedSpoils(GetSpoils(party, from), count, stackSizeBefore);
+            // Net of what the party screen still holds reserved for this source's other branches: their
+            // own commit events have yet to draw it, and a share carried out of it would be spent twice.
+            int carried = GetCarriedSpoils(GetAvailableSpoils(party, from), count, stackSizeBefore);
             if (carried > 0)
             {
                 AddSpoils(party, from, -carried);
@@ -182,7 +184,13 @@ namespace RBMCampaign
                     + (carried > 0 ? ", carried " + carried + " of the purse along" : "")
                     + ", pool " + GetSpoils(party, character));
             }
-            ClearSpoilsIfStackGone(party, character);
+            // An emptied stack's purse is not yet ownerless while another branch of the same source still
+            // has its event to come, or while men dragged to the other party wait to take their share.
+            if (!PartyScreenStagedUpgrades.HasPendingUpgrade(party, character)
+                && SpoilsTransferOnPartyScreen.GetOutgoingCount(party, character) == 0)
+            {
+                ClearSpoilsIfStackGone(party, character);
+            }
 
             // Hands the town that armed the gold-buyers the GOLD leg of the promotion -- what the screen took
             // from the player (staged at the time it was charged, since it cannot be recomputed once the

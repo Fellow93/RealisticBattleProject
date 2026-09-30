@@ -209,13 +209,14 @@ namespace RBMCampaign
         /// The player's own muster from a settlement's notables, one man at a time into the main party --
         /// the recruit-screen path, which carries neither settlement nor party. The screen only opens
         /// inside a village or town, so the main party's current settlement stands in for the "from a
-        /// settlement" gate. Prisoners pressed into service and mercenaries hired in a tavern reach this
-        /// event too, but only a recruit made while the party sits in a village or town is seeded.
+        /// settlement" gate. Mercenaries hired in a tavern reach this event too and are seeded like any
+        /// paid recruit. Prisoners pressed into service reach it as well, but bring nothing, as on the AI
+        /// path: nobody paid for them, so a seed would be spoils out of thin air.
         /// </summary>
         public static void OnUnitRecruited(CharacterObject character, int amount)
         {
             Settlement settlement = MobileParty.MainParty?.CurrentSettlement;
-            if (settlement == null || !(settlement.IsVillage || settlement.IsTown))
+            if (settlement == null || !(settlement.IsVillage || settlement.IsTown) || RecruitSupply.InPrisonerRecruitment)
             {
                 return;
             }

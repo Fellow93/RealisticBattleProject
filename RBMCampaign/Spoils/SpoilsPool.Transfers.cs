@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.ObjectSystem;
 
 namespace RBMCampaign
@@ -35,6 +36,27 @@ namespace RBMCampaign
                 AddSpoils(to, character, carried);
             }
             // The men carry the rations they marched off with, wherever they marched to.
+            TroopUpkeep.TransferFedState(from, to, character);
+            return carried;
+        }
+
+        /// <summary>
+        /// As <see cref="TransferSpoils"/>, for a share the caller has already worked out: the party screen
+        /// fixes what leaving men take while its upgrade reservations still stand, which the split above,
+        /// measured after the fact, cannot see. Never moves more than the purse holds. Returns what moved.
+        /// </summary>
+        public static int TransferSpoilsAmount(PartyBase from, PartyBase to, CharacterObject character, int amount)
+        {
+            if (from == null || to == null || from == to || character == null || character.IsHero)
+            {
+                return 0;
+            }
+            int carried = MathF.Max(0, MathF.Min(amount, GetSpoils(from, character)));
+            if (carried > 0)
+            {
+                AddSpoils(from, character, -carried);
+                AddSpoils(to, character, carried);
+            }
             TroopUpkeep.TransferFedState(from, to, character);
             return carried;
         }

@@ -260,6 +260,18 @@ namespace RBMCampaign
                             continue;
                         }
                     }
+                    // A leaderless party with an owner (a patrol, say) has no purse of its own to size the
+                    // batch against, and ApplyEffects would send the bill to the owner unasked -- the player,
+                    // for his own fiefs' parties. Only the men its spoils cover promote; nobody is billed.
+                    // A party with no owner either (bandits) is billed to no one and is left as it was.
+                    else if (fullGold > 0 && party.Owner != null && party.Owner.IsAlive)
+                    {
+                        count = MathF.Min(count, (int)SpoilsPool.GetCoveredMen(party, character, upgradeTarget));
+                        if (count <= 0)
+                        {
+                            continue;
+                        }
+                    }
 
                     if ((!party.Culture.IsBandit || upgradeTarget.Culture.IsBandit) && (character.Occupation != Occupation.Bandit || upgradeModel.CanPartyUpgradeTroopToTarget(party, character, upgradeTarget)))
                     {
@@ -409,9 +421,13 @@ namespace RBMCampaign
                 else if (payer != null && payer.IsAlive)
                 {
                     SkillLevelingManager.OnUpgradeTroops(party, option.Target, option.UpgradeTarget, option.Count);
+                    // GiveGoldAction takes no more than the payer holds, and the owner billed here need not be
+                    // the purse the batch was sized against (a leaderless party is not sized at all), so
+                    // measure what left him rather than assume the whole bill was met.
+                    int goldBefore = payer.Gold;
                     GiveGoldAction.ApplyBetweenCharacters(payer, null, option.TotalGoldCost, true);
-                    ClanEventGoldLedger.Record(payer, EventGoldKind.UpgradeGold, option.TotalGoldCost);
-                    goldCharged = option.TotalGoldCost;
+                    goldCharged = MathF.Max(0, goldBefore - payer.Gold);
+                    ClanEventGoldLedger.Record(payer, EventGoldKind.UpgradeGold, goldCharged);
                 }
 
                 // Draw the gold just billed against this party's daily upgrade budget, so a later stack in

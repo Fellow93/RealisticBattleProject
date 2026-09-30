@@ -27,7 +27,11 @@ namespace RBMCampaign
 
             bool isForHire = characterObject.Occupation == Occupation.Mercenary || characterObject.Occupation == Occupation.Gangster || characterObject.Occupation == Occupation.CaravanGuard;
 
-            ExplainedNumber stat = new ExplainedNumber((upgradeTargetEquipmentCost - characterEquipmentCost) * goldFactor);
+            // The multiplier scales the base rather than joining the perk factors below: ExplainedNumber
+            // sums its factors, so as a factor a 0.5x setting and two -10% perks came to 0.3x, not 0.4x,
+            // and a low enough setting let the perks alone carry the price to nothing.
+            ExplainedNumber stat = new ExplainedNumber((upgradeTargetEquipmentCost - characterEquipmentCost) * goldFactor
+                * RBMConfig.RBMConfig.troopUpgradeCostMultiplier);
             // A stack-keyed purse can be priced for any party (the cap values every
             // stack), and a settlement-owned PartyBase has no MobileParty to read perks off. The perks
             // simply do not apply then; the base multiplier below still does.
@@ -52,9 +56,6 @@ namespace RBMCampaign
                 }
             }
 
-            // ExplainedNumber resolves to base * (1 + sum of factors), so a 0.1x
-            // multiplier has to be expressed as a -0.9 factor.
-            stat.AddFactor(RBMConfig.RBMConfig.troopUpgradeCostMultiplier - 1f, new TextObject("{=RBM_CON_033}Realistic Battle Mod"));
             return stat;
         }
 
@@ -78,6 +79,31 @@ namespace RBMCampaign
         {
             float unpaidMen = SpoilsPool.GetUnpaidMen(party, characterObject, upgradeTarget, count);
             return MathF.Max(0, BuildUpgradeGoldCost(party, characterObject, upgradeTarget, unpaidMen).RoundedResultNumber);
+        }
+
+        /// <summary>
+        /// The most men, up to <paramref name="maxCount"/>, whose batch the given gold can pay for. Vanilla
+        /// sizes a batch by dividing gold by the next man's price, which under spoils is the discounted
+        /// price of one man -- so it offers the whole stack at a price only the leading men get.
+        /// </summary>
+        public static int GetAffordableUpgradeCount(PartyBase party, CharacterObject characterObject, CharacterObject upgradeTarget, int maxCount, int gold)
+        {
+            // The batch cost only ever grows with the count, so the largest affordable one bisects.
+            int low = 0;
+            int high = maxCount;
+            while (low < high)
+            {
+                int mid = (low + high + 1) / 2;
+                if (GetBatchUpgradeGoldCost(party, characterObject, upgradeTarget, mid) <= gold)
+                {
+                    low = mid;
+                }
+                else
+                {
+                    high = mid - 1;
+                }
+            }
+            return low;
         }
 
         [HarmonyPatch(typeof(DefaultPartyTroopUpgradeModel))]
@@ -156,7 +182,7 @@ namespace RBMCampaign
             /// wears cheaper kit, there is no discount to break out — the price is already zero — so the
             /// salvaged surplus is named on its own line, read straight from the original arguments.
             /// </summary>
-            private static void Postfix(ref string __result, int index, CharacterObject character, bool areUpgradesDisabled, int upgradeCoinCost, int __state)
+            private static void Postfix(ref string __result, int index, CharacterObject character, bool areUpgradesDisabled, int upgradeCoinCost, int availableUpgrades, int partyGoldChangeAmount, int __state)
             {
                 if (__result == null)
                 {
@@ -181,6 +207,18 @@ namespace RBMCampaign
                         .SetTextVariable("AMOUNT", __state).ToString() + CoinIcon;
                     __result += "\n" + new TextObject("{=RBM_SPOILS_007}You pay: {AMOUNT}")
                         .SetTextVariable("AMOUNT", upgradeCoinCost - __state).ToString() + CoinIcon;
+                    // "You pay" is the next man alone. The spoils run out part-way through a batch, so the
+                    // stack modifier's price is not that figure times the count; quote it outright. The
+                    // Prefix credited partyGoldChangeAmount with the covered gold, so take it back off.
+                    CharacterObject target = character.UpgradeTargets[index];
+                    int batch = GetAffordableUpgradeCount(PartyBase.MainParty, character, target, availableUpgrades,
+                        Hero.MainHero.Gold + partyGoldChangeAmount - __state);
+                    if (batch > 1)
+                    {
+                        __result += "\n" + new TextObject("{=RBM_SPOILS_031}All {COUNT}: you pay {AMOUNT}")
+                            .SetTextVariable("COUNT", batch)
+                            .SetTextVariable("AMOUNT", GetBatchUpgradeGoldCost(PartyBase.MainParty, character, target, batch)).ToString() + CoinIcon;
+                    }
                     return;
                 }
                 if (areUpgradesDisabled || !SpoilsPool.IsEnabled || character == null
@@ -238,6 +276,50 @@ namespace RBMCampaign
                 foreach (UpgradeTargetVM upgrade in __instance.Upgrades)
                 {
                     upgrade.IsAvailable = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Vanilla sizes each arrow's batch as gold divided by the next man's price (or the whole stack
+        /// when that price is zero). Under spoils the next man is the discounted one, so the arrow offered
+        /// a batch whose trailing men pay full price: the stack modifier then either charged several times
+        /// what the card quoted, or was refused outright by TightenUpgradeAffordability. Shrink each batch
+        /// to what the gold really covers; only ever lowers the count vanilla arrived at.
+        /// </summary>
+        [HarmonyPatch(typeof(PartyCharacterVM))]
+        [HarmonyPatch("InitializeUpgrades")]
+        private class ClampUpgradesToAffordableBatch
+        {
+            private static void Postfix(PartyCharacterVM __instance, PartyScreenLogic ____partyScreenLogic)
+            {
+                if (!SpoilsPool.IsEnabled || !__instance.IsUpgradableTroop || __instance.Upgrades == null || ____partyScreenLogic == null)
+                {
+                    return;
+                }
+                CharacterObject character = __instance.Character;
+                int gold = Hero.MainHero.Gold + ____partyScreenLogic.CurrentData.PartyGoldChangeAmount;
+                int most = 0;
+                for (int i = 0; i < __instance.Upgrades.Count && i < character.UpgradeTargets.Length; i++)
+                {
+                    UpgradeTargetVM upgrade = __instance.Upgrades[i];
+                    int offered = upgrade.AvailableUpgrades;
+                    upgrade.AvailableUpgrades = GetAffordableUpgradeCount(PartyBase.MainParty, character,
+                        character.UpgradeTargets[i], offered, gold);
+                    most = MathF.Max(most, upgrade.AvailableUpgrades);
+                    // RefreshShownUpgradeHint re-showed a hovered tooltip before this ran; its stack-modifier
+                    // line was worded for the batch vanilla offered, so show it again for the smaller one.
+                    if (upgrade.AvailableUpgrades != offered && _shownHint != null && upgrade.Hint == _shownHint)
+                    {
+                        MBInformationManager.HideInformations();
+                        upgrade.Hint.ExecuteBeginHint();
+                    }
+                }
+                // The two figures vanilla derives from the largest batch, redone now it may be smaller.
+                __instance.NumOfUpgradeableTroops = most;
+                if (most == 0)
+                {
+                    __instance.IsTroopUpgradable = false;
                 }
             }
         }

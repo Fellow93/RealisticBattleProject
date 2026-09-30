@@ -37,6 +37,13 @@ namespace RBMCampaign
         // left, which is the denominator the carried purse share is measured against.
         private static readonly Dictionary<CharacterObject, int> _stagedCount = new Dictionary<CharacterObject, int>();
 
+        // Set once TrackStagedUpgrade has reserved a batch, and spent by the ValidateCommand vanilla's
+        // UpgradeTroop opens with. That second check runs against the purse the reservation just drew
+        // down, so TightenUpgradeAffordability would price the same batch a second time, as if nothing
+        // covered it: a batch the spoils pay for outright was refused for gold it never needed, with its
+        // reservation and gold correction already staged and nothing to take them back.
+        private static bool _batchReserved;
+
         private static string TargetKey(CharacterObject from, CharacterObject to)
         {
             return from.StringId + "@" + to.StringId;
@@ -81,6 +88,9 @@ namespace RBMCampaign
             {
                 pending = count;
             }
+            // Men of this troop dragged to the other party are not counted back in: their share of the
+            // purse is already set aside (SpoilsTransferOnPartyScreen.GetOutgoingSpoils), so what is
+            // split here is split among the men who stayed.
             stackSizeBefore = SpoilsPool.GetStackSize(party, from) + pending;
             int remaining = pending - count;
             if (remaining > 0)
@@ -116,14 +126,78 @@ namespace RBMCampaign
             return spend;
         }
 
-        // If a clear is ever missed the next screen open resets it, and until then upgrades are
-        // quoted slightly high rather than the spoils pool being corrupted.
+        /// <summary>Men of this source troop staged to upgrade this visit and not yet committed.</summary>
+        public static int GetStagedCount(PartyBase party, CharacterObject character)
+        {
+            int staged;
+            return (party == PartyBase.MainParty && _stagedCount.TryGetValue(character, out staged)) ? staged : 0;
+        }
+
+        /// <summary>Whether any branch of this source troop still waits for its commit event.</summary>
+        public static bool HasPendingUpgrade(PartyBase party, CharacterObject character)
+        {
+            return party == PartyBase.MainParty && _stagedCount.ContainsKey(character);
+        }
+
+        /// <summary>
+        /// Tops a stack's purse back up to what the screen reserved against it, out of the same troop's
+        /// purse in the other party. The reservation can only outrun the purse when it counted on spoils
+        /// that men dragged in were bringing and those men were then sent back.
+        /// </summary>
+        public static void CoverShortfalls(PartyBase party, PartyBase other)
+        {
+            if (party != PartyBase.MainParty || other == null)
+            {
+                return;
+            }
+            foreach (KeyValuePair<CharacterObject, int> reserved in _stagedSpoils)
+            {
+                int shortfall = reserved.Value - SpoilsPool.GetSpoils(party, reserved.Key);
+                int drawn = System.Math.Min(shortfall, SpoilsPool.GetSpoils(other, reserved.Key));
+                if (drawn > 0)
+                {
+                    SpoilsPool.AddSpoils(other, reserved.Key, -drawn);
+                    SpoilsPool.AddSpoils(party, reserved.Key, drawn);
+                    SpoilsLog.Log("XFER", party, "drew " + drawn + " spoils back from " + SpoilsLog.Describe(other)
+                        + " to meet upgrades of " + SpoilsLog.Describe(reserved.Key) + " quoted against them");
+                }
+            }
+        }
+
+        // If a clear is ever missed the next screen open resets it (ClearOnOpen), and until then upgrades
+        // are quoted slightly high rather than the spoils pool being corrupted.
         private static void Clear()
         {
             _stagedSpoils.Clear();
             _stagedByTarget.Clear();
             _stagedGold.Clear();
             _stagedCount.Clear();
+            _savedSpoils = null;
+            _savedByTarget = null;
+            _savedGold = null;
+            _savedCount = null;
+        }
+
+        // The four tallies as they stood when the screen last saved its state, which it does on opening
+        // the upgrade popup. Cancelling the popup rolls the screen back to that save, not to the start of
+        // the visit, so the upgrades staged on the main screen beforehand are still pending and their
+        // reservations have to come back with them.
+        private static Dictionary<CharacterObject, int> _savedSpoils;
+        private static Dictionary<string, int> _savedByTarget;
+        private static Dictionary<string, int> _savedGold;
+        private static Dictionary<CharacterObject, int> _savedCount;
+
+        private static void Restore<TKey>(Dictionary<TKey, int> live, Dictionary<TKey, int> saved)
+        {
+            live.Clear();
+            if (saved == null)
+            {
+                return;
+            }
+            foreach (KeyValuePair<TKey, int> entry in saved)
+            {
+                live[entry.Key] = entry.Value;
+            }
         }
 
         /// <summary>
@@ -189,6 +263,14 @@ namespace RBMCampaign
                     + " -> " + SpoilsLog.Describe(upgradeTarget)
                     + "| spoils reserved " + spend + " (total " + _stagedSpoils[character] + ")"
                     + ", gold " + actualGold + " (vanilla will charge " + chargedByVanilla + ")");
+
+                _batchReserved = true;
+            }
+
+            // Vanilla's own ValidateCommand normally spends the flag; this only catches a throw before it.
+            private static void Finalizer()
+            {
+                _batchReserved = false;
             }
         }
 
@@ -222,6 +304,12 @@ namespace RBMCampaign
                 {
                     return;
                 }
+                // Already judged against the undrawn purse by TrackStagedUpgrade, before it reserved.
+                if (_batchReserved)
+                {
+                    _batchReserved = false;
+                    return;
+                }
                 CharacterObject character = command.Character;
                 if (character == null || command.UpgradeTarget < 0 || command.UpgradeTarget >= character.UpgradeTargets.Length)
                 {
@@ -247,22 +335,51 @@ namespace RBMCampaign
         }
 
         [HarmonyPatch(typeof(PartyScreenLogic))]
-        [HarmonyPatch("Reset")]
-        private class ClearOnReset
+        [HarmonyPatch("Initialize")]
+        private class ClearOnOpen
         {
-            private static void Postfix()
+            private static void Prefix()
             {
                 Clear();
             }
         }
 
         [HarmonyPatch(typeof(PartyScreenLogic))]
-        [HarmonyPatch("ResetToLastSavedPartyScreenData")]
-        private class ClearOnResetToLastSaved
+        [HarmonyPatch("Reset")]
+        private class ClearOnReset
+        {
+            // Before vanilla, not after: Reset raises AfterReset itself, which rebuilds every troop row
+            // and re-quotes its upgrades, and those quotes must already read the purse as unreserved.
+            private static void Prefix()
+            {
+                Clear();
+            }
+        }
+
+        [HarmonyPatch(typeof(PartyScreenLogic))]
+        [HarmonyPatch("SavePartyScreenData")]
+        private class SnapshotOnSave
         {
             private static void Postfix()
             {
-                Clear();
+                _savedSpoils = new Dictionary<CharacterObject, int>(_stagedSpoils);
+                _savedByTarget = new Dictionary<string, int>(_stagedByTarget);
+                _savedGold = new Dictionary<string, int>(_stagedGold);
+                _savedCount = new Dictionary<CharacterObject, int>(_stagedCount);
+            }
+        }
+
+        [HarmonyPatch(typeof(PartyScreenLogic))]
+        [HarmonyPatch("ResetToLastSavedPartyScreenData")]
+        private class RestoreOnResetToLastSaved
+        {
+            // A Prefix for the same reason as ClearOnReset: the rows are re-quoted inside the original.
+            private static void Prefix()
+            {
+                Restore(_stagedSpoils, _savedSpoils);
+                Restore(_stagedByTarget, _savedByTarget);
+                Restore(_stagedGold, _savedGold);
+                Restore(_stagedCount, _savedCount);
             }
         }
 

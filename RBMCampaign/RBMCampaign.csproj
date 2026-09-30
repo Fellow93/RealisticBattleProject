@@ -314,6 +314,7 @@
     <Compile Include="Spoils\SpoilsPool.LeaderCut.cs" />
     <Compile Include="Spoils\SpoilsPool.Transfers.cs" />
     <Compile Include="Spoils\SpoilsTransferOnPartyScreen.cs" />
+    <Compile Include="Spoils\SpoilsTransferOnSpecialScreens.cs" />
     <Compile Include="Spoils\RBMSpoilsCampaignBehavior.cs" />
     <Compile Include="Upkeep\TroopMarketFeedback.cs" />
     <Compile Include="Upkeep\TroopUpkeep.cs" />
