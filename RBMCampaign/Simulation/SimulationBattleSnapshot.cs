@@ -175,7 +175,7 @@ namespace RBMCampaign
             snapshot.DefenderName = Describe(mapEvent.DefenderSide);
 
             // For a naval raid the attacker is priced by what it can land, not what it embarked -- the same discount
-            // the raid-decision AI was given (see StrategicTroopPower.AmphibiousLandingFactor). Without this the log
+            // the raid-decision AI was given (see StrategicTroopPower.AmphibiousRaidStrengthPatch). Without this the log
             // would print the full manifest (e.g. 348 for 223 men) while the AI acted on a fraction of it, and the
             // raid it "should have won on paper" reads as an unexplained upset. The defenders are ashore already and
             // are always priced whole.

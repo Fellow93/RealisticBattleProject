@@ -1,4 +1,5 @@
 using HarmonyLib;
+using Helpers;
 using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
@@ -9,6 +10,7 @@ using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Naval;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
@@ -559,11 +561,6 @@ namespace RBMCampaign
             bool estimated = context == MapEvent.PowerCalculationContext.Estimated;
             float total = 0f;
 
-            // Running headcount of the men actually priced below, kept only for the amphibious landing discount at
-            // the foot of this method (see AmphibiousLandingFactor). Wounded are already dropped, so this is the
-            // fighting strength -- exactly the number the landing capacity is measured against.
-            int healthyMen = 0;
-
             // Only ever non-null while TryExplainParty is on the stack above us, for this exact party.
             List<StackPower> capture = (_captureFor == party) ? _captureInto : null;
 
@@ -586,7 +583,6 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                healthyMen += healthy;
 
                 float power = PowerOf(troop);
                 if (power <= 0f)
@@ -636,16 +632,6 @@ namespace RBMCampaign
 
             result = total * morale;
 
-            // AN AT-SEA PARTY IS ONLY AS STRONG ASHORE AS IT CAN PUT ASHORE. A raider carrying 223 men whose shallow-
-            // draft hulls seat 30 lands 30 a wave and feeds them into the defenders piecemeal -- the War Sails sim caps
-            // the beach party to that deck crew (NavalDLCCombatSimulationModel.GetParticipatingTroopCount), and the
-            // remaining 193 never touch the fight. Yet the raid decision weighs the WHOLE party: the AI's own strength
-            // for target scoring is GetTotalLandStrengthWithFollowers, which prices the raider through this method with
-            // the PlainBattle context, so an amphibious raider reads three times the strength it can actually land and
-            // commits to raids it then loses. Discount the LAND strength of an at-sea party by the fraction of it that
-            // can come off the ships, so the AI weighs the landing party, not the manifest. See AmphibiousLandingFactor.
-            result *= AmphibiousLandingFactor(party, context, healthyMen);
-
             // The one call into the log, and it asks first: building a block walks the perk table and formats a row
             // per stack, which must not happen on the thousands of prices that will never be written down.
             if (StrategicPowerLog.ShouldWrite(party))
@@ -665,42 +651,84 @@ namespace RBMCampaign
         private const float MinLandingFactor = 0.1f;
 
         /// <summary>
-        /// How much of an at-sea party's land strength it can actually put on a beach, in [<see cref="MinLandingFactor"/>, 1].
+        /// A RAIDER COMING IN BY SEA IS ONLY AS STRONG AS IT CAN PUT ASHORE. A raider carrying 223 men whose shallow-
+        /// draft hulls seat 30 lands 30 a wave and feeds them into the defenders piecemeal -- the War Sails sim caps
+        /// the beach party to that deck crew (NavalDLCCombatSimulationModel.GetParticipatingTroopCount), and the
+        /// remaining 193 never touch the fight. Yet the raid decision weighs the WHOLE party, so an amphibious raider
+        /// reads three times the strength it can actually land and commits to raids it then loses. This scales the
+        /// raider's <c>ourStrength</c> by <see cref="LandingFactor"/> for a raid it would make from the water.
+        ///
+        /// It lives HERE, on the raid score, and not in GetPowerOfParty where it began. There it keyed on
+        /// <c>IsCurrentlyAtSea</c>, which made a party's land strength move with its position -- and the same number
+        /// is the siege gate's <c>ourStrength</c>. An army that cleared the gate on land failed it the moment it
+        /// embarked, dropped the siege and disembarked, cleared it again ashore and re-embarked, forever. Strength
+        /// itself is position-blind again; only the raid decision is discounted, and by the ROUTE, not by where the
+        /// party happens to stand: a raid is a beach landing when it goes in through the village's port, which is
+        /// what leaves the raider at sea when the fight opens (MapEventHelper.IsNavalRaid).
+        /// </summary>
+        [HarmonyPatch(typeof(DefaultTargetScoreCalculatingModel), nameof(DefaultTargetScoreCalculatingModel.GetTargetScoreForFaction))]
+        internal static class AmphibiousRaidStrengthPatch
+        {
+            private static void Prefix(Settlement targetSettlement, Army.ArmyTypes missionType, MobileParty mobileParty,
+                ref float ourStrength)
+            {
+                if (!Enabled || missionType != Army.ArmyTypes.Raider || mobileParty == null || targetSettlement == null)
+                {
+                    return;
+                }
+                try
+                {
+                    // The cheap question first: a party that can land everyone has nothing to discount, so the two
+                    // route lookups are skipped for it. A party with no ships fails the route test instead.
+                    float landing = LandingFactor(mobileParty.Party);
+                    if (landing < 1f && RaidsThroughPort(mobileParty, targetSettlement))
+                    {
+                        ourStrength *= landing;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
+        /// <summary>
+        /// Whether <paramref name="mobileParty"/> would raid <paramref name="village"/> from its ships. A raider
+        /// already on its way there answers with the route it committed to, so the score it re-reads every think
+        /// tick is the one it was chosen on. Anyone else is asked the way AiMilitaryBehavior.GetDistanceScoreForRaiding
+        /// picks the route: through the port when the village has one and that way is the shorter.
+        /// </summary>
+        private static bool RaidsThroughPort(MobileParty mobileParty, Settlement village)
+        {
+            if (mobileParty.DefaultBehavior == AiBehavior.RaidSettlement && mobileParty.TargetSettlement == village)
+            {
+                return mobileParty.IsTargetingPort;
+            }
+            if (!village.HasPort || !mobileParty.HasNavalNavigationCapability)
+            {
+                return false;
+            }
+
+            MobileParty.NavigationType navigationType;
+            bool isFromPort;
+            float gateDistance;
+            float portDistance;
+            AiHelper.GetBestNavigationTypeAndAdjustedDistanceOfSettlementForMobileParty(mobileParty, village, false,
+                out navigationType, out gateDistance, out isFromPort);
+            AiHelper.GetBestNavigationTypeAndAdjustedDistanceOfSettlementForMobileParty(mobileParty, village, true,
+                out navigationType, out portDistance, out isFromPort);
+            return portDistance < gateDistance;
+        }
+
+        /// <summary>
+        /// How much of a party's strength it can actually put on a beach, in [<see cref="MinLandingFactor"/>, 1].
         /// Mirrors the War Sails auto-resolve cap (NavalDLCCombatSimulationModel.GetShallowShipDeckCrewCapacity): only
         /// hulls that can navigate shallow water land men, and only as many as their main deck seats. The fraction of
         /// the party's fighting men that fits aboard those hulls is the fraction of its strength that can land.
         ///
-        /// Fires for ONE case: the <see cref="MapEvent.PowerCalculationContext.PlainBattle"/> land-strength query on a
-        /// party that is currently at sea. That query is <c>MobileParty.GetTotalLandStrengthWithFollowers</c>, the
-        /// number the raid-decision AI weighs as its own strength. <c>GetContextForPosition</c> never returns
-        /// PlainBattle for a party on the water, so the ordinary strength bar and the sea-battle prices (which run
-        /// under SeaBattle/OpenSeaBattle, where every embarked man does fight) are untouched -- and so is the tooltip
-        /// capture path, which prices through <c>CalculateCurrentStrength</c> under a sea context. A party with no
-        /// ships -- every party when War Sails is absent -- is never at sea, so this reads 1 and the feature no-ops
-        /// with no DLC present and no reflection needed.
-        /// </summary>
-        private static float AmphibiousLandingFactor(PartyBase party, MapEvent.PowerCalculationContext context, int healthyMen)
-        {
-            if (context != MapEvent.PowerCalculationContext.PlainBattle)
-            {
-                return 1f;
-            }
-
-            MobileParty mobile = party.IsMobile ? party.MobileParty : null;
-            if (mobile == null || !mobile.IsCurrentlyAtSea)
-            {
-                return 1f;
-            }
-
-            return LandingFactorFromCapacity(ShallowLandingCapacity(party), healthyMen);
-        }
-
-        /// <summary>
-        /// The landing discount for a party priced by its SHIPS AND MEN alone, without the context or at-sea guards
-        /// <see cref="AmphibiousLandingFactor"/> wraps it in -- for a caller that already knows the fight is an
-        /// amphibious raid and only wants the number. That caller is the sim log, so the AttackerPower it prints is
-        /// the strength the raid-decision AI actually weighed (the landing party) rather than the whole manifest.
-        /// Returns 1 for a party with no ships, so it is harmless on any side of any battle and no-ops without the DLC.
+        /// Priced by the party's SHIPS AND MEN alone, for a caller that already knows the fight is an amphibious
+        /// raid: the raid decision above, and the sim log, so the AttackerPower it prints is the strength the AI
+        /// actually weighed (the landing party) rather than the whole manifest.
         /// </summary>
         internal static float LandingFactor(PartyBase party)
         {
