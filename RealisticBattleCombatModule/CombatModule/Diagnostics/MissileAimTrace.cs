@@ -15,6 +15,7 @@ namespace RBMCombat
     ///               chest height. predRange ~ tgtRange means the aim was right for the launch RBM gave it.
     ///   landRange - where it actually collided.
     /// Aim wrong: predRange short of tgtRange. Flight differs from the model: predRange ~ tgtRange, landRange short.
+    /// The player's shots are traced separately when the aim arc is on: ARCSHOT (RangedAimArcView) / ARCLAND pairs.
     /// Main thread only: OnAgentShootMissile and HandleMissileCollisionReaction are both engine callbacks on it.
     /// </summary>
     internal static class MissileAimTrace
@@ -29,7 +30,17 @@ namespace RBMCombat
             public float Time;
         }
 
+        // A player shot the aim arc (RangedAimArcView) predicted: where the arc said it would come down.
+        private struct ArcShot
+        {
+            public Vec3 Launch;
+            public Vec2 Dir;
+            public Vec3 PredImpact;
+            public float Time;
+        }
+
         private static readonly Dictionary<int, Shot> _shots = new Dictionary<int, Shot>();
+        private static readonly Dictionary<int, ArcShot> _arcShots = new Dictionary<int, ArcShot>();
         private static bool _hasPending;
         private static Shot _pending;
         private static string _pendingLine;
@@ -37,7 +48,19 @@ namespace RBMCombat
         public static void Reset()
         {
             _shots.Clear();
+            _arcShots.Clear();
             _hasPending = false;
+        }
+
+        /// <summary>From RangedAimArcView's shot callback: pairs the player's missile with the arc's predicted impact.</summary>
+        public static void BeginArcShot(int missileIndex, Vec3 launch, Vec3 direction, Vec3 predImpact, float time)
+        {
+            Vec2 dir = direction.AsVec2;
+            if (!BattleHitLog.IsEnabled || dir.Normalize() < 0.0001f)
+            {
+                return;
+            }
+            _arcShots[missileIndex] = new ArcShot { Launch = launch, Dir = dir, PredImpact = predImpact, Time = time };
         }
 
         /// <summary>Called from the shot prefix after RBM rescaled the launch. engineVelocity is what the AI aimed with.</summary>
@@ -108,6 +131,23 @@ namespace RBMCombat
         /// <summary>Called on the missile's first collision (ground, object, agent or shield).</summary>
         public static void Land(Mission mission, int missileIndex, Mission.Missile missile, Agent attachedAgent, bool attachedToShield)
         {
+            ArcShot arc;
+            if (_arcShots.TryGetValue(missileIndex, out arc))
+            {
+                _arcShots.Remove(missileIndex);
+                Vec3 at = missile.GetPosition();
+                float arcLandRange = Vec2.DotProduct(at.AsVec2 - arc.Launch.AsVec2, arc.Dir);
+                float arcPredRange = Vec2.DotProduct(arc.PredImpact.AsVec2 - arc.Launch.AsVec2, arc.Dir);
+                BattleHitLog.Write("ARCLAND missile=" + missileIndex
+                    + " flight=" + BattleHitLog.Fmt(mission.CurrentTime - arc.Time)
+                    + " hit=" + (attachedAgent == null ? "ground/object" : "agent" + (attachedToShield ? "-shield" : ""))
+                    + " landRange=" + BattleHitLog.Fmt(arcLandRange)
+                    + " predRange=" + BattleHitLog.Fmt(arcPredRange)
+                    + " short=" + BattleHitLog.Fmt(arcPredRange - arcLandRange)
+                    + " miss=" + BattleHitLog.Fmt(at.Distance(arc.PredImpact))
+                    + " dzToPred=" + BattleHitLog.Fmt(at.z - arc.PredImpact.z));
+            }
+
             Shot shot;
             if (!_shots.TryGetValue(missileIndex, out shot))
             {

@@ -650,6 +650,30 @@ protected override void OnFinalize() { RemoveLayer(_layer); _vm.OnFinalize(); ba
 `missionScreen.AddLayer(...)`, `LoadMovie(prefab, vm)`; tick the VM from the view's update;
 remove in `OnEndMission`/`OnRemoveBehavior`.
 
+**World-anchored markers** (3D point → 2D widget) — `FrontlineDebugOverlay`, `UnitStatusVM`,
+`RangedAimArcView` (RBMCombat `CombatModule/UI/AimArc/`). `MBDebug.RenderDebug*` is
+`[Conditional("_RGL_KEEP_ASSERTS")]` and compiled out of Release, so draw with widgets instead:
+- `MBWindowManager.WorldToScreen(missionScreen.CombatCamera, pos, ref x, ref y, ref w)` gives real
+  pixels; multiply by `layer.UIContext.InverseScale` for `PositionXOffset/YOffset`. `w < 0` = behind
+  the camera — skip it.
+- Prefab: a `ListPanel DataSource="{Pool}"` whose `<ItemTemplate>` root is a **zero-sized** widget
+  (`SuggestedWidth/Height="0"`, `IsHidden="@IsHidden"`), with the visible child placed by
+  `PositionXOffset/YOffset`. The offset moves the widget's **top-left corner**, so subtract half the
+  size to centre it. Pool the item VMs (never resize the list per frame); hide the unused tail.
+- `Sprite="BlankWhiteCircle"` (a round dot) and `BlankWhiteSquare_9` are native sprites already used
+  by mission HUD prefabs, so they are loaded in missions. `Color="@..."` tints, `AlphaFactor="@..."`
+  (a plain `float` on `Widget`) fades.
+- Tick from `OnMissionTick`: `Mission.OnTick` calls `Handler.UpdateCamera` **before** the behaviours'
+  `OnMissionTick`, so the projection uses this frame's camera (no one-frame swim when turning).
+  `MissionView.OnMissionScreenTick` runs from the screen's frame tick and is only gated on
+  `IsMissionTickable` — fine for hide checks, not relied on for projection.
+- A `MissionView` added from `SubModule.OnMissionBehaviorInitialize` is registered by the
+  `MissionScreen` in `OnMissionAfterStarting` (sets `MissionScreen`, drives `OnMissionScreenTick`,
+  `IsViewSuspended`); fall back to `ScreenManager.TopScreen as MissionScreen` if it is still null.
+  Vanilla's crosshair hide test (`MissionGauntletCrosshair.GetShouldArrowsBeVisible`) is a good
+  template: not suspended, `Mission.Mode` not Conversation/CutScene/Deployment, not
+  `IsViewingCharacter()`, `CustomCamera == null`, and `!ScreenManager.GetMouseVisibility()`.
+
 ---
 
 ## 7. GUI asset registration & discovery

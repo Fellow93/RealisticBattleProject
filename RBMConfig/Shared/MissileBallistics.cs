@@ -287,8 +287,9 @@ namespace RBMConfig
             return SlingSpeed(ammoWeight, drawWeight + GetLauncherModifierBonus(launcher), effectiveSkillDR, armorModifier, shieldType);
         }
 
-        private const float Gravity = 9.806f;
-        private const float StepSeconds = 0.005f;
+        public const float Gravity = 9.806f;
+        // Integration step of every flight model here; SampleTrajectory callers size their sampling in these steps.
+        public const float StepSeconds = 0.005f;
         private const float MaxFlightSeconds = 20f;
 
         private static readonly object _reachLock = new object();
@@ -303,16 +304,12 @@ namespace RBMConfig
         /// </summary>
         public static float RangeAtHeight(float vHorizontal, float vUp, float heightDifference, float airFriction)
         {
-            float x = 0f, z = 0f, vx = vHorizontal, vz = vUp;
+            float x = 0f, z = 0f, vx = vHorizontal, vy = 0f, vz = vUp;
             int steps = (int)(MaxFlightSeconds / StepSeconds);
             for (int i = 0; i < steps; i++)
             {
-                float speed = (float)Math.Sqrt(vx * vx + vz * vz);
                 float px = x, pz = z;
-                float drag = airFriction * speed * StepSeconds;
-                vx -= vx * drag;
-                vz -= vz * drag;
-                vz -= Gravity * StepSeconds;
+                StepVelocity(ref vx, ref vy, ref vz, airFriction);
                 x += vx * StepSeconds;
                 z += vz * StepSeconds;
                 if (vz < 0f && z <= heightDifference)
@@ -322,6 +319,70 @@ namespace RBMConfig
                 }
             }
             return -1f;
+        }
+
+        // One integration step of the flight velocity: quadratic drag on the current speed, then gravity. Position is
+        // advanced by the caller with the NEW velocity (semi-implicit Euler), which is what was verified in game.
+        private static void StepVelocity(ref float vx, ref float vy, ref float vz, float airFriction)
+        {
+            float speed = (float)Math.Sqrt(vx * vx + vy * vy + vz * vz);
+            float drag = airFriction * speed * StepSeconds;
+            vx -= vx * drag;
+            vy -= vy * drag;
+            vz -= vz * drag;
+            vz -= Gravity * StepSeconds;
+        }
+
+        /// <summary>Stops a sampled trajectory: true if the segment from..to hits something, with the hit point.</summary>
+        public delegate bool TrajectorySegmentTest(Vec3 from, Vec3 to, out Vec3 hit);
+
+        /// <summary>
+        /// World-space points along a missile's flight from start at velocity, under the same integrator as RangeAtHeight.
+        /// points[0] is the launch point, then one point every stepsPerSample integration steps (StepSeconds each). Each
+        /// new segment is handed to segmentTest; on a hit the hit point is the last point and landed is true. Otherwise it
+        /// stops at maxSeconds of flight, maxDrop metres below the launch height, or when points is full. Returns the count.
+        /// </summary>
+        public static int SampleTrajectory(Vec3 start, Vec3 velocity, float airFriction, int stepsPerSample, float maxSeconds, float maxDrop, Vec3[] points, TrajectorySegmentTest segmentTest, out bool landed)
+        {
+            landed = false;
+            if (points == null || points.Length == 0)
+            {
+                return 0;
+            }
+            points[0] = start;
+            int count = 1;
+            float x = start.x, y = start.y, z = start.z;
+            float vx = velocity.x, vy = velocity.y, vz = velocity.z;
+            int steps = (int)(Math.Min(maxSeconds, MaxFlightSeconds) / StepSeconds);
+            if (stepsPerSample < 1)
+            {
+                stepsPerSample = 1;
+            }
+            for (int i = 1; i <= steps && count < points.Length; i++)
+            {
+                StepVelocity(ref vx, ref vy, ref vz, airFriction);
+                x += vx * StepSeconds;
+                y += vy * StepSeconds;
+                z += vz * StepSeconds;
+                bool tooLow = z < start.z - maxDrop;
+                if (i % stepsPerSample != 0 && i != steps && !tooLow)
+                {
+                    continue;
+                }
+                Vec3 next = new Vec3(x, y, z);
+                if (segmentTest != null && segmentTest(points[count - 1], next, out Vec3 hit))
+                {
+                    points[count++] = hit;
+                    landed = true;
+                    return count;
+                }
+                points[count++] = next;
+                if (tooLow)
+                {
+                    break;
+                }
+            }
+            return count;
         }
 
         /// <summary>

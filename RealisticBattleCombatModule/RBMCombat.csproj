@@ -233,6 +233,9 @@
     <!-- UI -->
     <Compile Include="CombatModule\UI\PlayerArmorStatus\PlayerArmorStatus.cs" />
     <Compile Include="CombatModule\UI\PlayerArmorStatus\PlayerArmorStatusVM.cs" />
+    <Compile Include="CombatModule\UI\AimArc\RangedAimArcView.cs" />
+    <Compile Include="CombatModule\UI\AimArc\RangedAimArcVM.cs" />
+    <Compile Include="CombatModule\UI\AimArc\RangedAimCamera.cs" />
     <!-- Utilities (partial static class Utilities) -->
     <Compile Include="Utilities\Utilities.cs" />
     <Compile Include="Utilities\Utilities.Collision.cs" />

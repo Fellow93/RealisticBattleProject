@@ -292,6 +292,8 @@ namespace RBMConfig
             RealisticRangedReload.InnerText = RBMConfig.realisticRangedReload;
             XmlElement RangedReloadAffectsAi = xmlconfig.CreateElement("RangedReloadAffectsAi");
             RangedReloadAffectsAi.InnerText = RBMConfig.rangedReloadAffectsAi ? "1" : "0";
+            XmlElement RangedAimArcEnabled = xmlconfig.CreateElement("RangedAimArcEnabled");
+            RangedAimArcEnabled.InnerText = RBMConfig.rangedAimArcEnabled ? "1" : "0";
             XmlElement MaceBluntModifier = xmlconfig.CreateElement("MaceBluntModifier");
             MaceBluntModifier.InnerText = RBMConfig.maceBluntModifier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement ArmorThresholdModifier = xmlconfig.CreateElement("ArmorThresholdModifier");
@@ -316,6 +318,7 @@ namespace RBMConfig
             Global.AppendChild(SneakAttackInstaKill);
             Global.AppendChild(RealisticRangedReload);
             Global.AppendChild(RangedReloadAffectsAi);
+            Global.AppendChild(RangedAimArcEnabled);
             Global.AppendChild(MaceBluntModifier);
             Global.AppendChild(ArmorThresholdModifier);
             Global.AppendChild(BluntTraumaBonus);

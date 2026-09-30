@@ -273,6 +273,12 @@ namespace RBM
             {
                 mission.AddMissionBehavior((MissionBehavior)(object)new BattleHitLogic());
             }
+            // Independent of rbmCombatEnabled: the view predicts the vanilla launch when RBMCombat is off. The view also
+            // turns on the aim camera (its own Harmony instance), which frames the view's prediction.
+            if (RBMConfig.RBMConfig.rangedAimArcEnabled)
+            {
+                mission.AddMissionBehavior((MissionBehavior)(object)new RangedAimArcView());
+            }
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {
                 if (RBMConfig.RBMConfig.aiBehaviorLogEnabled)

@@ -192,6 +192,7 @@ namespace RBMCampaign
                     Field("thrustMagnitudeModifier", RC.ThrustMagnitudeModifier),
                     Field("realisticRangedReload", RC.realisticRangedReload),
                     Field("rangedReloadAffectsAi", RC.rangedReloadAffectsAi),
+                    Field("rangedAimArcEnabled", RC.rangedAimArcEnabled),
                     Field("realisticArrowArc", RC.realisticArrowArc),
                     Field("betterArrowVisuals", RC.betterArrowVisuals),
                     Field("passiveShoulderShields", RC.passiveShoulderShields),

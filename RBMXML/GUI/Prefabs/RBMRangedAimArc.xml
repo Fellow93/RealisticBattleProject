@@ -1,0 +1,31 @@
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="true">
+      <Children>
+        <!-- Zero-sized ItemTemplate roots so the ListPanel stack contributes no advance; each dot places itself
+             absolutely via PositionXOffset/PositionYOffset (same trick as RBMFrontlineDebug.xml / UnitStatus.xml).
+             BlankWhiteCircle is a native sprite already used by mission HUD prefabs, so it is loaded in missions. -->
+        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DataSource="{Dots}">
+          <ItemTemplate>
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="0" SuggestedHeight="0" IsHidden="@IsHidden">
+              <Children>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                        SuggestedWidth="@Size" SuggestedHeight="@Size"
+                        PositionXOffset="@ScreenX" PositionYOffset="@ScreenY"
+                        Sprite="BlankWhiteCircle" Color="@DotColor" AlphaFactor="@Alpha" />
+              </Children>
+            </Widget>
+          </ItemTemplate>
+        </ListPanel>
+        <Widget DataSource="{Impact}" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="0" SuggestedHeight="0" IsHidden="@IsHidden">
+          <Children>
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                    SuggestedWidth="@Size" SuggestedHeight="@Size"
+                    PositionXOffset="@ScreenX" PositionYOffset="@ScreenY"
+                    Sprite="BlankWhiteCircle" Color="@DotColor" AlphaFactor="@Alpha" />
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

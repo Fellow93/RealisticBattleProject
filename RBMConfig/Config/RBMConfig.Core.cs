@@ -271,6 +271,7 @@ namespace RBMConfig
             sneakAttackInstaKill = ReadOrCreate("/Config/RBMCombat/Global", "SneakAttackInstaKill", "0").Equals("1");
             realisticRangedReload = ReadOrCreate("/Config/RBMCombat/Global", "RealisticRangedReload", "2");
             rangedReloadAffectsAi = ReadOrCreate("/Config/RBMCombat/Global", "RangedReloadAffectsAi", "0").Equals("1");
+            rangedAimArcEnabled = ReadOrCreate("/Config/RBMCombat/Global", "RangedAimArcEnabled", "0").Equals("1");
             maceBluntModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "MaceBluntModifier", "1"));
             armorThresholdModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "ArmorThresholdModifier", "1"));
             bluntTraumaBonus = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "BluntTraumaBonus", "0"));
@@ -458,6 +459,7 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/SneakAttackInstaKill"), sneakAttackInstaKill);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RealisticRangedReload"), realisticRangedReload.ToString());
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RangedReloadAffectsAi"), rangedReloadAffectsAi);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RangedAimArcEnabled"), rangedAimArcEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/MaceBluntModifier"), maceBluntModifier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorThresholdModifier"), armorThresholdModifier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BluntTraumaBonus"), bluntTraumaBonus.ToString(CultureInfo.InvariantCulture));

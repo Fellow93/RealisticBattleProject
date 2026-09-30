@@ -45,6 +45,11 @@ namespace RBMConfig
         public static string realisticRangedReload = "2";
         // When true, AI agents follow realisticRangedReload too (otherwise that setting is player-only).
         public static bool rangedReloadAffectsAi = false;
+        // Player-only dotted trajectory preview while drawing a bow/crossbow/sling (RBMCombat RangedAimArcView), plus
+        // the camera assist that lifts and tilts the third-person camera so the predicted landing point of a high shot
+        // stays on screen (RBMCombat RangedAimCamera). Works with or without rbmCombatEnabled; when off the view is
+        // not even added to the mission and nothing is patched.
+        public static bool rangedAimArcEnabled = false;
         public static float maceBluntModifier = 1f;
         public static float armorThresholdModifier = 1f;
         public static float bluntTraumaBonus = 0f;

@@ -54,6 +54,9 @@ namespace RBMConfig
         public TextViewModel RangedReloadAffectsAiText { get; }
         public SelectorVM<SelectorItemVM> RangedReloadAffectsAi { get; }
 
+        public TextViewModel RangedAimArcEnabledText { get; }
+        public SelectorVM<SelectorItemVM> RangedAimArcEnabled { get; }
+
         public TextViewModel PassiveShoulderShieldsText { get; }
         public SelectorVM<SelectorItemVM> PassiveShoulderShields { get; }
 
@@ -96,6 +99,16 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel RangedReloadAffectsAiHint { get; } = Hint("When enabled, AI archers and crossbowmen follow the Ranged reload speed setting too (Vanilla / Realistic / Semi-realistic) instead of their fixed AI reload. Off keeps that setting player-only. Default off.");
+
+        // Plain-text label/hint for the same reason as the row above.
+        [DataSourceProperty]
+        public string RangedAimArcEnabledt
+        {
+            get { return new TextObject("Ranged aim arc (player, experimental)").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel RangedAimArcEnabledHint { get; } = Hint("Experimental. While you draw a bow or crossbow or wind up a sling, shows the predicted flight of the missile as a dotted arc with a marker where it will land. Uses the same launch speed and air drag the real shot flies with. In third person, when you aim up the camera also lifts and tilts down so the landing point of a high shot stays on screen; where you aim is unchanged, and the crosshair is hidden while the camera is moved (the arc shows the aim). Player only; thrown weapons are not covered. Default off.");
 
         [DataSourceProperty]
         public string PassiveShieldt
