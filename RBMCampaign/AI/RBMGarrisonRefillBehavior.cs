@@ -90,6 +90,121 @@ namespace RBMCampaign
             // Both maps are keyed by MobileParty, so drop a party's entries when it is destroyed -- else a
             // long session accumulates a dead MobileParty (and its object graph) per departed lord.
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, OnMobilePartyDestroyed);
+            // Diagnostics only: why AI armies end. Nothing else records an army's creation or dispersal.
+            CampaignEvents.ArmyCreated.AddNonSerializedListener(this, OnArmyCreated);
+            CampaignEvents.ArmyDispersed.AddNonSerializedListener(this, OnArmyDispersed);
+        }
+
+        // Transient, per-session: campaign hour each army was created at, for the ARMY-END age figure.
+        private readonly Dictionary<Army, double> _armyCreatedHour = new Dictionary<Army, double>();
+
+        private static readonly AccessTools.FieldRef<Army, int> ArmyInactivityCounter =
+            AccessTools.FieldRefAccess<Army, int>("_inactivityCounter");
+
+        private void OnArmyCreated(Army army)
+        {
+            if (army == null || army.LeaderParty == null)
+            {
+                return;
+            }
+            _armyCreatedHour[army] = CampaignTime.Now.ToHours;
+            if (!GarrisonRefillLog.IsEnabled)
+            {
+                return;
+            }
+            try
+            {
+                GarrisonRefillLog.Log("ARMY-NEW", PartyName(army.LeaderParty), DescribeArmy(army));
+            }
+            catch
+            {
+            }
+        }
+
+        private void OnArmyDispersed(Army army, Army.ArmyDispersionReason reason, bool isPlayersArmy)
+        {
+            if (army == null)
+            {
+                return;
+            }
+            double createdHour;
+            bool hasAge = _armyCreatedHour.TryGetValue(army, out createdHour);
+            _armyCreatedHour.Remove(army);
+            if (!GarrisonRefillLog.IsEnabled || army.LeaderParty == null)
+            {
+                return;
+            }
+            try
+            {
+                MobileParty leader = army.LeaderParty;
+                GarrisonRefillLog.Log("ARMY-END", PartyName(leader),
+                    "reason " + reason
+                    + "  ·  age " + (hasAge ? (CampaignTime.Now.ToHours - createdHour).ToString("0") + "h" : "?")
+                    + "  ·  cohesion " + army.Cohesion.ToString("0")
+                    + "  ·  idle " + ArmyInactivityCounter(army) + "h"
+                    + "  ·  waiting " + army.IsWaitingForArmyMembers()
+                    + "  ·  leader " + leader.DefaultBehavior
+                    + " -> " + GarrisonRefillLog.Name(leader.TargetSettlement)
+                    + (leader.IsCurrentlyAtSea ? " (at sea)" : "")
+                    + "  ·  " + DescribeArmy(army)
+                    + "  ·  " + DescribeSiegeOptions(leader));
+            }
+            catch
+            {
+            }
+        }
+
+        private static string DescribeArmy(Army army)
+        {
+            int men = 0;
+            int starving = 0;
+            int minFoodDays = int.MaxValue;
+            foreach (MobileParty party in army.Parties)
+            {
+                men += party.MemberRoster.TotalManCount;
+                if (party.Party.IsStarving)
+                {
+                    starving++;
+                }
+                minFoodDays = Math.Min(minFoodDays, party.GetNumDaysForFoodToLast());
+            }
+            return army.ArmyType + " vs " + (army.AiBehaviorObject != null && army.AiBehaviorObject.Name != null ? army.AiBehaviorObject.Name.ToString() : "?")
+                + "  ·  parties " + army.Parties.Count + " (attached " + army.LeaderPartyAndAttachedPartiesCount + ")"
+                + "  ·  men " + men
+                + "  ·  strength " + army.LeaderParty.GetTotalLandStrengthWithFollowers().ToString("0")
+                + "  ·  starving " + starving
+                + "  ·  min food " + (minFoodDays == int.MaxValue ? "?" : minFoodDays + "d");
+        }
+
+        // How many enemy fortifications still clear the siege strength gate for this leader right now, and
+        // the best score among them. Zero passing targets at dispersal = the army lost its only objective.
+        private static string DescribeSiegeOptions(MobileParty leader)
+        {
+            float strength = leader.GetTotalLandStrengthWithFollowers();
+            int enemyForts = 0;
+            int passing = 0;
+            float bestScore = 0f;
+            Settlement best = null;
+            foreach (Settlement settlement in Settlement.All)
+            {
+                if (!settlement.IsFortification || !settlement.MapFaction.IsAtWarWith(leader.MapFaction))
+                {
+                    continue;
+                }
+                enemyForts++;
+                float score = Campaign.Current.Models.TargetScoreCalculatingModel.GetTargetScoreForFaction(settlement, Army.ArmyTypes.Besieger, leader, strength);
+                if (score > 0f)
+                {
+                    passing++;
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        best = settlement;
+                    }
+                }
+            }
+            return "siege targets " + passing + "/" + enemyForts
+                + (best != null ? " (best " + GarrisonRefillLog.Name(best) + " " + bestScore.ToString("0.00") + ")" : "");
         }
 
         public override void SyncData(IDataStore dataStore)

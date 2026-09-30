@@ -18,6 +18,7 @@ namespace RBMCampaign
     /// <list type="bullet">
     /// <item>DIVERT -- the behavior steered a depleted lord toward one of his own surplus garrisons.</item>
     /// <item>REFILL -- a garrison actually released troops into an arriving party (vanilla's transfer).</item>
+    /// <item>ARMY-NEW / ARMY-END -- an AI army's creation and dispersal (reason, age, remaining siege targets).</item>
     /// </list>
     /// </summary>
     internal static class GarrisonRefillLog
@@ -74,6 +75,8 @@ namespace RBMCampaign
                     header.Append("Categories:").Append(Environment.NewLine);
                     header.Append("  DIVERT    a depleted lord was routed toward one of his clan's surplus garrisons").Append(Environment.NewLine);
                     header.Append("  REFILL    a garrison released troops into an arriving party (vanilla transfer)").Append(Environment.NewLine);
+                    header.Append("  ARMY-NEW  an AI army was created (type, target, parties, strength, food)").Append(Environment.NewLine);
+                    header.Append("  ARMY-END  an army dispersed: reason, age, leader behavior, siege targets still passing the gate").Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
 
                     File.WriteAllText(LogFilePath, header.ToString());

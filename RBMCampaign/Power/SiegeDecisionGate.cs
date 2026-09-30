@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem.GameComponents;
+using TaleWorlds.CampaignSystem.Party;
 
 namespace RBMCampaign
 {
@@ -38,13 +39,27 @@ namespace RBMCampaign
         /// Lowered to 1.25 (2.5x) on 2026-09-27: with RBM's uncapped garrisons the 3x bar made every fortification
         /// score 0, and vanilla only ever gathers an army for a siege target, so AI kingdoms never formed armies
         /// or took a fief. Garrison growth is now bounded by the recruit pool's diminishing returns (RecruitPool).
-        /// At 1 the patch is skipped entirely (vanilla 2x).
         /// </summary>
         private const float SiegeStrengthGateMultiplier = 1.25f;
 
-        private static bool Prepare()
+        /// <summary>
+        /// The factor an already-mustered army's leader is held to (vanilla's own "already sat down" 1.5x).
+        /// The bar above decides whether to FORM an army; once formed, the leader re-scores every target each
+        /// think tick against the same bar with no hysteresis, and RBM's armies only just clear it when they
+        /// form. Any drift on the defender side (a lord riding into the target, garrison growth, the kingdom
+        /// reserve term) then zeroes every siege score, a besieger army has no other objective, so it walks
+        /// to a friendly settlement and disperses for inactivity. Holding a formed army to the lower bar lets
+        /// it carry through the march it was gathered for.
+        /// </summary>
+        private const float MusteredArmySiegeFactor = 1.5f;
+
+        private static float FreshSiegeFactor(MobileParty mobileParty)
         {
-            return SiegeStrengthGateMultiplier != 1f;
+            if (mobileParty != null && mobileParty.Army != null && mobileParty.Army.LeaderParty == mobileParty)
+            {
+                return MusteredArmySiegeFactor;
+            }
+            return 2f * SiegeStrengthGateMultiplier;
         }
 
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -52,7 +67,7 @@ namespace RBMCampaign
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
 
             // Locate the unique 0.75f (the besieger ternary's false branch), then its 2f partner a few IL
-            // instructions away in either order, and scale only that 2f.
+            // instructions away in either order, and replace only that 2f with FreshSiegeFactor(mobileParty).
             int gateIndex = -1;
             for (int i = 0; i < codes.Count && gateIndex < 0; i++)
             {
@@ -76,7 +91,12 @@ namespace RBMCampaign
 
             if (gateIndex >= 0)
             {
-                codes[gateIndex].operand = 2f * SiegeStrengthGateMultiplier;
+                // Rewrite in place so any branch label on the literal stays on the first instruction.
+                // mobileParty is argument 3 (0 = this, 1 = targetSettlement, 2 = missionType).
+                codes[gateIndex].opcode = OpCodes.Ldarg_3;
+                codes[gateIndex].operand = null;
+                codes.Insert(gateIndex + 1, new CodeInstruction(OpCodes.Call,
+                    AccessTools.Method(typeof(SiegeDecisionGate), nameof(FreshSiegeFactor))));
             }
 
             return codes;
