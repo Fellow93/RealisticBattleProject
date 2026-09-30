@@ -1,5 +1,6 @@
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.MountAndBlade;
 using static TaleWorlds.Core.ArmorComponent;
 
 namespace RBMConfig
@@ -55,6 +56,59 @@ namespace RBMConfig
                     }
             }
             return 1f;
+        }
+
+        // Share of the weapon skill in the skill a kick or bash uses; the rest is Athletics.
+        public const float KickBashWeaponSkillShare = 0.3f;
+
+        // A kick lands harder than a punch thrown with the same skill. Applied after the skill scaling, so it
+        // still holds where the unarmed clamp caps both.
+        public const float KickDamageFactor = 1.2f;
+
+        /// <summary>
+        /// The skill a kick or bash is thrown with: mostly Athletics (footwork and balance), with a smaller share
+        /// of the skill with the weapon in hand. Athletics alone when unarmed. Same blend RBMAI's
+        /// AiKickBash.KickSkill uses for its rolls and costs.
+        /// </summary>
+        public static int GetKickBashSkill(Agent agent)
+        {
+            AgentStatCalculateModel model = MissionGameModels.Current.AgentStatCalculateModel;
+            int athletics = model.GetEffectiveSkill(agent, DefaultSkills.Athletics);
+            WeaponComponentData weapon = agent.WieldedWeapon.CurrentUsageItem;
+            if (weapon == null || weapon.RelevantSkill == null)
+            {
+                return athletics;
+            }
+            int weaponSkill = model.GetEffectiveSkill(agent, weapon.RelevantSkill);
+            return MathF.Round(athletics * (1f - KickBashWeaponSkillShare) + weaponSkill * KickBashWeaponSkillShare);
+        }
+
+        /// <summary>
+        /// Base magnitude of a kick before the unarmed skill scaling in <see cref="GetSkillBasedDamage"/>: the
+        /// punch model with the attacker's leg armor in place of the gauntlet. A quarter of the boot's weight
+        /// rather than half, as leg armor covers the whole leg and little of it is behind the foot.
+        /// </summary>
+        public static float GetKickMagnitude(ArmorMaterialTypes bootMaterial, float bootWeight)
+        {
+            return GetPunchMaterialFactor(bootMaterial) + bootWeight * 0.25f;
+        }
+
+        /// <summary>
+        /// Base magnitude of a shield bash before the unarmed skill scaling: a shove with the shield's face or
+        /// rim, modestly heavier with the shield's weight. Between a bare and a plated fist for the usual shields.
+        /// </summary>
+        public static float GetShieldBashMagnitude(float shieldWeight)
+        {
+            return 0.4f + shieldWeight * 0.1f;
+        }
+
+        /// <summary>
+        /// Base magnitude of a weapon bash (pommel or haft shove) before the unarmed skill scaling: a bare fist
+        /// with something hard in it, modestly heavier with the weapon's weight. The blade plays no part.
+        /// </summary>
+        public static float GetWeaponBashMagnitude(float weaponWeight)
+        {
+            return GetPunchMaterialFactor(ArmorMaterialTypes.None) + weaponWeight * 0.1f;
         }
 
         public static float GetSkillBasedDamage(float magnitude, bool isPassiveUsage, string weaponType, DamageTypes damageType, float effectiveSkill, float skillModifier, StrikeType strikeType, float weaponWeight)

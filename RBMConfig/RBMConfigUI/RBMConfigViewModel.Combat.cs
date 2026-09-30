@@ -30,6 +30,9 @@ namespace RBMConfig
         public TextViewModel StaminaSystemEnabledText { get; }
         public SelectorVM<SelectorItemVM> StaminaSystemEnabled { get; }
 
+        public TextViewModel AiKickBashEnabledText { get; }
+        public SelectorVM<SelectorItemVM> AiKickBashEnabled { get; }
+
         public TextViewModel PlayerPostureMultiplierText { get; }
         public SelectorVM<SelectorItemVM> PlayerPostureMultiplier { get; }
 
@@ -215,6 +218,18 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_030}Stamina System (requires Posture)").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public string AiKickBasht
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_120}AI Kick and Bash").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel AiKickBashHint { get; } = Hint("{=RBM_CON_121}AI soldiers kick, shield bash and weapon bash. Kicks and bashes also deal real damage, cost posture and stamina, and can knock an enemy down. Applies to the player's kicks and bashes too.");
 
         [DataSourceProperty]
         public bool IsStaminaSelectable => PostureSystemEnabled.SelectedIndex == 1;

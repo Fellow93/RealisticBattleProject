@@ -171,6 +171,7 @@
   <ItemGroup>
     <Compile Include="AiModule\Misc\GeneralsAndCaptainsAssignmentLogicPatch.cs" />
     <Compile Include="AiModule\Agents\AgentStats.cs" />
+    <Compile Include="AiModule\Agents\AiKickBash.cs" />
     <Compile Include="AiModule\Agents\AmmoPickupSafety.cs" />
     <Compile Include="AiModule\Agents\CombatFixes.cs" />
     <Compile Include="AiModule\Agents\Weather.cs" />

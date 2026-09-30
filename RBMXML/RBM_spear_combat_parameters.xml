@@ -257,7 +257,7 @@
 
     <!-- collision radii -->
     <def name="kick_shieldbash_radius"
-         val="0.2" />
+         val="0.35" />
   </definitions>
 
   <combat_parameters>

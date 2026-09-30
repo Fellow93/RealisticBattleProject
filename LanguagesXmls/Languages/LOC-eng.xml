@@ -29,6 +29,7 @@
 	<string id="RBM_AI_022" text="You dealt {DMG1} blunt trauma, {DMG2} armor penetration damage" />
 	<string id="RBM_AI_023" text="Posture" />
 	<string id="RBM_AI_024" text="Stamina" />
+	<string id="RBM_AI_025" text="KICK/BASH:" />
 	<!-- Combat Module Strings -->
 	<string id="RBM_COM_001" text="{TYPE} hit" />
 	<string id="RBM_COM_002" text="{TYPE} hit" />
@@ -529,6 +530,9 @@
 	<string id="RBM_CON_108" text="Writes the village-to-town goods and food chain to logs/economy next to the config: each village's daily production, every villager party sent out with its size, composition and cargo, each town's rations, and the end-of-day state of every settlement. Verbose, and only useful for tuning the economy." />
 	<string id="RBM_CON_109" text="Starting Gold Multiplier" />
 	<string id="RBM_CON_110" text="Multiplies the gold character creation hands out at the start of a new campaign. Only applies to a new game; a loaded save keeps its own gold. Default 5.0x." />
+	<!-- AI Kick and Bash Strings -->
+	<string id="RBM_CON_120" text="AI Kick and Bash" />
+	<string id="RBM_CON_121" text="AI soldiers kick, shield bash and weapon bash. Kicks and bashes also deal real damage, cost posture and stamina, and can knock an enemy down. Applies to the player's kicks and bashes too." />
 	<!-- Combat Toggle Restart Notice Strings -->
 	<string id="RBM_RESTART_001" text="Restart Required" />
 	<string id="RBM_RESTART_002" text="RBM Combat was changed. Everything else takes effect the next time you start or load a game, but RBM's spear and weapon animation parameters are only read when Bannerlord starts. Restart the game for them to match the new setting." />

@@ -27,6 +27,8 @@ namespace RBMAI
 
         public override void AfterStart()
         {
+            // The kick/bash counters are per battle.
+            AgentAi.AiKickBash.ResetCounters();
             _missionScreen = TaleWorlds.ScreenSystem.ScreenManager.TopScreen as MissionScreen;
             if (_missionScreen == null)
             {
@@ -137,6 +139,9 @@ namespace RBMAI
             _dataSource.Defha = new TextObject("{=RBM_AI_006}DEF HA :").ToString() + defha;
             _dataSource.Defcav = new TextObject("{=RBM_AI_007}DEF CAV:").ToString() + defcav;
             _dataSource.Definf = new TextObject("{=RBM_AI_008}DEF INF:").ToString() + definf;
+            _dataSource.Kickbash = RBMConfig.RBMConfig.aiKickBashEnabled
+                ? new TextObject("{=RBM_AI_025}KICK/BASH:").ToString() + " " + AgentAi.AiKickBash.CountersText()
+                : "";
         }
     }
 }

@@ -13,6 +13,7 @@
         private string defha = new TextObject("{=RBM_AI_006}DEF HA :").ToString() + " 0";
         private string defcav = new TextObject("{=RBM_AI_007}DEF CAV:").ToString() + " 0";
         private string definf = new TextObject("{=RBM_AI_008}DEF INF:").ToString() + " 0";
+        private string kickbash = "";
 
         [DataSourceProperty]
         public string Atkarc
@@ -155,6 +156,24 @@
                 }
                     definf = value;
                     OnPropertyChanged("Definf");
+            }
+        }
+
+        [DataSourceProperty]
+        public string Kickbash
+        {
+            get
+            {
+                return kickbash;
+            }
+            set
+            {
+                if (kickbash == value)
+                {
+                    return;
+                }
+                    kickbash = value;
+                    OnPropertyChanged("Kickbash");
             }
         }
     }

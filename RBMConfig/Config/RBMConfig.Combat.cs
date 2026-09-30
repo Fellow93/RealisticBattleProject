@@ -16,6 +16,9 @@ namespace RBMConfig
 
         public static bool postureEnabled = true;
         public static bool staminaEnabled = true;
+        // AI kick / shield bash / weapon bash (RBMAI AiModule/Agents/AiKickBash.cs). Gates the whole feature:
+        // the AI attempts, their posture/stamina costs, the victim's loss and the knockdown rules. Off = vanilla.
+        public static bool aiKickBashEnabled = true;
 
         public static float playerPostureMultiplier = 1f;
         public static bool postureGUIEnabled = true;

@@ -7,6 +7,7 @@
 - Ship ballista stones and boulders damage hulls and crew again (4.5.2 left them at almost no damage). Grapeshot stays capped at about vanilla's hull damage per pellet, so one volley can no longer sink a light ship.
 - Hand-thrown fire pots and stones kill again: the fire pot is back to full weight and damage, with a large splash. Burning splashes (hand-thrown, siege-engine and War Sails pots) deal full damage in the inner 30% of the radius and fall off to zero at the edge.
 - Spiked mace thrusts no longer pierce armor better than swords (mace pierce threshold 2 → 4). Existing configs still on the old default are updated once.
+- Kicks, shield bashes and weapon bashes deal real blunt damage instead of 1–2 points, using the same model as punches: it scales with skill, boot, shield or weapon weight and the body part hit, and armor reduces it. A bash blocked by a shield and a kick into a raised shield do no damage. Kicks and bashes also connect more easily (larger hit radius). The damage follows the new "AI Kick and Bash" setting.
 - Spears carried on the back no longer hang low and sink into the ground.
 - Armor worn down in battle no longer stays damaged on the saved gear after the War Sails storyline battle, stealth missions or closing the inventory mid-mission.
 - Sheathing a bow with an arrow nocked no longer leaves the string drawn, and a dropped bow no longer carries a phantom arrow.
@@ -35,6 +36,8 @@
 - Advancing AI lines no longer leave a few men lagging far behind. When the line widens, each man takes the nearest place in it instead of one on the far flank.
 - Advancing AI lines that are already in formation move at their slower men's full speed instead of being held back further. The formation's speed limit now applies only while the line is ragged.
 - Siege attackers whose only melee weapon is two-handed (e.g. the Imperial Flame line) no longer sheathe it to raise their shield and fight bare-handed.
+- **AI kick and bash (new RBM AI setting, on by default):** AI foot soldiers now kick, shield bash and weapon bash, which the vanilla AI never does. They try it at close range against an enemy who is blocking, holding a weapon ready, showing his back or staggered; a clearly more skilled fighter also tries it at other times. How often depends on the two fighters' relative skill (mostly Athletics, partly weapon skill). A raised shield stops a bash but not a kick, so the AI kicks a man behind a raised shield and otherwise picks either. With the posture system on, throwing one costs posture and stamina, hit or miss.
+- **Kick and bash knockdowns (same setting, player and AI):** a kick or bash always knocks down an enemy who is already staggered (posture break, posture tiredness or another kick or bash a moment earlier) or whose posture it empties. Otherwise it has a chance based on relative skill against an enemy holding a weapon ready or hit from behind; it is higher for a kick than a bash, from behind and against a tired enemy, and lower the heavier his armor.
 
 ### Campaign
 - Starting gold is now a multiplier on the gold character creation gives you (default 5x, adjustable 1x–50x) instead of a flat 5,000-denar purse, so backstory choices matter again. The setting is renamed "Starting Gold Multiplier" and resets to 5x on existing configs. New campaigns only.

@@ -73,6 +73,11 @@ namespace RBMCombat
         public static void lowerArmorQualityCheck(ref Agent agent, EquipmentIndex equipmentIndex, ItemObject.ItemTypeEnum itemType, AttackCollisionData attackCollisionData, Blow blow, Agent attacker, in MissionWeapon attackerWeapon)
         {
             EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
+            // A bash with real damage (kick/bash feature) is a shove like a punch or kick, which never wear armor.
+            if (RBMConfig.RBMConfig.aiKickBashEnabled && attackCollisionData.IsAlternativeAttack)
+            {
+                return;
+            }
             if (equipmentElement.Item != null && equipmentElement.Item.ItemType == itemType && equipmentElement.Item.ArmorComponent != null && !attackerWeapon.IsEmpty && blow.InflictedDamage > 1 && !blow.IsFallDamage)
             {
                 WeaponClass weaponType = attackerWeapon.CurrentUsageItem.WeaponClass;

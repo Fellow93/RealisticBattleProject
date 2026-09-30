@@ -83,6 +83,20 @@ namespace RBMCombat
             return result;
         }
 
+        // A kick gets past a raised shield to stagger the man behind it, so the engine never reports it as blocked
+        // (AttackBlockedWithShield stays false). It still lands on the shield, not on him: no real damage then.
+        // Raised = the shield-block action; in the way = the attacker within 60 degrees of the victim's facing.
+        private static bool IsKickCaughtOnRaisedShield(Agent attacker, Agent victim)
+        {
+            if (victim == null || !victim.IsHuman || victim.GetCurrentActionType(1) != Agent.ActionCodeType.DefendShield)
+            {
+                return false;
+            }
+            Vec2 toAttacker = attacker.Position.AsVec2 - victim.Position.AsVec2;
+            toAttacker.Normalize();
+            return victim.GetMovementDirection().DotProduct(toAttacker) >= 0.5f;
+        }
+
         private static float GetBodyPartDamageMultiplier(BoneBodyPartType bodyPart, DamageTypes damageType)
         {
             switch (bodyPart)
@@ -332,7 +346,42 @@ namespace RBMCombat
                 IAgentOriginBase attackerAgentOrigin = attackInformation.AttackerAgentOrigin;
                 Formation attackerFormation = attackInformation.AttackerFormation;
                 ItemModifier itemModifier = null;
-                if (!attackCollisionData.IsAlternativeAttack && !attackInformation.IsAttackerAgentMount && !attackCollisionData.IsFallDamage && attackerAgentOrigin != null && attackInformation.AttackerAgentCharacter != null && !attackCollisionData.IsMissile)
+                // Kicks and bashes: vanilla's flat 1-2 magnitude is replaced by the punch model, with the boot,
+                // shield or weapon in place of the gauntlet. A shove is not a cut, so the weapon's own class and
+                // damage factor play no part.
+                bool isKickOrBash = RBMConfig.RBMConfig.aiKickBashEnabled && attackCollisionData.IsAlternativeAttack && !attackBlockedWithShield && attacker != null && attacker.IsHuman && attackCollisionData.BaseMagnitude > 0f && !IsKickCaughtOnRaisedShield(attacker, victim);
+                if (isKickOrBash)
+                {
+                    bool isKick = attackerWeapon == null;
+                    if (isKick)
+                    {
+                        ItemObject boots = attacker.SpawnEquipment[EquipmentIndex.Leg].Item;
+                        magnitude = RBMConfig.SkillDamage.GetKickMagnitude(ArmorRework.GetArmorMaterialForBodyPartRBM(attacker, BoneBodyPartType.Legs), boots != null ? boots.Weight : 0f);
+                    }
+                    else if (attackerWeapon.IsShield)
+                    {
+                        magnitude = RBMConfig.SkillDamage.GetShieldBashMagnitude(attackInformation.AttackerWeapon.GetWeight());
+                    }
+                    else
+                    {
+                        magnitude = RBMConfig.SkillDamage.GetWeaponBashMagnitude(attackInformation.AttackerWeapon.GetWeight());
+                    }
+                    int ef = RBMConfig.SkillDamage.GetKickBashSkill(attacker);
+                    magnitude = Utilities.GetSkillBasedDamage(magnitude, false, "unarmedAttack", DamageTypes.Blunt, Utilities.GetEffectiveSkillWithDR(ef), Utilities.CalculateSkillModifier(ef), StrikeType.Swing, 5f);
+                    if (isKick)
+                    {
+                        magnitude *= RBMConfig.SkillDamage.KickDamageFactor;
+                    }
+                    // Vanilla scales its flat value by the momentum left after an earlier hit of the same
+                    // kick/bash; keep that share.
+                    float vanillaMagnitude = MissionGameModels.Current.AgentApplyDamageModel.CalculateAlternativeAttackDamage(in attackInformation, in attackCollisionData, attackerWeapon);
+                    if (vanillaMagnitude > 0f)
+                    {
+                        magnitude *= MBMath.ClampFloat(attackCollisionData.BaseMagnitude / vanillaMagnitude, 0f, 1f);
+                    }
+                    weaponType = "unarmedAttack";
+                }
+                if (!attackCollisionData.IsAlternativeAttack &&!attackInformation.IsAttackerAgentMount && !attackCollisionData.IsFallDamage && attackerAgentOrigin != null && attackInformation.AttackerAgentCharacter != null && !attackCollisionData.IsMissile)
                 {
                     SkillObject skill = (attackerWeapon == null) ? DefaultSkills.Athletics : attackerWeapon.RelevantSkill;
                     if (skill != null)
@@ -423,6 +472,10 @@ namespace RBMCombat
                 if (attackerWeapon != null && attackerWeapon.WeaponClass == WeaponClass.Javelin && attackerWeapon.WeaponFlags.HasFlag(WeaponFlags.BonusAgainstShield))
                 {
                     weaponDamageFactor *= 3f;
+                }
+                if (isKickOrBash)
+                {
+                    weaponDamageFactor = 1f;
                 }
 
                 //stealth calculation
