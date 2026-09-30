@@ -72,6 +72,40 @@ namespace RBMConfig
             }
         }
 
+        // Plain-text label/hint (no {=RBM_CON_xxx} id) for the same reason as the Frontline rows below.
+        private float _armorMultiplier;
+
+        [DataSourceProperty]
+        public float ArmorMultiplier
+        {
+            get { return _armorMultiplier; }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value * 20f) / 20f, 0.5f, 4f);
+                if (snapped != _armorMultiplier)
+                {
+                    _armorMultiplier = snapped;
+                    OnPropertyChangedWithValue(snapped, "ArmorMultiplier");
+                    OnPropertyChanged("ArmorMultiplierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string ArmorMultiplierValue
+        {
+            get { return _armorMultiplier.ToString("0.00"); }
+        }
+
+        [DataSourceProperty]
+        public string ArmorMultipliert
+        {
+            get { return new TextObject("Armor Multiplier").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel ArmorMultiplierHint { get; } = Hint("How strongly armor reduces damage: a blow is scaled by 100 / (100 + armor x this). Higher makes armor protect more and fights last longer; lower makes everyone die faster. Also feeds auto-resolve and troop power. Default 2.00.");
+
         [DataSourceProperty]
         public string TroopOverhault
         {

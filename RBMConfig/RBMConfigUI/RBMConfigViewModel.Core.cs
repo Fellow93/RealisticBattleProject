@@ -152,6 +152,8 @@ namespace RBMConfig
             ThrustModifierText = new TextViewModel(new TextObject("Thrust Modifier"));
             ThrustModifier = new SelectorVM<SelectorItemVM>(thrustModifierList, 0, null);
 
+            _armorMultiplier = MathF.Clamp(RBMConfig.armorMultiplier, 0.5f, 4f);
+
             int i = 0;
             foreach (var item in thrustModifierList)
             {
@@ -591,6 +593,8 @@ namespace RBMConfig
             RBMConfig.OneHandedThrustDamageBonus = 1f / newThrustModifier;
             RBMConfig.TwoHandedThrustDamageBonus = 1f / newThrustModifier;
 
+            RBMConfig.armorMultiplier = _armorMultiplier;
+
             RBMConfig.hitStopEnabled = HitStopEnabled.SelectedIndex == 1;
 
             if (PostureSystemEnabled.SelectedIndex == 0)
@@ -765,6 +769,7 @@ namespace RBMConfig
         {
             // Combat
             ThrustModifier.SelectedIndex = thrustModifierList.IndexOf(new TextObject("0.05").ToString());
+            ArmorMultiplier = 2f;
             RealisticArrowArc.SelectedIndex = 0;
             ArmorStatusUIEnabled.SelectedIndex = 1;
             SneakAttackInstaKill.SelectedIndex = 0;
