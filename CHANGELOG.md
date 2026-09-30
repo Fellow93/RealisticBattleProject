@@ -29,6 +29,7 @@
 - Cavalry ordered to dismount now dismounts and holds its formation, including after the formation is delegated to the AI.
 - Retreating riders are no longer held back by RBM's speed limit.
 - Archers no longer walk into the enemy to pick up spent arrows. Ammo lying within 25 m of an enemy (45 m for horsemen) is ignored.
+- AI missile troops only look for spent ammo when they are nearly out: below 15% of what they can carry of that type (vanilla: any quiver at half), or down to their last javelin, throwing axe or throwing knife. They also no longer break off drawing, shooting or reloading to fetch it.
 - Troops that lose their melee weapon pick up a dropped one again.
 - Polearm troops no longer switch weapons back and forth while an enemy hovers at the edge of range.
 - Swimmers in field battles (e.g. on river maps) are no longer treated as being on land, so they are no longer ordered to cheer or to pick up weapons while swimming.
