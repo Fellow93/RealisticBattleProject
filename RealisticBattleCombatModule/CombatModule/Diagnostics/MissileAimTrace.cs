@@ -8,6 +8,7 @@ namespace RBMCombat
     /// <summary>
     /// DIAGNOSTIC: where an AI bow/crossbow/sling shot was aimed, where RBM's launch should have carried it, and where it
     /// actually came down. Written into the battle hit log (same toggle) as SHOT / LAND line pairs keyed by missile.
+    /// AI throws (javelin, throwing axe/knife, stone) are traced the same way as THROW / LAND pairs (see BeginThrow).
     ///
     /// Reading a pair (all ranges are metres along the shot's horizontal direction from the launch point):
     ///   tgtRange  - the target's chest at the moment of the shot
@@ -111,6 +112,71 @@ namespace RBMCombat
             _hasPending = true;
         }
 
+        /// <summary>
+        /// Called from the shot prefix for an AI javelin/axe/knife/stone throw. engineVelocity is the throw the AI
+        /// aimed, finalVelocity the one launched (the same since RBM's AI release-angle tweaks were removed; kept apart
+        /// so a future change to the launch shows up). predRange is where the drag model says the throw crosses the
+        /// target's chest height: predRange ~ tgtRange means the AI aimed right; LAND's landRange shows where it
+        /// really came down. Logged with or without a target agent; without one the target fields read "none".
+        /// </summary>
+        public static void BeginThrow(Agent shooter, WeaponClass weaponClass, Vec3 position, Vec3 engineVelocity, Vec3 finalVelocity, float friction)
+        {
+            _hasPending = false;
+            if (!BattleHitLog.IsEnabled || shooter == null || !shooter.IsAIControlled || Mission.Current == null)
+            {
+                return;
+            }
+            Vec2 dir = finalVelocity.AsVec2;
+            if (dir.Normalize() < 0.0001f)
+            {
+                return;
+            }
+            Agent target = shooter.GetTargetAgent();
+            if (target != null && !target.IsActive())
+            {
+                target = null;
+            }
+
+            float engineSpeed = engineVelocity.Length;
+            float finalSpeed = finalVelocity.Length;
+            float aimPitch = engineSpeed > 0f ? (float)System.Math.Asin(MBMath.ClampFloat(engineVelocity.z / engineSpeed, -1f, 1f)) * 57.29578f : 0f;
+            float launchPitch = finalSpeed > 0f ? (float)System.Math.Asin(MBMath.ClampFloat(finalVelocity.z / finalSpeed, -1f, 1f)) * 57.29578f : 0f;
+            string line = "THROW " + weaponClass
+                + " shooter=" + shooter.Index + (shooter.HasMount ? "(mounted)" : "")
+                + " weapon=" + (shooter.WieldedWeapon.Item != null ? shooter.WieldedWeapon.Item.StringId : "?")
+                + " aimSpeed=" + BattleHitLog.Fmt(engineSpeed)
+                + " launchSpeed=" + BattleHitLog.Fmt(finalSpeed)
+                + " aimPitch=" + BattleHitLog.Fmt(aimPitch)
+                + " launchPitch=" + BattleHitLog.Fmt(launchPitch)
+                + " shooterSpeed=" + BattleHitLog.Fmt(shooter.Velocity.AsVec2.Length)
+                // 0 while RBMAI's RangedReachGate holds him: a throw logged with 0 slipped past the gate.
+                + " shootFreq=" + BattleHitLog.Fmt(shooter.AgentDrivenProperties.AiShootFreq)
+                + " friction=" + friction.ToString("0.#####", System.Globalization.CultureInfo.InvariantCulture);
+
+            Shot shot = new Shot { Launch = position, Dir = dir, Target = target, Time = Mission.Current.CurrentTime };
+            if (target != null)
+            {
+                Vec3 chest = target.GetChestGlobalPosition();
+                Vec3 tv = target.Velocity;
+                shot.TgtRange = Vec2.DotProduct(chest.AsVec2 - position.AsVec2, dir);
+                shot.TgtChestZ = chest.z;
+                float predRange = PredictRangeAtHeight(position, finalVelocity, chest.z, friction);
+                line += " tgtRange=" + BattleHitLog.Fmt(shot.TgtRange)
+                    + " dz=" + BattleHitLog.Fmt(chest.z - position.z)
+                    + " tgtSpeed=" + BattleHitLog.Fmt(tv.AsVec2.Length)
+                    + " tgtClosing=" + BattleHitLog.Fmt(-Vec2.DotProduct(tv.AsVec2, dir))
+                    + " predRange=" + (predRange < 0f ? "unreached" : BattleHitLog.Fmt(predRange));
+            }
+            else
+            {
+                shot.TgtChestZ = position.z;
+                line += " tgtRange=none";
+            }
+            _pending = shot;
+            _pendingLine = line;
+            _hasPending = true;
+        }
+
         /// <summary>Called from the shot postfix: the missile vanilla just added is the last in the list.</summary>
         public static void CommitShot(Mission mission)
         {
@@ -157,7 +223,7 @@ namespace RBMCombat
 
             Vec3 impact = missile.GetPosition();
             float landRange = Vec2.DotProduct(impact.AsVec2 - shot.Launch.AsVec2, shot.Dir);
-            string tgtNow = "dead";
+            string tgtNow = shot.Target == null ? "none" : "dead";
             if (shot.Target != null && shot.Target.IsActive())
             {
                 tgtNow = BattleHitLog.Fmt(Vec2.DotProduct(shot.Target.GetChestGlobalPosition().AsVec2 - shot.Launch.AsVec2, shot.Dir));
@@ -167,10 +233,12 @@ namespace RBMCombat
                 + " flight=" + BattleHitLog.Fmt(mission.CurrentTime - shot.Time)
                 + " hit=" + hit
                 + " landRange=" + BattleHitLog.Fmt(landRange)
-                + " tgtRange@shot=" + BattleHitLog.Fmt(shot.TgtRange)
-                + " tgtRange@land=" + tgtNow
-                + " short=" + BattleHitLog.Fmt(shot.TgtRange - landRange)
-                + " landDzToTgtChest=" + BattleHitLog.Fmt(impact.z - shot.TgtChestZ));
+                + (shot.Target == null
+                    ? " tgtRange@shot=none landDzToLaunch=" + BattleHitLog.Fmt(impact.z - shot.TgtChestZ)
+                    : " tgtRange@shot=" + BattleHitLog.Fmt(shot.TgtRange)
+                        + " tgtRange@land=" + tgtNow
+                        + " short=" + BattleHitLog.Fmt(shot.TgtRange - landRange)
+                        + " landDzToTgtChest=" + BattleHitLog.Fmt(impact.z - shot.TgtChestZ)));
         }
 
         /// <summary>

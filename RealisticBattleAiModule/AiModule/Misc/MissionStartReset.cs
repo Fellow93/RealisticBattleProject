@@ -69,6 +69,7 @@ namespace RBMAI
             AgentAi.RangedReachGate.holding.Clear();
             AgentAi.RangedReachGate.nextCheck.Clear();
             AgentAi.RangedReachGate.checkedTarget.Clear();
+            AgentAi.RangedReachGate.checkedWielded.Clear();
             StanceLogic.agentsToChangeFormation.Clear();
             StanceLogic.agentsToDropWeapon.Clear();
             StanceLogic.agentsToDropShield.Clear();

@@ -28,9 +28,8 @@ namespace RBMCombat
                 // comment in Native managed_core_parameters.xml) that RBM cannot change. Setting 0.0015 here made the
                 // AI aim with one drag while arrows and bolts flew with the other, so AI shots fell short, worse with
                 // distance (~3 m at 60 m, ~18 m at 150 m). Tune reach through missile speed instead.
-                ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionJavelin, 0.00215f);
-                ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionAxe, 0.01f);
-                ManagedParameters.SetParameter(ManagedParametersEnum.AirFrictionKnife, 0.01f);
+                // Javelin/axe/knife drag is left at the engine's values too (RBM had 0.00215/0.01/0.01; removed
+                // 2026-10-01 along with the AI throw release-angle tweaks).
                 ManagedParameters.SetParameter(ManagedParametersEnum.MissileMinimumDamageToStick, 12.5f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.BipedalRadius, 0.48f);
                 ManagedParameters.SetParameter(ManagedParametersEnum.MakesRearAttackDamageThreshold, 13f);

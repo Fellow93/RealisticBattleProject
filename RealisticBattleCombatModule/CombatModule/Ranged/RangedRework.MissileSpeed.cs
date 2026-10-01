@@ -143,49 +143,14 @@ namespace RBMCombat
                 WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
                 Vec3 engineLaunchVelocity = velocity;
 
-                if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe))
+                // AI javelin/throwing-axe throws used to be pitched down here after the AI had aimed (axes a flat 5
+                // deg, javelins by the shooter's receding speed, and 1.4/2 m/s off the upward speed with no target
+                // agent). Removed 2026-10-01: the engine aims with the throw speed RBMCombat's WeaponEquipped prefix
+                // hands it, so the tweaks only moved throws off target. AI throws are traced as THROW/LAND lines.
+                WeaponClass thrownClass = (WeaponClass)wsd[0].WeaponClass;
+                if (thrownClass == WeaponClass.Javelin || thrownClass == WeaponClass.ThrowingAxe || thrownClass == WeaponClass.ThrowingKnife || thrownClass == WeaponClass.Stone)
                 {
-                    Agent targetAgent = shooterAgent.GetTargetAgent();
-                    if (targetAgent != null)
-                    {
-                        if (wsd[0].WeaponClass == (int)WeaponClass.Javelin)
-                        {
-                            float relativeModifier = Vec3.DotProduct(shooterAgent.Velocity.NormalizedCopy(), targetAgent.Velocity.NormalizedCopy());
-                            float shooterSpeed = shooterAgent.Velocity.Length;
-                            if (shooterSpeed > 0)
-                            {
-                                float shooterRelativeSpeed = shooterSpeed * relativeModifier;
-                                if (shooterRelativeSpeed <= 0)
-                                {
-                                    double rotRad = (0.0174533 * shooterRelativeSpeed) / 1.1f;
-                                    float vecLength = velocity.Length;
-                                    double currentRad = (double)Math.Acos(MBMath.ClampFloat(velocity.z / vecLength, -1f, 1f));
-                                    float newZ = velocity.Length * ((float)Math.Cos(currentRad - rotRad));
-                                    velocity.z = newZ;
-                                }
-                            }
-                        }
-                        if (wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe)
-                        {
-                            double rotRad;
-                            rotRad = 0.0174533 * -5f;
-                            float vecLength = velocity.Length;
-                            double currentRad = (double)Math.Acos(MBMath.ClampFloat(velocity.z / vecLength, -1f, 1f));
-                            float newZ = velocity.Length * ((float)Math.Cos(currentRad - rotRad));
-                            velocity.z = newZ;
-                        }
-                    }
-                    else
-                    {
-                        if (!shooterAgent.HasMount)
-                        {
-                            velocity.z = velocity.z - 1.4f;
-                        }
-                        else
-                        {
-                            velocity.z = velocity.z - 2f;
-                        }
-                    }
+                    MissileAimTrace.BeginThrow(shooterAgent, thrownClass, position, engineLaunchVelocity, velocity, ItemObject.GetAirFrictionConstant(thrownClass, missionWeapon.CurrentUsageItem.WeaponFlags));
                 }
 
                 if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))

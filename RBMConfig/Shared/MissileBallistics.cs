@@ -218,6 +218,69 @@ namespace RBMConfig
             return (int)Math.Round(calculatedSpeed * shieldTypeModifier * equipmentWeightModifier);
         }
 
+        // Added to every throw's speed (and taken off again in the magnitude calculation, MagnitudeChanges.Missile).
+        public const int ThrowableCorrectionSpeed = 3;
+        // Hand-thrown stones fly at a flat speed.
+        public const int StoneThrowSpeed = 25;
+
+        public static int ThrowableSpeed(float ammoWeight, float effectiveSkill)
+        {
+            // Melee usages reach here with weight/0 = +Infinity, which already yields 0; treat a
+            // weightless item (0 or 0/0 = NaN) the same instead of letting it become int.MinValue.
+            if (!(ammoWeight > 0f) || float.IsInfinity(ammoWeight))
+            {
+                return 0;
+            }
+            return (int)Math.Ceiling(Math.Sqrt((MBMath.ClampFloat(ammoWeight * 70f, 60f, 250f) + (effectiveSkill * 0.75f)) * 2f / ammoWeight));
+        }
+
+        public static int ThrowSpeed(float ammoWeight, int correctiveMissileSpeed, float effectiveSkill, float armorModifier, WeaponClass shieldType)
+        {
+            float shieldTypeModifier = 1f;
+            float weightTraining = MBMath.ClampFloat(effectiveSkill * 0.001f, 0f, 0.2f); // until we have perk
+            float equipmentWeightModifier = (float)Math.Sqrt(MBMath.ClampFloat(1f - (armorModifier * 0.005f) + weightTraining, 0.7f, 1f));
+            switch (shieldType)
+            {
+                case WeaponClass.LargeShield:
+                    shieldTypeModifier = 0.87f;
+                    break;
+                case WeaponClass.SmallShield:
+                    shieldTypeModifier = 0.96f;
+                    break;
+            }
+            return (int)Math.Round(ThrowableSpeed(ammoWeight, effectiveSkill) * shieldTypeModifier * equipmentWeightModifier) + correctiveMissileSpeed;
+        }
+
+        /// <summary>
+        /// The speed RBMCombat's WeaponEquipped prefix gives the engine for a javelin, throwing axe/knife or stone:
+        /// weight per piece, the thrower's effective skill, his shield and his shoulder and arm armor; stones a flat
+        /// speed. Used by the player's aim arc and RBMAI's reach gate, since that value only lives in the engine's
+        /// copy of the weapon stats. 0 when there is nothing left to throw.
+        /// </summary>
+        public static int GetThrowSpeed(Agent agent, MissionWeapon weapon)
+        {
+            if (weapon.IsEmpty || weapon.Amount <= 0 || weapon.CurrentUsageItem == null)
+            {
+                return 0;
+            }
+            if (weapon.CurrentUsageItem.WeaponClass == WeaponClass.Stone)
+            {
+                return StoneThrowSpeed;
+            }
+            SkillObject skill = weapon.Item == null ? DefaultSkills.Athletics : weapon.Item.RelevantSkill;
+            int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, skill);
+            WeaponClass shieldType = WeaponClass.Undefined;
+            for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
+            {
+                if (agent.Equipment != null && !agent.Equipment[i].IsEmpty && agent.Equipment[i].IsShield())
+                {
+                    shieldType = agent.Equipment[i].CurrentUsageItem.WeaponClass;
+                }
+            }
+            float armorModifier = MBMath.ClampFloat(ShoulderArmor(agent) - 20f, 0f, 100f) + MBMath.ClampFloat(ArmArmor(agent) - 20f, 0f, 100f);
+            return ThrowSpeed(weapon.GetWeight() / weapon.Amount, ThrowableCorrectionSpeed, EffectiveSkillWithDR(effectiveSkill), armorModifier, shieldType);
+        }
+
         public static float EffectiveSkillWithDR(int effectiveSkill)
         {
             return (600f / (600f + effectiveSkill)) * (float)effectiveSkill;

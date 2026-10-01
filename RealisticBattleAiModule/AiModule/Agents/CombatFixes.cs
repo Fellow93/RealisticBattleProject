@@ -238,35 +238,6 @@ namespace RBMAI
         }
 
         [HarmonyPatch(typeof(Mission))]
-        [HarmonyPatch("OnAgentShootMissile")]
-        [UsedImplicitly]
-        [MBCallback]
-        internal class OverrideOnAgentShootMissile
-        {
-            //private static int _oldMissileSpeed;
-            private static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, ref Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
-            {
-                MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
-                WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
-
-                if (!RBMConfig.RBMConfig.rbmCombatEnabled && (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe)))
-                {
-                    //float shooterSpeed = shooterAgent.MovementVelocity.Normalize();
-                    if (!shooterAgent.HasMount)
-                    {
-                        velocity.z = velocity.z - 1.4f;
-                    }
-                    else
-                    {
-                        velocity.z = velocity.z - 2f;
-                    }
-                }
-
-                return true;
-            }
-        }
-
-        [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("ChargeDamageCallback")]
         [UsedImplicitly]
         [MBCallback]
