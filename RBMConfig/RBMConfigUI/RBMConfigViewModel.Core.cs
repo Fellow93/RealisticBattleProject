@@ -133,6 +133,10 @@ namespace RBMConfig
             PassiveShoulderShieldsText = new TextViewModel(new TextObject("Passive Shoulder Shields"));
             PassiveShoulderShields = new SelectorVM<SelectorItemVM>(passiveShoulderShields, 0, null);
 
+            List<string> passiveShieldBlockOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
+            PassiveShieldBlockEnabledText = new TextViewModel(new TextObject("Passive Shield Block (experimental)"));
+            PassiveShieldBlockEnabled = new SelectorVM<SelectorItemVM>(passiveShieldBlockOptions, 0, null);
+
             List<string> betterArrowVisuals = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             BetterArrowVisualsText = new TextViewModel(new TextObject("Better Arrow Visuals"));
             BetterArrowVisuals = new SelectorVM<SelectorItemVM>(betterArrowVisuals, 0, null);
@@ -202,6 +206,8 @@ namespace RBMConfig
             {
                 PassiveShoulderShields.SelectedIndex = 0;
             }
+
+            PassiveShieldBlockEnabled.SelectedIndex = RBMConfig.passiveShieldBlockEnabled ? 1 : 0;
 
             if (RBMConfig.betterArrowVisuals)
             {
@@ -568,6 +574,8 @@ namespace RBMConfig
                 RBMConfig.passiveShoulderShields = true;
             }
 
+            RBMConfig.passiveShieldBlockEnabled = PassiveShieldBlockEnabled.SelectedIndex == 1;
+
             if (BetterArrowVisuals.SelectedIndex == 0)
             {
                 RBMConfig.betterArrowVisuals = false;
@@ -792,6 +800,7 @@ namespace RBMConfig
             StuckThrownFallOutSeconds = 5f;
             StuckArrowFallOutSeconds = 45f;
             PassiveShoulderShields.SelectedIndex = 0;
+            PassiveShieldBlockEnabled.SelectedIndex = 0;
             RangedReloadSpeed.SelectedIndex = 2;
             RangedReloadAffectsAi.SelectedIndex = 0;
             RangedAimArcEnabled.SelectedIndex = 0;

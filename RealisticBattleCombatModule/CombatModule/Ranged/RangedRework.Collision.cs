@@ -145,7 +145,75 @@ namespace RBMCombat
                     acd.AbsorbedByArmor = collisionData.AbsorbedByArmor;
                     collisionData = acd;
                 }
+                else if (IsPassiveShieldBlock(in collisionData, attacker, victim))
+                {
+                    // The engine reports a blow on the arm holding a shield as a plain body hit unless the victim is
+                    // actively blocking. Rebuilt as a shield block, vanilla's own block path does the rest: shield
+                    // damage instead of health damage, no blow registered on the victim, the weapon bounces. Flagged
+                    // as a wrong-side block (CorrectSideShieldBlock false): he did not put the shield there on purpose.
+                    float attackerStunPeriod = collisionData.AttackerStunPeriod;
+                    float defenderStunPeriod = collisionData.DefenderStunPeriod;
+                    GetBlockStunPeriods(in collisionData, attacker, victim, ref attackerStunPeriod, ref defenderStunPeriod);
+                    AttackCollisionData acd = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(true, false, collisionData.IsAlternativeAttack, collisionData.IsColliderAgent, collisionData.CollidedWithShieldOnBack,
+                        collisionData.IsMissile, collisionData.MissileBlockedWithWeapon, collisionData.MissileHasPhysics, collisionData.EntityExists, collisionData.ThrustTipHit, collisionData.MissileGoneUnderWater, collisionData.MissileGoneOutOfBorder,
+                        CombatCollisionResult.Blocked, collisionData.AffectorWeaponSlotOrMissileIndex, collisionData.StrikeType, collisionData.DamageType, collisionData.CollisionBoneIndex,
+                        collisionData.VictimHitBodyPart, collisionData.AttackBoneIndex, collisionData.AttackDirection, collisionData.PhysicsMaterialIndex, collisionData.CollisionHitResultFlags, collisionData.AttackProgress, collisionData.CollisionDistanceOnWeapon,
+                        attackerStunPeriod, defenderStunPeriod, collisionData.MissileTotalDamage, collisionData.MissileStartingBaseSpeed, collisionData.ChargeVelocity, collisionData.FallSpeed, collisionData.WeaponRotUp,
+                        collisionData.WeaponBlowDir, collisionData.CollisionGlobalPosition, collisionData.MissileVelocity, collisionData.MissileStartingPosition, collisionData.VictimAgentCurVelocity, collisionData.CollisionGlobalNormal);
+                    acd.BaseMagnitude = collisionData.BaseMagnitude;
+                    acd.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
+                    acd.SelfInflictedDamage = collisionData.SelfInflictedDamage;
+                    acd.InflictedDamage = collisionData.InflictedDamage;
+                    acd.AbsorbedByArmor = collisionData.AbsorbedByArmor;
+                    collisionData = acd;
+                }
                 return true;
+            }
+
+            // Passive shield block: the shield only stops blows that come at its bearer from the front or the sides.
+            // Dot of the victim's facing with the direction to the attacker; below this the blow comes from the rear
+            // arc (the last 60 degrees to either side of straight behind) and lands on the arm, not the shield.
+            private const float PassiveShieldBlockMinFacingDot = -0.5f;
+
+            // A melee blow that the engine put on the shield arm of a human who holds a shield but is not blocking
+            // with it. Only the arm for now, not the shoulder or torso. Kicks and bashes keep their own rules.
+            private static bool IsPassiveShieldBlock(in AttackCollisionData collisionData, Agent attacker, Agent victim)
+            {
+                if (!RBMConfig.RBMConfig.passiveShieldBlockEnabled || attacker == null || victim == null || !victim.IsHuman || !victim.IsActive())
+                {
+                    return false;
+                }
+                if (collisionData.CollisionResult != CombatCollisionResult.StrikeAgent || collisionData.AttackBlockedWithShield || collisionData.IsAlternativeAttack ||
+                    collisionData.VictimHitBodyPart != BoneBodyPartType.ArmLeft)
+                {
+                    return false;
+                }
+                MissionWeapon offhand = victim.WieldedOffhandWeapon;
+                if (offhand.IsEmpty || offhand.CurrentUsageItem == null || !offhand.CurrentUsageItem.IsShield || offhand.HitPoints <= 0)
+                {
+                    return false;
+                }
+                Vec2 toAttacker = attacker.Position.AsVec2 - victim.Position.AsVec2;
+                toAttacker.Normalize();
+                return victim.GetMovementDirection().DotProduct(toAttacker) >= PassiveShieldBlockMinFacingDot;
+            }
+
+            // The engine only asks for block stun periods (Mission.GetDefendCollisionResults) when it sees a block
+            // itself, so a passive block gets them from the same vanilla routine. Whether a swing was a heavy attack
+            // is known only to the engine; taken as not. Its crush-through verdict is not used.
+            private static readonly MethodInfo GetDefendCollisionResultsMethod = AccessTools.Method(typeof(MissionCombatMechanicsHelper), "GetDefendCollisionResults");
+
+            private static void GetBlockStunPeriods(in AttackCollisionData collisionData, Agent attacker, Agent victim, ref float attackerStunPeriod, ref float defenderStunPeriod)
+            {
+                if (GetDefendCollisionResultsMethod == null)
+                {
+                    return;
+                }
+                object[] args = new object[] { attacker, victim, CombatCollisionResult.Blocked, collisionData.AffectorWeaponSlotOrMissileIndex, false, (StrikeType)collisionData.StrikeType, collisionData.AttackDirection,
+                    collisionData.CollisionDistanceOnWeapon, collisionData.AttackProgress, false, attacker.IsDoingPassiveAttack, false, defenderStunPeriod, attackerStunPeriod, false, false };
+                GetDefendCollisionResultsMethod.Invoke(null, args);
+                defenderStunPeriod = (float)args[12];
+                attackerStunPeriod = (float)args[13];
             }
         }
 

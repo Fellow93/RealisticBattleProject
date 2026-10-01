@@ -51,6 +51,9 @@ namespace RBMConfig
         public static float stuckThrownFallOutSeconds = 5f;
         public static float stuckArrowFallOutSeconds = 45f;
         public static bool passiveShoulderShields = false;
+        // A melee blow landing on the arm that holds a shield is blocked by the shield even when its bearer is not
+        // blocking (RBMCombat MeleeHitCallbackPatch in Ranged/RangedRework.Collision.cs). Player and AI alike.
+        public static bool passiveShieldBlockEnabled = false;
         public static bool troopOverhaulActive = true;
         public static string realisticRangedReload = "2";
         // When true, AI agents follow realisticRangedReload too (otherwise that setting is player-only).
