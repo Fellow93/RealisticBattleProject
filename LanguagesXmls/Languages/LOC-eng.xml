@@ -533,9 +533,6 @@
 	<!-- AI Kick and Bash Strings -->
 	<string id="RBM_CON_120" text="AI Kick and Bash" />
 	<string id="RBM_CON_121" text="AI soldiers kick, shield bash and weapon bash. Kicks and bashes also deal real damage, cost posture and stamina, and can knock an enemy down. Applies to the player's kicks and bashes too." />
-	<!-- Passive Shield Block Strings -->
-	<string id="RBM_CON_122" text="Passive Shield Block" />
-	<string id="RBM_CON_123" text="A melee blow that lands on the arm holding a shield is stopped by the shield even when its bearer is not blocking. It counts as a badly placed block: the shield takes the damage and the bearer still loses posture. Only the shield arm is covered, and not against blows from behind, kicks or bashes. Applies to the player and AI alike." />
 	<!-- Stuck Missiles Fall Out Strings -->
 	<string id="RBM_CON_124" text="Stuck javelins fall out after (s)" />
 	<string id="RBM_CON_125" text="Javelins, throwing axes and throwing knives stuck in a shield or in a living body work loose after roughly this many seconds and drop to the ground, where they can be picked up again. Each one gets its own time, up to 40% shorter or longer. 0 leaves them stuck, as in the base game. Default 5." />

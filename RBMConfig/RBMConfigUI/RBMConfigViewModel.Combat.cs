@@ -63,9 +63,6 @@ namespace RBMConfig
         public TextViewModel PassiveShoulderShieldsText { get; }
         public SelectorVM<SelectorItemVM> PassiveShoulderShields { get; }
 
-        public TextViewModel PassiveShieldBlockEnabledText { get; }
-        public SelectorVM<SelectorItemVM> PassiveShieldBlockEnabled { get; }
-
         public TextViewModel BetterArrowVisualsText { get; }
         public SelectorVM<SelectorItemVM> BetterArrowVisuals { get; }
 
@@ -259,18 +256,6 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_008}Passive Shoulder Shields").ToString();
             }
         }
-
-        [DataSourceProperty]
-        public string PassiveShieldBlockt
-        {
-            get
-            {
-                return new TextObject("{=RBM_CON_122}Passive Shield Block").ToString();
-            }
-        }
-
-        [DataSourceProperty]
-        public BasicTooltipViewModel PassiveShieldBlockHint { get; } = Hint("{=RBM_CON_123}A melee blow that lands on the arm holding a shield is stopped by the shield even when its bearer is not blocking. It counts as a badly placed block: the shield takes the damage and the bearer still loses posture. Only the shield arm is covered, and not against blows from behind, kicks or bashes. Applies to the player and AI alike.");
 
         [DataSourceProperty]
         public string BetterArrowst

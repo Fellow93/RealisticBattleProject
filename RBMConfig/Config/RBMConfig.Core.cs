@@ -271,7 +271,6 @@ namespace RBMConfig
             stuckThrownFallOutSeconds = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "StuckThrownFallOutSeconds", "5"));
             stuckArrowFallOutSeconds = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "StuckArrowFallOutSeconds", "45"));
             passiveShoulderShields = ReadOrCreate("/Config/RBMCombat/Global", "PassiveShoulderShields", "0").Equals("1");
-            passiveShieldBlockEnabled = ReadOrCreate("/Config/RBMCombat/Global", "PassiveShieldBlockEnabled", "1").Equals("1");
             troopOverhaulActive = ReadOrCreate("/Config/RBMCombat/Global", "TroopOverhaulActive", "1").Equals("1");
             sneakAttackInstaKill = ReadOrCreate("/Config/RBMCombat/Global", "SneakAttackInstaKill", "0").Equals("1");
             realisticRangedReload = ReadOrCreate("/Config/RBMCombat/Global", "RealisticRangedReload", "2");
@@ -464,7 +463,6 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/StuckThrownFallOutSeconds"), stuckThrownFallOutSeconds.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/StuckArrowFallOutSeconds"), stuckArrowFallOutSeconds.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/PassiveShoulderShields"), passiveShoulderShields);
-            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/PassiveShieldBlockEnabled"), passiveShieldBlockEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/TroopOverhaulActive"), troopOverhaulActive);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/SneakAttackInstaKill"), sneakAttackInstaKill);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RealisticRangedReload"), realisticRangedReload.ToString());
