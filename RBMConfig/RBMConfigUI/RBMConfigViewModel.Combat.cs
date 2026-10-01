@@ -146,6 +146,73 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel ArrowThicknessScaleHint { get; } = Hint("Makes the realistic arrows and bolts of Better Arrow Visuals thicker while they fly, so they are easier to follow. Only the thickness is scaled, not the length, and only in flight: arrows in the quiver, on the string and stuck in a target stay true to size. Visual only, hits are unchanged. Does nothing when Better Arrow Visuals is disabled. Default 1.00 (true to size).");
 
+        // Stuck missiles falling out (RBMCombat Ranged/RangedRework.StuckMissiles.cs). Whole seconds; 0 = never.
+        private float _stuckThrownFallOutSeconds;
+
+        [DataSourceProperty]
+        public float StuckThrownFallOutSeconds
+        {
+            get { return _stuckThrownFallOutSeconds; }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value), 0f, 60f);
+                if (snapped != _stuckThrownFallOutSeconds)
+                {
+                    _stuckThrownFallOutSeconds = snapped;
+                    OnPropertyChangedWithValue(snapped, "StuckThrownFallOutSeconds");
+                    OnPropertyChanged("StuckThrownFallOutSecondsValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string StuckThrownFallOutSecondsValue
+        {
+            get { return _stuckThrownFallOutSeconds <= 0f ? new TextObject("{=1JlzQIXE}Disabled").ToString() : _stuckThrownFallOutSeconds.ToString("0"); }
+        }
+
+        [DataSourceProperty]
+        public string StuckThrownFallOutSecondst
+        {
+            get { return new TextObject("{=RBM_CON_124}Stuck javelins fall out after (s)").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel StuckThrownFallOutSecondsHint { get; } = Hint("{=RBM_CON_125}Javelins, throwing axes and throwing knives stuck in a shield or in a living body work loose after roughly this many seconds and drop to the ground, where they can be picked up again. Each one gets its own time, up to 40% shorter or longer. 0 leaves them stuck, as in the base game. Default 5.");
+
+        private float _stuckArrowFallOutSeconds;
+
+        [DataSourceProperty]
+        public float StuckArrowFallOutSeconds
+        {
+            get { return _stuckArrowFallOutSeconds; }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value / 5f) * 5f, 0f, 300f);
+                if (snapped != _stuckArrowFallOutSeconds)
+                {
+                    _stuckArrowFallOutSeconds = snapped;
+                    OnPropertyChangedWithValue(snapped, "StuckArrowFallOutSeconds");
+                    OnPropertyChanged("StuckArrowFallOutSecondsValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string StuckArrowFallOutSecondsValue
+        {
+            get { return _stuckArrowFallOutSeconds <= 0f ? new TextObject("{=1JlzQIXE}Disabled").ToString() : _stuckArrowFallOutSeconds.ToString("0"); }
+        }
+
+        [DataSourceProperty]
+        public string StuckArrowFallOutSecondst
+        {
+            get { return new TextObject("{=RBM_CON_126}Arrows in shields fall out after (s)").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel StuckArrowFallOutSecondsHint { get; } = Hint("{=RBM_CON_127}Arrows and bolts stuck in a shield work loose after roughly this many seconds and drop to the ground, where they can be picked up again. Each one gets its own time, up to 40% shorter or longer. A shield also holds only 8 at once: one more and the oldest drops right away. Arrows stuck in a body have no timer, but a body keeps only 4: one more and the oldest drops. 0 leaves them stuck with no limit, as in the base game. Default 45.");
+
         [DataSourceProperty]
         public string TroopOverhault
         {

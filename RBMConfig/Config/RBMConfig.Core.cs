@@ -268,6 +268,8 @@ namespace RBMConfig
             armorPenetrationMessage = ReadOrCreate("/Config/RBMCombat/Global", "ArmorPenetrationMessage", "0").Equals("1");
             betterArrowVisuals = ReadOrCreate("/Config/RBMCombat/Global", "BetterArrowVisuals", "1").Equals("1");
             arrowThicknessScale = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "ArrowThicknessScale", "1"));
+            stuckThrownFallOutSeconds = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "StuckThrownFallOutSeconds", "5"));
+            stuckArrowFallOutSeconds = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "StuckArrowFallOutSeconds", "45"));
             passiveShoulderShields = ReadOrCreate("/Config/RBMCombat/Global", "PassiveShoulderShields", "0").Equals("1");
             passiveShieldBlockEnabled = ReadOrCreate("/Config/RBMCombat/Global", "PassiveShieldBlockEnabled", "1").Equals("1");
             troopOverhaulActive = ReadOrCreate("/Config/RBMCombat/Global", "TroopOverhaulActive", "1").Equals("1");
@@ -459,6 +461,8 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorPenetrationMessage"), armorPenetrationMessage);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BetterArrowVisuals"), betterArrowVisuals);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArrowThicknessScale"), arrowThicknessScale.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/StuckThrownFallOutSeconds"), stuckThrownFallOutSeconds.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/StuckArrowFallOutSeconds"), stuckArrowFallOutSeconds.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/PassiveShoulderShields"), passiveShoulderShields);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/PassiveShieldBlockEnabled"), passiveShieldBlockEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/TroopOverhaulActive"), troopOverhaulActive);

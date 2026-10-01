@@ -268,6 +268,9 @@ namespace RBM
                 {
                     mission.AddMissionBehavior((MissionBehavior)(object)new PlayerArmorStatus());
                 }
+                // Stuck missiles falling out; the missile collision patch registers them with this logic. Idle (and
+                // never registered with) when both of its settings are 0.
+                mission.AddMissionBehavior((MissionBehavior)(object)new RangedRework.StuckMissileLogic());
             }
             if (RBMConfig.RBMConfig.battleHitLoggingEnabled)
             {

@@ -45,6 +45,11 @@ namespace RBMConfig
         public static bool betterArrowVisuals = true;
         // Thickness multiplier for the realistic in-flight arrow/bolt mesh (betterArrowVisuals); 1 = true to size.
         public static float arrowThicknessScale = 1f;
+        // Seconds (randomised per missile) until a missile stuck in a unit works loose and drops to the ground as a
+        // pickable item (RBMCombat Ranged/RangedRework.StuckMissiles.cs); 0 = never (vanilla). Thrown weapons fall
+        // out of shields and bodies alike, arrows and bolts only out of shields (0 also lifts the per-shield cap).
+        public static float stuckThrownFallOutSeconds = 5f;
+        public static float stuckArrowFallOutSeconds = 45f;
         public static bool passiveShoulderShields = false;
         // A melee blow landing on the arm that holds a shield is blocked by the shield even when its bearer is not
         // blocking (RBMCombat MeleeHitCallbackPatch in Ranged/RangedRework.Collision.cs). Player and AI alike.

@@ -158,6 +158,8 @@ namespace RBMConfig
 
             _armorMultiplier = MathF.Clamp(RBMConfig.armorMultiplier, 0.5f, 4f);
             _arrowThicknessScale = MathF.Clamp(RBMConfig.arrowThicknessScale, 1f, 5f);
+            _stuckThrownFallOutSeconds = MathF.Clamp(RBMConfig.stuckThrownFallOutSeconds, 0f, 60f);
+            _stuckArrowFallOutSeconds = MathF.Clamp(RBMConfig.stuckArrowFallOutSeconds, 0f, 300f);
 
             int i = 0;
             foreach (var item in thrustModifierList)
@@ -610,6 +612,8 @@ namespace RBMConfig
 
             RBMConfig.armorMultiplier = _armorMultiplier;
             RBMConfig.arrowThicknessScale = _arrowThicknessScale;
+            RBMConfig.stuckThrownFallOutSeconds = _stuckThrownFallOutSeconds;
+            RBMConfig.stuckArrowFallOutSeconds = _stuckArrowFallOutSeconds;
 
             RBMConfig.hitStopEnabled = HitStopEnabled.SelectedIndex == 1;
 
@@ -793,6 +797,8 @@ namespace RBMConfig
             SneakAttackInstaKill.SelectedIndex = 0;
             BetterArrowVisuals.SelectedIndex = 1;
             ArrowThicknessScale = 1f;
+            StuckThrownFallOutSeconds = 5f;
+            StuckArrowFallOutSeconds = 45f;
             PassiveShoulderShields.SelectedIndex = 0;
             PassiveShieldBlockEnabled.SelectedIndex = 1;
             RangedReloadSpeed.SelectedIndex = 2;

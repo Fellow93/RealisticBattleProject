@@ -67,6 +67,8 @@ namespace RBMCombat
                             {
                                 attachedAgent.AttachWeaponToBone(missile.Weapon, missile.Entity, attachedBoneIndex, ref attachLocalFrame);
                             }
+                            // Stuck missiles work loose again after a while (RangedRework.StuckMissiles.cs).
+                            StuckMissileLogic.Register(__instance, attachedAgent, attachedToShield, shieldIndex, missile.Weapon);
                         }
                         else
                         {

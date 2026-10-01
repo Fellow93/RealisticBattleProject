@@ -287,6 +287,10 @@ namespace RBMConfig
             BetterArrowVisuals.InnerText = RBMConfig.betterArrowVisuals ? "1" : "0";
             XmlElement ArrowThicknessScale = xmlconfig.CreateElement("ArrowThicknessScale");
             ArrowThicknessScale.InnerText = RBMConfig.arrowThicknessScale.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement StuckThrownFallOutSeconds = xmlconfig.CreateElement("StuckThrownFallOutSeconds");
+            StuckThrownFallOutSeconds.InnerText = RBMConfig.stuckThrownFallOutSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement StuckArrowFallOutSeconds = xmlconfig.CreateElement("StuckArrowFallOutSeconds");
+            StuckArrowFallOutSeconds.InnerText = RBMConfig.stuckArrowFallOutSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement PassiveShoulderShields = xmlconfig.CreateElement("PassiveShoulderShields");
             PassiveShoulderShields.InnerText = RBMConfig.passiveShoulderShields ? "1" : "0";
             XmlElement PassiveShieldBlockEnabled = xmlconfig.CreateElement("PassiveShieldBlockEnabled");
@@ -321,6 +325,8 @@ namespace RBMConfig
             Global.AppendChild(ArmorPenetrationMessage);
             Global.AppendChild(BetterArrowVisuals);
             Global.AppendChild(ArrowThicknessScale);
+            Global.AppendChild(StuckThrownFallOutSeconds);
+            Global.AppendChild(StuckArrowFallOutSeconds);
             Global.AppendChild(PassiveShoulderShields);
             Global.AppendChild(PassiveShieldBlockEnabled);
             Global.AppendChild(TroopOverhaulActive);

@@ -536,6 +536,11 @@
 	<!-- Passive Shield Block Strings -->
 	<string id="RBM_CON_122" text="Passive Shield Block" />
 	<string id="RBM_CON_123" text="A melee blow that lands on the arm holding a shield is stopped by the shield even when its bearer is not blocking. It counts as a badly placed block: the shield takes the damage and the bearer still loses posture. Only the shield arm is covered, and not against blows from behind, kicks or bashes. Applies to the player and AI alike." />
+	<!-- Stuck Missiles Fall Out Strings -->
+	<string id="RBM_CON_124" text="Stuck javelins fall out after (s)" />
+	<string id="RBM_CON_125" text="Javelins, throwing axes and throwing knives stuck in a shield or in a living body work loose after roughly this many seconds and drop to the ground, where they can be picked up again. Each one gets its own time, up to 40% shorter or longer. 0 leaves them stuck, as in the base game. Default 5." />
+	<string id="RBM_CON_126" text="Arrows in shields fall out after (s)" />
+	<string id="RBM_CON_127" text="Arrows and bolts stuck in a shield work loose after roughly this many seconds and drop to the ground, where they can be picked up again. Each one gets its own time, up to 40% shorter or longer. A shield also holds only 8 at once: one more and the oldest drops right away. Arrows stuck in a body have no timer, but a body keeps only 4: one more and the oldest drops. 0 leaves them stuck with no limit, as in the base game. Default 45." />
 	<!-- Combat Toggle Restart Notice Strings -->
 	<string id="RBM_RESTART_001" text="Restart Required" />
 	<string id="RBM_RESTART_002" text="RBM Combat was changed. Everything else takes effect the next time you start or load a game, but RBM's spear and weapon animation parameters are only read when Bannerlord starts. Restart the game for them to match the new setting." />
