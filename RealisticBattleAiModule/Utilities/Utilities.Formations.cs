@@ -200,8 +200,12 @@ namespace RBMAI
 
         public static void DecideArrangementOrderForFormation(Formation formation)
         {
-            bool isShock = FormationRatioWieldingShockWeapons(formation) > 0.5f;
-            bool isShieldWallEligible = FormationRatioShieldWallEligible(formation) > 0.7f;
+            // Hysteresis: a formation already in an arrangement keeps it until the ratio drops clearly below the bar
+            // that put it there. A ratio hovering at the bar (weapon swaps, casualties) flipped the arrangement every
+            // tick, and every flip re-shapes the line (an n^2 dispersal in the advance, see OverrideBehaviorAdvance).
+            ArrangementOrder.ArrangementOrderEnum current = formation.ArrangementOrder.OrderEnum;
+            bool isShock = FormationRatioWieldingShockWeapons(formation) > (current == ArrangementOrder.ArrangementOrderEnum.Loose ? 0.4f : 0.5f);
+            bool isShieldWallEligible = FormationRatioShieldWallEligible(formation) > (current == ArrangementOrder.ArrangementOrderEnum.ShieldWall ? 0.6f : 0.7f);
             if (isShieldWallEligible)
             {
                 formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);

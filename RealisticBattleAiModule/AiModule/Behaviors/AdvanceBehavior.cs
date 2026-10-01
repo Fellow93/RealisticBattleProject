@@ -20,9 +20,15 @@ namespace RBMAI
         public static Dictionary<Formation, float> advanceScaleStartStorage = new Dictionary<Formation, float> { };
         public static Dictionary<Formation, float> advanceLastTickStorage = new Dictionary<Formation, float> { };
         public static Dictionary<Formation, float> archerWaitStartStorage = new Dictionary<Formation, float> { };
+        // Mission time of each formation's last re-shape dispersal (see ReshapeDispersalCooldown).
+        public static Dictionary<Formation, float> lastDispersalStorage = new Dictionary<Formation, float> { };
         private const float MaxArcherWaitSeconds = 30f;
         // A width change bigger than this fraction is a re-shape (first advance tick: +78%); casualty drift is ~1-2%.
         private const float ReshapeWidthFraction = 0.15f;
+        // At most one dispersal per formation in this many seconds. Re-shapes recur: every return from a Regroup
+        // interlude (native resets the width to FormOrderWide) and every Line/Loose/ShieldWall flip near the enemy,
+        // which could come every 0.5 s tick, each a multi-millisecond main-thread stall at a few hundred men.
+        private const float ReshapeDispersalCooldown = 10f;
         private static readonly MethodInfo CalculateCurrentOrderMethod = typeof(BehaviorAdvance).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly FieldInfo CurrentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -270,7 +276,12 @@ namespace RBMAI
                 // casualties or detachments -- only a real re-shape may disperse, never that per-file drift.
                 if (MathF.Abs(__instance.Formation.Width - widthBefore) > widthBefore * ReshapeWidthFraction)
                 {
-                    __instance.Formation.OnFormationDispersed();
+                    float now = Mission.Current.CurrentTime;
+                    if (!lastDispersalStorage.TryGetValue(__instance.Formation, out float lastDispersal) || now - lastDispersal >= ReshapeDispersalCooldown)
+                    {
+                        lastDispersalStorage[__instance.Formation] = now;
+                        __instance.Formation.OnFormationDispersed();
+                    }
                 }
 
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
