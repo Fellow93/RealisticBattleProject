@@ -51,57 +51,81 @@ namespace RBMAI
 
             // A kick/bash reaches about a pace; from further out it plays but hits air.
             public const float TriggerDistance = 1.4f;
+
             // The target has to be in front (cosine of the angle between facing and the direction to him).
             public const float FacingCosine = 0.85f;
+
             // A man with his shield raised, facing the attacker closer than this (cosine; 0.5 = within 60 degrees), is
             // kicked, never bashed.
             public const float ShieldFacingCosine = 0.5f;
+
             public const float BlockSeconds = 0.4f;
             public const float KickSeconds = 0.15f;
+
             // Longest the AI's own input is held off waiting for the action to start and play out.
             public const float WatchSeconds = 1.5f;
+
             // Chance to take an opening once the cooldown is up, against an equally skilled target. Relative like the
             // knockdown chance: scales with the attacker's share of the two skills, up to twice this, never below
             // MinChance.
             public const float AttemptEvenChance = 0.75f;
+
             public const float MinChance = 0.05f;
+
             // Attempt chance multiplier when the attacker is behind his target (see BehindCosine).
             public const float AttemptBehindMultiplier = 1.5f;
+
             // Attempt chance multiplier against a staggered target (see IsStaggered).
             public const float AttemptStaggeredMultiplier = 2f;
+
             // Chance a kick/bash that lands knocks its man down when both are equally skilled. The chance is relative:
             // it scales with the attacker's share of the two skills, from 0 (hopelessly outclassed) to twice this
             // (victim has no skill). Skills below MinSkill count as MinSkill.
             public static float KnockDownEvenChance = 0.25f;
+
             public const int MinSkill = 10;
+
             // Knockdown chance multiplier against a victim with no stamina left; 1 at full stamina, linear between.
             public static float KnockDownExhaustedMultiplier = 1.3f;
+
             // Knockdown chance multiplier for a kick (as opposed to a shield/weapon bash).
             public static float KnockDownKickMultiplier = 1.25f;
+
             // Knockdown chance multiplier when the blow comes from behind the victim: the attacker is further round
             // than BehindCosine from the victim's facing (-0.3 = more than about 107 degrees off).
             public static float KnockDownBehindMultiplier = 1.25f;
+
             public const float BehindCosine = -0.3f;
+
             // Knockdown chance multiplier against a victim whose armour weighs HeavyArmorWeight or more; 1 at
             // LightArmorWeight or less, linear between.
             public static float KnockDownHeavyArmorMultiplier = 0.5f;
+
             public const float LightArmorWeight = 5f;
             public const float HeavyArmorWeight = 40f;
+
             // Without an opening (see the attempt and knockdown rules) the chance is scaled by the attacker's skill
             // lead: nothing with no lead, the full chance at a lead of FullSkillLead, linear between.
             public static int FullSkillLead = 100;
+
             // Cost of throwing a kick/bash, when the posture (and stamina) system is on; reduced by skill.
             public const float PostureCost = 20f;
+
             public const float StaminaCost = 50f;
+
             // Share of max posture given back after a kick/bash empties it (the posture system's own reset share).
             public const float PostureBreakReset = 0.75f;
+
             // How long a man counts as staggered after a kick/bash lands on him: a second one in that time knocks him down.
             public const float KickStaggerSeconds = 1.2f;
+
             public const float CooldownMin = 4f;
             public const float CooldownMax = 8f;
+
             // Re-check delay after a look that found no opening. Without it every man re-checked every frame once his
             // cooldown was up (engine calls per man per frame); jittered so the army does not check in one frame.
             public const float RetryMin = 0.25f;
+
             public const float RetryMax = 0.5f;
 
             private static int _attempts;
@@ -217,6 +241,7 @@ namespace RBMAI
 
             // Written on the main thread, read on the AI thread.
             private volatile int _phase;
+
             private volatile bool _bash;
 
             private float _nextAttemptTime;
@@ -227,6 +252,7 @@ namespace RBMAI
 
             // Mission time the last kick/bash landed on this man (main thread only).
             public float LastKickedTime = float.MinValue;
+
             private bool _hadShield;
             private Agent.ActionCodeType _seen = Agent.ActionCodeType.Other;
 
@@ -612,8 +638,8 @@ namespace RBMAI
                     return;
                 }
                 // Every man gets the component (the cost applies to the player too); only the AI gets its input driven.
-                // Set once at spawn. Turning it on only for an attempt would spare the engine a managed callback per AI
-                // man per AI tick, but the AI thread reads the flag while it runs, so it is not toggled mid-battle.
+                // Set once at spawn: toggling the callback mid-battle (to have it only during an attempt) crashed the
+                // engine with an access violation -- the AI thread reads the flag while it runs.
                 __instance.AddComponent(new AiKickBashComponent(__instance));
                 if (__instance.Controller == AgentControllerType.AI)
                 {
