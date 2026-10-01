@@ -231,6 +231,7 @@ namespace RBMCombat
                 Missile missile;
                 if (____missilesDictionary.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
                 {
+                    PilumShieldPenetration.TryWoundBehindShield(__instance, missile, ref collisionData, attacker, victim, missilePosition, missileStartingPosition);
                     if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield) ||
                             missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsArea) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsAreaBig))
                     {

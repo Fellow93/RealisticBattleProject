@@ -210,6 +210,7 @@
     <Compile Include="CombatModule\Ranged\RangedRework.Siege.cs" />
     <Compile Include="CombatModule\Ranged\RangedRework.ArrowVisuals.cs" />
     <Compile Include="CombatModule\Ranged\RangedRework.Collision.cs" />
+    <Compile Include="CombatModule\Ranged\RangedRework.ShieldPenetration.cs" />
     <Compile Include="CombatModule\Ranged\RangedRework.FirePotSplash.cs" />
     <Compile Include="CombatModule\Ranged\RangedRework.Crosshair.cs" />
     <Compile Include="CombatModule\Ranged\RangedWeaponStats.cs" />

@@ -716,7 +716,7 @@ namespace RBMCombat
                                 }
                             case "Javelin":
                                 {
-                                    localInflictedDamage *= 25f;
+                                    localInflictedDamage *= 12.5f;
                                     break;
                                 }
                             case "ThrowingAxe":
@@ -773,7 +773,10 @@ namespace RBMCombat
                         }
                     }
 
-                    if (attackerWeapon != null && attackerWeapon.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield))
+                    // A thrown pilum's edge against shields is punching through them (RangedRework's
+                    // PilumShieldPenetration), not splitting them, so it does not get the doubling.
+                    bool isThrownPilum = attackCollisionData.IsMissile && weaponType == "Javelin";
+                    if (attackerWeapon != null && attackerWeapon.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield) && !isThrownPilum)
                     {
                         localInflictedDamage *= 2f;
                     }
