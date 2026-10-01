@@ -143,7 +143,9 @@ namespace RBM
                 if (ScreenManager.TopScreen != null && (Mission.Current.IsFieldBattle || Mission.Current.IsSiegeBattle || Mission.Current.IsNavalBattle || Mission.Current.SceneName.Contains("arena") || isHideout))
                 {
                     MissionScreen missionScreen = ScreenManager.TopScreen as MissionScreen;
-                    if (missionScreen != null && missionScreen.InputManager != null && missionScreen.InputManager.IsControlDown())
+                    // MissionScreen.InputManager is `Mission.InputManager`: it throws while the screen has no
+                    // Mission (setup/teardown frames where Mission.Current is already/still set).
+                    if (missionScreen != null && missionScreen.Mission != null && missionScreen.InputManager != null && missionScreen.InputManager.IsControlDown())
                     {
                         if (missionScreen.InputManager.IsKeyPressed(InputKey.V))
                         {
