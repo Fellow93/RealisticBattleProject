@@ -153,7 +153,7 @@ namespace RBMConfig
             ThrustModifier = new SelectorVM<SelectorItemVM>(thrustModifierList, 0, null);
 
             _armorMultiplier = MathF.Clamp(RBMConfig.armorMultiplier, 0.5f, 4f);
-            _arrowThicknessScale = MathF.Clamp(RBMConfig.arrowThicknessScale, 1f, 5f);
+            _arrowThicknessScale = MathF.Clamp(RBMConfig.arrowThicknessScale, 1f, 10f);
             _stuckThrownFallOutSeconds = MathF.Clamp(RBMConfig.stuckThrownFallOutSeconds, 0f, 60f);
             _stuckArrowFallOutSeconds = MathF.Clamp(RBMConfig.stuckArrowFallOutSeconds, 0f, 300f);
 

@@ -30,6 +30,10 @@ namespace RBMCombat
                 if (missile != null)
                 {
                     MissileAimTrace.Land(__instance, missileIndex, missile, attachedAgent, attachedToShield);
+                    if (collisionReaction != MissileCollisionReaction.PassThrough)
+                    {
+                        RestoreFlyingArrowThickness(missile);
+                    }
                 }
                 MissionObjectId missionObjectId = new MissionObjectId(-1, createdAtRuntime: true);
                 // Big battles with heavy missile volume can hand us a missile whose entity the engine never created

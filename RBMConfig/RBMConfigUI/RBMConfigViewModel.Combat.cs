@@ -118,7 +118,7 @@ namespace RBMConfig
             get { return _arrowThicknessScale; }
             set
             {
-                float snapped = MathF.Clamp((float)System.Math.Round(value * 4f) / 4f, 1f, 5f);
+                float snapped = MathF.Clamp((float)System.Math.Round(value * 4f) / 4f, 1f, 10f);
                 if (snapped != _arrowThicknessScale)
                 {
                     _arrowThicknessScale = snapped;
@@ -137,11 +137,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string ArrowThicknessScalet
         {
-            get { return new TextObject("Flying arrow thickness").ToString(); }
+            get { return new TextObject("Flying arrow thickness (experimental)").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel ArrowThicknessScaleHint { get; } = Hint("Makes the realistic arrows and bolts of Better Arrow Visuals thicker while they fly, so they are easier to follow. Only the thickness is scaled, not the length, and only in flight: arrows in the quiver, on the string and stuck in a target stay true to size. Visual only, hits are unchanged. Does nothing when Better Arrow Visuals is disabled. Default 1.00 (true to size).");
+        public BasicTooltipViewModel ArrowThicknessScaleHint { get; } = Hint("Experimental. Makes the realistic arrows and bolts of Better Arrow Visuals thicker while they fly, so they are easier to follow. Only the thickness is scaled, not the length, and only in flight: arrows in the quiver, on the string and stuck in a target stay true to size. Visual only, hits are unchanged. Does nothing when Better Arrow Visuals is disabled; at 1.00 it is switched off entirely. A change takes effect the next time a game is started or loaded. Default 1.00 (off, true to size).");
 
         // Stuck missiles falling out (RBMCombat Ranged/RangedRework.StuckMissiles.cs). Whole seconds; 0 = never.
         private float _stuckThrownFallOutSeconds;
