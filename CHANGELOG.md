@@ -17,12 +17,14 @@
 
 ### Ranged / AI shooting
 - AI arrows and bolts no longer fall short at long range. RBM's arrow drag didn't match the engine's, so the AI aimed with one drag value while missiles flew with another.
-- AI archers, crossbowmen and slingers hold fire until the target is actually within reach, instead of opening fire at 200–300 m and landing tens of metres short.
+- AI archers, crossbowmen and slingers hold fire until the target is actually within reach, instead of opening fire at 200–300 m and landing tens of metres short. AI javelin and throwing-axe throwers do the same, instead of throwing at targets 30 m and more away and landing well short.
+- AI javelins and throwing axes go where the AI aims them. RBM used to pitch AI throws down after the AI had aimed (throwing axes by 5°, javelins when the target moved away, and all of them when there was no target), which only made them land short.
+- Javelins, throwing axes and throwing knives use the game's own air drag again, so axes and knives carry a little further and hit a little harder.
 - AI slingers aim at the target instead of over it.
 - AI shooters no longer over-lead moving targets, which makes them noticeably better against walking infantry and charging cavalry.
 - Skilled AI crossbowmen are at least as accurate as vanilla ones and settle their aim as fast.
 - AI shooters use the correct launch speed after re-equipping or picking up a bow, crossbow or sling.
-- **Ranged aim arc (experimental, off by default):** a new RBM Combat setting for the player. While you draw a bow or crossbow or wind up a sling, a dotted arc shows the missile's predicted flight, with a marker where it will land (red on an enemy, green on a friendly) and a ring on the ground showing how far your current aiming error can scatter the shot. In third person, aiming upward also lifts the camera and tilts it down so the landing point of a high shot stays on screen. Your aim is unchanged; the crosshair is hidden while the camera is moved. Thrown weapons are not covered.
+- **Ranged aim arc (experimental, off by default):** a new RBM Combat setting for the player. While you draw a bow or crossbow, wind up a sling or ready a javelin, throwing axe, throwing knife or stone, a dotted arc shows the missile's predicted flight, with a marker where it will land (red on an enemy, green on a friendly) and a ring on the ground showing how far your current aiming error can scatter the shot. In third person, aiming upward also lifts the camera and tilts it down so the landing point of a high shot stays on screen. Your aim is unchanged; the crosshair is hidden while the camera is moved. Throws include your own running speed.
 
 ### AI
 - Sieges: attackers on the walls fight instead of idling until the gate opens. Attackers no longer stand shuffling outside a breached wall, and troops leave ladders and towers the AI has given up on.
