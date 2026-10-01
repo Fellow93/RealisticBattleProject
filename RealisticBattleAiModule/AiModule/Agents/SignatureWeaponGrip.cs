@@ -105,6 +105,14 @@ namespace RBMAI
                 {
                     return false;
                 }
+                // Never a banner bearer. He holds the banner in the off hand, and a two-handed-only grip on his
+                // replacement weapon (RBM's bastard swords count as one-handed swords) or sheathing his off hand drops
+                // it (DropOnWeaponChange); BannerBearerLogic.UpdateAgent then reads the emptied ExtraWeaponSlot and the
+                // engine crashes with an access violation at deployment.
+                if (BannerBearerLogic.IsBannerItem(kit[EquipmentIndex.ExtraWeaponSlot].Item))
+                {
+                    return false;
+                }
                 for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.ExtraWeaponSlot; i++)
                 {
                     ItemObject item = kit[i].Item;
