@@ -211,6 +211,7 @@
     <Compile Include="CombatModule\Ranged\RangedRework.ArrowVisuals.cs" />
     <Compile Include="CombatModule\Ranged\RangedRework.Collision.cs" />
     <Compile Include="CombatModule\Ranged\RangedRework.ShieldPenetration.cs" />
+    <Compile Include="CombatModule\Ranged\RangedRework.ArmorDeflection.cs" />
     <Compile Include="CombatModule\Ranged\RangedRework.StuckMissiles.cs" />
     <Compile Include="CombatModule\Ranged\RangedRework.FirePotSplash.cs" />
     <Compile Include="CombatModule\Ranged\RangedRework.Crosshair.cs" />

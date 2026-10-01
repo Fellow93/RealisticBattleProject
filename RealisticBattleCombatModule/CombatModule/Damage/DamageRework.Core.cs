@@ -496,7 +496,12 @@ namespace RBMCombat
                     }
                 }
 
-                inflictedDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, stealthMagnitude, armorAmount, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor, player, isPlayerVictim, armorMaterial)), 0, 2000);
+                inflictedDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, stealthMagnitude, armorAmount, victimAgentAbsorbedDamageRatio, out float penetratedDamage, out _, weaponDamageFactor, player, isPlayerVictim, armorMaterial)), 0, 2000);
+                if (attackCollisionData.IsMissile)
+                {
+                    // Arrows that only bruise through the armor break or glance off instead of sticking.
+                    RangedRework.ArmorDeflection.RecordBodyHit(penetratedDamage);
+                }
                 inflictedDamage = MathF.Floor(inflictedDamage * dmgMultiplier);
 
                 if (isSneakAttack && RBMConfig.RBMConfig.sneakAttackInstaKill)

@@ -5,12 +5,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.MountAndBlade.ComponentInterfaces;
 using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Mission;
 
@@ -29,6 +31,8 @@ namespace RBMCombat
                 ____missilesDictionary.TryGetValue(missileIndex, out missile);
                 if (missile != null)
                 {
+                    // An arrow the armor stopped breaks or glances off instead of sticking (RangedRework.ArmorDeflection.cs).
+                    ArmorDeflection.Apply(__instance, missile, ref collisionReaction, attachedAgent, attachedToShield, ref attachLocalFrame, ref isAttachedFrameLocal, ref bounceBackVelocity, ref bounceBackAngularVelocity);
                     MissileAimTrace.Land(__instance, missileIndex, missile, attachedAgent, attachedToShield);
                     if (collisionReaction != MissileCollisionReaction.PassThrough)
                     {
@@ -158,47 +162,96 @@ namespace RBMCombat
         [HarmonyPatch(typeof(Mission))]
         internal class MissileHitCallbackPatch
         {
+            // Set by the prefix on every missile hit: the hit is a block by a metal / a wooden shield (wielded or on
+            // the back). Read by DecideMissileWeaponFlagsAgainstShield inside the same MissileHitCallback. Main thread only.
+            private static bool _metalShieldBlock;
+            private static bool _woodenShieldBlock;
+            // Flags a metal shield takes away from a missile it blocks: nothing goes through it (Impale and other
+            // models' CanPenetrateShield included) and nothing sticks in it, so missiles bounce off - except arrows
+            // and bolts, which shatter on it most of the time. The shield still takes the hit's damage.
+            private const WeaponFlags MetalShieldStrippedFlags = WeaponFlags.CanPenetrateShield | WeaponFlags.AmmoSticksWhenShot | WeaponFlags.AmmoBreakOnBounceBackMask;
+
+            private const float MetalShieldArrowBreakChance = 0.8f;
+
+            // Arrows and bolts blocked by a wooden shield: most stick, some shatter, a few glance off.
+            private const float WoodenShieldArrowBreakChance = 0.15f;
+            private const float WoodenShieldArrowBounceChance = 0.05f;
+
+            private static readonly MethodInfo DecideMissileWeaponFlagsMethod = AccessTools.Method(typeof(AgentApplyDamageModel), nameof(AgentApplyDamageModel.DecideMissileWeaponFlags));
+
+            // Stands in for vanilla's one DecideMissileWeaponFlags call in MissileHitCallback, whose result decides
+            // both shield penetration and stick-or-bounce. Vanilla turns a bounce with AmmoBreaksOnBounceBack into a
+            // broken arrow (vanished, with the broken-arrow particles).
+            private static void DecideMissileWeaponFlagsAgainstShield(AgentApplyDamageModel model, Agent attackerAgent, in MissionWeapon missileWeapon, ref WeaponFlags missileWeaponFlags)
+            {
+                model.DecideMissileWeaponFlags(attackerAgent, in missileWeapon, ref missileWeaponFlags);
+                if (!_metalShieldBlock && !_woodenShieldBlock)
+                {
+                    return;
+                }
+                WeaponClass weaponClass = missileWeapon.CurrentUsageItem.WeaponClass;
+                bool isArrow = weaponClass == WeaponClass.Arrow || weaponClass == WeaponClass.Bolt;
+                if (_metalShieldBlock)
+                {
+                    missileWeaponFlags &= ~MetalShieldStrippedFlags;
+                    if (isArrow && MBRandom.RandomFloat < MetalShieldArrowBreakChance)
+                    {
+                        missileWeaponFlags |= WeaponFlags.AmmoBreaksOnBounceBack;
+                    }
+                }
+                else if (isArrow && missileWeaponFlags.HasAnyFlag(WeaponFlags.AmmoSticksWhenShot))
+                {
+                    float roll = MBRandom.RandomFloat;
+                    if (roll < WoodenShieldArrowBreakChance)
+                    {
+                        missileWeaponFlags &= ~(WeaponFlags.AmmoSticksWhenShot | WeaponFlags.AmmoBreakOnBounceBackMask);
+                        missileWeaponFlags |= WeaponFlags.AmmoBreaksOnBounceBack;
+                    }
+                    else if (roll < WoodenShieldArrowBreakChance + WoodenShieldArrowBounceChance)
+                    {
+                        missileWeaponFlags &= ~(WeaponFlags.AmmoSticksWhenShot | WeaponFlags.AmmoBreakOnBounceBackMask);
+                    }
+                }
+            }
+
+            [HarmonyTranspiler]
+            [HarmonyPatch("MissileHitCallback")]
+            private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                MethodInfo replacement = AccessTools.Method(typeof(MissileHitCallbackPatch), nameof(DecideMissileWeaponFlagsAgainstShield));
+                foreach (CodeInstruction instruction in instructions)
+                {
+                    if (instruction.Calls(DecideMissileWeaponFlagsMethod))
+                    {
+                        instruction.opcode = OpCodes.Call;
+                        instruction.operand = replacement;
+                    }
+                    yield return instruction;
+                }
+            }
+
             [HarmonyPrefix]
             [HarmonyPatch("MissileHitCallback")]
             private static bool Prefix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
             {
+                _metalShieldBlock = false;
+                _woodenShieldBlock = false;
+                ArmorDeflection.BeginMissileHit(in collisionData, missileAngularVelocity, attachGlobalFrame);
                 Missile missile;
                 if (____missilesDictionary.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
                 {
                     if (collisionData.CollidedWithShieldOnBack)
                     {
-                        if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield) ||
-                            missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsArea) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsAreaBig))
+                        if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsArea) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.AffectsAreaBig))
                         {
                             return true;
                         }
 
-                        // Turning this into a shield block sends vanilla down its AttackBlockedWithShield branch, which for a
-                        // CanPenetrateShield missile indexes the victim's off-hand slot - EquipmentIndex.None when the shield is
-                        // on the back. Ask the damage model for the flags vanilla will use (Impale, War Sails' Crew of Spears,
-                        // other mods' models) and leave those hits alone.
-                        WeaponFlags decidedFlags = missile.Weapon.CurrentUsageItem.WeaponFlags;
-                        MissionGameModels.Current.AgentApplyDamageModel.DecideMissileWeaponFlags(attacker, missile.Weapon, ref decidedFlags);
-                        if (decidedFlags.HasAnyFlag(WeaponFlags.CanPenetrateShield))
+                        // A metal shield on the back stops penetrating missiles too: the block below is safe for them
+                        // because DecideMissileWeaponFlagsAgainstShield strips CanPenetrateShield before vanilla reads it.
+                        if (!(victim != null && RealisticWeaponCollision.IsHitShieldMetal(victim, true)) && PenetratesShieldOnBack(missile, attacker))
                         {
                             return true;
-                        }
-
-                        // The engine passes a null attacker once the shooter has been removed from the mission (e.g. a
-                        // routed horse archer fading out while its arrow is still in flight).
-                        if (attacker?.Character != null)
-                        {
-                            TaleWorlds.CampaignSystem.CharacterObject characterObject = attacker.Character as TaleWorlds.CampaignSystem.CharacterObject;
-                            if (characterObject != null)
-                            {
-                                if (characterObject.HeroObject != null)
-                                {
-                                    if (characterObject.HeroObject.GetPerkValue(DefaultPerks.Throwing.Impale))
-                                    {
-                                        return true;
-                                    }
-                                }
-                            }
                         }
 
                         AttackCollisionData acd = AttackCollisionData.GetAttackCollisionDataForDebugPurpose(true, collisionData.CorrectSideShieldBlock, collisionData.IsAlternativeAttack, collisionData.IsColliderAgent, collisionData.CollidedWithShieldOnBack,
@@ -215,8 +268,39 @@ namespace RBMCombat
 
                         collisionData = acd;
                     }
+                    if (collisionData.AttackBlockedWithShield && victim != null)
+                    {
+                        _metalShieldBlock = RealisticWeaponCollision.IsHitShieldMetal(victim, collisionData.CollidedWithShieldOnBack);
+                        _woodenShieldBlock = !_metalShieldBlock;
+                    }
                 }
                 return true;
+            }
+
+            // A missile that hits a shield on the back goes on through it into the man carrying it rather than
+            // being blocked.
+            private static bool PenetratesShieldOnBack(Missile missile, Agent attacker)
+            {
+                if (missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.MultiplePenetration) || missile.Weapon.HasAllUsagesWithAnyWeaponFlag(WeaponFlags.CanPenetrateShield))
+                {
+                    return true;
+                }
+
+                // Turning this into a shield block sends vanilla down its AttackBlockedWithShield branch, which for a
+                // CanPenetrateShield missile indexes the victim's off-hand slot - EquipmentIndex.None when the shield is
+                // on the back. Ask the damage model for the flags vanilla will use (Impale, War Sails' Crew of Spears,
+                // other mods' models) and leave those hits alone.
+                WeaponFlags decidedFlags = missile.Weapon.CurrentUsageItem.WeaponFlags;
+                MissionGameModels.Current.AgentApplyDamageModel.DecideMissileWeaponFlags(attacker, missile.Weapon, ref decidedFlags);
+                if (decidedFlags.HasAnyFlag(WeaponFlags.CanPenetrateShield))
+                {
+                    return true;
+                }
+
+                // The engine passes a null attacker once the shooter has been removed from the mission (e.g. a
+                // routed horse archer fading out while its arrow is still in flight).
+                TaleWorlds.CampaignSystem.CharacterObject characterObject = attacker?.Character as TaleWorlds.CampaignSystem.CharacterObject;
+                return characterObject?.HeroObject != null && characterObject.HeroObject.GetPerkValue(DefaultPerks.Throwing.Impale);
             }
 
             // This postfix runs inside the engine's missile-hit callback, and the engine goes on to attach or drop
@@ -234,6 +318,7 @@ namespace RBMCombat
             [HarmonyPatch("MissileHitCallback")]
             private static void Postfix(ref Mission __instance, ref Dictionary<int, Missile> ____missilesDictionary, ref AttackCollisionData collisionData, Vec3 missileStartingPosition, Vec3 missilePosition, Vec3 missileAngularVelocity, Vec3 movementVelocity, MatrixFrame attachGlobalFrame, MatrixFrame affectedShieldGlobalFrame, int numDamagedAgents, Agent attacker, Agent victim, GameEntity hitEntity)
             {
+                ArmorDeflection.EndMissileHit();
                 Missile missile;
                 if (____missilesDictionary.TryGetValue(collisionData.AffectorWeaponSlotOrMissileIndex, out missile))
                 {

@@ -69,7 +69,7 @@ namespace RBMCombat
         }
 
         // Same shield lookup as vanilla AttackInformation: the wielded off-hand item, or the first non-wielded shield slot for the back.
-        private static bool IsHitShieldMetal(Agent victim, bool onBack)
+        internal static bool IsHitShieldMetal(Agent victim, bool onBack)
         {
             if ((victim.GetAgentFlags() & AgentFlag.CanWieldWeapon) == AgentFlag.None)
             {

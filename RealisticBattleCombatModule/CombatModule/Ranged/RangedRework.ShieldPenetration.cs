@@ -11,14 +11,15 @@ namespace RBMCombat
 {
     public partial class RangedRework
     {
-        // Pila (Javelin class with BonusAgainstShield) punching through a raised shield.
+        // Pila (Javelin class with BonusAgainstShield) punching through a raised wooden shield (a metal one stops
+        // every missile, RangedRework.Collision.cs).
         //
         // The engine's own CanPenetrateShield path is not used: it lets the missile fly on and stick in the body,
         // skips the shield's damage and knows nothing of how thick the shield was. Here the hit stays an ordinary
         // shield block - the pilum sticks in the shield and the shield takes its damage - and the wound is dealt
         // on top of it:
-        //  - the share of the throw that gets through is the shield treated as armor, by the shared armor math
-        //    (same armor x10 the shield damage itself uses);
+        //  - the shield takes a base 10% of the throw's magnitude and 5% more for every point of its armor
+        //    (armor 4 lets 70% through, armor 18 and up stops it);
         //  - the shank comes out the back along the line of flight, as deep as the energy left drives it;
         //  - only when that stretch of shank meets the man behind the shield is he wounded, by a normal missile
         //    blow to the body part it reaches first, carrying that share of the throw against that part's armor.
@@ -33,13 +34,9 @@ namespace RBMCombat
             // speed correction).
             private const float FullDepthEnergy = 120f;
 
-            // The pilum's armor piercing: the same x3 weapon damage factor DamageRework.Core gives a
-            // BonusAgainstShield javelin against body armor, which divides the armor threshold by 3.
-            private const float PilumPiercingFactor = 3f;
-
-            // Share of the energy left after the shield that the wound carries: the shank still grinds through
-            // the hole it made and the shield arm gives way, so the man behind takes less than a clean hit.
-            private const float WoundMomentumFactor = 0.7f;
+            // Magnitude the shield takes from the throw: a base share, plus a share per point of its armor.
+            private const float ShieldBaseLoss = 0.10f;
+            private const float ShieldLossPerArmorPoint = 0.05f;
 
             // The top of the skull above the head bone, which sits at the base of the skull.
             private const float SkullHeight = 0.15f;
@@ -118,16 +115,19 @@ namespace RBMCombat
                     return;
                 }
                 MissionWeapon shield = victim.WieldedOffhandWeapon;
-                if (shield.IsEmpty || shield.CurrentUsageItem == null || !shield.CurrentUsageItem.IsShield)
+                // A metal shield turns every missile (RangedRework.Collision.cs).
+                if (shield.IsEmpty || shield.CurrentUsageItem == null || !shield.CurrentUsageItem.IsShield || shield.CurrentUsageItem.PhysicsMaterial == "metal_shield")
                 {
                     return;
                 }
 
-                float penetration = GetPenetrationShare(collisionData.BaseMagnitude, (DamageTypes)collisionData.DamageType, shield.GetGetModifiedArmorForCurrentUsage(), out float energyLeft);
-                if (penetration <= 0f)
+                float penetration = MBMath.ClampFloat(1f - ShieldBaseLoss - ShieldLossPerArmorPoint * shield.GetGetModifiedArmorForCurrentUsage(), 0f, 1f);
+                if (penetration <= 0f || collisionData.BaseMagnitude <= 0f)
                 {
                     return;
                 }
+                Utilities.RBMComputeDamage(WeaponClass.Javelin.ToString(), (DamageTypes)collisionData.DamageType, collisionData.BaseMagnitude, 0f, 1f, out float unopposed, out _);
+                float energyLeft = unopposed * penetration;
 
                 Vec3 direction = collisionData.MissileVelocity;
                 if (direction.Normalize() < 0.01f)
@@ -150,7 +150,7 @@ namespace RBMCombat
 
                 // The normal missile damage path (magnitude, skill, body part armor), with the share that got through
                 // the shield as the momentum left.
-                object[] resultArgs = { attacker, victim, WeakGameEntity.Invalid, penetration * WoundMomentumFactor, missile.Weapon, false, false, false, bodyHit, null, null };
+                object[] resultArgs = { attacker, victim, WeakGameEntity.Invalid, penetration, missile.Weapon, false, false, false, bodyHit, null, null };
                 GetAttackCollisionResultsMethod.Invoke(mission, resultArgs);
                 bodyHit = (AttackCollisionData)resultArgs[8];
                 CombatLogData combatLog = (CombatLogData)resultArgs[10];
@@ -161,25 +161,6 @@ namespace RBMCombat
 
                 Blow blow = (Blow)CreateMissileBlowMethod.Invoke(mission, new object[] { attacker, bodyHit, missile.Weapon, missilePosition, missileStartingPosition });
                 RegisterBlowMethod.Invoke(mission, new object[] { attacker, victim, WeakGameEntity.Invalid, blow, bodyHit, missile.Weapon, combatLog });
-            }
-
-            // Share (0..1) of the throw left after the shield, the shield standing in as armor the way
-            // RBMComputeBlowDamageOnShield rates it. energyLeft is that remainder itself, which sets the depth.
-            private static float GetPenetrationShare(float magnitude, DamageTypes damageType, int shieldArmor, out float energyLeft)
-            {
-                energyLeft = 0f;
-                if (magnitude <= 0f)
-                {
-                    return 0f;
-                }
-                string weaponType = WeaponClass.Javelin.ToString();
-                Utilities.RBMComputeDamage(weaponType, damageType, magnitude, 0f, 1f, out float unopposed, out _);
-                if (unopposed <= 0f)
-                {
-                    return 0f;
-                }
-                Utilities.RBMComputeDamage(weaponType, damageType, magnitude, shieldArmor * 10f, 1f, out energyLeft, out _, PilumPiercingFactor);
-                return MBMath.ClampFloat(energyLeft / unopposed, 0f, 1f);
             }
 
             // The body part the shank behind the shield reaches first, if any.
