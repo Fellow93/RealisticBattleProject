@@ -43,6 +43,8 @@ namespace RBMConfig
 
         public static float armorMultiplier = 2f;
         public static bool betterArrowVisuals = true;
+        // Thickness multiplier for the realistic in-flight arrow/bolt mesh (betterArrowVisuals); 1 = true to size.
+        public static float arrowThicknessScale = 1f;
         public static bool passiveShoulderShields = false;
         public static bool troopOverhaulActive = true;
         public static string realisticRangedReload = "2";

@@ -285,6 +285,8 @@ namespace RBMConfig
             ArmorPenetrationMessage.InnerText = RBMConfig.armorPenetrationMessage ? "1" : "0";
             XmlElement BetterArrowVisuals = xmlconfig.CreateElement("BetterArrowVisuals");
             BetterArrowVisuals.InnerText = RBMConfig.betterArrowVisuals ? "1" : "0";
+            XmlElement ArrowThicknessScale = xmlconfig.CreateElement("ArrowThicknessScale");
+            ArrowThicknessScale.InnerText = RBMConfig.arrowThicknessScale.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement PassiveShoulderShields = xmlconfig.CreateElement("PassiveShoulderShields");
             PassiveShoulderShields.InnerText = RBMConfig.passiveShoulderShields ? "1" : "0";
             XmlElement TroopOverhaulActive = xmlconfig.CreateElement("TroopOverhaulActive");
@@ -316,6 +318,7 @@ namespace RBMConfig
             Global.AppendChild(ArmorMultiplier);
             Global.AppendChild(ArmorPenetrationMessage);
             Global.AppendChild(BetterArrowVisuals);
+            Global.AppendChild(ArrowThicknessScale);
             Global.AppendChild(PassiveShoulderShields);
             Global.AppendChild(TroopOverhaulActive);
             Global.AppendChild(SneakAttackInstaKill);

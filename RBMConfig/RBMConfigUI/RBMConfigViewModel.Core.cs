@@ -153,6 +153,7 @@ namespace RBMConfig
             ThrustModifier = new SelectorVM<SelectorItemVM>(thrustModifierList, 0, null);
 
             _armorMultiplier = MathF.Clamp(RBMConfig.armorMultiplier, 0.5f, 4f);
+            _arrowThicknessScale = MathF.Clamp(RBMConfig.arrowThicknessScale, 1f, 5f);
 
             int i = 0;
             foreach (var item in thrustModifierList)
@@ -600,6 +601,7 @@ namespace RBMConfig
             RBMConfig.TwoHandedThrustDamageBonus = 1f / newThrustModifier;
 
             RBMConfig.armorMultiplier = _armorMultiplier;
+            RBMConfig.arrowThicknessScale = _arrowThicknessScale;
 
             RBMConfig.hitStopEnabled = HitStopEnabled.SelectedIndex == 1;
 
@@ -782,6 +784,7 @@ namespace RBMConfig
             ArmorStatusUIEnabled.SelectedIndex = 1;
             SneakAttackInstaKill.SelectedIndex = 0;
             BetterArrowVisuals.SelectedIndex = 1;
+            ArrowThicknessScale = 1f;
             PassiveShoulderShields.SelectedIndex = 0;
             RangedReloadSpeed.SelectedIndex = 2;
             RangedReloadAffectsAi.SelectedIndex = 0;

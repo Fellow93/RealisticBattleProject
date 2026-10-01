@@ -109,6 +109,40 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel ArmorMultiplierHint { get; } = Hint("How strongly armor reduces damage: a blow is scaled by 100 / (100 + armor x this). Higher makes armor protect more and fights last longer; lower makes everyone die faster. Also feeds auto-resolve and troop power. Default 2.00.");
 
+        // Plain-text label/hint for the same reason as the row above.
+        private float _arrowThicknessScale;
+
+        [DataSourceProperty]
+        public float ArrowThicknessScale
+        {
+            get { return _arrowThicknessScale; }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value * 4f) / 4f, 1f, 5f);
+                if (snapped != _arrowThicknessScale)
+                {
+                    _arrowThicknessScale = snapped;
+                    OnPropertyChangedWithValue(snapped, "ArrowThicknessScale");
+                    OnPropertyChanged("ArrowThicknessScaleValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string ArrowThicknessScaleValue
+        {
+            get { return _arrowThicknessScale.ToString("0.00"); }
+        }
+
+        [DataSourceProperty]
+        public string ArrowThicknessScalet
+        {
+            get { return new TextObject("Flying arrow thickness").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel ArrowThicknessScaleHint { get; } = Hint("Makes the realistic arrows and bolts of Better Arrow Visuals thicker while they fly, so they are easier to follow. Only the thickness is scaled, not the length, and only in flight: arrows in the quiver, on the string and stuck in a target stay true to size. Visual only, hits are unchanged. Does nothing when Better Arrow Visuals is disabled. Default 1.00 (true to size).");
+
         [DataSourceProperty]
         public string TroopOverhault
         {
