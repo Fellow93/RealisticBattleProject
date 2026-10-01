@@ -671,7 +671,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel LordEquipmentUpgradeEnabledHint { get; } = Hint("AI lords spend gold in towns to upgrade their own battle gear to culture-matched items. Disable if another mod manages lord equipment.");
+        public BasicTooltipViewModel LordEquipmentUpgradeEnabledHint { get; } = Hint("AI lords spend gold in towns to upgrade their own battle gear to culture-matched items. Disable if another mod manages lord equipment. Default on.");
 
         // Caravan toggle labels and hints. Plain literal TextObjects (no {=KEY}) to sidestep the
         // LOC-eng.xml key-collision issue, like the category headers below.
