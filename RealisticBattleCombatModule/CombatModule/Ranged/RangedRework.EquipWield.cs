@@ -41,7 +41,7 @@ namespace RBMCombat
         [HarmonyPatch("WeaponEquipped")]
         private class OverrideWeaponEquipped
         {
-            private static bool Prefix(ref Agent __instance, EquipmentIndex equipmentSlot, ref WeaponData weaponData, ref WeaponStatsData[] weaponStatsData, in WeaponData ammoWeaponData, ref WeaponStatsData[] ammoWeaponStatsData, GameEntity weaponEntity, bool removeOldWeaponFromScene, bool isWieldedOnSpawn)
+            private static bool Prefix(ref Agent __instance, EquipmentIndex equipmentSlot, ref WeaponData weaponData, ref WeaponStatsData[] weaponStatsData, in WeaponData ammoWeaponData, ref WeaponStatsData[] ammoWeaponStatsData, bool removeOldWeaponFromScene, bool isWieldedOnSpawn)
             {
                 if (weaponStatsData != null)
                 {
