@@ -255,7 +255,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel RangedAimArcEnabledHint { get; } = Hint("Experimental. While you draw a bow or crossbow or wind up a sling, shows the predicted flight of the missile as a dotted arc with a marker where it will land. Uses the same launch speed and air drag the real shot flies with. In third person, when you aim up the camera also lifts and tilts down so the landing point of a high shot stays on screen; where you aim is unchanged, and the crosshair is hidden while the camera is moved (the arc shows the aim). Player only; thrown weapons are not covered. Default off.");
+        public BasicTooltipViewModel RangedAimArcEnabledHint { get; } = Hint("Experimental. While you draw a bow or crossbow or wind up a sling, shows the predicted flight of the missile as a dotted arc with a marker where it will land. Uses the same launch speed and air drag the real shot flies with. In third person, when you aim up the camera also lifts and tilts down so the landing point of a high shot stays on screen; where you aim is unchanged, and the crosshair is hidden while the camera is moved (the arc shows the aim). Also covers javelins, throwing axes, throwing knives and stones. Player only. Default off.");
 
         [DataSourceProperty]
         public string PassiveShieldt
