@@ -12,8 +12,8 @@ using MissileBallistics = RBMConfig.MissileBallistics;
 namespace RBMCombat
 {
     /// <summary>
-    /// Player aim assist: while the main agent is drawing a bow or crossbow or winding up a sling (action channel 1 is
-    /// ReadyRanged, the same test vanilla's crosshair uses), draws the predicted flight as screen-space dots plus an
+    /// Player aim assist: while the main agent is drawing a bow or crossbow, winding up a sling or readying a javelin,
+    /// throwing axe/knife or stone (action channel 1 is ReadyRanged, the same test vanilla's crosshair uses), draws the predicted flight as screen-space dots plus an
     /// impact marker. Gated on RBMConfig.rangedAimArcEnabled; RBM's SubModule does not even add it when that is off.
     ///
     /// Also the prediction source for the experimental RangedAimCamera, which is on whenever the arc is (same toggle):
@@ -49,6 +49,14 @@ namespace RBMCombat
         private const float OriginForward = 0f;
         private const float OriginRight = 0f;
         private const float OriginUp = 0f;
+        // The same for javelins, throwing axes/knives and stones, which leave from the hand: measured 2026-10-01 from 11
+        // throwing-axe ARCSHOT lines, dFwd 0.96-1.08 (1.05 typical), dRight ~0, dUp -0.05..-0.21 (-0.08 typical); speed
+        // and direction matched exactly. Javelins not yet measured separately.
+        private const float ThrowOriginForward = 1.05f;
+        private const float ThrowOriginRight = 0f;
+        private const float ThrowOriginUp = -0.08f;
+        // Seconds from the end of the aim (ReadyRanged) to the throw leaving the hand: ARCSHOT's age on every throw.
+        private const float ThrowReleaseDelay = 0.4f;
 
         // RangedRework.OverrideOnAgentShootMissile's Realistic Arrow Arc pitch-up for the player's bow/crossbow.
         private const double RealisticArrowArcRadians = 0.083141f;
@@ -350,7 +358,7 @@ namespace RBMCombat
 
         /// <summary>
         /// The launch the main agent's shot would get now: false unless he is drawing a bow/crossbow/sling that has
-        /// ammunition.
+        /// ammunition, or readying a javelin, throwing axe/knife or stone he still has some of.
         /// </summary>
         private bool TryPredictShot(out Vec3 origin, out Vec3 velocity, out float friction)
         {
@@ -374,11 +382,12 @@ namespace RBMCombat
                 return false;
             }
             WeaponClass launcherClass = usage.WeaponClass;
-            if (launcherClass != WeaponClass.Bow && launcherClass != WeaponClass.Crossbow && launcherClass != WeaponClass.Sling)
+            bool thrown = IsThrownClass(launcherClass);
+            if (!thrown && !IsLauncherClass(launcherClass))
             {
                 return false;
             }
-            if (MissileBallistics.GetLauncherAmmoWeight(agent, launcher, usage) <= 0f)
+            if (thrown ? launcher.Amount <= 0 : MissileBallistics.GetLauncherAmmoWeight(agent, launcher, usage) <= 0f)
             {
                 return false;
             }
@@ -390,7 +399,13 @@ namespace RBMCombat
             }
 
             float speed;
-            if (RBMConfig.RBMConfig.rbmCombatEnabled)
+            if (thrown)
+            {
+                // The engine throws at the MissileSpeed RBMCombat's WeaponEquipped prefix handed it, and the shot
+                // prefix leaves the player's throws alone; with RBMCombat off it is the weapon's own.
+                speed = RBMConfig.RBMConfig.rbmCombatEnabled ? MissileBallistics.GetThrowSpeed(agent, launcher) : launcher.GetModifiedMissileSpeedForCurrentUsage();
+            }
+            else if (RBMConfig.RBMConfig.rbmCombatEnabled)
             {
                 // Same as the shot prefix: RBM's launch speed from the cached draw weight (the launcher's shared
                 // MissileSpeed holds the draw weight outside the prefix), plus the shooter's speed along the shot.
@@ -414,7 +429,9 @@ namespace RBMCombat
             {
                 return false;
             }
-            velocity = dir * speed;
+            // A throw also carries the thrower's own velocity, added as a vector (measured: real speed = throw speed +
+            // his speed along the throw, and the throw flattens when running forward).
+            velocity = thrown ? dir * speed + agent.Velocity : dir * speed;
 
             if (RBMConfig.RBMConfig.rbmCombatEnabled && RBMConfig.RBMConfig.realisticArrowArc && (launcherClass == WeaponClass.Bow || launcherClass == WeaponClass.Crossbow))
             {
@@ -423,16 +440,32 @@ namespace RBMCombat
                 velocity.z = vecLength * (float)Math.Cos(currentRad - RealisticArrowArcRadians);
             }
 
-            // The drag the missile flies with is its ammo's, as in the shot prefix.
+            // The drag the missile flies with is its ammo's, as in the shot prefix; a thrown weapon is its own ammo.
             MissionWeapon ammo = launcher.AmmoWeapon;
-            friction = !ammo.IsEmpty && ammo.CurrentUsageItem != null
-                ? ItemObject.GetAirFrictionConstant(ammo.CurrentUsageItem.WeaponClass, ammo.CurrentUsageItem.WeaponFlags)
-                : ItemObject.GetAirFrictionConstant(usage.AmmoClass, (WeaponFlags)0);
+            friction = thrown
+                ? ItemObject.GetAirFrictionConstant(launcherClass, usage.WeaponFlags)
+                : !ammo.IsEmpty && ammo.CurrentUsageItem != null
+                    ? ItemObject.GetAirFrictionConstant(ammo.CurrentUsageItem.WeaponClass, ammo.CurrentUsageItem.WeaponFlags)
+                    : ItemObject.GetAirFrictionConstant(usage.AmmoClass, (WeaponFlags)0);
 
             LookFrame(dir, out Vec3 right, out Vec3 up);
-            origin = agent.GetEyeGlobalPosition() + dir * OriginForward + right * OriginRight + up * OriginUp;
+            // The throw leaves ThrowReleaseDelay after the aim ends, by when a moving thrower has carried on that far.
+            origin = thrown
+                ? agent.GetEyeGlobalPosition() + dir * ThrowOriginForward + right * ThrowOriginRight + up * ThrowOriginUp + agent.Velocity * ThrowReleaseDelay
+                : agent.GetEyeGlobalPosition() + dir * OriginForward + right * OriginRight + up * OriginUp;
             return true;
         }
+
+        private static bool IsLauncherClass(WeaponClass c)
+        {
+            return c == WeaponClass.Bow || c == WeaponClass.Crossbow || c == WeaponClass.Sling;
+        }
+
+        private static bool IsThrownClass(WeaponClass c)
+        {
+            return c == WeaponClass.Javelin || c == WeaponClass.ThrowingAxe || c == WeaponClass.ThrowingKnife || c == WeaponClass.Stone;
+        }
+
 
         private static void LookFrame(Vec3 forward, out Vec3 right, out Vec3 up)
         {
@@ -588,7 +621,7 @@ namespace RBMCombat
             }
             MissionWeapon launcher = shooterAgent.Equipment[weaponIndex];
             WeaponClass launcherClass = launcher.CurrentUsageItem != null ? launcher.CurrentUsageItem.WeaponClass : WeaponClass.Undefined;
-            if (launcherClass != WeaponClass.Bow && launcherClass != WeaponClass.Crossbow && launcherClass != WeaponClass.Sling)
+            if (!IsLauncherClass(launcherClass) && !IsThrownClass(launcherClass))
             {
                 return;
             }
