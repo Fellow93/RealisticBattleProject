@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Merged into Native's action sets by Module.CreateProcessedActionSetsXMLForNative: an <action_set> whose id
+  already exists has its children appended to the existing set, so only the added actions are listed here.
+  Keep `id` as the FIRST attribute - the merge keys on it.
+
+  act_scared_to_normal_2 is natively defined only in as_human_hideout_bandit (and the villager sets that inherit
+  it), so a battle soldier (as_human_warrior / as_human_female_warrior) cannot play it. Adding it to
+  as_human_warrior also covers as_human_female_warrior, which inherits it. Used by StanceLogic.forceTiredAnimation.
+-->
+<action_sets>
+	<action_set
+		id="as_human_warrior">
+		<action
+			type="act_scared_to_normal_2"
+			animation="anim_scared_to_normal_2" />
+	</action_set>
+</action_sets>

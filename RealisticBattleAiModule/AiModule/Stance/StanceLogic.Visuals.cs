@@ -178,13 +178,33 @@ namespace RBMAI
             agent.SetActionChannel(agent.HasMount ? 1 : 0, DecideAnimation(collisionData, isAttacker), actionSpeed: actionSpeed);
         }
 
+        // Natively only the hideout-bandit/villager action sets have this action; RBMXML/RBM_action_sets.xml adds it
+        // to as_human_warrior so battle soldiers can play it. Resolved once, not per blow.
+        // Any change to the forced stagger/tired actions must also be mirrored in AiKickBash.StaggerActions.
+        internal static readonly ActionIndexCache TiredAnimation = ActionIndexCache.Create("act_scared_to_normal_2");
+
+        // Normalized clip progress the tired reaction starts from, to play only the part of the clip we want.
+        // The full clip runs too long for a combat reaction, so its opening is skipped. TUNE in game.
+        private const float TiredAnimationStartProgress = 0.4f;
+
         public static void forceTiredAnimation(Agent agent, AttackCollisionData collisionData, float actionSpeed, bool isAttacker)
         {
             if (!CanForceReaction(agent))
             {
                 return;
             }
-            agent.SetActionChannel(agent.HasMount ? 1 : 0, ActionIndexCache.act_pickup_down_begin_left_stance, actionSpeed: actionSpeed);
+            // The clip is a civilian one with no action priority, so attack/defend input would cancel it at once.
+            // Give it the stagger's "struck" priority so nothing short of another hit/fall interrupts it. Priority only
+            // guards its own channel and attacks/blocks run on the upper-body channel 1, so a man on foot plays the clip
+            // on both channels, rooted in place. A rider only plays it on the upper body, so his horse keeps moving.
+            AnimFlags flags = AnimFlags.amf_priority_striked;
+            if (!agent.HasMount)
+            {
+                agent.SetActionChannel(0, TiredAnimation, additionalFlags: flags | AnimFlags.anf_lock_movement,
+                    actionSpeed: actionSpeed, startProgress: TiredAnimationStartProgress);
+            }
+            agent.SetActionChannel(1, TiredAnimation, additionalFlags: flags,
+                actionSpeed: actionSpeed, startProgress: TiredAnimationStartProgress);
         }
     }
 }
