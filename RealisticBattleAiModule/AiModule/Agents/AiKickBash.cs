@@ -99,6 +99,10 @@ namespace RBMAI
             public const float KickStaggerSeconds = 1.2f;
             public const float CooldownMin = 4f;
             public const float CooldownMax = 8f;
+            // Re-check delay after a look that found no opening. Without it every man re-checked every frame once his
+            // cooldown was up (engine calls per man per frame); jittered so the army does not check in one frame.
+            public const float RetryMin = 0.25f;
+            public const float RetryMax = 0.5f;
 
             private static int _attempts;
             private static int _kicks;
@@ -264,12 +268,15 @@ namespace RBMAI
             {
                 if (!RBMConfig.RBMConfig.aiKickBashEnabled)
                 {
-                    _phase = PhaseIdle;
+                    EndAttempt();
                     return;
                 }
+                bool aiControlled = Agent.IsAIControlled;
                 // The effort of the kick/bash itself, charged once as the action starts, hit or miss (a blow that lands
-                // costs its usual posture/stamina on top, through the posture patch). The player pays it too.
-                Agent.ActionCodeType action = CurrentAlternativeAttack();
+                // costs its usual posture/stamina on top, through the posture patch). The player pays it too. The native
+                // AI never kicks, so an AI man only does in an attempt of ours: his action (two engine calls) is only
+                // read while one is watched.
+                Agent.ActionCodeType action = !aiControlled || _watching ? CurrentAlternativeAttack() : Agent.ActionCodeType.Other;
                 bool inAlternativeAttack = action != Agent.ActionCodeType.Other;
                 if (inAlternativeAttack && !_wasInAlternativeAttack)
                 {
@@ -277,9 +284,9 @@ namespace RBMAI
                 }
                 _wasInAlternativeAttack = inAlternativeAttack;
 
-                if (!Agent.IsAIControlled)
+                if (!aiControlled)
                 {
-                    _phase = PhaseIdle;
+                    EndAttempt();
                     return;
                 }
                 float now = Agent.Mission.CurrentTime;
@@ -304,15 +311,19 @@ namespace RBMAI
                     bool finished = _phase == PhaseCommit && _seen != Agent.ActionCodeType.Other && !playing;
                     if (finished || now >= _watchEndTime)
                     {
-                        _watching = false;
-                        _phase = PhaseIdle;
+                        EndAttempt();
                         AiKickBash.Report(_seen, _hadShield);
                     }
                     return;
                 }
 
-                if (now < _nextAttemptTime || !CanAttempt() || !CanAfford())
+                if (now < _nextAttemptTime)
                 {
+                    return;
+                }
+                if (!CanAttempt() || !CanAfford())
+                {
+                    _nextAttemptTime = now + MBRandom.RandomFloatRanged(AiKickBash.RetryMin, AiKickBash.RetryMax);
                     return;
                 }
                 _nextAttemptTime = now + MBRandom.RandomFloatRanged(AiKickBash.CooldownMin, AiKickBash.CooldownMax);
@@ -339,6 +350,12 @@ namespace RBMAI
                     _phaseEndTime = now + AiKickBash.KickSeconds;
                     _phase = PhaseKick;
                 }
+            }
+
+            private void EndAttempt()
+            {
+                _phase = PhaseIdle;
+                _watching = false;
             }
 
             private float AttemptChance()
@@ -595,6 +612,8 @@ namespace RBMAI
                     return;
                 }
                 // Every man gets the component (the cost applies to the player too); only the AI gets its input driven.
+                // Set once at spawn. Turning it on only for an attempt would spare the engine a managed callback per AI
+                // man per AI tick, but the AI thread reads the flag while it runs, so it is not toggled mid-battle.
                 __instance.AddComponent(new AiKickBashComponent(__instance));
                 if (__instance.Controller == AgentControllerType.AI)
                 {
