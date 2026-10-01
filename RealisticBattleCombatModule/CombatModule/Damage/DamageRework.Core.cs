@@ -404,7 +404,8 @@ namespace RBMCombat
                     }
                 }
 
-                if (RBMConfig.RBMConfig.postureEnabled)
+                // Posture/stamina is RBMAI's system.
+                if (RBMConfig.RBMConfig.rbmAiEnabled && RBMConfig.RBMConfig.postureEnabled)
                 {
                     Stance victimPosture = null;
                     Stance attackerPosture = null;

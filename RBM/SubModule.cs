@@ -253,12 +253,12 @@ namespace RBM
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
             mission.AddMissionBehavior(new UnitStatusMissionView());
-            if (RBMConfig.RBMConfig.hitStopEnabled)
+            if (RBMConfig.RBMConfig.rbmAiEnabled && RBMConfig.RBMConfig.hitStopEnabled)
             {
                 mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.HitStopLogic());
             }
             Game.Current.GameTextManager.LoadGameTexts();
-            if (RBMConfig.RBMConfig.developerMode)
+            if (RBMConfig.RBMConfig.rbmAiEnabled && RBMConfig.RBMConfig.developerMode)
             {
                 mission.AddMissionBehavior((MissionBehavior)(object)new BattleStatsLogic());
             }
@@ -271,16 +271,15 @@ namespace RBM
                 // Stuck missiles falling out; the missile collision patch registers them with this logic. Idle (and
                 // never registered with) when both of its settings are 0.
                 mission.AddMissionBehavior((MissionBehavior)(object)new RangedRework.StuckMissileLogic());
-            }
-            if (RBMConfig.RBMConfig.battleHitLoggingEnabled)
-            {
-                mission.AddMissionBehavior((MissionBehavior)(object)new BattleHitLogic());
-            }
-            // Independent of rbmCombatEnabled: the view predicts the vanilla launch when RBMCombat is off. The view also
-            // turns on the aim camera (its own Harmony instance), which frames the view's prediction.
-            if (RBMConfig.RBMConfig.rangedAimArcEnabled)
-            {
-                mission.AddMissionBehavior((MissionBehavior)(object)new RangedAimArcView());
+                if (RBMConfig.RBMConfig.battleHitLoggingEnabled)
+                {
+                    mission.AddMissionBehavior((MissionBehavior)(object)new BattleHitLogic());
+                }
+                // The view also turns on the aim camera (its own Harmony instance), which frames the view's prediction.
+                if (RBMConfig.RBMConfig.rangedAimArcEnabled)
+                {
+                    mission.AddMissionBehavior((MissionBehavior)(object)new RangedAimArcView());
+                }
             }
             if (RBMConfig.RBMConfig.rbmAiEnabled)
             {

@@ -119,7 +119,7 @@ namespace RBM.AgentStatusBar
                     entry2.Value.ScreenXPosition = num0;
                     entry2.Value.ScreenYPosition = num1;
                     entry2.Value.tick(dt, _keyToggled);
-                    if (RBMConfig.RBMConfig.postureEnabled && AgentStances.values.TryGetValue(entry2.Key, out Stance stanceData))
+                    if (RBMConfig.RBMConfig.rbmAiEnabled && RBMConfig.RBMConfig.postureEnabled && AgentStances.values.TryGetValue(entry2.Key, out Stance stanceData))
                     {
                         entry2.Value.ShowStance = true;
                         entry2.Value.Posture = Convert.ToInt32(stanceData.posture);

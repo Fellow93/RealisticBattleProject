@@ -21,6 +21,11 @@ namespace RBM
         {
             private static void Postfix(ref string __result)
             {
+                // The holsters are only used by RBMCombat's items, which are skipped when Combat is off.
+                if (!RBMConfig.RBMConfig.rbmCombatEnabled)
+                {
+                    return;
+                }
                 try
                 {
                     // Find all active modules that have a RBMCombat_WS_item_holsters.xml
