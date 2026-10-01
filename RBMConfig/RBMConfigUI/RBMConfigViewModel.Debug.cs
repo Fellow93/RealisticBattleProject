@@ -75,6 +75,9 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel BattleHitLoggingEnabledHint { get; } = Hint("{=RBM_DBG_011}Writes every blow of a fought battle to logs/battles next to the config, one file per battle: attacker, target, weapon, body part, armor, damage and health left, plus the standings every 15 seconds and a summary at the end. Arenas and town visits are left out. Default off.");
+
+        [DataSourceProperty]
         public string AiBehaviorLogt
         {
             get { return new TextObject("{=RBM_DBG_004}AI Behavior Logging").ToString(); }
@@ -99,10 +102,17 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel SimulationLoggingEnabledHint { get; } = Hint("{=RBM_DBG_010}Writes every auto-resolved battle to logs/simulation next to the config: the sides and their parties, troop power, charge and volley figures, and the outcome including routed men. Needs RBM Campaign on. Default off.");
+
+        // Plain-text hints for the two rows whose labels are unkeyed literals.
+        [DataSourceProperty]
         public string SimulationLogHitst
         {
             get { return new TextObject("Auto Resolve Per-Hit Detail").ToString(); }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel SimulationLogHitsHint { get; } = Hint("Adds every simulated blow to the auto-resolve log -- thousands of lines for a big battle. Needs Detailed Auto Resolve and Detailed Auto Resolve Logging on. Default off.");
 
         [DataSourceProperty]
         public string StrategicPowerLoggingt
@@ -111,16 +121,25 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel StrategicPowerLoggingEnabledHint { get; } = Hint("Once a day, writes every party's troop power breakdown to logs/powerCalculation next to the config: its commander's perks and each troop stack's power per man. Needs Equipment Based Troop Power on. Default off.");
+
+        [DataSourceProperty]
         public string SpoilsLoggingt
         {
             get { return new TextObject("{=RBM_CON_039}Spoils Logging").ToString(); }
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel SpoilsLoggingEnabledHint { get; } = Hint("{=RBM_DBG_009}Writes the spoils economy to logs/campaign next to the config: purse changes, loot awards, troop upgrades and their supply-town draws, recruit gear, food and carousing. Needs RBM Campaign on. Default off.");
+
+        [DataSourceProperty]
         public string SpoilsVerboseLoggingt
         {
             get { return new TextObject("{=RBM_CON_049}Verbose Logging").ToString(); }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel SpoilsVerboseLoggingEnabledHint { get; } = Hint("{=RBM_DBG_008}Adds a line for every troop stack to the spoils log; off keeps only the party-level summaries. Needs Spoils Logging on. Default off.");
 
         [DataSourceProperty]
         public string EconomyLoggingt

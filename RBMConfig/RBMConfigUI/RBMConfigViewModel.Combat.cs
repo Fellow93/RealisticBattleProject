@@ -75,6 +75,9 @@ namespace RBMConfig
             }
         }
 
+        [DataSourceProperty]
+        public BasicTooltipViewModel ThrustModifierHint { get; } = Hint("{=RBM_CON_147}Scales the thrust damage figures weapons carry, which the AI weighs when it chooses between thrusting and swinging. RBM undoes the scale when it works out piercing damage, so stabs hit about as hard at any setting; lower values make the AI favour swings. Default 0.05.");
+
         // Plain-text label/hint (no {=RBM_CON_xxx} id) for the same reason as the Frontline rows below.
         private float _armorMultiplier;
 
@@ -220,6 +223,9 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel ActiveTroopOverhaulHint { get; } = Hint("{=RBM_CON_154}Replaces the troop trees of the main cultures, plus mercenaries, minor-faction troops, militia and tournament fighters, with RBM's versions: new equipment, skills and upgrade paths. Inactive keeps the base game's troops, still using RBM's item changes. Default active.");
+
+        [DataSourceProperty]
         public string Rangedspeedt
         {
             get
@@ -227,6 +233,9 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_007}Ranged reload speed").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel RangedReloadSpeedHint { get; } = Hint("{=RBM_CON_153}How fast bows and crossbows are reloaded, scaling with skill. Realistic is slow, above all for unskilled shooters; Semi-realistic reloads much faster at low skill; both also slow the bow draw for everyone. Vanilla keeps the base game's speeds. The reload part applies to the player only unless 'Ranged reload applies to AI' is on. Default Semi-realistic.");
 
         // Plain-text label/hint (no {=RBM_CON_xxx} id) for the same reason as the Frontline rows below.
         [DataSourceProperty]
@@ -258,6 +267,9 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel PassiveShoulderShieldsHint { get; } = Hint("{=RBM_CON_152}Lets RBM troops keep the shoulder-strapped versions of their shields, which stay on the shoulder while they fight with another weapon. Off swaps them for the normal hand-held versions. Needs Troop Overhaul on. Default off.");
+
+        [DataSourceProperty]
         public string BetterArrowst
         {
             get
@@ -265,6 +277,9 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_009}Better Arrow Visuals").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel BetterArrowVisualsHint { get; } = Hint("{=RBM_CON_151}Arrows and bolts in flight are drawn with their real model instead of the base game's thin streak. True to size they are harder to follow; 'Flying arrow thickness' can thicken them. Visual only, hits are unchanged. Default on.");
 
         [DataSourceProperty]
         public string ArmorGUIt
@@ -276,6 +291,9 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel ArmorStatusUIEnabledHint { get; } = Hint("{=RBM_CON_149}Shows six small icons in the lower right of the battle screen with the condition of your own armor -- head, shoulders, body, hands, legs and horse harness -- shading from green (better than standard) through grey to red as blows wear it down during the battle. Default on.");
+
+        [DataSourceProperty]
         public string SneakAttackt
         {
             get
@@ -283,6 +301,9 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_023}Sneak Attack Insta-Kill").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel SneakAttackInstaKillHint { get; } = Hint("{=RBM_CON_150}A blow that counts as a sneak attack -- a melee weapon or throwing knife striking an unaware person, or one not yet fully alert from behind, without hitting a shield -- deals a flat 200 damage, ignoring armor. It mostly matters in stealth missions, and you can never be the victim. Off applies the base game's sneak attack bonus before armor instead. Default off.");
 
         [DataSourceProperty]
         public string RealArrowt
@@ -294,6 +315,9 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel RealisticArrowArcHint { get; } = Hint("{=RBM_CON_148}Your bow and crossbow shots leave about 5 degrees above where you aim, so they fly a higher arc and the crosshair no longer marks where they land. Player only; slings and thrown weapons are unaffected. Default off.");
+
+        [DataSourceProperty]
         public string HitStopt
         {
             get
@@ -301,6 +325,9 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_022}Slow Motion in Combat").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel HitStopEnabledHint { get; } = Hint("{=RBM_CON_146}Briefly slows the battle to a quarter of its speed, for three quarters of a second, when you kill or knock out an enemy or break his posture. Works without RBM AI, though the posture-break slowdown needs the Posture System. Default on.");
 
         [DataSourceProperty]
         public string PostureSyst
@@ -312,6 +339,9 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel PostureSystemEnabledHint { get; } = Hint("{=RBM_CON_145}Blocks, parries and hits wear down a posture meter that recovers over time. When it runs out the soldier can be staggered, drop his weapon or shield, be knocked off his horse, or take damage that crushes through his guard. Off also switches off the Stamina System and the Posture GUI. Needs RBM AI on. Default on.");
+
+        [DataSourceProperty]
         public string StaminaSyst
         {
             get
@@ -319,6 +349,9 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_030}Stamina System (requires Posture)").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel StaminaSystemEnabledHint { get; } = Hint("{=RBM_CON_144}Attacking, blocking and being hit drain stamina, faster in heavy armor and slower with high Athletics. A tired soldier hits weaker, moves, swings and reloads slower, blocks worse and loses posture faster; above 85% stamina he slowly regains health. Needs RBM AI and the Posture System on. Default on.");
 
         [DataSourceProperty]
         public string AiKickBasht
@@ -368,6 +401,9 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel PlayerPostureMultiplierHint { get; } = Hint("{=RBM_CON_143}Multiplies your own character's maximum posture and posture recovery, and with the Stamina System on also your maximum stamina and its recovery. AI soldiers are unaffected. Needs RBM AI and the Posture System on. Default 1x.");
+
+        [DataSourceProperty]
         public string PostureGUIt
         {
             get
@@ -375,6 +411,9 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_014}Posture GUI").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel PostureGUIEnabledHint { get; } = Hint("{=RBM_CON_142}Shows your own posture bar in battle (and stamina bar, with the Stamina System on), and for a few seconds after you trade blows with an enemy, his name, health, posture and stamina. Needs RBM AI and the Posture System on. Default on.");
 
         [DataSourceProperty]
         public string Vanillat
@@ -386,6 +425,9 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel VanillaCombatAiHint { get; } = Hint("{=RBM_CON_140}Leaves AI soldiers' blocking, parrying and melee attack decisions on the base game's values instead of RBM's skill-based ones. It also lets the Combat AI difficulty option weaken RBM's AI aim as strongly as it does in the base game. Needs RBM AI on. Default off.");
+
+        [DataSourceProperty]
         public string KeepBattlet
         {
             get
@@ -393,6 +435,9 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_031}Keep Battle (Last Stand)").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel KeepBattleEnabledHint { get; } = Hint("{=RBM_CON_141}In sieges RBM keeps the defenders from losing morale as their comrades fall, so a garrison holds the walls to the last man. With this on, once fewer than 50 defenders remain and they have less than half the attackers' strength, losses shake them twice as hard, so the survivors can break and fall back for a last stand in the keep. Needs RBM AI on. Default off.");
 
         public List<string> thrustModifierList = new List<string> { new TextObject("0.01").ToString(), new TextObject("0.05").ToString(), new TextObject("0.10").ToString(), new TextObject("0.15").ToString(),
                                                                 new TextObject("0.20").ToString(), new TextObject("0.25").ToString(), new TextObject("0.30").ToString(), new TextObject("0.35").ToString(),

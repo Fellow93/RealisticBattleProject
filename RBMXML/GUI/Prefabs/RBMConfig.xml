@@ -103,7 +103,12 @@
 											<!-- Spoils Verbose Logging -->
 											<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 											  <Children>
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SpoilsVerboseLoggingt"/>
+												<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+												  <Children>
+													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SpoilsVerboseLoggingt"/>
+													<HintWidget DataSource="{SpoilsVerboseLoggingEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+												  </Children>
+												</Widget>
 												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 												  <Children>
 													<RichTextWidget DataSource="{SpoilsVerboseLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
@@ -116,7 +121,12 @@
 											<!-- Spoils Logging -->
 											<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 											  <Children>
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SpoilsLoggingt"/>
+												<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+												  <Children>
+													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SpoilsLoggingt"/>
+													<HintWidget DataSource="{SpoilsLoggingEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+												  </Children>
+												</Widget>
 												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 												  <Children>
 													<RichTextWidget DataSource="{SpoilsLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
@@ -129,7 +139,12 @@
 											<!-- Troop Power Logging -->
 											<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 											  <Children>
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@StrategicPowerLoggingt"/>
+												<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+												  <Children>
+													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@StrategicPowerLoggingt"/>
+													<HintWidget DataSource="{StrategicPowerLoggingEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+												  </Children>
+												</Widget>
 												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 												  <Children>
 													<RichTextWidget DataSource="{StrategicPowerLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
@@ -142,7 +157,12 @@
 											<!-- Auto Resolve Per-Hit Detail -->
 											<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 											  <Children>
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SimulationLogHitst"/>
+												<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+												  <Children>
+													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SimulationLogHitst"/>
+													<HintWidget DataSource="{SimulationLogHitsHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+												  </Children>
+												</Widget>
 												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 												  <Children>
 													<RichTextWidget DataSource="{SimulationLogHitsText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
@@ -155,7 +175,12 @@
 											<!-- Detailed Auto Resolve Logging -->
 											<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 											  <Children>
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SimulationLoggingt"/>
+												<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+												  <Children>
+													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SimulationLoggingt"/>
+													<HintWidget DataSource="{SimulationLoggingEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+												  </Children>
+												</Widget>
 												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 												  <Children>
 													<RichTextWidget DataSource="{SimulationLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
@@ -204,7 +229,12 @@
 											<!-- Field Battle Logging -->
 											<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 											  <Children>
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@BattleHitLoggingt"/>
+												<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+												  <Children>
+													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@BattleHitLoggingt"/>
+													<HintWidget DataSource="{BattleHitLoggingEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+												  </Children>
+												</Widget>
 												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 												  <Children>
 													<RichTextWidget DataSource="{BattleHitLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
@@ -254,7 +284,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ModuleStatust"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ModuleStatust"/>
+												<HintWidget DataSource="{RBMTournamentEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -844,7 +879,12 @@
 <ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopUpgradeRequireSupplyTownt"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopUpgradeRequireSupplyTownt"/>
+												<HintWidget DataSource="{TroopUpgradeRequireSupplyTownHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -858,7 +898,12 @@
 <ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@RecruitDrawsFromSettlementStockt"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@RecruitDrawsFromSettlementStockt"/>
+												<HintWidget DataSource="{RecruitDrawsFromSettlementStockHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -872,7 +917,12 @@
 <ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopUpgradeChargeMountValuet"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopUpgradeChargeMountValuet"/>
+												<HintWidget DataSource="{TroopUpgradeChargeMountValueHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -959,7 +1009,12 @@
 <ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 											<Children>
 
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SpectateBattlest"/>
+												<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+												  <Children>
+													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SpectateBattlest"/>
+													<HintWidget DataSource="{SpectateBattlesEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+												  </Children>
+												</Widget>
 
 												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 													<Children>
@@ -1000,7 +1055,12 @@
 <ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 											<Children>
 
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SimulationEquipmentt"/>
+												<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+												  <Children>
+													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SimulationEquipmentt"/>
+													<HintWidget DataSource="{SimulationEquipmentEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+												  </Children>
+												</Widget>
 
 												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 													<Children>
@@ -1014,7 +1074,12 @@
 <ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 											<Children>
 
-												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SimulationRoutt"/>
+												<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+												  <Children>
+													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SimulationRoutt"/>
+													<HintWidget DataSource="{SimulationRoutEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+												  </Children>
+												</Widget>
 
 												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 													<Children>
@@ -1026,7 +1091,12 @@
 											</ListPanel>
 <ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 												<Children>
-													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@StrategicPowert"/>
+													<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+													  <Children>
+														<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@StrategicPowert"/>
+														<HintWidget DataSource="{StrategicPowerEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+													  </Children>
+													</Widget>
 													<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 														<Children>
 															<RichTextWidget DataSource="{StrategicPowerEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
@@ -1037,7 +1107,12 @@
 											</ListPanel>
 <ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 												<Children>
-													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SimulationPerkt"/>
+													<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+													  <Children>
+														<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SimulationPerkt"/>
+														<HintWidget DataSource="{SimulationPerkSystemHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+													  </Children>
+													</Widget>
 													<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 														<Children>
 															<RichTextWidget DataSource="{SimulationPerkSystemText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
@@ -1050,7 +1125,12 @@
 <ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
   <Children>
 
-    <RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ShowInventoryItemWeightt"/>
+    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+      <Children>
+        <RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ShowInventoryItemWeightt"/>
+        <HintWidget DataSource="{ShowInventoryItemWeightHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+      </Children>
+    </Widget>
 <ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
   <Children>
     <RichTextWidget DataSource="{ShowInventoryItemWeightText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
@@ -1216,7 +1296,12 @@
 <ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ModuleStatust"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ModuleStatust"/>
+												<HintWidget DataSource="{RBMCampaignEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1262,7 +1347,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@Vanillat"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@Vanillat"/>
+												<HintWidget DataSource="{VanillaCombatAiHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1276,7 +1366,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@KeepBattlet"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@KeepBattlet"/>
+												<HintWidget DataSource="{KeepBattleEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1291,7 +1386,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@PostureGUIt"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@PostureGUIt"/>
+												<HintWidget DataSource="{PostureGUIEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1306,7 +1406,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@Playpost"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@Playpost"/>
+												<HintWidget DataSource="{PlayerPostureMultiplierHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1339,7 +1444,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight" IsEnabled="@IsStaminaSelectable">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@StaminaSyst"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@StaminaSyst"/>
+												<HintWidget DataSource="{StaminaSystemEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1354,7 +1464,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@PostureSyst"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@PostureSyst"/>
+												<HintWidget DataSource="{PostureSystemEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1531,7 +1646,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@HitStopt"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@HitStopt"/>
+												<HintWidget DataSource="{HitStopEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1546,7 +1666,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ModuleStatust"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ModuleStatust"/>
+												<HintWidget DataSource="{RBMAIEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1604,7 +1729,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ThrustModifiert"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ThrustModifiert"/>
+												<HintWidget DataSource="{ThrustModifierHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1636,7 +1766,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@RealArrowt"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@RealArrowt"/>
+												<HintWidget DataSource="{RealisticArrowArcHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1651,7 +1786,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ArmorGUIt"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ArmorGUIt"/>
+												<HintWidget DataSource="{ArmorStatusUIEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1666,7 +1806,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SneakAttackt"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@SneakAttackt"/>
+												<HintWidget DataSource="{SneakAttackInstaKillHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1753,7 +1898,12 @@
 
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@BetterArrowst"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@BetterArrowst"/>
+												<HintWidget DataSource="{BetterArrowVisualsHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1767,7 +1917,12 @@
 
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@PassiveShieldt"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@PassiveShieldt"/>
+												<HintWidget DataSource="{PassiveShoulderShieldsHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1782,7 +1937,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@Rangedspeedt"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@Rangedspeedt"/>
+												<HintWidget DataSource="{RangedReloadSpeedHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1814,7 +1974,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopOverhault"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopOverhault"/>
+												<HintWidget DataSource="{ActiveTroopOverhaulHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>
@@ -1829,7 +1994,12 @@
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 
-											<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="Fixed" HeightSizePolicy="CoverChildren" SuggestedWidth="!AT.Slider.Desc.Width" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ModuleStatust"/>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@ModuleStatust"/>
+												<HintWidget DataSource="{RBMCombatEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
 
 											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
 											  <Children>

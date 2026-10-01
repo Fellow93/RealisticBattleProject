@@ -29,6 +29,19 @@ namespace RBMConfig
 
         public TextViewModel RBMCampaignEnabledText { get; }
 
+        // Hover tooltips on the four "Module Status" rows. The Campaign one is plain text, matching its unkeyed caption.
+        [DataSourceProperty]
+        public BasicTooltipViewModel RBMCombatEnabledHint { get; } = Hint("{=RBM_CON_130}Master switch for RBM's combat overhaul: damage, armor, weapon and missile physics, ranged reload, and RBM's reworked items, troops and siege engines. Off returns combat to the base game and every option in this section stops working. RBM's spear and weapon animation parameters only follow a change after a game restart. Default on.");
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel RBMAIEnabledHint { get; } = Hint("{=RBM_CON_131}Master switch for RBM's battle AI: formation tactics and behaviors, siege AI, AI blocking and parrying, the posture and stamina systems, the frontline system and AI kicks and bashes. Off returns battle AI to the base game and every option in this section except Slow Motion in Combat stops working. Default on.");
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel RBMTournamentEnabledHint { get; } = Hint("{=RBM_CON_132}Tiered tournaments. Your tier comes from your level and the quality of your armor: below tier 5 you fight troops of your own tier, from tier 5 the lords and heroes in town. Arena gear, the prize (which can roll a better quality) and the renown you win follow your tier. Off restores the base game's tournaments. Default on.");
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel RBMCampaignEnabledHint { get; } = Hint("Master switch for RBM's campaign overhaul: the troop spoils economy, wages and upkeep, settlement wealth, village and town production, caravans, equipment-aware auto-resolve and troop power, and RBM's additions to the campaign screens. Off returns the campaign to the base game and every option in this section stops working. The screen additions only follow a change after a game restart. Default on.");
+
         [DataSourceProperty]
         public string CancelText
         {
@@ -405,7 +418,7 @@ namespace RBMConfig
 
             // RecruitSupply draw: Enabled is the default, so its option carries the "(Default)" tag.
             List<string> recruitDrawsFromSettlementStockOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
-            RecruitDrawsFromSettlementStockText = new TextViewModel(new TextObject("{=RBM_CON_110}Recruits Kitted From Market"));
+            RecruitDrawsFromSettlementStockText = new TextViewModel(new TextObject("{=RBM_CON_128}Recruits Kitted From Market"));
             RecruitDrawsFromSettlementStock = new SelectorVM<SelectorItemVM>(recruitDrawsFromSettlementStockOptions, 0, null);
 
             // Charge mount in gold: Enabled is the default, so its option carries the "(Default)" tag.

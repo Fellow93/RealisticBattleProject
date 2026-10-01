@@ -45,6 +45,9 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel SimulationEquipmentEnabledHint { get; } = Hint("{=RBM_CON_136}Auto-resolve works out every simulated blow from the troops' actual gear -- armor on each body part, shields and real missiles -- instead of their tier alone. Off returns auto-resolve to the base game, and Auto Resolve Routing and Auto Resolve Perks with it. Default on.");
+
+        [DataSourceProperty]
         public string SimulationRoutt
         {
             get
@@ -52,6 +55,9 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_096}Auto Resolve Routing").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel SimulationRoutEnabledHint { get; } = Hint("{=RBM_CON_137}In auto-resolve, a side cut down to fewer than 50 men and losing clearly worse than its enemy may break and flee instead of fighting to the last man; the survivors escape. The more one-sided the fight, the likelier the break. Siege assaults are not affected. Needs Detailed Auto Resolve on. Default off.");
 
         [DataSourceProperty]
         public string StrategicPowert
@@ -63,6 +69,9 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel StrategicPowerEnabledHint { get; } = Hint("{=RBM_CON_138}Party strength -- what the encounter screen shows and what AI lords weigh before attacking, fleeing or gathering armies -- is worked out from each troop's gear, training and horse and his commander's perks instead of his tier alone. Auto-resolve itself is not affected, so the shown strength no longer predicts it exactly. Default on.");
+
+        [DataSourceProperty]
         public string SimulationPerkt
         {
             get
@@ -72,6 +81,9 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
+        public BasicTooltipViewModel SimulationPerkSystemHint { get; } = Hint("{=RBM_CON_139}In auto-resolve, troops are split into formations under captains as in a real battle, and each captain's own combat perks apply to his formation; the commander's hit-point perks also reach his men. Replaces the base game's flat bonus for the number of captain perks. Needs Detailed Auto Resolve on. Default on.");
+
+        [DataSourceProperty]
         public string SpectateBattlest
         {
             get
@@ -79,6 +91,9 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_099}Spectate AI Battles").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel SpectateBattlesEnabledHint { get; } = Hint("{=RBM_CON_135}When two AI sides meet in a field battle or siege assault with enough men on each side, offers to let you watch it from a free camera. What you watch is only a copy: the battle on the map resolves on its own. Needs the RTS Camera mod. Default off.");
 
         private float _spectateMinTroopsPerSide;
 

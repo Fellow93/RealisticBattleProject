@@ -755,14 +755,17 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel RecruitDrawsFromSettlementStockHint { get; } = Hint("{=RBM_CON_109}A man recruited in a town is outfitted from that town's market; one recruited in a village is outfitted from the town it trades with. Gear of the right kind and tier leaves that market. It draws what the market has and never blocks a recruitment. Default on.");
+        public BasicTooltipViewModel TroopUpgradeRequireSupplyTownHint { get; } = Hint("{=RBM_CON_133}A party can only upgrade troops while it is inside a friendly or neutral settlement or within Upgrade Supply Range of a friendly or neutral town, and the new kit is taken from that town's market. AI parties are only held back on upgrades they pay for in gold; bandits are exempt. Off lets parties upgrade anywhere. Needs Troop Upgrade Cost above 0. Default on.");
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel RecruitDrawsFromSettlementStockHint { get; } = Hint("{=RBM_CON_129}A volunteer who appears in a town is kitted out from that town's market, one in a village from the town it trades with; it takes what the market has and never blocks a recruitment. It also sets the recruit price: free in your own fief (or anywhere in your realm as its ruler), the man's gear plus five days' wage for a vassal in his own realm, a tenth more for outsiders and mercenaries, and only the wage part plus a tenth for a landless adventurer; the money goes to the settlement. Off restores the base game's recruit price. Default on.");
 
         [DataSourceProperty]
         public string RecruitDrawsFromSettlementStockt
         {
             get
             {
-                return new TextObject("{=RBM_CON_110}Recruits Kitted From Market").ToString();
+                return new TextObject("{=RBM_CON_128}Recruits Kitted From Market").ToString();
             }
         }
 
@@ -1165,6 +1168,9 @@ namespace RBMConfig
                 return new TextObject("{=RBM_CON_105}Inventory Weight Column").ToString();
             }
         }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel ShowInventoryItemWeightHint { get; } = Hint("{=RBM_CON_134}Adds a weight column to the item rows of the inventory and trade screens, showing what one item weighs. Takes effect after restarting the game. Default on.");
 
         // Campaign config category headers. Plain literal TextObjects (no {=KEY}) to sidestep
         // the LOC-eng.xml key-collision issue; these are collapsible sub-section titles.
