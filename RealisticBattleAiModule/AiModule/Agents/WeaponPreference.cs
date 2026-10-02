@@ -41,6 +41,26 @@ namespace RBMAI
             public static readonly Dictionary<Agent, float> enemyCloseSince = new Dictionary<Agent, float>();
             // Agent -> when an enemy was last seen close. Drives MainWeaponDelay.
             public static readonly Dictionary<Agent, float> lastEnemyCloseTime = new Dictionary<Agent, float>();
+            // Agent -> CarriesPolearmAndSidearm, valid while the four weapon slots hold the same items. Walking every
+            // usage of every carried item was most of this check's cost, and the slots only change on a pickup or drop.
+            public static readonly Dictionary<Agent, LoadoutCache> loadoutCache = new Dictionary<Agent, LoadoutCache>();
+
+            public struct LoadoutCache
+            {
+                public ItemObject Slot0;
+                public ItemObject Slot1;
+                public ItemObject Slot2;
+                public ItemObject Slot3;
+                public bool CarriesBoth;
+            }
+
+            // A rider moving faster than this (m/s) is riding through, not fighting where he stands: no proximity
+            // query, and no close contact counted toward the sidearm. Lancers used to swap to the sword and back as
+            // they passed through a formation. Once he is bogged down below it the normal checks resume.
+            private const float MountedPassingSpeed = 4f;
+
+            // Main thread only (HumanAIComponent.OnTick); cleared after every use.
+            private static readonly MBList<Agent> _nearbyEnemies = new MBList<Agent>();
 
             // A polearm to prefer and a sidearm to fall back to. A man with only a polearm has nothing to switch to,
             // and pushing his melee favor made the AI keep reaching for a sidearm he doesn't carry. Anything that can
@@ -91,6 +111,44 @@ namespace RBMAI
                 return polearm && sidearm;
             }
 
+            private static ItemObject SlotItem(Agent agent, EquipmentIndex index)
+            {
+                MissionWeapon weapon = agent.Equipment[index];
+                return weapon.IsEmpty ? null : weapon.Item;
+            }
+
+            private static bool CarriesPolearmAndSidearmCached(Agent agent)
+            {
+                ItemObject slot0 = SlotItem(agent, EquipmentIndex.Weapon0);
+                ItemObject slot1 = SlotItem(agent, EquipmentIndex.Weapon1);
+                ItemObject slot2 = SlotItem(agent, EquipmentIndex.Weapon2);
+                ItemObject slot3 = SlotItem(agent, EquipmentIndex.Weapon3);
+                if (loadoutCache.TryGetValue(agent, out LoadoutCache cached) &&
+                    cached.Slot0 == slot0 && cached.Slot1 == slot1 && cached.Slot2 == slot2 && cached.Slot3 == slot3)
+                {
+                    return cached.CarriesBoth;
+                }
+                bool carriesBoth = CarriesPolearmAndSidearm(agent);
+                loadoutCache[agent] = new LoadoutCache { Slot0 = slot0, Slot1 = slot1, Slot2 = slot2, Slot3 = slot3, CarriesBoth = carriesBoth };
+                return carriesBoth;
+            }
+
+            private static bool IsNonRoutingEnemyClose(Agent agent)
+            {
+                Mission.Current.GetNearbyEnemyAgents(agent.Position.AsVec2, CloseEnemyRadius, agent.Team, _nearbyEnemies);
+                bool found = false;
+                for (int i = 0; i < _nearbyEnemies.Count; i++)
+                {
+                    if (!_nearbyEnemies[i].IsRunningAway)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                _nearbyEnemies.Clear();
+                return found;
+            }
+
             public static void TickWeaponPreference(Agent agent, float currentTime)
             {
                 if (Mission.Current == null || !Mission.Current.IsDeploymentFinished || agent.Team == null ||
@@ -102,9 +160,11 @@ namespace RBMAI
                 {
                     return;
                 }
-                nextCheck[agent] = currentTime + CheckInterval;
+                // Jittered: an army spawned in one frame otherwise ran every one of these checks in the same frame,
+                // forever. The delays below are timestamps, so the jitter only moves the check granularity.
+                nextCheck[agent] = currentTime + CheckInterval * (0.75f + 0.5f * MBRandom.RandomFloat);
 
-                if (agent.Equipment == null || !CarriesPolearmAndSidearm(agent))
+                if (agent.Equipment == null || !CarriesPolearmAndSidearmCached(agent))
                 {
                     enemyCloseSince.Remove(agent);
                     lastEnemyCloseTime.Remove(agent);
@@ -114,10 +174,10 @@ namespace RBMAI
                     }
                     return;
                 }
-                MBList<Agent> enemies = new MBList<Agent>();
-                enemies = Mission.Current.GetNearbyEnemyAgents(agent.GetWorldPosition().AsVec2, CloseEnemyRadius, agent.Team, enemies);
-                enemies.RemoveAll((Agent a) => a.IsRunningAway);
-                if (enemies.Count > 0)
+                Agent mount = agent.MountAgent;
+                bool enemyNear = (mount == null || mount.GetCurrentVelocity().LengthSquared <= MountedPassingSpeed * MountedPassingSpeed)
+                    && IsNonRoutingEnemyClose(agent);
+                if (enemyNear)
                 {
                     lastEnemyCloseTime[agent] = currentTime;
                     if (!enemyCloseSince.ContainsKey(agent))

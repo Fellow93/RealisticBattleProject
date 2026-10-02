@@ -23,7 +23,11 @@ namespace RBMAI
         [HarmonyPatch("SetAiRelatedProperties")]
         private class OverrideSetAiRelatedProperties
         {
-            private static readonly MethodInfo _getMeleeSkillMethod = typeof(AgentStatCalculateModel).GetMethod("GetMeleeSkill", BindingFlags.NonPublic | BindingFlags.Instance);
+            // A delegate, not MethodInfo.Invoke: this runs on every stat update of every agent, and Invoke boxed the
+            // result and allocated an argument array each time.
+            private static readonly Func<AgentStatCalculateModel, Agent, WeaponComponentData, WeaponComponentData, int> _getMeleeSkill =
+                AccessTools.MethodDelegate<Func<AgentStatCalculateModel, Agent, WeaponComponentData, WeaponComponentData, int>>(
+                    typeof(AgentStatCalculateModel).GetMethod("GetMeleeSkill", BindingFlags.NonPublic | BindingFlags.Instance));
 
             /// <summary>
             /// Mirrors the Throwing branch of SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent:
@@ -69,7 +73,7 @@ namespace RBMAI
                 }
 
                 SkillObject skill = (equippedItem == null) ? DefaultSkills.Athletics : equippedItem.RelevantSkill;
-                int meleeSkill = (int)_getMeleeSkillMethod.Invoke(__instance, new object[] { agent, equippedItem, secondaryItem });
+                int meleeSkill = _getMeleeSkill(__instance, agent, equippedItem, secondaryItem);
                 int effectiveSkill = __instance.GetEffectiveSkill(agent, skill);
                 float meleeLevel = RBMAI.Utilities.CalculateAILevel(agent, meleeSkill);                 //num
                 float effectiveSkillLevel = RBMAI.Utilities.CalculateAILevel(agent, effectiveSkill);    //num2

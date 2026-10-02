@@ -257,17 +257,60 @@ namespace RBMAI
                 CommonAIComponent ai = victim.CommonAIComponent;
                 if (ai != null && !ai.IsRetreating && !ai.IsPanicked && ai.CanPanic())
                 {
-                    ai.Retreat();
+                    // The formation's retreat-position cache reuses a flee point found within 20 m, so a charge that
+                    // shocks a dozen men in one pass runs the flee-position search once, not once per man (vanilla's
+                    // MovementOrder retreat does the same). It needs a formation to cache on.
+                    ai.Retreat(useCachingSystem: victim.Formation != null);
                     OnTickPatch.chargeRoutedAgents.Add(victim);
+                }
+            }
+
+            // Victim -> mission time of his last synthetic knockback. A horse ploughing through a packed formation
+            // bumps the same men several times a second, and each synthetic blow replays the hit animation and runs
+            // OnRegisterBlow on every mission behavior; one per victim per cooldown is all the stagger shows anyway.
+            public static readonly Dictionary<Agent, float> lastSyntheticKnockback = new Dictionary<Agent, float>();
+            private const float SyntheticKnockbackCooldown = 0.5f;
+            // A friendly bump slower than this (relative m/s) is a rider easing through his own infantry, not a
+            // collision; knocking those men back stalled every shoulder-to-shoulder formation a horseman passed.
+            private const float FriendlyKnockbackMinSpeed = 3f;
+
+            private static bool OnSyntheticKnockbackCooldown(Agent victim, float now)
+            {
+                return lastSyntheticKnockback.TryGetValue(victim, out float last) && now - last < SyntheticKnockbackCooldown;
+            }
+
+            // A 0-damage knockback blow: the charge staggers the victim even where vanilla's knockback model or its
+            // friendly early-out leaves the horse passing through him untouched.
+            private static void RegisterSyntheticKnockback(Mission mission, ref AttackCollisionData collisionData, Blow blow, Agent attacker, Agent victim, float now)
+            {
+                lastSyntheticKnockback[victim] = now;
+                blow.BaseMagnitude = 0;
+                blow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
+                blow.InflictedDamage = 0;
+                blow.SelfInflictedDamage = 0;
+                blow.AbsorbedByArmor = 0;
+                blow.DamageCalculated = true;
+                blow.BlowFlag |= BlowFlags.KnockBack;
+                MissionWeapon attackerWeapon = default(MissionWeapon);
+                victim.RegisterBlow(blow, collisionData);
+                foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
+                {
+                    missionBehaviour.OnRegisterBlow(attacker, victim, WeakGameEntity.Invalid, blow, ref collisionData, in attackerWeapon);
                 }
             }
 
             private static void Postfix(ref AttackCollisionData collisionData, Blow blow, Agent attacker, Agent victim, Mission __instance)
             {
-                if (attacker.RiderAgent != null)
+                Agent rider = attacker.RiderAgent;
+                if (rider != null)
                 {
-                    attacker.RiderAgent.EventControlFlags &= ~Agent.EventControlFlag.DoubleTapToDirectionMask;
-                    attacker.RiderAgent.EventControlFlags |= Agent.EventControlFlag.DoubleTapToDirectionUp;
+                    // One native read and at most one write, instead of two read-modify-write round trips.
+                    Agent.EventControlFlag flags = rider.EventControlFlags;
+                    Agent.EventControlFlag newFlags = (flags & ~Agent.EventControlFlag.DoubleTapToDirectionMask) | Agent.EventControlFlag.DoubleTapToDirectionUp;
+                    if (newFlags != flags)
+                    {
+                        rider.EventControlFlags = newFlags;
+                    }
                 }
                 // Vanilla has already registered the charge blow by the time this postfix runs, so the charge
                 // may have killed the victim. Retreat() and RegisterBlow on a removed agent reach native code.
@@ -327,39 +370,20 @@ namespace RBMAI
                     }
                     if (!isKnockBack && !isKnockDown)
                     {
-                        blow.BaseMagnitude = 0;
-                        blow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
-                        blow.InflictedDamage = 0;
-                        blow.SelfInflictedDamage = 0;
-                        blow.AbsorbedByArmor = 0;
-                        blow.DamageCalculated = true;
-                        blow.BlowFlag |= BlowFlags.KnockBack;
-                        WeakGameEntity invalid = WeakGameEntity.Invalid;
-                        Blow b = blow;
-                        MissionWeapon attackerWeapon = default(MissionWeapon);
-                        victim.RegisterBlow(blow, collisionData);
-                        foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
+                        float now = __instance.CurrentTime;
+                        if (!OnSyntheticKnockbackCooldown(victim, now))
                         {
-                            missionBehaviour.OnRegisterBlow(attacker, victim, WeakGameEntity.Invalid, blow, ref collisionData, in attackerWeapon);
+                            RegisterSyntheticKnockback(__instance, ref collisionData, blow, attacker, victim, now);
                         }
                     }
                 }
                 if (attacker.RiderAgent != null && !attacker.IsEnemyOf(victim) && victim.CurrentMortalityState != Agent.MortalityState.Invulnerable)
                 {
-                    blow.BaseMagnitude = 0;
-                    blow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
-                    blow.InflictedDamage = 0;
-                    blow.SelfInflictedDamage = 0;
-                    blow.AbsorbedByArmor = 0;
-                    blow.DamageCalculated = true;
-                    blow.BlowFlag |= BlowFlags.KnockBack;
-                    WeakGameEntity invalid = WeakGameEntity.Invalid;
-                    Blow b = blow;
-                    MissionWeapon attackerWeapon = default(MissionWeapon);
-                    victim.RegisterBlow(blow, collisionData);
-                    foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
+                    float now = __instance.CurrentTime;
+                    if (!OnSyntheticKnockbackCooldown(victim, now) &&
+                        (attacker.Velocity.AsVec2 - victim.Velocity.AsVec2).LengthSquared > FriendlyKnockbackMinSpeed * FriendlyKnockbackMinSpeed)
                     {
-                        missionBehaviour.OnRegisterBlow(attacker, victim, WeakGameEntity.Invalid, blow, ref collisionData, in attackerWeapon);
+                        RegisterSyntheticKnockback(__instance, ref collisionData, blow, attacker, victim, now);
                     }
                 }
                 return;
