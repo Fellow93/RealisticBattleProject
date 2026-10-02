@@ -38,6 +38,44 @@ namespace RBMAI
             // Next mission time each agent may scan for a dropped melee weapon (see TrySeekMeleeWeapon).
             public static Dictionary<Agent, float> meleePickupNextScan = new Dictionary<Agent, float>();
 
+            // Throttled verdict of the rider crowd-shove test (see Postfix).
+            public sealed class RiderCrowdState
+            {
+                public float nextCheck = float.MinValue;
+                public bool crowded = false;
+            }
+
+            public static Dictionary<Agent, RiderCrowdState> riderCrowdStates = new Dictionary<Agent, RiderCrowdState>();
+
+            // OnTick runs on the main thread only, so one shared buffer serves every rider. GetNearbyAgents clears it first.
+            private static readonly MBList<Agent> _riderCrowdScratch = new MBList<Agent>();
+
+            // A rider hemmed in by 3+ foot soldiers (either side), at least one of them an enemy. Horses, ridden or
+            // not, are agents too and are not counted.
+            private static bool IsRiderCrowdedByFoot(Agent rider)
+            {
+                MBList<Agent> nearby = _riderCrowdScratch;
+                Mission.Current.GetNearbyAgents(rider.Position.AsVec2, 1.25f, nearby);
+                int footCount = 0;
+                bool anyEnemy = false;
+                for (int i = 0; i < nearby.Count; i++)
+                {
+                    Agent other = nearby[i];
+                    if (!other.IsHuman || other.HasMount)
+                    {
+                        continue;
+                    }
+                    footCount++;
+                    if (!anyEnemy && other.IsEnemyOf(rider))
+                    {
+                        anyEnemy = true;
+                    }
+                }
+                // Don't keep the last batch of agents reachable from a static between frames.
+                nearby.Clear();
+                return footCount >= 3 && anyEnemy;
+            }
+
             private const float MeleePickupSearchRadius = 15f;
             private static readonly WeakGameEntity[] _meleePickupEntities = new WeakGameEntity[64];
             private static readonly UIntPtr[] _meleePickupIds = new UIntPtr[64];
@@ -291,14 +329,24 @@ namespace RBMAI
                 // formation ordered to dismount: the engine only lets a rider get off once he has nearly stopped
                 // (Agent.DismountVelocityLimit), so the shove kept the last riders, crowded by the comrades already
                 // on foot, moving and they never dismounted.
+                // The crowd test is a proximity query behind Mission's global agent-query lock, and ran for every
+                // mounted agent every frame. Its verdict is now re-taken every 0.2-0.3 s (jittered so riders don't
+                // re-query on the same frame) and re-applied every frame in between, so a rider shoves exactly as
+                // before, only noticing the crowd up to ~0.3 s later.
                 if (___Agent.IsActive() && ___Agent.HasMount
                     && ___Agent.Formation?.RidingOrder.OrderEnum != RidingOrder.RidingOrderEnum.Dismount)
                 {
-                    MBList<Agent> footSoldiersClose = new MBList<Agent>();
-                    footSoldiersClose = Mission.Current.GetNearbyAgents(___Agent.GetWorldPosition().AsVec2, 1.25f, footSoldiersClose);
-                    footSoldiersClose.RemoveAll((Agent a) => !a.IsHuman || a.HasMount);
-                    Agent rider = ___Agent;
-                    if (footSoldiersClose.Count >= 3 && footSoldiersClose.Any((Agent a) => a.IsEnemyOf(rider)))
+                    if (!riderCrowdStates.TryGetValue(___Agent, out RiderCrowdState crowdState))
+                    {
+                        crowdState = new RiderCrowdState();
+                        riderCrowdStates[___Agent] = crowdState;
+                    }
+                    if (currentTime >= crowdState.nextCheck)
+                    {
+                        crowdState.crowded = IsRiderCrowdedByFoot(___Agent);
+                        crowdState.nextCheck = currentTime + MBRandom.RandomFloatRanged(0.2f, 0.3f);
+                    }
+                    if (crowdState.crowded)
                     {
                         ___Agent.EventControlFlags &= ~Agent.EventControlFlag.DoubleTapToDirectionMask;
                         ___Agent.EventControlFlags |= Agent.EventControlFlag.DoubleTapToDirectionUp;
@@ -360,11 +408,67 @@ namespace RBMAI
         [HarmonyPatch("ApplyActionOnEachUnit", new Type[] { typeof(Action<Agent>), typeof(Agent) })]
         internal class ApplyActionOnEachUnitPatch
         {
-            private static bool Prefix(ref Action<Agent> action, ref Agent ignoreAgent, ref Formation __instance)
+            // Runs the action over a copy of the roster, as ApplyActionOnEachUnitViaBackupList does (attached units,
+            // then detached ones, each copied just before its pass), so an action that moves units between
+            // formations cannot break the iteration. The copies go into pooled per-thread lists instead of a fresh
+            // ToArray per call. Indexed by nesting depth: an action that itself calls ApplyActionOnEachUnit gets the
+            // next list, never the one its caller is still walking. [ThreadStatic] because this is also reached from
+            // the parallel movement job.
+            [ThreadStatic] private static List<List<Agent>> _snapshotPool;
+            [ThreadStatic] private static int _snapshotDepth;
+
+            private static bool Prefix(ref Action<Agent> action, ref Agent ignoreAgent, ref Formation __instance, List<Agent> ____detachedUnits)
             {
                 try
                 {
-                    __instance.ApplyActionOnEachUnitViaBackupList(action);
+                    List<List<Agent>> pool = _snapshotPool ?? (_snapshotPool = new List<List<Agent>>());
+                    int depth = _snapshotDepth;
+                    if (depth == pool.Count)
+                    {
+                        pool.Add(new List<Agent>());
+                    }
+                    List<Agent> snapshot = pool[depth];
+                    _snapshotDepth = depth + 1;
+                    try
+                    {
+                        // ignoreAgent is honoured, as native does; the old redirect to the backup-list method dropped it.
+                        snapshot.Clear();
+                        MBReadOnlyList<IFormationUnit> attachedUnits = __instance.Arrangement.GetAllUnits();
+                        for (int i = 0; i < attachedUnits.Count; i++)
+                        {
+                            Agent unit = (Agent)attachedUnits[i];
+                            if (unit != ignoreAgent)
+                            {
+                                snapshot.Add(unit);
+                            }
+                        }
+                        for (int i = 0; i < snapshot.Count; i++)
+                        {
+                            action(snapshot[i]);
+                        }
+                        snapshot.Clear();
+                        if (____detachedUnits != null)
+                        {
+                            for (int i = 0; i < ____detachedUnits.Count; i++)
+                            {
+                                Agent unit = ____detachedUnits[i];
+                                if (unit != ignoreAgent)
+                                {
+                                    snapshot.Add(unit);
+                                }
+                            }
+                        }
+                        for (int i = 0; i < snapshot.Count; i++)
+                        {
+                            action(snapshot[i]);
+                        }
+                    }
+                    finally
+                    {
+                        // Don't keep agents reachable from a static between calls.
+                        snapshot.Clear();
+                        _snapshotDepth = depth;
+                    }
                     return false;
                 }
                 catch (Exception)

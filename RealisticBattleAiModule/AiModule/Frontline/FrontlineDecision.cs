@@ -183,6 +183,18 @@ namespace RBMAI
             // >50s "archer has stalled" reset fired, so the 20s/50s logic keeps its effect without
             // reflecting into engine state from a worker thread.
             public float stallResetTime = float.MinValue;
+
+            // Cavalry free-charge verdict ("enemy riders or foot close enough to break ranks"), re-queried only
+            // when it expires: the two proximity queries behind it take Mission's global agent-query lock, and
+            // every AI rider ran them every frame from the parallel movement job.
+            public bool cavalryEnemyClose = false;
+            public float cavalryEnemyCloseExpiry = float.MinValue;
+
+            // Under ChargeWithTarget a rider more than 60 m from his target heads for the target's WorldPosition;
+            // resolving it is an engine call, so it is reused until it expires or the target changes.
+            public Agent cachedHeadingTarget = null;
+            public WorldPosition cachedHeadingPosition = WorldPosition.Invalid;
+            public float cachedHeadingExpiry = float.MinValue;
         }
 
         // Returns this agent's melee/charge target, reusing the cached one while it is fresh and still alive.

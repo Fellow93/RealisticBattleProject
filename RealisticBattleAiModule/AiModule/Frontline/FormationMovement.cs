@@ -15,8 +15,24 @@ namespace RBMAI
     [HarmonyPatch(typeof(HumanAIComponent))]
     internal class OverrideParallelFormationMovement
     {
-        private static readonly PropertyInfo ShouldCatchUpWithFormationProperty =
-            typeof(HumanAIComponent).GetProperty("ShouldCatchUpWithFormation");
+        // The setter is private. A compiled delegate rather than PropertyInfo.SetValue: this runs per agent per
+        // movement update, and SetValue boxed the bool and allocated an argument array on every call.
+        private static readonly Action<HumanAIComponent, bool> SetShouldCatchUpWithFormation = CreateShouldCatchUpSetter();
+
+        private static Action<HumanAIComponent, bool> CreateShouldCatchUpSetter()
+        {
+            // Null (the patch then skips the write, as it did when the property lookup failed) rather than a type
+            // initializer exception that would take the whole patch class down after a game update.
+            try
+            {
+                MethodInfo setter = AccessTools.PropertySetter(typeof(HumanAIComponent), "ShouldCatchUpWithFormation");
+                return setter != null ? AccessTools.MethodDelegate<Action<HumanAIComponent, bool>>(setter) : null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
         // Diagnostic counters read by AiBehaviorLogic (worker-thread increments, Interlocked).
         internal static long CallCount;
@@ -71,10 +87,10 @@ namespace RBMAI
                 Vec2 formationDirection = ___Agent.Formation.CurrentDirection;
                 bool unitBehindLine = (___Agent.Position.AsVec2 - ___Agent.Formation.CachedAveragePosition).DotProduct(formationDirection) < 0f;
 
-                if ((!unitFarFromSlot || !unitBehindLine) && ShouldCatchUpWithFormationProperty != null)
+                if ((!unitFarFromSlot || !unitBehindLine) && SetShouldCatchUpWithFormation != null)
                 {
                     System.Threading.Interlocked.Increment(ref SetCount);
-                    ShouldCatchUpWithFormationProperty.SetValue(__instance, true, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    SetShouldCatchUpWithFormation(__instance, true);
 
                     // shouldKeepWithFormationInsteadOfMovingToAgent is hard-set to true on purpose. Native
                     // computes it as (shield in the offhand) && (formation is >=50% ranged), so only a
@@ -102,8 +118,25 @@ namespace RBMAI
             StandGround
         }
 
-        private static readonly MethodInfo IsUnitDetachedForDebug =
-            typeof(Formation).GetMethod("IsUnitDetachedForDebug", BindingFlags.Instance | BindingFlags.NonPublic);
+        // Formation.IsUnitDetachedForDebug (internal) is _detachedUnits.Contains(unit). Agent.IsDetachedFromFormation
+        // tests the agent's own detachment field instead, which native sets and clears at different points, so the
+        // same method is kept, called through a compiled delegate: the old MethodInfo.Invoke allocated an argument
+        // array per agent per movement update.
+        private static readonly Func<Formation, Agent, bool> IsUnitDetachedForDebug = CreateIsUnitDetachedDelegate();
+
+        private static Func<Formation, Agent, bool> CreateIsUnitDetachedDelegate()
+        {
+            // Null (the prefix then defers to native, as before) rather than a type initializer exception.
+            try
+            {
+                MethodInfo method = AccessTools.Method(typeof(Formation), "IsUnitDetachedForDebug", new Type[] { typeof(Agent) });
+                return method != null ? AccessTools.MethodDelegate<Func<Formation, Agent, bool>>(method) : null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
         // NOT dead work, even though the sibling postfix disables the frame again for ChargeToTarget.
         // Native's ChargeToTarget path goes through Agent.GetBaseFormationFrame and never calls the managed
@@ -124,33 +157,29 @@ namespace RBMAI
             if (___Agent != null)
             {
                 var formation = ___Agent.Formation;
+                // Cheapest test first: everything below only matters under ChargeWithTarget, and the detached test is
+                // a list scan. All of these are side-effect free, so the order does not change the outcome.
                 // IsOnLand: vanilla GetBaseFormationFrame only queries an order position for agents on land; a swimmer
-                // (naval overboard) is left to native.
-                if (!___Agent.IsMount && ___Agent.IsOnLand() && formation != null &&(formation.QuerySystem.IsCavalryFormation || formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && !(bool)IsUnitDetachedForDebug.Invoke(formation, new object[] { ___Agent }))
+                // (naval overboard) is left to native. *ReadOnly class flags: worker thread (see FrontlinePositioning).
+                if (formation != null && formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget
+                    && !___Agent.IsMount && ___Agent.IsOnLand()
+                    && (formation.QuerySystem.IsCavalryFormationReadOnly || formation.QuerySystem.IsInfantryFormationReadOnly || formation.QuerySystem.IsRangedFormationReadOnly)
+                    && !IsUnitDetachedForDebug(formation, ___Agent))
                 {
-                    if (formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
+                    formationPosition = formation.GetOrderPositionOfUnit(___Agent);
+                    Agent targetAgent = ___Agent.GetTargetAgent();
+                    if (targetAgent != null)
                     {
-                        if (___Agent != null && formation != null)
-                        {
-                            formationPosition = formation.GetOrderPositionOfUnit(___Agent);
-                            if (___Agent.GetTargetAgent() != null)
-                            {
-                                formationDirection = ___Agent.GetTargetAgent().Position.AsVec2 - ___Agent.Position.AsVec2;
-                            }
-                            else
-                            {
-                                formationDirection = formation.GetDirectionOfUnit(___Agent);
-                            }
-                            limitIsMultiplier = true;
-                            speedLimit = __instance != null && HumanAIComponent.FormationSpeedAdjustmentEnabled ? __instance.GetDesiredSpeedInFormation(false) : -1f;
-                            __result = true;
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
+                        formationDirection = targetAgent.Position.AsVec2 - ___Agent.Position.AsVec2;
                     }
+                    else
+                    {
+                        formationDirection = formation.GetDirectionOfUnit(___Agent);
+                    }
+                    limitIsMultiplier = true;
+                    speedLimit = __instance != null && HumanAIComponent.FormationSpeedAdjustmentEnabled ? __instance.GetDesiredSpeedInFormation(false) : -1f;
+                    __result = true;
+                    return false;
                 }
             }
 

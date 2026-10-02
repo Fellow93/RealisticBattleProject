@@ -45,7 +45,7 @@ namespace RBMAI
                 try
                 {
                     Mission mission = Mission.Current;
-                    if (mission == null || (!mission.IsFieldBattle && !mission.IsNavalBattle) || unit == null || !__instance.QuerySystem.IsInfantryFormation)
+                    if (mission == null || (!mission.IsFieldBattle && !mission.IsNavalBattle) || unit == null || !__instance.QuerySystem.IsInfantryFormationReadOnly)
                     {
                         return;
                     }
@@ -138,9 +138,13 @@ namespace RBMAI
                 //for cavalry
                 // Skipped for a formation ordered to dismount (only the player issues that; it survives delegating
                 // command to the AI): its first men off would lose their slot below and charge the nearest enemy.
+                // The class flags are read through the *ReadOnly getters on this worker path, as native's own
+                // ParallelUpdateFormationMovement does: the plain getters re-evaluate the whole unit-ratio sync group
+                // when stale, from every worker at once. These flags are re-evaluated on every unit add/remove
+                // (FormationQuerySystem.ExpireAfterUnitAddRemove) and refreshed by the main-thread AI's reads otherwise.
                 if (mission != null && mission.IsFieldBattle && unit != null && __instance.IsAIControlled
                     && __instance.RidingOrder.OrderEnum != RidingOrder.RidingOrderEnum.Dismount
-                    && (__instance.QuerySystem.IsCavalryFormation || __instance.QuerySystem.IsRangedCavalryFormation))
+                    && (__instance.QuerySystem.IsCavalryFormationReadOnly || __instance.QuerySystem.IsRangedCavalryFormationReadOnly))
                 {
                     //cav cahrge if no mount
                     if (unit != null && unit.MountAgent == null)
@@ -148,44 +152,62 @@ namespace RBMAI
                         __result = WorldPosition.Invalid;
                         return false;
                     }
-                    // Both checks below produce the same outcome, so the cavalry one is evaluated first and the
-                    // infantry query is skipped entirely when it already fires. That also lets both share one buffer.
-                    MBList<Agent> enemiesCloseBy = ScratchEnemyQuery;
-
-                    //cav charge if close to enemy cavalry
-                    mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 15f, unit.Team, enemiesCloseBy);
-                    if (CountByMounted(enemiesCloseBy, true) > 2)
+                    // The two proximity queries take Mission's global agent-query lock and ran for every AI rider every
+                    // frame, serialising the movement workers. They are skipped outright while no enemy formation's
+                    // units can be inside the larger radius, and otherwise their verdict is reused for 0.25-0.5 s
+                    // (jittered so riders do not all re-query on the same frame).
+                    if (IsEnemyFormationWithin(mission, unit, CavalryEnemyCloseRadius + CavalryEnemyCloseGateMargin))
                     {
-                        __result = WorldPosition.Invalid;
-                        return false;
-                    }
-                    //cav charge if close to enemy infantry
-                    mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 7f, unit.Team, enemiesCloseBy);
-                    if (CountByMounted(enemiesCloseBy, false) > 2)
-                    {
-                        __result = WorldPosition.Invalid;
-                        return false;
+                        AIDecisionState cavalryState = GetOrCreateDecisionState(unit);
+                        float now = mission.CurrentTime;
+                        if (now >= cavalryState.cavalryEnemyCloseExpiry)
+                        {
+                            cavalryState.cavalryEnemyClose = AreEnemiesCloseToRider(mission, unit);
+                            cavalryState.cavalryEnemyCloseExpiry = now + MBRandom.RandomFloatRanged(0.25f, 0.5f);
+                        }
+                        if (cavalryState.cavalryEnemyClose)
+                        {
+                            __result = WorldPosition.Invalid;
+                            return false;
+                        }
                     }
                 }
-                if (mission != null && mission.IsFieldBattle && unit != null && __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsCavalryFormation)
+                if (mission != null && mission.IsFieldBattle && unit != null && __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget && __instance.QuerySystem.IsCavalryFormationReadOnly)
                 {
+                    AIDecisionState headingState = GetOrCreateDecisionState(unit);
                     var targetAgent = unit.GetTargetAgent();
                     if (__instance.IsAIControlled)
                     {
-                        targetAgent = GetCachedCorrectTarget(unit, GetOrCreateDecisionState(unit));
+                        targetAgent = GetCachedCorrectTarget(unit, headingState);
                     }
                     if (targetAgent != null)
                     {
                         float distance = (targetAgent.Position - unit.Position).Length;
                         if (distance > 60f)
                         {
-                            __result = targetAgent.GetWorldPosition();
+                            // GetWorldPosition resolves the navmesh face (an engine call). Beyond 60 m a heading up to
+                            // 0.5 s old steers the same, so it is reused until it expires or the target changes.
+                            float now = mission.CurrentTime;
+                            if (headingState == null)
+                            {
+                                __result = targetAgent.GetWorldPosition();
+                            }
+                            else
+                            {
+                                if (headingState.cachedHeadingTarget != targetAgent || now >= headingState.cachedHeadingExpiry)
+                                {
+                                    headingState.cachedHeadingPosition = targetAgent.GetWorldPosition();
+                                    headingState.cachedHeadingTarget = targetAgent;
+                                    headingState.cachedHeadingExpiry = now + MBRandom.RandomFloatRanged(0.25f, 0.5f);
+                                }
+                                __result = headingState.cachedHeadingPosition;
+                            }
                             return false;
                         }
                     }
                 }
                 //for range
-                if (mission != null && unit != null && __instance.IsAIControlled && mission.IsFieldBattle && __instance.QuerySystem.IsRangedFormation)
+                if (mission != null && unit != null && __instance.IsAIControlled && mission.IsFieldBattle && __instance.QuerySystem.IsRangedFormationReadOnly)
                 {
                     //ranged charge if close to enemy
                     MBList<Agent> enemiesCloseBy = ScratchEnemyQuery;
@@ -272,7 +294,7 @@ namespace RBMAI
                     return true;
                 }
 
-                if (mission != null && mission.IsFieldBattle && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormation || __instance.QuerySystem.IsRangedFormation) && !____detachedUnits.Contains(unit))
+                if (mission != null && mission.IsFieldBattle && (__instance.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || __instance.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge) && (__instance.QuerySystem.IsInfantryFormationReadOnly || __instance.QuerySystem.IsRangedFormationReadOnly) && !____detachedUnits.Contains(unit))
                 {
                     Agent targetAgent;
                     var vanillaTargetAgent = targetAgent = unit.GetTargetAgent();
@@ -633,6 +655,62 @@ namespace RBMAI
                 }
                 float distance = formation.CachedAveragePosition.Distance(closestEnemy.Formation.CachedMedianPosition.AsVec2);
                 return distance <= range;
+            }
+
+            // The larger of the two cavalry free-charge radii (the enemy-rider one; the enemy-foot one is 7 m).
+            private const float CavalryEnemyCloseRadius = 15f;
+            // Slack for the engine's query seeing positions a hair different from the managed ones read here.
+            private const float CavalryEnemyCloseGateMargin = 2f;
+
+            // The cavalry free-charge test: more than two enemy riders within 15 m, or more than two enemy foot
+            // within 7 m. Both outcomes are the same, so the rider query runs first and the foot query is skipped
+            // when it already fires; that also lets both share one buffer.
+            private static bool AreEnemiesCloseToRider(Mission mission, Agent unit)
+            {
+                MBList<Agent> enemiesCloseBy = ScratchEnemyQuery;
+                mission.GetNearbyEnemyAgents(unit.Position.AsVec2, CavalryEnemyCloseRadius, unit.Team, enemiesCloseBy);
+                if (CountByMounted(enemiesCloseBy, true) > 2)
+                {
+                    return true;
+                }
+                mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 7f, unit.Team, enemiesCloseBy);
+                return CountByMounted(enemiesCloseBy, false) > 2;
+            }
+
+            // False only when no unit of any enemy formation can be within `radius` of the unit: the distance to an
+            // enemy formation's bounding box (built from its units' actual positions once per frame, see
+            // Utilities.GetFormationUnitSnapshot) is a lower bound on the distance to each of its men, scattered or
+            // not. Enemies outside every formation are not counted: on their own they could only trip the >2 tests
+            // above as three or more formation-less men close together, which field battles practically never have.
+            private static bool IsEnemyFormationWithin(Mission mission, Agent unit, float radius)
+            {
+                Team ownTeam = unit.Team;
+                Vec2 position = unit.Position.AsVec2;
+                float radiusSquared = radius * radius;
+                List<Team> teams = mission.Teams;
+                for (int t = 0; t < teams.Count; t++)
+                {
+                    Team team = teams[t];
+                    if (team == null || !team.IsEnemyOf(ownTeam))
+                    {
+                        continue;
+                    }
+                    MBList<Formation> formations = team.FormationsIncludingSpecialAndEmpty;
+                    for (int f = 0; f < formations.Count; f++)
+                    {
+                        Formation formation = formations[f];
+                        if (formation == null || formation.CountOfUnits == 0)
+                        {
+                            continue;
+                        }
+                        Utilities.FormationUnitSnapshot snapshot = Utilities.GetFormationUnitSnapshot(formation);
+                        if (snapshot.Agents.Length > 0 && snapshot.DistanceSquaredToBounds(position) <= radiusSquared)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
             }
 
             private static int CountByMounted(MBList<Agent> agents, bool mounted)

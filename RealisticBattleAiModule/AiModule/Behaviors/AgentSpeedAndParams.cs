@@ -30,7 +30,10 @@ namespace RBMAI
             }
 
             // A dismounting formation keeps vanilla pacing, which slows riders into their slots so they can get off.
-            if ((agent.Formation.QuerySystem.IsRangedCavalryFormation || agent.Formation.QuerySystem.IsCavalryFormation)
+            // *ReadOnly class flags: AdjustSpeedLimit is called from ParallelUpdateFormationMovement on the movement
+            // workers, where the plain getters re-evaluate the unit-ratio group from several threads at once. Native
+            // re-evaluates these flags on every unit add/remove and the main-thread AI reads refresh them otherwise.
+            if ((agent.Formation.QuerySystem.IsRangedCavalryFormationReadOnly || agent.Formation.QuerySystem.IsCavalryFormationReadOnly)
                 && agent.Formation.RidingOrder.OrderEnum != RidingOrder.RidingOrderEnum.Dismount)
             {
                 // desiredSpeed < 0 is the "clear the limit" call (OnRetreating passes -1): let vanilla lift it
