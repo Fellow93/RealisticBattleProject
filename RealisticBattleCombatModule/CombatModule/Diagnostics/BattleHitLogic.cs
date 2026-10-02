@@ -77,6 +77,7 @@ namespace RBMCombat
             header.Append("  rbmCombatEnabled    = ").Append(RBMConfig.RBMConfig.rbmCombatEnabled).Append("\n");
             header.Append("  postureEnabled      = ").Append(RBMConfig.RBMConfig.postureEnabled).Append("\n");
             header.Append("  armorMultiplier     = ").Append(BattleHitLog.Fmt(RBMConfig.RBMConfig.armorMultiplier)).Append("\n");
+            header.Append("  bluntTraumaMultiplier = ").Append(BattleHitLog.Fmt(RBMConfig.RBMConfig.bluntTraumaMultiplier)).Append("\n");
             header.Append("\n");
             header.Append("  raw    = what the blow would have done to a naked man (dealt + absorbed by armour)").Append("\n");
             header.Append("  armor  = the armour standing over the part it actually landed on").Append("\n");

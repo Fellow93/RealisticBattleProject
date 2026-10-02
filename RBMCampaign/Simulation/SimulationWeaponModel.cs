@@ -733,6 +733,7 @@ namespace RBMCampaign
             float carryCut = (f != null) ? f.ExtraBluntFactorCut : 0.25f;
             float carryPierce = (f != null) ? f.ExtraBluntFactorPierce : 0.35f;
             float bluntBonus = RBMConfig.RBMConfig.bluntTraumaBonus;
+            float bluntMultiplier = RBMConfig.RBMConfig.bluntTraumaMultiplier;
 
             switch (profile.DamageType)
             {
@@ -741,52 +742,28 @@ namespace RBMCampaign
                         // A blunt blow's threshold is a hardcoded five, and its carry a flat seven tenths.
                         float penetrated = MathF.Max(0f, magnitude - (armorEffectiveness * 5f * thresholdModifier));
                         float stopped = (magnitude - penetrated) / magnitude;
-                        float trauma = magnitude * (0.7f * RBMConfig.RBMConfig.maceBluntModifier) * stopped * armorReduction;
+                        float trauma = magnitude * (0.7f * RBMConfig.RBMConfig.maceBluntModifier) * stopped * bluntMultiplier * armorReduction;
                         return penetrated + MathF.Max(0f, trauma);
                     }
 
                 case DamageTypes.Pierce:
                     {
-                        // A point finds a gap even in harness: a little always goes in, capped at fifteen. Maces
-                        // and arrows have no such gap to find (their partial threshold is nought), so for them
-                        // the partial term is the whole magnitude -- which is why the cap matters so much.
-                        float partialThreshold = GetPartialPenetrationThreshold(profile.WeaponType);
-                        float partial = MathF.Max(0f, magnitude - (armorEffectiveness * partialThreshold * thresholdModifier));
-                        if (partial > 15f)
-                        {
-                            partial = 15f;
-                        }
-                        float penetrated = MathF.Max(0f, magnitude - (armorEffectiveness * thresholdPierce * thresholdModifier)) - partial;
-                        float stopped = (magnitude - (penetrated + partial)) / magnitude;
-                        penetrated += partial;
-                        float trauma = magnitude * (carryPierce + bluntBonus) * stopped * armorReduction;
-                        return MathF.Max(0f, penetrated) + MathF.Max(0f, trauma);
+                        // Same shape as a cut, with the pierce threshold and carry. The live blow dropped its
+                        // capped "partial penetration" term on 2026-09-26 (RBMConfig/Shared/BlowDamage.cs), so
+                        // this one has none either.
+                        float penetrated = MathF.Max(0f, magnitude - (armorEffectiveness * thresholdPierce * thresholdModifier));
+                        float stopped = (magnitude - penetrated) / magnitude;
+                        float trauma = magnitude * (carryPierce + bluntBonus) * stopped * bluntMultiplier * armorReduction;
+                        return penetrated + MathF.Max(0f, trauma);
                     }
 
                 default:
                     {
                         float penetrated = MathF.Max(0f, magnitude - (armorEffectiveness * thresholdCut * thresholdModifier));
                         float stopped = (magnitude - penetrated) / magnitude;
-                        float trauma = magnitude * (carryCut + bluntBonus) * stopped * armorReduction;
+                        float trauma = magnitude * (carryCut + bluntBonus) * stopped * bluntMultiplier * armorReduction;
                         return penetrated + MathF.Max(0f, trauma);
                     }
-            }
-        }
-
-        /// <summary>RBM gives a mace, an arrow, a bolt and a sling-stone no partial penetration at all (Utilities.cs:1142-1175).</summary>
-        private static float GetPartialPenetrationThreshold(string weaponType)
-        {
-            switch (weaponType)
-            {
-                case "Mace":
-                case "Arrow":
-                case "Bolt":
-                case "SlingStone":
-                case "Stone":
-                    return 0f;
-
-                default:
-                    return 2f;
             }
         }
 

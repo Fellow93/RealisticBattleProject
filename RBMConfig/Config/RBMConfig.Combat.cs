@@ -63,6 +63,9 @@ namespace RBMConfig
         public static float maceBluntModifier = 1f;
         public static float armorThresholdModifier = 1f;
         public static float bluntTraumaBonus = 0f;
+        // Scales all blunt trauma (damage that gets through armor without penetrating it) for every weapon type,
+        // after bluntTraumaBonus; 1 = unchanged. Read by Shared/BlowDamage.cs and the auto-resolve copy.
+        public static float bluntTraumaMultiplier = 1f;
 
         public static bool sneakAttackInstaKill = false;
 

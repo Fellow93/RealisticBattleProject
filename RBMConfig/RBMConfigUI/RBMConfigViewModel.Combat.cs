@@ -110,7 +110,75 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel ArmorMultiplierHint { get; } = Hint("How strongly armor reduces damage: a blow is scaled by 100 / (100 + armor x this). Higher makes armor protect more and fights last longer; lower makes everyone die faster. Also feeds auto-resolve and troop power. Default 2.00.");
+        public BasicTooltipViewModel ArmorMultiplierHint { get; } = Hint("How strongly armor absorbs blunt trauma, the damage that gets through armor without penetrating it: that part is scaled by 100 / (100 + armor x this). Higher makes armored troops tankier; lower makes them die faster. Penetrating damage is unchanged. Also feeds auto-resolve and troop power. Default 2.00.");
+
+        // Plain-text label/hint, same as Armor Multiplier above.
+        private float _bluntTraumaMultiplier;
+
+        [DataSourceProperty]
+        public float BluntTraumaMultiplier
+        {
+            get { return _bluntTraumaMultiplier; }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value * 20f) / 20f, 0f, 3f);
+                if (snapped != _bluntTraumaMultiplier)
+                {
+                    _bluntTraumaMultiplier = snapped;
+                    OnPropertyChangedWithValue(snapped, "BluntTraumaMultiplier");
+                    OnPropertyChanged("BluntTraumaMultiplierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string BluntTraumaMultiplierValue
+        {
+            get { return _bluntTraumaMultiplier.ToString("0.00"); }
+        }
+
+        [DataSourceProperty]
+        public string BluntTraumaMultipliert
+        {
+            get { return new TextObject("Blunt Trauma Multiplier").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel BluntTraumaMultiplierHint { get; } = Hint("Scales blunt trauma, the damage that gets through armor without penetrating it, for every weapon type. Lower makes armored troops tankier; higher makes armor protect less. Penetrating damage is unchanged. Also feeds auto-resolve. Default 1.00.");
+
+        // Plain-text label/hint, same as Armor Multiplier above.
+        private float _armorThresholdModifier;
+
+        [DataSourceProperty]
+        public float ArmorThresholdModifier
+        {
+            get { return _armorThresholdModifier; }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value * 20f) / 20f, 0f, 3f);
+                if (snapped != _armorThresholdModifier)
+                {
+                    _armorThresholdModifier = snapped;
+                    OnPropertyChangedWithValue(snapped, "ArmorThresholdModifier");
+                    OnPropertyChanged("ArmorThresholdModifierValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string ArmorThresholdModifierValue
+        {
+            get { return _armorThresholdModifier.ToString("0.00"); }
+        }
+
+        [DataSourceProperty]
+        public string ArmorThresholdModifiert
+        {
+            get { return new TextObject("Armor Penetration Threshold").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel ArmorThresholdModifierHint { get; } = Hint("Scales how much of a blow armor stops outright: the part of a hit above armor x weapon factor x this penetrates, the rest becomes blunt trauma. Higher makes armored troops tankier, since more hits fail to penetrate; lower lets more damage straight through. Shields use the same rule. Also feeds auto-resolve. Default 1.00.");
 
         // Plain-text label/hint for the same reason as the row above.
         private float _arrowThicknessScale;

@@ -166,6 +166,8 @@ namespace RBMConfig
             ThrustModifier = new SelectorVM<SelectorItemVM>(thrustModifierList, 0, null);
 
             _armorMultiplier = MathF.Clamp(RBMConfig.armorMultiplier, 0.5f, 4f);
+            _bluntTraumaMultiplier = MathF.Clamp(RBMConfig.bluntTraumaMultiplier, 0f, 3f);
+            _armorThresholdModifier = MathF.Clamp(RBMConfig.armorThresholdModifier, 0f, 3f);
             _arrowThicknessScale = MathF.Clamp(RBMConfig.arrowThicknessScale, 1f, 10f);
             _stuckThrownFallOutSeconds = MathF.Clamp(RBMConfig.stuckThrownFallOutSeconds, 0f, 60f);
             _stuckArrowFallOutSeconds = MathF.Clamp(RBMConfig.stuckArrowFallOutSeconds, 0f, 300f);
@@ -616,6 +618,8 @@ namespace RBMConfig
             RBMConfig.TwoHandedThrustDamageBonus = 1f / newThrustModifier;
 
             RBMConfig.armorMultiplier = _armorMultiplier;
+            RBMConfig.bluntTraumaMultiplier = _bluntTraumaMultiplier;
+            RBMConfig.armorThresholdModifier = _armorThresholdModifier;
             RBMConfig.arrowThicknessScale = _arrowThicknessScale;
             RBMConfig.stuckThrownFallOutSeconds = _stuckThrownFallOutSeconds;
             RBMConfig.stuckArrowFallOutSeconds = _stuckArrowFallOutSeconds;
@@ -797,6 +801,8 @@ namespace RBMConfig
             // Combat
             ThrustModifier.SelectedIndex = thrustModifierList.IndexOf(new TextObject("0.05").ToString());
             ArmorMultiplier = 2f;
+            BluntTraumaMultiplier = 1f;
+            ArmorThresholdModifier = 1f;
             RealisticArrowArc.SelectedIndex = 0;
             ArmorStatusUIEnabled.SelectedIndex = 1;
             SneakAttackInstaKill.SelectedIndex = 0;

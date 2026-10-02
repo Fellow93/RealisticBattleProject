@@ -837,6 +837,8 @@ namespace RBMCampaign
 
         private static float _baselineArmorThreshold;
 
+        private static float _baselineBluntTraumaMultiplier;
+
         private static float _baselineThrustModifier;
 
         // And which defence the baseline mitigation was built for: the skill-based ladder skims a matchup by a
@@ -2678,6 +2680,8 @@ namespace RBMCampaign
             // skews, quietly, and nothing anywhere looks broken.
             //
             //   armorMultiplier / armorThresholdModifier : read by RbmDamage, so they are inside every baseline.
+            //   bluntTraumaMultiplier                    : likewise read by RbmDamage (scales every trauma term),
+            //                                              and the config screen moves it.
             //   ThrustMagnitudeModifier                  : read by the thrust and thrown energies, so it is inside
             //                                              every KIT. (The config screen really does change it --
             //                                              RBMConfigViewModel recomputes OneHandedThrustDamageBonus
@@ -2699,6 +2703,7 @@ namespace RBMCampaign
             float shieldBlockChance = RBMConfig.RBMConfig.simulationShieldBlockChance;
             float armorMultiplier = RBMConfig.RBMConfig.armorMultiplier;
             float armorThreshold = RBMConfig.RBMConfig.armorThresholdModifier;
+            float bluntTraumaMultiplier = RBMConfig.RBMConfig.bluntTraumaMultiplier;
             float thrustModifier = RBMConfig.RBMConfig.ThrustMagnitudeModifier;
             bool defenseSystem = RBMConfig.RBMConfig.simulationDefenseSystem;
 
@@ -2707,6 +2712,7 @@ namespace RBMCampaign
                 && _baselineShieldBlockChance == shieldBlockChance
                 && _baselineArmorMultiplier == armorMultiplier
                 && _baselineArmorThreshold == armorThreshold
+                && _baselineBluntTraumaMultiplier == bluntTraumaMultiplier
                 && _baselineThrustModifier == thrustModifier
                 && _baselineDefenseSystem == defenseSystem)
             {
@@ -2726,6 +2732,7 @@ namespace RBMCampaign
             _baselineShieldBlockChance = shieldBlockChance;
             _baselineArmorMultiplier = armorMultiplier;
             _baselineArmorThreshold = armorThreshold;
+            _baselineBluntTraumaMultiplier = bluntTraumaMultiplier;
             _baselineThrustModifier = thrustModifier;
             _baselineDefenseSystem = defenseSystem;
             _kitCache.Clear();

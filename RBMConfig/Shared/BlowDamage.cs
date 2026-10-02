@@ -173,7 +173,7 @@ namespace RBMConfig
                         }
                         damage += penetratedDamage;
 
-                        float bluntTrauma = magnitude * (0.7f * RBMConfig.maceBluntModifier) * bluntFraction;
+                        float bluntTrauma = magnitude * (0.7f * RBMConfig.maceBluntModifier) * bluntFraction * RBMConfig.bluntTraumaMultiplier;
                         bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
                         damage += bluntTraumaAfterArmor;
 
@@ -189,7 +189,7 @@ namespace RBMConfig
                         }
                         damage += penetratedDamage;
 
-                        float bluntTrauma = magnitude * (extraBluntFactorCut + RBMConfig.bluntTraumaBonus) * bluntFraction;
+                        float bluntTrauma = magnitude * (extraBluntFactorCut + RBMConfig.bluntTraumaBonus) * bluntFraction * RBMConfig.bluntTraumaMultiplier;
                         bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
                         damage += bluntTraumaAfterArmor;
 
@@ -223,7 +223,7 @@ namespace RBMConfig
                         }
                         damage += penetratedDamage;
 
-                        float bluntTrauma = magnitude * (extraBluntFactorPierce + RBMConfig.bluntTraumaBonus) * bluntFraction;
+                        float bluntTrauma = magnitude * (extraBluntFactorPierce + RBMConfig.bluntTraumaBonus) * bluntFraction * RBMConfig.bluntTraumaMultiplier;
                         bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
                         damage += bluntTraumaAfterArmor;
 

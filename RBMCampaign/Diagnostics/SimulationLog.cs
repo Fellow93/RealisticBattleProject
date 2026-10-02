@@ -98,6 +98,7 @@ namespace RBMCampaign
                     header.Append("  simulationLogHits             = ").Append(RC.simulationLogHits).Append(Environment.NewLine);
                     header.Append("  armorMultiplier               = ").Append(Fmt(RC.armorMultiplier)).Append(Environment.NewLine);
                     header.Append("  armorThresholdModifier        = ").Append(Fmt(RC.armorThresholdModifier)).Append(Environment.NewLine);
+                    header.Append("  bluntTraumaMultiplier         = ").Append(Fmt(RC.bluntTraumaMultiplier)).Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
 
                     // Not a toggle -- a standing fact of the model, stated because it shapes every field blow below.

@@ -362,6 +362,9 @@ namespace RBMCampaign
 
         private static float _cacheThrustBonus;
 
+        // The armour term divides by armorMultiplier, and the config screen can move it mid-session.
+        private static float _cacheArmorMultiplier;
+
         private static bool _cachePrimed;
 
         /// <summary>When the hero entries were last swept. Guarded by <see cref="_cacheLock"/>.</summary>
@@ -384,14 +387,17 @@ namespace RBMCampaign
         {
             bool rbmCombat = RBMConfig.RBMConfig.rbmCombatEnabled;
             float thrustBonus = RBMConfig.RBMConfig.OneHandedThrustDamageBonus;
+            float armorMultiplier = RBMConfig.RBMConfig.armorMultiplier;
             lock (_cacheLock)
             {
-                if (_cachePrimed && _cacheRbmCombat == rbmCombat && _cacheThrustBonus == thrustBonus)
+                if (_cachePrimed && _cacheRbmCombat == rbmCombat && _cacheThrustBonus == thrustBonus
+                    && _cacheArmorMultiplier == armorMultiplier)
                 {
                     return;
                 }
                 _cacheRbmCombat = rbmCombat;
                 _cacheThrustBonus = thrustBonus;
+                _cacheArmorMultiplier = armorMultiplier;
                 _powerCache.Clear();
                 _tierCache.Clear();
                 _cachePrimed = true;

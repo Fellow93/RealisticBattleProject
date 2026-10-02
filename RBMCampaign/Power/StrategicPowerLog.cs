@@ -507,6 +507,9 @@ namespace RBMCampaign
                     header.Append("     (measured off a run of THIS log; the three settings above all move the raw").Append(Environment.NewLine);
                     header.Append("      number it divides, so a change to any of them makes this value a lie until").Append(Environment.NewLine);
                     header.Append("      it is re-measured -- sum(men x power/man x powerScale) / sum(men x vanillaTier))").Append(Environment.NewLine);
+                    header.Append("  bluntTraumaMultiplier         = ").Append(Fmt(RC.bluntTraumaMultiplier)).Append(Environment.NewLine);
+                    header.Append("     (not read by this model -- its armour term has no blunt-trauma part; it moves").Append(Environment.NewLine);
+                    header.Append("      the live battle and auto-resolve only)").Append(Environment.NewLine);
 
                     File.WriteAllText(LogFilePath, header.ToString());
                     _fileOpened = true;

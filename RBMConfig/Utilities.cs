@@ -309,6 +309,8 @@ namespace RBMConfig
             ArmorThresholdModifier.InnerText = RBMConfig.armorThresholdModifier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement BluntTraumaBonus = xmlconfig.CreateElement("BluntTraumaBonus");
             BluntTraumaBonus.InnerText = RBMConfig.bluntTraumaBonus.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            XmlElement BluntTraumaMultiplier = xmlconfig.CreateElement("BluntTraumaMultiplier");
+            BluntTraumaMultiplier.InnerText = RBMConfig.bluntTraumaMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement ArmorStatusUIEnabled = xmlconfig.CreateElement("ArmorStatusUIEnabled");
             ArmorStatusUIEnabled.InnerText = RBMConfig.armorStatusUIEnabled ? "1" : "0";
             XmlElement RealisticArrowArc = xmlconfig.CreateElement("RealisticArrowArc");
@@ -334,6 +336,7 @@ namespace RBMConfig
             Global.AppendChild(MaceBluntModifier);
             Global.AppendChild(ArmorThresholdModifier);
             Global.AppendChild(BluntTraumaBonus);
+            Global.AppendChild(BluntTraumaMultiplier);
             Global.AppendChild(ArmorStatusUIEnabled);
             Global.AppendChild(RealisticArrowArc);
             Global.AppendChild(ThrustMagnitudeModifier);
