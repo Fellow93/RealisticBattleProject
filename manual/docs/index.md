@@ -19,7 +19,7 @@ Every part of the mod can be switched on or off separately, so you can use only 
     - [Tournaments](features/tournament.md): tournament participants, simulation and prizes
 - **Tuning the mod?** Every option on the in-game settings screen is explained in the [Settings Reference](settings.md).
 - **Just updated?** Click the **RBM Changelog** badge in the top-right corner of the title screen to see what
-  changed in each version (see [What's new](getting-started.md#whats-new)).
+  changed in each version (see [What's new](getting-started.md#whats-new)), or read the full [Changelog](changelog.md) here.
 
 ## Links
 

@@ -49,7 +49,7 @@ Every option is listed in the [Settings Reference](settings.md).
 
 ## What's new
 
-The title screen has an **RBM Changelog** badge in its top-right corner. Click it to see every RBM version and its notes. After an update, the newest version's notes open by themselves once, and the badge shows a dot until you have read them.
+The title screen has an **RBM Changelog** badge in its top-right corner. Click it to see every RBM version and its notes. After an update, the newest version's notes open by themselves once, and the badge shows a dot until you have read them. The same notes are in this manual's [Changelog](changelog.md).
 
 ## The module switches
 

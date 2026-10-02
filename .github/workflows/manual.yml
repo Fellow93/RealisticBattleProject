@@ -5,6 +5,7 @@ on:
     branches: [master]
     paths:
       - "manual/**"
+      - "CHANGELOG.md"
       - ".github/workflows/manual.yml"
   workflow_dispatch:
 

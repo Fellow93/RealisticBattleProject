@@ -8,6 +8,10 @@ edit_uri: edit/master/manual/docs/
 docs_dir: docs
 site_dir: site
 
+# changelog.md includes the repo's CHANGELOG.md (the same file the in-game viewer reads).
+watch:
+  - ../CHANGELOG.md
+
 theme:
   name: material
   features:
@@ -47,6 +51,10 @@ markdown_extensions:
   - toc:
       permalink: true
   - pymdownx.details
+  # base_path covers running mkdocs from the repo root (CI) or from manual/.
+  - pymdownx.snippets:
+      base_path: [".", ".."]
+      check_paths: true
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
@@ -62,3 +70,4 @@ nav:
       - Campaign: features/campaign.md
       - Tournaments: features/tournament.md
   - Settings Reference: settings.md
+  - Changelog: changelog.md
