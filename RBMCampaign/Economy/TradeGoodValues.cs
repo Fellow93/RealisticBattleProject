@@ -39,7 +39,7 @@ namespace RBMCampaign
             new Dictionary<string, (int, float)>
             {
                 // --- Goods declared in SandBoxCore/ModuleData/items/horses_and_others.xml ---
-                { "wool",        (160,    2f) },
+                { "wool",        (100,    2f) },
                 { "silver",      (43,     0.85f) },
                 { "jewelry",     (420,    0.025f) },
                 { "salt",        (30,     1f) },
@@ -69,7 +69,7 @@ namespace RBMCampaign
                 // StringIds taken from DefaultItems.RegisterAll, not from the mesh names.
                 { "grain",       (60,     30f) },
                 { "meat",        (200,    30f) },
-                { "hides",       (88,     0.8f) },
+                { "hides",       (70,     0.8f) },
                 { "planks",      (10,     20f) },
                 { "tools",       (48,     1f) },    // finished ironwork, ~4x the wrought iron in it
                 { "felt",        (250,    1f) },

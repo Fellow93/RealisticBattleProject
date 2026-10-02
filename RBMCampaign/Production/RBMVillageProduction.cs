@@ -38,7 +38,7 @@ namespace RBMCampaign
         {
             ("hog", 0.002f),
             ("meat", 0.001f),
-            ("hides", 0.01f),
+            ("hides", 0.03f),
             ("cow", 0.001f),
             ("cheese", 0.038f * 0.5f),
             ("butter", 0.03f * 0.5f),
