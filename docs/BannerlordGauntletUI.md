@@ -694,6 +694,14 @@ is pushed exactly once, and its layers are finalized with it. Facts that make it
   focus back to the top remaining `IsFocusLayer` layer.
 - `GauntletInitialScreen` layer orders: menu `"MainMenu"` 1, first-run `"MainMenuBrightness"` /
   `"MainMenuExposure"` 2 (find them with `FindLayer<GauntletLayer>(name)` to avoid covering them).
+- Opening a web link from a button: there is no TaleWorlds browser helper. Native's title-screen announcement
+  (`InitialMenuAnnouncementVM.ExecuteNavigateToLink`) tries `PlatformServices.Instance.ShowOverlayForWebPage(url).Result`
+  (Steam overlay) and falls back to `Process.Start(new ProcessStartInfo(url) { UseShellExecute = true })`. RBM's
+  "RBM Manual" badge uses only the `Process.Start` call, so the page opens in the default browser.
+- Stacking badges in a corner: a `CoverChildren` vertical `ListPanel` takes the widest child's width
+  (`StackLayout.MeasureLinear` maxes the cross axis), and each child's own `HorizontalAlignment` places it in
+  that column. Don't give the children `StretchToParent` width to equalise them: a `CoverChildren` parent
+  passes its own available width down, so a stretch child measures to the full screen.
 
 **World-anchored markers** (3D point → 2D widget) — `FrontlineDebugOverlay`, `UnitStatusVM`,
 `RangedAimArcView` (RBMCombat `CombatModule/UI/AimArc/`). `MBDebug.RenderDebug*` is

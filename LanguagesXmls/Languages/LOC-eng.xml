@@ -588,6 +588,7 @@
 	<string id="RBM_CHG_003" text="The changelog file was not found. It should be CHANGELOG.md in the RBM module folder." />
 	<string id="RBM_CHG_004" text="The changelog has no version entries." />
 	<string id="RBM_CHG_005" text="The changelog could not be read." />
+	<string id="RBM_CHG_006" text="RBM Manual" />
 	<!-- Config Screen: RBM Debug & Logging Section Strings -->
 	<string id="RBM_DBG_001" text="RBM Debug &amp; Logging" />
 	<string id="RBM_DBG_002" text="Developer Mode" />

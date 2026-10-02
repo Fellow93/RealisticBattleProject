@@ -12,7 +12,8 @@ using TaleWorlds.ScreenSystem;
 namespace RBMConfig
 {
     // The "RBM Changelog" badge in the top-right corner of the title screen and the viewer it opens, as two layers
-    // on the native initial screen (any MBInitialScreenBase), so nothing shows in a campaign or a mission.
+    // on the native initial screen (any MBInitialScreenBase), so nothing shows in a campaign or a mission. The badge
+    // layer also holds the "RBM Manual" badge under it, which opens the online manual in the browser.
     //
     // Hooked through ScreenManager.OnPushScreen / OnPopScreen, not a Harmony patch: those fire exactly once per
     // initial-screen instance (first launch and every return to the main menu create a new one) and are untouched
@@ -27,6 +28,9 @@ namespace RBMConfig
     {
         private const string BadgeMovie = "RBMChangelogBadge";
         private const string ViewerMovie = "RBMChangelog";
+
+        // The online player manual the "RBM Manual" badge (under the changelog badge) opens.
+        private const string ManualUrl = "https://fellow93.github.io/RealisticBattleProject/";
 
         // The native menu layer is 1 and its brightness/exposure prompts 2. The badge shares the menu's order
         // (they never overlap) so a first-run brightness prompt still covers it; the modal viewer goes above both.
@@ -134,7 +138,7 @@ namespace RBMConfig
             string newest = NewestVersion();
             bool unseen = newest != null && !string.Equals(newest, RBMConfig.lastSeenChangelogVersion, StringComparison.Ordinal);
 
-            _badgeVM = new RBMChangelogBadgeVM(() => _openRequested = true) { HasUnseen = unseen };
+            _badgeVM = new RBMChangelogBadgeVM(() => _openRequested = true, OpenManual) { HasUnseen = unseen };
             _badgeLayer = new GauntletLayer("RBMChangelogBadge", BadgeLayerOrder);
             _badgeLayer.LoadMovie(BadgeMovie, _badgeVM);
             // Mouse only, like the native menu layer: the badge never takes keyboard focus from the menu.
@@ -215,6 +219,23 @@ namespace RBMConfig
             _viewerMovie = null;
             _viewerVM?.OnFinalize();
             _viewerVM = null;
+        }
+
+        // Opens the manual in the default browser the way the native title-screen announcement falls back to when
+        // there is no platform overlay (InitialMenuAnnouncementVM.ExecuteNavigateToLink). The overlay itself
+        // (PlatformServices.ShowOverlayForWebPage) is skipped on purpose: native waits on its Task's Result, and it
+        // shows the page in the Steam overlay rather than the browser. Touches no layer, so it runs straight from
+        // the click instead of being deferred to Tick.
+        private static void OpenManual()
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(ManualUrl) { UseShellExecute = true });
+            }
+            catch (Exception e)
+            {
+                TaleWorlds.Library.Debug.Print("[RBM] Could not open the manual " + ManualUrl + ": " + e.Message);
+            }
         }
 
         private static bool IsNativePromptOpen()

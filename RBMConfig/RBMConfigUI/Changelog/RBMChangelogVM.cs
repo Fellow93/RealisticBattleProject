@@ -249,17 +249,20 @@ namespace RBMConfig
         }
     }
 
-    // The title-screen badge (prefab RBMChangelogBadge.xml).
+    // The title-screen badges (prefab RBMChangelogBadge.xml): "RBM Changelog" and "RBM Manual" under it.
     public class RBMChangelogBadgeVM : ViewModel
     {
         private readonly Action _onOpen;
+        private readonly Action _onOpenManual;
 
         private string _badgeText;
+        private string _manualText;
         private bool _hasUnseen;
 
-        internal RBMChangelogBadgeVM(Action onOpen)
+        internal RBMChangelogBadgeVM(Action onOpen, Action onOpenManual)
         {
             _onOpen = onOpen;
+            _onOpenManual = onOpenManual;
             RefreshValues();
         }
 
@@ -267,6 +270,7 @@ namespace RBMConfig
         {
             base.RefreshValues();
             BadgeText = new TextObject("{=RBM_CHG_001}RBM Changelog").ToString();
+            ManualText = new TextObject("{=RBM_CHG_006}RBM Manual").ToString();
         }
 
         public void ExecuteOpen()
@@ -274,11 +278,23 @@ namespace RBMConfig
             _onOpen?.Invoke();
         }
 
+        public void ExecuteOpenManual()
+        {
+            _onOpenManual?.Invoke();
+        }
+
         [DataSourceProperty]
         public string BadgeText
         {
             get => _badgeText;
             set { if (value != _badgeText) { _badgeText = value; OnPropertyChangedWithValue(value, "BadgeText"); } }
+        }
+
+        [DataSourceProperty]
+        public string ManualText
+        {
+            get => _manualText;
+            set { if (value != _manualText) { _manualText = value; OnPropertyChangedWithValue(value, "ManualText"); } }
         }
 
         // The newest changelog version has not been opened yet: the badge shows its "new" dot.
