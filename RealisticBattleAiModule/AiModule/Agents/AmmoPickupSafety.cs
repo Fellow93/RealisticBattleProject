@@ -1,4 +1,5 @@
 using HarmonyLib;
+using System.Collections.Generic;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
@@ -47,22 +48,76 @@ namespace RBMAI
                 }
             }
 
+            // The dangerous enemies around an agent, kept for SnapshotSeconds. A pickup scan tests every candidate item
+            // and a pickup under way is re-tested every frame, each a 45 m proximity query of its own; now one query
+            // per agent per snapshot serves them all. The query reaches SnapshotMargin past the danger radius, so it
+            // holds every enemy that could endanger an item within SnapshotMargin of where it was taken (the scan box
+            // is the agent's top speed across, and a pickup under way only gets closer).
+            internal sealed class DangerSnapshot
+            {
+                public Vec2 Center;
+                public float Expires = float.MinValue;
+                public readonly List<Vec2> Positions = new List<Vec2>();
+                public readonly List<float> RadiiSquared = new List<float>();
+            }
+
+            private const float SnapshotSeconds = 0.5f;
+            private const float SnapshotMargin = 25f;
+            internal static readonly Dictionary<Agent, DangerSnapshot> dangerSnapshots = new Dictionary<Agent, DangerSnapshot>();
+
+            private static bool IsDangerousEnemy(Agent enemy, out float radius)
+            {
+                radius = enemy.HasMount ? MountedDangerRadius : FootDangerRadius;
+                return enemy.IsActive() && enemy.IsHuman && !enemy.IsRunningAway;
+            }
+
             private static bool IsEnemyNear(Agent agent, Vec2 position)
             {
                 if (agent.Team == null || Mission.Current == null)
                 {
                     return false;
                 }
+                float now = Mission.Current.CurrentTime;
+                if (!dangerSnapshots.TryGetValue(agent, out DangerSnapshot snapshot))
+                {
+                    snapshot = new DangerSnapshot();
+                    dangerSnapshots[agent] = snapshot;
+                }
+                if (now >= snapshot.Expires)
+                {
+                    // Jittered, so a volley's worth of archers going for arrows together don't all re-query together.
+                    snapshot.Expires = now + SnapshotSeconds * (0.75f + 0.5f * MBRandom.RandomFloat);
+                    snapshot.Center = agent.Position.AsVec2;
+                    snapshot.Positions.Clear();
+                    snapshot.RadiiSquared.Clear();
+                    Mission.Current.GetNearbyEnemyAgents(snapshot.Center, MountedDangerRadius + SnapshotMargin, agent.Team, _nearbyEnemies);
+                    foreach (Agent enemy in _nearbyEnemies)
+                    {
+                        if (IsDangerousEnemy(enemy, out float radius))
+                        {
+                            snapshot.Positions.Add(enemy.Position.AsVec2);
+                            snapshot.RadiiSquared.Add(radius * radius);
+                        }
+                    }
+                    _nearbyEnemies.Clear();
+                }
+                if (snapshot.Center.DistanceSquared(position) <= SnapshotMargin * SnapshotMargin)
+                {
+                    for (int i = 0; i < snapshot.Positions.Count; i++)
+                    {
+                        if (snapshot.Positions[i].DistanceSquared(position) < snapshot.RadiiSquared[i])
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                // An item beyond the snapshot's cover: query around it directly.
                 Mission.Current.GetNearbyEnemyAgents(position, MountedDangerRadius, agent.Team, _nearbyEnemies);
                 bool danger = false;
                 foreach (Agent enemy in _nearbyEnemies)
                 {
-                    if (!enemy.IsActive() || !enemy.IsHuman || enemy.IsRunningAway)
-                    {
-                        continue;
-                    }
-                    float radius = enemy.HasMount ? MountedDangerRadius : FootDangerRadius;
-                    if (enemy.Position.AsVec2.DistanceSquared(position) < radius * radius)
+                    if (IsDangerousEnemy(enemy, out float radius) && enemy.Position.AsVec2.DistanceSquared(position) < radius * radius)
                     {
                         danger = true;
                         break;

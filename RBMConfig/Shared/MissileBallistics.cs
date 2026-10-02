@@ -448,9 +448,15 @@ namespace RBMConfig
             return count;
         }
 
+        // Height step of the MaxReach cache, in metres. Reach is smooth and nearly linear in height over a couple of
+        // metres, so interpolating between 2 m steps stays well within 1 m of the exact value (closer than the old
+        // rounding to the nearest metre, which was off by up to half a metre of height) with half the distinct entries.
+        // Each miss is 0.2-1 ms of trajectory steps.
+        private const float ReachHeightStep = 2f;
+
         /// <summary>
         /// The farthest a missile launched at this speed can carry to a point heightDifference metres above (or below)
-        /// its launch point, at the best elevation. Cached.
+        /// its launch point, at the best elevation. Cached per ReachHeightStep of height and interpolated between.
         /// </summary>
         public static float MaxReach(int speed, float heightDifference, float airFriction)
         {
@@ -458,8 +464,22 @@ namespace RBMConfig
             {
                 return 0f;
             }
-            int dz = (int)Math.Round(heightDifference);
-            long key = ((long)speed << 40) ^ ((long)(dz + 100000) << 20) ^ (long)(airFriction * 1000000f);
+            float steps = heightDifference / ReachHeightStep;
+            int lower = (int)Math.Floor(steps);
+            float t = steps - lower;
+            float reachLower = MaxReachAtStep(speed, lower, airFriction);
+            if (t <= 0f)
+            {
+                return reachLower;
+            }
+            float reachUpper = MaxReachAtStep(speed, lower + 1, airFriction);
+            return reachLower + (reachUpper - reachLower) * t;
+        }
+
+        private static float MaxReachAtStep(int speed, int heightStep, float airFriction)
+        {
+            float dz = heightStep * ReachHeightStep;
+            long key = ((long)speed << 40) ^ ((long)(heightStep + 100000) << 20) ^ (long)(airFriction * 1000000f);
             lock (_reachLock)
             {
                 if (_reachCache.TryGetValue(key, out float cached))
