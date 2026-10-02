@@ -160,8 +160,8 @@ spot fixed at deployment. RBM looks for a point on the map border behind the arm
 spot well away from enemy formations, and keeps the men out of water. When the base game's own spawn point is
 used, reinforcements appear 50 m in from the border instead of right on it.
 
-**Synced waves.** When one side's reinforcement wave arrives, the other side's wave is brought in too, and
-neither side may grow past half of the battle size.
+**Synced waves.** When one side's reinforcement wave arrives, the other side's wave is brought in too. Each
+wave brings its side back up to half of your battle size setting, as long as it has men left in reserve.
 
 **Rallying.** AI infantry whose men are scattered far ahead of or behind the formation stops to regroup before
 pressing on, unless the enemy is close. After a reinforcement wave, the formation gathers at a point a little in

@@ -92,7 +92,8 @@ namespace RBMAI.AiModule
         ///
         /// Two patches:
         ///  - Postfix on DefaultBattleMissionAgentSpawnLogic.CheckGlobalReinforcementBatch: after vanilla's loop, if
-        ///    exactly one side became active and the other still has remaining spawns and an empty reserve, re-run the
+        ///    exactly one side became active with a NEW wave (its reserve was empty before the tick) and the other
+        ///    still has remaining spawns and an empty reserve, re-run the
         ///    other side's CheckReinforcementBatch with the force flag set, then recompute _spawningReinforcements the
         ///    way vanilla does (agent-cap quota still applies).
         ///  - Postfix on MissionBattleSideSpawnContext.ComputeWaveBatch: with the force flag set and a zero result,
@@ -126,22 +127,34 @@ namespace RBMAI.AiModule
             private static class CheckGlobalReinforcementBatchPatch
             {
                 // Vanilla resets the timer inside the method, so the prefix records whether this call is the tick
-                // that actually evaluated the batches.
-                private static bool Prefix(DefaultBattleMissionAgentSpawnLogic __instance, out bool __state)
+                // that actually evaluated the batches (-1 = it is not), and which sides already held a reserve before
+                // it (bit 0 defender, bit 1 attacker): a side whose wave is still waiting or spawning in stays active
+                // across ticks, and its partner was already paired when that wave started.
+                private static bool Prefix(DefaultBattleMissionAgentSpawnLogic __instance, out int __state)
                 {
-                    __state = false;
+                    __state = -1;
                     try
                     {
                         BasicMissionTimer timer = GlobalTimer(__instance);
-                        __state = timer != null && timer.ElapsedTime >= GlobalInterval(__instance);
+                        if (timer != null && timer.ElapsedTime >= GlobalInterval(__instance))
+                        {
+                            MissionBattleSideSpawnContext[] contexts = Contexts(__instance);
+                            int pending = 0;
+                            if (contexts != null && contexts.Length >= 2)
+                            {
+                                if (contexts[0] != null && contexts[0].ReservedTroopsCount > 0) pending |= 1;
+                                if (contexts[1] != null && contexts[1].ReservedTroopsCount > 0) pending |= 2;
+                            }
+                            __state = pending;
+                        }
                     }
                     catch (Exception) { }
                     return true;
                 }
 
-                private static void Postfix(DefaultBattleMissionAgentSpawnLogic __instance, bool __state)
+                private static void Postfix(DefaultBattleMissionAgentSpawnLogic __instance, int __state)
                 {
-                    if (!__state || !IsFieldBattle())
+                    if (__state < 0 || !IsFieldBattle())
                     {
                         return;
                     }
@@ -165,6 +178,11 @@ namespace RBMAI.AiModule
                         }
 
                         int laggingIndex = defenderActive ? 1 : 0;
+                        if ((__state & (1 << (1 - laggingIndex))) != 0)
+                        {
+                            // The active side's wave was already under way before this tick, not a new one.
+                            return;
+                        }
                         MissionBattleSideSpawnContext lagging = contexts[laggingIndex];
                         MissionSpawnPhase phase = laggingIndex == 0 ? __instance.DefenderActivePhase : __instance.AttackerActivePhase;
                         if (phase == null || phase.RemainingSpawnNumber <= 0 || lagging.ReservedTroopsCount > 0)
@@ -197,11 +215,14 @@ namespace RBMAI.AiModule
             }
 
             /// <summary>
-            /// Two jobs, both at reservation time so a wave arrives as one burst and the reserve empties:
+            /// While a side still holds a reserve (the wave is stalled on the agent cap or still spawning in), every
+            /// global tick re-sizes it so on-field plus reserved equals half the battle size; men lost while waiting
+            /// are added to the wave. Otherwise two jobs at reservation time:
             ///  - with the force flag set and a zero result, return the side's wave size (casualty gate bypassed);
-            ///  - clamp the batch so the side never exceeds half the battle size. Vanilla only checks the total agent
-            ///    cap; clamping here (rather than at spawn time) avoids a leftover reserve that trickles in one man at
-            ///    a time as losses free room. The next wave then needs the side to fall below half again.
+            ///  - size every wave (triggered or forced) to refill the side to exactly half the battle size. Vanilla's
+            ///    fixed half-of-initial-spawn wave left a side that triggered late well under strength. Sizing here
+            ///    (rather than at spawn time) avoids a leftover reserve that trickles in one man at a time as losses
+            ///    free room. The next wave then needs the side to lose half its initial spawn again.
             /// </summary>
             [HarmonyPatch(typeof(MissionBattleSideSpawnContext), "ComputeWaveBatch")]
             private static class ComputeWaveBatchPatch
@@ -213,12 +234,27 @@ namespace RBMAI.AiModule
 
                 private static void Postfix(MissionBattleSideSpawnContext __instance, MissionSpawnPhase activePhase, ref int __result)
                 {
-                    if (activePhase == null || activePhase.RemainingSpawnNumber <= 0 || __instance.ReservedTroopsCount > 0)
+                    if (activePhase == null || activePhase.RemainingSpawnNumber <= 0)
                     {
                         return;
                     }
                     try
                     {
+                        if (__instance.ReservedTroopsCount > 0)
+                        {
+                            // A wave is still waiting for agent room or spawning in: re-size it to the side's current
+                            // strength. CheckReinforcementBatch subtracts the reserve already held, so only the shortfall
+                            // is added and a stalled wave still brings the side back to half the battle size.
+                            if (IsFieldBattle() && SpawnLogic(__instance) is DefaultBattleMissionAgentSpawnLogic pending)
+                            {
+                                int pendingCap = pending.BattleSize / 2;
+                                if (pendingCap > 0)
+                                {
+                                    __result = Math.Max(0, pendingCap - __instance.NumberOfActiveTroops);
+                                }
+                            }
+                            return;
+                        }
                         if (ForceWave && __result <= 0)
                         {
                             // Vanilla already recomputed _reinforcementBatchSize (and its quota) before applying the
@@ -231,10 +267,11 @@ namespace RBMAI.AiModule
                         }
                         if (__result > 0 && IsFieldBattle() && SpawnLogic(__instance) is DefaultBattleMissionAgentSpawnLogic logic)
                         {
+                            // BattleSize is the player's battle-size setting (mods included), so the cap follows it.
                             int sideCap = logic.BattleSize / 2;
                             if (sideCap > 0)
                             {
-                                __result = Math.Max(0, Math.Min(__result, sideCap - __instance.NumberOfActiveTroops));
+                                __result = Math.Max(0, sideCap - __instance.NumberOfActiveTroops);
                             }
                         }
                     }
