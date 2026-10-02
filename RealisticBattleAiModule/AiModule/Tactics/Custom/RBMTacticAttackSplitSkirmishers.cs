@@ -12,6 +12,9 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
     private int side = MBRandom.RandomInt(2);
     private int waitCountMainFormation = 0;
     private int waitCountMainFormationMax = 25;
+    // A man counts as a skirmisher while he holds MORE than this many javelins. Shared by the
+    // tactic weight and the split so the tactic is only chosen for men it will actually split off.
+    private const float SkirmisherJavelinThreshold = 2f;
 
     protected void AssignTacticFormations()
     {
@@ -52,7 +55,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
                 List<Agent> meleeList = new List<Agent>();
                 foreach (Agent agent in allInfantry)
                 {
-                    if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent))
+                    if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent, SkirmisherJavelinThreshold))
                         skirmishersList.Add(agent);
                     else
                         meleeList.Add(agent);
@@ -96,8 +99,15 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
                     _membershipSplitDone = true;
                 }
 
-                _skirmishers = skirmisherSlot;
-                _skirmishers.AI.IsMainFormation = false;
+                // Behaviors are only added to a formation when it receives its first unit
+                // (TeamAIGeneral.OnUnitAddedToFormationForTheFirstTime). A slot that never got a
+                // javelineer (none found, or the split was skipped) has an empty behavior list,
+                // and SetBehaviorWeight on it throws "Behavior weight could not be set."
+                if (skirmisherSlot.CountOfUnits > 0)
+                {
+                    _skirmishers = skirmisherSlot;
+                    _skirmishers.AI.IsMainFormation = false;
+                }
             }
         }
 
@@ -385,7 +395,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             {
                 formation.ApplyActionOnEachUnitViaBackupList((Agent agent) =>
                 {
-                    if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent, 2))
+                    if (RBMAI.Utilities.CheckIfSkirmisherAgent(agent, SkirmisherJavelinThreshold))
                         skirmisherCount++;
                 });
             }

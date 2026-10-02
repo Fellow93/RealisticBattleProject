@@ -24,6 +24,12 @@ namespace RBMAI
             private static void PostfixOnUnitAddedToFormationForTheFirstTime(Formation formation)
             {
                 formation.QuerySystem.Expire();
+                // This hook fires on every 0 -> >0 unit transition, not just the first, and
+                // behaviors are never removed. Vanilla guards its own set the same way.
+                if (formation.AI.GetBehavior<RBMBehaviorArcherSkirmish>() != null)
+                {
+                    return;
+                }
                 formation.AI.AddAiBehavior(new RBMBehaviorArcherSkirmish(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorForwardSkirmish(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorInfantryAttackFlank(formation));
