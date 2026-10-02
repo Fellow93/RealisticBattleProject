@@ -27,6 +27,10 @@ namespace RBMConfig
         public static bool? rbmCombatEnabledAtLaunch = null;
         public static bool rbmCampaignEnabled = true;
 
+        // Internal, no settings-screen control: the newest CHANGELOG.md version the player has opened in the
+        // title-screen changelog viewer (RBMChangelog). Empty until the first open, so a fresh install shows it.
+        public static string lastSeenChangelogVersion = "";
+
         // developerMode and every logging toggle live in RBMConfig.Debug.cs.
 
         public static void LoadConfig()
@@ -164,6 +168,8 @@ namespace RBMConfig
             // anything else, an empty node included, is off.
             string developerModeText = ReadOrCreate("/Config", "DeveloperMode", "0").Trim();
             developerMode = developerModeText == "1" || developerModeText.Equals("true", StringComparison.OrdinalIgnoreCase);
+
+            lastSeenChangelogVersion = ReadOrCreate("/Config", "LastSeenChangelogVersion", "").Trim();
 
             // Modules
             rbmTournamentEnabled = ReadOrCreate("/Config/RBMTournament", "Enabled", "1").Equals("1");
@@ -350,6 +356,7 @@ namespace RBMConfig
             // Always written, creating the node if this document lacks it (a fresh default config, or one saved
             // before the setting was in the settings screen).
             setInnerTextBoolean(EnsureNode("/Config", "DeveloperMode"), developerMode);
+            setInnerText(EnsureNode("/Config", "LastSeenChangelogVersion"), lastSeenChangelogVersion ?? "");
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMTournament/Enabled"), rbmTournamentEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/Enabled"), rbmAiEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Enabled"), rbmCombatEnabled);

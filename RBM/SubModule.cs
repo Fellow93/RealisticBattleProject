@@ -121,10 +121,16 @@ namespace RBM
             {
                 ScreenManager.PushScreen(new RBMConfig.RBMConfigScreen());
             }, () => (false, new TextObject("{=RBM_CON_020}RBM Configuration"))));
+
+            // "RBM Changelog" badge in the title screen's top-right corner (not a menu option); it adds its layers
+            // to every initial screen as it is pushed.
+            RBMConfig.RBMChangelog.Install();
         }
 
         protected override void OnApplicationTick(float dt)
         {
+            // Opens/closes the title-screen changelog viewer; returns at once when no title screen is up.
+            RBMConfig.RBMChangelog.Tick();
             CustomBattlePatches.TickInput();
             if (Mission.Current == null)
             {

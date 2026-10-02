@@ -284,6 +284,10 @@
     <Compile Include="RBMConfigUI\RBMConfigViewModel.Simulation.cs" />
     <Compile Include="RBMConfigUI\RBMConfigViewModel.Debug.cs" />
     <Compile Include="RBMConfigUI\TextViewModel.cs" />
+    <!-- Title-screen changelog badge + viewer -->
+    <Compile Include="RBMConfigUI\Changelog\ChangelogParser.cs" />
+    <Compile Include="RBMConfigUI\Changelog\RBMChangelog.cs" />
+    <Compile Include="RBMConfigUI\Changelog\RBMChangelogVM.cs" />
     <!-- Config data types -->
     <Compile Include="RBMCombatConfigPriceMultipliers.cs" />
     <Compile Include="RBMCombatConfigWeaponType.cs" />

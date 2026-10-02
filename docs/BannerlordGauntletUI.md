@@ -115,7 +115,7 @@ PropertyOwnerObject
 | Widget | Purpose · key props |
 |---|---|
 | **TextWidget** | Single run of localized plain text. `Text`, `IntText`, `FloatText`, `AutoHideIfEmpty`, `CanBreakWords`. Font/size/color from its `Brush`. |
-| **RichTextWidget** | Markup text with inline styles/sprites and clickable links. `Text`, fires `LinkClick`. |
+| **RichTextWidget** | Markup text with inline styles/sprites and clickable links. `Text`, fires `LinkClick`. Markup (see §4d): `<span style="X">…</span>`, `<a style="X" href="…">…</a>`, `<img src="Sprite\Name"/>`. |
 | **EditableTextWidget** | Text input (cursor, selection, clipboard, obfuscation). `Text`, `MaxLength`, `IsObfuscationEnabled`. Fires `TextEntered`. |
 | **IntegerInputTextWidget** / **FloatInputTextWidget** | Numeric input with clamp. `IntText`/`FloatText`, `MinInt/MaxInt`, `EnableClamp`. |
 | **AnimatedNumberTextWidget** | Counts up to a target. `Number`, `AnimationDuration`. |
@@ -497,6 +497,33 @@ base-game sprite names (`BlankWhiteSquare`, `HintBG@2x_9`, `mission_health_bar_f
 `ImageFit` (on widgets and layers): `Type` = `StretchToFit` (distort) · `Cover` (fill, may
 crop) · `Contain` (fit, letterbox), with H/V alignment.
 
+### 4d. Rich text styles (bold, colour runs) — verified
+
+`RichTextWidget` has no `<b>`. Its parser (`TaleWorlds.TwoDimension.RichTextParser` /
+`RichTextTagParser` / `RichText`) knows three tags: `img`, `a` and `span`. A `span`/`a` pushes its
+`style` attribute on a style stack (the widget's state name, `Default`, is the bottom), and each text
+run is drawn with **the widget brush's `Style` of that name** (`Brush.GetStyleOrDefault`), font
+included: `RichTextWidget.UpdateFontData` registers every brush style's `Font`/`FontSize`. So "bold"
+is a brush style with a heavier font, e.g. (RBM `RBMChangelog.Body.Text`):
+
+```xml
+<Style Name="Default" FontColor="#F9EAD2FF" FontSize="22" />
+<Style Name="Bold" Font="FiraSansExtraCondensed-Medium" FontColor="#F7C895FF" FontSize="22" />
+```
+then bind a VM string such as `a <span style="Bold">bold</span> run`. Unset style values fall back to `Default`.
+Single-player-safe fonts (used by Native/SandBox brushes): `FiraSansExtraCondensed-Regular`/`-Medium`/`-Light`,
+`Galahad`. **Escape `<` in data text:** every `<` starts a tag, and a malformed one can throw
+`RichTextException` (attribute without quotes, stray `/`), so replace it before binding (RBM swaps it for `‹`).
+
+### 4e. Sprite categories on the title screen
+
+Native's `GUI/NativeSpriteData.xml` marks `ui_group1`, `ui_fullbackgrounds`, `ui_fonts` and `ui_textures`
+`<AlwaysLoad/>`; anything else (e.g. `ui_options`, `ui_encyclopedia`) must be loaded by the screen that
+uses it. `BlankWhiteSquare(_9)`, `BlankWhiteCircle`, `Frame1Brush`'s `SPGeneral\Frame1\*` (+ `stone_texture_overlay`,
+`ui_textures`), `StdAssets\standart_popup_button*` (`Standard.PopupCloseButton`) and the
+`General\Scrollbar.Vertical1\*` art (`Standard.VerticalScrollbar`) are all `ui_group1` — safe anywhere.
+Check a sprite with: find its `<SpritePart>` `<Name>` in that file and read `<CategoryName>`.
+
 ---
 
 ## 5. ViewModel data binding (C# side)
@@ -649,6 +676,24 @@ protected override void OnFinalize() { RemoveLayer(_layer); _vm.OnFinalize(); ba
 `ScreenManager.TopScreen as MissionScreen`), `new GauntletLayer(name, order)`,
 `missionScreen.AddLayer(...)`, `LoadMovie(prefab, vm)`; tick the VM from the view's update;
 remove in `OnEndMission`/`OnRemoveBehavior`.
+
+**Overlay on a native screen you don't own** (e.g. the title screen) — RBM's `RBMChangelog`
+(`RBMConfig/RBMConfigUI/Changelog/`): subscribe once to `ScreenManager.OnPushScreen` / `OnPopScreen`
+(they fire for `PushScreen`, `CleanAndPushScreen`, `ReplaceTopScreen`, `SetAndActivateRootScreen`, and
+pops fire *after* the screen's `HandleFinalize`), match `screen is MBInitialScreenBase`, and `AddLayer` your
+`GauntletLayer` to it. No Harmony needed; each title-screen instance (first launch, every return to the menu)
+is pushed exactly once, and its layers are finalized with it. Facts that make it work:
+- `ScreenBase.AddLayer` on an active screen activates the layer at once; `HandleFinalize` finalizes all layers.
+- Mouse goes to the highest-order layer whose `HitTest()` is true, and a `GauntletLayer` is hit only where a
+  widget that accepts events is under the cursor (`EventManager.AnyWidgetsAt`). A full-screen root with
+  `DoNotAcceptEvents="true"` therefore clicks through everywhere except your buttons; a root that accepts
+  events makes the layer modal.
+- Keys reach only `ScreenManager.FocusedLayer` (`IsKeysAllowed`). For Escape: `layer.IsFocusLayer = true`,
+  `ScreenManager.TrySetFocus(layer)` (needs an order ≥ the focused layer's), register
+  `GenericPanelGameKeyCategory` and poll `layer.Input.IsHotKeyReleased("Exit")`; on close `TryLoseFocus` hands
+  focus back to the top remaining `IsFocusLayer` layer.
+- `GauntletInitialScreen` layer orders: menu `"MainMenu"` 1, first-run `"MainMenuBrightness"` /
+  `"MainMenuExposure"` 2 (find them with `FindLayer<GauntletLayer>(name)` to avoid covering them).
 
 **World-anchored markers** (3D point → 2D widget) — `FrontlineDebugOverlay`, `UnitStatusVM`,
 `RangedAimArcView` (RBMCombat `CombatModule/UI/AimArc/`). `MBDebug.RenderDebug*` is

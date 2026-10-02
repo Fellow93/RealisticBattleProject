@@ -582,6 +582,12 @@
 	<string id="RBM_RESTART_001" text="Restart Required" />
 	<string id="RBM_RESTART_002" text="RBM Combat was changed. Everything else takes effect the next time you start or load a game, but RBM's spear and weapon animation parameters are only read when Bannerlord starts. Restart the game for them to match the new setting." />
 	<string id="RBM_RESTART_003" text="OK" />
+	<!-- Title Screen Changelog Badge and Viewer Strings -->
+	<string id="RBM_CHG_001" text="RBM Changelog" />
+	<string id="RBM_CHG_002" text="Close" />
+	<string id="RBM_CHG_003" text="The changelog file was not found. It should be CHANGELOG.md in the RBM module folder." />
+	<string id="RBM_CHG_004" text="The changelog has no version entries." />
+	<string id="RBM_CHG_005" text="The changelog could not be read." />
 	<!-- Config Screen: RBM Debug & Logging Section Strings -->
 	<string id="RBM_DBG_001" text="RBM Debug &amp; Logging" />
 	<string id="RBM_DBG_002" text="Developer Mode" />

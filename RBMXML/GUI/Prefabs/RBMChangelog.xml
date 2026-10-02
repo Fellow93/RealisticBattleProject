@@ -1,0 +1,163 @@
+<Prefab>
+	<!-- Changelog viewer, a modal overlay layer on the title screen (RBMConfig.RBMChangelog). Versions from
+	     CHANGELOG.md on the left (newest first), the selected one's notes on the right. Every sprite used here
+	     (Frame1Brush's SPGeneral\Frame1 parts, BlankWhiteSquare_9, BlankWhiteCircle, the scrollbar and popup
+	     button art) is in ui_group1 / ui_textures, which are always loaded. -->
+	<Constants>
+		<Constant Name="RBMC.Panel.Width" Value="1360" />
+		<Constant Name="RBMC.Panel.Height" Value="860" />
+		<Constant Name="RBMC.List.Width" Value="250" />
+		<Constant Name="RBMC.Divider.Color" Value="#D6984650" />
+		<!-- Left gap of a bullet's text; the dot sits inside it. -->
+		<Constant Name="RBMC.Bullet.TextIndent" Value="26" />
+	</Constants>
+	<Window>
+		<!-- The root takes events across the whole screen, so the menu underneath cannot be clicked while open. -->
+		<Widget Id="ChangelogRoot" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+			<Children>
+
+				<!-- Dim the title screen. -->
+				<Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#000000BF" />
+
+				<BrushWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!RBMC.Panel.Width" SuggestedHeight="!RBMC.Panel.Height"
+							 HorizontalAlignment="Center" VerticalAlignment="Center" Brush="Frame1Brush">
+					<Children>
+
+						<!-- Title + divider. -->
+						<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="56" VerticalAlignment="Top" MarginTop="24"
+									Brush="SPOptions.GameKeysGroup.Title.Text" Brush.TextHorizontalAlignment="Center" Text="@TitleText" />
+						<Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="2" VerticalAlignment="Top"
+								MarginTop="92" MarginLeft="40" MarginRight="40" Sprite="BlankWhiteSquare_9" Color="!RBMC.Divider.Color" />
+
+						<!-- Body: version list | divider | notes. -->
+						<ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+								   MarginTop="114" MarginBottom="112" MarginLeft="40" MarginRight="30"
+								   StackLayout.LayoutMethod="HorizontalLeftToRight">
+							<Children>
+
+								<!-- Versions. Each item is one RBMChangelogVersionVM. -->
+								<Widget WidthSizePolicy="Fixed" SuggestedWidth="!RBMC.List.Width" HeightSizePolicy="StretchToParent">
+									<Children>
+										<ScrollablePanel Id="VersionsScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+														 MarginRight="28" ClipRect="VersionsClip" InnerPanel="VersionsClip\VersionsList"
+														 VerticalScrollbar="..\VersionsScrollbar\Scrollbar" MouseScrollAxis="Vertical" AutoHideScrollBars="true">
+											<Children>
+												<Widget Id="VersionsClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+													<Children>
+														<ListPanel Id="VersionsList" DataSource="{Versions}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+																   VerticalAlignment="Top" StackLayout.LayoutMethod="VerticalTopToBottom">
+															<ItemTemplate>
+																<ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="54" MarginBottom="6"
+																			  Brush="RBMLedger.TabButton" Command.Click="ExecuteSelect" IsSelected="@IsSelected"
+																			  DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+																	<Children>
+																		<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="10" MarginRight="10"
+																					DoNotAcceptEvents="true" Brush="RBMLedger.TabText" Text="@Name" />
+																	</Children>
+																</ButtonWidget>
+															</ItemTemplate>
+														</ListPanel>
+													</Children>
+												</Widget>
+											</Children>
+										</ScrollablePanel>
+										<Standard.VerticalScrollbar Id="VersionsScrollbar" HorizontalAlignment="Right"
+											HeightSizePolicy="StretchToParent" WidthSizePolicy="CoverChildren" VerticalAlignment="Top" />
+									</Children>
+								</Widget>
+
+								<Widget WidthSizePolicy="Fixed" SuggestedWidth="2" HeightSizePolicy="StretchToParent" MarginLeft="18"
+										Sprite="BlankWhiteSquare_9" Color="!RBMC.Divider.Color" />
+
+								<!-- Notes. -->
+								<Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="30">
+									<Children>
+
+										<!-- Missing / unreadable / empty changelog. -->
+										<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" IsVisible="@HasMessage"
+													Brush="RBMChangelog.Message.Text" Text="@MessageText" />
+
+										<!-- One item, the selected version (RBMChangelogPageVM). Replacing it rebuilds the scroll panel,
+										     so every newly selected version starts scrolled to the top. -->
+										<ListPanel DataSource="{Pages}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+												   StackLayout.LayoutMethod="VerticalTopToBottom">
+											<ItemTemplate>
+												<ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" StackLayout.LayoutMethod="VerticalTopToBottom">
+													<Children>
+														<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+																	Brush="RBMChangelog.Version.Text" Text="@VersionText" />
+														<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="2" IsVisible="@HasSubtitle"
+																	Brush="RBMChangelog.Subtitle.Text" Text="@SubtitleText" />
+
+														<Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginTop="14">
+															<Children>
+																<ScrollablePanel Id="NotesScroll" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent"
+																				 MarginRight="34" ClipRect="NotesClip" InnerPanel="NotesClip\NotesInner"
+																				 VerticalScrollbar="..\NotesScrollbar\Scrollbar" MouseScrollAxis="Vertical" AutoHideScrollBars="false">
+																	<Children>
+																		<Widget Id="NotesClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">
+																			<Children>
+																				<!-- One item per RBMChangelogLineVM; only the variant matching its kind is visible. -->
+																				<ListPanel Id="NotesInner" DataSource="{Lines}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren"
+																						   VerticalAlignment="Top" StackLayout.LayoutMethod="VerticalTopToBottom">
+																					<ItemTemplate>
+																						<Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren">
+																							<Children>
+
+																								<!-- "### Section" -->
+																								<TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginTop="14" MarginBottom="6"
+																											IsVisible="@IsSection" Brush="RBMChangelog.Section.Text" Text="@Text" />
+
+																								<!-- "- bullet": dot in the left gap, wrapped text beside it; Indent nests it. -->
+																								<Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="@Indent" MarginBottom="8"
+																										IsVisible="@IsBullet">
+																									<Children>
+																										<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="7" SuggestedHeight="7"
+																												HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="6" MarginTop="10"
+																												Sprite="BlankWhiteCircle" Color="#D69846FF" DoNotAcceptEvents="true" />
+																										<RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="!RBMC.Bullet.TextIndent"
+																														DoNotAcceptEvents="true" Brush="RBMChangelog.Body.Text" Text="@Text" />
+																									</Children>
+																								</Widget>
+
+																								<!-- Plain paragraph. -->
+																								<RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginBottom="8"
+																												IsVisible="@IsParagraph" DoNotAcceptEvents="true" Brush="RBMChangelog.Body.Text" Text="@Text" />
+
+																							</Children>
+																						</Widget>
+																					</ItemTemplate>
+																				</ListPanel>
+																			</Children>
+																		</Widget>
+																	</Children>
+																</ScrollablePanel>
+																<Standard.VerticalScrollbar Id="NotesScrollbar" HorizontalAlignment="Right"
+																	HeightSizePolicy="StretchToParent" WidthSizePolicy="CoverChildren" VerticalAlignment="Top" />
+															</Children>
+														</Widget>
+													</Children>
+												</ListPanel>
+											</ItemTemplate>
+										</ListPanel>
+
+									</Children>
+								</Widget>
+
+							</Children>
+						</ListPanel>
+
+						<!-- Close (Escape closes too). -->
+						<Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="80" VerticalAlignment="Bottom" MarginBottom="18">
+							<Children>
+								<Standard.PopupCloseButton Parameter.ButtonText="@CloseText" Parameter.ButtonAction="ExecuteClose" />
+							</Children>
+						</Widget>
+
+					</Children>
+				</BrushWidget>
+
+			</Children>
+		</Widget>
+	</Window>
+</Prefab>

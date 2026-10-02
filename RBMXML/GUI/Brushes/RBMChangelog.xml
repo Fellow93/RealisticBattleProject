@@ -1,0 +1,72 @@
+<Brushes>
+
+  <!-- Title-screen badge background: a dark plate like the native profile box in the same corner, warming to
+       parchment on hover. BlankWhiteSquare_9 is in ui_group1 (always loaded). -->
+  <Brush Name="RBMChangelog.Badge" TransitionDuration="0.1">
+    <Layers>
+      <BrushLayer Name="Fill" Sprite="BlankWhiteSquare_9" />
+    </Layers>
+    <Styles>
+      <Style Name="Default">
+        <BrushLayer Name="Fill" Color="#0A0806FF" AlphaFactor="0.7" />
+      </Style>
+      <Style Name="Hovered">
+        <BrushLayer Name="Fill" Color="#3A2A18FF" AlphaFactor="0.85" />
+      </Style>
+      <Style Name="Pressed">
+        <BrushLayer Name="Fill" Color="#5A4030FF" AlphaFactor="0.9" />
+      </Style>
+      <Style Name="Disabled">
+        <BrushLayer Name="Fill" Color="#0A0806FF" AlphaFactor="0.3" />
+      </Style>
+    </Styles>
+  </Brush>
+
+  <!-- Badge label: the main menu's own colours (InitialMenuButtonBrush), smaller. -->
+  <Brush Name="RBMChangelog.Badge.Text" Font="Galahad" TextHorizontalAlignment="Center" TextVerticalAlignment="Center">
+    <Layers>
+    </Layers>
+    <Styles>
+      <Style Name="Default" FontColor="#F4E1C4FF" TextGlowColor="#000000FF" FontSize="22" />
+      <Style Name="Hovered" FontColor="#F3C697FF" TextGlowColor="#000000FF" FontSize="22" />
+      <Style Name="Pressed" FontColor="#B57F5CFF" TextGlowColor="#000000FF" FontSize="22" />
+    </Styles>
+  </Brush>
+
+  <!-- Version header above the notes ("v4.5.3"), and the "(changes since ...)" line under it. -->
+  <Brush Name="RBMChangelog.Version.Text" Font="Galahad" TextHorizontalAlignment="Left" TextVerticalAlignment="Center">
+    <Styles>
+      <Style Name="Default" FontColor="#F4E1C4FF" TextGlowColor="#000000FF" FontSize="38" />
+    </Styles>
+  </Brush>
+  <Brush Name="RBMChangelog.Subtitle.Text" Font="FiraSansExtraCondensed-Regular" TextHorizontalAlignment="Left" TextVerticalAlignment="Center">
+    <Styles>
+      <Style Name="Default" FontColor="#C8B48CFF" TextAlphaFactor="0.9" FontSize="22" />
+    </Styles>
+  </Brush>
+
+  <!-- "### Combat" section titles: the settings screen's section-title amber, left aligned. -->
+  <Brush Name="RBMChangelog.Section.Text" Font="FiraSansExtraCondensed-Medium" TextHorizontalAlignment="Left" TextVerticalAlignment="Top">
+    <Styles>
+      <Style Name="Default" FontColor="#D69846FF" TextGlowColor="#FFFFFF00" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" FontSize="30" />
+    </Styles>
+  </Brush>
+
+  <!-- Bullet and paragraph text (RichTextWidget). Rich text picks a Style by name: the parser wraps "**x**" in
+       <span style="Bold">, which switches to the medium weight in a warmer colour. Bold falls back to Default
+       for anything it does not set. -->
+  <Brush Name="RBMChangelog.Body.Text" Font="FiraSansExtraCondensed-Regular" TextHorizontalAlignment="Left" TextVerticalAlignment="Top">
+    <Styles>
+      <Style Name="Default" FontColor="#F9EAD2FF" TextAlphaFactor="0.9" TextGlowColor="#FFFFFF00" TextOutlineAmount="0" TextGlowRadius="0" TextBlur="0" FontSize="22" />
+      <Style Name="Bold" Font="FiraSansExtraCondensed-Medium" FontColor="#F7C895FF" TextAlphaFactor="1" FontSize="22" />
+    </Styles>
+  </Brush>
+
+  <!-- Message shown in place of the notes when CHANGELOG.md is missing or unreadable. -->
+  <Brush Name="RBMChangelog.Message.Text" Font="FiraSansExtraCondensed-Regular" TextHorizontalAlignment="Center" TextVerticalAlignment="Center">
+    <Styles>
+      <Style Name="Default" FontColor="#F9EAD2FF" TextAlphaFactor="0.8" FontSize="26" />
+    </Styles>
+  </Brush>
+
+</Brushes>

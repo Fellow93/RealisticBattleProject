@@ -1,0 +1,29 @@
+<Prefab>
+	<!-- Title-screen "RBM Changelog" badge, top-right corner (RBMConfig.RBMChangelog adds it as its own layer on
+	     the native initial screen). The native InitialScreen.xml puts nothing there in single player: its only
+	     top-right widget is the console profile box (IsProfileSelectionEnabled, never set on PC), at the same
+	     25 px from the top. The full-screen root takes no events, so clicks anywhere else reach the menu. -->
+	<Window>
+		<Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true">
+			<Children>
+
+				<ButtonWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="46"
+							  HorizontalAlignment="Right" VerticalAlignment="Top" MarginTop="25" MarginRight="25"
+							  Brush="RBMChangelog.Badge" Command.Click="ExecuteOpen"
+							  DoNotPassEventsToChildren="true" UpdateChildrenStates="true">
+					<Children>
+						<TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="StretchToParent"
+									MarginLeft="22" MarginRight="22" DoNotAcceptEvents="true"
+									Brush="RBMChangelog.Badge.Text" Text="@BadgeText" />
+
+						<!-- "New" dot while the newest version has not been opened yet. -->
+						<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="14"
+								HorizontalAlignment="Right" VerticalAlignment="Top" PositionXOffset="5" PositionYOffset="-5"
+								Sprite="BlankWhiteCircle" Color="#E8A33CFF" DoNotAcceptEvents="true" IsVisible="@HasUnseen" />
+					</Children>
+				</ButtonWidget>
+
+			</Children>
+		</Widget>
+	</Window>
+</Prefab>
