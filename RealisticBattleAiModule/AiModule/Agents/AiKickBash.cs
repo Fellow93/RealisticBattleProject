@@ -362,7 +362,7 @@ namespace RBMAI
                 MissionWeapon offhand = Agent.WieldedOffhandWeapon;
                 _hadShield = !offhand.IsEmpty && offhand.CurrentUsageItem != null && offhand.CurrentUsageItem.IsShield;
                 _watching = true;
-                bool bash = !HoldsPolearmTwoHanded() && BashCanLand() && MBRandom.RandomFloat < AiKickBash.BashChance;
+                bool bash = BashCanLand() && MBRandom.RandomFloat < AiKickBash.BashChance;
                 _bash = bash;
                 float lead = bash ? AiKickBash.BlockSeconds : 0f;
                 _watchEndTime = now + lead + AiKickBash.KickSeconds + AiKickBash.WatchSeconds;
@@ -457,21 +457,11 @@ namespace RBMAI
                 {
                     return false;
                 }
-                // With a polearm in two hands he only ever kicks (HoldsPolearmTwoHanded), and the kick has to stay a
-                // kick: the Kick input turns into the suspect polearm bash if he is still in a guard, so not while he
-                // is defending. Nor while the polearm is in a passive usage (bracing): that usage set has no guard and
-                // no kick usage at all, the likeliest cause of the crash other mods saw.
+                // Not while bracing: the passive usage set has no guard and no kick usage.
                 WeaponComponentData weapon = Agent.WieldedWeapon.IsEmpty ? null : Agent.WieldedWeapon.CurrentUsageItem;
-                MissionWeapon offhand = Agent.WieldedOffhandWeapon;
-                bool hasShield = !offhand.IsEmpty && offhand.CurrentUsageItem != null && offhand.CurrentUsageItem.IsShield;
-                if (weapon != null && (weapon.WeaponClass == WeaponClass.TwoHandedPolearm || (weapon.IsPolearm && !hasShield)))
+                if (Agent.IsDoingPassiveAttack || (weapon != null && MBItem.GetItemIsPassiveUsage(weapon.ItemUsage)))
                 {
-                    Agent.ActionCodeType ownAction = Agent.GetCurrentActionType(1);
-                    if ((ownAction >= Agent.ActionCodeType.DefendAllBegin && ownAction < Agent.ActionCodeType.DefendAllEnd) ||
-                        Agent.IsDoingPassiveAttack || MBItem.GetItemIsPassiveUsage(weapon.ItemUsage))
-                    {
-                        return false;
-                    }
+                    return false;
                 }
                 Agent target = Agent.GetTargetAgent();
                 if (target == null || !target.IsActive() || target.MountAgent != null)
@@ -506,15 +496,6 @@ namespace RBMAI
                 Vec2 toAttacker = Agent.Position.AsVec2 - target.Position.AsVec2;
                 toAttacker.Normalize();
                 return target.GetMovementDirection().DotProduct(toAttacker) < AiKickBash.ShieldFacingCosine;
-            }
-
-            // Other mods that made the AI bash hit an unexplained engine crash when the bash was made with a polearm
-            // held in two hands, so with one the AI only ever kicks. Uses _hadShield, set just before this is asked.
-            private bool HoldsPolearmTwoHanded()
-            {
-                MissionWeapon main = Agent.WieldedWeapon;
-                WeaponComponentData usage = main.IsEmpty ? null : main.CurrentUsageItem;
-                return usage != null && (usage.WeaponClass == WeaponClass.TwoHandedPolearm || (usage.IsPolearm && !_hadShield));
             }
 
             private Agent.ActionCodeType CurrentAlternativeAttack()
