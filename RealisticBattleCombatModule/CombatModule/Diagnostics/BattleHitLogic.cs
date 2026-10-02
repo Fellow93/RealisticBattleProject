@@ -41,6 +41,19 @@ namespace RBMCombat
 
         private readonly Dictionary<string, Tally> _defenderTallies = new Dictionary<string, Tally>();
 
+        /// <summary>Melee blocks per kind, credited to the side of the man who blocked (indexed by MeleeBlockKind).</summary>
+        private readonly int[] _attackerBlocks = new int[RBMConfig.MeleeBlock.KindCount];
+
+        private readonly int[] _defenderBlocks = new int[RBMConfig.MeleeBlock.KindCount];
+
+        /// <summary>
+        /// Direct melee hits each side TOOK -- a man's weapon landing, not a horse charge, kick or bash -- so a
+        /// side's blocks and the hits that got past them sit on one row.
+        /// </summary>
+        private int _attackerMeleeHitsTaken;
+
+        private int _defenderMeleeHitsTaken;
+
         private float _nextHeader;
 
         private int _blows;
@@ -85,6 +98,11 @@ namespace RBMCombat
             header.Append("  armor  = the armour standing over the part it actually landed on").Append("\n");
             header.Append("  dealt  = what went through").Append("\n");
             header.Append("\n");
+            header.Append("  blocked melee blows are logged too, 'what' naming the block (the posture system's own cases):").Append("\n");
+            header.Append("    chamber  = chamber block            w-block / w-parry   = weapon block / perfect weapon parry").Append("\n");
+            header.Append("    sh-block = shield block             sh-parry            = perfect shield parry").Append("\n");
+            header.Append("    sh-wrong = shield raised to the wrong side").Append("\n");
+            header.Append("\n");
             header.Append("  SHOT/LAND = AI bow/crossbow aim trace (see MissileAimTrace): predRange ~ tgtRange means the aim").Append("\n");
             header.Append("              suited the launch; landRange short of predRange means the flight differs from the model").Append("\n");
             header.Append("\n");
@@ -95,6 +113,61 @@ namespace RBMCombat
             _nextHeader = 0f;
             _blows = 0;
             _linesMetAt = -1f;
+            System.Array.Clear(_attackerBlocks, 0, _attackerBlocks.Length);
+            System.Array.Clear(_defenderBlocks, 0, _defenderBlocks.Length);
+            _attackerMeleeHitsTaken = 0;
+            _defenderMeleeHitsTaken = 0;
+        }
+
+        /// <summary>
+        /// A blocked or parried melee blow never reaches <see cref="OnAgentHit"/> (the engine registers no blow for
+        /// it), so it is written down here, from the melee collision itself.
+        /// </summary>
+        public override void OnMeleeHit(Agent attacker, Agent victim, bool isCanceled, AttackCollisionData collisionData)
+        {
+            if (!_logging || attacker == null || victim == null || !attacker.IsHuman || !victim.IsHuman
+                || !attacker.IsEnemyOf(victim))
+            {
+                return;
+            }
+            RBMConfig.MeleeBlockKind kind = RBMConfig.MeleeBlock.Classify(in collisionData);
+            if (kind == RBMConfig.MeleeBlockKind.None)
+            {
+                return;
+            }
+
+            float now = Mission.Current.CurrentTime;
+            // A blow met by a blade or a shield is the lines meeting as surely as one that lands.
+            if (_linesMetAt < 0f)
+            {
+                _linesMetAt = now;
+            }
+            if (now >= _nextHeader)
+            {
+                WriteHeader(now);
+                _nextHeader = now + HeaderInterval;
+            }
+
+            (IsAttacker(victim) ? _attackerBlocks : _defenderBlocks)[(int)kind]++;
+
+            int slot = collisionData.AffectorWeaponSlotOrMissileIndex;
+            MissionWeapon weapon = (slot >= 0) ? attacker.Equipment[slot] : MissionWeapon.Invalid;
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("    ").Append(IsAttacker(attacker) ? "A " : "D ")
+              .Append(Clip(Name(attacker), 19).PadRight(20))
+              .Append("-> ").Append(Clip(Name(victim), 21).PadRight(22))
+              .Append(RBMConfig.MeleeBlock.Label(kind).PadRight(9))
+              .Append(Clip(Weapon(weapon), 16).PadRight(17))
+              .Append("-".PadRight(7))
+              .Append("-".PadLeft(7))
+              .Append("-".PadLeft(9))
+              .Append("-".PadLeft(9))
+              .Append("-".PadLeft(9))
+              .Append("   hp ").Append(BattleHitLog.Fmt(victim.Health).PadLeft(5))
+              .Append("/").Append(BattleHitLog.Fmt(victim.HealthLimit));
+
+            BattleHitLog.Write(sb.ToString());
         }
 
         public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon affectorWeapon,
@@ -143,6 +216,19 @@ namespace RBMCombat
 
             Record(striker, what, dealt, downed);
             _blows++;
+
+            // A horse as the affector with no charge speed is a trample, still the horse's doing, not a weapon hit.
+            if (what == "melee" && affectorAgent.IsHuman && striker.IsEnemyOf(affectedAgent))
+            {
+                if (IsAttacker(affectedAgent))
+                {
+                    _attackerMeleeHitsTaken++;
+                }
+                else
+                {
+                    _defenderMeleeHitsTaken++;
+                }
+            }
 
             StringBuilder sb = new StringBuilder();
             sb.Append("    ").Append(IsAttacker(striker) ? "A " : "D ")
@@ -359,6 +445,12 @@ namespace RBMCombat
             AppendTallies(sb, "D", _defenderTallies);
 
             sb.Append("\n");
+            sb.Append("  melee attacks met, by the side that met them (hit = direct melee hits taken, no charges/kicks/bashes):").Append("\n");
+            sb.Append("    side  chamber  w-block  w-parry  sh-block  sh-parry  sh-wrong       hit").Append("\n");
+            AppendBlocks(sb, "A", _attackerBlocks, _attackerMeleeHitsTaken);
+            AppendBlocks(sb, "D", _defenderBlocks, _defenderMeleeHitsTaken);
+
+            sb.Append("\n");
             sb.Append((_linesMetAt < 0f)
                 ? "  The lines never met: nobody reached anybody, and every blow above was landed at a distance."
                 : ("  The lines met at " + BattleHitLog.Clock(_linesMetAt)
@@ -379,6 +471,19 @@ namespace RBMCombat
                   .Append(entry.Value.Kills.ToString().PadLeft(12))
                   .Append("\n");
             }
+        }
+
+        private static void AppendBlocks(StringBuilder sb, string side, int[] blocks, int hitsTaken)
+        {
+            sb.Append("    ").Append(side).Append("   ")
+              .Append(blocks[(int)RBMConfig.MeleeBlockKind.ChamberBlock].ToString().PadLeft(9))
+              .Append(blocks[(int)RBMConfig.MeleeBlockKind.WeaponBlock].ToString().PadLeft(9))
+              .Append(blocks[(int)RBMConfig.MeleeBlockKind.WeaponParry].ToString().PadLeft(9))
+              .Append(blocks[(int)RBMConfig.MeleeBlockKind.ShieldBlock].ToString().PadLeft(10))
+              .Append(blocks[(int)RBMConfig.MeleeBlockKind.ShieldParry].ToString().PadLeft(10))
+              .Append(blocks[(int)RBMConfig.MeleeBlockKind.ShieldWrongSide].ToString().PadLeft(10))
+              .Append(hitsTaken.ToString().PadLeft(10))
+              .Append("\n");
         }
 
         private static string Clip(string text, int width)

@@ -2,6 +2,13 @@
   <Window>
     <Widget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "StretchToParent" IsVisible="true">
       <Children>
+        <TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" WidthSizePolicy="CoverChildren" MarginLeft="20" MarginBottom="280"  Text="@Shieldwrongside" />
+        <TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" WidthSizePolicy="CoverChildren" MarginLeft="20" MarginBottom="295"  Text="@Shieldparries" />
+        <TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" WidthSizePolicy="CoverChildren" MarginLeft="20" MarginBottom="310"  Text="@Shieldblocks" />
+        <TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" WidthSizePolicy="CoverChildren" MarginLeft="20" MarginBottom="325"  Text="@Weaponparries" />
+        <TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" WidthSizePolicy="CoverChildren" MarginLeft="20" MarginBottom="340"  Text="@Weaponblocks" />
+        <TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" WidthSizePolicy="CoverChildren" MarginLeft="20" MarginBottom="355"  Text="@Chamberblocks" />
+        <TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" WidthSizePolicy="CoverChildren" MarginLeft="20" MarginBottom="370"  Text="@Meleehits" />
         <TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" WidthSizePolicy="CoverChildren" MarginLeft="20" MarginBottom="385"  Text="@Kickbash" />
         <TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="415"  Text="@Atkarc" />
         <TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="430"  Text="@Atkha" />

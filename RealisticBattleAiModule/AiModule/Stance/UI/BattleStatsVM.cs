@@ -14,6 +14,13 @@
         private string defcav = new TextObject("{=RBM_AI_007}DEF CAV:").ToString() + " 0";
         private string definf = new TextObject("{=RBM_AI_008}DEF INF:").ToString() + " 0";
         private string kickbash = "";
+        private string chamberblocks = "";
+        private string weaponblocks = "";
+        private string weaponparries = "";
+        private string shieldblocks = "";
+        private string shieldparries = "";
+        private string shieldwrongside = "";
+        private string meleehits = "";
 
         [DataSourceProperty]
         public string Atkarc
@@ -174,6 +181,132 @@
                 }
                     kickbash = value;
                     OnPropertyChanged("Kickbash");
+            }
+        }
+
+        [DataSourceProperty]
+        public string Chamberblocks
+        {
+            get
+            {
+                return chamberblocks;
+            }
+            set
+            {
+                if (chamberblocks == value)
+                {
+                    return;
+                }
+                    chamberblocks = value;
+                    OnPropertyChanged("Chamberblocks");
+            }
+        }
+
+        [DataSourceProperty]
+        public string Weaponblocks
+        {
+            get
+            {
+                return weaponblocks;
+            }
+            set
+            {
+                if (weaponblocks == value)
+                {
+                    return;
+                }
+                    weaponblocks = value;
+                    OnPropertyChanged("Weaponblocks");
+            }
+        }
+
+        [DataSourceProperty]
+        public string Weaponparries
+        {
+            get
+            {
+                return weaponparries;
+            }
+            set
+            {
+                if (weaponparries == value)
+                {
+                    return;
+                }
+                    weaponparries = value;
+                    OnPropertyChanged("Weaponparries");
+            }
+        }
+
+        [DataSourceProperty]
+        public string Shieldblocks
+        {
+            get
+            {
+                return shieldblocks;
+            }
+            set
+            {
+                if (shieldblocks == value)
+                {
+                    return;
+                }
+                    shieldblocks = value;
+                    OnPropertyChanged("Shieldblocks");
+            }
+        }
+
+        [DataSourceProperty]
+        public string Shieldparries
+        {
+            get
+            {
+                return shieldparries;
+            }
+            set
+            {
+                if (shieldparries == value)
+                {
+                    return;
+                }
+                    shieldparries = value;
+                    OnPropertyChanged("Shieldparries");
+            }
+        }
+
+        [DataSourceProperty]
+        public string Shieldwrongside
+        {
+            get
+            {
+                return shieldwrongside;
+            }
+            set
+            {
+                if (shieldwrongside == value)
+                {
+                    return;
+                }
+                    shieldwrongside = value;
+                    OnPropertyChanged("Shieldwrongside");
+            }
+        }
+
+        [DataSourceProperty]
+        public string Meleehits
+        {
+            get
+            {
+                return meleehits;
+            }
+            set
+            {
+                if (meleehits == value)
+                {
+                    return;
+                }
+                    meleehits = value;
+                    OnPropertyChanged("Meleehits");
             }
         }
     }
