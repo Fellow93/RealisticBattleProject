@@ -103,6 +103,31 @@ namespace RBMCampaign
             return (prosperity * OwnedWorkshopProsperityShare) / active * mult;
         }
 
+        /// <summary>
+        /// Factor that turns a recipe's effective speed (the labour pool split over the recipes the town
+        /// can supply TODAY) into its fully-supplied speed (the same pool split over every recipe the shop
+        /// knows): active / total. Used by <see cref="WorkshopDemand"/> so a shortage does not inflate the
+        /// demand it reports -- with four of twenty-eight recipes supplied, each one runs seven times as
+        /// fast, and summing every recipe's input at that speed overstated the town's appetite sevenfold.
+        /// </summary>
+        public static float FullySuppliedFactor(Workshop workshop)
+        {
+            if (workshop == null || workshop.Settlement == null || workshop.Settlement.Town == null
+                || workshop.WorkshopType == null)
+            {
+                return 1f;
+            }
+
+            Bench bench = BenchFor(workshop.Settlement.Town, workshop.WorkshopType);
+            if (bench.Total <= 0)
+            {
+                return 1f;
+            }
+            // Same floor as Scale: an empty count is read as one active recipe.
+            int active = (bench.Active > 0) ? bench.Active : 1;
+            return (active >= bench.Total) ? 1f : (float)active / bench.Total;
+        }
+
         private static int CountOwnedWorkshops(Town town)
         {
             Workshop[] shops = town.Workshops;

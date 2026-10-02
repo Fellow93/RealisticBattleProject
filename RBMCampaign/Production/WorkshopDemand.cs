@@ -146,6 +146,18 @@ namespace RBMCampaign
                         continue;
                     }
 
+                    // The effective speed splits the shop's labour over the recipes the town can supply
+                    // today, so the fewer inputs on the shelf, the faster each recipe reads. Summed over
+                    // EVERY recipe that overstated the appetite exactly when inputs were short (Danustica:
+                    // ~1,500 leather a day reported against ~270 if every recipe were supplied), which
+                    // pinned the price of every short input at its cap and made the storage ceiling
+                    // meaningless. Rescaled to the labour split over every recipe, the figure is what the
+                    // shop would draw fully supplied: still potential demand, but no longer one that grows
+                    // as the shortage deepens.
+                    float fullySupplied = RBMConfig.RBMConfig.rbmCampaignEnabled
+                        ? ArtisanOutput.FullySuppliedFactor(shop)
+                        : 1f;
+
                     foreach (WorkshopType.Production production in shop.WorkshopType.Productions)
                     {
                         if (production.Inputs == null || production.Inputs.Count == 0)
@@ -157,7 +169,7 @@ namespace RBMCampaign
                         // cycle takes, with buildings, policies and perks already folded in.
                         float speed = Campaign.Current.Models.WorkshopModel
                             .GetEffectiveConversionSpeedOfProduction(shop, production.ConversionSpeed, false)
-                            .ResultNumber;
+                            .ResultNumber * fullySupplied;
                         if (speed <= 0f)
                         {
                             continue;

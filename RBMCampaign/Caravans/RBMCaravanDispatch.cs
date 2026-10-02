@@ -119,6 +119,41 @@ namespace RBMCampaign
         private const float SeaRouteDockBoardingDays = 0.1f;
         private const float SeaRouteOpenBoardingDays = 2f;
 
+        // Workshop materials no household buys, so they are not in the citizen basket, yet a town's
+        // workshops can pile them up while another town's sit idle without them (leather: Ortongard held
+        // 2,591 while Danustica and Epicrotea had none). They go through the same surplus / shortage /
+        // headroom tests as the basket, which for a workshop input read the town's workshop draw (see
+        // WorkshopDemand), so a town with no workshop using a material is neither a source nor a buyer.
+        // A missing item id is skipped by FindItem.
+        private static readonly string[] WorkshopMaterials =
+        {
+            "leather", "linen", "wool", "flax",
+            "ironIngot1", "ironIngot2", "ironIngot3", "ironIngot4", "ironIngot5", "ironIngot6",
+        };
+
+        private static string[] _dispatchGoods;
+
+        /// <summary>Everything a supply caravan may carry: the citizen basket, then the workshop materials.</summary>
+        private static string[] DispatchGoods
+        {
+            get
+            {
+                if (_dispatchGoods == null)
+                {
+                    List<string> goods = new List<string>(CitizenDemand.ModelledGoods);
+                    foreach (string id in WorkshopMaterials)
+                    {
+                        if (!goods.Contains(id))
+                        {
+                            goods.Add(id);
+                        }
+                    }
+                    _dispatchGoods = goods.ToArray();
+                }
+                return _dispatchGoods;
+            }
+        }
+
         /// <summary>
         /// A dispatch pass. Bins every town by its kingdom; within each kingdom it works DESTINATION-first:
         /// it takes each struggling town (neediest first) and fills a caravan with everything one source
@@ -184,7 +219,7 @@ namespace RBMCampaign
                 // is never over-promised across several destinations.
                 Dictionary<string, Town> bestSource = new Dictionary<string, Town>();
                 Dictionary<string, int> srcRemaining = new Dictionary<string, int>(); // "srcId#goodId" -> units left
-                foreach (string goodId in CitizenDemand.ModelledGoods)
+                foreach (string goodId in DispatchGoods)
                 {
                     ItemObject good = RBMCaravanRegister.FindItem(goodId);
                     if (good == null)
@@ -246,7 +281,7 @@ namespace RBMCampaign
                     // 500 meat and 500 fish, and two of the three would haul their cargo home refused.
                     int foodRoom = FoodRoomLessInFlight(dst);
 
-                    foreach (string goodId in CitizenDemand.ModelledGoods)
+                    foreach (string goodId in DispatchGoods)
                     {
                         ItemObject good = RBMCaravanRegister.FindItem(goodId);
                         if (good == null)
@@ -365,11 +400,11 @@ namespace RBMCampaign
             return null;
         }
 
-        /// <summary>How many modelled goods a town is currently short of -- its priority as a destination.</summary>
+        /// <summary>How many carried goods a town is currently short of -- its priority as a destination.</summary>
         private static int Neediness(Town town)
         {
             int count = 0;
-            foreach (string goodId in CitizenDemand.ModelledGoods)
+            foreach (string goodId in DispatchGoods)
             {
                 ItemObject good = RBMCaravanRegister.FindItem(goodId);
                 if (good == null)

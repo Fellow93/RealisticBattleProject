@@ -192,6 +192,35 @@
 			</Outputs>
 		</Production>
 
+		<!-- Tanning: placed after the slaughter recipes (which make hides) and before every recipe that
+		     eats hides or leather, because recipes run in list order each day and the hides consumers used
+		     to empty the shelf first. Two copies at 3 (was 2 x 1.5 at the end of the list) for a larger
+		     share of the artisans' labour. -->
+		<Production
+			conversion_speed="3">
+			<Inputs>
+				<Input
+					input_item="hides" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.leather"
+					output_count="1" />
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="3">
+			<Inputs>
+				<Input
+					input_item="hides" />
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.leather"
+					output_count="1" />
+			</Outputs>
+		</Production>
+
 		<Production
 			conversion_speed="3">
 			<Inputs>
@@ -817,32 +846,7 @@
 					output_count="1" />
 			</Outputs>
 		</Production>
- >-->				
-		<Production
-			conversion_speed="1.5">
-			<Inputs>
-				<Input
-					input_item="hides" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.leather"
-					output_count="1" />
-			</Outputs>
-		</Production>
-		<Production
-			conversion_speed="1.5">
-			<Inputs>
-				<Input
-					input_item="hides" />
-			</Inputs>
-			<Outputs>
-				<Output
-					output="ItemCategory.leather"
-					output_count="1" />
-			</Outputs>
-		</Production>
-		
+ >-->
 		<Production
 			conversion_speed="1">
 			<Inputs>
@@ -1465,9 +1469,11 @@
 					output_count="2" />
 			</Outputs>
 		</Production>
-			
+
+		<!-- Tanning at 25 (was 9): a tannery's main job, so it takes a much larger share of the shop's
+		     labour than any one leather-consuming recipe. -->
 		<Production
-			conversion_speed="9">
+			conversion_speed="25">
 			<Inputs>
 				<Input
 					input_item="hides" />
