@@ -439,24 +439,24 @@ namespace RBMCampaign
         /// is why melee was a bloodbath rather than the slow grind it is, and why the heavy foot won battles the mobile
         /// arms decide on the field. So a landed melee blow is scaled by pow(random, this): a high exponent piles the
         /// draws down near nothing and leaves a thin tail up at full, so the AVERAGE landed blow is worth 1/(exp+1) of
-        /// the full -- at 0.5, two-thirds. A charge is exempt (its weight is committed and lands whole); shots and
-        /// thrown weapons are spread the SAME now (RangedLandingExponent), and only a charge lands harder.
+        /// the full -- at 1.5, 0.4. Shots, thrown weapons and charges have their own, lower exponents
+        /// (RangedLandingExponent, ThrownLandingExponent, ChargeLandingExponent), so melee glances the most.
         ///
         /// CALIBRATED against a paired real-vs-sim log (2026-07-15): at the old value of 2 (a third), sim melee landed
         /// at ~0.4x the dealt of a real fought battle -- across every matchup and both sides, large n. The block/parry
         /// system already removes the turned-aside blows, so spreading the survivors down to a third double-counted the
-        /// miss -- which is why melee is no HARSHER than ranged now, not harsher as first supposed. Lowered to 0.5,
-        /// ~doubling sim melee to sit near real. Tune vs the log: raise to grind melee down, lower toward 0 to land full.
+        /// miss. Lowered to 1.5 (deliberately kept over the 0.5 once noted here). Tune vs the log: raise to grind melee
+        /// down, lower toward 0 to land full.
         /// </summary>
         private const float MeleeLandingExponent = 1.5f;
 
         /// <summary>
-        /// The melee exponent to use when the block/parry defence system is OFF (simulationDefenseSystem = 0). The 0.5
+        /// The melee exponent to use when the block/parry defence system is OFF (simulationDefenseSystem = 0). The 1.5
         /// above corrects a double-count that ONLY exists because the defence system discretely removes turned-aside
         /// blows before they reach this spread; with that system off, the old fractional-skim path removes nothing
-        /// here, so spreading survivors down to 0.5 (two-thirds) under-counts the miss and lands melee ~2x its
-        /// calibrated level -- the ranged-vs-melee winner flip. Held at the pre-defence-system calibration of 2 (a
-        /// third) for that path. See MeleeLandingExponent.
+        /// here, so spreading survivors only down to 1.5 (0.4) would under-count the miss and land melee above its
+        /// calibrated level. Held at the pre-defence-system calibration of 2 (a third) for that path. See
+        /// MeleeLandingExponent.
         /// </summary>
         private const float MeleeLandingExponentNoDefense = 2f;
 
@@ -466,9 +466,9 @@ namespace RBMCampaign
         /// not worth full magnitude every time either. Its failure modes (a clean miss, a shield got up in time) are
         /// priced elsewhere as accuracy and the block, not here. At 0.5 the AVERAGE landed shot is worth 1/(0.5+1) =
         /// two-thirds of the full. Applies to FIRED missiles (bow, crossbow, sling); a thrown weapon is committed and
-        /// lands harder -- see ThrownLandingExponent. Sits at the SAME value as melee -- the paired log (see
-        /// MeleeLandingExponent) found the two land alike once each arm's own misses are priced separately -- so raise
-        /// it to nerf ranged harder, lower toward 0 to let shots land nearer full.
+        /// lands harder -- see ThrownLandingExponent. Below melee's 1.5 (MeleeLandingExponent), so a landed shot keeps
+        /// more of its force than a landed swing. Raise it to nerf ranged harder, lower toward 0 to let shots land
+        /// nearer full.
         /// </summary>
         private const float RangedLandingExponent = 0.5f;
 
@@ -2227,8 +2227,8 @@ namespace RBMCampaign
             // cavalry clash, or the melee of lines that have met -- and there is no closing penalty left to apply.
 
             // A landed blow rarely bites at full force, and none of the four kinds lands whole every time. A melee
-            // swing (MeleeLandingExponent) and a FIRED shot (RangedLandingExponent) glance the most -- two-thirds on
-            // average. A THROWN weapon is committed and lands harder (ThrownLandingExponent, ~five-sixths), and a
+            // swing (MeleeLandingExponent) glances the most -- 0.4 on average -- and a FIRED shot (RangedLandingExponent)
+            // next, two-thirds. A THROWN weapon is committed and lands harder (ThrownLandingExponent, ~five-sixths), and a
             // CHARGE harder still (ChargeLandingExponent, ~three-quarters) -- both for the blow that catches a shade
             // off-square rather than one that arcs in from afar. Folded INTO the correction (not applied after) so the
             // log's vanilla x correction = dealt identity holds, and placed AFTER the ratio so it does not cancel
@@ -2249,8 +2249,8 @@ namespace RBMCampaign
             }
             else
             {
-                // 0.5 is calibrated for the defence system removing turned-aside blows upstream; with it off, nothing
-                // is removed here, so use the pre-defence-system exponent to avoid landing melee ~2x too hard.
+                // 1.5 is calibrated for the defence system removing turned-aside blows upstream; with it off, nothing
+                // is removed here, so use the pre-defence-system exponent to avoid landing melee too hard.
                 landingExponent = RBMConfig.RBMConfig.simulationDefenseSystem
                     ? MeleeLandingExponent
                     : MeleeLandingExponentNoDefense;

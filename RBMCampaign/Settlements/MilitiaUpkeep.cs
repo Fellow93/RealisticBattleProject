@@ -364,8 +364,9 @@ namespace RBMCampaign
         /// Returns <paramref name="amount"/> to the settlement's militia funding pot, the inverse of arming
         /// a man from it, routed by how that arming moved the money. Returns what was actually credited.
         ///
-        ///   * TOWN -- its citizens armed their own watch out of market money that left for outside gear;
-        ///     the refund re-enters that same citizen wealth (the symmetric inverse of the spend).
+        ///   * TOWN -- only with the recruit-supply draw off, when its citizens armed their watch out of
+        ///     market money; the refund re-enters that same citizen wealth. With the draw on a town arms
+        ///     from its own shelves and gets gear back instead (see RefundPendingDecline).
         ///
         ///   * CASTLE -- the kit was sourced from beyond its walls and the coin left its wealth; the refund
         ///     re-enters that wealth.
@@ -1537,12 +1538,19 @@ namespace RBMCampaign
             }
             _pendingRefund[settlement] = acc;
 
-            int credited = CreditFundingPot(settlement, perMan * refundedMen);
+            // A town armed these men free off its own shelves (see ArmOneMilitiaman), so they hand their
+            // gear back to the market, not coin to anyone.
+            bool returnsGear = settlement.IsTown && RecruitSupply.IsEnabled;
+            int credited = returnsGear
+                ? RecruitSupply.ReturnKitToMarket(settlement, SpawnTroop(settlement), refundedMen,
+                    BuildingEffects.SpawnCostFactor(settlement.Town))
+                : CreditFundingPot(settlement, perMan * refundedMen);
 
             if (SpoilsLog.IsEnabled && refundedMen > 0)
             {
                 SpoilsLog.Log("MILITIA", (settlement.Name != null ? settlement.Name.ToString() : settlement.StringId)
-                    + " refunded " + refundedMen + " shed militia (" + credited + "d to funding pot)");
+                    + " refunded " + refundedMen + " shed militia ("
+                    + (returnsGear ? credited + "d of gear back to market)" : credited + "d to funding pot)"));
             }
         }
 
@@ -1553,7 +1561,7 @@ namespace RBMCampaign
             {
                 // The village buys the kit off the town it trades with and pays that town's merchants --
                 // the recruit gear leg, which already does exactly this (debit village, credit town) --
-                // but only a quarter of a full kit's worth, the cheap arming of a levy.
+                // but only MilitiaVillageGearShare of a full kit's worth, the cheap arming of a levy.
                 RecruitSupply.DrawKitFromMarket(RecruitSupply.GetSupplyMarket(settlement), settlement, troop, 1,
                     MilitiaVillageGearShare);
                 return;
@@ -1575,6 +1583,13 @@ namespace RBMCampaign
                     return;
                 }
             }
+            // A town's citizens arm their own watch straight off their own market's shelves. The gear
+            // leaving is the whole cost: they are both buyer and seller, so no coin moves.
+            if (settlement.IsTown && RecruitSupply.IsEnabled)
+            {
+                RecruitSupply.DrawKitFromMarket(settlement, settlement, troop, 1, armingShare, chargeOwnTown: false);
+                return;
+            }
             int cost = (int)(SpoilsPool.GetEquipmentValue(troop) * armingShare);
             if (cost <= 0)
             {
@@ -1582,7 +1597,8 @@ namespace RBMCampaign
             }
             if (settlement.IsTown)
             {
-                // The townsmen arm their own watch out of the market's money.
+                // The draw feature is off, so there is no market draw to arm from: the townsmen pay the
+                // kit's worth out of the market's money instead.
                 SettlementWealth.DebitCitizens(settlement, cost, SettlementWealth.Source.Militia);
             }
             else

@@ -25,9 +25,9 @@ namespace RBMCampaign
         private const string SilverOreId = "silver";
 
         /// <summary>
-        /// Coin struck from one unit of silver ore, before any cut. Matches silver ore's own trade value
-        /// (<see cref="TradeGoodValues"/>): minting realises the ore's worth as money rather than minting
-        /// value from nothing.
+        /// Coin struck from one unit of silver ore, before any cut. Deliberately about twice silver ore's own
+        /// trade value (43, <see cref="TradeGoodValues"/>): striking coin adds new money to the economy on
+        /// top of the ore's worth, so the mint is a real source of money, not just a conversion.
         /// </summary>
         public const int CoinsPerOre = 85;
 

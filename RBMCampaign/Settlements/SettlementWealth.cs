@@ -507,6 +507,20 @@ namespace RBMCampaign
                 return true;
             }
 
+            // A castle has no market, and so no market fee, but it has one purse, its settlement wealth:
+            // book the write there rather than let vanilla drop it into the castle's gold field, which
+            // nothing reads. World generation's opening gold is left to vanilla -- a castle's opening
+            // wealth is seeded separately (CastleEconomy), and booking this too would seed it twice.
+            if (settlement.IsCastle)
+            {
+                if (seeding)
+                {
+                    return false;
+                }
+                Apply(settlement, amount, source);
+                return true;
+            }
+
             if (!HasMarket(settlement) || settlement.SettlementComponent == null)
             {
                 return false;

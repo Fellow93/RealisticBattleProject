@@ -502,8 +502,13 @@ namespace RBMCampaign
         /// for the militia levy, which stays mount-less. Never draws a pack animal or livestock even when
         /// true -- see <see cref="UpgradeSupply.IsCargoAnimal"/>.
         /// </param>
+        /// <param name="chargeOwnTown">
+        /// Whether a town drawing off its own market has its citizens front the value of the kit that left
+        /// (the volunteer leg, recovered as recruit pay). False for a town's militia, armed by its citizens
+        /// straight off their own shelves: the gear leaving is the whole cost and no coin moves.
+        /// </param>
         public static void DrawKitFromMarket(Settlement market, Settlement raisedAt, CharacterObject character, int count,
-            float valueShare = 1f, bool includeMount = false)
+            float valueShare = 1f, bool includeMount = false, bool chargeOwnTown = true)
         {
             if (!IsEnabled || market == null || market.ItemRoster == null
                 || character == null || character.IsHero || count <= 0)
@@ -611,7 +616,7 @@ namespace RBMCampaign
                     SettlementWealth.CreditCitizens(market, paid, armsSource);
                 }
             }
-            else if (raisedAt == market && drawn > 0 && SettlementWealth.HasCitizenPurse(market))
+            else if (chargeOwnTown && raisedAt == market && drawn > 0 && SettlementWealth.HasCitizenPurse(market))
             {
                 // A town arming its own volunteers off its own shelves: its citizens front the value of the
                 // kit that left, recovered when a lord musters the man -- RegisterRecruitPay credits the
@@ -629,6 +634,44 @@ namespace RBMCampaign
                     + "d kit" + (remoteBuyerPays ? ", paid " + paid + "d" : "")
                     + (taken < wanted ? " — market short " + (wanted - taken) : ""));
             }
+        }
+
+        /// <summary>
+        /// Puts <paramref name="count"/> disbanded men's kit back on <paramref name="market"/>'s shelves -- the
+        /// inverse of a town arming its militia free off its own market (<see cref="DrawKitFromMarket"/> with
+        /// chargeOwnTown false). Each man hands back the cheap end of his troop's own kit, up to
+        /// <paramref name="valueShare"/> of its value, mirroring the draw. No money moves. Returns the worth
+        /// of the gear put back.
+        /// </summary>
+        public static int ReturnKitToMarket(Settlement market, CharacterObject character, int count, float valueShare = 1f)
+        {
+            if (market == null || market.ItemRoster == null || character == null || character.IsHero || count <= 0)
+            {
+                return 0;
+            }
+            List<EquipmentElement> kit = SpoilsPool.GetKitElements(character);
+            if (kit.Count == 0)
+            {
+                return 0;
+            }
+            kit.Sort((a, b) => a.ItemValue.CompareTo(b.ItemValue));
+            int perManBudget = (int)(KitValue(character) * valueShare);
+            int returned = 0;
+            for (int man = 0; man < count; man++)
+            {
+                int budget = perManBudget;
+                foreach (EquipmentElement element in kit)
+                {
+                    if (element.ItemValue > budget)
+                    {
+                        break;
+                    }
+                    market.ItemRoster.AddToCounts(element, 1);
+                    budget -= element.ItemValue;
+                    returned += element.ItemValue;
+                }
+            }
+            return returned;
         }
 
         /// <summary>

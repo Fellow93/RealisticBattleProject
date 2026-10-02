@@ -38,7 +38,9 @@ namespace RBMCampaign
     /// be defensible too, but it would be a new faucet, which is the thing being removed.</item>
     /// </list>
     ///
-    /// Where there is no market to charge -- a village, a hideout -- vanilla is left alone rather than
+    /// A castle has no market, so a sale there is paid out of the castle's own wealth instead.
+    ///
+    /// Where there is nothing to charge -- a village, a hideout -- vanilla is left alone rather than
     /// having the payment silently zeroed. Failing to fund a sale must not mean cancelling it.
     /// </remarks>
     public static class RansomFunding
@@ -103,6 +105,15 @@ namespace RBMCampaign
                     || giverParty != null
                     || goldAmount <= 0)
                 {
+                    return;
+                }
+
+                // A castle has no market, but it has one purse, its own wealth: the broker there works for
+                // the castle, so the castle pays, and a poor castle pays less -- the town rule, minus the
+                // market fee a castle does not levy.
+                if (_market.IsCastle)
+                {
+                    goldAmount = SettlementWealth.Debit(_market, goldAmount, SettlementWealth.Source.Ransom);
                     return;
                 }
 

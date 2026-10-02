@@ -209,6 +209,28 @@ namespace RBMCampaign
             return result;
         }
 
+        /// <summary>
+        /// The items of a troop's representative kit (its first battle set), mount excluded -- what a man hands
+        /// back when he is sent home. Empty when the troop declares no battle equipment.
+        /// </summary>
+        public static List<EquipmentElement> GetKitElements(CharacterObject character)
+        {
+            List<EquipmentElement> result = new List<EquipmentElement>();
+            Equipment kit = GetRepresentativeEquipment(character);
+            if (kit == null)
+            {
+                return result;
+            }
+            foreach (EquipmentElement element in EnumerateEquipmentSlots(kit))
+            {
+                if (element.Item != null)
+                {
+                    result.Add(element);
+                }
+            }
+            return result;
+        }
+
         /// <summary>Appends a <see cref="SlotPurchase"/> for each slot in [begin, end) the target dearer-kits.</summary>
         private static void AddImprovedSlots(List<SlotPurchase> result, Equipment from, Equipment to, EquipmentIndex begin, EquipmentIndex end)
         {
