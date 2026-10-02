@@ -14,6 +14,13 @@ namespace RBMAI.AiModule.RbmBehaviors
     {
         public static Dictionary<Formation, WorldPosition> cavHoldPositions = new Dictionary<Formation, WorldPosition> { };
         public static Dictionary<Formation, WorldPosition> skirmisherRetreatPositions = new Dictionary<Formation, WorldPosition> { };
+        // Formation -> mission time enemy cavalry last charged it (the brace condition below last held).
+        public static Dictionary<Formation, float> braceLastThreatTime = new Dictionary<Formation, float> { };
+
+        // Bracing outlasts the charge order by this long. RBMBehaviorCavalryCharge alternates ChargeWithTarget with a
+        // Move to pull clear and reform, so bracing only on the charge order flipped the infantry between shieldwall
+        // + hold and its own arrangement + charge every cycle, and each arrangement flip re-lays the whole formation.
+        private const float BraceHoldSeconds = 8f;
 
         public static ArrangementOrder ArrangementOrderLine { get; private set; }
 
@@ -80,7 +87,12 @@ namespace RBMAI.AiModule.RbmBehaviors
                         cavDist = cavDirection.Normalize();
                     }
                     bool isOnlyCavRemaining = RBMAI.Utilities.CheckIfOnlyCavRemaining(__instance.Formation);
-                    if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && ((signDist > 35f || significantEnemy == enemyCav) || isOnlyCavRemaining))
+                    // Still within BraceHoldSeconds of the last charge at us: keep bracing while that cavalry is near,
+                    // even if it is reforming on a Move order or has drifted behind the infantry it supports.
+                    float currentTime = Mission.Current.CurrentTime;
+                    bool braceHeld = enemyCav != null && cavDist < 150f &&
+                        braceLastThreatTime.TryGetValue(__instance.Formation, out float lastThreat) && currentTime - lastThreat < BraceHoldSeconds;
+                    if (braceHeld || ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && ((signDist > 35f || significantEnemy == enemyCav) || isOnlyCavRemaining)))
                     {
                         if (isOnlyCavRemaining)
                         {
@@ -126,7 +138,12 @@ namespace RBMAI.AiModule.RbmBehaviors
                             // cavalry is actually charging us and close enough to matter, as BehaviorAdvance already does.
                             OrderType enemyCavOrder = enemyCav.GetReadonlyMovementOrderReference().OrderType;
                             bool enemyCavCharging = enemyCavOrder == OrderType.ChargeWithTarget || enemyCavOrder == OrderType.Charge;
-                            if (!(__instance.Formation.AI?.Side == FormationAI.BehaviorSide.Left || __instance.Formation.AI?.Side == FormationAI.BehaviorSide.Right) && enemyCav.TargetFormation == __instance.Formation && enemyCavCharging && cavDist < 150f)
+                            bool chargedAt = !(__instance.Formation.AI?.Side == FormationAI.BehaviorSide.Left || __instance.Formation.AI?.Side == FormationAI.BehaviorSide.Right) && enemyCav.TargetFormation == __instance.Formation && enemyCavCharging && cavDist < 150f;
+                            if (chargedAt)
+                            {
+                                braceLastThreatTime[__instance.Formation] = currentTime;
+                            }
+                            if (chargedAt || braceHeld)
                             {
                                 Vec2 vec = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                                 WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);

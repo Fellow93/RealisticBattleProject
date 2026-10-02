@@ -51,10 +51,12 @@ namespace RBMAI
             OverrideMovementOrder.positionsStorage.Clear();
             AiModule.RbmBehaviors.OverrideBehaviorCharge.cavHoldPositions.Clear();
             AiModule.RbmBehaviors.OverrideBehaviorCharge.skirmisherRetreatPositions.Clear();
+            AiModule.RbmBehaviors.OverrideBehaviorCharge.braceLastThreatTime.Clear();
             FormationPaceFix.tightState.Clear();
             RallyLogic.states.Clear();
             AiModule.ReinforcementAnchor.Reset();
             Utilities.significantFormationsCache.Clear();
+            Utilities.formationUnitSnapshots.Clear();
 
             // Agent-keyed state. Some of these were only cleared from MissionCombatantsLogic.EarlyStart, i.e. field
             // battles, so town, arena and other missions without it kept the last battle's agents alive.
@@ -64,6 +66,7 @@ namespace RBMAI
             AgentAi.OnTickPatch.bannerBearersWithHeldTarget.Clear();
             AgentAi.OnTickPatch.chargeRoutedAgents.Clear();
             AgentAi.OnTickPatch.meleePickupNextScan.Clear();
+            AgentAi.OnTickPatch.riderCrowdStates.Clear();
             AgentAi.WeaponPreference.enemyClose.Clear();
             AgentAi.WeaponPreference.nextCheck.Clear();
             AgentAi.WeaponPreference.enemyCloseSince.Clear();
@@ -72,6 +75,11 @@ namespace RBMAI
             AgentAi.RangedReachGate.nextCheck.Clear();
             AgentAi.RangedReachGate.checkedTarget.Clear();
             AgentAi.RangedReachGate.checkedWielded.Clear();
+            AgentAi.RangedReachGate.nextTargetCheck.Clear();
+            AgentAi.RangedReachGate.noTargetSince.Clear();
+            AgentAi.WeaponPreference.loadoutCache.Clear();
+            AgentAi.AmmoPickupSafety.dangerSnapshots.Clear();
+            AgentAi.ChargeDamageCallbackPatch.lastSyntheticKnockback.Clear();
             StanceLogic.agentsToChangeFormation.Clear();
             StanceLogic.agentsToDropWeapon.Clear();
             StanceLogic.agentsToDropShield.Clear();
