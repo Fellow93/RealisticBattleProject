@@ -172,6 +172,12 @@
 	<string id="RBM_militia_unpaid" text="Cannot be paid" />
 	<string id="RBM_militia_overcap" text="Over muster" />
 	<string id="RBM_militia_unarmed" text="Cannot be armed" />
+	<string id="RBM_militia_understrength" text="Mustering the levy" />
+	<string id="RBM_militia_prosperous" text="Prosperous citizens" />
+	<string id="RBM_militia_hardcap" text="Full muster" />
+	<string id="RBM_militia_overflow" text="Disbanding excess" />
+	<string id="RBM_militia_barracks" text="Barracks" />
+	<string id="RBM_militia_base_caps" text="Base (soft cap {SOFT}, hard cap {HARD})" />
 	<string id="RBM_recruit_tithe" text="Foreign levy" />
 	<string id="RBM_recruit_gear" text="Equipment" />
 	<string id="RBM_recruit_cost_title" text="Recruitment cost" />

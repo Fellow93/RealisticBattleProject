@@ -114,6 +114,15 @@ namespace RBMCampaign
             return Tier(town, null, DefaultBuildingTypes.CastleCraftmansQuarters);
         }
 
+        /// <summary>
+        /// Castles only -- the castle Guard House alone, where <see cref="GuardHouse"/> reads either. The two
+        /// differ under RBM: the castle's lifts the militia soft cap (see <c>MilitiaUpkeep</c>), the town's does not.
+        /// </summary>
+        public static int CastleGuardHouseTier(Town town)
+        {
+            return Tier(town, null, DefaultBuildingTypes.CastleGuardHouse);
+        }
+
         /// <summary>Castles only -- the demesne fields the keep works for itself.</summary>
         public static int FarmlandsTier(Town town)
         {

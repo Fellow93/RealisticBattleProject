@@ -140,11 +140,11 @@ namespace RBMCampaign
             }
             if (type == DefaultBuildingTypes.SettlementBarracks || type == DefaultBuildingTypes.CastleBarracks)
             {
-                return "RBM: cost of arming garrison & militia recruits -5/10/15% · garrison and militia intake +1/2/3 per day when the treasury can fund them · garrison soft size +20/40/60 men (recruits get dearer from the recruit pool later)";
+                return "RBM: cost of arming garrison & militia recruits -5/10/15% · garrison and militia intake +1/2/3 per day when the treasury can fund them · garrison soft size +20/40/60 men (recruits get dearer from the recruit pool later) · militia soft cap +2/3/5% of the fief's manpower";
             }
             if (type == DefaultBuildingTypes.SettlementTrainingFields || type == DefaultBuildingTypes.CastleTrainingFields)
             {
-                return "RBM: garrison promotions -5/10/15% · garrison and militia gain +10/20/30 experience a day (replaces the 1/2/3 above)";
+                return "RBM: garrison promotions -5/10/15% · garrison and militia gain +10/20/30 experience a day (replaces the 1/2/3 above) · militia soft cap +1/2/3% of the fief's manpower";
             }
             if (type == DefaultBuildingTypes.SettlementGuardHouse)
             {
@@ -152,7 +152,7 @@ namespace RBMCampaign
             }
             if (type == DefaultBuildingTypes.CastleGuardHouse)
             {
-                return "RBM: tariff on caravan and traveller trade +0.3/0.6/1.0 percentage points · convicts kept at work on the fief's building projects · the watch is raised by the barracks instead, so this no longer musters militia";
+                return "RBM: tariff on caravan and traveller trade +0.3/0.6/1.0 percentage points · convicts kept at work on the fief's building projects · militia soft cap +2/3/5% of the castle's manpower (replaces the militia per day above; the barracks owns intake)";
             }
             if (type == DefaultBuildingTypes.CastleCastallansOffice)
             {
@@ -190,13 +190,17 @@ namespace RBMCampaign
             {
                 return "RBM: bound villages produce +5/10/15% more goods · bound villages' recruit pool growth +10/20/30%";
             }
-            if (type == DefaultBuildingTypes.SettlementDailyTrainMilitia || type == DefaultBuildingTypes.SettlementDailyHousing)
+            if (type == DefaultBuildingTypes.SettlementDailyTrainMilitia)
+            {
+                return "RBM: recruit pool growth +25% and militia soft cap +3% of the town's manpower while running";
+            }
+            if (type == DefaultBuildingTypes.SettlementDailyHousing)
             {
                 return "RBM: recruit pool growth +25% while running";
             }
             if (type == DefaultBuildingTypes.CastleDailyRaiseTroops)
             {
-                return "RBM: recruit pool growth +50% while running";
+                return "RBM: recruit pool growth +50% and militia soft cap +3% of the castle's manpower while running";
             }
             return null;
         }

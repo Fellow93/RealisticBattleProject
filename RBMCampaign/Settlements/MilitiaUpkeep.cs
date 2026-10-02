@@ -13,6 +13,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
+using TaleWorlds.ObjectSystem;
 
 namespace RBMCampaign
 {
@@ -87,38 +88,85 @@ namespace RBMCampaign
         /// </summary>
         public const float MilitiaShedPerDay = 1f;
 
-        /// <summary>
-        /// The soft cap on a settlement's militia, as a share of the manpower behind it -- a village's
-        /// hearths, a fortification's prosperity. Not a wall the count cannot pass: past it, growth
-        /// slows to <see cref="MilitiaOverCapGrowthFactor"/> of its rate rather than stopping, so a
-        /// settlement can still creep higher on strong loyalty or a governor's perks, only slowly.
-        ///
-        /// A village that answers to a city keeps a smaller watch than one that answers to a castle:
-        /// the castle is a garrison's seat with no standing troops of its own to spare for the fields,
-        /// so its villages carry more of their own defence.
-        /// </summary>
-        public const float MilitiaCapVillageCity = 0.40f;
-        public const float MilitiaCapVillageCastle = 0.50f;
+        // ------------------------------------------------------------------ militia caps
+        //
+        // Every settlement's watch is bounded by two caps sized on one BASE -- the manpower behind it (see
+        // MilitiaCapBase): a town's prosperity, a castle's countryside (the AVERAGE hearth of its bound
+        // villages), a village's own hearths. The same shares then apply to all three kinds of place:
+        //
+        //   * SOFT cap = MilitiaSoftCapShare of the base, plus the fief's bonuses in percentage points
+        //     (buildings, the running daily project, kingdom policies), never above MilitiaSoftCapMaxShare.
+        //     Below it the day's growth runs untouched.
+        //   * HARD cap = MilitiaHardCapShare of the base, for everyone, moved by nothing. Between the two
+        //     the day's growth tapers by (1 - fill)^2, fill = how far the count has climbed from soft to
+        //     hard; growth may never carry the count past the hard cap; and a watch standing ABOVE it (a
+        //     siege spawn, an escort returning, a cap that fell under it) disbands MilitiaOverflowDrainRate
+        //     of the overflow a day, each man's kit refunded like an unpaid one's.
 
-        /// <summary>Militia soft cap for a castle, as a share of its prosperity.</summary>
-        public const float MilitiaCapCastle = 0.50f;
-
-        /// <summary>
-        /// Militia soft cap for a city, as a share of its prosperity -- the highest of the three: a
-        /// town is a crowd, and a crowd under threat arms a great many of its own.
-        /// </summary>
-        public const float MilitiaCapCity = 0.70f;
-
-        /// <summary>What fraction of a day's growth a settlement keeps once it is over its soft cap.</summary>
-        public const float MilitiaOverCapGrowthFactor = 0.10f;
+        /// <summary>The soft cap's share of the base before any bonus -- 40% of the manpower behind it.</summary>
+        public const float MilitiaSoftCapShare = 0.40f;
 
         /// <summary>
-        /// The HARD cap on a settlement's militia, as a multiple of its soft cap. The soft cap only slows
-        /// growth; this one stops it: no day's muster may carry the count past twice the soft cap, however
-        /// strong the loyalty or the governor's perks. Existing men over it are left standing (a siege
-        /// spawn, an escort returning) -- the clamp is on growth, not a dismissal.
+        /// The most the bonuses may lift the soft cap's share to -- 70%, kept under the hard cap's 75% so the
+        /// taper between the two never collapses.
         /// </summary>
-        public const float MilitiaHardCapMult = 2f;
+        public const float MilitiaSoftCapMaxShare = 0.70f;
+
+        /// <summary>
+        /// The HARD cap's share of the base -- 75%, the same for every settlement and moved by no bonus. No
+        /// day's muster may carry the count past it, and a watch standing over it disbands the excess.
+        /// </summary>
+        public const float MilitiaHardCapShare = 0.75f;
+
+        /// <summary>
+        /// Barracks (town or castle): soft-cap share added at levels 1/2/3 (+2/+3/+5 percentage points). The
+        /// lodgings that let a fief take in more men a day also let it keep more of them under arms. Keeps its
+        /// own +1/2/3 a day intake on top (see <see cref="BuildingEffects.BarracksGrowth"/>).
+        /// </summary>
+        public const float MilitiaSoftCapBarracksL1 = 0.02f;
+        public const float MilitiaSoftCapBarracksL2 = 0.03f;
+        public const float MilitiaSoftCapBarracksL3 = 0.05f;
+
+        /// <summary>
+        /// Castle Guard House: soft-cap share added at levels 1/2/3 (+2/+3/+5 percentage points), in place of
+        /// the vanilla +1/2/3 militia a day it no longer raises (see <see cref="AddMilitiaEffectOfBuildings"/>).
+        /// Castles only -- the town Guard House has no militia effect, in vanilla or here.
+        /// </summary>
+        public const float MilitiaSoftCapGuardHouseL1 = 0.02f;
+        public const float MilitiaSoftCapGuardHouseL2 = 0.03f;
+        public const float MilitiaSoftCapGuardHouseL3 = 0.05f;
+
+        /// <summary>Training Fields (town or castle): soft-cap share added per level, +1/+2/+3 percentage points.</summary>
+        public const float MilitiaSoftCapTrainingFieldsPerLevel = 0.01f;
+
+        /// <summary>
+        /// Train Militia (town) / Raise Troops (castle): soft-cap share added ONLY while it is the fief's
+        /// running daily project (<see cref="BuildingEffects.IsDailyProjectActive"/>), +3 percentage points.
+        /// </summary>
+        public const float MilitiaSoftCapDailyProject = 0.03f;
+
+        /// <summary>
+        /// Kingdom policies of the settlement's owner clan (towns, castles AND villages): soft-cap share in
+        /// percentage points. They used to add or take a flat man a day; they now move only the ceiling, and
+        /// War Sails' Bolster the Fyrd (looked up by <see cref="BolsterTheFyrdPolicyId"/>, so RBM needs no
+        /// NavalDLC reference) replaces its +25% growth factor with the same.
+        /// </summary>
+        public const float MilitiaSoftCapCitizenship = 0.03f;
+        public const float MilitiaSoftCapCantons = 0.03f;
+        public const float MilitiaSoftCapBolsterTheFyrd = 0.03f;
+        public const float MilitiaSoftCapSerfdom = -0.03f;
+
+        /// <summary>The string id War Sails registers its Bolster the Fyrd policy under (<c>NavalPolicies</c>).</summary>
+        public const string BolsterTheFyrdPolicyId = "policy_bolster_the_fyrd";
+
+        /// <summary>
+        /// Share of the count standing over the hard cap that disbands each day. Men drift home rather than
+        /// being dismissed on parade, so a large overflow sheds over weeks, not overnight.
+        /// </summary>
+        public const float MilitiaOverflowDrainRate = 0.05f;
+
+        /// <summary>The fewest men an over-hard-cap watch disbands in a day (never more than the overflow itself).</summary>
+        public const float MilitiaOverflowDrainMin = 1f;
 
         // ------------------------------------------------------------------ base growth curve (RBM-owned)
         //
@@ -153,10 +201,10 @@ namespace RBMCampaign
         //
         // A settlement whose watch has been gutted -- stormed, routed, or run down below half of what it
         // can hold -- musters far faster than the steady trickle would rebuild it: a place under real
-        // threat arms its own in a hurry. Below half the soft cap, a large extra intake is added on top
-        // of the base curve, sized on the same manpower the cap is (a fortification's prosperity, a
-        // village's hearths). It is ordinary positive growth: the soft cap still ceilings it (though at
-        // half-cap it is far under), and the affordability floor still gates it -- a settlement whose pot
+        // threat arms its own in a hurry. Below half the (effective) soft cap, a large extra intake is
+        // added on top of the base curve, sized on a fortification's prosperity or a village's hearths. It
+        // is ordinary positive growth: the caps still taper and stop it (though at half the soft cap it
+        // is far under), and the affordability floor still gates it -- a settlement whose pot
         // cannot arm a new man raises none of these either, so money is still needed to spawn.
 
         /// <summary>
@@ -179,7 +227,7 @@ namespace RBMCampaign
         // A city whose households have savings to spare arms more of its own: for every luxury tier the
         // citizens' savings have reached (small / medium / large, the same thresholds CitizenDemand shops
         // on) the city musters an extra Prosperity / 50 a day. Ordinary positive growth like the rest --
-        // the soft cap throttles it and the pot must still arm every man it raises.
+        // the caps taper and stop it and the pot must still arm every man it raises.
 
         /// <summary>Extra daily muster per unit of a city's prosperity, per luxury tier its citizens' savings have reached.</summary>
         public const float MilitiaPerProsperityPerLuxuryTier = 1f / 50f;
@@ -232,9 +280,10 @@ namespace RBMCampaign
         private static readonly TextObject OverCapText = new TextObject("{=RBM_militia_overcap}Over muster");
         private static readonly TextObject HardCapText = new TextObject("{=RBM_militia_hardcap}Full muster");
         private static readonly TextObject CannotArmText = new TextObject("{=RBM_militia_unarmed}Cannot be armed");
+        private static readonly TextObject OverflowText = new TextObject("{=RBM_militia_overflow}Disbanding excess");
 
         /// <summary>The extra intake a fief's Barracks lodgings allow.</summary>
-        private static readonly TextObject BarracksText = new TextObject("{=!}Barracks");
+        private static readonly TextObject BarracksText = new TextObject("{=RBM_militia_barracks}Barracks");
 
         /// <summary>The pay factor for a militiaman of this settlement -- see the wage-factor table.</summary>
         private static float MilitiaWageFactor(Settlement settlement)
@@ -423,28 +472,172 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The soft cap on this settlement's militia -- the count past which growth slows to a trickle.
-        /// A village is sized on its hearths and on whether it answers to a city or a castle; a
-        /// fortification on its prosperity. Zero (no cap) for anything else.
+        /// The manpower both militia caps are sized on: a town's prosperity; a village's hearths; a castle's
+        /// countryside -- the AVERAGE hearth of its bound villages, the same notion the castle's resting
+        /// prosperity is built on (<see cref="RBMProsperityEquilibrium.CastleTargetProsperity"/>, divided back
+        /// by its <see cref="RBMProsperityEquilibrium.CastleProsperityHearthFactor"/>). A castle with no bound
+        /// villages falls back to its own prosperity over that same factor -- the average hearth its
+        /// prosperity implies -- so a lone keep is sized on the scale its villages would have given it. Zero
+        /// (no cap) for anything else.
         /// </summary>
-        public static float MilitiaCap(Settlement settlement)
+        public static float MilitiaCapBase(Settlement settlement)
         {
+            if (settlement == null)
+            {
+                return 0f;
+            }
             if (settlement.IsVillage)
             {
-                float hearth = settlement.Village != null ? settlement.Village.Hearth : 0f;
-                Settlement bound = settlement.Village != null ? settlement.Village.TradeBound : null;
-                float share = (bound != null && bound.IsCastle) ? MilitiaCapVillageCastle : MilitiaCapVillageCity;
-                return hearth * share;
+                return settlement.Village != null ? settlement.Village.Hearth : 0f;
             }
             if (settlement.IsCastle)
             {
-                return Prosperity(settlement) * MilitiaCapCastle;
+                float scaled = RBMProsperityEquilibrium.CastleTargetProsperity(settlement);
+                if (scaled <= 0f)
+                {
+                    scaled = Prosperity(settlement);
+                }
+                return scaled / RBMProsperityEquilibrium.CastleProsperityHearthFactor;
             }
             if (settlement.IsTown)
             {
-                return Prosperity(settlement) * MilitiaCapCity;
+                return Prosperity(settlement);
             }
             return 0f;
+        }
+
+        /// <summary>
+        /// The share of <see cref="MilitiaCapBase"/> this settlement's SOFT cap sits at:
+        /// <see cref="MilitiaSoftCapShare"/> plus its building and policy bonuses, clamped to
+        /// [0, <see cref="MilitiaSoftCapMaxShare"/>].
+        /// </summary>
+        public static float MilitiaSoftCapShareFor(Settlement settlement)
+        {
+            float share = MilitiaSoftCapShare + SoftCapBuildingBonus(settlement) + SoftCapPolicyBonus(settlement);
+            return MBMath.ClampFloat(share, 0f, MilitiaSoftCapMaxShare);
+        }
+
+        /// <summary>
+        /// The soft cap on this settlement's militia -- the count past which growth starts to taper toward
+        /// the hard cap. <see cref="MilitiaCapBase"/> times <see cref="MilitiaSoftCapShareFor"/>; zero (no
+        /// cap) for anything that is not a town, castle or village.
+        /// </summary>
+        public static float MilitiaCap(Settlement settlement)
+        {
+            return MilitiaCapBase(settlement) * MilitiaSoftCapShareFor(settlement);
+        }
+
+        /// <summary>
+        /// The hard cap on this settlement's militia: <see cref="MilitiaHardCapShare"/> of
+        /// <see cref="MilitiaCapBase"/>, the same share everywhere. Growth never carries the count past it,
+        /// and a count above it disbands the excess (<see cref="OverflowDrain"/>).
+        /// </summary>
+        public static float MilitiaHardCap(Settlement settlement)
+        {
+            return MilitiaCapBase(settlement) * MilitiaHardCapShare;
+        }
+
+        /// <summary>
+        /// The soft-cap bonus a fief's buildings and running daily project give, as a share of the base:
+        /// Barracks, the castle Guard House, Training Fields, and Train Militia / Raise Troops while running.
+        /// Towns and castles only -- a village builds nothing of its own.
+        /// </summary>
+        private static float SoftCapBuildingBonus(Settlement settlement)
+        {
+            if (settlement == null || !(settlement.IsTown || settlement.IsCastle) || settlement.Town == null)
+            {
+                return 0f;
+            }
+            Town town = settlement.Town;
+            float bonus = LevelBonus(BuildingEffects.Barracks(town),
+                MilitiaSoftCapBarracksL1, MilitiaSoftCapBarracksL2, MilitiaSoftCapBarracksL3);
+            if (settlement.IsCastle)
+            {
+                bonus += LevelBonus(BuildingEffects.CastleGuardHouseTier(town),
+                    MilitiaSoftCapGuardHouseL1, MilitiaSoftCapGuardHouseL2, MilitiaSoftCapGuardHouseL3);
+            }
+            bonus += MilitiaSoftCapTrainingFieldsPerLevel * BuildingEffects.TrainingFields(town);
+            if (BuildingEffects.IsDailyProjectActive(town, DefaultBuildingTypes.SettlementDailyTrainMilitia)
+                || BuildingEffects.IsDailyProjectActive(town, DefaultBuildingTypes.CastleDailyRaiseTroops))
+            {
+                bonus += MilitiaSoftCapDailyProject;
+            }
+            return bonus;
+        }
+
+        /// <summary>The value for a building's level 1/2/3, 0 below level 1.</summary>
+        private static float LevelBonus(int level, float l1, float l2, float l3)
+        {
+            switch (level)
+            {
+                case 1: return l1;
+                case 2: return l2;
+                case 3: return l3;
+                default: return 0f;
+            }
+        }
+
+        /// <summary>
+        /// The soft-cap bonus the owner clan's kingdom policies give, as a share of the base: Citizenship,
+        /// Cantons and War Sails' Bolster the Fyrd raise it, Serfdom lowers it. Towns, castles and villages
+        /// alike (a village answers to its owner clan's kingdom); nothing for a settlement outside a kingdom.
+        /// </summary>
+        private static float SoftCapPolicyBonus(Settlement settlement)
+        {
+            Kingdom kingdom = (settlement != null && settlement.OwnerClan != null) ? settlement.OwnerClan.Kingdom : null;
+            if (kingdom == null || kingdom.ActivePolicies == null)
+            {
+                return 0f;
+            }
+            float bonus = 0f;
+            foreach (PolicyObject policy in kingdom.ActivePolicies)
+            {
+                if (policy == null)
+                {
+                    continue;
+                }
+                if (policy == DefaultPolicies.Citizenship)
+                {
+                    bonus += MilitiaSoftCapCitizenship;
+                }
+                else if (policy == DefaultPolicies.Cantons)
+                {
+                    bonus += MilitiaSoftCapCantons;
+                }
+                else if (policy == DefaultPolicies.Serfdom)
+                {
+                    bonus += MilitiaSoftCapSerfdom;
+                }
+                else if (policy.StringId == BolsterTheFyrdPolicyId)
+                {
+                    bonus += MilitiaSoftCapBolsterTheFyrd;
+                }
+            }
+            return bonus;
+        }
+
+        /// <summary>
+        /// Men an over-hard-cap watch disbands in a day, judged on a count of <paramref name="militia"/>:
+        /// <see cref="MilitiaOverflowDrainRate"/> of the overflow, at least <see cref="MilitiaOverflowDrainMin"/>,
+        /// never more than the overflow itself. Zero at or under the hard cap, or with no cap to measure.
+        /// </summary>
+        public static float OverflowDrain(Settlement settlement, float militia)
+        {
+            float hardCap = MilitiaHardCap(settlement);
+            if (hardCap <= 0f || militia <= hardCap)
+            {
+                return 0f;
+            }
+            float overflow = militia - hardCap;
+            float drain = MathF.Max(MilitiaOverflowDrainMin, overflow * MilitiaOverflowDrainRate);
+            return MathF.Min(drain, overflow);
+        }
+
+        /// <summary>A raided or otherwise abnormal village musters nothing, and loses no one to the day's model, as in vanilla.</summary>
+        private static bool IsMusterHalted(Settlement settlement)
+        {
+            return settlement.IsVillage && settlement.Village != null
+                && settlement.Village.VillageState != Village.VillageStates.Normal;
         }
 
         /// <summary>
@@ -491,17 +684,21 @@ namespace RBMCampaign
         ///     <see cref="MilitiaPerHearth"/>, <see cref="MilitiaPerProsperity"/>) seeded to vanilla's
         ///     values -- this is the growth/decline RBM now dials.
         ///
-        ///   * THE KEPT MODIFIERS (vanilla flavour). Loyalty, market weapons, kingdom policies, the
-        ///     Battanian feat, building effects, governor perks and settlement issues, reproduced from the
-        ///     same public API vanilla uses so a governor's perk or a serfdom policy still reads on the
-        ///     breakdown exactly as before (see <see cref="AddKeptModifiers"/>).
+        ///   * THE KEPT MODIFIERS (vanilla flavour). Loyalty, market weapons, the Battanian feat, building
+        ///     effects, governor perks and settlement issues, reproduced from the same public API vanilla
+        ///     uses so a governor's perk still reads on the breakdown exactly as before (see
+        ///     <see cref="AddKeptModifiers"/>). The militia policies now move the soft cap instead.
         ///
-        ///   * RBM'S CEILING AND FLOOR. A SOFT CAP -- past a share of hearths or prosperity, positive
-        ///     growth is cut to <see cref="MilitiaOverCapGrowthFactor"/>, a ceiling that yields to strong
-        ///     loyalty or perks rather than one the count cannot pass; only positive growth is touched. And
-        ///     an AFFORDABILITY FLOOR -- a settlement that cannot arm a new man raises none, and one that
-        ///     cannot keep twenty days of its militia's maintenance in the pot sheds men whatever its cap
-        ///     says, because a market spent dry SHOULD start losing its watch.
+        ///   * RBM'S CEILING AND FLOOR (<see cref="ApplyCeilingAndFloor"/>). Between the SOFT cap and the
+        ///     HARD cap positive growth tapers by (1 - fill)^2, and it may never carry the count past the
+        ///     hard cap; a watch already over the hard cap disbands its excess. And an AFFORDABILITY FLOOR --
+        ///     a settlement that cannot arm a new man raises none, and one that cannot keep twenty days of its
+        ///     militia's maintenance in the pot sheds men whatever its cap says, because a market spent dry
+        ///     SHOULD start losing its watch.
+        ///
+        /// While War Sails is loaded its model wraps this one and adds its own terms on top; see
+        /// <see cref="NavalMilitiaChangePatch"/>, which asks this prefix for the growth stage alone
+        /// (<see cref="_growthOnlyDepth"/>) so the ceiling and floor still land last.
         /// </remarks>
         [HarmonyPatch(typeof(DefaultSettlementMilitiaModel), "CalculateMilitiaChange")]
         private static class MilitiaChangePatch
@@ -512,21 +709,49 @@ namespace RBMCampaign
                 {
                     return true;
                 }
-                __result = ComputeMilitiaChange(settlement, includeDescriptions);
+                __result = (_growthOnlyDepth > 0)
+                    ? ComputeMilitiaGrowth(settlement, includeDescriptions)
+                    : ComputeMilitiaChange(settlement, includeDescriptions);
                 return false;
             }
         }
 
         /// <summary>
-        /// Builds a settlement's whole daily militia change: RBM's base curve, then the kept vanilla
-        /// modifiers, then RBM's soft cap and affordability floor.
+        /// Set while <see cref="NavalMilitiaChangePatch"/> is asking the model chain beneath War Sails' model
+        /// for the day's GROWTH alone: <see cref="MilitiaChangePatch"/> then returns
+        /// <see cref="ComputeMilitiaGrowth"/> without the ceiling and floor, which the naval patch applies
+        /// itself once War Sails' own term is in. A depth counter rather than a flag so a re-entrant call
+        /// unwinds cleanly; thread-static because a militia query may in principle come off another thread.
+        /// </summary>
+        [System.ThreadStatic]
+        private static int _growthOnlyDepth;
+
+        /// <summary>
+        /// Builds a settlement's whole daily militia change: the growth stage (RBM's base curve and the kept
+        /// vanilla modifiers), then RBM's ceiling and floor.
         /// </summary>
         private static ExplainedNumber ComputeMilitiaChange(Settlement settlement, bool includeDescriptions)
+        {
+            ExplainedNumber result = ComputeMilitiaGrowth(settlement, includeDescriptions);
+            if (!IsMusterHalted(settlement))
+            {
+                ApplyCeilingAndFloor(settlement, ref result);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// The GROWTH stage of the day's militia change: RBM's base curve, the understrength and
+        /// prosperous-city musters, the Barracks intake and the kept vanilla modifiers -- everything that
+        /// adds or takes men before the caps and the purse have their say (<see cref="ApplyCeilingAndFloor"/>).
+        /// Empty for a raided village.
+        /// </summary>
+        private static ExplainedNumber ComputeMilitiaGrowth(Settlement settlement, bool includeDescriptions)
         {
             ExplainedNumber result = new ExplainedNumber(0f, includeDescriptions);
 
             // A raided or otherwise abnormal village musters nothing, as in vanilla.
-            if (settlement.IsVillage && settlement.Village.VillageState != Village.VillageStates.Normal)
+            if (IsMusterHalted(settlement))
             {
                 return result;
             }
@@ -534,17 +759,19 @@ namespace RBMCampaign
             float militia = settlement.Militia;
 
             // --- Base curve (RBM-owned): flat muster and manpower intake. No retirement: the watch only
-            // shrinks through losses or the affordability shed, and only grows while the cap and the pot allow.
-            // Ride the soft cap in the base line's label -- the count past which muster throttles -- so the
-            // tooltip always shows what the watch is growing toward, the way the garrison names its cap.
+            // shrinks through losses, the affordability shed or the over-hard-cap drain, and only grows while
+            // the caps and the pot allow. Ride both caps in the base line's label -- where muster starts to
+            // taper and where it stops -- so the tooltip always shows what the watch is growing toward, the
+            // way the garrison names its cap.
             TextObject baseLine = BaseText;
             if (includeDescriptions)
             {
                 float softCap = MilitiaCap(settlement);
                 if (softCap > 0f)
                 {
-                    baseLine = new TextObject("{=rbm_mil_base_cap}Base (soft cap {CAP})");
-                    baseLine.SetTextVariable("CAP", (int)softCap);
+                    baseLine = new TextObject("{=RBM_militia_base_caps}Base (soft cap {SOFT}, hard cap {HARD})");
+                    baseLine.SetTextVariable("SOFT", (int)softCap);
+                    baseLine.SetTextVariable("HARD", (int)MilitiaHardCap(settlement));
                 }
             }
             if (settlement.IsFortification)
@@ -593,8 +820,28 @@ namespace RBMCampaign
             // --- Kept modifiers (vanilla flavour, reproduced from public API).
             AddKeptModifiers(settlement, ref result);
 
-            // --- RBM ceiling and floor.
-            ApplySoftCap(settlement, ref result);
+            return result;
+        }
+
+        /// <summary>
+        /// RBM's CEILING AND FLOOR, applied last to the day's change -- after the growth stage, and after any
+        /// term a wrapping model (War Sails, see <see cref="NavalMilitiaChangePatch"/>) added on top of it:
+        ///
+        ///   * TAPER -- between the soft and the hard cap positive growth is multiplied by (1 - fill)^2,
+        ///     fill = (militia - soft) / (hard - soft), shown as one "Over muster" line.
+        ///   * HARD CLAMP -- growth may not carry the count past the hard cap.
+        ///   * ARMING -- a settlement that cannot arm a new man raises none (<see cref="CanAffordSpawn"/>).
+        ///   * OVERFLOW DRAIN -- a count over the hard cap disbands <see cref="OverflowDrain"/> men a day.
+        ///   * UNPAID SHED -- a settlement that cannot keep its militia sheds <see cref="MilitiaShedPerDay"/>.
+        ///
+        /// The two declines do not stack: the day's change is the more negative of the two (the drain is
+        /// always at least one man, so the shed only bites under the hard cap). Both are refunded their kit
+        /// (see <see cref="RecordMilitiaChange"/>).
+        /// </summary>
+        private static void ApplyCeilingAndFloor(Settlement settlement, ref ExplainedNumber result)
+        {
+            float militia = settlement.Militia;
+            ApplySoftCapTaper(settlement, militia, ref result);
             ApplyHardCap(settlement, militia, ref result);
 
             // A settlement that cannot arm a new militiaman fields no new ones -- growth is held to zero,
@@ -605,19 +852,24 @@ namespace RBMCampaign
                 result.Add(-result.ResultNumber, CannotArmText);
             }
 
+            float drain = OverflowDrain(settlement, militia);
+            if (drain > 0f && result.ResultNumber > -drain)
+            {
+                result.Add(-drain - result.ResultNumber, OverflowText);
+            }
+
             if (!CanKeepMilitia(settlement) && result.ResultNumber > -MilitiaShedPerDay)
             {
                 result.Add(-MilitiaShedPerDay - result.ResultNumber, UnaffordableText);
             }
-
-            return result;
         }
 
         /// <summary>
-        /// Adds the vanilla militia modifiers RBM keeps -- market weapons, kingdom policies, the Battanian
-        /// feat, building effects, governor perks and settlement issues -- from the same public API vanilla
-        /// uses, so they read on the breakdown exactly as before. The base muster/retirement/intake spine is
-        /// NOT here: that is RBM's, added in <see cref="ComputeMilitiaChange"/>.
+        /// Adds the vanilla militia modifiers RBM keeps -- market weapons, the Battanian feat, building
+        /// effects, governor perks and settlement issues -- from the same public API vanilla uses, so they
+        /// read on the breakdown exactly as before. The base muster/retirement/intake spine is NOT here: that
+        /// is RBM's, added in <see cref="ComputeMilitiaGrowth"/>. Nor are the Serfdom, Cantons and Citizenship
+        /// policies' flat men a day: those now move the soft cap instead (<see cref="SoftCapPolicyBonus"/>).
         /// </summary>
         private static void AddKeptModifiers(Settlement settlement, ref ExplainedNumber result)
         {
@@ -628,18 +880,6 @@ namespace RBMCampaign
                 if (soldToMilitia > 0)
                 {
                     result.Add(0.2f * soldToMilitia, MilitiaFromMarketText);
-                }
-                Kingdom townKingdom = settlement.OwnerClan.Kingdom;
-                if (townKingdom != null)
-                {
-                    if (townKingdom.ActivePolicies.Contains(DefaultPolicies.Serfdom))
-                    {
-                        result.Add(-1f, DefaultPolicies.Serfdom.Name);
-                    }
-                    if (townKingdom.ActivePolicies.Contains(DefaultPolicies.Cantons))
-                    {
-                        result.Add(1f, DefaultPolicies.Cantons.Name);
-                    }
                 }
                 if (settlement.OwnerClan.Culture.HasFeat(DefaultCulturalFeats.BattanianMilitiaFeat))
                 {
@@ -653,12 +893,6 @@ namespace RBMCampaign
                 if (settlement.IsCastle && settlement.Town.InRebelliousState)
                 {
                     settlement.Town.AddEffectOfBuildings(BuildingEffectEnum.MilitiaReduction, ref result);
-                }
-
-                Kingdom kingdom = settlement.OwnerClan.Kingdom;
-                if (kingdom != null && kingdom.ActivePolicies.Contains(DefaultPolicies.Citizenship))
-                {
-                    result.Add(1f, DefaultPolicies.Citizenship.Name);
                 }
 
                 if (settlement.Town.Governor != null)
@@ -687,7 +921,9 @@ namespace RBMCampaign
         /// free intake channel sitting beside the Barracks -- the building RBM makes responsible for how
         /// many men a fief can take in and settle in a day (see <see cref="BuildingEffects.BarracksGrowth"/>).
         /// Two buildings paying the same currency makes neither choice mean anything, so the Guard House
-        /// keeps its gaol and its tariff and stops raising the watch. Every other building's Militia
+        /// keeps its gaol and its tariff and stops raising the watch -- it lifts the militia SOFT CAP
+        /// instead (<see cref="MilitiaSoftCapGuardHouseL1"/>), how many men the keep can hold under arms
+        /// rather than how fast they come. Every other building's Militia
         /// contribution -- the town Guard House has none -- passes through untouched.
         /// </summary>
         private static void AddMilitiaEffectOfBuildings(Town town, ref ExplainedNumber result)
@@ -705,10 +941,10 @@ namespace RBMCampaign
 
         /// <summary>
         /// Adds the understrength catch-up muster: while a settlement's watch sits below
-        /// <see cref="MilitiaUnderstrengthThreshold"/> of its soft cap, a large extra intake is raised on
-        /// top of the base curve, sized on the same manpower the cap is -- a city's or castle's prosperity,
-        /// a village's hearths. Nothing is added at or above the threshold, or where there is no cap to
-        /// measure against. This is ordinary positive growth, so the soft cap still ceilings it and the
+        /// <see cref="MilitiaUnderstrengthThreshold"/> of its effective soft cap (bonuses included), a large
+        /// extra intake is raised on top of the base curve, sized on a city's or castle's prosperity or a
+        /// village's hearths. Nothing is added at or above the threshold, or where there is no cap to
+        /// measure against. This is ordinary positive growth, so the caps still taper and stop it and the
         /// affordability floor (<see cref="CanAffordSpawn"/>) still gates it -- money is still needed to
         /// arm the men it musters.
         /// </summary>
@@ -750,7 +986,7 @@ namespace RBMCampaign
         /// prosperity per luxury tier (small / medium / large) its citizens' savings have reached, read off
         /// the same <see cref="CitizenDemand.SavingsInDaysOfIncome"/> thresholds the households shop on.
         /// Towns only -- castles and villages have no citizen ledger to measure. Ordinary positive growth:
-        /// the soft cap throttles it and <see cref="CanAffordSpawn"/> still gates it.
+        /// the caps taper and stop it and <see cref="CanAffordSpawn"/> still gates it.
         /// </summary>
         private static void AddProsperousCityMuster(Settlement settlement, ref ExplainedNumber result)
         {
@@ -774,28 +1010,34 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Cuts the day's growth to <see cref="MilitiaOverCapGrowthFactor"/> once the settlement is at or
-        /// over its soft cap. Leaves a settlement under its cap, or one already losing men, untouched.
+        /// Tapers the day's growth between the soft and the hard cap: fill = clamp01((militia - soft) /
+        /// (hard - soft)), and the growth is multiplied by (1 - fill)^2 -- full rate at the soft cap, a
+        /// quarter halfway, nothing at the hard cap. One "Over muster" line carries the cut. Leaves a
+        /// settlement at or under its soft cap, or one already losing men, untouched.
         /// </summary>
-        private static void ApplySoftCap(Settlement settlement, ref ExplainedNumber result)
+        private static void ApplySoftCapTaper(Settlement settlement, float militia, ref ExplainedNumber result)
         {
             if (result.ResultNumber <= 0f)
             {
                 return;
             }
-            float cap = MilitiaCap(settlement);
-            if (cap <= 0f || settlement.Militia < cap)
+            float softCap = MilitiaCap(settlement);
+            float hardCap = MilitiaHardCap(settlement);
+            if (softCap <= 0f || militia <= softCap || hardCap <= softCap)
             {
                 return;
             }
-            result.Add(-(1f - MilitiaOverCapGrowthFactor) * result.ResultNumber, OverCapText);
+            float fill = MBMath.ClampFloat((militia - softCap) / (hardCap - softCap), 0f, 1f);
+            float keep = (1f - fill) * (1f - fill);
+            result.Add(-(1f - keep) * result.ResultNumber, OverCapText);
         }
 
         /// <summary>
-        /// Clamps the day's growth so the count never crosses <see cref="MilitiaHardCapMult"/> times the
-        /// soft cap. Growth that would land under the hard cap passes untouched; growth that would overshoot
-        /// is cut to exactly what fills it; a settlement already at or over it raises no one. Decline is
-        /// never touched, and neither is a settlement with no cap to measure against.
+        /// Clamps the day's growth so the count never crosses the hard cap (<see cref="MilitiaHardCap"/>).
+        /// Growth that would land under it passes untouched; growth that would overshoot is cut to exactly
+        /// what fills it; a settlement already at or over it raises no one (and disbands its excess, see
+        /// <see cref="ApplyCeilingAndFloor"/>). Decline is never touched here, and neither is a settlement
+        /// with no cap to measure against.
         /// </summary>
         private static void ApplyHardCap(Settlement settlement, float militia, ref ExplainedNumber result)
         {
@@ -803,12 +1045,11 @@ namespace RBMCampaign
             {
                 return;
             }
-            float cap = MilitiaCap(settlement);
-            if (cap <= 0f)
+            float hardCap = MilitiaHardCap(settlement);
+            if (hardCap <= 0f)
             {
                 return;
             }
-            float hardCap = cap * MilitiaHardCapMult;
             float room = hardCap - militia;
             if (room < 0f)
             {
@@ -817,6 +1058,134 @@ namespace RBMCampaign
             if (result.ResultNumber > room)
             {
                 result.Add(room - result.ResultNumber, HardCapText);
+            }
+        }
+
+        // ------------------------------------------------------------------ War Sails (NavalDLC)
+
+        /// <summary>
+        /// War Sails replaces the militia model with a decorator (<c>NavalDLCSettlementMilitiaModel</c>) that
+        /// calls the base model -- RBM's prefixed result, already capped and floored -- and only then adds the
+        /// Boatswain's Accuracy Training governor perk (+2 a day, coastal towns and villages bound to a port
+        /// town) and a +25% factor for the Bolster the Fyrd policy. Both escaped every RBM cap and floor: the
+        /// perk could push a town over its hard cap or lift an unpayable watch's shed, and the factor
+        /// multiplied the shed and the drain along with the growth.
+        ///
+        /// So this prefix takes the decorator's place and rebuilds it in RBM's order: the model chain beneath
+        /// it (normally RBM's default-model prefix) is asked for the GROWTH stage alone via
+        /// <see cref="_growthOnlyDepth"/>, the perk is added exactly as War Sails adds it, and the ceiling and
+        /// floor (<see cref="ApplyCeilingAndFloor"/>) land last. Bolster the Fyrd's factor is dropped -- the
+        /// policy lifts the soft cap instead (<see cref="MilitiaSoftCapBolsterTheFyrd"/>).
+        ///
+        /// Reflected onto the DLC type by name, and the perk looked up by its string id, so RBM keeps no
+        /// build- or load-time dependency on an optional module: with War Sails absent the type does not
+        /// resolve, <see cref="Prepare"/> returns false and the patch is never applied. The target type has no
+        /// static initialiser, so unlike the default model it need not be held back until a game is live.
+        /// </summary>
+        /// <remarks>
+        /// The trade of a skip-prefix: a later War Sails build adding a third term to this method would be
+        /// skipped until mirrored here. The alternative -- a postfix -- cannot take a factor back out of an
+        /// <see cref="ExplainedNumber"/> nor put the caps after the perk, so it could not do the job.
+        /// </remarks>
+        [HarmonyPatch]
+        private static class NavalMilitiaChangePatch
+        {
+            private const string NavalModelTypeName = "NavalDLC.GameComponents.NavalDLCSettlementMilitiaModel";
+
+            /// <summary>War Sails' Boatswain perk "Accuracy Training", by the string id <c>NavalPerks</c> registers it under.</summary>
+            private const string AccuracyTrainingPerkId = "Accuracytraining";
+
+            private static System.Func<MBGameModel<SettlementMilitiaModel>, SettlementMilitiaModel> _baseModelGetter;
+
+            private static bool Prepare()
+            {
+                return TargetMethod() != null;
+            }
+
+            private static System.Reflection.MethodBase TargetMethod()
+            {
+                return AccessTools.Method(NavalModelTypeName + ":CalculateMilitiaChange");
+            }
+
+            private static bool Prefix(object __instance, Settlement settlement, bool includeDescriptions, ref ExplainedNumber __result)
+            {
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || settlement == null)
+                {
+                    return true;
+                }
+
+                // The growth stage from the chain beneath War Sails, so any other mod's model in between keeps
+                // its say; straight from RBM if the base model cannot be read.
+                SettlementMilitiaModel baseModel = BaseModelOf(__instance as SettlementMilitiaModel);
+                ExplainedNumber result;
+                _growthOnlyDepth++;
+                try
+                {
+                    result = (baseModel != null)
+                        ? baseModel.CalculateMilitiaChange(settlement, includeDescriptions)
+                        : ComputeMilitiaGrowth(settlement, includeDescriptions);
+                }
+                finally
+                {
+                    _growthOnlyDepth--;
+                }
+
+                // A raided village musters nothing -- not even the perk's men -- and the model takes no one.
+                if (!IsMusterHalted(settlement))
+                {
+                    AddAccuracyTraining(settlement, ref result);
+                    ApplyCeilingAndFloor(settlement, ref result);
+                }
+                __result = result;
+                return false;
+            }
+
+            /// <summary>The decorator's protected <c>BaseModel</c>, through a delegate built once.</summary>
+            private static SettlementMilitiaModel BaseModelOf(SettlementMilitiaModel model)
+            {
+                if (model == null)
+                {
+                    return null;
+                }
+                if (_baseModelGetter == null)
+                {
+                    System.Reflection.MethodInfo getter = AccessTools.PropertyGetter(
+                        typeof(MBGameModel<SettlementMilitiaModel>), "BaseModel");
+                    if (getter == null)
+                    {
+                        return null;
+                    }
+                    _baseModelGetter = AccessTools.MethodDelegate<System.Func<MBGameModel<SettlementMilitiaModel>, SettlementMilitiaModel>>(getter);
+                }
+                return _baseModelGetter(model);
+            }
+
+            /// <summary>
+            /// War Sails' Accuracy Training governor perk, reproduced from <c>NavalDLCSettlementMilitiaModel</c>:
+            /// a coastal town whose governor has it gains the perk's bonus through the standard town-perk helper;
+            /// a village bound to a coastal town whose governor has it gains its secondary bonus.
+            /// </summary>
+            private static void AddAccuracyTraining(Settlement settlement, ref ExplainedNumber result)
+            {
+                PerkObject perk = MBObjectManager.Instance != null
+                    ? MBObjectManager.Instance.GetObject<PerkObject>(AccuracyTrainingPerkId)
+                    : null;
+                if (perk == null)
+                {
+                    return;
+                }
+                if (settlement.IsTown && settlement.HasPort)
+                {
+                    PerkHelper.AddPerkBonusForTown(perk, settlement.Town, ref result);
+                }
+                else if (settlement.IsVillage && settlement.Village != null && settlement.Village.Bound != null)
+                {
+                    Town town = settlement.Village.Bound.Town;
+                    if (town != null && town.Settlement.HasPort && town.Governor != null && town.Governor.GetPerkValue(perk))
+                    {
+                        result.Add(perk.SecondaryBonus, perk.SecondaryDescription);
+                    }
+                }
             }
         }
 
@@ -906,8 +1275,9 @@ namespace RBMCampaign
         private static readonly Dictionary<Settlement, float> _pendingGrowth = new Dictionary<Settlement, float>();
 
         /// <summary>
-        /// The mirror of <see cref="_pendingGrowth"/> for men lost to the affordability floor: a settlement
-        /// shedding militia it can no longer pay for banks each shed man here, so his kit's cost can be
+        /// The mirror of <see cref="_pendingGrowth"/> for men disbanded -- by the affordability floor or the
+        /// over-hard-cap drain: a settlement shedding militia it can no longer pay for, or standing over its
+        /// hard cap, banks each disbanded man here, so his kit's cost can be
         /// returned to the funding pot later (see <see cref="RefundPendingDecline"/>) -- out of the same
         /// village suppression window the arming charge is, and in whole men so a coin is refunded only once
         /// a whole man has actually drifted home. Combat losses never touch this: they happen in battle, not
@@ -1009,11 +1379,14 @@ namespace RBMCampaign
         ///   * GROWTH accrues to <see cref="_pendingGrowth"/>, to be armed and paid for later out of the
         ///     village suppression window (see <see cref="ChargePendingSpawn"/>).
         ///
-        ///   * DECLINE accrues to <see cref="_pendingRefund"/> ONLY when the settlement cannot keep its
-        ///     militia (<see cref="CanKeepMilitia"/> is false) -- the affordability floor thinning a watch
-        ///     the pot can no longer pay for. Its kit cost is returned to the funding pot later (see
-        ///     <see cref="RefundPendingDecline"/>). Natural retirement on a settlement that CAN still pay is
-        ///     left alone: those men keep their kit, only a watch shed for want of money hands it back.
+        ///   * DECLINE accrues to <see cref="_pendingRefund"/> when the watch was disbanded rather than
+        ///     simply lost: in full when the settlement cannot keep its militia (<see cref="CanKeepMilitia"/>
+        ///     is false) -- the affordability floor thinning a watch the pot can no longer pay for -- and
+        ///     otherwise up to the over-hard-cap drain (<see cref="OverflowDrain"/>, judged on the count the
+        ///     day began with), so only the men sent home for standing over the cap are counted, not a
+        ///     negative modifier's. Their kit cost is returned to the funding pot later (see
+        ///     <see cref="RefundPendingDecline"/>). Any other decline on a settlement that CAN still pay is
+        ///     left alone: those men keep their kit.
         /// </summary>
         private static void RecordMilitiaChange(Settlement settlement, float preMilitia)
         {
@@ -1028,11 +1401,18 @@ namespace RBMCampaign
                 _pendingGrowth.TryGetValue(settlement, out acc);
                 _pendingGrowth[settlement] = acc + delta;
             }
-            else if (delta < 0f && !CanKeepMilitia(settlement))
+            else if (delta < 0f)
             {
-                float acc;
-                _pendingRefund.TryGetValue(settlement, out acc);
-                _pendingRefund[settlement] = acc - delta; // -delta is the positive count shed
+                float lost = -delta; // the positive count shed
+                float refunded = CanKeepMilitia(settlement)
+                    ? MathF.Min(lost, OverflowDrain(settlement, preMilitia))
+                    : lost;
+                if (refunded > 0f)
+                {
+                    float acc;
+                    _pendingRefund.TryGetValue(settlement, out acc);
+                    _pendingRefund[settlement] = acc + refunded;
+                }
             }
         }
 
@@ -1118,7 +1498,7 @@ namespace RBMCampaign
 
         /// <summary>
         /// Returns the kit cost of every whole militiaman a settlement has shed to the affordability floor
-        /// since it last paid, back into its funding pot. Called from the daily settlement pass beside
+        /// or the over-hard-cap drain since it last paid, back into its funding pot. Called from the daily settlement pass beside
         /// <see cref="ChargePendingSpawn"/> -- out here rather than in the DailyTick that shed them, so a
         /// village purse write is not caught inside <c>VillageGoldStock</c>'s suppression, exactly as the
         /// arming charge is deferred.

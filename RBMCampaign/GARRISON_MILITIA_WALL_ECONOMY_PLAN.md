@@ -6,6 +6,10 @@ current RBMCampaign implementation.
 
 **Status:** Tasks 1, 2, 3, 4 (4a+4b) and 5 (5a) and 6a implemented and building. 4c, 5b, 6b dropped;
 6c deferred. Nothing left outstanding.
+**Revised 2026-10-02:** the militia model is no longer a postfix on vanilla — `MilitiaUpkeep`
+replaces `CalculateMilitiaChange` outright (prefix returning false), and Task 2's caps were
+redesigned (40% soft / 75% hard, quadratic taper, building/policy soft-cap bonuses, overflow drain).
+Where this doc says "postfix" for the militia model, read "RBM's replacement".
 **Decisions locked** (this session): garrison wages = *fief-first, owner backstop* (share 1.0);
 city garrison food = *free*; wall upgrades (6c) = *deferred*; owner-only garrison recruitment
 (4c) = *dropped* — garrison size is shaped by Task 3's affordability/cost gates instead, and
@@ -73,7 +77,7 @@ Clamp to 1–3 for cost tables. No new state needed.
 | Militia **salary** | free | free | 25% of wage: debit city treasury → credit citizens |
 | Militia **maintenance** | village wealth ← bound-city citizen wealth | castle wealth | citizen wealth |
 | Militia **spawn / upgrade gear** | village wealth ← bound-city citizen wealth/stock | castle wealth | citizen wealth / trade stock |
-| Militia **soft cap** | 40% hearths (city-bound) / 50% hearths (castle-bound) | 50% prosperity | 70% prosperity |
+| Militia **soft / hard cap** | 40% / 75% hearth | 40% / 75% avg bound-village hearth | 40% / 75% prosperity |
 | Garrison **wages** | — | castle wealth, owner backstop | city wealth, owner backstop |
 | Garrison **food** | — | free from castle stocks | free from city stocks/market |
 | Garrison **spawn / upgrade gear** | — | castle wealth | city wealth |
@@ -129,28 +133,61 @@ verify it doesn't starve the market. The salary transfer nets zero denars overal
 
 ## Task 2 — Militia soft caps by hearth / prosperity %
 
-**File:** `Settlements/MilitiaUpkeep.cs` (extend the existing
-`CalculateMilitiaChange` postfix — do **not** rewrite the vanilla growth model).
+**File:** `Settlements/MilitiaUpkeep.cs` — the cap stage (`ApplyCeilingAndFloor`) of RBM's
+replacement militia model (`ComputeMilitiaGrowth` → `ApplyCeilingAndFloor`).
 
-**Current:** no percentage cap. Vanilla's implicit 2.5%/day retirement equilibrium plus
-RBM's wealth shed are the only limits.
+**History:** first shipped as a per-type soft cap (city 70% / castle 50% prosperity, village
+40–50% hearth) that cut over-cap growth to a flat ×0.10, with a hard cap at 2× soft.
+Redesigned 2026-10-02 to the scheme below; the old constants (`MilitiaCapCity/Castle/
+VillageCity/VillageCastle`, `MilitiaOverCapGrowthFactor`, `MilitiaHardCapMult`) are gone.
 
-**Change — cap base by type, throttle over-cap growth to 10%:**
+**Cap base** (`MilitiaCapBase`) — one rule for every type:
 
 ```
-cap = village-bound-to-city   -> 0.40 * Village.Hearth
-      village-bound-to-castle -> 0.50 * Village.Hearth   (Village.TradeBound.IsCastle)
-      castle                  -> 0.50 * Settlement.Town.Prosperity
-      city                    -> 0.70 * Settlement.Town.Prosperity
+base = city    -> Town.Prosperity
+       castle  -> average Hearth of its bound villages
+                  (CastleTargetProsperity / CastleProsperityHearthFactor;
+                   no bound villages -> castle prosperity / 1.5)
+       village -> Village.Hearth
 
-if currentMilitia >= cap and change > 0:  change *= 0.10   // soft cap
+soft = base * clamp(0.40 + bonuses, 0, 0.70)     // MilitiaSoftCapShare / MilitiaSoftCapMaxShare
+hard = base * 0.75                               // MilitiaHardCapShare
 ```
 
-Compose with Task 1's affordability shed (take the lower of the two) so an over-cap **and**
-broke settlement still sheds rather than creeps up at 10%.
+**Soft-cap bonuses** (share points added to 0.40):
 
-**Config:** `MilitiaCapVillageCity` 0.40, `MilitiaCapVillageCastle` 0.50,
-`MilitiaCapCastle` 0.50, `MilitiaCapCity` 0.70, `MilitiaOverCapGrowthFactor` 0.10.
+| Source | Bonus | Applies to |
+|---|---|---|
+| Barracks L1/L2/L3 | +0.02 / +0.03 / +0.05 | towns, castles (keeps its +1/2/3 militia/day) |
+| Castle Guard House L1/L2/L3 | +0.02 / +0.03 / +0.05 | castles (its vanilla militia/day stays stripped) |
+| Training Fields L1/L2/L3 | +0.01 / +0.02 / +0.03 | towns, castles |
+| Train Militia / Raise Troops | +0.03 while the active daily project | towns / castles |
+| Citizenship, Cantons, Bolster the Fyrd (War Sails) | +0.03 each | towns, castles, villages (owner's kingdom) |
+| Serfdom | −0.03 | towns, castles, villages |
+
+Villages get no building bonus. The three vanilla policies lost their flat militia/day terms
+(Serfdom −1, Cantons +1, Citizenship +1) — they now only move the soft cap.
+
+**Cap stage, in order** (positive growth only, except the drain and shed):
+
+```
+fill = clamp01((militia - soft) / (hard - soft))
+growth *= (1 - fill)^2                            // "Over muster" — quadratic taper
+growth  = min(growth, hard - militia)             // "Full muster" — never overshoot hard
+if !CanAffordSpawn: growth = 0                    // "Cannot be armed"
+if militia > hard:                                // "Disbanding excess"
+    drain = min(overflow, max(1, 0.05 * overflow))  // MilitiaOverflowDrainRate / Min
+if !CanKeepMilitia: change = min(change, -1)      // "Cannot be paid"
+```
+
+Men drained over the hard cap are refunded their kit value like the unpaid shed
+(`RecordMilitiaChange` → `_pendingRefund`); combat losses are never refunded. The understrength
+catch-up still fires below 0.5 × the *effective* soft cap; the new-campaign seed is clamped to it.
+
+**War Sails:** `NavalMilitiaChangePatch` skip-prefixes `NavalDLCSettlementMilitiaModel
+.CalculateMilitiaChange`: it takes the growth stage from the base model chain, re-adds the
+Accuracy Training governor perk, drops Bolster the Fyrd's ×1.25 (now a soft-cap bonus) and
+applies the cap stage last, so the DLC's terms no longer bypass the caps.
 
 ---
 
@@ -298,7 +335,7 @@ citizen wealth; consuming pottery as "bricks" for a fraction of construction.
 
 1. **Task 1** (militia salary/maintenance routing) — self-contained, low risk. Establishes
    the pot-routing + affordability helper the rest reuse.
-2. **Task 2** (militia caps) — small, independent postfix extension.
+2. **Task 2** (militia caps) — small, independent; redesigned 2026-10-02 (see Task 2).
 3. **Task 6a** (wall upkeep per-tier) — trivial, independent.
 4. **Task 4a/4b** (garrison wages fief-first + free city food) — independent of militia work.
 5. **Task 5** (recruit owner/outsider + horse gate) — independent.

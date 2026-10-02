@@ -302,6 +302,32 @@ player's boost, now deleted.)
 - Towns and castles alike; skipped under siege. Logged as `BUILD` in `EconomyLog`; tool debt persists as
   `RBM_constructionToolDebt`.
 
+#### Militia caps (`Settlements/MilitiaUpkeep.cs`)
+
+A skip-prefix on `DefaultSettlementMilitiaModel.CalculateMilitiaChange` authors the whole day's change in
+two stages: **growth** (`ComputeMilitiaGrowth` — base curve, understrength and prosperous-city musters,
+Barracks +1/2/3, the kept vanilla modifiers) then **ceiling & floor** (`ApplyCeilingAndFloor`). Both caps
+are shares of one base (`MilitiaCapBase`): town = prosperity, village = hearth, castle = average hearth of
+its bound villages (`RBMProsperityEquilibrium.CastleTargetProsperity / CastleProsperityHearthFactor`; a
+castle with none uses its prosperity / 1.5).
+
+- **Soft cap** = base × clamp(40% + bonuses, 0, 70%). Bonuses in percentage points: Barracks +2/3/5,
+  castle Guard House +2/3/5, Training Fields +1/2/3, Train Militia / Raise Troops +3 while running (no
+  building bonus for villages); owner kingdom's policies (all three kinds) Citizenship +3, Cantons +3,
+  War Sails' Bolster the Fyrd +3 (by string id), Serfdom −3. The three vanilla policies no longer add men a day.
+- **Hard cap** = base × 75% for everyone. Between the caps positive growth × (1 − fill)², fill =
+  (militia − soft) / (hard − soft) ("Over muster"); growth never crosses the hard cap.
+- **Over the hard cap** the watch disbands 5% of the overflow a day (min 1, max the overflow); with the
+  unpaid shed (1/day) the day takes the more negative of the two. Both are refunded their kit
+  (`RecordMilitiaChange` → `RefundPendingDecline`); combat losses are not.
+- Unchanged: understrength catch-up below 0.5 × the effective soft cap, prosperous-city muster,
+  `CanAffordSpawn`, `CanKeepMilitia`, governor perks, the new-campaign seed (clamped to the soft cap).
+- **War Sails**: `NavalDLCSettlementMilitiaModel` wraps the default model and added Accuracy Training
+  (+2/day) and Bolster the Fyrd (×1.25) after RBM's caps. `NavalMilitiaChangePatch` (resolved by type
+  name, `Prepare` false without the DLC) skips it: it asks the chain beneath for the growth stage only
+  (`_growthOnlyDepth`), re-adds the perk (looked up by id `Accuracytraining`), drops the factor, then
+  applies the ceiling & floor.
+
 #### Building effects (`Settlements/BuildingEffects.cs`)
 
 `BuildingEffects.Tier(town, townType, castleType)` reads `Building.CurrentLevel` for whichever of a
@@ -315,9 +341,12 @@ vanilla effect stays in place unless the row says "replaces".
 | Fortifications | siege defence advantage x1.1/1.2/1.3 (**replaces** the old downward step from L3) | `SimulationSiege.MeasureWall` = `1 + 0.1 x level` |
 | | garrison + militia maintenance −0/5/10% | `GarrisonUpkeep.MaintenanceBill`, `MilitiaUpkeep.DailyMaintenanceBill` |
 | Barracks | arming a garrison or militia recruit −5/10/15% | `GarrisonRecruitCost.SpawnCost`, `MilitiaUpkeep.SpawnCostPerMan` + `ArmOneMilitiaman` |
-| | intake ceiling +1/2/3 a day | `GarrisonRecruitCost.Compute` (added to `GarrisonSpawnDailyMax`, own tooltip line), `MilitiaUpkeep.ComputeMilitiaChange` |
+| | intake ceiling +1/2/3 a day | `GarrisonRecruitCost.Compute` (added to `GarrisonSpawnDailyMax`, own tooltip line), `MilitiaUpkeep.ComputeMilitiaGrowth` |
+| | militia soft cap +2/3/5 percentage points | `MilitiaUpkeep.SoftCapBuildingBonus` |
 | Training Fields | garrison promotions −5/10/15% | `SpoilsUpgradePatches.DiscountGarrisonUpgrade` (both the affordability test and the billed sum) |
 | | +10/20/30 XP a day, garrison AND militia party (10x vanilla's `ExperiencePerDay`) | `GarrisonDrill` postfix on `GetEffectiveDailyExperience`, filter widened to `IsMilitia` |
+| | militia soft cap +1/2/3 percentage points | `MilitiaUpkeep.SoftCapBuildingBonus` |
+| Train Militia / Raise Troops (daily) | militia soft cap +3 percentage points while it is the running daily project | `MilitiaUpkeep.SoftCapBuildingBonus` via `BuildingEffects.IsDailyProjectActive` |
 | Guard House | tariff +0.3/0.6/1.0 percentage points on GUARDED trade only (caravans, lords, the player) | `TradeTariff.Levy(.., guardedTrade: true)` from `SettlementWealth.RouteNativeWrite` and `InventoryLogic.DoneLogic` |
 | | passive convict labour | the Guard House terms in the construction ceiling/free-labour above |
 | Tax Office | wealth tax and minting cuts x1.05/1.1/1.15, owner and fief legs alike | `WealthTax.OnDailyTick`, `Minting` |
@@ -336,7 +365,7 @@ Four more rows are CASTLE-ONLY, three of them building types a town has no equiv
 | | mounted garrison maintenance −10/20/30% | `GarrisonUpkeep.MaintenanceBill`, `character.IsMounted` elements only |
 | Craftsman Quarters | castle income x1.1/1.2/1.3 | `CastleEconomy.OnDailyTick` |
 | Farmlands | castle food production +10/20/30% (**replaces** the flat 6/12/18) | `RBMTownFoodSupply.TownFoodStocksChangePatch.Postfix`, castles only |
-| Guard House (castle) | **removes** vanilla's `Militia` +1/2/3 — the Barracks owns intake | `MilitiaUpkeep.AddMilitiaEffectOfBuildings` |
+| Guard House (castle) | **replaces** vanilla's `Militia` +1/2/3 a day with militia soft cap +2/3/5 percentage points — the Barracks owns intake | `MilitiaUpkeep.AddMilitiaEffectOfBuildings` (strip), `MilitiaUpkeep.SoftCapBuildingBonus` (cap) |
 
 #### Prison labour (`Settlements/PrisonLabour.cs`)
 
