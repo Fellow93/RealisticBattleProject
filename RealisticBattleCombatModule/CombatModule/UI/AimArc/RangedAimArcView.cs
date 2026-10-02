@@ -98,25 +98,27 @@ namespace RBMCombat
         // The agent the arc ends on, null when it ends on terrain/objects (or not at all).
         private Agent _predHitAgent;
 
-        // Where the aim camera should keep in frame: the landing point, or the farthest sampled point when the arc
-        // lands nowhere. Unlike _hasPrediction (kept past the release for ARCSHOT), cleared the moment the arc is not
-        // being predicted.
+        // Where the aim camera should keep in frame: where the flight comes down to the terrain, or to the shooter's own
+        // ground level when there is no terrain to meet. Unlike _hasPrediction (kept past the release for ARCSHOT),
+        // cleared the moment the arc is not being predicted.
         private bool _cameraTargetValid;
         private float _cameraTargetTime;
         private Vec3 _cameraTarget;
         private const float CameraTargetMaxAge = 0.25f;
 
-        // Camera target when the arc lands nowhere (off the map edge, or still airborne when the 6 s sampling ends): the
-        // same flight carried on, without scene raycasts, until it comes back down to the shooter's own ground level.
-        // Coarser samples, since only the crossing point is used.
+        // The camera's flight: the same one carried on through units and scene objects (no raycasts) until it meets the
+        // terrain heightmap, at the arc's own sample spacing (one heightmap lookup per sample).
+        private const float CameraMaxFlightSeconds = 20f;
+        private readonly Vec3[] _terrainSamples = new Vec3[(int)(CameraMaxFlightSeconds / SampleSeconds) + 2];
+        private MissileBallistics.TrajectorySegmentTest _terrainTest;
+
+        // Camera target when the flight meets no terrain either (past the map edge, or a terrain hole): carried on until
+        // it comes back down to the shooter's own ground level. Coarser samples, since only the crossing point is used.
         private const float FallbackSampleSeconds = 0.5f;
-        private const float FallbackMaxFlightSeconds = 20f;
         private static readonly int FallbackStepsPerSample = Math.Max(1, (int)Math.Round(FallbackSampleSeconds / MissileBallistics.StepSeconds));
-        private readonly Vec3[] _fallbackSamples = new Vec3[(int)(FallbackMaxFlightSeconds / FallbackSampleSeconds) + 2];
+        private readonly Vec3[] _fallbackSamples = new Vec3[(int)(CameraMaxFlightSeconds / FallbackSampleSeconds) + 2];
         private MissileBallistics.TrajectorySegmentTest _groundPlaneTest;
         private float _groundPlaneZ;
-        // Set while sampling for the camera: SegmentHitsScene then tests terrain/objects only.
-        private bool _skipAgents;
 
         private bool _drawArc;
         private bool _cameraEnabled;
@@ -130,6 +132,7 @@ namespace RBMCombat
                 return;
             }
             _segmentTest = SegmentHitsScene;
+            _terrainTest = SegmentCrossesTerrain;
             _groundPlaneTest = SegmentCrossesGroundPlane;
             _drawArc = RBMConfig.RBMConfig.rangedAimArcEnabled;
             if (_drawArc)
@@ -257,36 +260,24 @@ namespace RBMCombat
             _predFriction = friction;
             _predImpact = _samples[count - 1];
             _predLanded = landed;
-            // The camera frames where the flight meets the ground/scene, never a unit: the arc flicking on and off men
-            // as the aim sweeps a formation would otherwise jerk the camera between the man and the ground behind him.
-            // So when the arc ended on a unit, carry the flight on through him to the scene. And when nothing is hit at
-            // all, the farthest point sampled can still be high in the air (or missing terrain past the map edge left
-            // nothing to hit), which would let the camera relax back to normal, so carry the flight on down to the
-            // shooter's ground level instead.
+            // The camera frames where the flight comes down to the terrain, never a unit or a scene object: the arc
+            // flicking on and off men as the aim sweeps a formation, or between a wall face, its battlements, a ladder or
+            // a siege tower and the ground beyond, would otherwise jerk the camera between the near hit and the far one.
+            // So the flight is carried on through all of them to the terrain. And when it meets no terrain (past the map
+            // edge, a terrain hole), the farthest point sampled can still be high in the air, which would let the camera
+            // relax back to normal, so it is carried on down to the shooter's ground level instead.
             _cameraTarget = _predImpact;
-            bool cameraLanded = landed && _predHitAgent == null;
-            if (!cameraLanded && count > 1)
+            if (count > 1)
             {
-                if (landed)
+                int terrainCount = MissileBallistics.SampleTrajectory(origin, velocity, friction, StepsPerSample, CameraMaxFlightSeconds, MaxDrop, _terrainSamples, _terrainTest, out bool onTerrain);
+                if (onTerrain)
                 {
-                    _skipAgents = true;
-                    try
-                    {
-                        int sceneCount = MissileBallistics.SampleTrajectory(origin, velocity, friction, FallbackStepsPerSample, FallbackMaxFlightSeconds, MaxDrop, _fallbackSamples, _segmentTest, out cameraLanded);
-                        if (cameraLanded)
-                        {
-                            _cameraTarget = _fallbackSamples[sceneCount - 1];
-                        }
-                    }
-                    finally
-                    {
-                        _skipAgents = false;
-                    }
+                    _cameraTarget = _terrainSamples[terrainCount - 1];
                 }
-                if (!cameraLanded)
+                else
                 {
                     _groundPlaneZ = Mission.MainAgent.Position.z;
-                    int fallbackCount = MissileBallistics.SampleTrajectory(origin, velocity, friction, FallbackStepsPerSample, FallbackMaxFlightSeconds, MaxDrop, _fallbackSamples, _groundPlaneTest, out bool _);
+                    int fallbackCount = MissileBallistics.SampleTrajectory(origin, velocity, friction, FallbackStepsPerSample, CameraMaxFlightSeconds, MaxDrop, _fallbackSamples, _groundPlaneTest, out bool _);
                     if (fallbackCount > 1)
                     {
                         _cameraTarget = _fallbackSamples[fallbackCount - 1];
@@ -511,7 +502,7 @@ namespace RBMCombat
             }
 
             Agent main = mission.MainAgent;
-            if (main == null || _skipAgents)
+            if (main == null)
             {
                 return hitScene;
             }
@@ -582,6 +573,34 @@ namespace RBMCombat
                     _dataSource.PushDot(x, y, RingDotSize, RingDotAlpha, color);
                 }
             }
+        }
+
+        /// <summary>
+        /// Camera flight: the segment going from above the terrain heightmap to at or below it, at the point where it
+        /// crosses (linear in height above the terrain, which is centimetres off over a 0.1 s segment). Walls, siege
+        /// engines, buildings and units are not terrain, so the flight passes through them. A segment that starts below
+        /// the terrain (under an overhang, through a hole) does not count, and no height (NaN/infinite) is no terrain.
+        /// </summary>
+        private bool SegmentCrossesTerrain(Vec3 from, Vec3 to, out Vec3 hit)
+        {
+            hit = to;
+            Scene scene = Mission?.Scene;
+            if (scene == null)
+            {
+                return false;
+            }
+            float toAbove = to.z - scene.GetTerrainHeight(to.AsVec2);
+            if (!(toAbove <= 0f))
+            {
+                return false;
+            }
+            float fromAbove = from.z - scene.GetTerrainHeight(from.AsVec2);
+            if (!(fromAbove > 0f) || float.IsInfinity(fromAbove) || float.IsInfinity(toAbove))
+            {
+                return false;
+            }
+            hit = Vec3.Lerp(from, to, MBMath.ClampFloat(fromAbove / (fromAbove - toAbove), 0f, 1f));
+            return true;
         }
 
         /// <summary>Camera fallback: the flight coming back down through the shooter's own ground level.</summary>
