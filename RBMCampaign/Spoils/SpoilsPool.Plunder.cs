@@ -69,7 +69,7 @@ namespace RBMCampaign
         /// </remarks>
         public static void OnRaidCompleted(BattleSideEnum winnerSide, RaidEventComponent raidEvent)
         {
-            if (!IsEnabled || RBMConfig.RBMConfig.troopRaidSpoilsMultiplier <= 0f || raidEvent == null)
+            if (!IsEnabled || raidEvent == null)
             {
                 return;
             }
@@ -170,7 +170,7 @@ namespace RBMCampaign
         /// </remarks>
         public static void OnBesiegedFortificationDailyTick(Settlement settlement)
         {
-            if (!IsEnabled || RBMConfig.RBMConfig.troopRaidSpoilsMultiplier <= 0f)
+            if (!IsEnabled)
             {
                 return;
             }

@@ -96,8 +96,7 @@ namespace RBMCampaign
             get
             {
                 return RBMConfig.RBMConfig.rbmCampaignEnabled
-                    && IsEnabled
-                    && RBMConfig.RBMConfig.troopRaidSpoilsMultiplier > 0f;
+                    && IsEnabled;
             }
         }
 

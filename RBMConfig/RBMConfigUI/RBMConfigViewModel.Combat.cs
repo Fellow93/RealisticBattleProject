@@ -365,7 +365,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel RangedAimArcEnabledHint { get; } = Hint("Experimental. While you draw a bow or crossbow or wind up a sling, shows the predicted flight of the missile as a dotted arc with a marker where it will land. Uses the same launch speed and air drag the real shot flies with. In third person, when you aim up the camera also lifts and tilts down so the landing point of a high shot stays on screen; where you aim is unchanged, and the crosshair is hidden while the camera is moved (the arc shows the aim). Also covers javelins, throwing axes, throwing knives and stones. Player only. Default off.");
+        public BasicTooltipViewModel RangedAimArcEnabledHint { get; } = Hint("Experimental. While you draw a bow or crossbow or wind up a sling, shows the predicted flight of the missile as a dotted arc with a marker where it will land. Uses the same launch speed and air drag the real shot flies with. In third person, when you aim up the camera also lifts and tilts down so the landing point of a high shot stays on screen; where you aim is unchanged, and the crosshair is hidden while the camera is moved (the arc shows the aim). Also covers javelins, throwing axes, throwing knives and stones. Player only. Needs RBM Combat. Default off.");
 
         [DataSourceProperty]
         public string PassiveShieldt
@@ -437,7 +437,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel HitStopEnabledHint { get; } = Hint("{=RBM_CON_146}Briefly slows the battle to a quarter of its speed, for three quarters of a second, when you kill or knock out an enemy or break his posture. Works without RBM AI, though the posture-break slowdown needs the Posture System. Default on.");
+        public BasicTooltipViewModel HitStopEnabledHint { get; } = Hint("{=RBM_CON_146}Briefly slows the battle to a quarter of its speed, for three quarters of a second, when you kill or knock out an enemy or break his posture. Needs RBM AI, and the posture-break slowdown also needs the Posture System. Default on.");
 
         [DataSourceProperty]
         public string PostureSyst

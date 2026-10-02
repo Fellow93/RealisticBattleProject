@@ -89,10 +89,10 @@ namespace RBMConfig
         // keeping the rest.
         public static float troopSettlementFunWageFraction = 0.25f;
 
-        // Share of a sacked village's plundered wealth its soldiers pocket as spoils, on top of the
-        // goods the party carts off. Scaled against how much of the village the raid actually stripped.
-        // Zero leaves raiding paying the party but not its men.
-        public static float troopRaidSpoilsMultiplier = 0.25f;
+        // Raid and siege plunder spoils have no dial: the share of a drained purse the men carry off is a
+        // constant in RBMCampaign/Spoils/SpoilsPool.Plunder.cs (RaidSpoilsShare). The old
+        // TroopRaidSpoilsMultiplier setting only ever acted as an on/off switch there, so it was removed;
+        // an old config still holding the node loads fine, the node is simply never read.
 
         // The base share of the spoils a party's men gather -- off a battlefield, a raid or a sack -- that
         // their leader skims into his own purse as gold before the rest settles into the stacks: a
@@ -187,7 +187,7 @@ namespace RBMConfig
         // Multiplies the daily output of every village's production -- the per-Hearth rate the rework
         // rolls each day, and with it the warehouse capacity and the production tooltip, so all three
         // stay in step. 1 leaves output as the rework computes it; below 1 throttles the countryside,
-        // above 1 floods it. Range 0.01..2. Default 1.
+        // above 1 floods it. Range 0.01..2. Default 0.5.
         public static float villageProductionMultiplier = 0.5f;
 
         // Multiplies the effective conversion speed of every workshop -- how fast it turns its inputs

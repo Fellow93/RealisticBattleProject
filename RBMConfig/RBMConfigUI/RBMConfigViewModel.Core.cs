@@ -34,7 +34,7 @@ namespace RBMConfig
         public BasicTooltipViewModel RBMCombatEnabledHint { get; } = Hint("{=RBM_CON_130}Master switch for RBM's combat overhaul: damage, armor, weapon and missile physics, ranged reload, and RBM's reworked items, troops and siege engines. Off returns combat to the base game and every option in this section stops working. RBM's spear and weapon animation parameters only follow a change after a game restart. Default on.");
 
         [DataSourceProperty]
-        public BasicTooltipViewModel RBMAIEnabledHint { get; } = Hint("{=RBM_CON_131}Master switch for RBM's battle AI: formation tactics and behaviors, siege AI, AI blocking and parrying, the posture and stamina systems, the frontline system and AI kicks and bashes. Off returns battle AI to the base game and every option in this section except Slow Motion in Combat stops working. Default on.");
+        public BasicTooltipViewModel RBMAIEnabledHint { get; } = Hint("{=RBM_CON_131}Master switch for RBM's battle AI: formation tactics and behaviors, siege AI, AI blocking and parrying, the posture and stamina systems, the frontline system and AI kicks and bashes. Off returns battle AI to the base game and every option in this section stops working. Default on.");
 
         [DataSourceProperty]
         public BasicTooltipViewModel RBMTournamentEnabledHint { get; } = Hint("{=RBM_CON_132}Tiered tournaments. Your tier comes from your level and the quality of your armor: below tier 5 you fight troops of your own tier, from tier 5 the lords and heroes in town. Arena gear, the prize (which can roll a better quality) and the renown you win follow your tier. Off restores the base game's tournaments. Default on.");
@@ -508,7 +508,6 @@ namespace RBMConfig
             _recruitMaintenanceDays = MathF.Clamp(RBMConfig.recruitMaintenanceDays, 0f, 30f);
             _troopFoodWageFraction = MathF.Clamp(RBMConfig.troopFoodWageFraction, 0f, 10f);
             _troopSettlementFunWageFraction = MathF.Clamp(RBMConfig.troopSettlementFunWageFraction, 0f, 10f);
-            _troopRaidSpoilsMultiplier = MathF.Clamp(RBMConfig.troopRaidSpoilsMultiplier, 0f, 10f);
             ShowInventoryItemWeight.SelectedIndex = RBMConfig.showInventoryItemWeight ? 1 : 0;
             LordEquipmentUpgradeEnabled.SelectedIndex = RBMConfig.lordEquipmentUpgradeEnabled ? 1 : 0;
             KingdomCaravansEnabled.SelectedIndex = RBMConfig.kingdomCaravansEnabled ? 1 : 0;
@@ -742,7 +741,6 @@ namespace RBMConfig
             RBMConfig.recruitMaintenanceDays = (int)MathF.Round(_recruitMaintenanceDays);
             RBMConfig.troopFoodWageFraction = _troopFoodWageFraction;
             RBMConfig.troopSettlementFunWageFraction = _troopSettlementFunWageFraction;
-            RBMConfig.troopRaidSpoilsMultiplier = _troopRaidSpoilsMultiplier;
             RBMConfig.showInventoryItemWeight = ShowInventoryItemWeight.SelectedIndex == 1;
             RBMConfig.lordEquipmentUpgradeEnabled = LordEquipmentUpgradeEnabled.SelectedIndex == 1;
             RBMConfig.kingdomCaravansEnabled = KingdomCaravansEnabled.SelectedIndex == 1;
@@ -854,13 +852,16 @@ namespace RBMConfig
             TroopUpgradeChargeMountValue.SelectedIndex = 1;
             TroopLootPiecesPerMan = 3f;
             TroopLootOverlookChancePerTier = 0.5f;
+            TroopMaintenanceFraction = 0.005f;
+            IndependentMaintenancePurseFraction = 1f;
             TroopSettlementFoodDays = 20f;
             RecruitMaintenanceDays = 20f;
             TroopFoodWageFraction = 0.5f;
-            TroopSettlementFunWageFraction = 1.5f;
-            TroopRaidSpoilsMultiplier = 0.25f;
+            TroopSettlementFunWageFraction = 0.25f;
             TroopLeaderSpoilsCutFraction = 0.05f;
             TroopSpoilsCapDays = 20f;
+            BuildingCostMultiplier = 250f;
+            ConstructionBudgetShare = 0.01f;
             TroopLuxuryCooldownDays = 20f;
             TroopLuxurySpendChance = 0.02f;
             TroopFallenSpoilsCaptureFraction = 0.75f;

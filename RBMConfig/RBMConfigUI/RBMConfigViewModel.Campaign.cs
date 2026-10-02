@@ -620,49 +620,6 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopSettlementFunWageFractionHint { get; } = Hint("{=RBM_CON_057}A day's wage a man drinks away for each day he sits idle in a settlement. Default 0.25.");
 
-
-        private float _troopRaidSpoilsMultiplier;
-
-        [DataSourceProperty]
-        public float TroopRaidSpoilsMultiplier
-        {
-            get
-            {
-                return _troopRaidSpoilsMultiplier;
-            }
-            set
-            {
-                float snapped = MathF.Clamp((float)System.Math.Round(value, 2), 0f, 10f);
-                if (snapped != _troopRaidSpoilsMultiplier)
-                {
-                    _troopRaidSpoilsMultiplier = snapped;
-                    OnPropertyChangedWithValue(snapped, "TroopRaidSpoilsMultiplier");
-                    OnPropertyChanged("TroopRaidSpoilsMultiplierValue");
-                }
-            }
-        }
-
-        [DataSourceProperty]
-        public string TroopRaidSpoilsMultiplierValue
-        {
-            get
-            {
-                return _troopRaidSpoilsMultiplier.ToString("0.00");
-            }
-        }
-
-        [DataSourceProperty]
-        public string TroopRaidSpoilsMultipliert
-        {
-            get
-            {
-                return new TextObject("{=RBM_CON_044}Raid Plunder Pocketed").ToString();
-            }
-        }
-
-        [DataSourceProperty]
-        public BasicTooltipViewModel TroopRaidSpoilsMultiplierHint { get; } = Hint("{=RBM_CON_059}Share of a raid's plunder its soldiers keep for themselves as spoils. Default 0.25.");
-
         // Lord equipment toggle label and hint. Plain literal TextObjects (no {=KEY}), like the caravan ones.
         [DataSourceProperty]
         public string LordEquipmentUpgradeEnabledt

@@ -57,7 +57,7 @@ namespace RBMConfig
         public static bool rangedReloadAffectsAi = false;
         // Player-only dotted trajectory preview while drawing a bow/crossbow/sling (RBMCombat RangedAimArcView), plus
         // the camera assist that lifts and tilts the third-person camera so the predicted landing point of a high shot
-        // stays on screen (RBMCombat RangedAimCamera). Works with or without rbmCombatEnabled; when off the view is
+        // stays on screen (RBMCombat RangedAimCamera). Needs rbmCombatEnabled too; when either is off the view is
         // not even added to the mission and nothing is patched.
         public static bool rangedAimArcEnabled = false;
         public static float maceBluntModifier = 1f;

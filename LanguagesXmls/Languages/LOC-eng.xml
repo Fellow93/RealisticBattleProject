@@ -101,7 +101,6 @@
 	<string id="RBM_CON_041" text="Food Days Bought" />
 	<string id="RBM_CON_042" text="Spoils Spent on Food" />
 	<string id="RBM_CON_043" text="Spoils Spent on Fun" />
-	<string id="RBM_CON_044" text="Raid Plunder Pocketed" />
 	<string id="RBM_CON_046" text="Spoils Reserve (Days of Keep)" />
 	<string id="RBM_CON_047" text="Luxury Cooldown (Days)" />
 	<string id="RBM_CON_048" text="Luxury Buy Chance" />
@@ -115,7 +114,6 @@
 	<string id="RBM_CON_055" text="Days of food a man buys when he passes through a settlement. 0 stops him buying any. Default 20." />
 	<string id="RBM_CON_056" text="Share of a day's wage a man spends to feed himself for a day. Default 0.50." />
 	<string id="RBM_CON_057" text="A day's wage a man drinks away for each day he sits idle in a settlement. Default 0.25." />
-	<string id="RBM_CON_059" text="Share of a raid's plunder its soldiers keep for themselves as spoils. Default 0.25." />
 	<string id="RBM_CON_061" text="Days of keep a stack holds in its purse before upkeep spends the surplus: this many days of its wage and its field maintenance together. Default 20." />
 	<string id="RBM_CON_063" text="Days a stack waits after buying a luxury before it splurges again. Default 20." />
 	<string id="RBM_CON_064" text="Chance each idle hour that an over-cap stack buys a luxury from the settlement. Default 0.02." />
@@ -556,7 +554,7 @@
 	<string id="RBM_CON_129" text="A volunteer who appears in a town is kitted out from that town's market, one in a village from the town it trades with; it takes what the market has and never blocks a recruitment. It also sets the recruit price: free in your own fief (or anywhere in your realm as its ruler), the man's gear plus five days' wage for a vassal in his own realm, a tenth more for outsiders and mercenaries, and only the wage part plus a tenth for a landless adventurer; the money goes to the settlement. Off restores the base game's recruit price. Default on." />
 	<!-- Config Screen: Option Tooltip Strings -->
 	<string id="RBM_CON_130" text="Master switch for RBM's combat overhaul: damage, armor, weapon and missile physics, ranged reload, and RBM's reworked items, troops and siege engines. Off returns combat to the base game and every option in this section stops working. RBM's spear and weapon animation parameters only follow a change after a game restart. Default on." />
-	<string id="RBM_CON_131" text="Master switch for RBM's battle AI: formation tactics and behaviors, siege AI, AI blocking and parrying, the posture and stamina systems, the frontline system and AI kicks and bashes. Off returns battle AI to the base game and every option in this section except Slow Motion in Combat stops working. Default on." />
+	<string id="RBM_CON_131" text="Master switch for RBM's battle AI: formation tactics and behaviors, siege AI, AI blocking and parrying, the posture and stamina systems, the frontline system and AI kicks and bashes. Off returns battle AI to the base game and every option in this section stops working. Default on." />
 	<string id="RBM_CON_132" text="Tiered tournaments. Your tier comes from your level and the quality of your armor: below tier 5 you fight troops of your own tier, from tier 5 the lords and heroes in town. Arena gear, the prize (which can roll a better quality) and the renown you win follow your tier. Off restores the base game's tournaments. Default on." />
 	<string id="RBM_CON_133" text="A party can only upgrade troops while it is inside a friendly or neutral settlement or within Upgrade Supply Range of a friendly or neutral town, and the new kit is taken from that town's market. AI parties are only held back on upgrades they pay for in gold; bandits are exempt. Off lets parties upgrade anywhere. Needs Troop Upgrade Cost above 0. Default on." />
 	<string id="RBM_CON_134" text="Adds a weight column to the item rows of the inventory and trade screens, showing what one item weighs. Takes effect after restarting the game. Default on." />
@@ -571,7 +569,7 @@
 	<string id="RBM_CON_143" text="Multiplies your own character's maximum posture and posture recovery, and with the Stamina System on also your maximum stamina and its recovery. AI soldiers are unaffected. Needs RBM AI and the Posture System on. Default 1x." />
 	<string id="RBM_CON_144" text="Attacking, blocking and being hit drain stamina, faster in heavy armor and slower with high Athletics. A tired soldier hits weaker, moves, swings and reloads slower, blocks worse and loses posture faster; above 85% stamina he slowly regains health. Needs RBM AI and the Posture System on. Default on." />
 	<string id="RBM_CON_145" text="Blocks, parries and hits wear down a posture meter that recovers over time. When it runs out the soldier can be staggered, drop his weapon or shield, be knocked off his horse, or take damage that crushes through his guard. Off also switches off the Stamina System and the Posture GUI. Needs RBM AI on. Default on." />
-	<string id="RBM_CON_146" text="Briefly slows the battle to a quarter of its speed, for three quarters of a second, when you kill or knock out an enemy or break his posture. Works without RBM AI, though the posture-break slowdown needs the Posture System. Default on." />
+	<string id="RBM_CON_146" text="Briefly slows the battle to a quarter of its speed, for three quarters of a second, when you kill or knock out an enemy or break his posture. Needs RBM AI, and the posture-break slowdown also needs the Posture System. Default on." />
 	<string id="RBM_CON_147" text="Scales the thrust damage figures weapons carry, which the AI weighs when it chooses between thrusting and swinging. RBM undoes the scale when it works out piercing damage, so stabs hit about as hard at any setting; lower values make the AI favour swings. Default 0.05." />
 	<string id="RBM_CON_148" text="Your bow and crossbow shots leave about 5 degrees above where you aim, so they fly a higher arc and the crosshair no longer marks where they land. Player only; slings and thrown weapons are unaffected. Default off." />
 	<string id="RBM_CON_149" text="Shows six small icons in the lower right of the battle screen with the condition of your own armor -- head, shoulders, body, hands, legs and horse harness -- shading from green (better than standard) through grey to red as blows wear it down during the battle. Default on." />
