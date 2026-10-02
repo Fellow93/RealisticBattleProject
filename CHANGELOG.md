@@ -19,7 +19,9 @@
 - **Pila punch through shields:** a thrown pilum that hits a raised wooden shield sticks in it and can drive through to wound the man behind, keeping 90% of the throw's force minus 5% per point of shield armor. Thrown pila no longer deal double damage to shields, and the javelin body-damage factor is halved.
 - **Stuck missiles fall out:** javelins, throwing axes and throwing knives stuck in a shield or a living body work loose after about 5 s. Arrows and bolts fall out of shields after about 45 s (at most 8 per shield), and a body holds at most 4 arrows. Each drops as a loose item you can pick up. Two new RBM Combat sliders set the times; 0 keeps vanilla behavior.
 - **Flying arrow thickness (experimental):** a new RBM Combat slider (1–10, default 1) makes arrows and bolts thicker in flight with Better Arrow Visuals, which are true to size and hard to follow. Arrows in the quiver, on the string and stuck ones keep their real size, and the hit test is unchanged.
-- **Armor multiplier slider:** the armor multiplier is now adjustable from the RBM Combat options (0.5–4, default 2).
+- **Armor sliders:** a new Armor Effectiveness slider in the RBM Combat options (0.25–3, default 1) scales every armor value, for all weapons. It also feeds auto-resolve and troop power, and does not change how fast armor wears. A collapsible "Advanced Armor" group below it holds three finer sliders that work on top of it: Armor Multiplier (0.5–4, default 2, how strongly armor absorbs blunt trauma), Blunt Trauma Multiplier (0–3, default 1) and Armor Penetration Threshold (0–3, default 1, how much of a blow armor stops outright).
+- Auto-resolve follows the live armor rules: thrusts and arrows no longer get a partial-penetration floor that live combat removed.
+- The Pavise and Deployable Pavise shields have more armor (7 → 10).
 
 ### Ranged / AI shooting
 - AI arrows and bolts no longer fall short at long range. RBM's arrow drag didn't match the engine's, so the AI aimed with one drag value while missiles flew with another.
@@ -30,7 +32,7 @@
 - AI shooters no longer over-lead moving targets, which makes them noticeably better against walking infantry and charging cavalry.
 - Skilled AI crossbowmen are at least as accurate as vanilla ones and settle their aim as fast.
 - AI shooters use the correct launch speed after re-equipping or picking up a bow, crossbow or sling.
-- **Ranged aim arc (experimental, off by default):** a new RBM Combat setting for the player. While you draw a bow or crossbow, wind up a sling or ready a javelin, throwing axe, throwing knife or stone, a dotted arc shows the missile's predicted flight, with a marker where it will land (red on an enemy, green on a friendly) and a ring on the ground showing how far your current aiming error can scatter the shot. In third person, aiming upward also lifts the camera and tilts it down so the landing point of a high shot stays on screen. Your aim is unchanged; the crosshair is hidden while the camera is moved. Throws include your own running speed.
+- **Ranged aim arc (experimental, off by default):** a new RBM Combat setting for the player. While you draw a bow or crossbow, wind up a sling or ready a javelin, throwing axe, throwing knife or stone, a dotted arc shows the missile's predicted flight, with a marker where it will land (red on an enemy, green on a friendly) and a ring on the ground showing how far your current aiming error can scatter the shot. In third person, aiming upward also lifts the camera and tilts it down so the landing point of a high shot stays on screen. Your aim is unchanged; the crosshair is hidden while the camera is moved. Throws include your own running speed. The camera frames where the shot lands on the ground, so sweeping the aim across walls, ladders and towers in a siege no longer makes it jump.
 
 ### AI
 - Sieges: attackers on the walls fight instead of idling until the gate opens. Attackers no longer stand shuffling outside a breached wall, and troops leave ladders and towers the AI has given up on.
@@ -47,7 +49,7 @@
 - Siege attackers whose only melee weapon is two-handed (e.g. the Imperial Flame line) no longer sheathe it to raise their shield and fight bare-handed.
 - **AI kick and bash (new RBM AI setting, on by default):** AI foot soldiers now kick, shield bash and weapon bash, which the vanilla AI never does. They try it at close range against an enemy who is blocking, holding a weapon ready, showing his back or staggered; a clearly more skilled fighter also tries it at other times. How often depends on the two fighters' relative skill (mostly Athletics, partly weapon skill). A raised shield stops a bash but not a kick, so the AI kicks a man behind a raised shield and otherwise picks either. With the posture system on, throwing one costs posture and stamina, hit or miss.
 - **Kick and bash knockdowns (same setting, player and AI):** a kick or bash always knocks down an enemy who is already staggered (posture break, posture tiredness or another kick or bash a moment earlier) or whose posture it empties. Otherwise it has a chance based on relative skill against an enemy holding a weapon ready or hit from behind; it is higher for a kick than a bash, from behind and against a tired enemy, and lower the heavier his armor.
-- AI soldiers holding a polearm in two hands only kick, never bash, and not while bracing it. Other mods have reported an engine crash when the AI bashes with a two-handed polearm.
+- AI soldiers never kick or bash while bracing a polearm.
 - Posture tiredness plays a new stagger animation instead of the pick-up animation, and input can no longer cancel it.
 - Fewer stutters near the enemy: an advancing AI line re-forms at most once every 10 s, and formations no longer flip between line, loose and shield wall when they sit right at the switch point.
 
@@ -68,6 +70,12 @@
 - War Sails: AI armies that have to sail to a siege no longer board their ships, disembark and board again in an endless loop. A party's strength no longer drops while it is at sea; the landing limit for ship raids now only affects the decision to raid a village through its port.
 - AI armies no longer form, march for a day and disband. A new army still needs 2.5x the defenders' strength to besiege, but one that already exists keeps its target down to 1.5x, vanilla's own factor for a siege under way. Army creation and dispersal are recorded in the garrison log.
 - Clans without a culture are removed the way vanilla does it, and clans that are already eliminated are no longer destroyed again on every load.
+- **Militia caps:** militia grow freely up to a soft cap of 40% of the fief's base (town prosperity, a castle's average village hearth, a village's hearth), then ever more slowly up to a hard cap of 75%. Above the hard cap 5% of the excess leaves each day, with their kit refunded. Barracks, the castle Guard House, Training Fields, the Train Militia and Raise Troops projects and the Citizenship, Cantons and Bolster the Fyrd policies raise the soft cap (up to 70%); Serfdom lowers it. The Guard House and the four policies no longer change militia per day directly. The militia tooltip shows both caps.
+- A town arms new militia straight from its own market's shelves, and disbanded militiamen put their kit back on them.
+- Prisoners sold at a castle are paid from the castle's own wealth, and gold the game pays to a castle goes into its wealth instead of an unused purse.
+- **Workshop gear follows the town's culture:** most weapons, shields, armor and ammo a workshop makes now come from the gear of that culture's militia, troop trees and mercenaries. A market holds at most 6 of any one item, so a few items no longer flood every market, and foreign-culture gear is no longer made.
+- **Leather supply:** towns no longer run out of leather, and so of armor. Workshop demand for materials is counted realistically instead of growing as inputs ran out, supply caravans now also carry leather, linen, wool, flax and iron ingots between towns, and tanning runs before every recipe that uses hides or leather, at a higher rate.
+- Wool and hides are cheaper, and villages produce hides a little faster.
 
 ### Tournament
 - Skipping a round simulates the right fighters again, instead of reusing the previous match and scoring nobody.
@@ -81,6 +89,11 @@
 - Every option on the config screen now has a hover tooltip that states its default.
 - "Recruits Kitted From Market" no longer shows the Starting Gold tooltip text.
 - Hit stop and the developer battle stats now need RBM AI on; the battle hit log and the ranged aim arc need RBM Combat on.
+- Reset to Default restores every setting to its real default. It used to set Spoils Spent on Fun to 1.5 instead of 0.25 and skipped Building Cost Multiplier, Construction Budget Share, Daily Maintenance and Self-Funded Maintenance Share.
+- The "Raid Plunder Pocketed" setting is removed; it only acted as an on/off switch. Raid spoils always flow as its default did, and old configs still load.
+- Options that depend on another sit directly below it, indented, and sub-groups share one heading style.
+- The battle hit log records every blocked or parried melee blow by type (chamber, weapon block or parry, shield block or parry, wrong-side shield), with a per-side table at the end of the battle. The developer battle stats show a melee hits counter and a counter for each block type.
+- **Changelog on the title screen:** an "RBM Changelog" badge in the top-right corner opens the list of versions and their notes. The newest one opens by itself once after an update.
 
 ### Stability / fixes
 - Fixed a crash at startup on Linux/Proton (a regression since 4.4.9).

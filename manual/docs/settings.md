@@ -200,8 +200,8 @@ into a `logs` folder next to the config file (`Documents\Mount and Blade II Bann
 
 | Setting | Default | What it does |
 |---|---|---|
-| Developer Mode | Disabled | Developer extras: an in-battle stats overlay, an "RBM Developer Stats" block in weapon tooltips and the siege archer-point debug pass. Takes effect from the next battle. |
-| Field Battle Logging | Disabled | Writes every blow of a fought battle to `logs/battles`, one file per battle: attacker, target, weapon, body part, armor, damage and health left, plus the standings every 15 seconds and a summary at the end. Arenas and town visits are left out. Only runs while RBM Combat is enabled. |
+| Developer Mode | Disabled | Developer extras: an in-battle stats overlay, an "RBM Developer Stats" block in weapon tooltips and the siege archer-point debug pass. The stats overlay needs RBM AI; besides damage by troop type and kick and bash attempts, it counts melee hits and each kind of block and parry. Takes effect from the next battle. |
+| Field Battle Logging | Disabled | Writes every blow of a fought battle to `logs/battles`, one file per battle: attacker, target, weapon, body part, armor, damage and health left, plus the standings every 15 seconds and a summary at the end. Melee blows that are blocked or parried are logged too, by type (chamber, weapon block or parry, shield block or parry, wrong-side shield), and the summary counts them per side. Arenas and town visits are left out. Only runs while RBM Combat is enabled. |
 | AI Behavior Logging | Disabled | Writes, second by second, every team's chosen tactic and every formation's behavior and movement order to `logs/ai`. Needs RBM AI. Takes effect from the next battle. |
 | Armor Penetration Messages | Disabled | Prints the blunt trauma and armor penetration damage of every blow you deal or take to the message log. |
 | Detailed Auto Resolve Logging | Disabled | Writes every auto-resolved battle to `logs/simulation`: the sides and their parties, troop power, charge and volley figures, and the outcome including routed men. Needs RBM Campaign. |

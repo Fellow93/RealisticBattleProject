@@ -201,7 +201,9 @@ The base game's cut of town trade is gone. Instead:
 These appear in your finance screen ("Settlement wealth tax", and so on). In the Fiefs tab, the Tariffs row is
 replaced by "Wealth tax" or "Castle surplus".
 
-When a lord sells prisoners in a town, the ransom is paid out of that town's citizen wealth.
+When a lord sells prisoners in a town, the ransom is paid out of that town's citizen wealth. At a castle it
+is paid out of the castle's own wealth, so a poor castle pays less. Any other gold the game pays to a castle
+also goes into its wealth.
 
 ### Garrisons
 
@@ -220,10 +222,15 @@ When a lord sells prisoners in a town, the ransom is paid out of that town's cit
 ### Militia
 
 - Militia have a **soft cap** of 40% of the settlement's base (prosperity for towns, hearths for villages,
-  and for castles a figure based on the hearths of their villages). Barracks, a castle's Guard House, Training Fields, the Train Militia
-  and Raise Troops projects and some kingdom policies raise it, up to 70%.
-- Above the soft cap, growth slows sharply, and it can never pass the **hard cap** of 75%. Militia above the
-  hard cap slowly disband.
+  and for castles the average hearths of their villages). Barracks, a castle's Guard House, Training Fields,
+  the Train Militia and Raise Troops projects (while they run) and the Citizenship, Cantons and Bolster the
+  Fyrd (War Sails) policies raise it, up to 70%. Serfdom lowers it. The castle Guard House and these four
+  policies no longer add or remove militia each day; they only move the soft cap.
+- Above the soft cap, growth slows more and more the closer the militia get to the **hard cap** of 75%, and
+  it can never pass it. Militia standing above the hard cap (after a siege, for example) disband at 5% of the
+  excess a day, and their kit is refunded. The militia tooltip shows both caps.
+- A town arms new militia straight from its own market's shelves, and disbanded militiamen put their kit
+  back on them (with *Recruits Kitted From Market* on; otherwise the kit is paid out of citizen wealth).
 - Militia cost money: a town's militia is paid a quarter of a soldier's wage, a castle's a tenth, a village's
   nothing, plus gear maintenance. If the settlement cannot hold 20 days of the militia's pay, they shrink by one
   man a day.
@@ -295,8 +302,9 @@ and luxury goods.
 - Forming a caravan costs about ten times the base game's price, and it carries ten times the seed capital.
   Your caravan pays you a tenth of its purse above its seed capital each day.
 - **Kingdom supply caravans** (setting: *Kingdom Supply Caravans*) carry goods from towns with a surplus to
-  towns running short, inside a kingdom and to kingdoms with a trade agreement. They can be raided. They cost
-  their owner nothing and pay nothing.
+  towns running short, inside a kingdom and to kingdoms with a trade agreement. Besides the goods townsfolk
+  buy, they carry the workshop materials leather, linen, wool, flax and iron ingots. They can be raided. They
+  cost their owner nothing and pay nothing.
 - **Caravan investment** (setting: *Caravan Investment*) lets rich towns lend to struggling ones along these
   routes.
 
@@ -308,9 +316,13 @@ and luxury goods.
   workshop's capital is low.
 - A workshop only produces when the batch is profitable and the town can pay for it. It skips a cycle if the
   town already holds all it can store of every output.
-- Workshops that make war gear mostly make the town culture's troop equipment, and stop making an item once
-  the market holds 6 of it.
+- Workshops that make war gear (weapons, shields, armor and ammunition) mostly make the gear of the town
+  culture's militia, troop trees and mercenaries, and never make another culture's gear. They stop making an
+  item once the market holds 6 of it, so a few items no longer flood every market.
 - Towns also have small hidden artisans producing alongside the workshops.
+- **Leather.** The artisans tan hides into leather before any of their other recipes that use hides or
+  leather, and tanneries spend more of their work on tanning, so towns no longer run out of leather (and with
+  it armor).
 - The player's smithy gets a steel refining chain using crude iron, charcoal and silver.
 
 ## Recruitment

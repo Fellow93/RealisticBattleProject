@@ -212,7 +212,8 @@ kicks.
 looks for an opening: an enemy who is blocking, holding his weapon ready, turning his back, or staggered.
 Without an opening, only a more skilled fighter will try. Attempts are more likely from behind and against a
 staggered enemy, and there is a pause of several seconds between attempts. Against an enemy holding a shield
-toward him, the AI kicks rather than bashes.
+toward him, the AI kicks rather than bashes. Any AI soldier can kick or bash, whatever weapon he holds, but
+never while bracing a polearm.
 
 **Skill.** Kicks and bashes use a mix of Athletics and the skill of the weapon in hand. The more skilled fighter
 tries more often and knocks down more often.
@@ -265,7 +266,8 @@ bashes.
 - **Frontline overlay.** With the frontline system on, **Ctrl+Shift+F** toggles a debug overlay that shows the
   soldiers' frontline decisions.
 - **Battle stats.** With *Developer Mode* on, a text overlay in the bottom-left corner shows damage by troop type,
-  kick and bash attempts, block and parry counts and melee hits. It is meant for testing, not normal play.
+  kick and bash attempts, melee hits, and a counter for each kind of block and parry (chamber, weapon block or
+  parry, shield block or parry, wrong-side shield). It is meant for testing, not normal play.
 
 ## AI log
 

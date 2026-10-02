@@ -47,6 +47,10 @@ Documents\Mount and Blade II Bannerlord\Configs\RBM\config.xml
 
 Every option is listed in the [Settings Reference](settings.md).
 
+## What's new
+
+The title screen has an **RBM Changelog** badge in its top-right corner. Click it to see every RBM version and its notes. After an update, the newest version's notes open by themselves once, and the badge shows a dot until you have read them.
+
 ## The module switches
 
 RBM is split into parts you can turn on and off separately. All of them are on by default.
@@ -104,7 +108,7 @@ Documents\Mount and Blade II Bannerlord\Configs\RBM\logs\
 
 | Folder | Contents | Turned on by |
 |---|---|---|
-| `battles` | Every blow of a fought battle, standings every 15 seconds, and a summary | *Field Battle Logging* |
+| `battles` | Every blow of a fought battle and every blocked or parried melee blow, standings every 15 seconds, and a summary | *Field Battle Logging* (needs RBM Combat) |
 | `ai` | Each team's tactic and each formation's behavior and orders, second by second | *AI Behavior Logging* (needs RBM AI) |
 | `simulation` | Every auto-resolved battle | *Detailed Auto Resolve Logging* (needs RBM Campaign) |
 | `powerCalculation` | Daily troop power breakdown of every party | *Troop Power Logging* |

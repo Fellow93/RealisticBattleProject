@@ -38,7 +38,7 @@ Other rules that change the threshold:
 - **Arrows and bolts against mail, leather or cloth** face only half the armor. Plate gets its full value.
 - **Javelins with a bonus against shields** (pila) have a much lower threshold.
 
-The overall armor curve can be tuned with the **Armor Effectiveness**, **Armor Multiplier**, **Blunt Trauma Multiplier** and **Armor Penetration Threshold** sliders. To see the split for every blow you deal or take, turn on **Armor Penetration Messages**. Both are in the [Settings Reference](../settings.md).
+The **Armor Effectiveness** slider makes every armor value count for more or less, against all weapons (it does not change how fast armor wears). For finer control, the collapsible **Advanced Armor** group below it holds **Armor Multiplier** (how strongly armor softens blunt trauma), **Blunt Trauma Multiplier** and **Armor Penetration Threshold** (how much of a blow armor stops outright), which work on top of it. All of them also apply to auto-resolve. To see the split for every blow you deal or take, turn on **Armor Penetration Messages**. Both are in the [Settings Reference](../settings.md).
 
 ## Skill and weapon speed
 
@@ -106,7 +106,7 @@ Shields take damage by weapon type:
 - Weapons with a **bonus against shields** do double.
 - **Javelins and throwing axes** hit shields very hard. Arrows and bolts do far less.
 
-A blow that hits a shield slung on someone's back is treated as blocked by it. For missiles and shields, see [Ranged Combat](ranged.md).
+A blow that hits a shield slung on someone's back is treated as blocked by it. The **Pavise Shield** and **Deployable Pavise Shield** have 10 shield armor. For missiles and shields, see [Ranged Combat](ranged.md).
 
 ## Blows and reactions
 

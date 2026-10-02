@@ -49,7 +49,7 @@ The reload part of this setting only affects you, unless **Ranged reload applies
 - The prediction uses the same launch speed and air drag as the real shot (and the Realistic Arrow Arc tilt, if that is on).
 - The marker turns **red** when the arc would hit an enemy and **green** when it would hit a friend.
 - A ring of dots on the ground around the landing point shows your current aiming spread. It shrinks as your aim settles.
-- In third person, aiming up also lifts the camera and tilts it down so the landing point of a high shot stays on screen. Where you aim is unchanged, and the crosshair is hidden while the camera is moved.
+- In third person, aiming up also lifts the camera and tilts it down so the landing point of a high shot stays on screen. Where you aim is unchanged, and the crosshair is hidden while the camera is moved. The camera frames where the shot would come down on the ground, so in a siege, sweeping your aim across walls, ladders and towers no longer makes it jump.
 
 !!! note
     The aim arc and aim camera are player-only aids and are still experimental.
