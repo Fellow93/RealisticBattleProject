@@ -118,7 +118,8 @@ either produces at a loss or refuses a profitable cycle.
 | File | What it does | Fate |
 |---|---|---|
 | `Production/WorkshopVillageBias.cs:188-224` | postfix `FindTotalInputDensityScore`; `:225+` logs `DecideBestWorkshopType` (WCB:1278) | keep as-is |
-| `Production/WorkshopItemTierBias.cs:75+` | prefix `GetRandomItemAux` (WCB:1049) | keep as-is |
+| `Production/WorkshopItemTierBias.cs:75+` | prefix `GetRandomItemAux` (WCB:1049); its draw is `Pick`, reused as the open-market leg below | keep as-is |
+| `Production/WorkshopTroopOrders.cs` (2026-10-02) | skip-prefix `GetItemsToProduce` (WCB:820): war gear is 80% (garments 50%) drawn from the town culture's troop kits, militia/troop trees/mercs 50/40/10, rest via `WorkshopItemTierBias.Pick`; per-item market cap 6 (all quality stacks), a capped category produces nothing; ammo (`arrows`, bolts included) is covered, non-gear goes through vanilla `GetRandomItem`; logs SHOPGEAR (daily, per town) + GEARBOOK (per culture per session) | uncalibrated |
 | `Production/TownStorage.cs:151,165` | `OutputHasNoRoom` / `Accept` | keep; called by the new decision |
 | `Production/WorkshopDemand.cs`, `SteelRefining.cs` | no workshop-behavior patches (Steel patches `DefaultSmithingModel`/`CraftingCampaignBehavior` only) | untouched |
 | `Economy/RBMMarketPrices.cs:695,737,849` | the price patches everything above reads | untouched |

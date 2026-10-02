@@ -79,6 +79,7 @@ namespace RBMCampaign
             TradeTariff.FlushDaily(settlement);
             WorkshopPurse.FlushDaily(settlement);
             WorkshopDiagnostics.FlushDaily(settlement);
+            WorkshopTroopOrders.FlushDaily(settlement);
             TownStorage.FlushDaily(settlement);
             RBMMarketPrices.LogDaily(settlement);
             SettlementWealth.FlushDaily(settlement);

@@ -53,6 +53,7 @@ namespace RBMCampaign
             RBMWorkshopCycle.Reset();
             RBMWorkshopExpense.Reset();
             WorkshopDiagnostics.Reset();
+            WorkshopTroopOrders.Reset();
             TownStorage.Reset();
         }
 
