@@ -177,7 +177,13 @@ namespace RBMAI
             }
             if (__instance.Formation != null && __instance.Formation.QuerySystem.IsInfantryFormation && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
-                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+                // Only while Regroup is the active behaviour: FindBestBehavior also runs this on a mere candidate,
+                // and the flip to Line and back re-applied behaviour values to every agent (see BehaviorChargePatch).
+                // Once active, the TickOccasionally postfix below sets Line every tick anyway.
+                if (__instance.Formation.AI != null && __instance.Formation.AI.ActiveBehavior == __instance)
+                {
+                    __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+                }
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
                 if (significantEnemy != null)
                 {

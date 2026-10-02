@@ -288,7 +288,7 @@ namespace RBMAI
                         }
                         else
                         {
-                            targetAgent = Utilities.NearestAgentFromFormation(unit.GetWorldPosition().AsVec2, __instance.TargetFormation);
+                            targetAgent = Utilities.NearestAgentFromFormation(unit.Position.AsVec2, __instance.TargetFormation);
                         }
                     }
 
@@ -304,131 +304,21 @@ namespace RBMAI
                         Vec2 leftVec = direction.LeftVec();
                         Vec2 rightVec = direction.RightVec();
 
-                        // These four must be distinct buffers: every Count below is read after all four are filled.
-                        MBList<Agent> alliesFront = ScratchAlliesFront;
-                        MBList<Agent> alliesLeft = ScratchAlliesLeft;
-                        MBList<Agent> alliesRight = ScratchAlliesRight;
-                        MBList<Agent> enemiesFront = ScratchEnemiesFront;
-
-                        mission.GetNearbyAllyAgents(unitPosition + direction * 1.35f, 1.35f, unit.Team, alliesFront);
-                        mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.35f, 1.35f, unit.Team, alliesLeft);
-                        mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.35f, 1.35f, unit.Team, alliesRight);
-
-                        mission.GetNearbyEnemyAgents(unitPosition + direction * 1.5f, 2f, unit.Team, enemiesFront);
-
-                        float postureModifier = 1f;
-                        float staminaModifier = 1f;
-                        if (RBMConfig.RBMConfig.postureEnabled)
-                        {
-                            Stance stance = null;
-                            AgentStances.values.TryGetValue(unit, out stance);
-                            // RecalculatePosture rebuilds these maxima additively from skills and gear, so a
-                            // zero is reachable. Dividing by it yields NaN, which Lerp propagates straight into
-                            // every decision score. Leave the modifier at its neutral 1f instead.
-                            if (unit != null && stance != null)
-                            {
-                                if (stance.maxPosture > 0f)
-                                {
-                                    postureModifier = MathF.Lerp(0.1f, 1f, stance.posture / stance.maxPosture);
-                                }
-                                if (stance.maxStamina > 0f)
-                                {
-                                    staminaModifier = MathF.Lerp(0.33f, 1f, MathF.Clamp(stance.stamina / stance.maxStamina, 0f, 1f));
-                                }
-                            }
-                        }
-
-                        float healthModifier = MathF.Lerp(0.33f, 1f, unit.Health / unit.HealthLimit);
-                        bool isSoldier = unit.Character.IsSoldier;
-
-                        int alliesFrontCount = LimitCount(alliesFront.Count, 10);
-                        int alliesLeftCount = LimitCount(alliesLeft.Count, 5);
-                        int alliesRightCount = LimitCount(alliesRight.Count, 5);
-                        int enemiesFrontCount = LimitCount(enemiesFront.Count, 10);
-
-                        int hasShieldAdditive = 0;
-                        int hasTwoHandedEquippedAddtive = 0;
-                        if (!unit.WieldedOffhandWeapon.IsEmpty && unit.WieldedOffhandWeapon.IsShield())
-                        {
-                            hasShieldAdditive += 1;
-                        }
-                        if (__instance.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall)
-                        {
-                            hasShieldAdditive += 2;
-                        }
-                        if (__instance.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)
-                        {
-                            hasShieldAdditive -= 1;
-                        }
-                        if (!unit.WieldedWeapon.IsEmpty && unit.WieldedWeapon.CurrentUsageItem != null && unit.WieldedWeapon.CurrentUsageItem.IsTwoHanded)
-                        {
-                            hasTwoHandedEquippedAddtive += 1;
-                        }
-
-                        bool isBannerBearer = RBMAI.Utilities.IsBannerBearer(unit);
-                        bool isHero = unit.Character.IsHero;
-
-                        bool shouldAttackMore = alliesFrontCount <= 1 && enemiesFrontCount <= 1;
-
-                        float findAlly = (alliesFrontCount * 0.5f) + (enemiesFrontCount) - alliesRightCount - alliesLeftCount + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
-                        float fallback = (alliesFrontCount) + enemiesFrontCount;
-                        float attack = -(alliesFrontCount * 0.5f) + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier))
-                        float flankAllyLeft = (alliesFrontCount * 1.25f) + (alliesRightCount) - (alliesLeftCount) - enemiesFrontCount;
-                        float flankAllyRight = (alliesFrontCount * 1.25f) + (alliesLeftCount) - (alliesRightCount) - enemiesFrontCount;
-
-                        if (isBannerBearer)
-                        {
-                            attack -= 3;
-                            flankAllyLeft *= flankAllyLeft > 0 ? -1f : 1f;
-                            flankAllyRight *= flankAllyRight > 0 ? -1f : 1f;
-                        }
-
-                        if (shouldAttackMore && !isBannerBearer)
-                        {
-                            attack += 3;
-                        }
-
-                        if (hasShieldAdditive > 0)
-                        {
-                            findAlly += hasShieldAdditive;
-                            flankAllyLeft -= (hasShieldAdditive / 2f);
-                            flankAllyRight -= (hasShieldAdditive / 2f);
-                        }
-
-                        if (hasTwoHandedEquippedAddtive > 0)
-                        {
-                            attack += hasTwoHandedEquippedAddtive;
-                            flankAllyLeft += hasTwoHandedEquippedAddtive;
-                            flankAllyRight += hasTwoHandedEquippedAddtive;
-                        }
-
-                        attack = attack > 0 ? (attack * staminaModifier) : attack;
-
-                        // The per-decision config weights are applied last, to the finished score, so a weight
-                        // of 1 reproduces the old hard-coded behaviour exactly. Both flank directions share
-                        // one weight -- steering left and right apart would bias the whole line sideways.
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.Attack, (attack > 0 ? attack * (postureModifier * healthModifier) : attack) * RBMConfig.RBMConfig.frontlineAttackWeight);
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.BackStep, (fallback > 0 ? (fallback * (2 - postureModifier)) : fallback) * RBMConfig.RBMConfig.frontlineBackStepWeight);
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FindAlly, (findAlly > 0 ? (findAlly * (2 - postureModifier)) : findAlly) * RBMConfig.RBMConfig.frontlineFindAllyWeight);
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FlankAllyLeft, flankAllyLeft * RBMConfig.RBMConfig.frontlineFlankWeight);
-                        aiDecision.AIMindset.SetValue(AIMindset.AIDecision.FlankAllyRight, flankAllyRight * RBMConfig.RBMConfig.frontlineFlankWeight);
-
-                        //bool checkTimer = aiDecision.AIMindset.AIDecisionTimer != null ? aiDecision.AIMindset.AIDecisionTimer.Check(Mission.Current.CurrentTime) : true;
-                        //aiDecision.AIMindset.AIDecisionTimer = null;
+                        // The scores only matter on the frame a new decision is taken, so the four proximity
+                        // queries (each behind Mission's global agent-query lock) and the scoring run then and
+                        // not every frame. Frames in between only count themselves, and the decision frame
+                        // replays that many score updates (see DecideMindset).
                         if (aiDecision.AIMindset.AIDecisionTimer == null)
                         {
-                            if (postureModifier < 0.5f && enemiesFrontCount == 0)
-                            {
-                                aiDecision.AIMindset.currentDecision = AIMindset.AIDecision.Rest;
-                            }
-                            else
-                            {
-                                aiDecision.AIMindset.getDecision(out aiDecision.AIMindset.currentDecision);
-                            }
+                            DecideMindset(mission, __instance, unit, aiDecision.AIMindset, unitPosition, direction, leftVec, rightVec);
                             aiDecision.AIMindset.AIDecisionTimer = new Timer(Mission.Current.CurrentTime, MBRandom.RandomFloatRanged(0f, RBMConfig.RBMConfig.frontlineDecisionTimerMax), false);
                         }
                         else
                         {
+                            if (aiDecision.AIMindset.pendingScoreUpdates < AIMindset.MaxPendingScoreUpdates)
+                            {
+                                aiDecision.AIMindset.pendingScoreUpdates++;
+                            }
                             bool checkTimer = aiDecision.AIMindset.AIDecisionTimer.Check(Mission.Current.CurrentTime);
                             if (checkTimer)
                             {
@@ -532,6 +422,146 @@ namespace RBMAI
                 }
 
                 return true;
+            }
+
+            // Scores the unit's surroundings and picks its next frontline decision. Called only on the frame a
+            // decision is taken (AIDecisionTimer == null).
+            // AIMindset.SetValue is not a plain assignment: each call nudges the stored score toward the new
+            // input and decays it toward its base, so the scores are integrated over the per-frame calls the
+            // block used to make. To keep that, the frames skipped since the last decision are replayed here
+            // with this frame's inputs (the integration settles within ~20 steps, so the decision is dominated
+            // by recent, near-identical inputs either way).
+            private static void DecideMindset(Mission mission, Formation formation, Agent unit, AIMindset mindset, Vec2 unitPosition, Vec2 direction, Vec2 leftVec, Vec2 rightVec)
+            {
+                // These four must be distinct buffers: every Count below is read after all four are filled.
+                MBList<Agent> alliesFront = ScratchAlliesFront;
+                MBList<Agent> alliesLeft = ScratchAlliesLeft;
+                MBList<Agent> alliesRight = ScratchAlliesRight;
+                MBList<Agent> enemiesFront = ScratchEnemiesFront;
+
+                mission.GetNearbyAllyAgents(unitPosition + direction * 1.35f, 1.35f, unit.Team, alliesFront);
+                mission.GetNearbyAllyAgents(unitPosition + leftVec * 1.35f, 1.35f, unit.Team, alliesLeft);
+                mission.GetNearbyAllyAgents(unitPosition + rightVec * 1.35f, 1.35f, unit.Team, alliesRight);
+
+                mission.GetNearbyEnemyAgents(unitPosition + direction * 1.5f, 2f, unit.Team, enemiesFront);
+
+                float postureModifier = 1f;
+                float staminaModifier = 1f;
+                if (RBMConfig.RBMConfig.postureEnabled)
+                {
+                    Stance stance = null;
+                    AgentStances.values.TryGetValue(unit, out stance);
+                    // RecalculatePosture rebuilds these maxima additively from skills and gear, so a
+                    // zero is reachable. Dividing by it yields NaN, which Lerp propagates straight into
+                    // every decision score. Leave the modifier at its neutral 1f instead.
+                    if (unit != null && stance != null)
+                    {
+                        if (stance.maxPosture > 0f)
+                        {
+                            postureModifier = MathF.Lerp(0.1f, 1f, stance.posture / stance.maxPosture);
+                        }
+                        if (stance.maxStamina > 0f)
+                        {
+                            staminaModifier = MathF.Lerp(0.33f, 1f, MathF.Clamp(stance.stamina / stance.maxStamina, 0f, 1f));
+                        }
+                    }
+                }
+
+                float healthModifier = MathF.Lerp(0.33f, 1f, unit.Health / unit.HealthLimit);
+                bool isSoldier = unit.Character.IsSoldier;
+
+                int alliesFrontCount = LimitCount(alliesFront.Count, 10);
+                int alliesLeftCount = LimitCount(alliesLeft.Count, 5);
+                int alliesRightCount = LimitCount(alliesRight.Count, 5);
+                int enemiesFrontCount = LimitCount(enemiesFront.Count, 10);
+
+                int hasShieldAdditive = 0;
+                int hasTwoHandedEquippedAddtive = 0;
+                if (!unit.WieldedOffhandWeapon.IsEmpty && unit.WieldedOffhandWeapon.IsShield())
+                {
+                    hasShieldAdditive += 1;
+                }
+                if (formation.ArrangementOrder == ArrangementOrder.ArrangementOrderShieldWall)
+                {
+                    hasShieldAdditive += 2;
+                }
+                if (formation.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose)
+                {
+                    hasShieldAdditive -= 1;
+                }
+                if (!unit.WieldedWeapon.IsEmpty && unit.WieldedWeapon.CurrentUsageItem != null && unit.WieldedWeapon.CurrentUsageItem.IsTwoHanded)
+                {
+                    hasTwoHandedEquippedAddtive += 1;
+                }
+
+                bool isBannerBearer = RBMAI.Utilities.IsBannerBearer(unit);
+                bool isHero = unit.Character.IsHero;
+
+                bool shouldAttackMore = alliesFrontCount <= 1 && enemiesFrontCount <= 1;
+
+                float findAlly = (alliesFrontCount * 0.5f) + (enemiesFrontCount) - alliesRightCount - alliesLeftCount + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
+                float fallback = (alliesFrontCount) + enemiesFrontCount;
+                float attack = -(alliesFrontCount * 0.5f) + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier))
+                float flankAllyLeft = (alliesFrontCount * 1.25f) + (alliesRightCount) - (alliesLeftCount) - enemiesFrontCount;
+                float flankAllyRight = (alliesFrontCount * 1.25f) + (alliesLeftCount) - (alliesRightCount) - enemiesFrontCount;
+
+                if (isBannerBearer)
+                {
+                    attack -= 3;
+                    flankAllyLeft *= flankAllyLeft > 0 ? -1f : 1f;
+                    flankAllyRight *= flankAllyRight > 0 ? -1f : 1f;
+                }
+
+                if (shouldAttackMore && !isBannerBearer)
+                {
+                    attack += 3;
+                }
+
+                if (hasShieldAdditive > 0)
+                {
+                    findAlly += hasShieldAdditive;
+                    flankAllyLeft -= (hasShieldAdditive / 2f);
+                    flankAllyRight -= (hasShieldAdditive / 2f);
+                }
+
+                if (hasTwoHandedEquippedAddtive > 0)
+                {
+                    attack += hasTwoHandedEquippedAddtive;
+                    flankAllyLeft += hasTwoHandedEquippedAddtive;
+                    flankAllyRight += hasTwoHandedEquippedAddtive;
+                }
+
+                attack = attack > 0 ? (attack * staminaModifier) : attack;
+
+                // The per-decision config weights are applied last, to the finished score, so a weight
+                // of 1 reproduces the old hard-coded behaviour exactly. Both flank directions share
+                // one weight -- steering left and right apart would bias the whole line sideways.
+                float attackValue = (attack > 0 ? attack * (postureModifier * healthModifier) : attack) * RBMConfig.RBMConfig.frontlineAttackWeight;
+                float backStepValue = (fallback > 0 ? (fallback * (2 - postureModifier)) : fallback) * RBMConfig.RBMConfig.frontlineBackStepWeight;
+                float findAllyValue = (findAlly > 0 ? (findAlly * (2 - postureModifier)) : findAlly) * RBMConfig.RBMConfig.frontlineFindAllyWeight;
+                float flankLeftValue = flankAllyLeft * RBMConfig.RBMConfig.frontlineFlankWeight;
+                float flankRightValue = flankAllyRight * RBMConfig.RBMConfig.frontlineFlankWeight;
+
+                // This frame's update plus one per frame skipped since the last decision.
+                int scoreUpdates = mindset.pendingScoreUpdates + 1;
+                mindset.pendingScoreUpdates = 0;
+                for (int i = 0; i < scoreUpdates; i++)
+                {
+                    mindset.SetValue(AIMindset.AIDecision.Attack, attackValue);
+                    mindset.SetValue(AIMindset.AIDecision.BackStep, backStepValue);
+                    mindset.SetValue(AIMindset.AIDecision.FindAlly, findAllyValue);
+                    mindset.SetValue(AIMindset.AIDecision.FlankAllyLeft, flankLeftValue);
+                    mindset.SetValue(AIMindset.AIDecision.FlankAllyRight, flankRightValue);
+                }
+
+                if (postureModifier < 0.5f && enemiesFrontCount == 0)
+                {
+                    mindset.currentDecision = AIMindset.AIDecision.Rest;
+                }
+                else
+                {
+                    mindset.getDecision(out mindset.currentDecision);
+                }
             }
 
             // Returns a finished target position -- a short step toward the nearest ally, not the ally's own

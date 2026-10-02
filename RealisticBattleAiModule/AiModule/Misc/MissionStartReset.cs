@@ -54,6 +54,7 @@ namespace RBMAI
             FormationPaceFix.tightState.Clear();
             RallyLogic.states.Clear();
             AiModule.ReinforcementAnchor.Reset();
+            Utilities.significantFormationsCache.Clear();
 
             // Agent-keyed state. Some of these were only cleared from MissionCombatantsLogic.EarlyStart, i.e. field
             // battles, so town, arena and other missions without it kept the last battle's agents alive.

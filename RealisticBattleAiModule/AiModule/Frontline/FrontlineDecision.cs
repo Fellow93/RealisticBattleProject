@@ -23,6 +23,12 @@ namespace RBMAI
 
             public Boolean shouldClearTargetFrame = false;
 
+            // Frames since the last decision whose SetValue updates were skipped; the next decision replays
+            // them (GetOrderPositionOfUnitCore only scores on decision frames). The cap only bounds a stall or
+            // a very large frontlineDecisionTimerMax -- the scores have long settled by then.
+            public int pendingScoreUpdates = 0;
+            public const int MaxPendingScoreUpdates = 240;
+
             public enum AIDecision
             {
                 Attack,
@@ -170,6 +176,8 @@ namespace RBMAI
             // all landing on the same one.
             public Agent cachedTarget = null;
             public float cachedTargetExpiry = float.MinValue;
+            // True when cachedTarget is a "no target" answer taken under ChargeWithTarget (see GetCachedCorrectTarget).
+            public bool cachedTargetIsNullUnderCharge = false;
 
             // RBM-side stand-in for the old forged write to Agent.LastRangedAttackTime: records when the
             // >50s "archer has stalled" reset fired, so the 20s/50s logic keeps its effect without
@@ -196,10 +204,26 @@ namespace RBMAI
             {
                 return cached;
             }
+            // A null is reused too, but only one found under ChargeWithTarget and only while the formation is
+            // still on it: that is GetCorrectTarget's expensive path (no significant enemy formation), which
+            // otherwise reran every frame. Under any other order it returns null at its first check, and caching
+            // that would delay target pickup by up to 1s right after a charge is ordered.
+            bool isChargeWithTarget = IsOnChargeWithTarget(unit);
+            if (cached == null && state.cachedTargetIsNullUnderCharge && now < state.cachedTargetExpiry && isChargeWithTarget)
+            {
+                return null;
+            }
             Agent target = Utilities.GetCorrectTarget(unit);
             state.cachedTarget = target;
+            state.cachedTargetIsNullUnderCharge = target == null && isChargeWithTarget;
             state.cachedTargetExpiry = now + MBRandom.RandomFloatRanged(0.5f, 1f);
             return target;
+        }
+
+        private static bool IsOnChargeWithTarget(Agent unit)
+        {
+            Formation formation = unit.Formation;
+            return formation != null && formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget;
         }
 
         public static AIDecisionState GetOrCreateDecisionState(Agent unit)

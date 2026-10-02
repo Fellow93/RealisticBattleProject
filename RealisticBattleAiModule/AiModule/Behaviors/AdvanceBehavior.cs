@@ -127,7 +127,13 @@ namespace RBMAI
                             {
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                             }
-                            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                            // Only while Advance is the active behaviour: FindBestBehavior also runs this on a mere
+                            // candidate, and the flip to shieldwall and back re-applied behaviour values to every
+                            // agent (see BehaviorChargePatch). Once active, PrefixTickOccasionally runs this again.
+                            if (__instance.Formation.AI != null && __instance.Formation.AI.ActiveBehavior == __instance)
+                            {
+                                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                            }
                             return false;
                         }
                         positionsStorage.Remove(__instance.Formation);

@@ -29,7 +29,7 @@ namespace RBMAI
                     MovementOrder movementOrder = formation.GetReadonlyMovementOrderReference();
                     if ((formation.QuerySystem.IsInfantryFormation || formation.QuerySystem.IsRangedFormation) && (movementOrder.OrderType == OrderType.ChargeWithTarget))
                     {
-                        formations = RBMAI.Utilities.FindSignificantFormations(formation);
+                        formations = RBMAI.Utilities.FindSignificantFormationsCached(formation);
                         Formation priorityFormation = null;
                         if (movementOrder.OrderType == OrderType.ChargeWithTarget && movementOrder.TargetFormation != null && !formations.Contains(movementOrder.TargetFormation))
                         {
@@ -42,7 +42,7 @@ namespace RBMAI
                     }
                     if (formation.QuerySystem.IsCavalryFormation && movementOrder.OrderType == OrderType.ChargeWithTarget)
                     {
-                        formations = RBMAI.Utilities.FindSignificantFormations(formation);
+                        formations = RBMAI.Utilities.FindSignificantFormationsCached(formation);
                         Formation priorityFormation = null;
                         if (movementOrder.OrderType == OrderType.ChargeWithTarget && movementOrder.TargetFormation != null && !formations.Contains(movementOrder.TargetFormation))
                         {
@@ -62,9 +62,11 @@ namespace RBMAI
         {
             Agent targetAgent = null;
             float distance = 10000f;
+            // Agent.Position is a direct read of the engine's position pointer; GetWorldPosition is an interop
+            // call (it also resolves the navmesh face). Only X/Y are compared here, and they are the same.
             targetFormation?.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
             {
-                float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                float newDist = unitPosition.Distance(agent.Position.AsVec2);
                 if (newDist < distance)
                 {
                     targetAgent = agent;
@@ -86,7 +88,7 @@ namespace RBMAI
                     {
                         if (!agent.IsRunningAway)
                         {
-                            float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                            float newDist = unitPosition.Distance(agent.Position.AsVec2);
                             if (newDist < distance)
                             {
                                 targetAgent = agent;
@@ -96,7 +98,7 @@ namespace RBMAI
                     }
                     else
                     {
-                        float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                        float newDist = unitPosition.Distance(agent.Position.AsVec2);
                         if (newDist < distance)
                         {
                             targetAgent = agent;
@@ -110,7 +112,7 @@ namespace RBMAI
                 distance = 10000f;
                 priorityFormation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
-                    float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                    float newDist = unitPosition.Distance(agent.Position.AsVec2);
                     if (newDist < distance)
                     {
                         targetAgent = agent;
@@ -125,7 +127,7 @@ namespace RBMAI
         {
             Agent targetAgent = null;
             float distance = 10000f;
-            Vec2 unitPosition = unit.GetWorldPosition().AsVec2;
+            Vec2 unitPosition = unit.Position.AsVec2;
             foreach (Team team in Mission.Current.Teams.ToList())
             {
                 if (team.IsEnemyOf(unit.Formation.Team))
@@ -134,7 +136,7 @@ namespace RBMAI
                     {
                         enemyFormation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                         {
-                            float newDist = unitPosition.Distance(agent.GetWorldPosition().AsVec2);
+                            float newDist = unitPosition.Distance(agent.Position.AsVec2);
                             if (newDist < distance)
                             {
                                 targetAgent = agent;

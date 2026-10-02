@@ -47,6 +47,15 @@ namespace RBMAI.AiModule.RbmBehaviors
             {
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
+                // FindBestBehavior (via PrecalculateMovementOrder) and the BehaviorCharge constructor also run this
+                // on a charge that is only a candidate. Writing shieldwall/firing/arrangement onto the formation then
+                // flipped it to charge settings and back whenever another behaviour won, and every flip re-applies
+                // behaviour values to all its agents (a visible hitch). So the formation is only touched while
+                // Charge is the active behaviour; the order itself is always computed, it is the behaviour's answer.
+                // The movement order needs no write here: once active, BehaviorCharge.TickOccasionally runs this
+                // and then applies CurrentOrder itself.
+                bool isActiveBehavior = __instance.Formation.AI != null && __instance.Formation.AI.ActiveBehavior == __instance;
+
                 if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && __instance.Formation.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
                 {
                     Formation enemyCav = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, false, false, true, false, false);
@@ -103,7 +112,10 @@ namespace RBMAI.AiModule.RbmBehaviors
                             {
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                             }
-                            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                            if (isActiveBehavior)
+                            {
+                                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                            }
                             return false;
                         }
                         else
@@ -144,7 +156,10 @@ namespace RBMAI.AiModule.RbmBehaviors
                                 {
                                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                                 }
-                                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                                if (isActiveBehavior)
+                                {
+                                    __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                                }
                                 return false;
                             }
                         }
@@ -175,10 +190,12 @@ namespace RBMAI.AiModule.RbmBehaviors
 
                 if (significantEnemy != null && __instance.Formation.QuerySystem.IsInfantryFormation && __instance.Formation.CountOfUnitsWithoutDetachedOnes >= 30)
                 {
-                    __instance.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
                     ____currentOrder = MovementOrder.MovementOrderChargeToTarget(significantEnemy);
-                    Utilities.DecideArrangementOrderForFormation(__instance.Formation);
-                    __instance.Formation.SetMovementOrder(____currentOrder);
+                    if (isActiveBehavior)
+                    {
+                        __instance.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
+                        Utilities.DecideArrangementOrderForFormation(__instance.Formation);
+                    }
                     return false;
                 }
             }

@@ -1,5 +1,6 @@
 using RBMConfig;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -587,6 +588,43 @@ namespace RBMAI
                     }
                 }
             }
+            return formations;
+        }
+
+        // GetCorrectTarget asks for this per charging agent, from the parallel movement job, and every agent of a
+        // formation gets the same answer within a frame -- so build it once per formation per frame. An entry is
+        // never mutated after it is published, only replaced whole, so a worker never reads a list mid-fill; two
+        // workers racing on the same frame both build it, which is harmless. Cleared in MissionStartReset.
+        internal sealed class SignificantFormationsEntry
+        {
+            public readonly float Time;
+            public readonly List<Formation> Formations;
+
+            public SignificantFormationsEntry(float time, List<Formation> formations)
+            {
+                Time = time;
+                Formations = formations;
+            }
+        }
+
+        internal static readonly ConcurrentDictionary<Formation, SignificantFormationsEntry> significantFormationsCache = new ConcurrentDictionary<Formation, SignificantFormationsEntry>();
+
+        // Same as FindSignificantFormations(formation) (no cavalry), cached for the current frame. The returned
+        // list is shared between callers: read it, never modify it.
+        public static List<Formation> FindSignificantFormationsCached(Formation formation)
+        {
+            Mission mission = Mission.Current;
+            if (mission == null || formation == null)
+            {
+                return FindSignificantFormations(formation);
+            }
+            float now = mission.CurrentTime;
+            if (significantFormationsCache.TryGetValue(formation, out SignificantFormationsEntry entry) && entry.Time == now)
+            {
+                return entry.Formations;
+            }
+            List<Formation> formations = FindSignificantFormations(formation);
+            significantFormationsCache[formation] = new SignificantFormationsEntry(now, formations);
             return formations;
         }
 
