@@ -131,8 +131,8 @@ namespace RBMCampaign
         /// The one tier that moves is T0, whose ratio is 345 rather than ~200: a peasant comes out at 0.70 against
         /// vanilla's 0.40. That is this model saying vanilla under-prices the rabble by 1.75x, and it is kept.
         ///
-        /// Re-measure this if the offense model moves (rbmCombatEnabled, OneHandedThrustDamageBonus, armorMultiplier
-        /// -- see _cacheRbmCombat) or if the tuning above is re-cut. The log prints what it was measured under.
+        /// Re-measure this if the offense model moves (rbmCombatEnabled, OneHandedThrustDamageBonus, armorMultiplier,
+        /// armorEffectivenessMultiplier -- see _cacheRbmCombat) or if the tuning above is re-cut. The log prints what it was measured under.
         /// </summary>
         internal const float PowerScale = 272f;
 
@@ -153,9 +153,11 @@ namespace RBMCampaign
         /// <summary>
         /// How many armour points buy one man's worth of extra life, at armorMultiplier == 1 (vanilla). RBM's own
         /// armour equation is <c>100/(100 + armor*armorMultiplier)</c>, so the divisor the passive term actually uses
-        /// is <c>ArmorConstant/armorMultiplier</c> whenever RBM Combat is on -- that is what makes the passive term
-        /// say the same thing about armour that a real RBM blow does (see PowerOfSet). At the default multiplier of 2
-        /// that halves the divisor, doubling armour's weight. This base value is only the armorMultiplier == 1 case.
+        /// is <c>ArmorConstant/(armorMultiplier*armorEffectivenessMultiplier)</c> whenever RBM Combat is on (the
+        /// "Armor Effectiveness" setting scales every armour value before that equation) -- that is what makes the
+        /// passive term say the same thing about armour that a real RBM blow does (see PowerOfSet). At the default
+        /// multiplier of 2 that halves the divisor, doubling armour's weight. This base value is only the
+        /// armorMultiplier == 1, armorEffectivenessMultiplier == 1 case.
         /// </summary>
         private const float ArmorConstant = 100f;
 
@@ -362,8 +364,11 @@ namespace RBMCampaign
 
         private static float _cacheThrustBonus;
 
-        // The armour term divides by armorMultiplier, and the config screen can move it mid-session.
+        // The armour term divides by armorMultiplier and armorEffectivenessMultiplier, and the config screen can move
+        // either mid-session.
         private static float _cacheArmorMultiplier;
+
+        private static float _cacheArmorEffectiveness;
 
         private static bool _cachePrimed;
 
@@ -388,16 +393,18 @@ namespace RBMCampaign
             bool rbmCombat = RBMConfig.RBMConfig.rbmCombatEnabled;
             float thrustBonus = RBMConfig.RBMConfig.OneHandedThrustDamageBonus;
             float armorMultiplier = RBMConfig.RBMConfig.armorMultiplier;
+            float armorEffectiveness = RBMConfig.RBMConfig.armorEffectivenessMultiplier;
             lock (_cacheLock)
             {
                 if (_cachePrimed && _cacheRbmCombat == rbmCombat && _cacheThrustBonus == thrustBonus
-                    && _cacheArmorMultiplier == armorMultiplier)
+                    && _cacheArmorMultiplier == armorMultiplier && _cacheArmorEffectiveness == armorEffectiveness)
                 {
                     return;
                 }
                 _cacheRbmCombat = rbmCombat;
                 _cacheThrustBonus = thrustBonus;
                 _cacheArmorMultiplier = armorMultiplier;
+                _cacheArmorEffectiveness = armorEffectiveness;
                 _powerCache.Clear();
                 _tierCache.Clear();
                 _cachePrimed = true;
@@ -1088,12 +1095,14 @@ namespace RBMCampaign
                            + (shoulder * ZoneShoulder) + (arm * ZoneArm) + (leg * ZoneLeg);
             // Barding is NOT here -- it is the horse's armour, and it is priced in the mount term (MountFractionOf).
             weighted += ShieldPassiveWeight * shieldTier;
-            // ArmorConstant is the vanilla (armorMultiplier == 1) value. Under RBM Combat the real blow divides
-            // armour by 100/(100 + armor*armorMultiplier), so the passive term only says what a real blow says when
-            // the divisor tracks 100/armorMultiplier. At the default multiplier of 2 this doubles armour's weight --
-            // exactly the "price of protection" RBM's own armour equation charges. See ArmorConstant's own summary.
+            // ArmorConstant is the vanilla (armorMultiplier == 1) value. Under RBM Combat the real blow first scales
+            // every armour value by armorEffectivenessMultiplier (E, "Armor Effectiveness") and then divides by
+            // 100/(100 + armor*E*armorMultiplier), so the passive term only says what a real blow says when the
+            // divisor tracks 100/(armorMultiplier*E). At the default multiplier of 2 (E = 1) this doubles armour's
+            // weight -- exactly the "price of protection" RBM's own armour equation charges. See ArmorConstant's own
+            // summary. (E also moves the live penetration threshold, which this passive term has no part for.)
             float armorConstant = rbmCombat
-                ? (ArmorConstant / RBMConfig.RBMConfig.armorMultiplier)
+                ? (ArmorConstant / (RBMConfig.RBMConfig.armorMultiplier * RBMConfig.RBMConfig.armorEffectivenessMultiplier))
                 : ArmorConstant;
             float passiveFactor = 1f + (weighted / armorConstant);
 

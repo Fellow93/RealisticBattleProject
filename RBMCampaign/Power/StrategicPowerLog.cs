@@ -501,10 +501,13 @@ namespace RBMCampaign
                     header.Append("  simulationPerkSystem          = ").Append(RC.simulationPerkSystem).Append(Environment.NewLine);
                     header.Append("     (gates the commander's hit-point perks; see SimulationTroopHitPoints)").Append(Environment.NewLine);
                     header.Append("  armorMultiplier               = ").Append(Fmt(RC.armorMultiplier)).Append(Environment.NewLine);
-                    header.Append("  OneHandedThrustDamageBonus    = ").Append(Fmt(RC.OneHandedThrustDamageBonus)).Append(Environment.NewLine);
+                    header.Append("  armorEffectivenessMultiplier  = ").Append(Fmt(RC.armorEffectivenessMultiplier)).Append(Environment.NewLine);
+                    header.Append("     (read by the armour term with armorMultiplier: divisor = 100 / (armorMultiplier x this))").Append(Environment.NewLine);
+                    header.Append("  OneHandedThrustDamageBonus   = ").Append(Fmt(RC.OneHandedThrustDamageBonus)).Append(Environment.NewLine);
                     header.Append("     (read by RBM's melee TIER formula, so it moves ranged/shield/horse numbers)").Append(Environment.NewLine);
                     header.Append("  powerScale                    = ").Append(Fmt(StrategicTroopPower.PowerScale)).Append(Environment.NewLine);
-                    header.Append("     (measured off a run of THIS log; the three settings above all move the raw").Append(Environment.NewLine);
+                    header.Append("     (measured off a run of THIS log; rbmCombatEnabled, armorMultiplier,").Append(Environment.NewLine);
+                    header.Append("      armorEffectivenessMultiplier and OneHandedThrustDamageBonus all move the raw").Append(Environment.NewLine);
                     header.Append("      number it divides, so a change to any of them makes this value a lie until").Append(Environment.NewLine);
                     header.Append("      it is re-measured -- sum(men x power/man x powerScale) / sum(men x vanillaTier))").Append(Environment.NewLine);
                     header.Append("  bluntTraumaMultiplier         = ").Append(Fmt(RC.bluntTraumaMultiplier)).Append(Environment.NewLine);

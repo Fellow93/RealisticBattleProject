@@ -66,6 +66,12 @@ namespace RBMConfig
         // Scales all blunt trauma (damage that gets through armor without penetrating it) for every weapon type,
         // after bluntTraumaBonus; 1 = unchanged. Read by Shared/BlowDamage.cs and the auto-resolve copy.
         public static float bluntTraumaMultiplier = 1f;
+        // The player-facing "Armor Effectiveness": every armor value counts as this many times itself before the
+        // damage math runs (Shared/BlowDamage.cs, the auto-resolve copy, and the troop-power armour term); 1 =
+        // unchanged. Because the scaled armor feeds both the penetration threshold and the 100/(100+armor x
+        // armorMultiplier) trauma curve, it STACKS multiplicatively with armorThresholdModifier and armorMultiplier
+        // (the "Advanced Armor" settings): e.g. 1.5 here with armorThresholdModifier 2 acts as a threshold of 3x.
+        public static float armorEffectivenessMultiplier = 1f;
 
         public static bool sneakAttackInstaKill = false;
 

@@ -190,6 +190,7 @@ namespace RBMCampaign
                     Field("maceBluntModifier", RC.maceBluntModifier),
                     Field("bluntTraumaBonus", RC.bluntTraumaBonus),
                     Field("bluntTraumaMultiplier", RC.bluntTraumaMultiplier),
+                    Field("armorEffectivenessMultiplier", RC.armorEffectivenessMultiplier),
                     Field("thrustMagnitudeModifier", RC.ThrustMagnitudeModifier),
                     Field("realisticRangedReload", RC.realisticRangedReload),
                     Field("rangedReloadAffectsAi", RC.rangedReloadAffectsAi),

@@ -16,6 +16,12 @@ namespace RBMConfig
     {
         public static float RBMComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, out float penetratedDamage, out float bluntTraumaAfterArmor, float weaponDamageFactor = 1f, BasicCharacterObject player = null, bool isPlayerVictim = false, ArmorMaterialTypes armorMaterial = ArmorMaterialTypes.None)
         {
+            // "Armor Effectiveness": every armor value counts as this many times itself. Applied first, so the
+            // arrow-vs-mail halving, the 100/(100+armor x armorMultiplier) trauma curve and the penetration
+            // threshold (armor x weapon factor x armorThresholdModifier) all see the scaled armor -- it stacks
+            // multiplicatively with both Advanced Armor settings.
+            armorEffectiveness *= RBMConfig.armorEffectivenessMultiplier;
+
             if (armorMaterial != ArmorMaterialTypes.None)
             {
                 if (armorMaterial != ArmorMaterialTypes.Plate && damageType == DamageTypes.Pierce && (weaponType.Contains("Arrow") || weaponType.Contains("Bolt")))

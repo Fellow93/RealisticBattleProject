@@ -165,6 +165,7 @@ namespace RBMConfig
             ThrustModifierText = new TextViewModel(new TextObject("Thrust Modifier"));
             ThrustModifier = new SelectorVM<SelectorItemVM>(thrustModifierList, 0, null);
 
+            _armorEffectiveness = MathF.Clamp(RBMConfig.armorEffectivenessMultiplier, 0.25f, 3f);
             _armorMultiplier = MathF.Clamp(RBMConfig.armorMultiplier, 0.5f, 4f);
             _bluntTraumaMultiplier = MathF.Clamp(RBMConfig.bluntTraumaMultiplier, 0f, 3f);
             _armorThresholdModifier = MathF.Clamp(RBMConfig.armorThresholdModifier, 0f, 3f);
@@ -617,6 +618,7 @@ namespace RBMConfig
             RBMConfig.OneHandedThrustDamageBonus = 1f / newThrustModifier;
             RBMConfig.TwoHandedThrustDamageBonus = 1f / newThrustModifier;
 
+            RBMConfig.armorEffectivenessMultiplier = _armorEffectiveness;
             RBMConfig.armorMultiplier = _armorMultiplier;
             RBMConfig.bluntTraumaMultiplier = _bluntTraumaMultiplier;
             RBMConfig.armorThresholdModifier = _armorThresholdModifier;
@@ -800,6 +802,7 @@ namespace RBMConfig
         {
             // Combat
             ThrustModifier.SelectedIndex = thrustModifierList.IndexOf(new TextObject("0.05").ToString());
+            ArmorEffectiveness = 1f;
             ArmorMultiplier = 2f;
             BluntTraumaMultiplier = 1f;
             ArmorThresholdModifier = 1f;

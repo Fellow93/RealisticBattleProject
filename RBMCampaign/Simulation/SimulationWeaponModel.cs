@@ -715,7 +715,9 @@ namespace RBMCampaign
                 return 0f;
             }
 
-            float armorEffectiveness = armor;
+            // "Armor Effectiveness" scales the armour first, exactly as the live blow does (BlowDamage.RBMComputeDamage),
+            // so the threshold and the trauma curve below both see it.
+            float armorEffectiveness = armor * RBMConfig.RBMConfig.armorEffectivenessMultiplier;
 
             // A mail coat is poor answer to an arrow: RBM halves it, for everything but plate.
             if (!victimIsPlate && profile.DamageType == DamageTypes.Pierce

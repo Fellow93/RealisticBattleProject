@@ -280,6 +280,7 @@ namespace RBMConfig
             armorThresholdModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "ArmorThresholdModifier", "1"));
             bluntTraumaBonus = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "BluntTraumaBonus", "0"));
             bluntTraumaMultiplier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "BluntTraumaMultiplier", "1"));
+            armorEffectivenessMultiplier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "ArmorEffectivenessMultiplier", "1"));
             ThrustMagnitudeModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "ThrustMagnitudeModifier", "0.05"));
             OneHandedThrustDamageBonus = 1f / ThrustMagnitudeModifier;
             TwoHandedThrustDamageBonus = 1f / ThrustMagnitudeModifier;
@@ -473,6 +474,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorThresholdModifier"), armorThresholdModifier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BluntTraumaBonus"), bluntTraumaBonus.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BluntTraumaMultiplier"), bluntTraumaMultiplier.ToString(CultureInfo.InvariantCulture));
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorEffectivenessMultiplier"), armorEffectivenessMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ThrustMagnitudeModifier"), ThrustMagnitudeModifier.ToString(CultureInfo.InvariantCulture));
 
             // Rebuild WeaponTypes section from scratch to handle any additions or missing nodes

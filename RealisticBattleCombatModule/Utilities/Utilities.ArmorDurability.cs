@@ -251,7 +251,9 @@ namespace RBMCombat
                     magnitude = magnitude * RBMConfig.RBMConfig.OneHandedThrustDamageBonus;
                 }
                 //float magScaling = (float)Math.Pow((magnitude * weaponDamageFactor) / (armorThreshold * armorValue), 2);
-                float magScaling = (blow.AbsorbedByArmor / (armorValue * armorThreshold)) / 5f;
+                // The blow math scaled the armor by armorEffectivenessMultiplier, so AbsorbedByArmor grows with it;
+                // scale the capacity it is measured against the same way, or stronger armor would wear faster.
+                float magScaling = (blow.AbsorbedByArmor / (armorValue * RBMConfig.RBMConfig.armorEffectivenessMultiplier * armorThreshold)) / 5f;
                 float scaledProbability = defaultProbability + (magScaling * weaponTypeScaling);
                 float randomF = MBRandom.RandomFloat;
                 //InformationManager.DisplayMessage(new InformationMessage(weaponType + " " + damageType + " " + armorMaterialType + ": " + Math.Round(scaledProbability * 100f, 2) + "%"));

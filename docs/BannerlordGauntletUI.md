@@ -759,6 +759,42 @@ caveat and the `WidgetPrefab.LoadFrom` redirect details.
   `CollapseIndicator="XTitle\CollapseIndicator"`, whose child `TextWidget Id="XTitle"`
   (brush `SPOptions.GameKeysGroup.Title.Text`) carries a `BrushWidget Id="CollapseIndicator"`
   (brush `SPOptions.GameKeysgroup.ExpandIndicator`). Sub-categories nest the same shape.
+  Both paths are resolved relative to the toggle widget (`..` = its parent section `ListPanel`), so
+  the Ids only have to be unique among siblings — every section reuses `Id="CollapseIndicator"`
+  safely. A *visually subordinate* sub-group (Combat → "Advanced Armor": `AdvancedArmorSection` /
+  `AdvancedArmorOptions` / `AdvancedArmorTitle`) keeps the same title brush but shrinks it inline
+  with `Brush.FontSize="28"` (the section titles are 36), indents it (`MarginLeft="70"` vs 30) and
+  uses a smaller indicator (16 px, `PositionXOffset="-23"`, `PositionYOffset="-2"`). The five Campaign
+  categories (Upkeep, Wages, Spoils, Upgrades, Module) use the same sub-group heading style.
+- **Nesting = indent + tinted band.** Nested content carries three attributes:
+  `MarginLeft="!AT.SubItem.Indent" Sprite="!AT.SubItem.Bg.Sprite" Color="!AT.SubItem.Bg.Color"`
+  (constants at the top of the prefab: 40px, the same step as section title 30 → sub-group title 70;
+  the native `BlankWhiteSquare_9` sprite; `#00000059`, a 35% black). A sub-group puts them on its
+  `*Options` panel, so all its rows shift and sit on one band; a row that depends on the row displayed
+  directly *above* it puts them on its own row `ListPanel`. They add up: a dependent row inside a
+  sub-group sits 80px in on a darker band. Current parent → child rows: Posture System → Stamina,
+  Player Posture Multiplier, Posture GUI; Frontline System → its 6 tuning sliders; Troop Overhaul →
+  Passive Shoulder Shields; Ranged reload speed → Ranged reload applies to AI; Better Arrow Visuals →
+  Flying Arrow Thickness; Kingdom Supply Caravans → Caravan Investment; Detailed Auto Resolve → Routing,
+  Perks; Spectate → its min-troops slider; Upgrade Near Town → Upgrade Supply Range; Spoils Logging →
+  Verbose; Detailed Auto Resolve Logging → Per-Hit Detail. Children must be listed **before** their
+  parent in the XML (reverse order) so they are displayed under it.
+  - Why it works: any `Widget` (incl. `ListPanel`) draws its own `Sprite` behind its children in
+    `Widget.OnRender`, tinted by `Color` (alpha byte included), stretched to its area (`ImageFit` defaults
+    to `StretchToFit`); native prefabs use `ListPanel … Sprite=…` the same way. Use the colour's alpha,
+    not `AlphaFactor`, to fade it — both affect only the widget's own sprite, but the colour keeps it in
+    one constant. `BlankWhiteSquare_9` is a `NineRegionSprite` over the `BlankWhiteSquare` part in
+    `Modules/Native/GUI/NativeSpriteData.xml`, category `ui_group1`, which is `<AlwaysLoad/>`, so it is
+    available on any screen. `!Constant` works for any attribute (`WidgetAttributeValueTypeConstant`
+    matches every value starting with `!`). Margins work in the cross axis of a vertical `ListPanel`
+    (`Widget.Layout` adds `ScaledMarginLeft`; `StretchToParent` measure subtracts it), so the whole row
+    — the centre-aligned label in its fixed `AT.Slider.Desc.Width` box and the control — moves.
+- **Inline brush overrides:** any attribute named `A.B` is resolved by
+  `WidgetExtensions.GetObjectAndProperty` as property `B` on the object returned by property `A`,
+  so `Brush.FontSize="28"` sets `FontSize` on the widget's (cloned) brush. Keep it **after**
+  `Brush="…"`, as every existing use does: assigning the brush replaces the clone (attribute
+  application order not verified beyond that working in game). Also used in `RBMLedger.xml`
+  (`Brush.FontSize`, `Brush.TextHorizontalAlignment`).
 - A toggle row is a horizontal `ListPanel`: a label (`RichTextWidget`, brush
   `SPOptions.OptionName.Text`, width `!AT.Slider.Desc.Width`) — or, for a tooltip, a fixed `Widget`
   wrapping that label plus a `HintWidget DataSource="{XHint}"` — then a vertical `ListPanel` with a

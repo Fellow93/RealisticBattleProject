@@ -79,6 +79,48 @@ namespace RBMConfig
         public BasicTooltipViewModel ThrustModifierHint { get; } = Hint("{=RBM_CON_147}Scales the thrust damage figures weapons carry, which the AI weighs when it chooses between thrusting and swinging. RBM undoes the scale when it works out piercing damage, so stabs hit about as hard at any setting; lower values make the AI favour swings. Default 0.05.");
 
         // Plain-text label/hint (no {=RBM_CON_xxx} id) for the same reason as the Frontline rows below.
+        // The one player-facing armor knob; the three rows after it are the "Advanced Armor" sub-group.
+        private float _armorEffectiveness;
+
+        [DataSourceProperty]
+        public float ArmorEffectiveness
+        {
+            get { return _armorEffectiveness; }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value * 20f) / 20f, 0.25f, 3f);
+                if (snapped != _armorEffectiveness)
+                {
+                    _armorEffectiveness = snapped;
+                    OnPropertyChangedWithValue(snapped, "ArmorEffectiveness");
+                    OnPropertyChanged("ArmorEffectivenessValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string ArmorEffectivenessValue
+        {
+            get { return _armorEffectiveness.ToString("0.00"); }
+        }
+
+        [DataSourceProperty]
+        public string ArmorEffectivenesst
+        {
+            get { return new TextObject("Armor Effectiveness").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel ArmorEffectivenessHint { get; } = Hint("Armor counts as this many times its value. Higher means armored troops take less damage from every weapon; lower means armor protects less. Unarmored troops are unaffected. The Advanced Armor settings below work on top of this one: each of them is applied to the armor after this setting has scaled it. Also feeds auto-resolve and troop power. Default 1.00.");
+
+        // Sub-group header for the three advanced armor rows below.
+        [DataSourceProperty]
+        public string AdvancedArmort
+        {
+            get { return new TextObject("Advanced Armor").ToString(); }
+        }
+
+        // Plain-text label/hint, same as Armor Effectiveness above.
         private float _armorMultiplier;
 
         [DataSourceProperty]
@@ -110,7 +152,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel ArmorMultiplierHint { get; } = Hint("How strongly armor absorbs blunt trauma, the damage that gets through armor without penetrating it: that part is scaled by 100 / (100 + armor x this). Higher makes armored troops tankier; lower makes them die faster. Penetrating damage is unchanged. Also feeds auto-resolve and troop power. Default 2.00.");
+        public BasicTooltipViewModel ArmorMultiplierHint { get; } = Hint("How strongly armor absorbs blunt trauma, the damage that gets through armor without penetrating it: that part is scaled by 100 / (100 + armor x this). Higher makes armored troops tankier; lower makes them die faster. Penetrating damage is unchanged. Also feeds auto-resolve and troop power. With Armor Effectiveness: the formula uses the armor after Armor Effectiveness has scaled it, so the two multiply. For example, Armor Effectiveness 1.5 with this at 2 makes armor count 3x in this curve. Default 2.00.");
 
         // Plain-text label/hint, same as Armor Multiplier above.
         private float _bluntTraumaMultiplier;
@@ -144,7 +186,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel BluntTraumaMultiplierHint { get; } = Hint("Scales blunt trauma, the damage that gets through armor without penetrating it, for every weapon type. Lower makes armored troops tankier; higher makes armor protect less. Penetrating damage is unchanged. Also feeds auto-resolve. Default 1.00.");
+        public BasicTooltipViewModel BluntTraumaMultiplierHint { get; } = Hint("Scales blunt trauma, the damage that gets through armor without penetrating it, for every weapon type. Lower makes armored troops tankier; higher makes armor protect less. Penetrating damage is unchanged. Also feeds auto-resolve. With Armor Effectiveness: that setting first decides how much of a hit armor stops and how much of the stopped part it absorbs; this one then scales whatever blunt trauma is left. They don't multiply into each other: this does not make armor count for more, it only changes how much a stopped hit still hurts. Default 1.00.");
 
         // Plain-text label/hint, same as Armor Multiplier above.
         private float _armorThresholdModifier;
@@ -178,7 +220,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel ArmorThresholdModifierHint { get; } = Hint("Scales how much of a blow armor stops outright: the part of a hit above armor x weapon factor x this penetrates, the rest becomes blunt trauma. Higher makes armored troops tankier, since more hits fail to penetrate; lower lets more damage straight through. Shields use the same rule. Also feeds auto-resolve. Default 1.00.");
+        public BasicTooltipViewModel ArmorThresholdModifierHint { get; } = Hint("Scales how much of a blow armor stops outright: the part of a hit above armor x weapon factor x this penetrates, the rest becomes blunt trauma. Higher makes armored troops tankier, since more hits fail to penetrate; lower lets more damage straight through. Shields use the same rule. Also feeds auto-resolve. With Armor Effectiveness: the threshold is worked out from the armor after Armor Effectiveness has scaled it, so the two multiply. For example, Armor Effectiveness 1.5 with this at 1.2 makes armor stop 1.8x as much as at the defaults. Default 1.00.");
 
         // Plain-text label/hint for the same reason as the row above.
         private float _arrowThicknessScale;
