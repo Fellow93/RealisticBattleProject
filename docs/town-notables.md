@@ -11,7 +11,8 @@ deliberately parallel, and the contrasts between them are the interesting part. 
 
 All decompiled paths are relative to `decompiled/`; the default assembly is
 `TaleWorlds.CampaignSystem`, so `TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/…`
-is written `…GameComponents/…`. Researched 2026-08-15 against game v1.4.7.
+is written `…GameComponents/…`. Researched 2026-08-15 against game v1.4.7; the RBM interactions were
+re-checked against the code on 2026-10-02.
 
 ---
 
@@ -104,7 +105,7 @@ OwnedWorkshops.IsEmpty() && OwnedCaravans.IsEmpty() && OwnedAlleys.IsEmpty()
 event — a protection village notables can never have.
 
 Heirs work as elsewhere: `Power >= 100` at death spawns a relative inheriting relations with
-`|value| >= 20`, the open issue, and **the caravans** (`TransferCaravanOwnership:296-300`, with
+`|value| >= 20` (or any non-zero relation with a co-resident), the open issue, and **the caravans** (`TransferCaravanOwnership:296-300`, with
 `PartyTradeGold` preserved). Below 100 the caravans are destroyed outright and the seat is vacated,
 refilling on the weekly `SettlementHelper.SpawnNotablesIfNeeded` roll at one notable per success.
 
@@ -164,8 +165,8 @@ the only writer. Production credits `min(1000, itemPrice)` and debits the town; 
 and credit the town — both only when `effectCapital` is true, which requires **all** inputs and outputs
 of that production to be `IsTradeGood`. The margin floor
 (`CanNotableWorkshopProduceThisCycle:776-792`) refuses a cycle if
-`outputIncome <= inputMaterialCost + 200f/ConversionSpeed`, or `town.Gold < outputIncome`, or
-`workshop.Capital < inputMaterialCost`.
+`outputIncome <= inputMaterialCost + 200f/ConversionSpeed` (bare `inputMaterialCost` for the hidden
+bench), or `town.Gold < outputIncome`, or `workshop.Capital < inputMaterialCost`.
 
 **The owner's gold is never touched.** `HandleDailyExpense:1101-1114` routes purely on identity:
 
@@ -184,12 +185,37 @@ takes `max(0, ProfitMade)/5` off capital, and the hero side is a separate
 notable and **resets capital to 10,000 out of thin air**, with `ChangeOwnerOfWorkshopAction` moving
 zero gold on a notable→notable transfer.
 
-> ⚠️ **RBM findings.** In [`WorkshopPurse.cs`](../RBMCampaign/Settlements/WorkshopPurse.cs), the
-> `NotableExpensePatch`'s `fromOwner = state[1] - shop.Owner.Gold` term is **identically zero on every
-> call**, because vanilla's notable branch has no owner-gold leg — the capture is dead weight and the
-> doc comment describing it is wrong for the notable twin. Separately, `RBMWorkshopCycle.SettlesInGold` forces
-> `effectCapital = false`, freezing the hidden artisans shop's capital at 10,000 → `ProfitMade == 0` →
-> **RBM Artisans earn exactly nothing** unless they win a named shop (§3.3).
+> ⚠️ **RBM owns the workshop rules outright** ([`RBMCampaign/Workshops/`](../RBMCampaign/Workshops/),
+> all under `rbmCampaignEnabled`; [`WorkshopPurse.cs`](../RBMCampaign/Settlements/WorkshopPurse.cs) is now
+> only the SHOPS/SHOPWAGE log ledger):
+>
+> - **`RBMWorkshopModel`** (a decorating `WorkshopModel`): `InitialCapital` **60,000**, `CapitalLowLimit`
+>   **30,000**, `DailyExpense` **250**. Since every handover resets capital to `InitialCapital`, the
+>   bankruptcy bailout above is now **60,000**. `GetCostForPlayer` is delegated, and the base model's
+>   `InitialCapital / 5` reads its *own* 10,000, so the purchase price still carries `+2,000` (the code
+>   comment claiming it picks up RBM's figure is wrong). Old-save caveat: `Workshop.InitialCapital` is
+>   written only at `InitializeWorkshop`, so a shop founded before the change keeps a 10,000 `ProfitMade`
+>   baseline. Its owner keeps drawing a fifth of everything above 10,000 a day, which pulls its capital
+>   back toward 10,000.
+> - **`RBMWorkshopCycle.Decide`** replaces both production gates: storage glut first
+>   (`workshopHeadroomGateEnabled`, default on), then the payout net of salary must reach
+>   **1.15 × inputs** (hidden bench: bare `payout > inputs`), then shop capital ≥ inputs, then town gold ≥
+>   the payout actually paid.
+> - **`RBMWorkshopSettlement`** pays each finished item at its sell-side price, capped at **10 % of town
+>   gold** (floor 500) and at what the town holds — replacing `min(1000, price)` — and prices the whole
+>   input draw, not one unit.
+> - **`RBMWorkshopExpense`** takes a salary out of every sale (`55 % − 5 %` per 48,000 of
+>   `EquipmentCost`, floor 10 %, only while capital is above 40,000) and bills the 250/day overhead
+>   (capital above the low limit → the *player* owner's gold → capital → bankruptcy at `Capital < 250`).
+>   Both are credited to the town's **citizen wealth** (`Source.WorkshopWages`) instead of destroyed. A
+>   notable owner's `Hero.Gold` is still never touched.
+> - **`RBMWorkshopCycle.SettlesInGold`** keeps the hidden `artisans` bench out of gold on every path: it
+>   settles in kind and moves only the market fee on its inputs (`TradeTariff.Levy`, citizens →
+>   treasury). Its capital never leaves its founding value → `ProfitMade == 0` → **RBM Artisans earn
+>   exactly nothing** unless they win a named shop (§3.3).
+> - **`Production/WorkshopTroopOrders`** (a `GetItemsToProduce` prefix) draws 80 % of war-gear units
+>   (50 % of garments) from the town culture's troop kits — militia 50 / troop trees 40 / mercenaries 10 —
+>   and makes no item the market already holds **6** of.
 
 ### 2.2 Caravans — merchants only
 
@@ -211,6 +237,9 @@ world-gen, and `DailyTickHero:580` at **75 %/day** for any merchant currently wi
 - Elite chance: `Power × 0.0045 − 0.5` when `Power >= 112`, else 0.
 - Growth: `PartyTradeGold` moves only through real `SellItemsAction`/`BuyItemsAction` trades.
   `BuyCategory` caps a single-category purchase at `min(0.5 × PartyTradeGold, 1.5 × avg, 1500)`.
+  Under RBM, [`CaravanTradeVolume.cs`](../RBMCampaign/Economy/CaravanTradeVolume.cs) raises the 1,500 to
+  **60,000** (120,000 for a War Sails convoy), lifts the 300-lot ceiling, and drops the 500 clamp on the
+  category average values.
 - Income: `(PartyTradeGold − 10000) / 5` per day, deducted from the caravan, plus Trade XP via
   `SkillLevelingManager.OnTradeProfitMade`.
 
@@ -242,9 +271,9 @@ merchant is broke.
 **Destruction:** `PartyTradeGold` transfers to the winner as plunder (`MapEvent.cs:1867`). The owner
 loses the asset but **no `Hero.Gold`**, and takes no power penalty.
 
-RBM's own supply caravans ([`RBMCaravanDispatch.cs:337`](../RBMCampaign/Economy/RBMCaravanDispatch.cs))
+RBM's own supply caravans ([`RBMCaravanDispatch.cs:399`](../RBMCampaign/Caravans/RBMCaravanDispatch.cs))
 are owned by the settlement owner clan's leader, never by notables, so
-`ManageCaravanExpensesOfNotable` never sees them.
+`ManageCaravanExpensesOfNotable` never sees them; `ClanCaravanPayoutFloatPatch` pays them out nothing.
 
 ### 2.3 Alleys — gang leaders only
 
@@ -258,6 +287,11 @@ Covered in depth in §8. Economically: a flat, hardcoded **+30/day per alley** i
 
 Alleys cost nothing to acquire or hold. `AlleyCampaignBehavior` contains **zero** `GiveGoldAction`
 calls touching an owner, and thug rosters are conjured at battle time rather than paid for.
+
+> Under RBM that 30/day has no payer, and because the converter now credits a notable's surplus to the
+> market instead of destroying it (§3.1), alley income is a small net **faucet** of 60–120 a day per
+> town. It is left open on purpose — see the remarks in
+> [`NotableWealth.cs`](../RBMCampaign/Settlements/NotableWealth.cs).
 
 ---
 
@@ -286,7 +320,8 @@ if (notable.Gold > 10500) {
 > came out of citizen wealth (§2.1, §2.2), the converter was the second-largest sink on the map:
 > roughly **12,000–22,000 a day per town**, against a 20,000 worldgen seed. Under RBM,
 > [`NotableWealth.cs`](../RBMCampaign/Settlements/NotableWealth.cs) now credits the surplus to the
-> market and pays the refill leg out of it. Note the workshop and caravan *withdrawals* were always
+> town's citizen wealth (`Source.NotableWealth`) and pays the refill leg out of it, clamped to what the
+> market can find. Note the workshop and caravan *withdrawals* were always
 > honest transfers — the destruction was entirely here, one step later.
 
 ### 3.2 Why the purse still pins
@@ -321,7 +356,9 @@ so it never pays the 100/day. In vanilla it accrues capital from its all-trade-g
 > moves after creation. Their power therefore has nothing opposing the `−0.1/day` occupation term.
 > Vanilla's restoring force applies only above 100, so this decayed **without bound** until
 > [`ArtisanStanding.cs`](../RBMCampaign/Settlements/ArtisanStanding.cs) cancelled the penalty at and
-> below the Regular rank — an RBM artisan now drifts to exactly 100 and holds. See §13.3.
+> below the Regular rank — an RBM artisan now drifts to exactly 100 and holds. An open issue's
+> `IssueOwnerPower` drag still applies, though, and nothing pulls the artisan back up once it has pushed
+> them under 100. See §13.3.
 
 ### 3.4 Player gold that reaches a notable
 
@@ -330,7 +367,7 @@ Three paths, and only one is routine:
 | Path | Site | Who receives |
 |---|---|---|
 | **Buying a workshop** | `ChangeOwnerOfWorkshopAction.ApplyInternal` → `GiveGoldAction.ApplyBetweenCharacters(newOwner, owner, cost)` | **the notable** — real gold |
-| Buying a caravan | `CaravanConversationsCampaignBehavior` → `GiveGoldAction.ApplyForCharacterToSettlement(MainHero, Settlement.CurrentSettlement, cost)` | **the settlement** — the notable gets nothing, no power, no relation |
+| Buying a caravan | `CaravanConversationsCampaignBehavior` → `GiveGoldAction.ApplyForCharacterToSettlement(MainHero, Settlement.CurrentSettlement, cost)` | **the settlement** — the notable gets nothing, no power, no relation (under RBM the write is routed into the town's citizen wealth by `SettlementGoldFunnel`) |
 | Patronage / barter | `NotableSupportersCampaignBehavior.cs:125`, `GoldBarterable.cs:68` | the notable |
 
 **Selling a workshop back** is `GiveGoldAction.ApplyBetweenCharacters(null, Hero.MainHero, cost)` — the
@@ -398,6 +435,15 @@ Per-slot chance `0.75 × pow(0.7 + smallFactionBonus, i+1)` → 0.525 / 0.368 / 
 score** (every faction town scores 1/2/3 by prosperity `<3000`/`<6000`/`≥6000` plus its village count,
 saturating at 46) — a rich town in a big kingdom produces no faster than a poor one beside it.
 
+> ⚠️ **RBM caps the fill with a manpower pool.**
+> [`Recruitment/RecruitPool.cs`](../RBMCampaign/Recruitment/RecruitPool.cs) gives every town, castle and
+> village a saved pool of men sized off prosperity (hearth for a village): it refills
+> `0.03 × prosperity` a day up to `0.2 × prosperity`, before building bonuses. Every slot the daily roll
+> *fills* costs one man; fills the pool cannot pay for are undone, weakest new recruit first. Promotions
+> are free. The garrison draws on the same pool but must leave `0.07 × prosperity` for volunteers, and
+> pays `1 + (garrison / 150)²` per man (100 for a castle). So under RBM a town's prosperity *does* govern
+> its volunteer supply. Gated by `rbmCampaignEnabled`.
+
 ### 5.2 Which troop
 
 `DefaultVolunteerModel.GetBasicVolunteer` returns `Culture.EliteBasicTroop` **only** for a
@@ -426,6 +472,15 @@ for `IsGangLeader` sellers in a clan-owned settlement, gated on the governor's `
 > `Charm.FlexibleEthics` is the **only** gameplay use of `IsUrbanNotable` (= Merchant ∪ Artisan ∪
 > GangLeader) in the entire tree, besides the property's own definition at `Hero.cs:348`.
 
+> ⚠️ **RBM re-roots slot access in land, not relation.**
+> [`Economy/RecruitCapacity.cs`](../RBMCampaign/Economy/RecruitCapacity.cs) prefixes
+> `MaximumIndexHeroCanRecruitFromHero`: any member of the owner clan takes **all 6** slots, and the
+> kingdom's ruler gets `1 + relation ladder` on his relation with the owner clan's *leader* (clamped
+> 0–6). Everyone else keeps the vanilla calculation above. For owners and rulers the notable's relation
+> and the occupation perks therefore stop mattering, and
+> [`RecruitSupply`](../RBMCampaign/Economy/RecruitSupply.cs) also prices their recruits at **zero**
+> (§12).
+
 ### 5.4 Garrison auto-recruit
 
 `GarrisonRecruitmentCampaignBehavior` draws from the town's own notables **plus all bound villages'**,
@@ -433,7 +488,8 @@ subject to `boundVillage.VillageState == Normal`, using
 `MaximumIndexGarrisonCanRecruitFromHero` (**no relation term** — effectively 1 plus
 `OneOfTheFamily`), sorted cheapest-wage-first, limited by wage budget, party size, and
 `GetMaximumDailyAutoRecruitmentCount`. Requires `GarrisonAutoRecruitmentIsEnabled && FoodChange > 0`
-and no map event or siege. RBM suppresses this entirely (§12).
+and no map event or siege. RBM suppresses this entirely and grows garrisons from the fief's treasury
+and the manpower pool instead, never from notables' slots (§12).
 
 ---
 
@@ -550,6 +606,10 @@ coupling in the game.
 | CapturedByBountyHunters | `IsGangLeader`, infested hideout within range, `"looter"` character exists | Common |
 | RivalGangMovingIn | `IsGangLeader`, town, `Security <= 60`, + a rival `IsGangLeader` in the same town | Common |
 | SnareTheWealthy | `IsGangLeader`, town, `!HasPort`, `Security <= 50`, + target merchant with `Power >= 150` and `Mercy + Honor < 0`, no cooldown on three related issues | Rare |
+
+Under RBM, [`Production/QuestTradeGoods.cs`](../RBMCampaign/Production/QuestTradeGoods.cs) repoints the
+two artisan issues at goods RBM markets stock: ArtisanCantSellProducts delivers `planks` instead of
+`hardwood`, and ArtisanOverpricedGoods asks for `tools` instead of `iron` and never for `hardwood`.
 
 **Negatives:** nothing in the tree gates an issue on `IsUrbanNotable`. `ProdigalSon` and
 `NotableWantsDaughterFound` merely *consume* a gang leader as a target — their givers are a lord and a
@@ -771,7 +831,8 @@ the strongest notables most in absolute terms. Displayed as
 
 **No other notable effect of siege or capture exists**: no `KillCharacterAction` on notables, no
 relation change with notables (the only relation leg is attacker-leader ↔ previous owner, −30 Devastate
-/ −15 Pillage), no gold to or from notables. Town-level companions: loyalty −30/−15/0, prosperity
+/ −15 Pillage), no gold to or from notables. (Under RBM the defence muster also empties every town
+notable's volunteer slots into the garrison when the assault starts — §12.) Town-level companions: loyalty −30/−15/0, prosperity
 −1.5×/−1×/−0.5× a log-scaled base, building level-downs, party morale +20/+10.
 
 > Village notables are exempt from all of this (`if (settlement.IsTown)`), including when their own
@@ -848,7 +909,7 @@ arrow running back the other way.
   **`IsMerchant || IsArtisan`** (not merchant-only), blocked while disguised, needs a clan companion who
   `CanLeadParty()`. Cost 15,000 / 22,500 elite. **The gold goes to the settlement, not the notable**
   (`ApplyForCharacterToSettlement`), and the notable gains no power or relation. Port towns swap
-  "caravan" for "trade convoy".
+  "caravan" for "trade convoy". Under RBM the price is ×10 (150,000 / 225,000).
 - **Buying a workshop** — `WorkshopsCharactersCampaignBehavior.cs:93-98`, gated on
   `IsNotable && CurrentSettlement == Settlement.CurrentSettlement && OwnedWorkshops.Count(!IsHidden) == 1`
   — **no occupation filter**. Clickable needs peace with the town's faction, enough gold for
@@ -874,32 +935,43 @@ arrow running back the other way.
 
 ## 12. What RBM currently does
 
-RBM touches notables **only through `VolunteerTypes`** and through workshop/caravan *pricing*. Nothing
-in the repo reads or writes notable `Hero.Power` or `SupporterOf`, and the only `Hero.Gold` contact is a
-**measurement** that turns out to be identically zero.
+RBM touches town notables through their **volunteer slots** (manpower pool, slot capacity, recruit
+price and kit, defence muster), the **gold⇄power converter**, the **artisan's power floor**, and
+workshop/caravan **economics**. Nothing in the repo reads or writes `SupporterOf`, alleys, or notable
+relations; `Hero.Power` and `Hero.Gold` are written only by `NotableWealth` (vanilla's own arithmetic)
+and `ArtisanStanding`.
 
 | File | What it does | Gate |
 |---|---|---|
-| [`Settlements/WorkshopPurse.cs`](../RBMCampaign/Settlements/WorkshopPurse.cs) | `CaptureBefore`/`SettleAfter` around `HandleNotableWorkshopExpense` measure the outlay and credit citizen wealth. `RBMWorkshopCycle.SettlesInGold` keeps the artisans out of gold on every path. ⚠️ The `fromOwner` term is **dead** (§2.1), and the freeze **zeroes Artisan income** (§3.3). | `rbmCampaignEnabled` |
-| [`Economy/CaravanCapital.cs`](../RBMCampaign/Economy/CaravanCapital.cs) | `PriceScale = 10` on `GetInitialTradeGold` and `GetCaravanFormingCost`; `FormingCostPatch` scales what the player pays. ⚠️ Amplifies the elite-caravan discrepancy to ~15,000/day (§2.2); `CaravanGoldLowLimit` is left unscaled. | `rbmCampaignEnabled` |
-| [`Economy/RecruitSupply.cs`](../RBMCampaign/Economy/RecruitSupply.cs) | Multiset diff around the daily volunteer tick draws each new troop's kit off the market — a town arming its own sons debits its **citizen purse** (`Source.TownArms`). Replaces recruit price wholesale (owner clan/ruler free, vassal gear + 5× wage, foreigner +10 %). | `SpoilsPool.IsEnabled && recruitDrawsFromSettlementStock` |
-| [`Settlements/GarrisonRecruitCost.cs`](../RBMCampaign/Settlements/GarrisonRecruitCost.cs) | Prefix-skips vanilla's garrison auto-recruit so it no longer consumes a notable's volunteer per day; replaced with a wealth-driven growth curve. | `GarrisonRecruitCost.IsEnabled` |
-| [`Settlements/SettlementDefenseMuster.cs`](../RBMCampaign/Settlements/SettlementDefenseMuster.cs) | On siege assault, empties every notable's `VolunteerTypes` into the garrison. | `rbmCampaignEnabled` |
+| [`Workshops/`](../RBMCampaign/Workshops/) (`RBMWorkshopModel`, `RBMWorkshopCycle`, `RBMWorkshopSettlement`, `RBMWorkshopExpense`) | RBM's workshop rules (§2.1): 60,000 founding capital, 250/day overhead, salary share of each sale and overhead credited to citizen wealth, 15 % margin gate, payout capped at 10 % of town gold. `SettlesInGold` keeps the artisans' bench out of gold, which **zeroes Artisan income** (§3.3). | `rbmCampaignEnabled` |
+| [`Production/WorkshopTroopOrders.cs`](../RBMCampaign/Production/WorkshopTroopOrders.cs) | Workshops make mostly the town culture's troop gear, no item past 6 in the market (§2.1). | `rbmCampaignEnabled` |
+| [`Economy/CaravanCapital.cs`](../RBMCampaign/Economy/CaravanCapital.cs) | `PriceScale = 10` on `GetInitialTradeGold` and `GetCaravanFormingCost` (and the War Sails twins); `ClanCaravanPayoutFloatPatch` reads the clan-caravan float off the model. ⚠️ Amplifies the elite-caravan discrepancy to ~15,000/day (§2.2); `CaravanGoldLowLimit` is left unscaled. | `rbmCampaignEnabled` |
+| [`Economy/RecruitSupply.cs`](../RBMCampaign/Economy/RecruitSupply.cs) | Multiset diff around the daily volunteer tick draws each new volunteer's kit (mount included) off the market — a town arming its own sons debits its **citizen wealth** (`Source.TownArms`). Replaces the recruit price wholesale: owner clan or realm ruler **free**; vassal in his own realm full gear + 5 days' wage; mercenary or lord abroad the same **+10 %**; landless adventurer 5 days' wage +10 %, no gear. Mercenary, gangster and caravan-guard troops are always paid. What the recruiter pays is credited back to the town's citizen wealth (`Source.Recruit`) instead of destroyed. | `SpoilsPool.IsEnabled && recruitDrawsFromSettlementStock` (both default on) |
+| [`Recruitment/RecruitPool.cs`](../RBMCampaign/Recruitment/RecruitPool.cs) | The manpower pool every volunteer fill and garrison man draws on (§5.1). | `rbmCampaignEnabled` |
+| [`Economy/RecruitCapacity.cs`](../RBMCampaign/Economy/RecruitCapacity.cs) | Owner clan takes all 6 slots; the ruler's slots follow his relation with the owner clan's leader (§5.3). | `rbmCampaignEnabled` |
+| [`Settlements/GarrisonRecruitCost.cs`](../RBMCampaign/Settlements/GarrisonRecruitCost.cs) | Prefix-skips vanilla's garrison auto-recruit (and base garrison change), so the garrison no longer consumes a notable's volunteer per day; replaced with a wealth-driven growth curve paid from the fief's treasury and charged to the manpower pool. | `GarrisonRecruitCost.IsEnabled` (`SpoilsPool.IsEnabled && rbmCampaignEnabled`) |
+| [`Settlements/SettlementDefenseMuster.cs`](../RBMCampaign/Settlements/SettlementDefenseMuster.cs) | `RBMSettlementDefenseBehavior`: when a siege assault starts, empties every notable's `VolunteerTypes` into the garrison (the militia if there is no garrison party). It also fires for village raids and forced levies. | `rbmCampaignEnabled` |
 | [`Recruitment/TavernMercenaryTroopsPatch.cs`](../RBMCampaign/Recruitment/TavernMercenaryTroopsPatch.cs) | Postfixes `RegularMercenariesSpawnChance` → `1f`, making the caravan-guard branch of the tavern re-roll unreachable. | `rbmCampaignEnabled` |
 | [`Settlements/NotableWealth.cs`](../RBMCampaign/Settlements/NotableWealth.cs) | Replacing prefix on `NotablePowerManagementBehavior.BalanceGoldAndPowerOfNotable`. Same arithmetic and the same standing per denar, but the surplus is credited to citizen wealth under `Source.NotableWealth` instead of destroyed, and the refill leg is debited from it instead of minted — clamped to what the market can find, with any part-point remainder returned. | `rbmCampaignEnabled` |
 | [`Settlements/ArtisanStanding.cs`](../RBMCampaign/Settlements/ArtisanStanding.cs) | Postfix on `DefaultNotablePowerModel.CalculateDailyPowerChangeForHero` cancelling the artisan's `−0.1/day` occupation penalty at and below `RegularNotableMaxPowerLevel`, so the decay left behind by the bench freeze self-limits at 100 instead of running unbounded. | `rbmCampaignEnabled` |
 | [`AI/RBMRecruitBiasBehavior.cs`](../RBMCampaign/AI/RBMRecruitBiasBehavior.cs) | Additive `GoToSettlement` score toward free-recruit fiefs. | `RecruitSupply.IsEnabled` |
+| [`Production/QuestTradeGoods.cs`](../RBMCampaign/Production/QuestTradeGoods.cs) | Repoints the two artisan issues at goods RBM markets stock (§7.1). | `rbmCampaignEnabled` |
 
 ### 12.1 Interactions worth watching
 
 - **The `GetBasicVolunteer` override** (§5.2) runs under `rbmCombatEnabled`, giving town notables a
   15 % elite chance vanilla never grants them.
 - **Slot accumulation.** With garrison auto-recruit suppressed, town slots drain only to players and AI
-  parties → higher average slot age → more `log2(Power/Tier)` upgrade rolls → **offered tiers drift
-  above vanilla over a long campaign**, and more so for merchants than gang leaders.
-- **The artisan freeze** makes one of the five town notables permanently powerless, which feeds back
-  into the workshop-buyer weight (`Power / 10^count`) and makes artisans progressively *less* likely to
-  win named shops over time.
+  parties (and to the defence muster when the town is assaulted) → higher average slot age → more
+  `log2(Power/Tier)` upgrade rolls → **offered tiers drift above vanilla over a long campaign**, and
+  more so for merchants than gang leaders. The manpower pool charges only *fills*, so a drained pool
+  slows the refill of emptied slots without slowing promotions.
+- **The artisan freeze** pins one of the five town notables at power 100 (§3.3) while a bare merchant
+  sits near 200. With the 10× slot-0 penalty on top, an artisan's workshop-buyer weight
+  (`Power / 10^count`) is about a twentieth of a shopless merchant's, so artisans rarely win named shops.
+- **Owners recruit freely.** Between `RecruitCapacity` (all 6 slots) and `RecruitSupply` (price 0), a
+  fief's own clan empties its notables' slots at will, whatever the notables think of it. Relation with a
+  town notable now matters mainly to outsiders.
 
 ---
 
@@ -949,7 +1021,7 @@ Recorded as observations, not proposals.
 | `NotableDisappearPowerLimit` | 100 (moot for asset holders) | ″ |
 | Power ranks | 0 / 100 / 200 → 0.05 / 0.10 / 0.15 influence | ″ |
 | Workshops per town | 4 (slot 0 hidden `artisans`) | `DefaultWorkshopModel` |
-| Workshop initial capital / expense / bankruptcy | 10,000 / 100 per day / `Capital < 100` | ″ |
+| Workshop initial capital / expense / bankruptcy | 10,000 / 100 per day / `Capital < 100` (RBM 60,000 / 250 / `< 250`) | ″ / `RBMWorkshopModel` |
 | Workshop buyer weight | `max(Power,0) / 10^OwnedWorkshops` | ″ |
 | Caravan seed | 10,000 / 17,500 elite (RBM ×10) | `DefaultCaravanModel` |
 | Caravan payout gate | hardcoded `eliteCaravan:false` → 10,000 | `DefaultClanFinanceModel:879` |

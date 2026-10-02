@@ -12,7 +12,8 @@ document disagree about a number, they are the more specific and win.
 
 All decompiled paths are relative to `decompiled/`; the default assembly is
 `TaleWorlds.CampaignSystem`, so `TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/…`
-is written `…GameComponents/…`. Researched 2026-08-15 against game v1.4.7.
+is written `…GameComponents/…`. Researched 2026-08-15 against game v1.4.7; re-verified 2026-10-02
+against the v1.4.8 decompile and the current RBM code.
 
 ---
 
@@ -37,7 +38,9 @@ one channel from a notable to any settlement number is the issue-effect pipeline
 *debuff* applied while an issue is open, not a contribution.
 
 This matters for RBM because the campaign layer treats settlements as economic actors with real
-purses, and the notables living in them are the one population that is entirely outside that circuit.
+purses, and the notables living in them are almost entirely outside that circuit. RBM's touches —
+the converter's surplus routed into the village purse, a hearth-sized manpower pool gating new
+volunteers, ownership-based slot access and pricing — are marked inline and collected in §10.
 
 ---
 
@@ -100,8 +103,9 @@ Notable templates live in `Modules/SandBox/ModuleData/spspecialcharacters.xml` �
 `CultureObject.NotableTemplates` (`CultureObject.cs:206, 516`).
 
 Counts: **18 `occupation="Headman"` and 12 `occupation="RuralNotable"`** — three headmen and two rural
-notables per culture across six cultures. `Modules/NavalDLC/ModuleData/naval_characters.xml` adds more
-Headman templates.
+notables per culture across six cultures. That is vanilla only: `Modules/NavalDLC/ModuleData/naval_characters.xml`
+adds a seventh culture, Nord, with 3 Headman templates (`spc_nord_headman_1/2/3`) and 2 RuralNotable
+templates — so with the NavalDLC loaded it is **seven** cultures.
 
 ```xml
 <NPCCharacter id="spc_empire_headman_1" name="{=!}empire rebellious headman" voice="earnest"
@@ -119,18 +123,24 @@ The three headman archetypes per culture are consistently **rebellious** (`Valor
 
 ### 1.4 Traits are load-bearing
 
-`DefaultHeroCreationModel.GetTraitsForHero` (L277-303) rolls `Honor, Mercy, Generosity, Valor,
-Calculating` for every notable occupation. These are not flavour: `Mercy <= 0`, `Generosity <= 0`, and
-`Honor + Mercy < 0` are hard gates on five of the rural-notable issues (§6.2). **A generous, merciful
-rural notable is issue-sterile for most of the roster** — it will sit there producing recruits and
-never offering the player anything.
+`DefaultHeroCreationModel.GetTraitsForHero` (L277-305; the notable block is L296-303) rolls `Honor,
+Mercy, Generosity, Valor, Calculating` for every notable occupation. These are not flavour: `Mercy <= 0`,
+`Generosity <= 0`, and `Honor + Mercy < 0` are hard gates on the issue giver for several of the
+rural-notable issues (§6.2). **A generous, merciful rural notable is excluded from three of the ten
+rural-capable issues outright** (LandlordNeedsAccessToVillageCommons, LandLordNeedsManualLaborers,
+NotableWantsDaughterFound), **plus RuralNotableInnAndOut unless `Honor < −Mercy`**. FamilyFeud's
+`Mercy <= 0` gate applies to the *other* village's notable, not the giver
+(`SandBox/SandBox.Issues/FamilyFeudIssueBehavior.cs`, `ConditionsHold`).
 
 ### 1.5 Occupation is immutable
 
 No `SetNewOccupation` callsite anywhere promotes a village notable. The only calls are
 `NavalStorylineData.cs:204`, `FamilyFeudIssueBehavior.cs:715` (→ Wanderer),
-`RivalGangMovingInIssueBehavior.cs` (×3), and `CompanionRolesCampaignBehavior.cs:262` (→ Lord). Heirs
-copy `relative.Occupation` (`HeroCreator.cs:226`). **A village line stays Headman/RuralNotable
+`RivalGangMovingInIssueBehavior.cs` (×3), `CompanionRolesCampaignBehavior.cs:262` (→ Lord), and
+`HeroCreator.cs:322` — reached through `SetOccupation` for offspring (`HeroCreator.cs:267`, taking the
+mother's or father's occupation), not for notables. Heirs get their occupation through the template
+roll: `HeroCreator.cs:226` calls `GetRandomTemplateByOccupation(relative.Occupation, …)`, so the heir is
+built from a template of the relative's occupation rather than copying it directly. **A village line stays Headman/RuralNotable
 forever** — it can never become a Merchant and thereby acquire an income.
 
 ### 1.6 Death, heirs, and respawn
@@ -139,7 +149,7 @@ Village notables have **no death protection**. `NotablesCampaignBehavior.CanHero
 vetoes death while one of the notable's caravans is in a map event, and village notables never own
 caravans.
 
-**Attrition death** — `CheckAndMakeNotableDisappear` (L286-307), daily. Requires: no
+**Attrition death** — `CheckAndMakeNotableDisappear` (L295-307), daily. Requires: no
 workshop/caravan/alley (always true for villagers), `CanDie(Lost)`, `CanHaveCampaignIssues()` — i.e.
 **no active issue** — and `Power < NotableDisappearPowerLimit` (100). Probability:
 
@@ -158,7 +168,7 @@ spawns a replacement that inherits every relation with `|value| >= 20` (or any n
 co-residents) and re-parents the issue. **Below 100 power the seat is simply vacated.** Dead notables
 are unregistered after 7 days (`RemoveNotableCharacterAfterDays`).
 
-**Respawn** — `DailyTickSettlement` (L199-214) keeps a per-settlement 7-day counter, then calls
+**Respawn** — `DailyTickSettlement` (L201-216) keeps a per-settlement 7-day counter, then calls
 `SettlementHelper.SpawnNotablesIfNeeded` (`Helpers/SettlementHelper.cs:559`), which gates on a deficit
 ratio and, on success, spawns **exactly one** notable:
 
@@ -175,7 +185,7 @@ A fully-emptied village refills at roughly one notable per week at best.
 There is **no code path that changes a notable's `CurrentSettlement`**. The only
 `EnterSettlementAction.ApplyForCharacterOnly` calls for notables are at creation
 (`NotablesCampaignBehavior.cs:46`, `SettlementHelper.cs:615`) and at heir replacement
-(`ChangeDeadNotable:366`). They do not flee raids, do not relocate, and do not switch allegiance when
+(`ChangeDeadNotable:367`). They do not flee raids, do not relocate, and do not switch allegiance when
 the fief changes hands.
 
 ---
@@ -203,7 +213,18 @@ if (notable.Gold > 10500) {
 ```
 
 **500 gold ⇄ 1 power**, dead band `[4500, 10500]`. Every notable is born with exactly 10,000
-(`NotablesCampaignBehavior.OnHeroCreated:47`) — dead centre of the band.
+(`NotablesCampaignBehavior.OnHeroCreated:47`) — dead centre of the band. Note the upward leg pays the
+surplus to recipient `null`: vanilla **destroys** it.
+
+> ⚠️ **RBM replaces the converter.**
+> [`Settlements/NotableWealth.cs`](../RBMCampaign/Settlements/NotableWealth.cs) is a replacing prefix on
+> `BalanceGoldAndPowerOfNotable` with vanilla's arithmetic, band and integer truncation unchanged —
+> only the counterparty moves. The surplus is **credited to the notable's settlement** instead of being
+> destroyed (a town's citizen wealth; a village, which has no citizen pot, its own purse via
+> `SettlementWealth.Credit`), and the `< 4500` refill leg is paid out of that same pocket rather than
+> minted (in whole 500-gold lots; it buys back only what the pocket can fund). A notable with no
+> `CurrentSettlement` skips the day. Gated by `rbmCampaignEnabled`. The power gained per gold is
+> identical to vanilla.
 
 ### 2.2 Why a villager's gold never moves
 
@@ -239,10 +260,16 @@ Things that do **not** pay a village notable:
 
 - **Recruitment.** `RecruitmentCampaignBehavior.ApplyInternal` (L619/625/630) sends the price to
   `GiveGoldAction.ApplyBetweenCharacters(side1Party.LeaderHero, null, …)` — recipient `null`, so the
-  gold is **destroyed**. Notables are paid nothing for the men they supply.
+  gold is **destroyed**. Notables are paid nothing for the men they supply. (Under RBM the price is
+  credited to the settlement the man was raised in — a village's own purse — never to the notable;
+  §10.)
 - **Village production, hearth, tax, trade, prosperity.** Village gold is `SettlementComponent.Gold`,
   hard-capped at `InitialVillageGold = 1000` (`Village.cs:29, 236`), and belongs to the settlement.
-  `VillagerCampaignBehavior.cs:332-336` zeroes convoy trade gold into `Village.TradeTaxAccumulated`.
+  `VillagerCampaignBehavior.cs:332-336` zeroes the returning convoy's trade gold and adds only the
+  village tax on it (`CalculateVillageTaxFromIncome`) to `Village.TradeTaxAccumulated`. (Under
+  RBM, [`Settlements/VillageGoldStock.cs`](../RBMCampaign/Settlements/VillageGoldStock.cs) suppresses
+  the daily clamp and that field becomes the village's real purse — still the settlement's, not a
+  notable's.)
 - **Quest rewards.** Every issue reward is `GiveGoldAction.ApplyBetweenCharacters(null, Hero.MainHero,
   RewardGold)` — minted, never drawn from the giver's purse.
 - **Inheritance.** `KillCharacterAction.cs:98` transfers a dead hero's gold to `victim.Clan.Leader`,
@@ -261,12 +288,13 @@ Village notables *can* receive gold, but only from the player, via three paths:
 Each pushes them above 10,500, and the converter bleeds it back down at 500 gold → 1 power per day
 until they settle into `[10000, 10500)`. **They can never fall below 10,000, so the `Gold < 4500`
 power→gold branch is unreachable for a village notable.** Their power is a one-way sink from player
-gifts and can never be topped up by liquidating assets.
+gifts and can never be topped up by liquidating assets. Under RBM the converted gold is no longer
+destroyed: a player's gift to a village notable ends up in the **village's purse** (§2.1).
 
 > ⚠️ **Consequence for tooling.** Reading `notable.Gold` to gauge wealth or economic health returns
 > ~10,000 everywhere in Calradia. It is a transducer, not a stock. `Hero.Power` is the accumulator.
 > Equally: their 10,000 is dead capital, so **writing to it breaks nothing** — no vanilla consumer
-> reads it except the converter.
+> reads it except the converter (and, under RBM, its `NotableWealth` replacement).
 
 ---
 
@@ -332,7 +360,8 @@ Only four things, and only the first is routine:
 2. **Survival** — the `Power < 100` disappearance roll (§1.6).
 3. **An heir** — `Power >= 100` at death.
 4. **Clan influence**, if the player has bought patronage — 0.05 / 0.10 / 0.15 per day at power
-   > 0 / > 100 / > 200 (`DefaultClanPoliticsModel.cs:76-88`).
+   ≤ 100 / > 100 / > 200 (the Regular rank is the default, so even power ≤ 0 pays 0.05;
+   `DefaultNotablePowerModel.GetPowerRank`, summed in `DefaultClanPoliticsModel.cs:77-84`).
 
 ---
 
@@ -340,7 +369,7 @@ Only four things, and only the first is routine:
 
 ### 4.1 The slots
 
-`Hero.VolunteerTypes` is `CharacterObject[6]` (`MaximumNumberOfVolunteers = 6`, `Hero.cs:43/47`),
+`Hero.VolunteerTypes` is `CharacterObject[6]` (`MaximumNumberOfVolunteers = 6`, `Hero.cs:44/47`),
 `[SaveableField(130)]`, allocated in the ctor and **set to `null` wholesale in `Hero.OnDeath`**
 (L1960) — so always null-check the array itself, not just its elements.
 
@@ -386,8 +415,24 @@ Per-slot daily chance for a large faction (`num = 0.7`):
 > `+0.2` on the base. A prosperous, high-hearth village produces recruits at exactly the same rate as
 > a burned-out one in the same kingdom.
 
-Notable **Power plays no part in filling** either. Modifiers: the `Cantons` policy `AddFactor(0.2f)`,
-and `Riding.CavalryTactics` if the slot's *existing* troop `IsMounted`.
+Notable **Power plays no part in filling** either. Modifiers: the `Cantons` policy `AddFactor(0.2f)` —
+but it is keyed on `hero.Clan?.Kingdom`, and notables are clanless (`DefaultHeroCreationModel.GetClan`
+returns null without a mother), so it never fires for them — and `Riding.CavalryTactics` (perk of the
+village's `TradeBound` town) if the slot's *existing* troop `IsMounted`.
+
+> ⚠️ **RBM gates filling on manpower.**
+> [`Recruitment/RecruitPool.cs`](../RBMCampaign/Recruitment/RecruitPool.cs) gives every village a
+> manpower pool sized off its **hearth**: ceiling `Hearth × 0.2`, refill `Hearth × 0.03` a day (+10 %
+> per level of the bound fief's Roads and Paths), persisted as `RBM_settlementRecruitPool`, starting
+> full. A postfix on `UpdateVolunteersOfNotablesInSettlement` (run first, before `RecruitSupply`'s kit
+> draw) counts each notable's occupied slots before/after the roll: every new fill costs one man from
+> the pool, and fills the pool cannot pay for are cleared again, weakest first. In-place **upgrades
+> cost nothing** (the occupied count does not change), so an empty pool freezes the slot count but not
+> the tier climb. Purchases and the defence muster neither charge nor refund the pool; a raid shrinks
+> it only through the hearth it destroys (the pool is clamped to its current ceiling). Gated by
+> `rbmCampaignEnabled`. A 400-hearth village holds up to 80 men and regains 12 a day against 18 slots
+> across its three notables, so the pool binds mainly in small or depopulated villages — but it is the
+> one place hearth now reaches recruit output.
 
 ### 4.3 Which troop, and the upgrade ladder
 
@@ -412,7 +457,9 @@ return sellerHero.Culture.BasicTroop;
 > roll for every notable in the world. This discards the castle rule entirely — castle-bound villages
 > lose their guaranteed elite recruits, and every town notable gains a 15 % elite chance they should
 > not have. It is gated by `rbmCombatEnabled`, **not** by any campaign toggle, so it applies even with
-> RBMCampaign off.
+> RBMCampaign off. `UpdateVolunteersOfNotablesInSettlement` calls `GetBasicVolunteer` **once per
+> notable per day** (L228), so the roll is per notable-day: every slot that notable fills that day gets
+> the same troop.
 
 **In-place upgrade is the only source of high-tier recruits.** Same tick, same probability gate first,
 then `RecruitmentCampaignBehavior.cs:241-249`:
@@ -430,9 +477,11 @@ else if (characterObject.UpgradeTargets.Length != 0 && characterObject.Tier < Mo
 not weighted. A notable at Power 200 upgrades a Tier-1 troop at `log2(200) × 0.01 ≈ 7.6 %` per
 successful slot roll. Power ≤ Tier gives a non-positive chance.
 
-After any change the array is insertion-sorted descending by `Level + (IsMounted ? 0.5 : 0)` with
-nulls slid to the tail (L255-287). This is why "relation gates index N" means **"you may buy the N
-strongest"**.
+After any change the array is insertion-sorted **ascending** — weakest first — by
+`Level + (IsMounted ? 0.5 : 0)` (L255-287). Empty slots are skipped over, not compacted: the troops
+are reordered among themselves while the nulls stay roughly where they were. This is why "relation
+gates index N" means **"you may buy only the weakest few"** — the strongest recruits sit at the high
+indices that need the most relation.
 
 ### 4.4 Consumption
 
@@ -440,19 +489,23 @@ Three disjoint paths:
 
 | Consumer | Site | Slot bound |
 |---|---|---|
-| **Player** | `RecruitmentVM.OnDone` (`…ViewModelCollection.GameMenu.Recruitment/RecruitmentVM.cs:884`) | `index <= max` |
+| **Player** | gate `RecruitVolunteerVM.cs:173` → `HeroHelper.HeroCanRecruitFromHero` (`HeroHelper.cs:411`); purchase `RecruitmentVM.OnDone` (`…ViewModelCollection.GameMenu.Recruitment/RecruitmentVM.cs:882`, slot nulled L893) | `index <= max` |
 | **AI parties** | `RecruitmentCampaignBehavior.RecruitVolunteersFromNotable` (L504) | `index < max` |
 | **Garrison auto-recruit** | `GarrisonRecruitmentCampaignBehavior.TickAutoRecruitmentGarrisonChange` | `MaximumIndexGarrisonCanRecruitFromHero` |
 
 Note the **off-by-one**: the player UI uses `<=` and the AI uses `<`, so an AI party effectively gets
-one fewer slot than the player at identical relation.
+one fewer slot than the player at identical relation. The AI loop also starts at a random index and
+stops at the first index `>= max`, and buys only if `PartyTradeGold` exceeds the recruit price and the
+wage budget covers the man.
 
 AI recruiting runs from `HourlyTickParty` (L291) and again on `OnBeforeSettlementEntered` (L563), which
 calls `CheckRecruiting` **7 times** for a normal party (1 for caravans; 1/2/3 for parties in the
 player's army depending on `MainParty.PartySizeRatio` vs 0.6 / 0.9).
 
 Garrison auto-recruit draws from the town's own notables **plus all bound villages'** notables, subject
-to `boundVillage.VillageState == Normal` — so a looted village stops feeding its town's garrison.
+to `boundVillage.VillageState == Normal` (L145) — so a looted village stops feeding its town's
+garrison. **Under RBM this consumer is switched off entirely** (`GarrisonRecruitCost`, §10): garrisons
+grow from the fief's treasury and its own manpower pool, and village slots drain only to parties.
 
 Slots are set to `null` on purchase and refill only on the next daily tick — there is no immediate
 refill anywhere.
@@ -468,11 +521,31 @@ buyer perk factors, then `LimitMin(1f)`.
 
 **Relation does not change the price.** It only changes how many slots are visible.
 
+> ⚠️ **RBM replaces the price wholesale** (`RecruitSupply.RecruitPrice`, a postfix on this method,
+> skipped for `withoutItemCost` quotes). By the recruiter's standing at the village or town he stands
+> in: **owner clan or the realm's ruler → free**; a vassal of the settlement's own kingdom → the
+> troop's full gear value (mount included) + 5 days of its wage; a mercenary or a lord of another
+> realm → that × 1.1; a clanless/kingdomless adventurer → the 5-day wage × 1.1, no gear. Vanilla's
+> buyer perks and feats are re-applied and the price floors at 1. Mercenary/gangster/caravan-guard
+> troops (and whatever the town tavern is selling) are never free. Relation still plays no part.
+> Gated by `RecruitSupply.IsEnabled`.
+
 ### 4.6 Militia is entirely separate
 
 `…GameComponents/DefaultSettlementMilitiaModel.cs` has **zero** references to `VolunteerTypes`. Village
 militia is `BaseVillageMilitiaChange = 0.5f` plus `Village.Hearth / 400f` ("From Hearths", L112-115),
-retirement `−Militia × 0.025`, policies, feats, and the **bound town's governor** perks (L54-56).
+retirement `−Militia × 0.025` (L110), policies, feats, and the governor perks of the village's
+**`TradeBound` town** (L54-56 — the bound town, or for a castle village the town it trades with).
+
+> ⚠️ **RBM rebuilds the militia curve** ([`Settlements/MilitiaUpkeep.cs`](../RBMCampaign/Settlements/MilitiaUpkeep.cs),
+> a patch on `CalculateMilitiaChange`), still with no reference to volunteer slots. For a village:
+> the same 0.5 + Hearth/400 intake but **no retirement**; a soft cap of 40 % of hearth (raised by
+> kingdom policies, never above 70 %) and a hard cap of 75 % of hearth, with growth tapering by
+> `(1 − fill)²` between them and 5 %/day of any excess over the hard cap disbanding; an extra
+> Hearth/150 a day while below half the soft cap. Each new militiaman is armed with **10 %** of a
+> full kit bought off the `TradeBound` town (village purse → town citizens), and the village must
+> hold 3× that cost to arm one. Village militia draw **no wage** (factor 0) and a tenth of a field
+> troop's maintenance.
 
 The raid "force volunteers" action also ignores notable slots:
 `VillageHostileActionCampaignBehavior` grants `ceil(Village.Hearth / 30)` of
@@ -492,7 +565,7 @@ negative, affinity → positive, 0 → keep sign).
 
 ### 5.2 How it changes
 
-**Daily loyalty gain** — `CharacterRelationCampaignBehavior.cs:421-435`, the village branch:
+**Daily loyalty gain** — `CharacterRelationCampaignBehavior.cs:423-431`, the village branch:
 
 ```csharp
 if (!item2.IsVillage || !(item2.Village.Bound.Town.Loyalty >= settlementLoyaltyModel.ThresholdForNotableRelationBonus)) continue;
@@ -509,7 +582,7 @@ There is **no loyalty-based penalty branch for villages**, and — unlike towns,
 gives artisans/merchants `DailyNotablePowerPenalty = −1` and gang leaders `+1` — **village notables
 receive no daily power change from settlement stats at all.**
 
-**Decay** — `NotablesCampaignBehavior.UpdateNotableRelations` (L216-241), reached only on a 1 %/day
+**Decay** — `NotablesCampaignBehavior.UpdateNotableRelations` (L218-244), reached only on a 1 %/day
 roll per notable (≈ once per 100 days), and it **skips `Clan.PlayerClan` entirely**. For each AI clan
 leader, with probability `|relation| / 1000`, apply a 20-point step toward zero.
 
@@ -526,7 +599,9 @@ defender, one random notable of the settlement gains `+5` with each contributing
 
 **Coercion** — `QuestHelper.ApplyGenericMinorMajorCoercionConsequences` (L104-116): forcing supplies or
 volunteers from a village whose notable is your quest giver → `CompleteQuestWithFail`,
-`ApplyPlayerRelation(-5)`, `AddPower(-10f)`, `Honor -50`.
+`ApplyPlayerRelation(-5)`, `AddPower(-10f)`, `Honor -50`. Callers first check
+`QuestHelper.CheckMinorMajorCoercion` (L90-100): the player forcing supplies or volunteers from a
+village where the quest sits either with the village's `OwnerClan` or with one of its notables.
 
 ### 5.3 What relation buys
 
@@ -539,19 +614,30 @@ volunteers from a village whose notable is your quest giver → `CompleteQuestWi
 | **Relation** | `≥100 → 7`, `≥80 → 6`, `≥60 → 5`, `≥40 → 4`, `≥20 → 3`, `≥10 → 2`, `≥5 → 1`, `≥0 → 0`, `<0 → −1` |
 | Same map faction as the notable's settlement | `+1` |
 | Buyer is **not** the player | `+1` |
-| At war with that faction | `−(1 + notPlayerBonus)` |
+| At war with that faction | `−(1 + notPlayerBonus)` — waived (0) for a minor-faction hero recruiting in a village |
 | `Charm.Firebrand` (seller `IsRuralNotable`) | `+SecondaryBonus` |
 | `Leadership.CombatTips` (same culture) | `+SecondaryBonus` |
-| `Engineering.EngineeringGuilds` (seller `IsArtisan`) | — town only |
+| `Trade.ArtisanCommunity` (seller `IsMerchant`), `Charm.FlexibleEthics` (seller `IsUrbanNotable`), `Engineering.EngineeringGuilds` (seller `IsArtisan`) | — town only |
 
 `difficultyBonus` = `DefaultDifficultyModel.GetPlayerRecruitSlotBonus()`: VeryEasy **2**, Easy **1**,
 Realistic **0**.
 
-**Patronage** — `NotableSupportersCampaignBehavior.cs:39-48`. The `notable_support_request` line needs
-`GetRelationWithPlayer() >= 50f` and, if already sponsored, `relationWithPlayer >=
-notable.GetRelation(SupporterOf.Leader)` with that relation `!= MaxRelationLimit`. Cost
+> ⚠️ **RBM re-roots slot access in land, not relation**
+> ([`Economy/RecruitCapacity.cs`](../RBMCampaign/Economy/RecruitCapacity.cs), a prefix on
+> `MaximumIndexHeroCanRecruitFromHero`, gated by `rbmCampaignEnabled`). Any member of the clan that
+> **owns the village gets the full 6**, whatever the headman thinks of him. The **realm's ruler**
+> recruiting from a vassal's fief gets `min(6, max(0, 1 + ladder))`, where `ladder` is the relation
+> ladder above applied to his relation with the **owner clan's leader**, not with the notable — with
+> no faction, non-player, perk or difficulty terms. Everyone else keeps vanilla's notable-relation
+> calculation. Garrison auto-recruit (`MaximumIndexGarrisonCanRecruitFromHero`) is a separate method
+> and is untouched.
+
+**Patronage** — `NotableSupportersCampaignBehavior.cs:39-48` registers the lines; the conditions are in
+`notable_support_request_on_clickable_condition` (L60-88). The `notable_support_request` line needs
+`GetRelationWithPlayer() >= 50f` (L81) and, if already sponsored, `relationWithPlayer >=
+notable.GetRelation(SupporterOf.Leader)` with that relation `!= MaxRelationLimit` (L64-79). Cost
 `GetInitialNotableSupporterCost = 20000 + 10000 × Clan.PlayerClan.SupporterNotables.Count`. Accepting
-sets `SupporterOf = Clan.PlayerClan` and grants `+5` relation.
+sets `SupporterOf = Clan.PlayerClan` and grants `+5` relation (accept consequence, L121-126).
 
 **Player progression** — `DefaultPlayerProgressionModel.cs:11` includes `SupporterNotables.Count ×
 0.001f`, which feeds `IssueDifficultyMultiplier` and hence most issue reward formulas.
@@ -597,8 +683,10 @@ village caps at **two concurrent notable issues** across its three notables.
   `Common = 3`, `Rare = 1`, modulated by `_additionalFrequencyScore` (0.2 normally, −0.4 during
   world-gen).
 - World-gen seeds `ceil(0.7 × Village.All.Count)` village issues (towns: 0.8).
-- **AI can solve an issue out from under the player** — `OnSettlementEntered` (L440+): when a non-player
-  lord enters, 5 % (own fief) / 1 % (other) chance to `CompleteIssueWithAiLord`.
+- **AI can solve an issue out from under the player** — `OnSettlementEntered` (L384-401): when a
+  non-player lord not in an army enters, 5 % (own fief) / 1 % (other) chance to pick a random issue in
+  the settlement and `CompleteIssueWithAiLord` — only if `CanBeCompletedByAI()` and it is still
+  `IsOngoingWithoutQuest`, so an issue the player has taken as a quest is safe.
 - Cooldown after any terminal state is **per issue type per hero**, 30 days
   (`DefaultIssueModel.IssueOwnerCoolDownInDays`).
 
@@ -610,10 +698,10 @@ Every issue gated on a village notable:
 |---|---|---|
 | ExtortionByDeserters | `IsHeadman`, village, `Bound?.Town.Security <= 50` | Common |
 | HeadmanNeedsGrain | `IsHeadman`, bound to a **town**, type ≠ WheatFarm, town grain `InStore < 30`, local price `> 0.9 × avg` | Common |
-| HeadmanNeedsToDeliverAHerd | `IsHeadman \|\| IsRuralNotable`, bound **not** a castle, animal-production type, `Bound.Town.Security <= 60` | VeryCommon |
+| HeadmanNeedsToDeliverAHerd | `IsHeadman \|\| IsRuralNotable`, bound **not** a castle, animal-production type, `Bound.Town.Security <= 60`, `Bound.Notables.Count > 0` | VeryCommon |
 | HeadmanVillageNeedsDraughtAnimals | `IsHeadman`, prosperity Low/Mid, mine or Lumberjack | VeryCommon |
 | VillageNeedsTools | `IsHeadman`, prosperity `< Mid`, no `IsAnimal` production, item count 0 | VeryCommon |
-| NearbyBanditBase | `IsHeadman`, `Bound.Town.Security <= 50` | VeryCommon |
+| NearbyBanditBase | `IsHeadman`, `Bound.Town.Security <= 50`, an infested hideout within `NearbyHideoutMaxRange` (half the average distance between the two closest towns) | VeryCommon |
 | LandlordNeedsAccessToVillageCommons | `IsRuralNotable`, WheatFarm, `Mercy <= 0 && Generosity <= 0`, `Security <= 70`, + a sibling village with a free Headman | Common |
 | LandLordNeedsManualLaborers | `IsRuralNotable`, `Mercy <= 0`, mine type | VeryCommon |
 | LandLordTheArtOfTheTrade | `IsRuralNotable`, `Bound.Town.GetItemPrice(PrimaryProduction) < PrimaryProduction.Value` | VeryCommon |
@@ -621,7 +709,7 @@ Every issue gated on a village notable:
 | VillageNeedsCraftingMaterials | `IsRuralNotable`, not at war with the player | Rare |
 | MerchantNeedsHelpWithOutlaws | `IsMerchant \|\| IsRuralNotable`, nearby `IsInfested` hideout | VeryCommon |
 | FamilyFeud | `IsRuralNotable`, bound to a town, + another village of that town with a free `IsRuralNotable` with `Mercy <= 0` | Rare |
-| NotableWantsDaughterFound | `IsRuralNotable`, `Bound.BoundVillages.Count > 2`, `Age > 2 × HeroComesOfAge`, `Mercy <= 0 && Generosity <= 0` | Rare |
+| NotableWantsDaughterFound | `IsRuralNotable`, `CanHaveCampaignIssues()`, `Bound.BoundVillages.Count > 2`, `Age > 2 × HeroComesOfAge`, a female companion template of the culture and a male GangLeader template, `Mercy <= 0 && Generosity <= 0` | Rare |
 | RuralNotableInnAndOut | `IsRuralNotable \|\| IsHeadman`, bound is a town, `Mercy + Honor < 0`, culture `BoardGame != None` | Common |
 
 `LesserNobleRevoltIssueBehavior` is **not** a village-notable issue (gated `IsLord`); it merely applies
@@ -670,13 +758,13 @@ Power deltas are hand-written inside each issue. Selected values:
 | Issue | Success | Failure |
 |---|---|---|
 | ExtortionByDeserters | rel `+8`, `AddPower(15)`, town `Security +10`, `Prosperity +100` | rel `−10`, `AddPower(−10)`, `Security −10`, `Prosperity −50` |
-| HeadmanNeedsGrain | rel `+5`, `AddPower(10)`, `Prosperity +50`, `+1` with every other notable | rel `−3` others, `AddPower(−5)`, `Prosperity −10`; quest worst branch `AddPower(−10)` |
-| HeadmanNeedsToDeliverAHerd | rel `+5`, `AddPower(5)`, **`Hearth +50`** | `AddPower(−5)`, target `Prosperity −10` |
-| HeadmanVillageNeedsDraughtAnimals | rel `+5`/`+8`, `Hearth +30`/`+80`/`+50` | rel `−5`, `Hearth −30` |
-| VillageNeedsTools | rel `+5`/`+7`, `AddPower(10)`, `Hearth +50` | rel `−5`, `AddPower(−10)`, `Hearth −30` |
+| HeadmanNeedsGrain | rel `+5`, `AddPower(10)`, `Prosperity +50`, `+1` with every other notable | alt-solution failure (L270-278): `AddPower(−5)`, `Prosperity −10`, rel `−3` with **all** the village's notables, owner included; quest timeout (L729-741): owner rel `−5`, others `−3`, `AddPower(−5)`, `Prosperity −10`; criminal-rating branch `AddPower(−10)` |
+| HeadmanNeedsToDeliverAHerd | rel `+5`, `AddPower(5)`, **`Hearth +50`**; quest success also target town `Prosperity +50` (L532) | `AddPower(−5)`, target `Prosperity −10`, rel `−5` on timeout or `−10` otherwise (L660-662) |
+| HeadmanVillageNeedsDraughtAnimals | rel `+5`/`+8`, `Hearth +30`/`+80`/`+50`; `AddPower(10)` on the alt solution (L285) and on quest success (L627) | timeout: `AddPower(−10)`, rel `−5`, `Hearth −30` (L633-635) |
+| VillageNeedsTools | alt solution: rel `+5`, `AddPower(10)`, `Hearth +50` (L297-299); quest: `AddPower(10)`, rel `+7` and `Hearth +40` with an exchange item (and `+2` with the other notables), else rel `+5` and `Hearth +20` (L589-614) | timeout: rel `−5`, `AddPower(−10)`, `Hearth −30` (L575-577); `OnFailed`: only `AddPower(−10)`, rel `−5` (L580-584) |
 | VillageNeedsCraftingMaterials | rel `+5`, `AddPower(10)`, `Hearth +60` (quest `+30`) | `AddPower(−10)`, `Hearth −40` |
-| LandLordNeedsManualLaborers | rel `+5`, `AddPower(10)` | betray branch: headman rel `−5`, `AddPower(−10)` |
-| LandlordNeedsAccessToVillageCommons | owner rel `+5`, `AddPower(10)`; **target village's notables `−3` and `AddPower(−10)`** | inverted |
+| LandLordNeedsManualLaborers | giver rel `+5`, `AddPower(10)`; on the no-profit-share success where a counter-offer was made, the headman takes rel `−5` and `AddPower(−10)` (L673-674); with profit share and a counter-offer, headman `AddPower(5)` | accepting the counter-offer (`QuestFailPlayerAcceptedCounterOffer`, L681-695): giver `AddPower(−10)`, rel `−3`; headman `AddPower(+10)`, rel `+5`. Timeout (L707-711): giver `AddPower(−10)`, rel `−5` |
+| LandlordNeedsAccessToVillageCommons | owner rel `+5`, `AddPower(10)`; **only the target village's `IsHeadman` notables** `−3` and `AddPower(−10)` (L247-254) | owner rel `−5`, `AddPower(−10)`; target headmen rel `+3`, `AddPower(+10)` (L257-273) |
 | LandlordTrainingForRetainers | rel `+5`, `AddPower(10)` | rel `−5`, `AddPower(−10)` |
 | NearbyBanditBase | `AddPower(+5)`, `Prosperity +10` | `AddPower(−5)`, `Prosperity −10` |
 | NotableWantsDaughterFound | rel `+10`, `AddPower(10)`, `Security +10` | rel `−10`, `Prosperity −5`, `Security −5` |
@@ -696,8 +784,14 @@ whose quest loop is a genuine `GiveGoldAction.ApplyBetweenCharacters(MainHero, Q
 Nearly every village issue carries `!CurrentSettlement.IsRaided && !IsUnderRaid` in its stay-alive
 check (`ExtortionByDeserters:269`, `HeadmanVillageNeedsDraughtAnimals:236`,
 `LandLordNeedsManualLaborers:181`, `LandLordTheArtOfTheTrade:226`, `LandlordTrainingForRetainers:177`,
-`NearbyBanditBase:321`, …). **A raid auto-cancels them, and cancel pays no relation** (§6.4) — so a
-raid silently voids the player's in-progress work with that village.
+`NearbyBanditBase:321`, …). That stay-alive auto-cancel only applies to issues **not yet turned into
+quests** — it is gated on `IsOngoingWithoutQuest` (`IssueBase.cs:896`, `IssueManager.cs:262/516`). **A
+raid auto-cancels them, and cancel pays no relation** (§6.4).
+
+A quest already in progress is cancelled by its own `VillageBeingRaided` handler instead.
+ExtortionByDeserters is the exception (`Issues/ExtortionByDesertersIssueBehavior.cs:901-925`): if the
+raider is the deserter party or the player, the quest **fails** — rel `−10`/`−5`, `AddPower(−10)`, town
+`Security −10`, `Prosperity −50`. Only a third party's raid gives it a zero-delta cancel.
 
 ---
 
@@ -705,7 +799,7 @@ raid silently voids the player's in-progress work with that village.
 
 ### 7.1 Raid completed
 
-`NotablePowerManagementBehavior.cs:38-44`:
+`NotablePowerManagementBehavior.cs:39-45`:
 
 ```csharp
 private void OnRaidCompleted(BattleSideEnum winnerSide, RaidEventComponent mapEvent)
@@ -715,6 +809,10 @@ private void OnRaidCompleted(BattleSideEnum winnerSide, RaidEventComponent mapEv
 Flat **`−5` power to every notable of the raided village, regardless of which side won** — the
 `winnerSide` argument is ignored. No gold loss. Relation is handled separately by `BeHostileAction`,
 which no-ops while at war (§5.2).
+
+Under RBM a raid also costs the village its **standing volunteers**: `RBMSettlementDefenseBehavior`
+(§10) empties every notable's slots into the village militia the moment the raid — or a forced levy
+of volunteers or supplies — map event starts.
 
 ### 7.2 Village states
 
@@ -744,10 +842,13 @@ are completely untouched by siege aftermath**, including Pillage/Devastate on th
 
 ### 7.4 Ownership changes
 
-The only reaction is `IssueManager.OnSettlementOwnerChanged` (L576-596): if the player is on either
+The main reaction is `IssueManager.OnSettlementOwnerChanged` (L576-596): if the player is on either
 side, notable issues in that settlement — and in its bound villages if the settlement
-`IsFortification` — get `InitializeIssueOnSettlementOwnerChange()`. No power, gold, relation, or
-`CurrentSettlement` change. **Notables do not switch allegiance and are not replaced.**
+`IsFortification` — get `InitializeIssueOnSettlementOwnerChange()` (`IssueBase.cs:1005`), which removes
+the issue's lord-solution dialogue lines if `IsThereLordSolution`. Separately, every `IssueBase`
+subscribes to `OnSettlementOwnerChanged` itself (`IssueBase.cs:503`, handler L1013-1019): on any owner
+change of its `IssueSettlement` it calls `ConversationManager.RemoveRelatedLines(this)`. No power, gold,
+relation, or `CurrentSettlement` change. **Notables do not switch allegiance and are not replaced.**
 
 ---
 
@@ -771,8 +872,8 @@ Specifically:
   (`<300 → 4f`, `<600 → 1.2f`, else `0.2f`), `GrazingRights −0.25`, three perks, the bound town's
   `VillageHeartsPerDay` buildings, `EmpireVillageHearthFeat`, and the `VillageHearth` issue effect.
   **Notable power appears nowhere.**
-- **Village militia** — `Village.Hearth / 400f` plus a flat base and the bound town's governor perks.
-  Not notables.
+- **Village militia** — `Village.Hearth / 400f` plus a flat base and the trade-bound town's governor
+  perks. Not notables.
 - **Village production** — `DefaultVillageProductionCalculatorModel.cs:31,82` reads
   `village.GetHearthLevel() + 1` only.
 - **Town loyalty** — `DefaultSettlementLoyaltyModel.GetSettlementLoyaltyChangeDueToNotableRelations`
@@ -788,16 +889,23 @@ Specifically:
 **The only channel from a village notable to any settlement number is the issue-effect pipeline
 (§6.3)** — and every one of those effects is negative.
 
+This still holds under RBM. RBM replaces or rebuilds several of these models (village production in
+`Production/RBMVillageProduction.cs`, militia in `Settlements/MilitiaUpkeep.cs`, which keeps the issue
+effects), and none of its replacements reads a notable's presence, power or relation. The arrows RBM
+adds run the other way — from the settlement **to** the notables: hearth sizes the manpower pool that
+gates their slot fills (§4.2), and the village purse receives what their converted gold and their
+recruits' prices bring in (§2.1, §10).
+
 ---
 
 ## 9. Player interaction surface
 
-- **Conversation family** — `LordConversationsCampaignBehavior.UsesLordConversations` (L124-131)
+- **Conversation family** — `LordConversationsCampaignBehavior.UsesLordConversations` (L123-130)
   includes `IsHeadman` and `IsRuralNotable`, so village notables get the full `hero_main_options` menu.
 - **First meeting** — `conversation_headman_introduction_on_condition` (L1698) sets `VILLAGE_NAME`;
-  `conversation_rural_notable_introduction_on_condition` (L1710) sets no settlement variable. Both
+  `conversation_rural_notable_introduction_on_condition` (L1709) sets no settlement variable. Both
   require `ConversationManager.CurrentConversationIsFirst`.
-- **Issue offer** — `IssuesCampaignBehavior.AddDialogues` (L460+) plus
+- **Issue offer** — `IssuesCampaignBehavior.AddDialogues` (L459+) plus
   `LordConversationsCampaignBehavior.cs:794` `"hero_give_issue"` → `"issue_offer"` (priority 110),
   branching to lord solution / quest / send-troops.
 - **Patronage** — `"notable_support_request"` / `"notable_support_end"` (§5.3).
@@ -811,8 +919,9 @@ Specifically:
   `culture.RuralNotableNotary` (`sp_rural_notable_notary`) per `IsRuralNotable || IsHeadman` in the
   village scene; placement via `SandBox.Missions.AgentBehaviors/NotableSpawnPointHandler.cs`.
 - **Rumours** — `CommonVillagersCampaignBehavior.GetPossibleIssueRumors` (L611-626) surfaces
-  `notable.Issue.IssueAsRumorInSettlement`; `GetBeggarStories` (L634-650) casts a `RuralNotable` with
-  `Mercy < 0 && Generosity <= 0` as the villain. `CommonVillagersCampaignBehavior.cs:1051-1060` uses
+  `notable.Issue.IssueAsRumorInSettlement`; `GetBeggarStories` (L629-680; villain check L639) casts a
+  `RuralNotable` with `Mercy < 0 && Generosity <= 0` as the villain — it iterates the current
+  settlement's `BoundVillages`, so it is a **town** beggar's story about a village notable. `CommonVillagersCampaignBehavior.cs:1051-1060` uses
   `GetRelation(leader)` with `IsHeadman` to pick villager lines.
 - **Tutorial** — `StoryMode…/TutorialPhaseCampaignBehavior.cs:292-297` creates a scripted Headman and
   immediately grants `AddPower(200)` so it cannot vanish; L511 creates a RuralNotable.
@@ -821,27 +930,40 @@ Specifically:
 
 ## 10. What RBM currently does
 
-RBM touches village notables **only through `VolunteerTypes`**. Nothing in the repo reads or writes
-notable `Hero.Gold`, `Hero.Power`, or `SupporterOf`. All recruitment money RBM re-plumbs lands in
-`SettlementWealth` pots — never in the purse of the notable who supplied the man.
+RBM touches village notables mainly through `VolunteerTypes`, plus one write to `Hero.Gold`/`Hero.Power`
+(the converter replacement). Nothing in the repo reads or writes `SupporterOf`, and nothing changes a
+village notable's daily power drift (`ArtisanStanding` is artisan-only). All recruitment money RBM
+re-plumbs lands in settlement purses — for a village, the village's own purse — never in the purse of
+the notable who supplied the man.
 
 | File | What it does | Gate |
 |---|---|---|
-| [`Economy/RecruitSupply.cs`](../RBMCampaign/Economy/RecruitSupply.cs) | Pre/postfix on `UpdateVolunteersOfNotablesInSettlement` counts volunteers as a **multiset** before/after (vanilla re-sorts the array, so slot indices are unusable) and draws each net-new troop's kit in real items off the supply market — village → `Village.TradeBound`. Separately **replaces the recruit price wholesale**: owner clan / realm ruler → free, vassal at home → gear + 5× wage, mercenary or lord abroad → +10 %. | `SpoilsPool.IsEnabled && recruitDrawsFromSettlementStock` |
-| [`Settlements/SettlementDefenseMuster.cs`](../RBMCampaign/Settlements/SettlementDefenseMuster.cs) | On raid or siege assault, **empties every notable's whole `VolunteerTypes` array** into militia (village) or garrison (fortification). Permanently consumed. | `rbmCampaignEnabled` |
-| [`Settlements/GarrisonRecruitCost.cs`](../RBMCampaign/Settlements/GarrisonRecruitCost.cs) | Prefix-skips vanilla's garrison auto-recruit, so it no longer eats a village volunteer per day; replaced by a wealth-driven growth curve. | `GarrisonRecruitCost.IsEnabled` |
-| [`AI/RBMRecruitBiasBehavior.cs`](../RBMCampaign/AI/RBMRecruitBiasBehavior.cs) | Additive `GoToSettlement` score steering understrength AI lords toward free-recruit fiefs, which vanilla's scorer cannot see because it prices off volunteer wage. Reads the first 4 slots per notable. | `RecruitSupply.IsEnabled` |
-| [`Settlements/MilitiaUpkeep.cs`](../RBMCampaign/Settlements/MilitiaUpkeep.cs) | `ArmOneMilitiaman` reuses `RecruitSupply.DrawKitFromMarket` at `MilitiaVillageGearShare` (≈ ¼ kit) for villages. | `RecruitSupply.IsEnabled` |
+| [`Settlements/NotableWealth.cs`](../RBMCampaign/Settlements/NotableWealth.cs) | Replacing prefix on `BalanceGoldAndPowerOfNotable`: same 500:1 band and arithmetic, but the surplus is credited to the notable's settlement (a village: its purse) instead of destroyed, and the refill leg is paid from there instead of minted (§2.1). | `rbmCampaignEnabled` |
+| [`Recruitment/RecruitPool.cs`](../RBMCampaign/Recruitment/RecruitPool.cs) (+ `RBMRecruitPoolCampaignBehavior`) | Hearth-sized manpower pool (max `Hearth × 0.2`, `+Hearth × 0.03`/day, +10 %/level of the bound fief's Roads and Paths). Postfix (priority First) on `UpdateVolunteersOfNotablesInSettlement` charges one man per new fill and clears fills it cannot pay for; upgrades are free (§4.2). Shown on the settlement tooltip. | `rbmCampaignEnabled` |
+| [`Economy/RecruitCapacity.cs`](../RBMCampaign/Economy/RecruitCapacity.cs) | Prefix on `MaximumIndexHeroCanRecruitFromHero`: owner clan → all 6 slots; realm ruler → ladder of his relation with the owner clan's leader; everyone else vanilla (§5.3). | `rbmCampaignEnabled` |
+| [`Economy/RecruitSupply.cs`](../RBMCampaign/Economy/RecruitSupply.cs) | **Gear leg:** pre/postfix on `UpdateVolunteersOfNotablesInSettlement` counts volunteers as a **multiset** before/after (vanilla re-sorts the array, so slot indices are unusable) and draws each net-new troop's full kit, mount included, in real items off `Village.TradeBound`'s market. The village **pays** that town's citizens the full kit value out of its own purse (budget capped at what the purse holds); a broke village's recruits go out in whatever they had. **Price leg:** replaces the recruit price wholesale (§4.5) and credits what the recruiter paid to the **village purse** (`TroopMarketFeedback.RegisterRecruitPay`), so the village recovers its outlay when a lord comes for the man. Prisoner recruitment pays nothing. | `SpoilsPool.IsEnabled && recruitDrawsFromSettlementStock` (default on) |
+| [`Settlements/SettlementDefenseMuster.cs`](../RBMCampaign/Settlements/SettlementDefenseMuster.cs) (`RBMSettlementDefenseBehavior`) | On `MapEventStarted` for a raid, a siege assault, or a forced levy of volunteers or supplies, **empties every living notable's whole `VolunteerTypes` array** into the militia (village) or garrison (fortification; militia if it has no garrison party). Permanently consumed; the pool is not refunded. Own-settlement notables only. A muster that lifts the militia above its hard cap drains back 5 %/day. | `rbmCampaignEnabled` |
+| [`Settlements/GarrisonRecruitCost.cs`](../RBMCampaign/Settlements/GarrisonRecruitCost.cs) | Prefix-skips vanilla's `TickAutoRecruitmentGarrisonChange` (and `TickGarrisonChangeForTown`), so the garrison no longer takes a village volunteer per day; garrisons instead grow from the fief's treasury and its **own** manpower pool, never from village slots. | `GarrisonRecruitCost.IsEnabled` (`SpoilsPool.IsEnabled && rbmCampaignEnabled`) |
+| [`AI/RBMRecruitBiasBehavior.cs`](../RBMCampaign/AI/RBMRecruitBiasBehavior.cs) | Additive `GoToSettlement` score steering understrength AI lords (below 90 % of their affordable size, within 6 days' travel, target offering at least 4 volunteers) toward free-recruit fiefs, which vanilla's scorer cannot see because it prices off volunteer wage. Reads the first 4 slots per notable (vanilla's same-faction count — it does not model `RecruitCapacity`'s 6 for owners). | `RecruitSupply.IsEnabled` |
+| [`Settlements/MilitiaUpkeep.cs`](../RBMCampaign/Settlements/MilitiaUpkeep.cs) | `ArmOneMilitiaman` reuses `RecruitSupply.DrawKitFromMarket` at `MilitiaVillageGearShare` = **0.1** of a kit (no mount) for villages: village purse → trade-bound town's citizens. Militia never draws on notable slots or the manpower pool. | the draw runs only under `RecruitSupply.IsEnabled` |
 
 ### 10.1 Known interactions worth watching
 
 - **The `GetBasicVolunteer` override** (§4.3) is gated by `rbmCombatEnabled`, not by any campaign
   toggle. It removes the castle-village elite rule and adds a flat 15 % elite roll everywhere.
 - **Slot accumulation.** Because `GarrisonRecruitCost` suppresses vanilla's garrison auto-recruit,
-  village slots now drain only to players and AI parties. Higher average slot age → more in-place
-  upgrade rolls → **offered troop tiers drift above vanilla over a long campaign.**
+  village slots now drain only to players, AI parties and the defence muster. Higher average slot age
+  → more in-place upgrade rolls → **offered troop tiers drift above vanilla over a long campaign.**
+  The manpower pool does not counter this: it charges fills, not upgrades.
+- **Owners empty their own villages.** With `RecruitCapacity` giving the owner clan all 6 slots and
+  `RecruitSupply` pricing them at zero, an owning lord takes the strongest, most-upgraded slots that
+  vanilla would have locked behind relation.
 - **`RecruitSupply`'s multiset diff observes the overridden `GetBasicVolunteer` output**, so the kit
-  values drawn from market move with that patch.
+  values drawn from market move with that patch. It runs after `RecruitPool`'s postfix, so refused
+  fills are never armed.
+- **The defence muster arms men the village already paid for.** Their kit was bought at fill time;
+  moving them into the militia does not refund or re-charge anything, and the muster can carry the
+  militia over its hard cap, after which the excess drains at 5 %/day with kit refunds.
 
 ---
 
@@ -851,15 +973,18 @@ Recorded as observations, not proposals.
 
 1. **The purse is free real estate.** A village notable's 10,000 gold is written once and read by
    nothing but the converter. RBM could use `Hero.Gold` as a real per-notable balance without breaking
-   a single vanilla consumer — but the converter would have to be neutralised first, or any balance
-   above 10,500 silently bleeds into power at 500:1.
-2. **Volunteer production is blind to everything RBM models.** Local prosperity, hearth, food, wealth,
-   and the settlement's purse have no influence on recruit output; only kingdom-wide town count does.
-   This is the sharpest mismatch between vanilla and RBM's locality-driven economy.
+   a single vanilla consumer — but the converter (now `NotableWealth`, which still runs the 500:1
+   exchange, only with the village purse as counterparty) would have to be neutralised first, or any
+   balance above 10,500 bleeds into power and the village purse at 500:1.
+2. **Volunteer production is nearly blind to what RBM models.** Fill *chance* still reads only the
+   kingdom-wide size score; the one local term is RBM's hearth-sized manpower pool, which caps how
+   many fills a village can afford but not how fast they roll. Prosperity, food, wealth and the
+   village purse still play no part. The purse does decide how well a new recruit is armed (the gear
+   draw is capped at what the village can pay).
 3. **Power is the only tier lever.** Any attempt to make recruit quality reflect a village's condition
    has to route through `notable.Power`, because `log2(Power / Tier) × 0.01` is the sole upgrade path.
-4. **Castles are notable-free.** Anything castle-side must work through bound villages or the garrison
-   path that RBM already suppresses.
+4. **Castles are notable-free.** Anything castle-side must work through bound villages or the
+   castle's own manpower pool, which under RBM feeds only its wealth-grown garrison.
 5. **Villages already hold `Alley` objects** that nothing owns — an existing, save-safe per-village
    container if a village-side equivalent of the alley economy were ever wanted.
 6. **Issue effects are the only vanilla precedent** for a notable moving a settlement number, and they
@@ -878,11 +1003,11 @@ Recorded as observations, not proposals.
 | Converter dead band | `[4500, 10500]` | ″ |
 | `NotableDisappearPowerLimit` | 100 | `DefaultNotablePowerModel` |
 | Disappearance chance | `(100 − Power)/100 × 0.02`/day | ″ |
-| Power rank thresholds | 0 / 100 / 200 → 0.05 / 0.10 / 0.15 influence | ″ |
+| Power rank thresholds | ≤ 100 / > 100 / > 200 → 0.05 / 0.10 / 0.15 influence | ″ |
 | Raid power penalty | −5, both sides | `NotablePowerManagementBehavior.OnRaidCompleted` |
 | Occupation power drift | Headman +0.1, RuralNotable +0.1 | `DefaultNotablePowerModel` |
 | Castle-bound village bonus | +0.1 power/day, +0..20 initial | ″ |
-| `MaximumNumberOfVolunteers` | 6 | `Hero.cs:43` |
+| `MaximumNumberOfVolunteers` | 6 | `Hero.cs:44` |
 | `MaxVolunteerTier` | 4 | `DefaultVolunteerModel.cs:11` |
 | Slot fill chance (large faction) | 0.525 / 0.368 / 0.257 / 0.180 / 0.126 / 0.088 | ″ |
 | Faction size score saturation | 46 | ″ |
@@ -891,6 +1016,10 @@ Recorded as observations, not proposals.
 | Issue cooldown | 30 days, per type per hero | `DefaultIssueModel` |
 | Notable respawn cadence | weekly check, 1 per success | `SettlementHelper.SpawnNotablesIfNeeded` |
 | Dead notable unregister | 7 days | `NotablesCampaignBehavior.WeeklyTick` |
-| Loyalty relation bonus | `Bound.Town.Loyalty ≥ 75` → +1 at 5 %/day | `CharacterRelationCampaignBehavior.cs:421` |
+| Loyalty relation bonus | `Bound.Town.Loyalty ≥ 75` → +1 at 5 %/day | `CharacterRelationCampaignBehavior.cs:423` |
 | Patronage cost | `20000 + 10000 × SupporterNotables.Count` | `DefaultNotablePowerModel.cs:152` |
 | Notable templates | 18 Headman, 12 RuralNotable | `spspecialcharacters.xml` |
+| **RBM** manpower pool (village) | max `Hearth × 0.2`, refill `Hearth × 0.03`/day, 1 man per new fill | `RecruitPool` |
+| **RBM** slot access | owner clan 6; ruler by relation with owner leader; else vanilla | `RecruitCapacity` |
+| **RBM** recruit price | owner/ruler free; vassal at home gear + 5 days' wage; outsider × 1.1 | `RecruitSupply.RecruitPrice` |
+| **RBM** elite volunteer roll | 15 % `EliteBasicTroop`, every notable (`rbmCombatEnabled`) | `CampaignChanges.DefaultVolunteerModelPatch` |

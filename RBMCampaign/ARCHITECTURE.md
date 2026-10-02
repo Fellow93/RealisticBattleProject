@@ -11,10 +11,11 @@ gated by the config toggle `rbmCampaignEnabled` (default on).
 
 It has grown well past the spoils system this document was first written for. The module now
 also carries the **settlement wealth ledger** (`Settlements/`), the **village-to-town goods and
-food chain** (`Production/`), the **market and caravan economy** (`Economy/`), the
-**equipment-aware auto-resolve** (`Simulation/`, `Power/`) and the **spectator battle**
-(`Spectate/`). Those have their own documents — see the file map at the foot of this one.
-Everything below is about the spoils purse specifically.
+food chain** (`Production/`), **workshop rules** (`Workshops/`), the **market and caravan economy**
+(`Economy/`, `Caravans/`), the **settlement manpower pool** (`Recruitment/`), **AI lord behaviors**
+(`AI/`), the **equipment-aware auto-resolve** (`Simulation/`, `Power/`), the **spectator battle**
+(`Spectate/`) and the **RBM Ledger** screen (`UI/Ledger/`). Those have their own documents — see
+the file map at the foot of this one. Everything below is about the spoils purse specifically.
 
 > **Money.** `docs/economy-money-flows.md` maps every gold pool in the campaign layer, every flow
 > between them, how spoils feed the settlement economy, and which edges still conjure or destroy
@@ -29,9 +30,14 @@ party X" is one purse, separate from the same troop in party Y. It lives in a si
 (`SpoilsPool._spoils`) because Bannerlord's `TroopRosterElement` struct has no spare field to
 hang it on.
 
-The purse **fills** from battlefield loot, raid and siege plunder, and the daily wage, and
-**drains** on upgrades, field maintenance, food, carousing, paid healing, the odd luxury, and
-the leader's cut.
+The purse **fills** from battlefield loot, the beaten enemy's captured purses, raid and siege
+plunder, stripped prisoners (ransomed or left behind), the daily wage and a recruit's seed, and
+**drains** on upgrades, field maintenance, food, carousing, paid healing, the odd luxury, the
+leader's cut, and the share each fallen man takes to the grave.
+
+Villager parties are exempt (`IsExemptParty`, gated at `AddSpoils`). Companion heroes claim shares
+like a stack but hold no purse: their share is paid straight to the party payee's gold
+(`IsCompanionStack`, `EventGoldKind.CompanionSpoils`), with no leader's cut.
 
 ## How spoils are EARNED
 
@@ -41,32 +47,49 @@ the leader's cut.
   routed (fled with theirs). The winners hold the field, so they recover **both sides'**
   fallen, including their own dead.
 - Each dead man is stripped of one of his battle-equipment sets, chosen at random. Every
-  armor/weapon slot yields a **random 25–75% of the item's value** (mean 50%; consumables like
-  arrows/javelins reflect what's left unspent).
+  armor/weapon slot, horse and harness included, yields a **random 25–75% of the item's value**
+  (mean 50%; consumables like arrows/javelins reflect what's left unspent).
 - Loot is **bucketed by item tier**, then handed out to the victorious parties in proportion to
   each party's `ContributionToBattle` (even split if all contributions are zero, e.g. simulated
   battles).
-- Within a party, loot follows a **pecking order**: veterans (higher troop tier) pick first.
+- Within a party, loot follows a **pecking order**: veterans (higher troop tier) pick first, and
+  within a tier the culture's noble line ahead of the levy.
   The further *beneath* a troop's tier a piece is, the likelier he is to **overlook** it
   (`troopLootOverlookChancePerTier`, compounding per tier of gap). What veterans overlook or
   can't carry cascades to greener troops.
-- Each man carries at most `troopLootPiecesPerMan × men in stack` pieces.
+- A stack carries at most `troopLootPiecesPerMan × men in stack` pieces.
+- **Casualties first** (`SpoilsPool.Casualties.cs`): the winners' dead take their per-man share
+  of their stack's purse with them; a wholly wiped stack's purse is half recovered and split among
+  the surviving stacks by tier weight. The beaten side's killed and wounded drop their share of
+  their purses, of which `troopFallenSpoilsCaptureFraction` (0.75) goes to the winners by
+  contribution, then tier weight.
 - **Player feedback**: post-battle message ("Your men strip the fallen and recover N in
-  spoils" / "…find nothing they can use").
+  spoils" / "…find nothing they can use"), plus companion-gold and leader's-cut lines.
 
 ### 2. Village raids (`SpoilsPool.OnRaidCompleted`)
 
 Hooks `CampaignEvents.RaidCompletedEvent(BattleSideEnum winnerSide, RaidEventComponent raidEvent)`,
-which fires once when a raid concludes. Only on `winnerSide == Attacker`. The pot is
-`village.Hearth × RaidDamage × troopRaidSpoilsMultiplier` (`RaidEventComponent.RaidDamage` is the
-0–1 share of the village actually stripped). It's split among `raidEvent.AttackerSide.Parties` by
-`ContributionToBattle` (even split if all zero — mirrors `OnMapEventEnded`), then spread evenly by
-head count within each party via `GrantFlatSpoilsToParty` (plunder is shared, not fought over piece
-by piece like battlefield kit). The player gets a "Your men plunder {SETTLEMENT}…" message.
+which fires once when a raid concludes. Only on `winnerSide == Attacker`. The village's purse
+(`SettlementWealth`, a village's vanilla `Gold` field) is debited `× RaidDamage`
+(`RaidEventComponent.RaidDamage` is the 0–1 share of the village actually stripped), and the
+hard-coded `RaidSpoilsShare = 0.5` of what was drained becomes the pot; the rest is destroyed. The
+pot is split among `raidEvent.AttackerSide.Parties` by `ContributionToBattle` (even split if all
+zero — mirrors `OnMapEventEnded`), then by tier weight within each party via
+`GrantSpoilsWeightedByTier` (plunder is a lump, not fought over piece by piece like battlefield
+kit), then the leader's cut. The player gets a "Your men plunder {SETTLEMENT}…" message.
 
-### 3. Town/castle sacking (`SpoilsPool.OnSiegeAftermathApplied`)
+The goods side of a raid is cut at the model: `RaidGoodsDestruction` postfixes
+`DefaultRaidModel.GetRaidLootMultiplier` so a raid keeps `0.5 + 0.001 × Roguery (+0.2 Nord)`,
+clamped to 1, of vanilla's haul.
 
-Driven by the **vanilla aftermath choice** — the player's Devastate / Pillage / Show Mercy menu, or
+### 3. Siege drain and town/castle sacking (`SpoilsPool.OnBesiegedFortificationDailyTick`, `SpoilsPool.OnSiegeAftermathApplied`)
+
+While a siege holds, a daily settlement tick drains 5% (`SiegeDailyDrainRate`) of a besieged
+castle's treasury or a besieged town's citizen wealth, of which `SiegeDrainSpoilsShare = 0.5` goes to
+the besieging parties (by headcount, then tier weight) and the rest is destroyed. The same tick
+snapshots the besiegers so the sack can pay them after the camp is torn down. Silent to the player.
+
+The sack itself is driven by the **vanilla aftermath choice** — the player's Devastate / Pillage / Show Mercy menu, or
 `DetermineAISiegeAftermath`'s weighted pick for an AI — off
 `CampaignEvents.OnSiegeAftermathAppliedEvent`. Towns and castles, player and AI alike. Per tier:
 
@@ -80,7 +103,9 @@ Wealth is drawn from a town's **citizen wealth** or a castle's **treasury** (a t
 intact to the new owner). Market goods (towns only) come off `town.Owner.ItemRoster` at the market's
 own asking price, food at half the fraction. Everything paid out was first taken from the settlement;
 the non-spoils remainder is destroyed, never banked. The pot is split across **every besieging party**
-by vanilla's contribution map (headcount fallback), then by tier weight within each party.
+by vanilla's contribution map (headcount fallback), then by tier weight within each party, each with
+its leader's cut. A won sally-out arrives on the same event and sacks nothing (the previous owner's
+faction check). The sack and the siege drain share the `SpoilsPool.SackActive` gate.
 
 The prosperity fraction and the zeroing of vanilla's minted army gold live in
 `SiegeAftermathPatches`. **Ordering note:** `MapEvent.FinalizeEventAux` dispatches `OnMapEventEnded`
@@ -89,27 +114,63 @@ The prosperity fraction and the zeroing of vanilla's minted army gold live in
 menu. `OnSettlementCaptured` therefore only parks/consumes a besieger snapshot, with an hourly sweep
 as the backstop for any capture path that raises no aftermath at all (sacked at Pillage).
 
-### 4. Wages (`SpoilsPool.OnDailyTickParty`)
+### 4. Prisoners (`SpoilsPool.Ransom.cs`, `SpoilsPool.PrisonerStrip.cs`)
 
-Each day, every non-hero stack's full wage is deposited into its purse.
-**The party's actual gold is untouched** — this only reinterprets where some of the wage
-notionally went (kit maintenance). Applies to every party in the world.
+- **Ransom**: every prisoner sold — heroes included — yields his full mounted kit worth
+  (`GetEquipmentValueWithMount`) as spoils to the selling party, by tier weight, then the leader's cut.
+  Hooks: `SellPrisonersAction.ApplyInternal` (real sales only), `EndCaptivityAction.ApplyByRansom` (a
+  lord ransomed by courier offer or barter, outside a sale), and the manual-labourers delivery quest's
+  `OnDoneClicked`. The gold for the man himself is vanilla's, but `Settlements/RansomFunding.cs`
+  debits it from the buying town's citizen wealth instead of minting it (left alone where there is no
+  citizen purse). `RansomMenuTooltip` / `RansomScreenSpoilsLabel` show the spoils half.
+- **Left behind**: prisoners the player declines on the post-battle loot screen are stripped for half
+  their kit worth (`LeftoverPrisonerStripFraction`), via a prefix on
+  `PlayerEncounter.OnPlayerLootMembersAndPrisonerEnd`.
+
+### 5. Wages and recruit seed (`SpoilsPool.OnDailyTickParty`, `SpoilsPool.Maintenance.cs`)
+
+Each day, every non-hero stack's full wage is deposited into its purse — twice it for a mercenary
+company under contract (the second wage is the one `MercenaryContractPay` charges and the crown
+reimburses). **The party's actual gold is untouched** — this only reinterprets where some of the
+wage notionally went (kit maintenance). Applies to every party in the world but bandit parties.
+Garrisons bank their wage like any troop (the fief pays it, `GarrisonUpkeep`). Militia stacks go to
+`MilitiaUpkeep.PayMilitiaUpkeep` instead: the settlement's funding pot pays a reduced wage into the
+purse — town 0.25, castle 0.10, village 0 of a soldier's wage (`MilitiaWageFactor*`) — and their kit
+maintenance is met from that purse first.
+
+A stack recruited from a village or town is seeded `recruitMaintenanceDays` (20) days of maintenance
+(`OnTroopRecruited` for the AI, `OnUnitRecruited` for the player; the two events are disjoint).
 
 ## How spoils are SPENT
 
 ### 1. Troop upgrades (main sink)
 
-- The equipment-value delta between a troop and its upgrade target *is* the gold cost. Spoils
-  pay it, consumed **one man at a time** — if the purse covers 2.5 men, the first 2 upgrade
-  free, the 3rd pays half, the rest pay full.
-- Base price runs through the vanilla perks/feats (Steward SoundReserves, Bow RenownedArcher,
-  Khuzait feat, Steward Contractors) then `troopUpgradeCostMultiplier`.
+- The equipment-value delta between a troop and its upgrade target *is* the gold cost (horse and
+  harness included while `troopUpgradeChargeMountValue` is on — `MountValueUpgrade` then also drops
+  vanilla's horse-item requirement). Spoils pay it, consumed **one man at a time** — if the purse
+  covers 2.5 men, the first 2 upgrade free, the 3rd pays half, the rest pay full.
+- The delta is scaled by `troopUpgradeCostMultiplier`, then run through the vanilla perks/feats
+  (Steward SoundReserves, Bow RenownedArcher, Khuzait feat, Steward Contractors). A man's spoils
+  price is that same full gold price, so the perks discount both pockets. A cheaper-kit upgrade
+  costs 0 gold and credits the surplus to the upgraded stack's purse.
 - Patches `DefaultPartyTroopUpgradeModel.GetGoldCostForUpgrade` to quote the *next* man's price.
+- **Supply town** (`UpgradeSupply`): only the **gold** leg reaches a town — the supply town's citizen
+  wealth via `TroopMarketFeedback.RegisterPurchase`, market fee included, falling back to the nearest
+  friendly town, then any town. The spoils leg credits no one. With `troopUpgradeRequireSupplyTown` on,
+  stock matching the improved slots leaves that town's market for the gold-bought men only, and a party
+  needs a friendly town within `troopUpgradeSupplyRadius` (or to be resting in any friendly settlement)
+  to upgrade: the player's arrows are refused and greyed, the AI promotes only purse-covered men.
+- **AI extras**: `PartyUpgradeBudget` — an optional per-party daily cap on upgrade *gold*, set from
+  the clan Parties panel (`RBM_partyUpgradeCapGold` / `RBM_partyUpgradeCapEnabled`); garrison
+  promotions are billed to the fief treasury (then `GarrisonSubsidy`), less the Training Fields
+  discount; `UpgradeFormationWeights` turns vanilla's fixed AI branch pick at an upgrade fork into a
+  weighted draw by culture, garrison role and the lord's traits.
 
 ### 2. Food in settlements (`TroopUpkeep`)
 
-- On settlement enter and each hour it stays, each unprovisioned stack buys `troopSettlementFoodDays`
-  days of food off the market — **real items, real stock, real prices**.
+- On settlement enter and each hour it stays, each unprovisioned stack of a visiting party buys
+  `troopSettlementFoodDays` days of food off the market — **real items, real stock, real prices**.
+  Garrisons and militia buy none (`IsVisitor`): their settlement feeds them.
 - Buys the best fare it can afford first; per-item ceiling scales with wage
   (`troopFoodWageFraction`). Recruits buy grain, veterans buy meat/cheese. Falls back to
   anything rather than starve; limited by market stock and purse.
@@ -124,17 +185,42 @@ notionally went (kit maintenance). Applies to every party in the world.
 
 Each hour idling in a settlement, each stack spends `troopSettlementFunWageFraction` of its
 daily wage on drink/dice — a quarter of a day's wage at the default, plus a surplus term that
-bites harder the further over its cap the purse stands. Purse never goes negative.
+bites harder the further over its cap the purse stands (at most 2% of the surplus an hour), all
+under a per-man ceiling of `25 × (tier + 1)` a day. Purse never goes negative. The coin is credited to
+the settlement's purse (`TroopMarketFeedback.RegisterServiceSpend`); in a town half of it also buys
+tavern fare off the market.
 
-**Garrisons and militia are excluded** from food/carousing (they never leave; would be an
-infinite spending faucet). Only visiting field parties spend in settlements.
+**Garrisons and militia carouse too** (`SpendsLocally` admits every party), and buy luxuries and pay
+for healing: their purse holds the wage their own settlement paid them, so their spending is that
+coin coming back over the counter. Only food is reserved to visitors.
 
-### 4. The spoils cap (`SpoilsPool.GetSpoilsCap`, `Spoils/SpoilsPool.Cap.cs`)
+### 4. Field maintenance (`Spoils/SpoilsPool.Maintenance.cs`)
+
+`troopMaintenanceFraction` (0.005) of a stack's mounted kit worth a day, charged once per clan per
+day off the clan finance model's apply pass (`MaintenanceFinanceLine`) for every active party in
+`clan.WarPartyComponents`. The purse meets `independentMaintenancePurseFraction` (1) of it for a clan
+sworn to no kingdom or a mercenary under contract, and none of it for a sworn vassal or ruler; the
+shortfall is folded into the clan's daily gold change. That gold leg is credited to the nearest town
+not at war with the party (the one it stands in, if any; never a castle or village) through
+`TroopMarketFeedback.RegisterPurchase`, market fee included. The spoils leg is simply drained.
+**Nothing comes off the town's shelves** — maintenance is labour, not stock. Garrisons are billed
+their kit maintenance by `GarrisonUpkeep.ChargeMaintenance` (paid by the fief, not the purse) and
+militia inside `MilitiaUpkeep`.
+
+### 5. Healing and luxuries (`TroopUpkeep.Healing.cs`, `TroopUpkeep.Luxury.cs`)
+
+Hourly in a settlement: a stack with wounded pays `troopSpoilsHealGoldPerTier × tier` a man to mend
+up to `troopSpoilsHealFractionPerHour` of them (not while starving), paid to the settlement; an
+over-cap stack off cooldown rolls `troopLuxurySpendChance` to buy one luxury off the market, a
+keepsake that goes to no inventory. The leader earns Steward XP for what his stacks spend on food and
+luxuries (`TroopUpkeep.Stewardship.cs`, which also grants daily XP for food stores and spare mounts).
+
+### 6. The spoils cap (`SpoilsPool.GetSpoilsCap`, `Spoils/SpoilsPool.Cap.cs`)
 
 Not a sink of its own — a ceiling the sinks above read. Each stack's cap
 `GetSpoilsCap` = `(dailyWage + dailyMaintenance) × troopSpoilsCapDays`, i.e. a configured number of
 days' worth of the stack's own keep — its daily wage (`PartyWageModel.GetCharacterWage × stackSize`)
-and its daily field maintenance (`DailyMaintenanceCost`, the same per-stack upkeep §7 charges). Priced
+and its daily field maintenance (`DailyMaintenanceCost`, the same per-stack upkeep §4 charges). Priced
 the same for every tier: a veteran's dearer wage and kit already make his days' keep the deeper purse,
 so there is no separate war chest and a top-tier troop with no upgrade to save for is held to the same
 rule. `troopSpoilsCapDays` is 0–60 (default 20); 0 collapses the cap to nothing.
@@ -144,9 +230,13 @@ it), but once it does, upkeep starts drawing the surplus down — carousing bite
 over-cap stacks splurge on luxuries. Nothing over the cap is handed back to your gold — the surplus
 is drunk and eaten where the men stand, which credits that settlement's purse rather than yours.
 
-Spoils reach gold at exactly one point, the leader's cut (`Spoils/SpoilsPool.LeaderCut.cs`), and it
+A purse reaches gold at exactly one point, the leader's cut (`Spoils/SpoilsPool.LeaderCut.cs`), and it
 is conserving: the share is drawn back out of the same purses the gather just filled, so no coin is
-minted. `GetPartyPayee` (owner if alive, else `LeaderHero`) also lives here — the cut pays through it.
+minted. The fraction is `troopLeaderSpoilsCutFraction × (clan tier + 1)`, ×1.5 for a mercenary under
+contract, × `(1 + 0.003 × Roguery)`, clamped to 1. A party with no non-hero stack takes its cut of the
+whole pot minted instead (`ApplyLeaderCutSolo`). (Companions' shares never enter a purse; see above.)
+`GetPartyPayee` (owner if alive, else `LeaderHero`) lives in `SpoilsPool.Cap.cs` — the cut pays
+through it.
 
 ## Who it applies to
 
@@ -156,17 +246,32 @@ minted. `GetPartyPayee` (owner if alive, else `LeaderHero`) also lives here — 
   (Vanilla's helpers are private and pass a private struct — can't be patched directly, hence
   the full reimplementation.)
 - Fully symmetric: AI parties loot, earn wage-spoils, and spend on upgrades like the player.
+- **Garrisons and militia** hold purses too: wage in (paid by their settlement), carousing, luxuries
+  and healing out, promotions from the purse first.
 
 ## Player-visible UI
 
 1. **Spoils bar** on the party screen — `RBMTroopSpoilsBarWidget` (a `FillBarVerticalWidget`)
    injected into the native party-screen prefab.
 2. **Upgrade tooltip breakdown** — patches `CampaignUIHelper.GetUpgradeHint` → full worth,
-   "Spoils cover: X", "You pay: Y".
+   "Includes mount: M", "Spoils cover: X", "You pay: Y", "All N: you pay Z", or "Salvaged into
+   spoils" for a cheaper-kit upgrade; a no-supply-town note, with the arrows greyed and each batch
+   clamped to what the gold covers (`PartyCharacterVM.InitializeUpgrades` postfixes).
 3. **Party-screen staging** — `PartyScreenStagedUpgrades` reserves spoils for queued-but-unconfirmed
    upgrades and fixes vanilla's gold math (vanilla multiplies one per-man price by batch size,
    overcharging when spoils make leading men free). Cleared on screen reset/close.
-4. **Post-battle loot message**.
+   `SpoilsTransferOnPartyScreen` / `SpoilsTransferOnSpecialScreens` move purses with transferred men.
+4. **Maintenance lines** — per-man maintenance under the selected troop's wage on the party screen
+   (`MaintenanceLabelPrefabPatch`), in the troop tooltip (`MaintenanceTroopTooltipLine`), and in the
+   clan-finance and party-wage breakdowns (`MaintenanceFinanceLine`, `MaintenancePartyWageLine`).
+5. **Upgrade-budget control** — slider + "unlimited" checkbox beside the clan Parties panel's wage
+   limit (`UpgradeLimitPrefabPatch`, `UpgradeLimitWidgets`).
+6. **Map party tooltip** — the party's total purse (`SpoilsPartyTooltip`).
+7. **Ransom** — the spoils half of a ransom on the tavern option's tooltip and the ransom screen's
+   label (`RansomMenuTooltip`, `RansomScreenSpoilsLabel`).
+8. **Messages** — post-battle loot, plunder, sack, ransom, stripped-prisoner, companion-gold and
+   leader's-cut lines; nameplate bubbles over a settlement for carousing, food and luxury buys
+   (`RBMMapNotifications`).
 
 ## Save/load
 
@@ -176,8 +281,12 @@ Serialized via `SyncData`:
 - `RBM_troopFedUntilHours` — when each stack next needs food (`TroopUpkeep`).
 - `RBM_troopLuxuryCooldown` — when each stack may indulge again (`TroopUpkeep`).
 - `RBM_townTroopTrade` — what troops have spent in each town (`TroopMarketFeedback`).
-- `RBM_settlementWealth` — the settlement treasury pot (`SettlementWealth`).
+- `RBM_partyUpgradeCapGold`, `RBM_partyUpgradeCapEnabled` — per-party daily upgrade-gold caps (`PartyUpgradeBudget`).
+- `RBM_clanEventGoldByDay`, `RBM_clanEventGoldFirstDay` — the 14-day event-gold record (`ClanEventGoldLedger`).
+- `RBM_settlementWealth` — the town/castle treasury pot (`SettlementWealth`; citizen wealth rides on vanilla's `Gold`, as does a village's single purse).
 - `RBM_settlementRecruitPool` — each settlement's manpower pool (`RecruitPool`); a settlement with no entry starts full.
+- `RBM_constructionToolDebt`, `RBM_pendingWealthTaxIncome`, `RBM_campaignSeeded` — construction, wealth tax and the one-time seeding flag.
+- `RBM_caravan*` (`RBMCaravanRegister`, `RBMCaravanInvestment`) and `RBM_town*Hist` / `RBM_village*Hist` (the Ledger's histories).
 
 ⚠️ A persisted store must be reset in its behavior's **constructor**, not from `OnSessionLaunched`:
 `LoadBehaviorData` runs before `RegisterEvents` on load, and an absent key leaves the field
@@ -190,11 +299,12 @@ with the stack, like its XP.
 
 ## Config knobs
 
-All under `/Config/RBMCampaign` in the config XML, wired into the in-game settings UI. **Only the
-spoils knobs this document discusses are listed here** — the maintenance, healing, luxury,
-leader-cut, supply-town, trade-good and simulation settings are tabulated in
+All under `/Config/RBMCampaign` in the config XML, most wired into the in-game settings UI. **Only
+the spoils knobs this document discusses are listed here** — the maintenance, healing, luxury,
+leader-cut, supply-town, stewardship and simulation settings are tabulated in
 [README.md](README.md#tuning-it), and the store itself is `RBMConfig/Config/RBMConfig.Campaign.cs`
-plus `RBMConfig.Simulation.cs`.
+plus `RBMConfig.Simulation.cs`, with the log toggles in `RBMConfig.Debug.cs`. The raid and siege
+spoils shares are code constants in `Spoils/SpoilsPool.Plunder.cs` / `.MarketSack.cs`, not settings.
 
 | Setting | Default | Effect |
 |---|---|---|
@@ -202,23 +312,27 @@ plus `RBMConfig.Simulation.cs`.
 | `TroopUpgradeSpoilsLootMultiplier` | 1 | How much battlefield loot yields. |
 | `TroopLootPiecesPerMan` | 3 | Pieces of kit one man can carry off a field. |
 | `TroopLootOverlookChancePerTier` | 0.5 | Chance a troop overlooks kit one tier below him (compounds per tier). |
-| `TroopRaidSpoilsMultiplier` | 0.25 | Plunder soldiers pocket sacking a settlement — of a village's `Hearth × RaidDamage`, or a stormed town's `Prosperity`. 0 disables plunder spoils. |
+| `TroopFallenSpoilsCaptureFraction` | 0.75 | Share of a beaten enemy's fallen-and-wounded purse the winners capture. |
 | `TroopSpoilsCapDays` | 20 | Days of keep (daily wage + daily field maintenance) a stack holds in `GetSpoilsCap` — the flush threshold above which upkeep spends surplus on drink/luxuries. Slider 0–60, discrete. |
 | `TroopSettlementFoodDays` | 20 | Days of food a stack buys per trip. |
 | `TroopFoodWageFraction` | 0.5 | Food price ceiling a man will pay, relative to his wage. |
 | `TroopSettlementFunWageFraction` | 0.25 | Carousing spend per day idled, as a multiple of daily wage. |
-| `RBMCampaignEnabled` | 1 | Master on/off for the whole module. |
-| `SpoilsLoggingEnabled` | 1 | Toggles the diagnostic log file. |
+| `Enabled` (`rbmCampaignEnabled`) | 1 | Master on/off for the whole module. |
+| `SpoilsLoggingEnabled` | 0 | Toggles the diagnostic log file. |
+| `SpoilsVerboseLoggingEnabled` | 0 | Per-stack detail in that log, rather than party summaries only. |
 
 ## Diagnostics
 
 `SpoilsLog` writes a detailed trace (loot distribution, wage deposits, upgrade pricing, food
 buying, carousing, save/load counts) to `<configFolder>/logs/campaign/rbm_spoils_<yyyy-MM-dd_HH-mm-ss>.log`
-— one timestamped file per launch so runs don't overwrite each other, with `LogRetention.PruneOldest`
-capping how many are kept. When `developerMode` is on, lines also print to the in-game message log.
+— one timestamped file per play session (`SpoilsLog.StartCampaignLog` rolls it on session launch,
+with the config dumped at the top) so runs don't overwrite each other, with `LogRetention.PruneOldest`
+capping how many are kept. Lines also go to the engine's debug output (`Debug.Print`), never to the
+in-game message log.
 
-`EconomyLog` (`logs/economy/`) and `SimulationLog` (`logs/simulation/`) are the other two sinks,
-each with its own config toggle.
+The other sinks: `EconomyLog` (`logs/economy/`), `SimulationLog` (`logs/simulation/`), `CaravanLog`
+(`logs/caravans/`) and `Power/StrategicPowerLog` (`logs/powerCalculation/`), each with its own toggle,
+and `GarrisonRefillLog` (`logs/garrison/`), which writes whenever the module is on.
 
 ## File map
 
@@ -230,19 +344,25 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | File | Role |
 |---|---|
 | `Spoils/SpoilsPool.cs` | Purse storage, keying, `IsEnabled`. A `partial static class` split across the files below. |
-| `Spoils/SpoilsPool.Equipment.cs` | Equipment valuation and its cache. |
-| `Spoils/SpoilsPool.BattleLoot.cs` / `.Casualties.cs` | Loot distribution off a field, and who is strippable. |
-| `Spoils/SpoilsPool.Plunder.cs` | Raid and siege plunder pots; the wealth leg of the sack and the capture/aftermath handshake. |
+| `Spoils/SpoilsPool.Equipment.cs` | Equipment valuation (with and without the mount) and its caches; the slot diffs the supply-town and recruit draws buy against. |
+| `Spoils/SpoilsPool.BattleLoot.cs` | Loot distribution off a field: salvage, the pecking order, companion gold. |
+| `Spoils/SpoilsPool.Casualties.cs` | The fallen's purse shares: the winners' own losses, wiped-stack recovery, the enemy purse captured; `GrantSpoilsWeightedByTier`. |
+| `Spoils/SpoilsPool.Plunder.cs` | The raid pot, the daily siege drain and besieger snapshot, the wealth leg of the sack, the capture/aftermath handshake, and the multi-party split. |
+| `Spoils/RaidGoodsDestruction.cs` | Scales a raid's goods haul by the taken fraction (base 0.5, Roguery and Nord lift it). |
+| `Spoils/SpoilsPool.Ransom.cs` | Ransomed (and quest-delivered) prisoners' kit into spoils, with its three hooks. |
+| `Spoils/SpoilsPool.PrisonerStrip.cs` | Prisoners left on the loot screen stripped for half their kit. |
+| `Spoils/RansomMenuTooltip.cs` / `RansomScreenSpoilsLabel.cs` | The spoils half of a ransom on the tavern option and the ransom screen (display only). |
 | `Spoils/SpoilsPool.MarketSack.cs` | The sack of a stormed fief, tiered by the vanilla aftermath choice (Devastate / Pillage / Show Mercy): wealth and prosperity fractions, the market-goods sack, and the orphaned-capture sweep. |
 | `Spoils/SiegeAftermathPatches.cs` | Replaces vanilla's army-size prosperity penalty with the flat tier fraction, and zeroes the gold it minted for the victors. |
-| `Spoils/SpoilsPool.Wages.cs` | The daily wage deposit. |
-| `Spoils/SpoilsPool.Maintenance.cs` | Daily field upkeep and its market hand-off. |
-| `Spoils/SpoilsPool.UpgradeMath.cs` | Upgrade pricing, the player-side commit path. |
-| `Spoils/SpoilsPool.Cap.cs` | The days-of-keep ceiling and `GetPartyPayee`. |
+| `Spoils/SpoilsPool.Wages.cs` | The daily wage deposit (mercenary double wage, militia hand-off) and the main party's orphan sweep. |
+| `Spoils/SpoilsPool.Maintenance.cs` | Daily field upkeep and its market hand-off; the recruit seed and its two recruit events. |
+| `Spoils/SpoilsPool.UpgradeMath.cs` | Upgrade pricing, salvage credit, the purse carried on graduation, the player-side commit path. |
+| `Spoils/SpoilsPool.Cap.cs` | The days-of-keep ceiling, `GetPartyPayee` and `IsCompanionStack`. |
 | `Spoils/SpoilsPool.LeaderCut.cs` | The commander's cut — the one spoils→gold exit. |
 | `Spoils/SpoilsPool.Transfers.cs` | Carrying a purse across a party transfer. |
 | `Spoils/RBMSpoilsCampaignBehavior.cs` | Event subscriptions and `SyncData`. |
-| `Spoils/MaintenanceFinanceLine.cs` / `MaintenancePartyWageLine.cs` | Clan-finance and party-wage tooltip lines (display only). |
+| `Spoils/MaintenanceFinanceLine.cs` | Charges the clan's daily maintenance off the finance model's apply pass, and writes its breakdown lines. |
+| `Spoils/MaintenancePartyWageLine.cs` / `MaintenanceTroopTooltipLine.cs` | Maintenance in the party-wage tooltip and, per man, in the troop tooltip (display only). |
 | `Spoils/SpoilsTransferOnPartyScreen.cs` | Purse follows men moved on the party screen. |
 | `Spoils/SpoilsTransferOnSpecialScreens.cs` | Purse follows men on the two screens with no left owner party: garrison donation and creating a companion's clan party. |
 | `Finance/ClanEventGoldLedger.cs` | 14-day record of the gold paid to the player's clan per event (leader's cut, companions' share, mint cuts, gold-paid promotions), averaged into the finance breakdown. Display only. |
@@ -258,7 +378,9 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Upgrades/RBMCampaignPatches.cs` | `GetGoldCostForUpgrade` + the `GetUpgradeHint` tooltip breakdown. |
 | `Upgrades/UpgradeSupply.cs` | The supply-town gate, the market draw, and the payment leg. |
 | `Upgrades/MountValueUpgrade.cs` | Pricing the horse instead of consuming one. |
-| `Upkeep/TroopUpkeep.cs` (+ `.Food.cs` / `.FoodForecast.cs` / `.Healing.cs` / `.Luxury.cs`) | Settlement food, carousing, paid healing, luxuries; days-of-food forecast. |
+| `Upgrades/PartyUpgradeBudget.cs` | The per-party daily cap on upgrade gold, and its save. |
+| `Upgrades/UpgradeFormationWeights.cs` | Weighted AI choice of branch at an upgrade fork (culture, garrison, traits). |
+| `Upkeep/TroopUpkeep.cs` (+ `.Food.cs` / `.FoodForecast.cs` / `.Healing.cs` / `.Luxury.cs` / `.Stewardship.cs`) | Settlement food, carousing, paid healing, luxuries; days-of-food forecast; the leader's Steward XP. |
 | `Upkeep/TroopMarketFeedback.cs` | Where troop spending lands in a settlement's purse. |
 | `Upkeep/RBMTroopUpkeepCampaignBehavior.cs` | Event subscriptions and `SyncData`. |
 | `Wages/TierBasedWageModel.cs` | The per-tier wage table. |
@@ -267,7 +389,20 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 
 | Folder | Role |
 |---|---|
-| `Settlements/` | The two-pot settlement wealth ledger (`SettlementWealth`), its funnel over vanilla's writes, tariffs, ransoms, garrison/militia/administrative upkeep, the owner/citizen garrison backstop (`GarrisonSubsidy` + its player-facing `GarrisonSubsidyFinanceLine`), wealth-driven garrison growth (`GarrisonRecruitCost`) and drill XP (`GarrisonDrill`), workshop purses, and the **construction engine** (`Construction.cs` / `.Materials.cs` / `.Patches.cs`). |
+| `Settlements/` | The two-pot settlement wealth ledger (`SettlementWealth`, `SettlementWealthTooltip`), its funnel over vanilla's writes (`SettlementGoldFunnel`, `NativeTradeConservation`, `ShipTradeFunnel`, `VillageGoldStock`), tariffs (`TradeTariff`), wealth tax and owner income (`WealthTax`, `SettlementIncomeFinanceLine`), minting, castle income (`CastleEconomy`), ransom funding (`RansomFunding`), garrison/militia/administrative upkeep (`GarrisonUpkeep`, `MilitiaUpkeep`, `AdministrativeUpkeep`), the owner/citizen garrison backstop (`GarrisonSubsidy` + its player-facing `GarrisonSubsidyFinanceLine`), wealth-driven garrison growth (`GarrisonRecruitCost`), drill XP (`GarrisonDrill`), garrison morale/size/wage-limit patches, AI lords' wage limit (`LordPartyWageLimit`), mercenary contract pay, fief starvation, the defence muster (`SettlementDefenseMuster`), notable and artisan purses, workshop purses and diagnostics, prison labour, building effects, and the **construction engine** (`Construction.cs` / `.Materials.cs` / `.Patches.cs`). Details in the sub-sections below. |
+| `Recruitment/` | `RecruitPool` — each settlement's finite **manpower pool** (towns/castles off Prosperity, villages off Hearth): +0.03/point a day, ceiling 0.2/point, persisted as `RBM_settlementRecruitPool` by `RBMRecruitPoolCampaignBehavior` (daily refill + one `MANPOWER` economy-log summary line). Each volunteer slot the vanilla daily roll fills draws one man (`VolunteerSpawnPatch`, a before/after occupied-slot diff on `RecruitmentCampaignBehavior.UpdateVolunteersOfNotablesInSettlement`, clearing over-budget fills; `Priority.First` so `RecruitSupply`'s kit draw sees only admitted men). A garrison recruit (`GarrisonRecruitCost.GrowGarrison`, clamped in `Compute`, never below a 0.07/point reserve kept for volunteers) costs `1 + (garrison / softSize)²` men, `softSize` 150 for a town, 100 for a castle, plus Barracks +20/40/60. Promotions, transfers, prisoners, the defence muster and militia are not charged. Building multipliers: growth (`GetGrowthBonus`) +25% while Train Militia or Housing runs, +50% for Raise Troops, a village +10/20/30% from its bound fief's Roads; ceiling (`GetMaxBonus`) +10/20/30% from the Castellan's Office. Also `TavernMercenaryTroopsPatch` (forces the tavern's regular-mercenary spawn chance to 1, so towns never stock caravan guards). |
+| `Production/` | Village production (`RBMVillageProduction`, `VillageHousehold`, `VillageShopping`, `VillageProductionIconPatch`), villager convoys, dispatch, escorts and deliveries, town food supply, storage and reserve (`RBMTownFoodSupply`, `TownStorage`, `TownFoodReserve`), citizen and workshop demand, the artisan bench (`ArtisanOutput`), workshop output choice (`WorkshopTroopOrders`, `WorkshopItemTierBias`, `WorkshopVillageBias`), smithy steel refining (`SteelRefining`), and quest trade goods. |
+| `Workshops/` | RBM's ownership of the workshop rules. `RBMWorkshopModel` — a `WorkshopModel` decorator registered in `OnGameStart`; it owns `InitialCapital` (60,000), `CapitalLowLimit` (half of it) and `DailyExpense` (250, the standing overhead only), and applies `ArtisanOutput.Scale` inside `GetEffectiveConversionSpeedOfProduction`. Everything else delegates to `BaseModel`, so NavalDLC's own workshop-model decoration survives whichever order the two are registered in. `RBMWorkshopCycle` — the produce-or-not decision, as skip-prefixes on both `Can*WorkshopProduceThisCycle` gates: storage glut (folded in from the deleted `WorkshopHeadroomGate`), then a proportional margin (`payout − salary ≥ inputCost × 1.15`, replacing vanilla's speed-inverted floor; the artisans need only `payout > inputCost`), shop solvency and town cash, all judged on the payout `RBMWorkshopSettlement` will actually pay. Also the single `SettlesInGold` predicate (the artisans settle in kind). `RBMWorkshopSettlement` — the money and goods legs, as skip-prefixes on `ProduceAnOutputToTown` and `ConsumeInputFromTownMarket`: one sell-side valuation ceilinged at 10% of town gold (min 500) serves gate and payment alike, and inputs are priced on the whole draw rather than vanilla's one unit. `RBMWorkshopExpense` — the **salary**, a share of every sale paid to citizen wealth as `Source.WorkshopWages` right after the payout lands (`PaySalary`: 55% − 5% per 48,000 of `EquipmentCost`, floor 10%; nothing while capital is at or below 40,000, nothing for the artisans), and the daily overhead as one skip-prefix on `HandleDailyExpense` replacing vanilla's three methods, paid down vanilla's ladder (capital while above `CapitalLowLimit`, else a player owner's gold, else capital if it covers the overhead, else vanilla's own `ChangeWorkshopOwnerByBankruptcy`) and credited to citizens the same way. It still counts the day's batches off the two `TickOneProductionCycleFor*Workshop` methods, for the log and the card. `WorkshopCardPayrollLine` — the clan-card "Production Wages" row. See `WORKSHOP_RULES_PLAN.md` for the phases that follow. |
+| `Economy/` | Market prices and liquidity, the hidden stock and exact-slot roster reads (`HiddenMarketStock`, `RosterStock`), party trade flow, caravan capital and trade volume, recruit supply, capacity and price hint, trade-good values and categories (base and War Sails), the Trade XP soft-cap, prosperity equilibrium, and world-generation seeding (`RBMEconomyCampaignBehavior`). |
+| `Caravans/` | Intra-kingdom supply caravans: `RBMCaravanDispatch` (matches a surplus town to a short one), `RBMCaravanArrival` (keeps vanilla trade logic off them, sells on arrival), `RBMCaravanInvestment` (a repayable citizen-wealth injection from a rich town to a struggling one), `RBMCaravanRegister` (the persisted register and manifests), `RBMCaravanBehavior` (weekly dispatch, cleanup, save). |
+| `AI/` | AI lord behaviors: `LordEquipmentUpgrade` (buy culture-matched gear in town), `LordPackTrain` (pack animals and spare mounts), `RBMGarrisonRefillBehavior` (a depleted lord refills from a clan fortification's surplus garrison), `RBMRecruitBiasBehavior` (recruiting is free in his own fiefs), `RBMDeserterRaiderBehavior` (deserters hunt convoys and raid), `RBMLordSpawnSettlementBehavior` (a respawning lord appears at his clan's fortification). |
+| `Simulation/` | The equipment-aware auto-resolve: weapon model, hit points, arm targeting, perks and command structure, morale, rout, wounded capture, player participation, the battle state and snapshot, the two-phase wall assault (`SimulationSiege.cs`) and siege artillery (`SimulationSiegeEngines.cs`). See `AUTO_RESOLVE.md`. |
+| `Power/` | `StrategicTroopPower` and its tooltip — the campaign-side power figure; `SiegeDecisionGate` (the strength an AI lord needs before he besieges) and `StrategicPowerLog`. |
+| `Spectate/` | Watching an AI-vs-AI battle as a no-agent spectator. |
+| `UI/` | The party-screen spoils bar, maintenance label and map party tooltip, the clan-screen upgrade-budget control, the inventory weight column, settlement nameplate bubbles (`RBMMapNotifications`), the smithy refine-row layout, building-effect tooltips and the Projects grid (below), each with its prefab injection; `UI/Ledger/` (the RBM Ledger screen, Ctrl+Shift+K or the Escape menu, with its 30-day town/village histories) and `UI/SimulationPanel/` (a live auto-resolve panel on the map battle-simulation view). |
+| `SwitchLord/` | `LordSwitcher` — debug tool to take over another lord's party. |
+| `Diagnostics/` | `SpoilsLog`, `EconomyLog`, `SimulationLog`, `CaravanLog`, `GarrisonRefillLog`, `LogRetention`. |
+| `RBMCampaignPatcher.cs` | Entry point (`DoPatching`), at the project root. |
 
 #### Construction (`Settlements/Construction*.cs`)
 
@@ -283,23 +418,31 @@ player's boost, now deleted.)
   to `min(player gold, 10 x daily capacity)`).
 - **Ceiling** — `prosperity x 36 + prisoners x 60 + guardHouseTier x 0.6 x prosperity`, times the Mason
   capacity factor (`1 + 0.1 x tier`), times vanilla's loyalty curve. `prisoners x 30 +
-  guardHouseTier x 0.3 x prosperity` of it is free labour that costs nothing, and the Mason's efficiency
-  factor (`1 + 0.05 x tier`) multiplies what the money bought.
+  guardHouseTier x 0.3 x prosperity` of it is free labour that costs nothing. The day's points —
+  free, material and cash alike — are multiplied by the Mason's efficiency factor (`1 + 0.05 x tier`)
+  and by `PerkFactor` (governor skill and perks, the Battanian feat, market production goods; clamped
+  1..2).
 - **Spending order** — free labour, then clay/planks off the settlement's own market (up to half the
-  day's work, never touching the last 20 pieces on the shelves), then wages at a coin a point of which
-  half reaches the townsmen. Tools wear out at one load per 50,000 points and are bought the same way;
-  a load owed with no tools on the market halves the day's output. Nothing calls `ChangeGold`.
+  day's work, never touching the last 20 pieces on the shelves; the men working them draw a further 0.5
+  coin a point, all to townsmen), then wages at a coin a point of which half reaches the townsmen. Tools
+  wear out at one load per 50,000 points and are bought the same way; a load owed that cannot be bought
+  (none on the market, or the reserve cannot afford it) halves the day's output. With nothing queued, a
+  quarter of the day's capacity (`IdleProjectShare`) goes to the least-built building. Nothing calls
+  `ChangeGold`.
 - **Seams** — a prefix on `BuildingsCampaignBehavior.TickCurrentBuildingForTown` takes the tick off
   vanilla (ours runs from `RBMSettlementWealthCampaignBehavior.OnDailyTickSettlement`), and postfixes on
   `DefaultBuildingConstructionModel.CalculateDailyConstructionPower`/`WithoutBoost` report the funded
-  figure to the UI and the days-to-complete estimate.
+  figure to the UI and the days-to-complete estimate. `GetBoostAmount` returns 0 and `GetBoostCost`
+  `int.MaxValue` (vanilla's boost is gone), `TownManagementReserveControlVM.UpdateReserveText` is
+  rewritten, and the reserve ceiling is raised through a `set_MaxReserveAmount` prefix.
 - **Labour market** — `Construction.LabourMarket` resolves once per tick (cached a day) where the work is
   transacted: the fief itself if it has a citizen purse, else — for a castle, which has none — the nearest
   town it is not at war with, as `MilitiaUpkeep` arms a castle's watch. Wages, material and tool money
   land in that town's citizen purse and the tariff is levied there; goods still come off the castle's own
   stores first and off the town's shelves only when it has none. A castle that can reach no such town
-  buys no materials and its wage coin leaves the ledger.
-- Towns and castles alike; skipped under siege. Logged as `BUILD` in `EconomyLog`; tool debt persists as
+  buys no materials and its wage coin leaves the ledger. Either way a castle gets half of each day's
+  spend back into its own wealth.
+- Towns and castles alike; the work is skipped under siege, though the daily budget deposit still runs. Logged as `BUILD` in `EconomyLog`; tool debt persists as
   `RBM_constructionToolDebt`.
 
 #### Militia caps (`Settlements/MilitiaUpkeep.cs`)
@@ -339,14 +482,16 @@ vanilla effect stays in place unless the row says "replaces".
 | Building | RBM effect | Seam |
 |---|---|---|
 | Fortifications | siege defence advantage x1.1/1.2/1.3 (**replaces** the old downward step from L3) | `SimulationSiege.MeasureWall` = `1 + 0.1 x level` |
-| | garrison + militia maintenance −0/5/10% | `GarrisonUpkeep.MaintenanceBill`, `MilitiaUpkeep.DailyMaintenanceBill` |
+| | garrison maintenance −0/5/10%; for militia only the keep/affordability bill is cut, not what it is charged | `GarrisonUpkeep.MaintenanceBill`, `MilitiaUpkeep.DailyMaintenanceBill` (read by `CanKeepMilitia` / `GarrisonRecruitCost.FullDailyBill`) |
 | Barracks | arming a garrison or militia recruit −5/10/15% | `GarrisonRecruitCost.SpawnCost`, `MilitiaUpkeep.SpawnCostPerMan` + `ArmOneMilitiaman` |
 | | intake ceiling +1/2/3 a day | `GarrisonRecruitCost.Compute` (added to `GarrisonSpawnDailyMax`, own tooltip line), `MilitiaUpkeep.ComputeMilitiaGrowth` |
 | | militia soft cap +2/3/5 percentage points | `MilitiaUpkeep.SoftCapBuildingBonus` |
+| | garrison manpower soft size +20/40/60 | `RecruitPool` garrison draw |
 | Training Fields | garrison promotions −5/10/15% | `SpoilsUpgradePatches.DiscountGarrisonUpgrade` (both the affordability test and the billed sum) |
-| | +10/20/30 XP a day, garrison AND militia party (10x vanilla's `ExperiencePerDay`) | `GarrisonDrill` postfix on `GetEffectiveDailyExperience`, filter widened to `IsMilitia` |
+| | +10/20/30 XP a day for the garrison (10x vanilla's `ExperiencePerDay`), a third of that for the militia party | `GarrisonDrill` postfix on `GetEffectiveDailyExperience`, filter widened to `IsMilitia` (`MilitiaDrillShare = 1/3`) |
 | | militia soft cap +1/2/3 percentage points | `MilitiaUpkeep.SoftCapBuildingBonus` |
 | Train Militia / Raise Troops (daily) | militia soft cap +3 percentage points while it is the running daily project | `MilitiaUpkeep.SoftCapBuildingBonus` via `BuildingEffects.IsDailyProjectActive` |
+| | manpower pool growth +25% (Train Militia, also Housing) / +50% (Raise Troops) while running | `RecruitPool.GetGrowthBonus` |
 | Guard House | tariff +0.3/0.6/1.0 percentage points on GUARDED trade only (caravans, lords, the player) | `TradeTariff.Levy(.., guardedTrade: true)` from `SettlementWealth.RouteNativeWrite` and `InventoryLogic.DoneLogic` |
 | | passive convict labour | the Guard House terms in the construction ceiling/free-labour above |
 | Tax Office | wealth tax and minting cuts x1.05/1.1/1.15, owner and fief legs alike | `WealthTax.OnDailyTick`, `Minting` |
@@ -355,6 +500,7 @@ vanilla effect stays in place unless the row says "replaces".
 | Mason | construction efficiency +5/10/15%, labour ceiling +10/20/30% (**replaces** `ConstructionPerDay`) | `Construction.MasonTier` |
 | Waterworks | every other point of infrastructure worth +10/20/30% | `RBMProsperityEquilibrium.InfrastructureMultiplier` = `1 + score x 0.02 x (1 + 0.1 x tier)`, clamp unchanged |
 | Roads and Paths | bound-village production +5/10/15% | `RBMVillageProduction.RoadsFactor`, applied to the tick and to `CalculateDailyProductionAmount` alike |
+| | bound-village manpower pool growth +10/20/30% | `RecruitPool.GetGrowthBonus` |
 
 Four more rows are CASTLE-ONLY, three of them building types a town has no equivalent of (accessors
 `CastellanTier` / `CraftsmanTier` / `FarmlandsTier`, `null` town type):
@@ -363,6 +509,7 @@ Four more rows are CASTLE-ONLY, three of them building types a town has no equiv
 |---|---|---|
 | Castellan's Office | 10/20/30% of garrison recruits enlist as `Culture.EliteBasicTroop` | `GarrisonRecruitCost.PickRecruit`, rolled per man and priced through `SpawnCostFor`; `Compute`/`SpawnCost` keep the common soldier so the wealth rate stays deterministic |
 | | mounted garrison maintenance −10/20/30% | `GarrisonUpkeep.MaintenanceBill`, `character.IsMounted` elements only |
+| | manpower pool ceiling +10/20/30% | `RecruitPool.GetMaxBonus` |
 | Craftsman Quarters | castle income x1.1/1.2/1.3 | `CastleEconomy.OnDailyTick` |
 | Farmlands | castle food production +10/20/30% (**replaces** the flat 6/12/18) | `RBMTownFoodSupply.TownFoodStocksChangePatch.Postfix`, castles only |
 | Guard House (castle) | **replaces** vanilla's `Militia` +1/2/3 a day with militia soft cap +2/3/5 percentage points — the Barracks owns intake | `MilitiaUpkeep.AddMilitiaEffectOfBuildings` (strip), `MilitiaUpkeep.SoftCapBuildingBonus` (cap) |
@@ -377,7 +524,9 @@ carries it into the granary cap and the ledger tooltip. The construction side of
 (`Construction`: +60 ceiling, 30 free points each) is separate and unchanged.
 
 `UI/BuildingEffectTooltips.cs` postfixes `BuildingType.GetExplanationAtLevel` to append a plain "RBM:"
-line per building type, so the town management project list names these effects beside vanilla's.
+line per building type, so the town management project list names these effects beside vanilla's, and
+strips vanilla's `GarrisonCapacity` / `GarrisonAutoRecruitment` lines; its `ApplyDescriptions()` rewrites
+several buildings' description text on each session launch.
 
 The town management Projects grid is reshaped by two cooperating `WidgetPrefab.LoadFrom` injections, both
 installed from `OnSubModuleLoad` under `rbmCampaignEnabled`. `UI/ProjectsGridPrefabPatch.cs` owns
@@ -393,39 +542,40 @@ separate, untouched set.
 values by the same 90/110 factor (caption `MarginTop`, progress strip, hammer cluster, level plate, overlay
 buttons). They are split by file because each redirects to `%TEMP%\RBM\Prefabs\<name>.xml` and would collide
 otherwise. `DevelopmentItem.xml` has exactly one call site (this grid), so scaling the file is safe.
-| `Recruitment/` | `RecruitPool` — each settlement's finite **manpower pool** (towns/castles off Prosperity, villages off Hearth): +0.03/point a day, ceiling 0.2/point, persisted as `RBM_settlementRecruitPool` by `RBMRecruitPoolCampaignBehavior` (daily refill + one `MANPOWER` economy-log summary line). Every NEW soldier draws one man: `GarrisonRecruitCost.GrowGarrison` (clamped in `Compute`, and never below a 0.07/point reserve kept for volunteers) and each volunteer slot the vanilla daily roll fills (`VolunteerSpawnPatch`, a before/after occupied-slot diff on `RecruitmentCampaignBehavior.UpdateVolunteersOfNotablesInSettlement`, clearing over-budget fills; `Priority.First` so `RecruitSupply`'s kit draw sees only admitted men). Promotions, transfers, prisoners, the defence muster and militia are not charged. Growth/ceiling are one method each (`GetDailyGrowth`/`GetMax`) for a later building multiplier. Also `TavernMercenaryTroopsPatch`. |
-| `Production/` | Village production, villager convoys and deliveries, town food supply and storage, citizen and workshop demand. |
-| `Workshops/` | RBM's ownership of the workshop rules. `RBMWorkshopModel` — a `WorkshopModel` decorator registered in `OnGameStart`; it owns `InitialCapital` (60,000), `CapitalLowLimit` (half of it) and `DailyExpense` (250, the standing overhead only), and applies `ArtisanOutput.Scale` inside `GetEffectiveConversionSpeedOfProduction`. Everything else delegates to `BaseModel`, so NavalDLC's own workshop-model decoration survives whichever order the two are registered in. `RBMWorkshopCycle` — the produce-or-not decision, as skip-prefixes on both `Can*WorkshopProduceThisCycle` gates: storage glut (folded in from the deleted `WorkshopHeadroomGate`), then a proportional margin (`inputCost x 1.15 + wage`, replacing vanilla's speed-inverted floor), shop solvency and town cash, all judged on the payout `RBMWorkshopSettlement` will actually pay. Also the single `SettlesInGold` predicate (the artisans settle in kind). `RBMWorkshopSettlement` — the money and goods legs, as skip-prefixes on `ProduceAnOutputToTown` and `ConsumeInputFromTownMarket`: one sell-side valuation ceilinged at 10% of town gold (min 500) serves gate and payment alike, and inputs are priced on the whole draw rather than vanilla's one unit. `RBMWorkshopExpense` — the daily bill, as one skip-prefix on `HandleDailyExpense` replacing vanilla's three methods: overhead plus a per-batch payroll (75/batch), paid down vanilla's ladder (capital while above `CapitalLowLimit`, else a player owner's gold, else capital, else what capital there is, else vanilla's own `ChangeWorkshopOwnerByBankruptcy`), with every denar credited to citizen wealth as `Source.WorkshopWages`. It also counts the day's batches off the two `TickOneProductionCycleFor*Workshop` methods. `WorkshopCardPayrollLine` — the clan-card "Production Wages" row, reading its last payroll. See `WORKSHOP_RULES_PLAN.md` for the phases that follow. |
-| `Economy/` | Market prices and liquidity, caravan capital and trade volume, recruit supply, trade-good values, prosperity equilibrium. |
-| `Simulation/` | The equipment-aware auto-resolve: weapon model, hit points, arm targeting, perks, morale, rout, player participation, and the two-phase wall assault (`SimulationSiege.cs`). |
-| `Power/` | `StrategicTroopPower` and its tooltip — the campaign-side power figure. |
-| `Spectate/` | Watching an AI-vs-AI battle as a no-agent spectator. |
-| `UI/` | The party-screen spoils bar, the inventory weight column, and their prefab injections. |
-| `Diagnostics/` | `SpoilsLog`, `EconomyLog`, `SimulationLog`, `LogRetention`. |
-| `RBMCampaignPatcher.cs` | Entry point (`DoPatching`), at the project root. |
 
 ## Lifecycle wiring (in `RBM/SubModule.cs`)
 
 - `ApplyHarmonyPatches()` → `RBMCampaignPatcher.DoPatching(ref rbmcampaignHarmony)` (PatchAll +
   widget registration), or `UnpatchAll` when disabled.
-- `OnSubModuleLoad()` → `SpoilsBarPrefabPatch.ApplyEarly(...)` — **must** run here, not in
-  `ApplyHarmonyPatches`, because Gauntlet parses and caches the party-screen prefab before
-  `OnGameStart`. `ApplyEarly` also calls `SpoilsLog.Reset()`.
-- `OnGameStart()` (Campaign only) → adds six behaviors: `RBMSpoilsCampaignBehavior`,
-  `RBMTroopUpkeepCampaignBehavior`, `RBMSimulationCampaignBehavior`, `RBMSpectateCampaignBehavior`,
-  `RBMEconomyCampaignBehavior`, `RBMSettlementWealthCampaignBehavior` (plus the later additions listed
-  in `RBM/SubModule.cs`, the last being `RBMRecruitPoolCampaignBehavior`).
+- `OnSubModuleLoad()` (under `rbmCampaignEnabled`) → the `ApplyEarly(...)` prefab injections:
+  `SpoilsBarPrefabPatch`, `ItemWeightPrefabPatch`, `MaintenanceLabelPrefabPatch`,
+  `UpgradeLimitPrefabPatch`, `RBMEscapeMenuPrefabPatch`, `RefineRowLayoutPrefabPatch`,
+  `ProjectsGridPrefabPatch`, `TownManagementGridPatch`. These **must** run here, not in
+  `ApplyHarmonyPatches`, because Gauntlet parses and caches those prefabs before `OnGameStart`. The
+  spoils log is not opened here: early traces buffer until `SpoilsLog.StartCampaignLog` opens the file
+  on session launch.
+- `OnApplicationTick` (on the map) → `LordSwitcher.CheckHotkey()` and `RBMLedgerHotkey.CheckHotkey()`.
+- `OnGameStart()` (Campaign only, under `rbmCampaignEnabled`) → adds fourteen behaviors:
+  `RBMSpoilsCampaignBehavior`, `RBMTroopUpkeepCampaignBehavior`, `RBMSimulationCampaignBehavior`,
+  `RBMSpectateCampaignBehavior`, `RBMEconomyCampaignBehavior`, `RBMSettlementWealthCampaignBehavior`,
+  `RBMCaravanBehavior`, `RBMVillageLedgerCampaignBehavior`, `RBMTownLedgerCampaignBehavior`,
+  `RBMGarrisonRefillBehavior`, `RBMRecruitBiasBehavior`, `RBMSettlementDefenseBehavior`,
+  `RBMDeserterRaiderBehavior`, `RBMRecruitPoolCampaignBehavior` — and, registered last,
+  `AddModel(new RBMWorkshopModel())`. (`SaveRosterRepairBehavior`, added for every campaign, is RBM's,
+  not RBMCampaign's.)
 
 ### Campaign event listeners
 
 `RBMSpoilsCampaignBehavior` (`SpoilsPool`):
-- `OnSessionLaunchedEvent` → session setup
-- `MapEventEnded` → loot distribution
+- `OnSessionLaunchedEvent` → session setup (open the spoils log, prune exempt parties' purses)
+- `MapEventEnded` → casualties, captured purses, loot distribution
 - `RaidCompletedEvent` → village-raid plunder
+- `DailyTickSettlementEvent` → besieger snapshot and the daily siege drain
 - `OnSiegeAftermathAppliedEvent` → town/castle sack, tiered by the aftermath choice
 - `OnSettlementOwnerChangedEvent` → besieger snapshot handshake for that sack (siege captures only)
+- `HourlyTickEvent` → the sack sweep (orphaned captures, stale handshake marks)
 - `DailyTickPartyEvent` → wage deposits
-- `MobilePartyDestroyed` → prune purses
+- `MobilePartyDestroyed` → prune purses, upgrade caps (`PartyUpgradeBudget`) and the payee cache (`UpgradeSupply`)
 - `PlayerUpgradedTroopsEvent` → charge staged spoils
 - `OnTroopRecruitedEvent` / `OnUnitRecruitedEvent` → seed a recruit's upkeep. The two are
   **disjoint by source**, not duplicates: the player's recruit screen fires the second (with no
@@ -433,5 +583,10 @@ otherwise. `DevelopmentItem.xml` has exactly one call site (this grid), so scali
 
 `RBMTroopUpkeepCampaignBehavior` (`TroopUpkeep`):
 - `SettlementEntered` → buy food
-- `HourlyTickPartyEvent` → buy food + carouse
+- `HourlyTickPartyEvent` → paid healing, buy food, carouse, luxuries, provisioning Steward XP
+- `DailyTickPartyEvent` → food-reserve and spare-mount Steward XP; `FiefStarvation` (a starving field
+  party loses wounded)
 - `MobilePartyDestroyed` → prune food state
+
+Maintenance has no listener: it is charged from the `DefaultClanFinanceModel.CalculateClanGoldChange`
+patch in `MaintenanceFinanceLine`.

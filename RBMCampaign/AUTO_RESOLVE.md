@@ -63,7 +63,7 @@ scale     = SimulationAbsoluteScale
 40        = vanilla's own base scale, cancelled
 ```
 
-Dividing by `40 · tierTerm` cancels vanilla's base scale *and* its tier-power core and puts `actual` in their place. What is left of vanilla's number — side advantage, the leader/captain modifier, every Tactics and Scouting perk, and its own random spread — rides through the multiply untouched, which is how "keep all of vanilla's factors" and "absolute damage" hold at once.
+Dividing by `40 · tierTerm` cancels vanilla's base scale *and* its tier-power core and puts `actual` in their place. What is left of vanilla's number — side advantage, the leader modifier, the Tactics and Scouting perks, and its own random spread — rides through this multiply untouched, which is how "keep all of vanilla's factors" and "absolute damage" hold at once. Two of those are then reshaped by the postfix, on both paths: the leader modifier and the terrain context are lifted back out (see the end of this section), and the side commander's base Tactics advantage is replaced by a gentler two-sided one (`CommanderTacticsFactor`, below).
 
 There is no `0.1 … 8` clamp on this path: there is no ratio to clamp, and an absolute mismatch is *meant* to be lopsided. The upper end is bounded per blow instead, against the struck man's own hit points (`SimulationAbsoluteBlowCap`, default 1.5× his pool) — taken in the postfix, where the man being struck is actually known. `scale` is the sole calibration dial of this path: it sets how a blow's real magnitude maps onto the pool the casualty stage wears down. Vanilla's fixed 40 set that scale for free; absolute mode owns it, and it is tuned against a paired log.
 
@@ -83,11 +83,19 @@ Note that `SimulationEquipmentPowerWeight` is the exponent **only on this path**
 
 **Tier is replaced, not adjusted**, either way. This is deliberate: a tier was only ever shorthand for *what kit does he carry and how well is he trained*, and both of those are now measured directly. Leaving vanilla's tier term in would charge for the same thing twice — and it was the reason a recruit in mail could not out-fight a looter in rags by more than the 1.41× his tier number allowed.
 
-What survives untouched is the `leaderModifier` half of `(1 + leaderModifier + contextModifier)`. So **the captain's perks and the leader's Tactics still apply exactly as before.** Morale and routing are a different matter now, and are their own sections — see §6b and §6c.
+The `leaderModifier` half of `(1 + leaderModifier + contextModifier)` survives only while the perk system is off. That term is `Hero.PowerModifier`, and it is nothing but a **count** of the side commander's captain perks; with `SimulationPerkSystem` on (the default) the real captains' real perks are priced into each man's skill instead (`SimulationPerks`; see `SimulationPerkSystem` in §9), so the count is lifted back out of the blow rather than charged twice. Morale and routing are a different matter now, and are their own sections — see §6b and §6c.
 
-**And the whole of it hangs on one switch.** `SimulationEnabled` is not merely "price blows by kit": every part of this document is gated on it. With it off, vanilla's morale multiplies blows again (§6b), the flat hundred-point lottery decides every man (§6a), selection goes back to arm-blind random (§5a), the rout never fires (§6c), and the player is spared from his own auto-resolve (§7). Off means off — what you get is the battle Bannerlord would have fought without RBM installed.
+**The commander's Tactics is reshaped, not kept.** Vanilla adds `+0.1%` per point of the side commander's Tactics to every blow his side lands — one-sided, through the side advantage. The postfix divides that back off and puts a two-sided edge at half the rate in its place (`CommanderTacticsFactor`):
 
-The `contextModifier` — the `(troop type | terrain | side)` table — is a different matter, and it does **not** simply cancel: the striker and the struck are different arms on different sides, so their context terms differ and both ride into vanilla's ratio. On a **field** battle that terrain-vs-arm bonus is now deliberately **lifted back out** — the postfix recomputes the ratio with the context zeroed on both sides and folds the difference into the blow's correction. An arm's edge is meant to come from its horse and its lance, both already priced in the equipment ratio, not from the ground it stands on. A **siege** keeps its full vanilla context (the wall is its own fact), and the leader modifier, being no kind of terrain, is kept everywhere. See `GetTerrainNeutralizingFactor`.
+```
+factor = 1/(1 + Ts·0.001) · (1 + Ts·0.0005) / (1 + Tk·0.0005)       Ts, Tk = the two side commanders' Tactics
+```
+
+Two equal generals cancel; only the gap between them tells. Vanilla's −10% siege storming penalty and the PreBattleManeuvers perk ride the same advantage and are deliberately left in.
+
+**And the whole of it hangs on one switch.** `SimulationEnabled` is not merely "price blows by kit": every part of this document is gated on it. With it off, vanilla's morale multiplies blows again (§6b), the flat hundred-point lottery decides every man (§6a), selection goes back to arm-blind random (§5a), RBM's rout never fires and vanilla's morale rout returns (§6c), the wounded are captured by vanilla's rules again, and the player is spared from his own auto-resolve (§7). Off means off — what you get is the battle Bannerlord would have fought without RBM installed.
+
+The `contextModifier` — the `(troop type | terrain | side)` table — is a different matter, and it does **not** simply cancel: the striker and the struck are different arms on different sides, so their context terms differ and both ride into vanilla's ratio. That terrain-vs-arm bonus is now deliberately **lifted back out of every blow, siege included** — the postfix recomputes the ratio with the context zeroed on both sides and folds the difference into the blow's correction. An arm's edge is meant to come from its horse and its lance, both already priced in the equipment ratio, not from the ground it stands on; and a siege's own facts (no horses, the wall, the defender's better dice) are priced by this model's siege handling (§5, §6), not by vanilla's table on top. The `Estimated` context is left alone, because vanilla charged it no context to begin with. The same factor lifts the leader modifier when the perk system is on (above). See `GetVanillaPowerNeutralizingFactor`. (The strategic power model does the opposite on a siege and keeps the context — a different number, see `STRATEGIC_POWER.md`.)
 
 ---
 
@@ -95,7 +103,7 @@ The `contextModifier` — the `(troop type | terrain | side)` table — is a dif
 
 `rbmCombatEnabled` picks **which combat model the auto-resolve is faithful to**, so the map battle stays consistent with the battle you would actually have fought had you pressed the button. It changes two things: how a blow's force is computed, and how armour answers it.
 
-**And it changes the items themselves.** `XmlLoadingPatches` gates the XML merge: every file tagged `RBM_COMBAT_XML_TAG` — the weapons, armours, shields, horses and ranged data — is **not merged at all** when RBM Combat is off, and the game keeps native item stats. This matters, because RBM's numbers are tuned for RBM's equations: a Short Simple Raider Spear carries `thrust_damage="6"` precisely *because* `RBMComputeDamage` multiplies a Pierce magnitude back by twenty. Read that 6 through native's equations and the spear is worthless. It never happens, because with RBM Combat off the spear is a native spear again.
+**And it changes the items themselves.** `XmlLoadingPatches` gates the XML merge: every file tagged `RBM_COMBAT_XML_TAG` — the weapons, armours, shields, horses and ranged data — is **not merged at all** when RBM Combat is off, and the game keeps native item stats. This matters, because RBM's numbers are tuned for RBM's equations: an RBM spear lists a single-digit thrust damage (a crafted Short Simple Raider Spear comes out around 6) precisely *because* `RBMComputeDamage` multiplies a Pierce magnitude back by twenty. Read that number through native's equations and the spear is worthless. It never happens, because with RBM Combat off the spear is a native spear again.
 
 The consequence for this model is that the two paths are genuinely two models — different equations **and** different item data — and both must be complete. Neither can borrow from the other.
 
@@ -107,12 +115,12 @@ The consequence for this model is that the two paths are genuinely two models �
 | Listed item damage | **Never used for melee.** Not once. | Is the entire answer. |
 | What weapon quality buys | **Penetration.** `sqrt(damageFactor)` divides the armour threshold. A fine blade does not hit *harder*; it finds the gap. | Force. A better weapon has a bigger number. |
 | Skill | Enormous. A master lands what a recruit only swings — up to ~3× on RBM's own clamp. Nothing is added; it is already inside RBM's damage clamp. | Small but **not nothing**: `× (1 + 0.3·min(skill/250, 1))`. A master does 1.3× a recruit with the same sword. See the note below. |
-| Swing | `StrikeMagnitudeForSwing` — vanilla's two-body impulse physics, on RBM's class-specific angular speed (`0.83/1000` for maces and polearms, `0.75/800` two-handed axe, `0.83/800` blades). | — |
-| Thrust (Pierce) | **Raw kinetic energy, no clamp at all.** `CalculateThrustSpeed` / `SimulateThrustLayer`, three acceleration layers, then energy capped at 180 (one-handed) or 250 (two-handed). | — |
+| Swing | `StrikeMagnitudeForSwing` — vanilla's two-body impulse physics, on RBM's class-specific angular speed (`0.83/1000` for one-handed axes, maces and polearms, `0.75/800` two-handed axe, `0.83/800` blades). Only classes RBM skill-clamps get a swing price. | — |
+| Thrust (Pierce) | **Raw kinetic energy, no clamp at all.** `CalculateThrustSpeed` / `SimulateThrustLayer`, three acceleration layers (speed capped at 9 one-handed, 6 two-handed), then energy capped at 180 (one-handed) or 250 (two-handed polearm, sword or mace). | — |
 | Thrust (Cut/Blunt) | Physics, then through the same skill clamp a swing uses. | — |
-| Missiles | `energy = 0.5·m·v²`, where `v` comes from the bow's **draw weight**, its powerstroke and its material efficiency. A longbow (0.835) wastes more of the draw than a composite horsebow (0.90). The arrow's own damage enters as a head factor. | The **arrowhead**: the shaft's listed damage, scaled linearly by the bow's missile speed against a reference of 100 and clamped to 0.5…2. Native reaches damage through missile speed, and this is the honest shorthand for it. |
+| Missiles | `energy = 0.5·m·v²`, where `v` comes from the bow's **draw weight**, its powerstroke and its material efficiency. A longbow (0.835) wastes more of the draw than a composite horsebow (0.90); a crossbow is 0.88. The shaft keeps 0.7 of its momentum across the field, the energy is capped per ammo weight (×2250 arrow, ×2500 bolt, ×3000 stone), and the arrow's own damage enters as a head factor (`ThrustDamage · 0.01`). | The **arrowhead**: the shaft's listed damage, scaled linearly by the bow's missile speed against a reference of 100 and clamped to 0.5…2, times the skill factor below. Native reaches damage through missile speed, and this is the honest shorthand for it. |
 | Slings | Their own law — the arm whirls the stone, so the man's **skill reaches the speed**, which is true of nothing a bowman does. | Listed damage. |
-| Thrown | `0.5·m·v²` from `calculateThrowableSpeed`; a javelin's energy is capped at `weight × 300`, a throwing axe's is not. | Listed damage. |
+| Thrown | `0.5·m·v²` from `calculateThrowableSpeed`, keeping 0.85 of its momentum; a javelin's (or thrown polearm's) energy is capped at `weight × 300`, a throwing axe's is not; knives and daggers ×0.6; a hand-thrown stone is its listed damage. | Listed damage, times the skill factor. |
 
 > **Both paths must exist, or the baseline cannot save you.** For a while the ranged branch ran RBM's bow physics *unconditionally* — so with RBM Combat off, every archer in Calradia was priced on draw weight and powerstroke while every infantryman beside him was priced on the number printed on his sword. Those are not the same units, and a baseline cannot rescue a striker who is measured in different units from the man he is measured against.
 
@@ -122,12 +130,13 @@ The consequence for this model is that the two paths are genuinely two models �
 
 ### 3b. How armour answers
 
-**RBM Combat ON** (`Utilities.RBMComputeDamage` → `WeaponTypeDamage`):
+**RBM Combat ON** (`RBMConfig/Shared/BlowDamage.cs`: `RBMComputeDamage` → `WeaponTypeDamage`, the same code live combat runs; the sim's mirror of it is `SimulationWeaponModel.RbmDamage`):
 
 ```
+armor          = armor · armorEffectivenessMultiplier                (the "Armor Effectiveness" setting, default 1)
 armorReduction = 100 / (100 + armor · armorMultiplier)          ← multiplicative, but only on TRAUMA
 penetrated     = max(0, magnitude − armor · threshold · thresholdModifier / weaponDamageFactor)
-trauma         = magnitude · bluntCarry · stopped · armorReduction
+trauma         = magnitude · (bluntCarry + bluntTraumaBonus) · stopped · bluntTraumaMultiplier · armorReduction
 damage         = penetrated + trauma
 ```
 
@@ -136,7 +145,7 @@ Two mechanisms, not one:
 - a **subtractive penetration threshold** — armour that is thick enough simply stops the blow, and no amount of a sword's edge gets through it;
 - a **multiplicative blunt carry** — what the armour stopped still arrives as shock, and a mace carries far more of it through than a blade.
 
-The threshold is per-weapon-type (RBM's own `getWeaponTypeFactors`: roughly 5 for cut, 3 for pierce), and it is **divided by the weapon's damage factor** — which is the whole of what weapon quality means here. A Pierce arrow or bolt **halves** the armour it meets on anything that is not plate; a Cut broadhead does not. Plate is the only armour RBM does not halve, and it answers an arrow properly.
+The threshold is per-weapon-type (RBM's own `getWeaponTypeFactors`: 5 for a cut from most melee classes, a pierce 2.5–4 by class — 3 for spears and daggers; arrows and bolts 2.6 cut / 2 pierce, javelins 3 / 3, sling stones 10 / 6; a Blunt blow uses a flat 5 whatever the weapon; the sim falls back to 5 / 3 for a type it cannot find), and so is the blunt carry (0.25 cut, 0.35 pierce, 0.15 for arrows; `0.7 × maceBluntModifier` for Blunt). It is **divided by the weapon's damage factor** — which is the whole of what weapon quality means here. A Pierce arrow or bolt **halves** the armour it meets on anything that is not plate; a Cut broadhead does not. Plate is the only armour RBM does not halve, and it answers an arrow properly.
 
 Consequences that fall straight out of this and are worth stating plainly:
 
@@ -147,11 +156,17 @@ Consequences that fall straight out of this and are worth stating plainly:
 **RBM Combat OFF** (`DefaultStrikeMagnitudeModel.ComputeRawDamage`):
 
 ```
-damage = magnitude · (50 / (50 + armor))          ← gentler, and applied to the whole blow
-       + threshold and blunt-factor terms by damage type
+reduced    = magnitude · (50 / (50 + armor))          ← gentler, and applied to the whole blow
+penetrated = max(0, reduced − armor · t)
+damage     = b · reduced + (1 − b) · penetrated
+
+            t      b
+  Pierce   0.33   0.25
+  Cut      0.5    0.1
+  Blunt    0.2    0.6
 ```
 
-Vanilla's curve is softer, has no penetration threshold worth the name, and does not distinguish a bodkin from a broadhead. Both paths read the numbers from the game's own item data — neither is a table of guesses — but they are genuinely different models, and the auto-resolve follows whichever one you are running.
+Vanilla's curve is softer, its threshold is a small one taken *after* the curve, and it has no rule that lets an arrow halve mail — a bodkin and a broadhead differ only by the Pierce and Cut rows above. Both paths read the numbers from the game's own item data — neither is a table of guesses — but they are genuinely different models, and the auto-resolve follows whichever one you are running.
 
 ---
 
@@ -177,7 +192,7 @@ Things that are deliberately *not* in the pool:
 
 ### Hit zones
 
-**Six zones, not vanilla's four.** RBM's own body-part worth is reckoned over six bones, and this model keeps all six rather than folding shoulders into `Arm` and chest+abdomen into `Body` — a shoulder is not an arm and does not answer like one. Each row is a distribution and sums to 1. The game itself has no such table — a real blow's bone is decided by collision geometry per swing — so these are honest estimates of that geometry, not figures lifted from anywhere.
+**Six zones, not vanilla's four.** RBM's own body-part worth is reckoned over seven bones (head, neck, chest, abdomen, shoulders, arms, legs), and this model keeps them apart wherever it matters rather than folding shoulders into `Arm` the way vanilla does — a shoulder is not an arm and does not answer like one. Only chest and abdomen are merged, into `Torso`: they carry the same armour and differ by a tenth in worth. Each row is a distribution and sums to 1. The game itself has no such table — a real blow's bone is decided by collision geometry per swing — so these are honest estimates of that geometry, not figures lifted from anywhere.
 
 | | Head | Neck | Torso | Shoulder | Arm | Leg |
 |---|---|---|---|---|---|---|
@@ -185,14 +200,16 @@ Things that are deliberately *not* in the pool:
 | Foot vs mounted *(no polearm)* | 0.03 | 0.02 | 0.30 | 0.10 | 0.08 | **0.47** |
 | Mounted vs foot | **0.22** | 0.08 | 0.32 | 0.18 | 0.15 | 0.05 |
 | Mounted vs mounted | 0.15 | 0.05 | 0.35 | 0.20 | 0.15 | 0.10 |
-| Missile vs foot | 0.12 | 0.03 | 0.50 | 0.15 | 0.10 | 0.10 |
-| Missile vs mounted | 0.08 | 0.02 | 0.40 | 0.12 | 0.08 | **0.30** |
+| Missile vs foot | 0.07 | 0.02 | 0.56 | 0.15 | 0.10 | 0.10 |
+| Missile vs mounted | 0.05 | 0.01 | 0.44 | 0.12 | 0.08 | **0.30** |
 
 Two footmen are eye to eye, so it is the chest and shoulders and arms that catch it and the legs almost never — a man does not stoop to hack at ankles. But a man on foot hacking upward at a horseman finds the rider's **legs and lower body** at his eye level, while the rider cutting downward finds the footman's **head and shoulders**.
 
 **A spear is the exception, and it is why `Foot vs mounted` is not the whole of foot-against-horse.** The legs are where a footman's reach *ends*, not where he wants to strike: a man with a sword cannot get past them. A polearm gives him back the height the horse took — he sets it at the rider's chest and face and does not stoop to the animal's shins. So a spearman at a horseman rolls **`Foot vs foot`**, the same spread two footmen trade, and only a man *without* a spear is reduced to the legs. This must agree with the weapon pool, which narrows to his polearms in the same breath (§4): it would be nonsense to price the blow as the spear and then aim it as though he were swinging a hatchet. The consequence worth stating: barding is worth a great deal against infantry **who have no polearm**, and much less against the ones who do — which is most of them.
 
-An arrow does not roll any of the foot/mounted matchups, but it is **not** target-blind either: a shaft loosed at a rider meets a far larger, lower target, so a great share of them find the horse at the leg where its barding answers, and fewer reach the man's head above. A single missile table could not tell those apart.
+An arrow does not roll any of the foot/mounted matchups, but it is **not** target-blind either: a shaft loosed at a rider meets a far larger, lower target, so a great share of them find the horse at the leg where its barding answers, and fewer reach the man's head above. A single missile table could not tell those apart. The missile rows are for **thrown** weapons too — a javelin is a missile here as much as an arrow is. (Head and neck were cut from 15% to 9% of shafts at a footman, and from 10% to 6% at a rider, the freed share going to the torso: a bowman looses at the middle of a moving mass, not at a head, and a volley lands by area alone.)
+
+**A charge does not roll a zone at all**: the lance goes into the body, and the blow is priced at `Torso`.
 
 ### Horse or man — never both
 
@@ -202,28 +219,29 @@ A blow at a mounted troop is a blow at **two** things, and it finds only one of 
 |---|---|
 | A footman's melee stroke | **0.45** |
 | A horseman's melee stroke | 0.15 |
-| A missile | 0.22 |
+| A missile (fired or thrown) | 0.22 |
 
-The horse is the bigger target and the lower one, so a footman hacking upward often takes it; a horseman is aiming at the man he means to unseat and rarely wastes a stroke on the mount; an arrow is loosed at the mass of the rider and only now and then takes the animal instead.
+The horse is the bigger target and the lower one, so a footman hacking upward often takes it; a horseman is aiming at the man he means to unseat and rarely wastes a stroke on the mount; an arrow or a javelin is loosed at the mass of the rider and only now and then takes the animal instead.
 
 A blow that finds the horse wears the **horse alone** — its own pool, met through its own barding — and never touches the rider, his armour, his defence or his wound pool. A blow that finds the rider meets **his** armour, not the barding, because the barding is the horse's and the horse was not hit. Horses die, and when one does its rider is a man on foot in cavalry harness: no barding, no height, no charge, and no longer a horseman for the purpose of anything else in this document — a man whose horse is dead has left the cavalry skirmish, whatever else he is doing.
+
+Horses are tracked per **stack**, not per animal (§12): the share of a stack's horses still standing is the chance that *this* blow's man is still mounted, rolled for the struck man and the striker alike on every live blow. The reference tables call a stack mounted while more than half its horses stand.
 
 These three shares are dials for the whole cavalry balance and are meant to be tuned against a paired log: foot infantry should ground a squadron over the course of a fight, not in a round.
 
 ### And a blow is worth what it is worth *where it lands*
 
-Where a blow falls decides two separate things, and only one of them is armour. RBM's own `DamageRework.GetBodyPartDamageMultiplier`:
+Where a blow falls decides two separate things, and only one of them is armour. The worth of each zone is RBM's own `DamageRework.GetBodyPartDamageMultiplier`, copied into the model as `SimulationEquipmentPower.BodyPartMultiplier` (the RBMCombat method is private to that module):
 
 | | Pierce | Cut | Blunt |
 |---|---|---|---|
 | Head / Neck | **1.5** | **1.5** | **1.5** |
-| Abdomen | 1.0 | 1.0 | 1.0 |
-| Chest | 0.9 | 0.9 | 0.9 |
+| Torso (RBM: abdomen 1.0, chest 0.9) | 0.95 | 0.95 | 0.95 |
 | Shoulders | 0.6 | 0.6 | 0.7 |
 | Arms | 0.5 | 0.6 | 0.7 |
 | Legs | 0.5 | 0.6 | 0.7 |
 
-**A head hit is worth three times a leg hit.** RBM's table is over six bones and this model keeps all six of them, so every row above maps across untouched.
+Any other damage type is worth 1.0 everywhere. **A head hit is worth three times a leg hit** for a thrust or an arrow, two and a half times for a cut, a little over twice for a mace. Every row maps across from RBM's table except the torso, which is the mean of its chest and abdomen.
 
 So **a real blow rolls a body part** from the distribution for its matchup, meets the armour standing over *that* part, and is paid what a blow to that part is worth. It does not meet an average of a man. The reference tables and the baselines take the expectation over all six zones instead — each zone's own armour, each zone's own multiplier, **averaged after** — because they are asking about a matchup, not a moment.
 
@@ -245,7 +263,7 @@ Gated behind `SimulationDefenseSystem` (on by default). A blow is not simply thr
 | With only a weapon (or a shattered shield) | 0.20 | +0.18 | a floor, ~2× harder across the range |
 | | | | capped at **0.75** — no defence makes a man untouchable |
 
-Both climb with the **defender's own melee skill**. A successful defence is a **parry** with probability `parryShare` — base 0.20 at equal skill, tilted by the defender's skill *advantage* (his skill minus his attacker's), capped at 0.6 — and otherwise a plain **block**. A shield block dumps the whole blow onto the shield; a weapon block merely deflects it; a **parry negates the blow and lands a riposte on the attacker**, against the attacker's own wound pool.
+Both climb with the **defender's own melee skill**. A successful defence is a **parry** with probability `parryShare` — base 0.20 at equal skill, plus 0.5 × his skill *advantage* over his attacker (as a share of 250), clamped to 0…0.6 — and otherwise a plain **block**. A rider struck by a man on foot never parries: his defence is always a plain block. A shield block dumps the whole blow onto the shield; a weapon block merely deflects it; a **parry negates the blow and lands a riposte on the attacker**, against the attacker's own wound pool.
 
 Note the two *distinct, non-overlapping* uses of skill, because it is easy to read them as one: the defender's **absolute** skill raises the defence *chance*; the skill **gap** splits a defence into block-or-parry. Out-fighting a man is what turns your defences into counters.
 
@@ -259,11 +277,14 @@ This is what makes landed melee lethality depend on **training** rather than on 
 | **An archer ridden down** | ×0.25, and **no parry at all**. A bow is no parrying weapon and there is no countering a charge with a knife. This is the classic death of unsupported archers. |
 | **A mounted man** | ×0.85, shield and all. He sits high and busy, managing a horse with one hand, and a shield slung for the saddle does not come across as fast as one carried on the arm. A bit less, not a collapse. |
 | **An archer under fire** | ×0.5 on his shield block against incoming **shots**. A man watching his own shot and his target gets the board up late. |
+| **The man on the wall** | With `SimulationSiegeDefenderEnabled`, a besieged defender struck by a besieger defends ×`SimulationSiegeDefenderDefenseBonus` (1.3) — shield block, weapon block and parry alike — and the cap rises to **0.9** for him. |
 
-**A ranged blow is answered by the shield alone** — quality-based, skill-blind — and now to **full negation** onto the shield rather than a fractional skim. `SimulationShieldBlockChance` is read *here and nowhere else* once the defence system is on:
+**A ranged blow is answered by the shield alone** — quality-based, skill-blind — and now to **full negation** onto the shield rather than a fractional skim. Once the defence system is on, `SimulationShieldBlockChance` is read on a live blow *here and nowhere else* (it also sits in the baselines, §8):
 
 ```
-block = SimulationShieldBlockChance · sqrt(shieldQuality / typicalShieldQuality)     capped at 0.65
+block = SimulationShieldBlockChance · sqrt(shieldQuality / typicalShieldQuality) · 1.35     capped at 0.65
+      · shieldIntegrity · (0.5 for an archer) · (0.85 for a rider)
+      · (1.3 on the wall, capped at 0.9)
 ```
 
 The square root matters. Taken flat, a Pavise — which is a wall of wood and scores accordingly — sat on the cap while a Norse round shield turned 21%, so the shieldwall infantry that shields exist *for* came off worse than a crossbowman hiding behind a board. A better shield should stop more blows than a poorer one; it should not stop three and a half times as many. Most of what stops a blow is the man, and men do not differ fourfold.
@@ -286,15 +307,19 @@ A shot now rolls to hit **before it is a blow at all**, which is the important p
 missChance = SimulationRangedMissChance          (0.35 — an UNTRAINED man with a bow)
            · (1 − 0.6 · skillFraction)           accuracy is the most trained thing about an archer
            · launcherFactor                      bolt 0.7 · arrow 1.0 · stone 1.3
-           · volleyFactor                        1.25 in the volley, 1.0 once closing
+           · volleyFactor                        1.5 at the volley's opening, easing to 1.0 at its close; 1.0 after it
            · mountedShooterFactor                1.25 — loosing from a moving horse
-           · mountedTargetFactor                 1.4  — shooting at one
+           · mountedTargetFactor                 1.4  — shooting at one (1.15 at a horse archer)
                                                  capped at 0.8
+then, in a siege (SimulationSiegeDefenderEnabled):
+           · SimulationSiegeRangedMissSkew       1.4 for the besieger firing up, (2 − 1.4) = 0.6 for the defender firing down
+           · the wall's attacker miss factor     a wall assault only, scaled by wall level (§6)
+                                                 each re-capped at 0.8
 ```
 
 Skill bites harder here than anywhere else in the model, and deliberately: accuracy is what an archer's training *is*. At saturation a man misses 40% as often as an untrained one — a Fian's shafts find men, a levy's find dirt — but never to zero, because nobody hits every shot. The launcher factor is keyed on the *shaft's* class, which is how the shot profile names itself: a bolt means a crossbow, the one ranged weapon in Calradia a conscript can point and loose; a stone means a sling, the least accurate thing on the field by a distance.
 
-**Fired missiles only.** A thrown javelin is a committed, short-range throw at a man the thrower can see, and is left alone.
+**Fired missiles only.** A thrown javelin is a committed, short-range throw at a man the thrower can see, and is left alone. On the reference tables the roll is folded in as its expectation, `× (1 − missChance)`.
 
 > **Calibration, and read this before tuning anything else.** This roll removes shots that `RangedLandingExponent`'s magnitude spread was implicitly standing in for. That exponent was calibrated against a paired log with **no miss roll upstream**, so it was carrying the misses itself, in magnitude space. With a discrete miss now taking them out first, the arm is being charged for the same failure twice — exactly the double-count the melee side had. Re-measure ranged against a paired log and expect to **lower** `RangedLandingExponent` to compensate. Until that is done, these two dials are known to overlap.
 
@@ -313,7 +338,7 @@ It is a **weighted preference, never a hard filter**: a drawn candidate of an un
 | Phase | |
 |---|---|
 | **Volley** | The bows — but *weighted by how many bows the side brought*, not handed to them whole. Only `share^0.6` of the volley's shots become archer fire. |
-| **Skirmish** | The horse (1.0), the shooters (1.0), and foot skirmishers who still have javelins (1.0). Everyone else on foot is merely walking (0.15). |
+| **Skirmish** | The horse (1.0), the shooters (1.0), and foot skirmishers who carry javelins (1.0 — read off the kit, so a man whose bundle is already spent is still picked, and lands nothing). Everyone else on foot is merely walking (0.15). |
 | **Contact** | The mounted arms are chosen **1.4×** as often as their headcount alone would give them — a horseman rides in, kills, backs out and comes again, engaging many where the foot engage one. A **foot archer** drops to **0.35**: the enemy is on him and he is drawing a sword or dying, not loosing freely. (A horse archer keeps his mounted weight — he rides clear and shoots; he is not overrun the way the foot are.) |
 
 The volley's `share^0.6` is not free, and it is the subtle one. Random selection gave archers `share` of the shots and the old `VolleyFocus` boost multiplied them by `share^-0.4`, so their output went as `share^0.6`. Reproducing that same count-dependence **in the pick** is what lets the two coexist: **when arm targeting is on, `VolleyFocus` stands down**, because the bows are now handed their turns directly and boosting them as well would pay for the same thing twice.
@@ -326,6 +351,8 @@ The volley's `share^0.6` is not free, and it is the subtle one. Random selection
 | Ranged (foot bows and horse archers alike) | The massed foot (1.0) over the mounted, who are fewer, faster and further off (0.35) |
 | Cavalry, in the skirmish | Horse meets horse out in front of the foot (1.0 vs 0.3) |
 | Cavalry, at contact | They break off and ride down the shooters (0.9) before grinding at the foot line (0.75) |
+
+A melee footman also leans toward a man already bloodied: a fresh man is kept at ×0.8 against a near-dead one's ×1 (`WoundFocusPull` 0.2) — the man in front of you who is already reeling is the one you finish. Each pick is a bounded rejection sampler (eight draws, then the last uniform draw stands). In a wall assault the striker pick also spends the shot/melee quota the siege allocation solved for (§6).
 
 Two of these numbers carry scars worth recording. `CavalryMobilityMultiplier` was **eased from 1.75 to 1.4**: at 1.75, stacked on the charge buffs, the horse landed so many blows it ran the field on charges where a ranged army should have won. `ContactArcherStrikerWeight` was **eased from 0.25 to 0.35**: the sim had let an attacker's bows shoot half a forest battle's blows where a real forest melee lets them shoot a fifth, and 0.25 over-corrected it.
 
@@ -353,7 +380,7 @@ So 2000 vs 500 at a cap of 1000 is fought **500 against 500**, with 1500 men wai
 
 **The simulation now fights it the same way.** Each round it reads the two sides' live strength, works out how many of each the cap lets stand in the line — the *engaged* count — and hands out blows off **that** rather than off the whole headcount, using vanilla's own formula (`min(enemy·2, pow(engaged, 0.6))`) so nothing else about the round moves. For 2000 vs 500 the blow ratio collapses from ~2.3 : 1 to ~**1 : 1**: the two lines are the same width, so they trade nearly evenly. The larger side still **wins** — it feeds its reserve forward as the front falls and the smaller side has no reserve to feed — but the smaller side, dying at the pace of the front rather than of the crowd, lands far more blows before it breaks, and the winner **pays in casualties for every rank it has to bring up**. A bloodless four-to-one is now a bloody one, which is the whole point.
 
-**The engaged counts are re-read every round off live strength**, so the front is not frozen at the muster. As the loser thins below half the cap, the winner's share of the line grows to fill what the cap leaves — envelopment, and it falls straight out of the same rule with nothing added for it.
+**The engaged counts are re-read every round off live strength**, so the front is not frozen at the muster. As the loser thins below half the cap, the winner's share of the line grows to fill what the cap leaves — envelopment, and it falls straight out of the same rule with nothing added for it. (The fought battle may not quite agree here: RBMAI's reinforcement waves hold each side to half the cap once the initial spawn is in, so in a mission the winner's line may never grow past half. Not yet checked against a paired log.)
 
 **The round is repriced to match.** Fewer blows a round means the battle takes more rounds to resolve, and charging each of those extra rounds the full field price (§6, the clock) would stretch the fight out across the campaign map — the same "billed half an hour for a slice of a battle" error the clock was rebuilt to kill. So a narrowed field round costs proportionally fewer campaign minutes, scaled by how much of the round the thinner front actually carries. The battle is bloodier; it is not longer.
 
@@ -365,8 +392,8 @@ Auto-resolve has only ever known about the third.
 
 | | | |
 |---|---|---|
-| **1. The volley** | the lines are far apart | The bowmen have the field, **and nobody else does anything at all.** In the first round only the **defender** may loose — the attacker is still too far out to answer. |
-| **2. The skirmish** (3 rounds) | the ground between them | The javelins come off their backs and are hurled. And the **horse meet the horse**: each side's cavalry ride out at each other in the open, long before the foot are anywhere near. Everyone else is still walking, and pays the closing penalty. |
+| **1. The volley** | the lines are far apart | The bowmen have the field, **and nobody else does anything at all.** In the opening rounds only the **defender** may loose — the attacker is still too far out to answer (see below). |
+| **2. The skirmish** (3 rounds) | the ground between them | The javelins come off their backs and are hurled. And the **horse meet the horse**: each side's cavalry ride out at each other in the open, long before the foot are anywhere near. Everyone else is still walking, and lands nothing. |
 | **3. The lines meet** | the brawl | Everything auto-resolve has always imagined a battle to be — and the least interesting of the three. |
 
 **In the volley, a man who is not shooting lands no blow.** Not a weak one — *none*. The lines are a bowshot apart: no sword reaches that far, and a man walking toward an enemy he cannot touch is not fighting badly, he is not fighting. The volley is the archers' round and nobody else's, which is the entire reason it is worth having archers.
@@ -388,12 +415,12 @@ Note what this is **not**: it is not `1/share`. That is the obvious fix and it i
 
 This was a closing *penalty* before — a hundredth of a blow, but a blow — and across four thousand of them it added up to a real body count landed by men who were, at the time, several hundred yards away with their shields up. Nothing is spent by such a man either: he splinters no shield and kills no horse, because he never reached one.
 
-In the **skirmish** the closing penalty does apply, and should: the ground between the lines is not a bowshot any more, so a blow is at least conceivable — but he is still walking, past a cavalry battle he can do nothing about and under javelins he cannot answer.
+The **skirmish** is the same now. It once kept a closing penalty (0.08 of a blow) for a man still walking, on the theory that a blow was at least conceivable once the lines were inside a bowshot; it has been removed. A man who has not yet engaged anybody lands **no blow at all** in either act — he is walking past a cavalry battle he can do nothing about and under javelins he cannot answer. Such null blows are not written to the trace either.
 
 Two consequences worth stating, because both were wrong before and both matter:
 
 - **A javelin is thrown in the skirmish, not the volley.** A man does not hurl a spear at somebody a bowshot away. He carries it across the open ground and throws it when he is close enough, and then it is gone and he is a man with a knife.
-- **A horseman has two moments of contact.** He meets the enemy cavalry in the skirmish; he cannot reach their infantry until the lines close. He may charge at either — but he is *engaged* only when he has actually found somebody, and until then he is riding across empty ground.
+- **A horseman has two moments of contact.** He meets the enemy cavalry in the skirmish; he cannot reach their infantry until the lines close. Only the second is a charge — horse on horse is a clash, not a charge, and a charge lands only on a man on foot — and he is *engaged* only when he has actually found somebody; until then he is riding across empty ground.
 
 ### The volley
 
@@ -403,18 +430,21 @@ How long the approach lasts is a question about the ground:
 
 | Context | Volley rounds |
 |---|---|
-| **Siege**, not an assault | **12** |
-| Plain, steppe, desert, dune, snow, river, forest | 6 |
+| **Siege** context (a wall assault's approach, §6 below, is 12 too) | **12** |
+| Plain, steppe, desert, dune, snow | 6 |
 | Naval raid, sea, open sea, river crossing | 4 |
+| Forest, river | 3 |
 | **Village** | **2** |
 
-Storming a wall is the longest approach there is, and everyone on it is shooting at you the whole way with nowhere to go but forward. A village is the opposite: there is no ground to cross at all — the fighting starts in among the houses, at arm's length, the moment anyone arrives. Ships closing on one another is a short thing, and then it is boarding and butchery.
+Storming a wall is the longest approach there is, and everyone on it is shooting at you the whole way with nowhere to go but forward. A village is the opposite: there is no ground to cross at all — the fighting starts in among the houses, at arm's length, the moment anyone arrives. In trees and along water the lines are on each other almost at once. Ships closing on one another is a short thing, and then it is boarding and butchery. (Native reports the `Siege` context only for a wall assault, so in practice a sally-out or a relief battle reads the terrain it stands on.)
 
-During the volley, a man who is **not** shooting or throwing pays a **closing penalty** — he is walking, into arrows, and achieving very nearly nothing.
+**And a small fight has a short approach.** The figures above are reached at 200 men on the field (both sides, counted at the muster); a smaller field battle gets a proportional share, never below one round — two warbands of twenty do not deploy at two hundred paces and advance under arrows, they blunder into each other. A siege and a sea fight are exempt: crossing the killing ground, or closing hull to hull, is the same length whoever is doing it.
+
+During the volley, a man who is **not** shooting lands no blow at all — he is walking, into arrows (see above).
 
 ### The opening rounds belong to the defender
 
-For the first **two** rounds, only the defender may loose. He is standing on his ground with his enemy in the open and the whole field to shoot across; the attacker is still coming, too far out to answer, and eats it. That is what it means to advance on a prepared position, and it is why storming one is expensive.
+For the first **two** rounds, only the defender may loose. He is standing on his ground with his enemy in the open and the whole field to shoot across; the attacker is still coming, too far out to answer, and eats it. That is what it means to advance on a prepared position, and it is why storming one is expensive. The window scales with battle size the same way the volley does (two rounds at 200 men, one at 100); the fixed-approach contexts keep the full two; and a wall assault has none at all, because its approach has rules of its own (below).
 
 The attacker is not merely out-shot in those rounds — he is doing **nothing at all**, because a man in the volley who is not shooting lands no blow (see above). Two rounds of free fire is the price of crossing open ground at somebody who is already there.
 
@@ -422,7 +452,7 @@ Javelins are unaffected: nobody throws during the volley at all, so there is not
 
 ### The defender's high ground
 
-A side that stands and waits picks the ground it waits on — a ridge, a slope, the lip of a ford — and its archers shoot **downhill**: a little more range, a plunging angle that finds the gaps a level shot glances off, and a target that is climbing at them rather than shooting back on even terms. The attacker, coming up, shoots **uphill** for the reverse of all of it. So in a field battle the defender's **fired** shots are worth **×1.10** and the attacker's **×0.90**.
+A side that stands and waits picks the ground it waits on — a ridge, a slope, the lip of a ford — and its archers shoot **downhill**: a little more range, a plunging angle that finds the gaps a level shot glances off, and a target that is climbing at them rather than shooting back on even terms. The attacker, coming up, shoots **uphill** for the reverse of all of it. So in a field battle the defender's **fired** shots are worth **×1.10** and the attacker's **×0.90** — from bowmen on foot only; a horse archer is not standing on anybody's ridge.
 
 This is the field cousin of the siege wall's magnitude bonus (×1.25 / ×0.85, below), and deliberately a **milder** one: a wall is a wall every time, but a defender does not *always* hold the height, so the flat field figure is kept small. It touches fired missiles only — a javelin at skirmish range is a level, short throw the slope barely moves — and never a wall assault, which prices the same idea harder and by phase. Both figures are model constants (`FieldDefenderShotMagnitude` / `FieldAttackerShotMagnitude`); set them to 1 to switch the bias off.
 
@@ -441,11 +471,11 @@ This was not hypothetical. At Tamnuh Castle on 1084-030 the garrison went from 2
 | **1. The approach** (12 rounds) | The killing ground. Nobody is in reach of anybody: the men on the parapet shoot down, the besiegers shoot back up, and no sword touches anything. |
 | **2. The assault** | The ladders go up and the fighting is hand to hand at whatever openings the siege equipment bought. |
 
-**On the approach the defender has every advantage there is.** He looses **five shots for every one** the attacker gets — he is standing still behind stone with the town's arrow stores at his elbow, while the besieger is walking uphill carrying a ladder. His shots are worth **×1.25** and the attacker's **×0.85**, and the attacker misses half again as often on top of the wall skew that already applies to any siege.
+**On the approach the defender has every advantage there is.** He looses **five shots for every one** the attacker gets — he is standing still behind stone with the town's arrow stores at his elbow, while the besieger is walking uphill carrying a ladder. His shots are worth **×1.25** and the attacker's **×0.85**, and the attacker misses half again as often on top of the wall skew (`SimulationSiegeRangedMissSkew`, §5) that already applies to every shot at a wall.
 
 **And a besieger can only reach the men shooting at him.** The defending infantry are behind the parapet; an arrow aimed at one of them hits masonry. This is a *hard* rule, not a preference — a garrison with no archers on the wall simply cannot be hurt while the ground is being crossed, which is correct, because there is nobody up there to shoot at. The defender is under no such restriction: from a wall he can see the whole army.
 
-**In the assault the defender's edge narrows.** Two shots to one rather than five, and **no** magnitude bonus — his advantage there is the frontage and the rate of fire, not the weight of the arrow. The attacker keeps his penalties (he is still fighting from a ladder) but can now reach anybody.
+**In the assault the defender's edge narrows.** Two shots to one rather than five, and **no** magnitude bonus — his advantage there is the frontage and the rate of fire, not the weight of the arrow. The attacker keeps his penalties (he is still fighting from a ladder: ×0.85 magnitude, and misses ×1.35 rather than ×1.5) but can now reach anybody.
 
 **And how good the wall is scales all of it.** Fortifications are built, and native tracks the level on the settlement (`Town.GetWallLevel()`, 1–3, off `SettlementFortifications` for a town and `CastleFortifications` for a castle). A higher wall means a higher parapet, better merlons to shoot from and hide behind, and a longer, worse climb.
 
@@ -459,8 +489,9 @@ What scales is the **advantage**, not the raw number: every dial is a departure 
 | Defender magnitude, approach | ×1.275 | ×1.30 | **×1.325** |
 | Attacker magnitude | ×0.835 | ×0.82 | **×0.805** |
 | Attacker miss, approach | ×1.55 | ×1.60 | **×1.65** |
+| …assault | ×1.385 | ×1.42 | **×1.455** |
 
-A settlement whose wall level cannot be read falls back to **level 3**, not to a poor wall — the conservative failure, since a bad reading can then never quietly hand a siege to the besieger by treating a great city as a palisade. (`GetWallLevel()` genuinely returns 0, not 1, when it cannot find the building.)
+A settlement whose wall level cannot be read falls back to **level 3**, not to a poor wall — the conservative failure, since a bad reading can then never quietly hand a siege to the besieger by treating a great city as a palisade. (`GetWallLevel()` genuinely returns 0, not 1, when it cannot find the building.) A battle with no town to read at all keeps the bare base figures (factor 1.0: 5 : 1, ×1.25, ×0.85, ×1.5).
 
 **It does not touch the width**, deliberately. Width is a fact about the *openings* — how wide the breach is, how many men fit through a gatehouse, how many can stand at the top of one ladder — and a hole in a great wall is the same size as a hole in a poor one. A better wall buys a worse approach to it, not a narrower gap once it is down.
 
@@ -471,8 +502,8 @@ Three lanes, which is native's own `MaximumAttackerMeleeSiegeEngineCount = 3`. W
 | Lane content | Attacker | Defender |
 |---|---|---|
 | Breach in the wall | 4 | 4 |
-| Siege tower | 4 | 4 |
-| Battering ram (middle lane only) | 8 | 8 |
+| Siege tower (or heavy tower) | 4 | 4 |
+| Battering ram (or improved ram), whichever slot it stands in | 8 | 8 |
 | Siege ladder | 1 | **5** |
 | Empty | 0 | 0 |
 
@@ -482,7 +513,7 @@ The ladder row is the shape of the whole idea: one man can be at the top of it a
 
 So the lanes are assembled from the equipment: **the gate** is wherever the ram is, and **the two wall lanes** are the settlement's two wall sections (`WallSectionCount` is hardcoded to 2 for every fortification), each either a hole or whatever climbing engine is assigned to it. Engines count only if `IsActive` and `Hitpoints > 0`.
 
-**A breached section is a hole and nothing else** — men walk through a gap, they do not queue for a ladder beside it. **An empty lane is worth nothing**: no fallback, no floor. And with only two stretches of wall, a besieger who built three towers has one with nowhere to go — that surplus is *logged*, never silently dropped.
+**A breached section is a hole and nothing else** — men walk through a gap, they do not queue for a ladder beside it. **An empty lane is worth nothing**: no fallback, no floor. And with only two stretches of wall, a besieger who built three towers has one with nowhere to go — that surplus is *logged*, never silently dropped. (The one assumption made: a wall whose equipment cannot be read at all is taken as two ladders, 2 against 10.)
 
 The widths are frozen at the moment the approach ends, so a ram broken on the way in contributes nothing.
 
@@ -490,15 +521,15 @@ The widths are frozen at the moment the approach ends, so a ram broken on the wa
 
 It was a ratio first, and eight logged sieges showed why that could not work. Native's besiegers build rams and towers and nothing else, and both are symmetric (8/8, 4/4) — so every siege opened at 12:12 or 16:16, and since both widths step together a ratio of equals is 1:1 for ever. The frontage never once touched an outcome. The ladder's 1/5, the whole reason widths differ at all, was never built in any of them.
 
-A consequence worth stating: the round's total blow count is **no longer preserved**. A storm through a single gap contains less fighting than a field battle between the same armies, so a siege resolves over more rounds — and each still bills the campaign clock at `simulationRoundMinutes`. If sieges start taking implausible campaign *time*, the round clock is the thing to reprice, not the ceiling.
+A consequence worth stating: the round's total blow count is **no longer preserved**. A storm through a single gap contains less fighting than a field battle between the same armies, so a siege resolves over more rounds — and each still bills the campaign clock at vanilla's siege ratio, twice `simulationRoundMinutes` (20 minutes at the default). If sieges start taking implausible campaign *time*, the round clock is the thing to reprice, not the ceiling.
 
 **Ranged fire is untouched by width** — men shoot over the fight from the whole length of the wall, and no gap in the masonry limits that.
 
 **Width moves.** Every man the attackers put down at an opening widens it by one for *both* sides — the press gives ground, the fight spills along the wall; every man the defenders put down narrows it by one for both. Melee kills only: an archer picking a man off the ground below does not close a breach. The floor is what the equipment bought at the start, and there is no ceiling — an assault that is going well goes better, which is what a collapse looks like from outside.
 
-**If nothing survives, there is no assault.** Every ladder burned, every tower broken, the ram destroyed and the wall still whole: the men who crossed the killing ground have arrived at a sheer face with empty hands. The besiegers are **repulsed** on the spot, through native's own `Route()` so the survivors leave as fugitives, carrying whatever the crossing cost them.
+**If nothing survives, there is no assault.** Every ladder burned, every tower broken, the ram destroyed and the wall still whole: the men who crossed the killing ground have arrived at a sheer face with empty hands. The besiegers are **repulsed** — after one last round fought as approach — through native's own `Route()` so the survivors leave as fugitives, carrying whatever the crossing cost them.
 
-**How the round is divided.** The game hands each side one number — its tick count — and a siege has two ratios to honour at once. So the allocation solves for all four counts directly (the two sides' shots and the two sides' melee blows), from the rate of fire, the width, and the archers the two sides actually brought; the tick counts carry half the answer and the striker selection carries the other half. **The round's total is unchanged**: this redistributes a round, it does not inflate one, so no siege lethality moves for a reason that is not the wall.
+**How the round is divided.** The game hands each side one number — its tick count — and a siege has two ratios to honour at once. So the allocation solves for all four counts directly (the two sides' shots and the two sides' melee blows), from the rate of fire, the width, and the archers the two sides actually brought; the tick counts carry half the answer and the striker selection carries the other half (it spends a per-side shot quota). On the approach every action is a shot. The **shots** are a share of the round's natural total and never inflate it; the **melee** is capped by the width as above, so an assault round can only hold less fighting than its field equivalent, never more.
 
 Every number here is a hardcoded constant, uncalibrated as of this writing.
 
@@ -525,19 +556,19 @@ Ballistas were exempt at first, on the reasoning that nobody runs a bolt-thrower
 
 **On the wall.** A ballista looses one or two bolts a round at men only, and a bolt that finds someone puts a terrible wound in him — 50–100% of that man's own pool, so it is lethal to a whole man at the top of its band, survivable in good armour, and cumulative. It used to kill outright on every hit; that threw away everything the rest of the model says about armour for the engine that fires most often, and in one siege it meant 241 dead from 350 bolts. A defending catapult decides once, at the start, whether it is working on the besieger's equipment or on his men, and holds to it — until the ladders go up, when every engine on the wall turns to the men climbing it. Firing at men, a stone kills two or three at a stroke; a pot kills one and burns ten more for 20–60% of their pools apiece. There is no accuracy roll on the approach — a mangonel does not miss a column crossing open ground it has been ranging on for days — but there is one in the assault, because now it is dropping rocks near a fight its own men are in.
 
-**Below it.** Every besieger's shot is 30% likelier to go wide. His ballistas work exactly as the wall's do. His heavy engines shoot at the defender's engines the whole battle through, assault included, and what they kill among the garrison they kill incidentally, rolled *separately* from the hit — a stone that misses a mangonel still lands somewhere. A stone catapult takes a man a quarter of the time; a pot kills the one it lands on and burns three to six more; a trebuchet fires every second round, hits timber hardest of anything on the field, and drops a rock big enough to take two or three men a third of the time.
+**Below it.** Every besieger's engine hits 30% less often than its data says (×0.7 on the hit chance; the incidental kills below are not touched). His ballistas otherwise work as the wall's do — the wall's own lose a third of their aim once the assault begins (×0.65, the same miss every defending engine takes then), his do not. His heavy engines shoot at the defender's engines the whole battle through, assault included, and what they kill among the garrison they kill incidentally, rolled *separately* from the hit — a stone that misses a mangonel still lands somewhere. A stone catapult takes a man a quarter of the time; a pot kills the one it lands on and burns three to six more; a trebuchet fires every second round, hits timber hardest of anything on the field (×1.15 against engines), and drops a rock big enough to take two or three men 35% of the time. An engine id the model does not know is treated as a stone catapult.
 
 **A broken engine stays broken.** It is removed from the campaign's own siege event, by slot — not through native's `BreakSiegeEngine`, which takes a *type* and would break the wrong one of a matched pair. So a ram lost to a mangonel has to be rebuilt before the next assault, and — because the assault widths are read from the survivors at the end of the approach — **a garrison that breaks the ram in time has genuinely narrowed the storm that follows.** That is the loop that makes the artillery matter.
 
 Casualties go through the game's own `ApplySimulationDamageToSelectedTroop`, so they book against the right party, run RBM's wound pools, and let the surgeon decide dead or merely carried off, exactly like a casualty from a sword.
 
-### Ammunition — counted in rounds, not blows
+### Ammunition — counted in arrows, per man
 
-**A quiver does not empty per blow. It empties per minute.** A man looses arrows at a rate and keeps loosing until the quiver is out or the enemy is on him.
+**A quiver is a real number of arrows on a real man's back**, and it empties one shaft per shot he looses — misses included. Each archer stack carries a pool of `living men × his arrows`, his arrows read off his own kit (the stack sizes of the quivers he carries, averaged over his battle sets; 20 if no quiver could be read at all). When a man falls, his share of the pool falls with him: a line ground to a remnant cannot keep shooting from the quivers of its dead.
 
-This is worth being precise about, because getting it wrong inverts the behaviour. Blows per man per round go as `N^-0.4`, so counting shots in *blows* meant twenty archers in a roadside skirmish burned their quivers dry before the fight was decided, while eight hundred archers in the great set-piece battle of the war shot from a full quiver from the first exchange to the last. Exactly the wrong way round: the skirmish is over in a minute and nobody empties anything; the long battle is precisely where the arrows run out.
+This is worth being precise about, because getting it wrong inverts the behaviour. The pool scales with the stack, while the shots a stack looses scale only as `pow(men, 0.6)` — so a big set-piece line shoots for far longer than a roadside handful, which is the right way round: the skirmish is over in a minute and nobody empties anything; the long battle is precisely where the arrows run out. When the quiver is dry he draws from his melee arsenal — and his armour was never meant for that.
 
-So arrows are spent against the **round counter**: a man shoots for `AmmoRounds` (30) and then he is a man with a knife, and how many friends he brought has nothing to do with it. When the quiver is dry he draws from his melee arsenal — and his armour was never meant for that. (Raised from 14 alongside the skill-based defence system: once melee blows could be blocked, parried and countered, a battle took materially longer to decide, and a 14-round quiver had every archer in Calradia dry before the lines properly met.)
+It used to be a **round** count instead (`AmmoRounds`, 14 and then 30: a man shot for that many rounds and was then a man with a knife, however many friends he had brought). That held a constant amount of fighting only while a round held a constant amount — and the field frontage (above) broke exactly that, stretching a big battle over more, thinner rounds. So the quiver is counted in arrows, per man.
 
 **Siege defenders never run dry.** A man on a wall is not shooting from his quiver; he is shooting from the town's arrow stores, stacked behind the parapet for exactly this. A besieger carries what he can climb a ladder with.
 
@@ -545,9 +576,11 @@ So arrows are spent against the **round counter**: a man shoots for `AmmoRounds`
 
 Half the infantry in Calradia carry a brace of throwing spears or a few throwing axes, and those are not melee weapons — he hurls them while the lines close and then draws steel. Auto-resolve has never once let him: they were either ignored entirely or, worse, treated as the weapon he swung for the whole battle, an axe thrown on an infinite loop.
 
-A throw is a **missile** in every respect that follows: it goes to the mass of the man, it meets the *missile* shield block, and it does not touch the horse — a javelin goes where it was thrown, not into the animal's flank.
+A throw is a **missile** in every respect that follows: it goes to the mass of the man (the missile hit-zone rows), it meets the *missile* shield block, and when the target is mounted it finds the horse as often as an arrow does (0.22).
 
-He hurls one per round, so **the bundle on his back is the number of rounds he can throw for.** Two javelins, two rounds. The approach across open ground runs four rounds — so he does terrible damage in the opening two, runs out, and spends the rest of the walk paying the closing penalty with nothing in his hand and the enemy line still coming. That is exactly what being a skirmisher is. There is no store to fall back on and no siege exception: nobody stockpiles javelins behind a parapet.
+He hurls one per round, from the round the skirmish opens, so **the bundle on his back is the number of rounds he can throw for.** Two javelins, two rounds. The skirmish runs three rounds — so he does terrible damage in the opening two, runs out, and spends the rest of the walk landing nothing, with nothing in his hand and the enemy line still coming. That is exactly what being a skirmisher is. There is no store to fall back on and no siege exception: nobody stockpiles javelins behind a parapet. (Javelins, unlike arrows, are still counted in rounds: a bundle of two or three is too shallow for whose-they-are to matter.)
+
+**A man who reaches the melee still carrying some** may hurl one rather than draw steel: at contact, a foot man whose bundle is not yet spent throws on a quarter of his blows (`ContactJavelinThrowChance`, 0.25).
 
 ### The charge, and the horse under him
 
@@ -559,28 +592,32 @@ So the charge is a **coin, not a countdown**. A share of his blows land at the g
 
 | Ground | Base | × boost | Effective |
 |---|---|---|---|
-| Open field — plain, steppe, desert | 0.5 | 0.9 | **0.45** |
-| Trees and water — wood, river | 0.4 | 0.9 | 0.36 |
-| A village street | 0.15 | 0.9 | 0.135 |
-| A wall, a deck, a besieged gate | **0** | — | **0** |
+| Open field — plain, steppe, desert, dune, snow | 0.5 | 1.1 | **0.55** |
+| Trees and water — wood, river, river crossing | 0.4 | 1.1 | 0.44 |
+| A village street | 0.15 | 1.1 | 0.165 |
+| A wall, a deck, a besieged gate, a naval raid | **0** | — | **0** |
 
 Note this is *not* `KitingRoom`, though the two ask a related question and are read off the same terrain. Kiting asks whether a horse can run *away* and keep running; the charge asks only whether it has room to build speed into a crowd. A **village street** is where they part company: it gives a horse archer nothing at all — nobody kites between houses — while still leaving a lancer room for the odd charge. The naval and siege zeroes are not scaled by the boost: a wall and a deck have no charge to scale, and no horse on them either.
 
-The `ChargeChanceBoost` was pulled from 1.2 to 0.9 when the charge became **unblockable** and started hitting for the mount's real weight: with those two changes the horse was charging too often and running whole battles single-handed.
+The `ChargeChanceBoost` was pulled from 1.2 to 0.9 when the charge became **unblockable** and started hitting for the mount's real weight — with those two changes the horse was charging too often and running whole battles single-handed — and has since been eased back up to 1.1.
 
-**And a charge needs a crowd to break.** The ground's own figure is thinned by how many of the enemy are still **on their feet** — a charge into a thin screen of survivors is not the same act as a charge into a standing line. So as a side's foot are killed, the charges into it come less freely, and a small fight prints a small number and should. The battle log writes the opening figure for each side, with the foot count it was computed from.
+**And a charge needs a crowd to break.** The ground's own figure is thinned by how many of the enemy are still **on their feet** — linearly, saturating at 200 foot — since a charge into a thin screen of survivors is not the same act as a charge into a standing line. So as a side's foot are killed, the charges into it come less freely, and a small fight prints a small number and should. The battle log writes the opening figure for each side, with the foot count it was computed from.
 
-It fires only once he has met somebody: while the lines are still closing a horseman has nobody to ride down, and a charge delivered into empty ground is not a charge. He finds the enemy *cavalry* in the skirmish, well before the foot are in reach, and his blows there roll the same coin.
+It fires only once he has met somebody, and only into a man **on foot**: while the lines are still closing a horseman has nobody to ride down, and a charge delivered into empty ground is not a charge. He finds the enemy *cavalry* in the skirmish, well before the foot are in reach, but horse against horse is a clash (`horse` in the trace) and never a charge.
+
+**Weight of numbers tells too.** A mounted arm's blows gain up to +25% as its own numbers grow, saturating at 120 riders, counted per arm (lancers by lancers, horse archers by horse archers) off the live counts. And a horse archer will now and then wheel in and charge himself — at 0.15 of the thinned charge chance, the bow put away for that blow.
 
 **A charge costs the horse something, too.** Riding a horse into a standing man at speed hurts the animal — and riding it onto set spears hurts it a great deal more (`ChargeSpearRebound`). That toll is paid out of the horse's own pool, which is one of the ways a squadron grinds itself down over a long fight rather than charging fresh for ever.
 
 For where a footman's blow actually goes — the horse or the man on it — see §5's *Horse or man*, which is now a roll of its own rather than an aside here.
 
+**A horse is worth its own hit points.** Each stack's horse pool is its animals' own health (the mount's Monster hit points plus its extra health, raised by the commander's `Medicine.Sledges` and `Riding.Veterinary`); `HorseCapacity` (260) is only the fallback for a mount whose health cannot be read.
+
 **And a siege — or a ship — has no horses in it at all.** This is a stronger thing than kiting room going to nothing, and kept separate from it. A horse hemmed into a village street is still a horse — it cannot charge, but it is there, catching blows at the leg and dying before its rider does. A horse on a wall or a deck does not exist: the game brings none to a storm, and none aboard a boarding action, and a cavalry troop in either is a lance and a suit of barding with no animal under it. So there a lancer is dismounted outright — no charge, no barding counted at the leg, no horse to be killed first, and no riding out to meet the enemy cavalry in front. A wall, a deck and a village street all read zero kiting room, but they are not the same zero: the village keeps its horses and the other two have none.
 
 ### Braced steel
 
-A spear set against a horse is the answer infantry have had to cavalry for three thousand years, and auto-resolve has never once let them use it. A braced polearm lands **half again as hard** on a horseman.
+A spear set against a horse is the answer infantry have had to cavalry for three thousand years, and auto-resolve has never once let them use it. A braced polearm lands **×1.6** on a horseman. And when the horse is itself coming on — rolled at the (thinned) chance of a charge into the spearman's own side — its own momentum is fed back into the spear that meets it: the brace gains `ChargeDamage × 0.02 × 0.5` of the struck horse.
 
 This one is a deliberate thumb on the scale and is *not* built into the baseline — see §8.
 
@@ -590,19 +627,19 @@ A horse archer is **not a cavalryman with a bow**, and auto-resolve has always m
 
 He was always his own arm of service here (`HorseArcherType` — mounted *and* ranged, bucketed and baselined apart from the lancers), and he has always shot in the volley alongside the foot archers, and gone on shooting in every act of the battle for as long as his quiver holds out. What he could not do was **decline the melee**.
 
-So a foot melee blow at a mounted archer who still has arrows lands at **a tenth of its worth**. Not because the spearman is bad — his spear is as good as it ever was, and if he braced it he still gets his full half-again — but because there is nobody standing in front of him to put it into. The tenth that gets through is the man caught turning, the horse gone lame, the pocket of ground with no way out.
+So a foot melee blow at a mounted archer who still has arrows is cut by the battle's kiting room: `× (1 − KitingRoom · (1 − 0.3))` (`HorseArcherEvasion` 0.3) — **0.37 of its worth on open ground**, 0.72 in a wood, untouched where there is no room. Not because the spearman is bad — his spear is as good as it ever was, and if he braced it he still gets his full 1.6 — but because there is nobody standing in front of him to put it into. What gets through is the man caught turning, the horse gone lame, the pocket of ground with no way out.
 
-**Three things end it, and only three:**
+**Three things end it — and a fourth, his horse:**
 
 | | |
 |---|---|
 | **The quiver runs dry** | The clock the model already keeps (§ *Ammunition*). Out of arrows, he has no reason to keep his distance and no way to profit by it — he is a lightly armoured man on a tired horse, and now the infantry get their turn. This is the *design*: the way to beat horse archers is to outlast them. |
-| **Cavalry** | A rider catches a rider. The exemption asks `!striker.IsMounted`, so it never applies to a horseman at all: lances land in full, at full charge. Which is exactly why every steppe army in history feared the other side's cavalry and very little else. |
+| **Cavalry** | A rider catches a rider. The evasion applies only to a striker on foot (and never to a missile), so it never touches a horseman: his blows land in full. Which is exactly why every steppe army in history feared the other side's cavalry and very little else. "On foot" is the battle's answer — a lancer whose own horse is dead is a footman here too. |
 | **The ground** | It is scaled by the battle's **kiting room**, read off the same terrain the volley length is read off. Open country — plain, steppe, desert, dune, snow — is the horse's at `0.9`: not quite absolute, because even on the steppe there are hollows and broken ground and horses that stumble. A forest or a river crossing cuts it to `0.4`: the lanes are short, the horse cannot run, and a man on foot with an axe gets his chance. A village street, a ship's deck, a breached wall: **zero**. Nobody kites up a siege ladder. |
 
-Arrows find him regardless — a shaft does not care how fast his horse is — because only *melee from foot* requires him to be somewhere he can be reached.
+Arrows find him regardless — a shaft does not care how fast his horse is — because only *melee from foot* requires him to be somewhere he can be reached. And the fourth way out: once his own horse is down (§5's per-stack horse roll), he is a bowman on foot and the evasion is gone.
 
-Like the brace, this is a deliberate thumb on the scale and is *not* in the baseline (§8), so it survives the division rather than cancelling in it. In the blow-by-blow trace it prints as **`KITED`**, which is worth its own word: a column of "melee" blows each dealing a tenth of nothing looks like a broken model, and is in fact infantry doing the one thing infantry cannot do.
+Like the brace, this is a deliberate thumb on the scale and is *not* in the baseline (§8), so it survives the division rather than cancelling in it. In the blow-by-blow trace it prints as **`KITED`**, which is worth its own word: a column of "melee" blows each dealing a third of their worth looks like a broken model, and is in fact infantry doing the one thing infantry cannot do.
 
 ---
 
@@ -617,6 +654,8 @@ else if (MBRandom.RandomInt(_selectedSimulationTroop.MaxHitPoints()) < damage)
 Eight damage against a hundred hit points is not eight points off a bar — it is an **eight per cent chance the man is simply gone**, and a ninety-two per cent chance the blow never happened. Nothing accumulates. A veteran in plate who has been hacked at for twenty rounds is as fresh as the moment he arrived, and a recruit's lucky swing can kill a champion outright. Only a **hero** got a real pool (`AddHeroDamage`) — four lines higher up in the same method.
 
 The game does know who each man is: `MapEventSide` keeps a `UniqueTroopDescriptor` for the soldier it has selected. So a pool is possible, and RBM keeps one, per battle, for every man.
+
+**The wounds outlast the round.** Native rebuilds the muster at the top of every round (`MapEvent.SimulateBattleSetup`) and issues fresh descriptors, which would otherwise heal every man between rounds. So a prefix there folds each surviving wound into a store kept per party and troop type, and the first time a fresh man of that stack is struck he takes on the worst wound still owed — the man nearest death is the next to go down.
 
 The roll is not replaced — it is **bent**. `RandomInt(maxHitPoints)` returns `0 … maxHitPoints-1`, so rewriting `damage` in a prefix makes the outcome certain in either direction:
 
@@ -635,11 +674,11 @@ And every part of the equipment model bites harder, which is the real prize: arm
 
 **A hero is exempt from all of it.** He keeps his own pool, unscaled: the lethality figure is a trooper knob, and a hero already had a real pool of his own to accumulate against. The scale is also *not* applied to his `MaxHitPoints()` for a second reason worth recording — that method also feeds the absolute per-blow cap (§2), so scaling him there would cap his blows against a pool he does not have, and a lord would die faster than the cap dial claimed.
 
-**The trace prints what a man has left, and not what he started with.** It used to print both (`hp 52/100`), which was worth it while every trooper's pool was a flat hundred. It is not any more: the pool is the native hundred widened by the lethality scale and lifted again by his commander's hit-point perks, so the denominator now moves per troop, per party and per lord — and a column that changes its own meaning down the page is worse than no column. The pools are reported once, in full, in the perks block at the head of each battle (§6c).
+**The trace prints what a man has left, and not what he started with.** It used to print both (`hp 52/100`), which was worth it while every trooper's pool was a flat hundred. It is not any more: the pool is the native hundred widened by the lethality scale and lifted again by his commander's hit-point perks, so the denominator now moves per troop, per party and per lord — and a column that changes its own meaning down the page is worse than no column. The pools are reported once, in the perks block at the head of each battle (§10) — printed for a party only when a hit-point or mount perk actually fired, and as the commanded pool *before* the lethality scale.
 
 **The commander's perks are folded in; the captain's are not there to fold.** A trooper's pool is his own hundred plus whatever his *party leader* has learned about keeping men alive — `ThickHides`, `HardyFrontline`, `WellBuilt`, `HardKnock`, `UnwaveringDefense`, `PickedShots`, and a doctor-lord's `MinisterOfHealth`, worth up to +28 and more for a well-led line. This is `SandboxAgentStatCalculateModel.GetEffectiveMaxHealth` transcribed, so a battle you press the button on agrees with a battle you fight by hand.
 
-This block was once removed on the principle that a soldier's staying power should be his own frame, "not a bonus his captain carries." Both halves of that turned out to be wrong. **None of these is a captain perk** — every one is `PartyRole.PartyLeader`, and their own descriptions say *"to troops in your party"* where a captain perk always says *"in your formation"*; there is no hit-point perk anywhere in Bannerlord with a Captain slot. And the analogy to lifting tier and terrain does not hold: those were *proxies* the equipment model could measure directly and better, where a perk is a real effect with a real number that nothing else in the model says. Gated on `simulationPerkSystem`, with the captain system (§6c).
+This block was once removed on the principle that a soldier's staying power should be his own frame, "not a bonus his captain carries." Both halves of that turned out to be wrong. **None of these is a captain perk** — every one is `PartyRole.PartyLeader`, and their own descriptions say *"to troops in your party"* where a captain perk always says *"in your formation"*; there is no hit-point perk anywhere in Bannerlord with a Captain slot. And the analogy to lifting tier and terrain does not hold: those were *proxies* the equipment model could measure directly and better, where a perk is a real effect with a real number that nothing else in the model says. Gated on `simulationPerkSystem`, with the captain system (see `SimulationPerkSystem` in §9). The commander's veterinary — `Medicine.Sledges`, `Riding.Veterinary` — reaches his men's horses the same way (§6, *The charge*).
 
 ---
 
@@ -649,7 +688,7 @@ Vanilla's `SimulateHit` ends by multiplying the blow through `CalculateSimulatio
 
 The reason is that it double-counts a thing this model now measures directly. What a blow *does* is decided by the kit that threw it, the armour it met, the training behind it and the pool it wears down. A side's campaign morale is not a fact about a spear, and letting it scale the spear taxes or subsidises every blow in the battle for a reason already accounted for elsewhere.
 
-Be precise about the scope, because it is narrow: only morale's effect on a **blow's damage** is removed. Whether a side *breaks* is a different question entirely, and vanilla's answer to it stands untouched unless §6c is switched on.
+Be precise about the scope, because it is narrow: only morale's effect on a **blow's damage** is removed here. Whether a side *breaks* is a different question, answered in §6c — and note that vanilla's own morale rout does **not** survive the overhaul either.
 
 With the equipment model off, the prefix returns `true` and vanilla's morale runs exactly as it always did — the battle is meant to be vanilla's own, morale and all.
 
@@ -659,19 +698,22 @@ With the equipment model off, the prefix returns `true` and vanilla's morale run
 
 Gated behind `SimulationRoutEnabled`, and **off by default**.
 
-Vanilla's auto-resolve routs a side only when its side morale reaches nearly zero — and that figure is the *standing campaign* `MobileParty.Morale`, which **never moves during the simulated fight**. So a side that is being annihilated is exactly as steady in round forty as it was in round one, and every auto-resolved battle in the game grinds on to the last man. That is not how battles end. Battles end when somebody runs.
+Vanilla's auto-resolve routs a side only when its side morale reaches nearly zero — and that figure is the *standing campaign* `MobileParty.Morale`, which **never moves during the simulated fight**. So a side that is being annihilated is exactly as steady in round forty as it was in round one, and every auto-resolved battle in the game grinds on to the last man — or, worse, a party that set out hungry and unpaid breaks while still hundreds strong, for reasons that have nothing to do with the fight in front of it. That is not how battles end. Battles end when somebody runs.
 
-**A side breaks when it is being butchered** — when it has lost a much larger *share* of the men it marched in with than the enemy has:
+**So vanilla's morale rout is switched off whenever the overhaul is on — whatever this toggle says.** A prefix on `MapEvent.CalculateWinner` (`SimulationNoVanillaRout`) lifts both sides' morale out of reach of its rout branch; annihilation still ends a battle exactly as before. With `SimulationRoutEnabled` on, RBM's rule below decides when a side breaks; with it off, **nothing** breaks a side and the battle is fought to annihilation. Only with the equipment model itself off does vanilla's morale rout come back.
+
+**A side breaks when it is a butchered remnant** — when fewer than 50 of its men still stand, *and* it has lost a larger *share* of the men it marched in with than the enemy has:
 
 | | |
 |---|---|
-| `RoutLossGapThreshold` | **0.2** — it must have lost this much more of itself, in proportion, than its enemy |
-| `RoutMinBeatenLoss` | **0.25** — and it must have bled a real quarter of itself away first |
+| `RoutMaxBeatenTroops` | **50** — the hard floor: a side with this many men still standing never breaks, whatever its losses. Only a remnant runs. (In a skirmish both sides are under it from the start, and the shares alone decide.) |
+| `RoutLossGapThreshold` | **0.06** — it must have lost this much more of itself, in proportion, than its enemy |
+| `RoutMinBeatenLoss` | **0.08** — and it must have bled at least this share of itself away |
 | `RoutBaseChancePerRound` | **0.03** — a small base chance, re-rolled every round |
-| `RoutSeverityScale` | **0.35** — plus a share growing with how far past the gap the butchery has gone (severity 0 at the threshold, 1 at a wipe) |
-| `RoutMaxChancePerRound` | **0.45** — the ceiling |
+| `RoutSeverityScale` | **0.35** — plus a share growing with how far past the gap the butchery has gone: `severity = (gap − 0.06) / 0.94`, 0 at the threshold, 1 only when the beaten side is wiped out and the enemy has lost nobody |
+| `RoutMaxChancePerRound` | **0.45** — the ceiling, which in practice never binds: the most the two terms above can reach is 0.38 |
 
-Re-rolled each round, so a hopeless stand compounds toward a near-certain break while a merely bad one may yet hold. The figures are kept deliberately low: routs are meant to be the **exception**. A beaten side more often fights on and takes its losses than breaks and runs.
+The gap and the minimum loss were lowered (from 0.12 and 0.15) when the 50-man floor came in: the floor is now what decides *when* a side may break, and the two shares need only keep a dead-even or near-bloodless fight from breaking anybody. Re-rolled each round, so a hopeless stand compounds toward a near-certain break while a merely bad one may yet hold. Routs are still meant to be the **end** of a beaten force, not a mid-battle collapse.
 
 **Casualty share and not headcount, and this is the whole design.** The first version measured the live headcount ratio, and it broke in both directions:
 
@@ -682,9 +724,11 @@ Casualty share reads the fight the right way round: the side bleeding out faster
 
 Two details that keep it honest: a side that *gained* men after the muster (reinforcements attaching mid-battle) would read a negative loss, so the fractions are clamped at zero; and a dead-even bleed breaks nobody.
 
-**The break runs through vanilla's own `Route()`**, not through a reimplementation — which is what makes the fugitives *survive*, and the pursuit, the prisoners and the rewards all behave as the game intends. Ending the battle means setting `MapEvent.BattleState`, whose setter is internal and is reached by reflection; that is deliberate, because it is the same act vanilla's own rout performs and it is what fires `OnBattleWon` and finalises the event.
+**The break runs through vanilla's own `Route()`**, not through a reimplementation — which is what makes the fugitives *survive*, and the pursuit, the prisoners and the rewards all behave as the game intends. Ending the battle means setting `MapEvent.BattleState`, whose setter is internal and is reached by reflection; that is deliberate, because it is the same act vanilla's own rout performs and it is what fires `OnBattleWon` and finalises the event. Every rout — this one, the siege repulse, or vanilla's when the overhaul is off — is marked for the log (`SimulationRoutMarker`), which then splits the fugitives from the dead.
 
-**Sieges are left to vanilla.** A storm is not a field a man can run off.
+**A wall assault never routs this way.** A storm is not a field a man can run off; the only break in one is the repulse when no way in survives the approach (§6). (And since vanilla's morale rout is off too, a storm is fought to the end.)
+
+**The wounded are taken.** When the battle ends, every non-hero wounded man of each defeated NPC party goes into a winner's prison roster — even when his side retreated, which vanilla's `CaptureDefeatedPartyMembers` skips entirely — rather than being left to vanilla's chance-gated capture, which could strike a man off the roster and hand him to nobody (`SimulationWoundedCapture`, gated on the overhaul alone, not on this toggle). The captor is drawn weighted by contribution to the battle, among winners that took part; villagers, caravans, patrols and a village's own garrison or militia never hold prisoners. `CanTroopBeTakenPrisoner` is respected, heroes are left to vanilla, and the player's own main party is never stripped — a player who retreats keeps his wounded as vanilla allows.
 
 ---
 
@@ -720,7 +764,7 @@ These are **measured from the game's own roster**, never guessed, and the log pr
 
 Measuring rather than deriving is deliberate. A formula baseline with a different *slope* against tier than the model's own would silently hand one end of the tier range a bonus and tax the other, for no reason but the curve — and the whole correction is a ratio against this, so a baseline that is quietly wrong makes every blow quietly wrong without making any single blow *look* wrong. Measuring also means the model adapts to whatever items a mod loads.
 
-**The population is line troops only.** `CharacterObject.All` is not a muster roll — it is every character the game has ever heard of, and it is full of people who never see a battle: villagers, townsfolk, tavern keepers, blacksmiths, musicians. They carry pitchforks and kitchen knives and were dragging down the very average that decides whether a real soldier is any good. Heroes are excluded too: Calradia fields a few hundred lords, nearly all mounted in the finest harness in the game, and leaving them in made the typical "cavalryman" a nobleman in plate. **A lord is measured against the line; he is not part of it.**
+**The population is fighting men only** — by occupation: soldiers, mercenaries, bandits, gangsters, guards, caravan guards and banner bearers. `CharacterObject.All` is not a muster roll — it is every character the game has ever heard of, and it is full of people who never see a battle: villagers, townsfolk, tavern keepers, blacksmiths, musicians. They carry pitchforks and kitchen knives and were dragging down the very average that decides whether a real soldier is any good. Heroes are excluded too: Calradia fields a few hundred lords, nearly all mounted in the finest harness in the game, and leaving them in made the typical "cavalryman" a nobleman in plate. **A lord is measured against the line; he is not part of it.**
 
 ### What is in the baseline and what is not
 
@@ -736,7 +780,7 @@ Any term applied to **both** `actual` and `baseline` **cancels in the ratio and 
 | Weapon pool, and the polearm preference | yes | **yes** | Which weapon a man draws is a fact about his kit. Otherwise a spearman would be measured against a baseline of men who never reached for theirs, and *every* infantry troop in Calradia would read as unusually good against horse. |
 | **Brace bonus** | yes | **no** | A thumb. Auto-resolve has never let infantry set a spear, and it should. It must survive the division rather than cancel in it. |
 | **Charge** | yes | **no** | Same. |
-| **Volley / closing penalty** | yes | **no** | Same. |
+| **Volley / closing (no blow at all)** | yes | **no** | Same. |
 | **Javelins** | yes | **no** | Same. |
 | **Ranged miss roll** | yes | **no** | Same — and note it sits *above* the blow entirely: a missed shot is not a smaller blow, it is no blow at all. |
 | **Horse-or-man roll** | yes | **no** | The reference tables ask what a matchup does to the **man**, and the horse is not part of that question — so they take the man every time. Only a live blow rolls it. |
@@ -747,11 +791,11 @@ Note that on the **absolute** path (§2, the default) there is no division by a 
 
 ## 9. Configuration
 
-In the XML, under `/Config/RBMCampaign`:
+In the XML, under `/Config/RBMCampaign` (defaults are the loader's fallbacks in `RBMConfig.Core.cs` — what a fresh config gets — and agree with the field initializers in `RBMConfig.Simulation.cs` / `RBMConfig.Debug.cs`). Everything here also needs RBM Campaign itself on.
 
 | Key | Default | Effect |
 |---|---|---|
-| `SimulationEquipmentEnabled` | 1 | **Detailed auto resolve — the master switch.** `0` restores vanilla's auto-resolve *entirely*: tier-priced blows, vanilla morale (§6b), the hit-point lottery (§6a), arm-blind selection (§5a), no rout (§6c), and the spared player (§7). |
+| `SimulationEquipmentEnabled` | 1 | **Detailed auto resolve — the master switch.** `0` restores vanilla's auto-resolve *entirely*: tier-priced blows, vanilla morale and vanilla's morale rout (§6b, §6c), the hit-point lottery (§6a), arm-blind selection (§5a), vanilla's wounded capture, and the spared player (§7). |
 | `SimulationEquipmentPowerWeight` | 1 | The exponent on the correction **in ratio mode only** (§2). `1` = the model at face value; above 1 widens the gap between a well-found soldier and a ragged one. `0` is **the master switch off**, not merely a neutral weight — `SimulationEnabled` reads it. |
 | `SimulationAbsoluteDamage` | 1 | Price a blow at its own real magnitude rather than as a ratio against its arm's baseline (§2). `0` restores the ratio-against-baseline path and its `0.1 … 8` clamp. |
 | `SimulationAbsoluteScale` | 1 | The sole calibration dial of absolute mode: how a blow's real magnitude maps onto the hit-point pool. Raise to make blows bite harder. **Tune vs a paired log.** |
@@ -761,16 +805,16 @@ In the XML, under `/Config/RBMCampaign`:
 | `SimulationArmTargeting` | 1 | Phase- and arm-weighted selection of striker and struck (§5a). `0` restores vanilla's uniform random pick and the `VolleyFocus` path. |
 | `SimulationRangedMissEnabled` | 1 | Let a fired shot miss before it is a blow (§5). `0` restores the shot that always arrives. |
 | `SimulationRangedMissChance` | 0.35 | What an **untrained** man with a bow misses; every other accuracy term works on this. `0` disables the roll. **Interacts with `RangedLandingExponent` — see the calibration note in §5.** |
-| `SimulationRoutEnabled` | **0** | Let a butchered side break and run (§6c). **Off by default**: vanilla's fight-to-annihilation is what the game does without RBM. |
-| `SimulationPerkSystem` | 1 | Synthesise the formations auto-resolve lacks, appoint a captain over each by the game's own assignment rule (honouring the player's Order of Battle), and ask each for his real perks — replacing vanilla's flat *count* of the side commander's captain perks, which is then lifted back out so nothing is counted twice. Also restores the commander's hit-point perks (ThickHides, HardyFrontline, WellBuilt, HardKnock, UnwaveringDefense, PickedShots, MinisterOfHealth) to his men. `0` restores vanilla's count and drops the hit-point perks. |
+| `SimulationRoutEnabled` | **0** | Let a butchered remnant (under 50 men) break and run (§6c). **Off by default**, and off means fought to annihilation: vanilla's morale rout stays disabled while the overhaul is on either way. |
+| `SimulationPerkSystem` | 1 | Synthesise the formations auto-resolve lacks, appoint a captain over each by the game's own assignment rule (honouring the player's Order of Battle), and ask each for his real perks — replacing vanilla's flat *count* of the side commander's captain perks, which is then lifted back out so nothing is counted twice. Also restores the commander's hit-point perks (ThickHides, HardyFrontline, WellBuilt, HardKnock, UnwaveringDefense, PickedShots, MinisterOfHealth) to his men, and his veterinary perks to their horses. `0` restores vanilla's count and drops the hit-point perks — in the strategic party power too, which borrows the same pool. |
 | `SimulationSiegeDefenderEnabled` | 1 | Price the wall as better **dice** rather than the flat power bonus RBM has to neutralise: the besieged man turns aside more, and an exchange of shot is skewed by height. Off outside a siege. |
 | `SimulationSiegeDefenderDefenseBonus` | 1.3 | Multiplier on the besieged man's shield-block, weapon-block and parry chances while a besieger strikes him (capped, so the wall is an edge and not invulnerability). `1` is no edge. |
 | `SimulationSiegeRangedMissSkew` | 1.4 | Height advantage in an exchange of shot, symmetric about 1: the besieger firing up misses ×skew more, the defender firing down ×(2 − skew) less. `1` is no skew. |
 | `SimulationRoundMinutes` | 10 | **The clock, and nothing else.** What one simulated round costs in campaign minutes; a siege assault keeps vanilla's own ratio and costs twice it. Changes no blow, casualty or phase. Vanilla bills a flat 30 for a round that was a whole chunk of the brawl, while an RBM round is a thin phase slice — so a fight needing more rounds (blows that miss, are blocked, or kill a horse) billed half an hour for each and locked two warbands together for a day. `0` restores vanilla's flat 30/60. |
 | `SpectateBattlesEnabled` | **0** | Offer to open an AI-vs-AI battle as a real-time fight with no player agent on the field (§10). The map battle auto-resolves beside it and reaches its own verdict; the watched fight is a copy, written back nowhere. A measuring instrument. Needs RTSCamera. |
 | `SpectateMinTroopsPerSide` | 100 | How big both sides must be before that offer is made. |
-| `SimulationLoggingEnabled` | 1 | The battle log (§10): rosters, kit, matchup table, result. |
-| `SimulationLogHits` | 1 | The blow-by-blow trace (§10). Needs the log above. A large battle runs to several thousand lines. |
+| `SimulationLoggingEnabled` | **0** | The battle log (§10): rosters, kit, matchup table, result. |
+| `SimulationLogHits` | **0** | The blow-by-blow trace (§10). Needs the log above. A large battle runs to several thousand lines. |
 
 And one knob that belongs to the field rather than the map, under `/Config/RBMCombat/Global`:
 
@@ -778,17 +822,17 @@ And one knob that belongs to the field rather than the map, under `/Config/RBMCo
 |---|---|---|
 | `BattleHitLoggingEnabled` | 0 | Writes every blow of the battles you fight **yourself** to `logs/battles/`, in the same columns, so the model can be checked against a real fight (§10). |
 
-Three toggles appear in the in-game config screen — *Detailed Auto Resolve*, *Auto Resolve Routing* and *Detailed Auto Resolve Logging*. The numeric knobs and the remaining feature gates are XML-only, deliberately.
+The in-game config screen carries *Detailed Auto Resolve* (`SimulationEquipmentEnabled`), *Auto Resolve Routing* (`SimulationRoutEnabled`), *Auto Resolve Perks* (`SimulationPerkSystem`), *Spectate AI Battles* and *Spectate Minimum Troops Per Side*, and among the logging options *Detailed Auto Resolve Logging*, *Auto Resolve Per-Hit Detail* (`SimulationLogHits`) and *Field Battle Logging*. The numeric knobs and the remaining feature gates are XML-only, deliberately.
 
-The baselines and kits are rebuilt if `rbmCombatEnabled`, `SimulationShieldBlockChance`, `SimulationDefenseSystem`, `armorMultiplier`, `armorThresholdModifier` or `ThrustMagnitudeModifier` moves — every setting that is baked into them. `actual` is computed live on every blow, so a setting that changed under a stale baseline would skew every correction in the game while nothing anywhere looked broken.
+The baselines and kits are rebuilt if `rbmCombatEnabled`, `SimulationShieldBlockChance`, `SimulationDefenseSystem`, `armorMultiplier`, `armorThresholdModifier`, `bluntTraumaMultiplier`, `armorEffectivenessMultiplier` or `ThrustMagnitudeModifier` moves — every setting that is baked into them. (`SimulationEquipmentPowerWeight` is applied after the kits and baselines, and `SimulationPerkSystem` rides in the kit-cache key, so neither needs a rebuild.) `actual` is computed live on every blow, so a setting that changed under a stale baseline would skew every correction in the game while nothing anywhere looked broken.
 
-**And the caches are cleared at the start of every session.** The per-battle and per-troop caches are static, keyed by `MapEvent`/`CharacterObject` identity, and are reclaimed only by the `MapEventEnded` of the battle that filled them. A save loaded while an event was live tears that campaign down *without ever ending its events*, so those entries — and any hero instances they hold — would sit orphaned for the life of the process, and the loaded battle would resume against a stale round clock. Every simulation cache therefore resets on `OnSessionLaunched`, which fires on a new game and on every load alike.
+**And the caches are cleared at the start of every session.** The per-battle and per-troop caches are static, keyed by `MapEvent`/`CharacterObject` identity, and are reclaimed only by the `MapEventEnded` of the battle that filled them. A save loaded while an event was live tears that campaign down *without ever ending its events*, so those entries — and any hero instances they hold — would sit orphaned for the life of the process, and the loaded battle would resume against a stale round clock. Every simulation cache that holds a campaign object — battle state and siege state, wound pools, snapshots, the rout musters, kits, arm-targeting and perk caches — therefore resets on `OnSessionLaunched`, which fires on a new game and on every load alike. The baseline tables are deliberately kept: they hold no campaign object and rebuild themselves on a config change.
 
 ---
 
 ## 10. Checking it rather than trusting it
 
-With logging on, every auto-resolved battle is written to `<configFolder>/logs/simulation/` **as it was actually fought** — not replayed, not averaged, not simulated a second time:
+With logging on, every auto-resolved battle is written to `<configFolder>/logs/simulation/` **as it was actually fought** — not replayed, not averaged, not simulated a second time. It is one file per play session (`rbm_simulation_<stamp>.log`), each battle a block in it:
 
 ```
 day 1085-016  ·  FieldBattle  ·  PlainBattle  ·  PLAYER
@@ -796,30 +840,36 @@ day 1085-016  ·  FieldBattle  ·  PlainBattle  ·  PLAYER
   defender : 15 parties  (934 men)
   advantage: attacker 1.1, defender 1
 
-  RESULT  winner attacker  ·  casualties  attacker 721, defender 933
+  RESULT  winner attacker  ·  casualties  attacker 721, defender 933  ·  no side broke -- fought to a finish
 ```
+
+The header also prints each side's strategic power, the opening charge figure into each side's foot, the volley length (`approach` and the wall, engines and lanes for a siege), and a perks block per side; the result line says the round a side broke at and how many of its casualties were fugitives rather than dead, and flags a stalled battle or a repulsed storm. A siege adds an artillery block.
 
 Then three things, and they answer three different questions.
 
 **The kit, as the model reads it** — item by item, with the raw numbers off each item. RBM builds its melee weapons from crafting pieces at runtime, so no XML on disk can be trusted to say what a weapon finally is; only this can. It also prints how many weapons are on the belt, how many kinds of arrow are in the quiver, and whether one of them is a spear.
 
-**The matchup table** — every striker against every struck, worked through: armour met, shield block, actual, baseline, equipment ratio, tier term, correction. Note what this is and is not. It asks what a blow **would** do, *outside any battle* — so nobody in it is ever in a volley, nobody is ever out of arrows, and no shield is ever splintered. It is a reference table, not a record of the fight.
+**The matchup table** — the three most numerous troop types on each side, every striker against every struck, worked through: armour met, shield block, actual, baseline, equipment ratio, tier term, correction. Note what this is and is not. It asks what a blow **would** do, *outside any battle* — so nobody in it is ever in a volley, nobody is ever out of arrows, and no shield is ever splintered. It is a reference table, not a record of the fight.
 
 **The battle, blow by blow** — the fight itself, round by round, every man who swung, recorded as it landed:
 
 ```
   the battle, blow by blow -- as the game actually fought it (4192 blows):
-    striker              -> struck                what        weapon        armor  blk%   vanilla  x corr  =  dealt   hp   result
+      striker            -> struck                what     defense       weapon            armor   def%   vanilla  x corr  =  dealt       hp   result
 
     ── round 1  ·  VOLLEY -- the bowmen have the field, the foot are walking into it  ·  22 v 20
-    A Aserai Archer      -> Imperial Recruit      shoot       Arrow         26.71 33.58     31.4    1.53     48.0   hp 52
-    A Harami             -> Aserai Recruit        throw       Javelin       22.35 34.46     40.1    2.87    115.1   hp  0   DOWN
+    A Aserai Archer      -> Imperial Recruit      shoot    none         Arrow          torso  26.71  33.58     31.4    1.53     48.0  hp    52
+    A Aserai Archer      -> Imperial Recruit      shoot    shield-block Arrow          torso  26.71  33.58     29.0       0        0  hp    52
 
-    ── round 5  ·  THE LINES HAVE MET  ·  19 v 14
-    D Aserai Recruit     -> Nomad Bandit          braced      OneHandedPol  35.35     0     22.4    5.16    115.6   hp  0   DOWN
+    ── round 4  ·  SKIRMISH -- javelins in the air, and the horse are at each other  ·  21 v 19
+    A Harami             -> Aserai Recruit        throw    none         Javelin        head   22.35  34.46     40.1    2.87    115.1  hp     0   DOWN
+
+    ── round 7  ·  THE LINES HAVE MET  ·  19 v 14
+    D Aserai Recruit     -> Nomad Bandit          braced   none         OneHandedPol   torso  35.35      0     22.4    5.16    115.6  hp     0   DOWN
+    A Nomad Bandit       -> Aserai Recruit        melee    parry        OneHandedSwo   arm    12.10  45.00     18.9       0        0  hp    70
 ```
 
-This is the only place the model's *story* can be read. The matchup table says what a blow would do in the abstract; it cannot tell you that the archers ran dry in round fifteen and spent the rest of the fight being cut down with knives in their hands, or that the lancers' charge was spent by round four and they were never dangerous again. `what` is what the man was actually doing — `shoot`, `throw`, `melee`, `CHARGE`, `braced`, or `closing` (in the volley with nothing to answer arrows with).
+This is the only place the model's *story* can be read. The matchup table says what a blow would do in the abstract; it cannot tell you that the archers ran dry in round fifteen and spent the rest of the fight being cut down with knives in their hands, or that the lancers' charges thinned out as the enemy foot fell and they were never as dangerous again. `what` is what the man was actually doing — `shoot`, `throw`, `melee`, `horse` (cavalry meeting cavalry in the skirmish), `CHARGE`, `braced`, `KITED` (§6), or `riposte` (a parry's counter). `defense` is how the blow was answered — `none`, `shield-block`, `weapon-block`, `parry`, `miss` — and the unlabelled column after the weapon is the zone it landed in. A man still closing lands no blow, and such non-blows are not written down. A siege's rounds are headed `APPROACH` (with the wall factor) or `ASSAULT` (with the frontage, `width a v d`).
 
 **Every blow here is a blow the game really struck**, taken from inside `SimulateHit` as it happened, and whether it put its man down is the game's own verdict. That is not pedantry, and it is why the log no longer replays anything. It used to: each battle was fought twenty more times with the model and twenty without, and the two averages set side by side. But a replay is a reimplementation of vanilla's loop, and a reimplementation **drifts** from the thing it reimplements. This one did — it gave heroes a line trooper's single roll where the game accumulates their damage, and quietly killed every lord in the log. It was answering, very confidently, a question about a battle nobody had fought.
 
@@ -827,7 +877,7 @@ The model has been designed wrong several times on reasoning that looked perfect
 
 ### And the battle you fight yourself, in the same columns
 
-Everything above is a claim about what a battle **is**: that the archers own the approach and are helpless once it is crossed, that a javelin is worth more than the man who throws it, that a charge is spent once, that armour and not tier decides who walks away. None of it can be argued into being true.
+Everything above is a claim about what a battle **is**: that the archers own the approach and are helpless once it is crossed, that a javelin is worth more than the man who throws it, that a charge needs a standing line to break, that armour and not tier decides who walks away. None of it can be argued into being true.
 
 So `BattleHitLoggingEnabled` (in `/Config/RBMCombat/Global`, off by default) writes the battles you fight **on the field** to `<configFolder>/logs/battles/` — one file per battle, every blow as it landed, in the same columns:
 
@@ -835,14 +885,14 @@ So `BattleHitLoggingEnabled` (in `/Config/RBMCombat/Global`, off by default) wri
     striker            -> struck                what     weapon           part    armor      raw   absorb    dealt   hp
 
     ── 0:22  ·  THE APPROACH -- no line has reached the other yet  ·  241 v 198
-    A Battanian Fian     -> Imperial Legionary   shoot    Arrow            head    38.4     92.1     51.7     40.4   hp 60
-    D Imperial Legionary -> Battanian Skirmisher throw    Javelin          body    24.1    121.6     37.2     84.4   hp 16   DOWN
+    A Battanian Fian     -> Imperial Legionary   shoot    Arrow            head    38.4     92.1     51.7     40.4   hp 60/120
+    D Imperial Legionary -> Battanian Skirmisher throw    Javelin          body    24.1    121.6     37.2     84.4   hp 0/100   DOWN
 
     ── 1:15  ·  THE LINES HAVE MET (at 1:04)  ·  198 v 171
-    A Battanian Wildling -> Imperial Legionary   melee    TwoHandedAxe     body    41.0     88.3     44.9     43.4   hp 12
+    A Battanian Wildling -> Imperial Legionary   melee    TwoHandedAxe     body    41.0     88.3     44.9     43.4   hp 12/120
 ```
 
-Two differences, both forced by the thing being logged rather than chosen. A real battle has **seconds, not rounds**, so the headers count time. And it does not need a volley *model* — it simply notices the first melee blow anyone lands and says so, which is the real event the simulation's volley is an abstraction of. Everything logged before that line was landed across open ground by men who had not reached each other yet, and the tallies at the foot of the file say how much of the battle that was.
+Two differences, both forced by the thing being logged rather than chosen. A real battle has **seconds, not rounds**, so the headers count time. And it does not need a volley *model* — it simply notices the first melee contact anyone makes, a landed blow or a blocked one, and says so, which is the real event the simulation's volley is an abstraction of. (The field log has more to say than the trace: `kick`, `bash` and `fall` rows, its own rows for blocked melee — `chamber`, `w-block`, `w-parry`, `sh-block`, `sh-parry`, `sh-wrong` — a `shield` marker on a blow the shield took, aim-trace rows, and a melee-blocks table at the foot.) Everything logged before that line was landed across open ground by men who had not reached each other yet, and the tallies at the foot of the file say how much of the battle that was.
 
 That is the check. What share of the killing did the bowmen really do; what was a javelin really worth; did the charge really decide anything — asked of the field, and answerable against the map.
 
@@ -859,7 +909,7 @@ Everything else is read from the game's own equations and item data, or measured
 | Missile shield bonus | 1.35 | A shield is better against an arrow than a swordsman. |
 | Shield defence base / skill | 0.45 / +0.30 | The melee defence chance behind an intact shield, before and across skill. |
 | Weapon defence floor / skill | 0.20 / +0.18 | The same with only a weapon — about half a shield's across the range. |
-| Defence chance cap | 0.75 | No defence makes a man untouchable. |
+| Defence chance cap | 0.75 | No defence makes a man untouchable. (0.9 for the man on the wall.) |
 | Parry share, base / gap / cap | 0.20 / 0.5 / 0.6 | How many defences become counters, and how far out-skilling a man tilts it. |
 | Cavalry vs archer defence | 0.25 | What is left of a bowman's block with a lance coming at him. No parry at all. |
 | Mounted defence | 0.85 | A rider defends a little worse than the same man standing. |
@@ -867,23 +917,29 @@ Everything else is read from the game's own equations and item data, or measured
 | `SimulationRangedMissChance` | 0.35 | What an untrained man with a bow misses. |
 | Ranged miss skill reduction | 0.6 | How much of his misses a fully trained bowman removes. |
 | Ranged miss factors | 0.7 / 1.0 / 1.3 | Crossbow, bow, sling. |
-| Volley / mounted shooter / mounted target | 1.25 / 1.25 / 1.4 | The long shot, the moving platform, the moving target. |
+| Volley (opening → close) / mounted shooter / mounted target (horse archer) | 1.5 → 1.0 / 1.25 / 1.4 (1.15) | The long shot, the moving platform, the moving target. |
 | Max miss chance | 0.8 | No dial pairing makes an arm that cannot hit anything. |
-| Closing penalty | 0.08 | What a man with a sword achieves while walking into arrows. |
+| ~~Closing penalty~~ | — | **Removed.** It was 0.08; a man still closing now lands no blow at all (§6). |
 | Brace bonus | 1.6 | A spear set against a horse. |
 | Anti-cavalry closing bonus | 0.5 | The struck horse's own momentum, fed back into the spear that met it. |
-| Charge chance by ground | 0.5 / 0.4 / 0.15 | Open field, wood, village street — before the 0.9 boost. A wall and a deck are zero. |
+| Charge chance by ground | 0.5 / 0.4 / 0.15 | Open field, wood, village street — before the 1.1 boost. A wall and a deck are zero. |
+| Charge crowd saturation | 200 | Enemy foot at which a charge comes as freely as the ground allows. |
+| Mounted mass bonus / saturation | 0.25 / 120 | How much harder a massed mounted arm hits, and at how many riders it tops out. |
+| Horse archer charge fraction | 0.15 | How often a horse archer wheels in and charges, as a share of the charge chance. |
 | Charge strength | 0.02 | Per point of the mount's charge stat. A charge is unblockable, so this is the dial to pull if the horse comes out too strong. |
 | Charge self-damage / spear rebound / armour rebound | 4 / 2.5 / 0.01 | What a charge costs the horse that makes it, and what running onto set spears or into plate costs it. |
 | Horse hit chance | 0.45 / 0.15 / 0.22 | Foot melee, mounted melee, missile — whether a blow at a rider finds the animal. |
 | Contact javelin throw chance | 0.25 | A skirmisher who reaches the melee still carrying javelins hurls one rather than drawing steel. |
-| Horse archer evasion | 0.1 | What a foot melee blow is worth against a mounted archer who still has arrows. |
-| Ammo rounds | 30 | A quiver, in rounds of steady loosing. |
-| Shield capacity per man | 600 | Simulated damage an ordinary shield eats before it is kindling. Raised from 25 when a block started eating the whole blow. |
-| Horse capacity | 260 | What a horse takes before it falls. **Needs re-tuning**: the horse-or-man roll cut a footman's wear on it from 100% of blows to 45%. |
+| Horse archer evasion | 0.3 | What a foot melee blow is worth against a mounted archer who still has arrows, at full kiting room (scaled by the room: 0.37 on open ground). |
+| Wound focus pull | 0.2 | How much a melee footman leans toward a man already bloodied (§5a). |
+| ~~Ammo rounds~~ | — | **Removed.** The quiver is now arrows per man, read off the kit (§6); 20 is the fallback when no quiver can be read. |
+| Shield capacity per man | 600 | Simulated damage an ordinary shield eats before it is kindling, scaled by the shield's own hit points against an 800 reference (floor 200). Raised from 25 when a block started eating the whole blow. |
+| Horse capacity | 260 | Fallback only: what a horse takes before it falls when its own hit points cannot be read. A real mount wears its own health. |
 | Lethality hit point scale | 1.25 | How far a trooper's pool is widened past his native hundred (§6a). |
 | Landing exponents: melee / melee-no-defence / ranged / thrown / charge | 1.5 / 2 / 0.5 / 0.2 / 0.35 | How much of its full magnitude a landed blow of each kind is worth. **See the note below.** |
-| Rout: gap / min loss / base / severity / cap | 0.2 / 0.25 / 0.03 / 0.35 / 0.45 | When a butchered side breaks, and how often (§6c). |
+| Rout: remnant floor / gap / min loss / base / severity / cap | 50 / 0.06 / 0.08 / 0.03 / 0.35 / 0.45 | When a butchered side breaks, and how often (§6c). |
+| Commander Tactics per point | 0.0005 | The two-sided replacement for vanilla's one-sided 0.001 (§2). |
+| Volley battle saturation | 200 | Men on the field at which the volley and the defender's free rounds reach their full length (§6). |
 | Missile momentum remaining | 0.7 | An arrow has been slowing the whole way across the field. |
 | Thrown momentum remaining | 0.85 | A javelin has not been slowing nearly as long. |
 | Correction clamp | 0.1 … 8 | Ratio mode only. A real mismatch is meant to be lopsided. Not unbounded. |
@@ -894,19 +950,19 @@ Everything else is read from the game's own equations and item data, or measured
 | Vanilla skill share | 0.3 | How much of a soldier's damage his training accounts for **under vanilla rules only** (saturating at 250 skill). The only number here that is an estimate rather than a reading. |
 | Vanilla missile speed reference | 100 | The speed an ordinary bow throws at, under vanilla rules only. |
 
-> **Two calibration debts are outstanding and are recorded here rather than buried.** `RangedLandingExponent` was calibrated with no miss roll upstream and now **double-counts** with `SimulationRangedMissChance` (§5); it wants re-measuring downward against a paired log. And `HorseCapacity` was set when every footman's blow wore the horse — the horse-or-man roll now sends 55% of them to the rider instead, so a squadron is grounded more slowly than the figure was tuned for.
+> **A calibration debt is outstanding and is recorded here rather than buried.** `RangedLandingExponent` was calibrated with no miss roll upstream and now **double-counts** with `SimulationRangedMissChance` (§5); it wants re-measuring downward against a paired log. (The other debt once recorded here, `HorseCapacity` tuned before the horse-or-man roll, no longer binds: horses now wear their own hit points and 260 is only a fallback.) `MeleeLandingExponent` is 1.5 on purpose (a landed melee blow is worth 0.4 of its full magnitude on average); an older code comment that described 0.5 has been corrected.
 
 ---
 
 ## 12. Known limits
 
-- **Reinforcements that join mid-battle** are not counted. The muster and the snapshot are taken at the top of the first round — the first moment the battle can be seen whole, and before a blow has landed. A party arriving at round five is not in the rosters the arrows, shields and horses were all measured against.
+- **Reinforcements that join mid-battle** are only partly counted. The muster and the snapshot are taken at the top of the first round — the first moment the battle can be seen whole, and before a blow has landed. Each later round, when a side's party count has grown, troop types not yet mustered are added at their live strength and the side's arm shares are recomputed; but a stack already present keeps its round-one count, and the log snapshot, the rout's starting muster, the captains and the volley length are not revisited.
 - **A stack, not a soldier.** The simulation hands us troop *types*, never individual men — a blow is struck by "an Imperial Archer", not by a man with eleven arrows left. So arrows, shields and horses are tracked per stack and scaled by headcount. That is an abstraction, and it is the honest limit of what the game gives us to work with.
-- **The trace is the whole battle.** A large fight is several thousand lines. That is deliberate — the arrows running dry, the charge decaying, the shieldwall splintering all happen *late*, and a truncated trace hid exactly the half of the model only the trace could show. The log folder keeps its last ten files.
+- **The trace is the whole battle.** A large fight is several thousand lines. That is deliberate — the arrows running dry, the squadron thinning, the shieldwall splintering all happen *late*, and a truncated trace hid exactly the half of the model only the trace could show. The log folder keeps its last ten files (one per play session).
 
 - **There is no A/B any more.** The log cannot tell you what this battle *would* have been without the model, because that battle does not exist and the only way to produce it was to reimplement vanilla's loop and run it — which is precisely how the log came to be lying. To compare, set `SimulationEquipmentEnabled` to `0` and fight the campaign; both logs are records of real battles.
 
-- **Two dials are known to be uncalibrated, and are listed in §11 rather than left to be discovered.** `RangedLandingExponent` double-counts with the ranged miss roll, which was added above it after the exponent had been tuned to carry those misses itself; and `HorseCapacity` was tuned when every footman's blow wore the horse, where the horse-or-man roll now sends 55% of them to the rider. Both want a paired log.
+- **A dial is known to be uncalibrated, and is listed in §11 rather than left to be discovered.** `RangedLandingExponent` double-counts with the ranged miss roll, which was added above it after the exponent had been tuned to carry those misses itself. It wants a paired log. (So do the newer starting figures — the mounted mass bonus, the battle-size scaling of the volley — which their own code marks uncalibrated.)
 
 - **The field frontage and the high-ground bias are new, and their figures are starting values.** The frontage (§6, *The field is only as wide as the real one*) is the higher-stakes of the two: it is what makes a lopsided win bloody, and how bloody is exactly what wants checking against the log — a run of big, one-sided auto-resolves, confirming the winner's casualties have climbed to a believable level without the fight dragging on the campaign clock. The defender's ×1.10 / ×0.90 high-ground magnitudes are milder and lower-risk, but likewise unmeasured. Both are model constants, off with `FieldFrontageEnabled = false` or by setting the magnitudes to 1.
 

@@ -36,12 +36,13 @@ Neither one should be tuned by copying numbers from the other.
 ### 1.1 What is patched — and why not the obvious method
 
 RBM prefixes **`GetPowerOfParty`**, not `GetDefaultTroopPower`. The long comment at
-`StrategicTroopPower.cs:16-51` explains: `GetDefaultTroopPower` returns vanilla's
+`StrategicTroopPower.cs:19-54` explains: `GetDefaultTroopPower` returns vanilla's
 tier term, and that same term is *also* the divisor the auto-resolve model cancels
-out. Patching it would charge for equipment twice. So RBM keeps vanilla's whole
-per-party loop and swaps only the **base per-man value**.
+out. Patching it would charge for equipment twice. So RBM keeps vanilla's per-party
+loop and swaps the **base per-man value** (dropping vanilla's field-terrain modifier on
+the way, §1.2).
 
-The gate (`StrategicTroopPower.cs:292-300`):
+The gate (`StrategicTroopPower.cs:329-337`):
 
 ```
 Enabled = rbmCampaignEnabled && strategicPowerEnabled && Campaign.Current != null
@@ -49,7 +50,7 @@ Enabled = rbmCampaignEnabled && strategicPowerEnabled && Campaign.Current != nul
 
 ### 1.2 The party formula
 
-`TryGetPowerOfParty` (`StrategicTroopPower.cs:457-546`) is vanilla's loop with the
+`TryGetPowerOfParty` (`StrategicTroopPower.cs:557-655`) is vanilla's loop with the
 tier base replaced. Per troop stack:
 
 ```csharp
@@ -61,7 +62,8 @@ if (power <= 0f)
 
 power *= HealthFactorOf(troop, party);                       // commander HP perks, §5.1
 
-float contextMod = estimated ? 0f : model.GetContextModifier(troop, side, context);
+bool siege = context == MapEvent.PowerCalculationContext.Siege;
+float contextMod = siege ? model.GetContextModifier(troop, side, context) : 0f;
 float leaderMod  = (party.LeaderHero != null) ? party.LeaderHero.PowerModifier : 0f;
 
 float perMan = power * (1f + leaderMod + contextMod);        // vanilla's (1 + leader + context) shape kept
@@ -77,13 +79,16 @@ Notes:
   vanilla computes it and is worth almost nothing (it counts only the two
   `PrimaryRole == Captain` perks). RBM does not try to fix it here — it preserves the
   `(1 + leader + context)` shape.
-- **`contextMod`** is vanilla's terrain-vs-arm table, and is dropped for `estimated`
-  prices (where the terrain is unknown).
+- **`contextMod`** is vanilla's terrain-vs-arm table, **kept for a siege only**. Field
+  terrain is dropped in every context — it is a per-arm guess that double-counts what the
+  model already prices in the man — while a wall is a real fact about the fight and stays
+  in the strength the AI reads. (Contrast the auto-resolve blow, which lifts the context out
+  everywhere, siege included — §6.)
 
 ### 1.3 `PowerOf` → `Measure` — the man's own worth
 
-`PowerOf` (`StrategicTroopPower.cs:571-629`) is cached per `CharacterObject` (heroes
-re-measured daily). `Measure` (`721-784`) averages `PowerOfSet` over **all** of the
+`PowerOf` (`StrategicTroopPower.cs:812-870`) is cached per `CharacterObject` (heroes
+re-measured daily). `Measure` (`967-1034`) averages `PowerOfSet` over **all** of the
 troop's battle equipment sets, then divides by a scale constant:
 
 ```
@@ -104,7 +109,7 @@ proportional term).
 
 ### 1.4 `PowerOfSet` — pricing one kit
 
-`PowerOfSet` (`StrategicTroopPower.cs:793-867`) is the heart of the strategic model:
+`PowerOfSet` (`StrategicTroopPower.cs:1043-1130`) is the heart of the strategic model:
 
 ```
 product = offense × activeFactor × passiveFactor
@@ -118,9 +123,11 @@ The mount then adds a **share of the rider's own power**, sized by how survivabl
 is (its hit points plus its barding, against a barded warhorse as the yardstick). Because the
 share tracks the horse and not the base, lighter cavalry gain less than armoured: roughly
 +18% for a bare mount, +30% for a knight's, +34% for a cataphract's. A flat additive term
-inverted that ordering, which is why it is proportional.
+inverted that ordering, which is why it is proportional. `MountFractionOf` (`1140-1150`)
+is `(HitPoints + HitPointBonus + BardingToHealth·barding) / ReferenceMountSurvival ·
+MountBonusAtReference`, 0 on foot.
 
-**Offense** (`814-829`):
+**Offense** (`1064-1079`; `melee`/`ranged` themselves are built as in §4):
 ```
 offense = melee
 if shooter:                              # shooter = has ranged AND game fields him as ranged
@@ -134,7 +141,7 @@ offense *= 1 + ChargeWeight·chargeDamage # cavalry charge
 > back would be priced as a full-time archer.
 
 **Active factor** — blows turned aside outright (a thing he *does*, priced on skill;
-a shield is nearly the whole worth of carrying one) (`831-837`):
+a shield is nearly the whole worth of carrying one) (`1081-1087`):
 ```
 skillFrac    = clamp(MeleeSkill / SkillSaturation, 0, 1)
 active       = hasShield ? clamp(ShieldDefenseBase + ShieldDefenseSkillCoeff·skillFrac, 0, cap)
@@ -143,23 +150,25 @@ activeFactor = (1 / (1 − active)) ^ ActiveDefenseDamping
 ```
 
 **Passive factor** — what is left of a blow he did *not* turn aside; also where a
-shield stops an arrow (`839-848`):
+shield stops an arrow (`1089-1107`):
 ```
 weighted = head·0.16 + neck·0.03 + torso·0.44 + shoulder·0.12 + arm·0.14 + leg·0.11
 weighted += ShieldPassiveWeight·shieldTier
-armorConstant = rbmCombat ? ArmorConstant / armorMultiplier : ArmorConstant
+armorConstant = rbmCombat ? ArmorConstant / (armorMultiplier · armorEffectivenessMultiplier)
+                          : ArmorConstant
 passiveFactor = 1 + weighted / armorConstant
 ```
 
 **Barding is not in this term** — it is the horse's armour, priced once in the mount share
-above. **The divisor tracks the combat module**: RBM's armour equation divides a blow by
-`100/(100 + armor·armorMultiplier)`, so the passive term only agrees with a real blow when its
-divisor is `100/armorMultiplier`. At the default multiplier of 2 that doubles armour's weight.
-With RBM Combat off, the flat `ArmorConstant` is used.
+above. **The divisor tracks the combat module**: RBM's armour equation scales armour by
+`armorEffectivenessMultiplier` and divides a blow by `100/(100 + armor·armorMultiplier)`, so
+the passive term only agrees with a real blow when its divisor is
+`100/(armorMultiplier · armorEffectivenessMultiplier)`. At the defaults (2 and 1) that doubles
+armour's weight. With RBM Combat off, the flat `ArmorConstant` is used.
 
 ### 1.5 Morale factor
 
-`MoraleOf` (`StrategicTroopPower.cs:552-563`), applied to the party total:
+`MoraleOf` (`StrategicTroopPower.cs:793-804`), applied to the party total:
 
 | Case | Factor |
 |---|---|
@@ -169,13 +178,15 @@ With RBM Combat off, the flat `ArmorConstant` is used.
 
 ### 1.6 Strategic tuning constants
 
-These live **in code** (`StrategicTroopPower.cs:96-288`), *not* in the config screen:
+These live **in code** (`StrategicTroopPower.cs:92-325`), *not* in the config screen
+(the full list, including the launcher-physics and defence-ladder constants, is in
+`STRATEGIC_POWER.md` §6):
 
 | Constant | Value | Meaning |
 |---|---|---|
 | `PowerScale` | `272f` | maps model output onto vanilla's power range. **Measured, not chosen.** |
 | Zone weights H/N/T/Sh/A/L | `0.16 / 0.03 / 0.44 / 0.12 / 0.14 / 0.11` | hit-share per armour zone |
-| `ArmorConstant` | `100f` | armour → passive-factor divisor, **÷ `armorMultiplier` under RBM Combat** |
+| `ArmorConstant` | `100f` | armour → passive-factor divisor, **÷ `armorMultiplier · armorEffectivenessMultiplier` under RBM Combat** |
 | `ShieldPassiveWeight` | `4f` | shield's passive (arrow-stopping) worth |
 | `ReferenceMountSurvival` | `440f` | the barded-warhorse yardstick the mount share is scaled off |
 | `MountBonusAtReference` | `0.43f` | share of his own power a rider gains at that yardstick |
@@ -183,10 +194,13 @@ These live **in code** (`StrategicTroopPower.cs:96-288`), *not* in the config sc
 | `BestWeaponWeight` | `0.7f` | weight of the best weapon among a kit |
 | `RangedShare` | `0.7f` | fraction of battle an archer spends shooting |
 | `RangedOffenseWeight` | `1.35f` | archer offense premium |
-| `SkillSaturation` | `250f` | skill value at which defense curve saturates |
+| `SkillOffenseSpread` | `1f` | at saturation a man hits this much harder than a recruit |
+| `SkillSaturation` | `250f` | skill value at which the offense and defense curves saturate |
 | `PenetrationWeight` | `0.35f` | weapon-quality → penetration |
 | `ChargeWeight` | `0.004f` | cavalry charge-damage weight |
 | `ActiveDefenseDamping` | `0.4f` | exponent damping the turn-aside factor |
+| `RangedEnergyScale` | `0.7f` | launcher joules → offense units |
+| `CrossbowReloadDivisor` | `2.5f` | a crossbow's energy paid back for its reload |
 | `SlingEnergy` | `110f` | flat joules for slings |
 
 ---
@@ -202,7 +216,7 @@ damage = (0.5 + 0.5·rand) · 40 · (power_striker / power_struck)^0.7 · advant
 where `power` is again the pure tier term. RBM's postfix (`SimulationEquipmentPower.cs:44-49`)
 **replaces the power ratio** with a real equipment-vs-armour computation.
 
-The master gate (`1189-1196`):
+The master gate (`1272-1278`):
 ```
 SimulationEnabled = simulationEquipmentEnabled && simulationEquipmentPowerWeight > 0f
 ```
@@ -210,8 +224,10 @@ Every auxiliary system (arm targeting, morale, wound pools, perks) reads this on
 
 ### 2.1 The correction — `Explain` / `GetCorrection`
 
-`Explain` (`SimulationEquipmentPower.cs:1219-1982`) returns a `Breakdown` whose
-`.Correction` multiplies vanilla's damage. The assembly (`1875-1980`):
+`Explain` (`SimulationEquipmentPower.cs:1302-2266`) returns a `Breakdown` whose
+`.Correction` multiplies vanilla's damage (`GetCorrection`, `1172`, is the same without the
+breakdown). A blow the defender turned aside (`breakdown.Defended`) leaves with a
+correction of 0 before any of this. The assembly (`2159-2266`):
 
 ```csharp
 float baseline = GetBaselineDamage(strikerTroop, struckTroop);   // typical dmg, this arm-vs-arm matchup
@@ -251,19 +267,26 @@ correction *= landing;
 
 ### 2.2 The postfix wrapper
 
-`SimulateHit` postfix (`SimulationEquipmentPower.cs:831-919`):
+`SimulateHit` postfix (`SimulationEquipmentPower.cs:879-988`):
 
+0. Returns at once, leaving vanilla's blow untouched, when `SimulationEnabled` is false.
 1. Calls `Explain(... spend: true ...)` to get the real blow.
-2. **Terrain/leader neutralizing** (`867-874`): multiplies `Correction` by
+2. **Terrain/leader neutralizing** (`916-923`): multiplies `Correction` by
    `GetVanillaPowerNeutralizingFactor` (§6).
-3. **Absolute per-blow cap** (`886-901`): caps `vanillaDamage · correction` at
-   `simulationAbsoluteBlowCap · struckMaxHitPoints`.
-4. `__result = new ExplainedNumber(vanillaDamage · correction)`.
-5. Riposte (parry counter) applied (`915-918`).
+3. **Commander Tactics reshaped** (`924-934`): multiplies `Correction` by
+   `CommanderTacticsFactor` (§6) — vanilla's one-sided Tactics advantage out, a gentler
+   two-sided one in.
+4. **Absolute per-blow cap** (`940-962`, absolute mode only): caps `vanillaDamage · correction` at
+   `simulationAbsoluteBlowCap · MaxHitPoints(struck, struckParty)` — his commanded,
+   lethality-scaled pool (§5.1).
+5. `__result = new ExplainedNumber(vanillaDamage · correction)`.
+6. The blow is parked for the siege width (`SimulationSiege.NoteBlow`) and written to the
+   hit log (`RecordHit`).
+7. Riposte (parry counter) applied (`984-987`).
 
 ### 2.3 `VanillaTierPower` — the divisor being cancelled
 
-`VanillaTierPower` (`SimulationEquipmentPower.cs:2202-2211`) recomputes vanilla's tier
+`VanillaTierPower` (`SimulationEquipmentPower.cs:2490-2499`) recomputes vanilla's tier
 formula **by hand**, deliberately, so that no Harmony patch elsewhere can move the
 divisor RBM is trying to cancel:
 
@@ -277,14 +300,18 @@ if (troop.IsHero) power *= 1.5f;
 
 ## 3. Configuration toggles & multipliers
 
-**File:** `RBMConfig/RBMConfig.cs`
+**Files:** `RBMConfig/Config/RBMConfig.Simulation.cs` (auto-resolve + strategic toggles),
+`RBMConfig.Combat.cs` (armour/thrust), `RBMConfig.Debug.cs` (log toggles),
+`RBMConfig.Core.cs` (module toggles and the XML loader). Defaults below are the loader's
+fallbacks — what a fresh config gets — and match the field initializers. The full
+auto-resolve list is in `AUTO_RESOLVE.md` §9.
 
 | Field | Default | Affects |
 |---|---|---|
 | `rbmCampaignEnabled` | `true` | master campaign gate |
 | `rbmCombatEnabled` | `true` | selects the whole offense/armour model + skill curve used by both power systems |
 | `strategicPowerEnabled` | `true` | §1 on/off |
-| `strategicPowerLoggingEnabled` | `true` | strategic power log |
+| `strategicPowerLoggingEnabled` | `false` | strategic power log (`logs/powerCalculation/`) |
 | `simulationEquipmentEnabled` | `true` | §2 master gate |
 | `simulationEquipmentPowerWeight` | `1f` | ratio-mode exponent (`0` = vanilla, `>1` widens gaps); also part of `SimulationEnabled` |
 | `simulationAbsoluteDamage` | `true` | absolute vs ratio damage mode |
@@ -294,10 +321,12 @@ if (troop.IsHero) power *= 1.5f;
 | `simulationDefenseSystem` | `true` | block/parry/riposte ladder (also switches the melee landing exponent) |
 | `simulationArmTargeting` | `true` | arm-aware striker/struck selection |
 | `simulationRangedMissEnabled` | `true` | archer accuracy/miss rolls |
-| `simulationPerkSystem` | `true` | captain + commander perk contributions |
-| `simulationLogHits` / `simulationLogHits` | `true` | per-hit auto-resolve log |
+| `simulationPerkSystem` | `true` | captain + commander perk contributions — the commander HP perks also feed §1 (§5.1) |
+| `simulationLoggingEnabled` / `simulationLogHits` | `false` / `false` | auto-resolve battle log / its per-hit trace |
 | `armorMultiplier` | `2f` | RBM armour equation `100 / (100 + armor·mult)` |
+| `armorEffectivenessMultiplier` | `1f` | scales every armour value before the threshold and the curve; also in §1's passive divisor |
 | `armorThresholdModifier` | `1f` | per-type armour thresholds |
+| `bluntTraumaMultiplier` | `1f` | scales every trauma term of RBM's armour equation |
 | `ThrustMagnitudeModifier` | `0.05f` | thrust energy; its reciprocal is `OneHandedThrustDamageBonus` (= 20) |
 | `OneHandedThrustDamageBonus` | `20f` | read by the RBM melee tier formula |
 
@@ -309,43 +338,54 @@ proportionally less lethal.
 
 Changing a dial mid-session rebuilds the affected caches:
 
-- `StrategicTroopPower.EnsureCacheFresh` (`348-364`) watches `rbmCombatEnabled` and
-  `OneHandedThrustDamageBonus`.
-- `SimulationEquipmentPower.EnsureBaselines` (`2325-2367`) watches `rbmCombatEnabled`,
+- `StrategicTroopPower.EnsureCacheFresh` (`391-412`) watches `rbmCombatEnabled`,
+  `OneHandedThrustDamageBonus`, `armorMultiplier` and `armorEffectivenessMultiplier`.
+- `SimulationEquipmentPower.EnsureBaselines` (`2676-2966`) watches `rbmCombatEnabled`,
   `simulationShieldBlockChance`, `armorMultiplier`, `armorThresholdModifier`,
-  `ThrustMagnitudeModifier`, and `simulationDefenseSystem` — moving any of these
-  rebuilds all baselines and kit prices.
+  `bluntTraumaMultiplier`, `armorEffectivenessMultiplier`, `ThrustMagnitudeModifier`, and
+  `simulationDefenseSystem` — moving any of these rebuilds all baselines and kit prices.
+  (`simulationPerkSystem` needs no rebuild: it rides in the kit-cache key as the captain's
+  perk signature.)
 
 ---
 
 ## 4. How equipment & tier factor in
 
 **Tier is explicitly removed, not used.** This is the central design decision
-(`SimulationEquipmentPower.cs:28-56`, `StrategicTroopPower.cs:16-47`). Both models
-divide vanilla's tier term back out and substitute real kit measurements. Tier
-survives only as `VanillaTierPower` — the divisor being cancelled.
+(`SimulationEquipmentPower.cs:26-31` and `51-56`, `StrategicTroopPower.cs:19-54`). Both
+models divide vanilla's tier term back out (or never read it) and substitute real kit
+measurements. Tier survives only as `VanillaTierPower` — the divisor being cancelled — and
+as the item tier of a shield in the strategic passive term.
 
-What actually feeds power instead:
+What actually feeds **strategic** power instead (all in `StrategicTroopPower.cs`):
 
-- **Melee weapons** — `MeleeWeaponScore` (`SimulationEquipmentPower.cs:945-967`). With
-  RBM Combat **on**, the weapon's listed damage is discarded; the blow collapses onto a
-  per-class ceiling (`ClassCeiling`, `974-1007` — e.g. OneHandedSword cut `15·4.6`,
-  TwoHandedAxe cut `24·4.6`) × a skill factor × penetration. Weapon *quality* survives
-  only as penetration (`Penetration`, `1143-1147`: `1 + 0.35·(√factor − 1)`). With RBM
-  Combat **off**, it uses listed `max(Swing, Thrust)`.
+- **Melee weapons** — `MeleeWeaponScore` (`1228-1250`), combined per kit by `MeleeOffense`
+  (`1156-1214`) as `0.7·best + 0.3·mean`. With RBM Combat **on**, the weapon's listed
+  damage is discarded; the blow collapses onto a per-class ceiling (`ClassCeiling`,
+  `1257-1290` — e.g. OneHandedSword cut `15·4.6`, TwoHandedAxe cut `24·4.6`, mirroring the
+  clamps in `RBMConfig/Shared/SkillDamage.cs`) × `(1 + skillFrac)` × penetration. Weapon
+  *quality* survives only as penetration (`Penetration`, `1426-1430`:
+  `1 + 0.35·(√factor − 1)`). With RBM Combat **off**, it uses listed `max(Swing, Thrust)`
+  × `(1 + skillFrac)`.
 - **Ranged launchers** — priced on **real kinetic energy in joules**
-  (`LauncherEnergyOf`, `1104-1140`), not tier:
-  `0.5 · (drawWeight·4.448) · powerstroke · efficiency`, crossbows `/ 2.5` for reload.
-  RBM repurposes `MissileSpeed` as draw weight in pounds. Slings are priced flat at
-  110 J (their "tier" is a length, not a draw weight).
-- **Armour** — read zone-by-zone (`GetArmorZones`, line 3133) and weighted by hit-zone
-  shares. Shield item tiers still use `TierOf` (`1215-1252`, clamped 0–6.5).
-- **Barding / charge** — `BardingOf` (`1172-1180`, uses `ArmorComponent.BodyArmor`),
-  `ChargeDamageOf` (`1162-1170`, uses `HorseComponent.ChargeDamage`).
+  (`LauncherEnergyOf`, `1387-1423`), not tier:
+  `0.5 · (drawWeight·4.448) · powerstroke · efficiency`, crossbows `/ 2.5` for reload, then
+  × `RangedEnergyScale` (0.7) × `(1 + skillFrac)` in `RangedOffense` (`1301-1370`), which
+  also requires matching ammo in the kit. RBM repurposes `MissileSpeed` as draw weight in
+  pounds. Slings are priced flat at 110 J (their `MissileSpeed` is a length, not a draw
+  weight).
+- **Armour** — read zone-by-zone (`SimulationEquipmentPower.GetArmorZones`, `3501`) and
+  weighted by hit-zone shares. Shield item tiers use `TierfOf` (`1498-1535`, clamped 0–6.5).
+- **Barding / charge** — `BardingOf` (`1455-1463`, uses `ArmorComponent.BodyArmor`),
+  `ChargeDamageOf` (`1445-1453`, uses `HorseComponent.ChargeDamage`).
 
-In the auto-resolve model, item worth enters through **actual damage vs actual armour
-per body zone**, run through the live combat model's armour equation, then normalized
-against a per-arm baseline (`_baselineDamage`).
+In the **auto-resolve** model, item worth enters through **actual damage vs actual armour
+per body zone**: each weapon is turned into a profile by `SimulationWeaponModel`
+(`CollectMeleeProfiles` / `CollectShotProfiles` / `GetThrownProfile` in
+`SimulationEquipmentPower.cs`), run through the live combat model's armour equation
+(`SimulationWeaponModel.RbmDamage`, mirroring `RBMConfig/Shared/BlowDamage.cs`, or
+`SimulationWeaponModel.VanillaDamage`, mirroring native's `ComputeRawDamage`), and — in ratio mode — normalized against a per-arm baseline
+(`_baselineDamage`).
 
 ---
 
@@ -356,22 +396,28 @@ Bannerlord has **two non-overlapping perk tracks**; RBM routes them differently.
 ### 5.1 Commander track (party-scoped) → hit points
 
 **File:** `RBMCampaign/Simulation/SimulationTroopHitPoints.cs`,
-`BuildCommandedHealth` (`231-291`). Transcribes
+`BuildCommandedHealth` (`274-334`). Transcribes
 `SandboxAgentStatCalculateModel.GetEffectiveMaxHealth`. Perks that raise a trooper's
 HP pool include:
 
-- `TwoHanded.ThickHides`, `Polearm.HardyFrontline` (primary slot), `Crossbow.PickedShots` (ranged only)
-- Foot only: `Athletics.WellBuilt`, `Polearm.HardKnock`, `OneHanded.UnwaveringDefense`
-- Leader's `Medicine.MinisterOfHealth`, scaled by Medicine skill above the epic threshold (`279-288`)
-- Mount HP: `CommandedMountHealth` (`316+`) — `Medicine.Sledges`, `Riding.Veterinary`
+- `TwoHanded.ThickHides`, `Polearm.HardyFrontline` (primary slot) — not at sea;
+  `Crossbow.PickedShots` (ranged only)
+- Foot only: `Athletics.WellBuilt` (not at sea), `Polearm.HardKnock`,
+  `OneHanded.UnwaveringDefense` (infantry, not at sea). "Foot" is the battle's answer
+  (`SimulationBattleState.IsMountedIn`), so a cavalryman on a wall collects them.
+- Leader's `Medicine.MinisterOfHealth`, scaled by Medicine skill above the epic threshold (`319-331`)
+- Mount HP: `CommandedMountHealth` (`359-384`) — `Medicine.Sledges`, `Riding.Veterinary`
+
+All of it is gated on `SimulationPerks.Enabled` (`simulationPerkSystem && SimulationEnabled`);
+off, the pool is just the troop's own `MaxHitPoints()`.
 
 This HP number flows into **both** systems:
 
-- **Strategic:** `HealthFactorOf` (`StrategicTroopPower.cs:1308-1316`) =
+- **Strategic:** `HealthFactorOf` (`StrategicTroopPower.cs:1591-1599`) =
   `CommandedHealth / 100`, multiplied into per-man power.
 - **Auto-resolve:** `MaxHitPoints` (`SimulationTroopHitPoints.cs:164-186`) =
   `CommandedHealth · 1.25` (lethality scale), used for casualty attrition and the
-  per-blow cap.
+  per-blow cap. A hero is exempt: he keeps his own unscaled `MaxHitPoints()`.
 
 ### 5.2 Captain track (formation-scoped) → skill → into the kit
 
@@ -389,7 +435,7 @@ kits. Gate (`111-117`): `simulationPerkSystem && SimulationEnabled`.
 
 > The **strategic** model applies only the commander (party-scoped HP) track —
 > captains need formations that don't exist on the campaign map
-> (`StrategicTroopPower.cs:53-71`). Vanilla's own `leaderMod = LeaderHero.PowerModifier`
+> (`StrategicTroopPower.cs:56-74`). Vanilla's own `leaderMod = LeaderHero.PowerModifier`
 > is kept intact but counts only 2 `Captain`-role perks.
 
 ---
@@ -397,17 +443,19 @@ kits. Gate (`111-117`): `simulationPerkSystem && SimulationEnabled`.
 ## 6. Terrain / arm context modifiers
 
 **File:** `SimulationEquipmentPower.cs`, `GetVanillaPowerNeutralizingFactor`
-(`2245-2305`).
+(`2534-2597`).
 
 Vanilla's blow rides on `(1 + leaderModifier + contextModifier)` per side, where
 `contextModifier` is the arm-vs-terrain-vs-side table (cavalry worth more in the open,
-archers worth less defending a wood). RBM **lifts this out on a field battle** — arm
-advantage is meant to come from the horse and lance already priced into the equipment
-ratio — but **keeps it on a siege**:
+archers worth less defending a wood). RBM **lifts the context out of every blow, siege
+included** — arm advantage is meant to come from the horse and lance already priced into
+the equipment ratio, and a siege's own facts (no horses, the wall) are priced by the
+model's siege handling rather than by vanilla's table. Only the `Estimated` context is
+left alone, because vanilla charged it no context to begin with:
 
 ```csharp
-bool keepContext = estimated || strikerContext == PowerCalculationContext.Siege;
-float keptContextStriker = keepContext ? chargedContextStriker : 0f;
+float chargedContextStriker = estimated ? 0f : model.GetContextModifier(...);   // what vanilla charged
+float keptContextStriker = 0f;                                                   // what the blow keeps
 
 // leader term also lifted when RBM prices captain perks itself:
 float keptLeaderStriker = SimulationPerks.Enabled ? 0f : chargedLeaderStriker;
@@ -417,18 +465,36 @@ float neutralRatio = pow(keptStriker   / keptStruck,   0.7f);
 return neutralRatio / vanillaRatio;      // folded into breakdown.Correction
 ```
 
-`LeaderModifierOf` (`2313-2316`) =
+(The strategic model is the opposite on sieges: it keeps the siege context for the AI's
+strength read — §1.2.)
+
+`LeaderModifierOf` (`2605-2608`) =
 `party.MapEventSide.LeaderParty.LeaderHero.PowerModifier` (mirrors vanilla's cached
 `LeaderSimulationModifier`).
 
+### Commander Tactics
+
+`CommanderTacticsFactor` (`2654-2667`) is folded into the correction right after the
+neutralizing factor. Vanilla's side commander adds `+0.1%` per point of Tactics to every
+blow his side lands (`VanillaTacticsAdvantagePerPoint = 0.001`), one-sided. RBM divides that
+back out and puts a two-sided edge at half the rate in its place
+(`CommanderTacticsPerPoint = 0.0005`):
+
+```
+factor = 1/(1 + Ts·0.001) · (1 + Ts·0.0005) / (1 + Tk·0.0005)     // Ts, Tk = striker's / struck's side commander Tactics
+```
+
+Two equal generals cancel; only the gap tells. Vanilla's siege storming penalty and the
+PreBattleManeuvers perk gap ride the same advantage and are deliberately left in.
+
 ### Arm buckets
 
-`GetBucket` / `GetTroopType` (`2620-2725`) classify every troop into
-Infantry(0) / Archer(1) / Cavalry(2) / HorseArcher(3). `ArmOf` (`2631-2634`) is the
+`GetBucket` (`2981-2984`) / `GetTroopType` (`3078-3086`) classify every troop into
+Infantry(0) / Archer(1) / Cavalry(2) / HorseArcher(3). `ArmOf` (`2992-2995`) is the
 single shared arm classifier used by both damage pricing and target selection.
-`IsRangedTroop` (`2711-2714`) counts slingers as ranged. Heroes are bucketed by what
+`IsRangedTroop` (`3072-3075`) counts slingers as ranged. Heroes are bucketed by what
 they *fight* as, never their own bucket. The baseline table
-`_baselineDamage[striker][struck]` (built in `EnsureBaselines`, `2325-2605`) is the
+`_baselineDamage[striker][struck]` (built in `EnsureBaselines`, `2676-2966`) is the
 per-arm-matchup pivot the equipment ratio divides against.
 
 ---
@@ -437,18 +503,22 @@ per-arm-matchup pivot the equipment ratio divides against.
 
 | File | Role |
 |---|---|
-| `Power/StrategicTroopPower.cs` | §1 — displayed party power (`GetPowerOfParty` prefix) |
-| `Power/StrategicPowerLog.cs` | strategic power logging |
-| `Power/StrategicPowerTooltip*.cs` | strategic power UI tooltip |
-| `Simulation/SimulationEquipmentPower.cs` | §2 — auto-resolve blow power (`SimulateHit` postfix), baselines, arm buckets, terrain neutralizing |
+| `Power/StrategicTroopPower.cs` | §1 — displayed party power (`GetPowerOfParty` prefix); amphibious raid discount |
+| `Power/StrategicPowerLog.cs` | strategic power logging (`logs/powerCalculation/`) |
+| `Power/StrategicPowerTooltip*.cs` | strategic power UI tooltip (encounter strength bar) |
+| `Power/SiegeDecisionGate.cs` | AI siege-start strength bar (not gated on `strategicPowerEnabled`) |
+| `Simulation/SimulationEquipmentPower.cs` | §2 — auto-resolve blow power (`SimulateHit` postfix), baselines, arm buckets, terrain/leader neutralizing, commander Tactics |
 | `Simulation/SimulationTroopHitPoints.cs` | §5.1 — commander-perk HP pool + lethality scale |
 | `Simulation/SimulationPerks.cs` | §5.2 — captain-perk skill folding + kit signature |
 | `Simulation/SimulationWeaponModel.cs` | weapon/missile physics both models mirror |
 | `Simulation/SimulationBattleState.cs` | battle clock, ammo, horses-alive, charge/kiting terrain reads |
 | `Simulation/SimulationCommandStructure.cs` | per-side captain chain of command |
 | `Simulation/SimulationArmTargeting.cs` | arm-aware striker/struck selection |
-| `Simulation/SimulationMorale.cs` / `SimulationRout.cs` | in-sim morale & routing |
-| `RBMConfig/RBMConfig.cs` | all config dials (§3) |
+| `Simulation/SimulationMorale.cs` | skips vanilla's morale multiplier on a blow |
+| `Simulation/SimulationRout.cs` | in-sim routing |
+| `Simulation/SimulationSiege.cs` / `SimulationSiegeEngines.cs` | wall-assault acts and widths / artillery |
+| `RBMConfig/Shared/BlowDamage.cs`, `SkillDamage.cs` | RBM's armour equation and skill clamps, shared with live combat |
+| `RBMConfig/Config/RBMConfig.*.cs` | all config dials (§3) |
 
 Related design notes already in the repo: `RBMCampaign/AUTO_RESOLVE.md`,
 `RBMCampaign/TROOP_POWER_TASK.md`, `RBMCampaign/ARCHITECTURE.md`.
