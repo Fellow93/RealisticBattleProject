@@ -556,7 +556,7 @@
 	</Item>
 	<Item id="pavise_shield" name="{=aVGSZhCN}Pavise Shield" body_name="bo_cap_kite_shield_e" shield_body_name="bo_kite_shield_e" recalculate_body="false" mesh="kite_shield_e" using_tableau="true" weight="7" appearance="0.7" Type="Shield" item_holsters="shield:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.1,-0.025" culture="Culture.vlandia">
 		<ItemComponent>
-			<Weapon weapon_class="LargeShield" body_armor="7" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="118" center_of_mass="0.0,0.1,0.1" hit_points="760">
+			<Weapon weapon_class="LargeShield" body_armor="10" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="118" center_of_mass="0.0,0.1,0.1" hit_points="760">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
 			</Weapon>
 		</ItemComponent>
@@ -902,7 +902,7 @@
 	</Item>
 	<Item id="pavise_shield_shoulder" name="{=RBM_SHI_036}Deployable Pavise Shield" body_name="bo_cap_kite_shield_e" shield_body_name="bo_kite_shield_e" recalculate_body="false" mesh="kite_shield_e" using_tableau="true" weight="7" appearance="0.7" Type="Shield" item_holsters="pavise:shield:shield_2:shield_3:shield_4" has_lower_holster_priority="true" holster_position_shift="-0.1,-0.1,-0.025" is_merchandise="true" culture="Culture.vlandia">
 		<ItemComponent>
-			<Weapon weapon_class="LargeShield" body_armor="7" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="118" center_of_mass="0.0,0.1,0.1" hit_points="760">
+			<Weapon weapon_class="LargeShield" body_armor="10" thrust_speed="82" thrust_damage="8" thrust_damage_type="Blunt" speed_rating="82" physics_material="wood_shield" item_usage="shield" position="0.0, 0.00, 0.00" rotation="0.0,10.0,40.00" weapon_length="118" center_of_mass="0.0,0.1,0.1" hit_points="760">
 				<WeaponFlags CanBlockRanged="true" HasHitPoints="true"/>
 			</Weapon>
 		</ItemComponent>
