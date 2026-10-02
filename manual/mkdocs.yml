@@ -1,0 +1,64 @@
+site_name: Realistic Battle Mod Manual
+site_description: Player manual for the Realistic Battle Mod (RBM) for Mount & Blade II Bannerlord
+site_url: https://fellow93.github.io/RealisticBattleProject/
+repo_url: https://github.com/Fellow93/RealisticBattleProject
+repo_name: Fellow93/RealisticBattleProject
+edit_uri: edit/master/manual/docs/
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - search.suggest
+    - toc.follow
+    - content.action.edit
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: brown
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: brown
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Features:
+      - Combat & Armor: features/combat.md
+      - Ranged Combat: features/ranged.md
+      - Posture & Stamina: features/posture.md
+      - Battle AI: features/ai.md
+      - Campaign: features/campaign.md
+      - Tournaments: features/tournament.md
+  - Settings Reference: settings.md
