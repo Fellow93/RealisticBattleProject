@@ -20,8 +20,9 @@ namespace RBMAI
         /// with the attacker's share of the two fighters' skills (RelativeSkill).
         ///
         /// Attempt (AI only, AiKickBashComponent): both men on foot, target close and in front, per-agent cooldown
-        /// up, cost affordable, then a relative-skill roll; more likely from behind and against a staggered target.
-        /// It needs an opening: the target is blocking, holding his weapon ready, showing his back or staggered.
+        /// up, cost affordable, target not knocked down, then a relative-skill roll; more likely from behind and
+        /// against a target whose posture is broken or nearly so. It needs an opening: the target is blocking,
+        /// holding his weapon ready, showing his back, or his posture is broken or nearly so (NearBrokenPostureShare).
         /// Without one the chance is scaled by the attacker's skill lead (SkillLeadFactor), so only a better fighter
         /// tries it.
         ///
@@ -35,11 +36,12 @@ namespace RBMAI
         /// blocked by a shield or a kick into a raised shield. The victim's posture and stamina loss is the posture
         /// patch's usual one for the blow, i.e. by its damage.
         ///
-        /// Knockdown (player too, AiKickBashKnockDownPatch), for a blow not blocked by a shield on a man on foot:
-        /// certain if he is staggered (posture break, posture tiredness, or a kick within KickStaggerSeconds) or if
-        /// the blow leaves his posture empty; otherwise a relative-skill roll, at full chance against a man holding
-        /// his weapon ready or hit from behind and scaled by the skill lead against anything else. The roll is
-        /// higher for a kick than a bash, from behind and against a tired man, lower the heavier his armour.
+        /// Knockdown (player too, AiKickBashKnockDownPatch), for an enemy's blow not blocked by a shield on a man on
+        /// foot who is not already down: certain if he is still in a posture-break or posture-tiredness reaction or if the blow leaves his
+        /// posture empty; otherwise a relative-skill roll, at full chance against a man holding his weapon ready or
+        /// hit from behind and scaled by the skill lead against anything else. The roll is higher for a kick than a
+        /// bash, from behind, against a man kicked/bashed within KickStaggerSeconds and against a tired man, lower
+        /// the heavier his armour.
         ///
         /// Blows that land show up as "kick"/"bash" in the battle hit log; in developer mode the outcome of AI
         /// attempts (which action the engine started) is counted and shown in the battle stats overlay.
@@ -75,8 +77,11 @@ namespace RBMAI
             // Attempt chance multiplier when the attacker is behind his target (see BehindCosine).
             public const float AttemptBehindMultiplier = 1.5f;
 
-            // Attempt chance multiplier against a staggered target (see IsStaggered).
+            // Attempt chance multiplier against a target whose posture is broken or nearly so (see IsPostureBrokenOrNearly).
             public const float AttemptStaggeredMultiplier = 2f;
+
+            // A man whose posture is at or below this share of its max counts as nearly broken: an opening.
+            public const float NearBrokenPostureShare = 0.25f;
 
             // Chance a kick/bash that lands knocks its man down when both are equally skilled. The chance is relative:
             // it scales with the attacker's share of the two skills, from 0 (hopelessly outclassed) to twice this
@@ -116,8 +121,12 @@ namespace RBMAI
             // Share of max posture given back after a kick/bash empties it (the posture system's own reset share).
             public const float PostureBreakReset = 0.75f;
 
-            // How long a man counts as staggered after a kick/bash lands on him: a second one in that time knocks him down.
+            // How long a man counts as off balance after a kick/bash lands on him: a second one in that time is more
+            // likely to knock him down (KnockDownRecentKickMultiplier).
             public const float KickStaggerSeconds = 1.2f;
+
+            // Knockdown chance multiplier against a man a kick/bash landed on within KickStaggerSeconds.
+            public static float KnockDownRecentKickMultiplier = 1.5f;
 
             public const float CooldownMin = 4f;
             public const float CooldownMax = 8f;
@@ -158,9 +167,26 @@ namespace RBMAI
                 StanceLogic.TiredAnimation
             };
 
-            // Reeling from a posture break or posture tiredness (the forced reaction is still playing), or from a
-            // kick/bash that landed within the last KickStaggerSeconds.
-            public static bool IsStaggered(Agent victim)
+            // Down from a knockdown, falling or getting back up (every knockdown fall and rise is an actt_fall action).
+            public static bool IsKnockedDown(Agent victim)
+            {
+                return victim.GetCurrentActionType(0) == Agent.ActionCodeType.Fall;
+            }
+
+            // Still reeling from a posture break or posture tiredness, or with posture at or below
+            // NearBrokenPostureShare of its max (main thread only: reads the posture store).
+            public static bool IsPostureBrokenOrNearly(Agent victim)
+            {
+                if (IsPostureBroken(victim))
+                {
+                    return true;
+                }
+                return RBMConfig.RBMConfig.postureEnabled && AgentStances.values.TryGetValue(victim, out Stance stance) && stance != null &&
+                    stance.posture <= stance.maxPosture * NearBrokenPostureShare;
+            }
+
+            // The posture system's forced reaction to a posture break or posture tiredness is still playing.
+            public static bool IsPostureBroken(Agent victim)
             {
                 ActionIndexCache action = victim.GetCurrentAction(0);
                 for (int i = 0; i < StaggerActions.Length; i++)
@@ -170,6 +196,12 @@ namespace RBMAI
                         return true;
                     }
                 }
+                return false;
+            }
+
+            // A kick/bash landed on him within the last KickStaggerSeconds.
+            public static bool WasKickedRecently(Agent victim)
+            {
                 AiKickBashComponent component = victim.GetComponent<AiKickBashComponent>();
                 return component != null && victim.Mission.CurrentTime - component.LastKickedTime < KickStaggerSeconds;
             }
@@ -397,8 +429,8 @@ namespace RBMAI
                 {
                     chance *= AiKickBash.AttemptBehindMultiplier;
                 }
-                // A staggered man goes down to a kick/bash, so he is the one to go for.
-                if (AiKickBash.IsStaggered(target))
+                // A man with his posture broken or nearly so goes down to a kick/bash, so he is the one to go for.
+                if (AiKickBash.IsPostureBrokenOrNearly(target))
                 {
                     chance *= AiKickBash.AttemptStaggeredMultiplier;
                 }
@@ -406,13 +438,13 @@ namespace RBMAI
             }
 
             // 1 against an opening: a man who is blocking (shield or weapon), holding his weapon ready to strike,
-            // showing his back, or staggered. Against anything else only a better fighter tries it, the more readily the bigger his
-            // skill lead.
+            // showing his back, or with his posture broken or nearly so. Against anything else only a better fighter
+            // tries it, the more readily the bigger his skill lead.
             private float OpeningFactor(Agent target)
             {
                 Agent.ActionCodeType targetAction = target.GetCurrentActionType(1);
                 bool blocking = targetAction >= Agent.ActionCodeType.DefendAllBegin && targetAction < Agent.ActionCodeType.DefendAllEnd;
-                if (blocking || targetAction == Agent.ActionCodeType.ReadyMelee || AiKickBash.IsBehind(Agent, target) || AiKickBash.IsStaggered(target))
+                if (blocking || targetAction == Agent.ActionCodeType.ReadyMelee || AiKickBash.IsBehind(Agent, target) || AiKickBash.IsPostureBrokenOrNearly(target))
                 {
                     return 1f;
                 }
@@ -464,7 +496,8 @@ namespace RBMAI
                     return false;
                 }
                 Agent target = Agent.GetTargetAgent();
-                if (target == null || !target.IsActive() || target.MountAgent != null)
+                // Nothing to kick over in a man already down.
+                if (target == null || !target.IsActive() || target.MountAgent != null || AiKickBash.IsKnockedDown(target))
                 {
                     return false;
                 }
@@ -537,9 +570,10 @@ namespace RBMAI
             [HarmonyPriority(Priority.Last)]
             private static void Postfix(ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData)
             {
+                // A friend's kick/bash is left to the engine, and a man already down is not knocked down again.
                 if (!RBMConfig.RBMConfig.aiKickBashEnabled || !collisionData.IsAlternativeAttack || attackerAgent == null || !attackerAgent.IsHuman ||
                     victimAgent == null || !victimAgent.IsHuman ||
-                    victimAgent.MountAgent != null)
+                    victimAgent.MountAgent != null || !attackerAgent.IsEnemyOf(victimAgent) || AiKickBash.IsKnockedDown(victimAgent))
                 {
                     return;
                 }
@@ -548,20 +582,21 @@ namespace RBMAI
                 {
                     return;
                 }
-                // A man already reeling (posture break, tired, or a kick/bash a moment ago) has no footing left: down.
-                bool staggered = AiKickBash.IsStaggered(victimAgent);
+                // Read before this blow restarts the window.
+                bool kickedRecently = AiKickBash.WasKickedRecently(victimAgent);
                 AiKickBashComponent victimComponent = victimAgent.GetComponent<AiKickBashComponent>();
                 if (victimComponent != null)
                 {
                     victimComponent.LastKickedTime = victimAgent.Mission.CurrentTime;
                 }
-                if (staggered)
+                // A man still reeling from a posture break or posture tiredness has no footing left: down.
+                if (AiKickBash.IsPostureBroken(victimAgent))
                 {
                     __result.BlowFlag |= BlowFlags.KnockDown;
                     return;
                 }
                 // The man hit has already lost posture and stamina to the posture patch, by the blow's damage.
-                if (RBMConfig.RBMConfig.postureEnabled && attackerAgent.IsEnemyOf(victimAgent) &&
+                if (RBMConfig.RBMConfig.postureEnabled &&
                     AgentStances.values.TryGetValue(victimAgent, out Stance victimStance) && victimStance != null)
                 {
                     // Posture gone: he goes down, no roll, and gets posture back as after any posture break.
@@ -590,6 +625,11 @@ namespace RBMAI
                 if (fromBehind)
                 {
                     chance *= AiKickBash.KnockDownBehindMultiplier;
+                }
+                // And one still off balance from the last kick/bash.
+                if (kickedRecently)
+                {
+                    chance *= AiKickBash.KnockDownRecentKickMultiplier;
                 }
                 // A man in heavy armour is harder to tip over.
                 float armorWeight = victimAgent.SpawnEquipment.GetTotalWeightOfArmor(true);
