@@ -91,8 +91,8 @@ namespace RBMCampaign
             new Dictionary<string, (string, float)[]>
             {
                 { "wheat_farm", new (string, float)[] { ("grain", 0.2f * 0.95f), ("planks", 1.027f * 0.1f) } },
-                { "cattle_farm", new (string, float)[] { ("cow", 0.008f * 0.5f), ("cheese", 0.035f * 0.5f), ("butter", 0.028f * 0.5f) } },
-                { "sheep_farm", new (string, float)[] { ("sheep", 0.0031f * 0.5f), ("cheese", 0.02f * 0.5f), ("butter", 0.015f * 0.5f), ("wool", 0.08f * 0.5f) } },
+                { "cattle_farm", new (string, float)[] { ("cheese", 0.035f * 0.5f), ("butter", 0.028f * 0.5f), ("cow", 0.008f * 0.5f) } },
+                { "sheep_farm", new (string, float)[] { ("cheese", 0.02f * 0.5f), ("butter", 0.015f * 0.5f), ("wool", 0.08f * 0.5f), ("sheep", 0.0031f * 0.5f) } },
                 { "swine_farm", new (string, float)[] { ("hog", 0.019f * 0.5f) } },
                 { "lumberjack", new (string, float)[] { ("charcoal", 1.027f*1.8f), ("planks", 1.027f*0.2f) } },
                 { "clay_mine", new (string, float)[] { ("clay", 0.6f), ("grain", 0.1f) } },

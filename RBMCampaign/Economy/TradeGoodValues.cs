@@ -39,7 +39,7 @@ namespace RBMCampaign
             new Dictionary<string, (int, float)>
             {
                 // --- Goods declared in SandBoxCore/ModuleData/items/horses_and_others.xml ---
-                { "wool",        (100,    2f) },
+                { "wool",        (80,     2f) },
                 { "silver",      (43,     0.85f) },
                 { "jewelry",     (420,    0.025f) },
                 { "salt",        (30,     1f) },
@@ -62,7 +62,7 @@ namespace RBMCampaign
                 { "oil",         (270,    6.23f) },
                 { "fur",         (833,    0.75f) },
                 { "sheep",       (220,    60f) },    //should be 2x but it does not work economically
-                { "cow",         (480,    175f) },   //should be 2x but it does not work economically
+                { "cow",         (380,    175f) },   //should be 2x but it does not work economically
                 { "hog",         (130,    60f) },    //should be 2x but it does not work economically
 
                 // --- Goods built in code by DefaultItems.InitializeTradeGood ---

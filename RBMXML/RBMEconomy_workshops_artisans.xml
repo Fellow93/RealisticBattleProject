@@ -231,7 +231,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="6" />
+					output_count="12" />
 			</Outputs>
 		</Production>
 		<Production
@@ -244,7 +244,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="6" />
+					output_count="12" />
 			</Outputs>
 		</Production>
 		
@@ -258,7 +258,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="3" />
+					output_count="12" />
 			</Outputs>
 		</Production>		
 		<Production
@@ -271,7 +271,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="3" />
+					output_count="12" />
 			</Outputs>
 		</Production>
 		
@@ -285,7 +285,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="6" />
+					output_count="12" />
 			</Outputs>
 		</Production>
 		<Production
@@ -298,7 +298,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="6" />
+					output_count="12" />
 			</Outputs>
 		</Production>
 		
@@ -312,7 +312,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="6" />
+					output_count="12" />
 			</Outputs>
 		</Production>
 		<Production
@@ -325,7 +325,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="6" />
+					output_count="12" />
 			</Outputs>
 		</Production>
 
@@ -342,7 +342,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="4" />
+					output_count="8" />
 			</Outputs>
 		</Production>
 		<Production
@@ -358,7 +358,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="4" />
+					output_count="8" />
 			</Outputs>
 		</Production>		
 		
@@ -376,7 +376,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.light_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -392,7 +392,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.light_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		
@@ -410,7 +410,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.medium_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -426,7 +426,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.medium_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -442,7 +442,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.medium_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -458,7 +458,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.medium_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 
@@ -695,7 +695,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.horse_equipment" 
-					output_count="4" />
+					output_count="8" />
 			</Outputs>
 		</Production>
 	<!--< Gambeson horse armour (T2?) >-->				
@@ -720,7 +720,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" />
+					output="ItemCategory.horse_equipment_2" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -744,7 +745,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" />
+					output="ItemCategory.horse_equipment_2" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 	<!--< Leather horse armour (T3?) >-->			
@@ -769,7 +771,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_3" />
+					output="ItemCategory.horse_equipment_3" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -793,7 +796,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_3" />
+					output="ItemCategory.horse_equipment_3" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -817,7 +821,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_3" />
+					output="ItemCategory.horse_equipment_3" 
+					output_count="2"/>
 			</Outputs>
 		</Production>		
 		
@@ -1036,7 +1041,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="4" />
+					output_count="8" />
 			</Outputs>
 		</Production>
 		<Production
@@ -1052,7 +1057,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="4" />
+					output_count="8" />
 			</Outputs>
 		</Production>
 		<Production
@@ -1065,7 +1070,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="4" />
+					output_count="8" />
 			</Outputs>
 		</Production>
 		<Production
@@ -1078,7 +1083,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="4" />
+					output_count="8" />
 			</Outputs>
 		</Production>
 		
@@ -1095,7 +1100,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.light_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1111,7 +1116,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.light_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		
@@ -1136,7 +1141,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" />
+					output="ItemCategory.horse_equipment_2" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -1264,7 +1270,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="6" />
+					output_count="12" />
 			</Outputs>
 		</Production>
 		<Production
@@ -1277,7 +1283,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="6" />
+					output_count="12" />
 			</Outputs>
 		</Production>
 		<Production
@@ -1305,7 +1311,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="4" />
+					output_count="8" />
 			</Outputs>
 		</Production>
 		<Production
@@ -1321,7 +1327,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="4" />
+					output_count="8" />
 			</Outputs>
 		</Production>
 		
@@ -1338,7 +1344,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.light_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1354,7 +1360,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.light_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		
@@ -1379,7 +1385,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" />
+					output="ItemCategory.horse_equipment_2" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1403,7 +1410,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" />
+					output="ItemCategory.horse_equipment_2" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 	</WorkshopType>
@@ -1495,7 +1503,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.garment"
-					output_count="4" />
+					output_count="8" />
 			</Outputs>
 		</Production>
 		
@@ -1515,7 +1523,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.horse_equipment" 
-					output_count="4" />
+					output_count="8" />
 			</Outputs>
 		</Production>
 
@@ -1540,7 +1548,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" />
+					output="ItemCategory.horse_equipment_2" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1564,7 +1573,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" />
+					output="ItemCategory.horse_equipment_2" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1588,7 +1598,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" />
+					output="ItemCategory.horse_equipment_2" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1612,7 +1623,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" />
+					output="ItemCategory.horse_equipment_2" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		
@@ -1637,7 +1649,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_3" />
+					output="ItemCategory.horse_equipment_3" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1661,7 +1674,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_3" />
+					output="ItemCategory.horse_equipment_3" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1688,7 +1702,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_3" />
+					output="ItemCategory.horse_equipment_3" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1715,7 +1730,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_3" />
+					output="ItemCategory.horse_equipment_3" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		
@@ -1732,7 +1748,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.medium_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1748,7 +1764,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.medium_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1764,7 +1780,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.medium_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1780,7 +1796,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.medium_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		
@@ -1809,7 +1825,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_4" />
+					output="ItemCategory.horse_equipment_4" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1836,7 +1853,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_4" />
+					output="ItemCategory.horse_equipment_4" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1863,7 +1881,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_4" />
+					output="ItemCategory.horse_equipment_4" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1890,7 +1909,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_4" />
+					output="ItemCategory.horse_equipment_4" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 	<!--< Full Mail and Scale horse armour (T5-6?) >-->			
@@ -1918,7 +1938,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_5" />
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1945,7 +1966,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_5" />
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1972,7 +1994,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_5" />
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -1999,7 +2022,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_5" />
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -2026,7 +2050,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_5" />
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -2053,7 +2078,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_5" />
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		
@@ -2839,7 +2865,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.medium_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -2855,7 +2881,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.medium_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 
@@ -2872,7 +2898,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.medium_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -2888,7 +2914,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.medium_armor" 
-					output_count="3"/>
+					output_count="6"/>
 			</Outputs>
 		</Production>		
 		
@@ -2905,7 +2931,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.heavy_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -2921,7 +2947,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.heavy_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>		
 		<Production
@@ -2940,7 +2966,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.heavy_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -2959,7 +2985,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.heavy_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -2978,7 +3004,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.heavy_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -2997,7 +3023,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.heavy_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>		
 		<Production
@@ -3013,7 +3039,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.heavy_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3029,7 +3055,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.heavy_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>		
 		<Production
@@ -3048,7 +3074,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.heavy_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3067,7 +3093,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.heavy_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3086,7 +3112,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.heavy_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3105,7 +3131,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.heavy_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		
@@ -3126,7 +3152,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ultra_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3145,7 +3171,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ultra_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3164,7 +3190,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ultra_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3183,7 +3209,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ultra_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		
@@ -3203,7 +3229,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ultra_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3222,7 +3248,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ultra_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3241,7 +3267,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ultra_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3260,7 +3286,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ultra_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		
@@ -3283,7 +3309,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ultra_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3305,7 +3331,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ultra_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3327,7 +3353,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ultra_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3349,7 +3375,7 @@
 			<Outputs>
 				<Output
 					output="ItemCategory.ultra_armor" 
-					output_count="2"/>
+					output_count="4"/>
 			</Outputs>
 		</Production>		
 
@@ -3378,7 +3404,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_4" />
+					output="ItemCategory.horse_equipment_4" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3405,7 +3432,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_4" />
+					output="ItemCategory.horse_equipment_4" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3432,7 +3460,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_4" />
+					output="ItemCategory.horse_equipment_4" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3459,7 +3488,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_4" />
+					output="ItemCategory.horse_equipment_4" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 	<!--< Full Mail and Scale horse armour (T5-6?) >-->			
@@ -3487,7 +3517,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_5" />
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3514,7 +3545,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_5" />
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3541,7 +3573,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_5" />
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3568,7 +3601,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_5" />
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3595,7 +3629,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_5" />
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 		<Production
@@ -3622,7 +3657,8 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_5" />
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
 			</Outputs>
 		</Production>
 	</WorkshopType>
