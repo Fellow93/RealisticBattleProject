@@ -1058,6 +1058,20 @@ namespace RBMCampaign
             ScreenManager.PopScreen();
         }
 
+        // Column headings for the two tables. Bound rather than written into the prefab so
+        // that they go through the language files like the rest of the screen.
+        [DataSourceProperty] public string VillageHeader => RBMLedgerHeaders.Village;
+        [DataSourceProperty] public string ProductionHeader => RBMLedgerHeaders.Production;
+        [DataSourceProperty] public string WealthHeader => RBMLedgerHeaders.Wealth;
+        [DataSourceProperty] public string HearthHeader => RBMLedgerHeaders.Hearth;
+        [DataSourceProperty] public string MilitiaHeader => RBMLedgerHeaders.Militia;
+        [DataSourceProperty] public string TownHeader => RBMLedgerHeaders.Town;
+        [DataSourceProperty] public string ProsperityHeader => RBMLedgerHeaders.Prosperity;
+        [DataSourceProperty] public string CitizenHeader => RBMLedgerHeaders.Citizen;
+        [DataSourceProperty] public string TreasuryHeader => RBMLedgerHeaders.Treasury;
+        [DataSourceProperty] public string FoodHeader => RBMLedgerHeaders.Food;
+        [DataSourceProperty] public string GarrisonHeader => RBMLedgerHeaders.Garrison;
+
         [DataSourceProperty]
         public MBBindingList<RBMLedgerTabVM> Tabs
         {

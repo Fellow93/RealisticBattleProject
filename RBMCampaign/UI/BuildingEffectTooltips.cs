@@ -136,59 +136,59 @@ namespace RBMCampaign
         {
             if (type == DefaultBuildingTypes.SettlementFortifications || type == DefaultBuildingTypes.CastleFortifications)
             {
-                return "RBM: siege defence +10/20/30% · garrison & militia maintenance -0/5/10%";
+                return new TextObject("{=RBM_BLD_FORT}RBM: siege defence +10/20/30% · garrison & militia maintenance -0/5/10%").ToString();
             }
             if (type == DefaultBuildingTypes.SettlementBarracks || type == DefaultBuildingTypes.CastleBarracks)
             {
-                return "RBM: cost of arming garrison & militia recruits -5/10/15% · garrison and militia intake +1/2/3 per day when the treasury can fund them · garrison soft size +20/40/60 men (recruits get dearer from the recruit pool later) · militia soft cap +2/3/5% of the fief's manpower";
+                return new TextObject("{=RBM_BLD_BARRACKS}RBM: cost of arming garrison & militia recruits -5/10/15% · garrison and militia intake +1/2/3 per day when the treasury can fund them · garrison soft size +20/40/60 men (recruits get dearer from the recruit pool later) · militia soft cap +2/3/5% of the fief's manpower").ToString();
             }
             if (type == DefaultBuildingTypes.SettlementTrainingFields || type == DefaultBuildingTypes.CastleTrainingFields)
             {
-                return "RBM: garrison promotions -5/10/15% · garrison and militia gain +10/20/30 experience a day (replaces the 1/2/3 above) · militia soft cap +1/2/3% of the fief's manpower";
+                return new TextObject("{=RBM_BLD_TRAINING}RBM: garrison promotions -5/10/15% · garrison and militia gain +10/20/30 experience a day (replaces the 1/2/3 above) · militia soft cap +1/2/3% of the fief's manpower").ToString();
             }
             if (type == DefaultBuildingTypes.SettlementGuardHouse)
             {
-                return "RBM: tariff on caravan and traveller trade +0.3/0.6/1.0 percentage points · convicts kept at work on the fief's building projects";
+                return new TextObject("{=RBM_BLD_GUARD_TOWN}RBM: tariff on caravan and traveller trade +0.3/0.6/1.0 percentage points · convicts kept at work on the fief's building projects").ToString();
             }
             if (type == DefaultBuildingTypes.CastleGuardHouse)
             {
-                return "RBM: tariff on caravan and traveller trade +0.3/0.6/1.0 percentage points · convicts kept at work on the fief's building projects · militia soft cap +2/3/5% of the castle's manpower (replaces the militia per day above; the barracks owns intake)";
+                return new TextObject("{=RBM_BLD_GUARD_CASTLE}RBM: tariff on caravan and traveller trade +0.3/0.6/1.0 percentage points · convicts kept at work on the fief's building projects · militia soft cap +2/3/5% of the castle's manpower (replaces the militia per day above; the barracks owns intake)").ToString();
             }
             if (type == DefaultBuildingTypes.CastleCastallansOffice)
             {
-                return "RBM: 10/20/30% of garrison recruits enlist as the culture's elite soldier rather than its common one · upkeep of the mounted garrison -10/20/30% · recruit pool max +10/20/30%";
+                return new TextObject("{=RBM_BLD_CASTELLAN}RBM: 10/20/30% of garrison recruits enlist as the culture's elite soldier rather than its common one · upkeep of the mounted garrison -10/20/30% · recruit pool max +10/20/30%").ToString();
             }
             if (type == DefaultBuildingTypes.CastleCraftmansQuarters)
             {
-                return "RBM: the castle's daily income from its lands +10/20/30%";
+                return new TextObject("{=RBM_BLD_CRAFTSMEN}RBM: the castle's daily income from its lands +10/20/30%").ToString();
             }
             if (type == DefaultBuildingTypes.CastleFarmlands)
             {
-                return "RBM: the castle's own food production +10/20/30% (replaces the flat 6/12/18 food a day)";
+                return new TextObject("{=RBM_BLD_FARMLANDS}RBM: the castle's own food production +10/20/30% (replaces the flat 6/12/18 food a day)").ToString();
             }
             if (type == DefaultBuildingTypes.SettlementTaxOffice)
             {
-                return "RBM: wealth tax and minting cuts +5/10/15%, to the fief and its lord alike";
+                return new TextObject("{=RBM_BLD_TAX_OFFICE}RBM: wealth tax and minting cuts +5/10/15%, to the fief and its lord alike").ToString();
             }
             if (type == DefaultBuildingTypes.SettlementMarketplace)
             {
-                return "RBM: tariff on every trade in the settlement +10/20/30%";
+                return new TextObject("{=RBM_BLD_MARKET}RBM: tariff on every trade in the settlement +10/20/30%").ToString();
             }
             if (type == DefaultBuildingTypes.SettlementWarehouse || type == DefaultBuildingTypes.CastleGranary)
             {
-                return "RBM: the granary holds 40/50/60 days of the fief's own eating (30 days with no granary), replacing the fixed food limit; a town's market refuses food beyond it";
+                return new TextObject("{=RBM_BLD_GRANARY}RBM: the granary holds 40/50/60 days of the fief's own eating (30 days with no granary), replacing the fixed food limit; a town's market refuses food beyond it").ToString();
             }
             if (type == DefaultBuildingTypes.SettlementMason || type == DefaultBuildingTypes.CastleMason)
             {
-                return "RBM: construction efficiency +5/10/15% · labour ceiling +10/20/30% (replaces construction per day)";
+                return new TextObject("{=RBM_BLD_MASON}RBM: construction efficiency +5/10/15% · labour ceiling +10/20/30% (replaces construction per day)").ToString();
             }
             if (type == DefaultBuildingTypes.SettlementWaterworks)
             {
-                return "RBM: everything else the town has built is worth +10/20/30% more prosperity";
+                return new TextObject("{=RBM_BLD_WATERWORKS}RBM: everything else the town has built is worth +10/20/30% more prosperity").ToString();
             }
             if (type == DefaultBuildingTypes.SettlementRoadsAndPaths || type == DefaultBuildingTypes.CastleRoadsAndPaths)
             {
-                return "RBM: bound villages produce +5/10/15% more goods · bound villages' recruit pool growth +10/20/30%";
+                return new TextObject("{=RBM_BLD_ROADS}RBM: bound villages produce +5/10/15% more goods · bound villages' recruit pool growth +10/20/30%").ToString();
             }
             if (type == DefaultBuildingTypes.SettlementDailyTrainMilitia)
             {
@@ -196,11 +196,11 @@ namespace RBMCampaign
             }
             if (type == DefaultBuildingTypes.SettlementDailyHousing)
             {
-                return "RBM: recruit pool growth +25% while running";
+                return new TextObject("{=RBM_BLD_DAILY_MILITIA_HOUSING}RBM: recruit pool growth +25% while running").ToString();
             }
             if (type == DefaultBuildingTypes.CastleDailyRaiseTroops)
             {
-                return "RBM: recruit pool growth +50% and militia soft cap +3% of the castle's manpower while running";
+                return new TextObject("{=RBM_BLD_DAILY_RAISE_TROOPS}RBM: recruit pool growth +50% and militia soft cap +3% of the castle's manpower while running").ToString();
             }
             return null;
         }

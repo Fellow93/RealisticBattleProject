@@ -107,17 +107,17 @@ namespace RBMConfig
         [DataSourceProperty]
         public string ArmorEffectivenesst
         {
-            get { return new TextObject("Armor Effectiveness").ToString(); }
+            get { return new TextObject("{=RBM_CFG_ARMOR_EFF}Armor Effectiveness").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel ArmorEffectivenessHint { get; } = Hint("Armor counts as this many times its value. Higher means armored troops take less damage from every weapon; lower means armor protects less. Unarmored troops are unaffected. The Advanced Armor settings below work on top of this one: each of them is applied to the armor after this setting has scaled it. Also feeds auto-resolve and troop power. Default 1.00.");
+        public BasicTooltipViewModel ArmorEffectivenessHint { get; } = Hint("{=RBM_CFG_ARMOR_EFF_HINT}Armor counts as this many times its value. Higher means armored troops take less damage from every weapon; lower means armor protects less. Unarmored troops are unaffected. The Advanced Armor settings below work on top of this one: each of them is applied to the armor after this setting has scaled it. Also feeds auto-resolve and troop power. Default 1.00.");
 
         // Sub-group header for the three advanced armor rows below.
         [DataSourceProperty]
         public string AdvancedArmort
         {
-            get { return new TextObject("Advanced Armor").ToString(); }
+            get { return new TextObject("{=RBM_CFG_CAT_ADV_ARMOR}Advanced Armor").ToString(); }
         }
 
         // Plain-text label/hint, same as Armor Effectiveness above.
@@ -148,11 +148,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string ArmorMultipliert
         {
-            get { return new TextObject("Armor Multiplier").ToString(); }
+            get { return new TextObject("{=RBM_CFG_ARMOR_MULT}Armor Multiplier").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel ArmorMultiplierHint { get; } = Hint("How strongly armor absorbs blunt trauma, the damage that gets through armor without penetrating it: that part is scaled by 100 / (100 + armor x this). Higher makes armored troops tankier; lower makes them die faster. Penetrating damage is unchanged. Also feeds auto-resolve and troop power. With Armor Effectiveness: the formula uses the armor after Armor Effectiveness has scaled it, so the two multiply. For example, Armor Effectiveness 1.5 with this at 2 makes armor count 3x in this curve. Default 2.00.");
+        public BasicTooltipViewModel ArmorMultiplierHint { get; } = Hint("{=RBM_CFG_ARMOR_MULT_HINT}How strongly armor absorbs blunt trauma, the damage that gets through armor without penetrating it: that part is scaled by 100 / (100 + armor x this). Higher makes armored troops tankier; lower makes them die faster. Penetrating damage is unchanged. Also feeds auto-resolve and troop power. With Armor Effectiveness: the formula uses the armor after Armor Effectiveness has scaled it, so the two multiply. For example, Armor Effectiveness 1.5 with this at 2 makes armor count 3x in this curve. Default 2.00.");
 
         // Plain-text label/hint, same as Armor Multiplier above.
         private float _bluntTraumaMultiplier;
@@ -182,11 +182,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string BluntTraumaMultipliert
         {
-            get { return new TextObject("Blunt Trauma Multiplier").ToString(); }
+            get { return new TextObject("{=RBM_CFG_BLUNT_MULT}Blunt Trauma Multiplier").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel BluntTraumaMultiplierHint { get; } = Hint("Scales blunt trauma, the damage that gets through armor without penetrating it, for every weapon type. Lower makes armored troops tankier; higher makes armor protect less. Penetrating damage is unchanged. Also feeds auto-resolve. With Armor Effectiveness: that setting first decides how much of a hit armor stops and how much of the stopped part it absorbs; this one then scales whatever blunt trauma is left. They don't multiply into each other: this does not make armor count for more, it only changes how much a stopped hit still hurts. Default 1.00.");
+        public BasicTooltipViewModel BluntTraumaMultiplierHint { get; } = Hint("{=RBM_CFG_BLUNT_MULT_HINT}Scales blunt trauma, the damage that gets through armor without penetrating it, for every weapon type. Lower makes armored troops tankier; higher makes armor protect less. Penetrating damage is unchanged. Also feeds auto-resolve. With Armor Effectiveness: that setting first decides how much of a hit armor stops and how much of the stopped part it absorbs; this one then scales whatever blunt trauma is left. They don't multiply into each other: this does not make armor count for more, it only changes how much a stopped hit still hurts. Default 1.00.");
 
         // Plain-text label/hint, same as Armor Multiplier above.
         private float _armorThresholdModifier;
@@ -216,11 +216,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string ArmorThresholdModifiert
         {
-            get { return new TextObject("Armor Penetration Threshold").ToString(); }
+            get { return new TextObject("{=RBM_CFG_ARMOR_PEN}Armor Penetration Threshold").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel ArmorThresholdModifierHint { get; } = Hint("Scales how much of a blow armor stops outright: the part of a hit above armor x weapon factor x this penetrates, the rest becomes blunt trauma. Higher makes armored troops tankier, since more hits fail to penetrate; lower lets more damage straight through. Shields use the same rule. Also feeds auto-resolve. With Armor Effectiveness: the threshold is worked out from the armor after Armor Effectiveness has scaled it, so the two multiply. For example, Armor Effectiveness 1.5 with this at 1.2 makes armor stop 1.8x as much as at the defaults. Default 1.00.");
+        public BasicTooltipViewModel ArmorThresholdModifierHint { get; } = Hint("{=RBM_CFG_ARMOR_PEN_HINT}Scales how much of a blow armor stops outright: the part of a hit above armor x weapon factor x this penetrates, the rest becomes blunt trauma. Higher makes armored troops tankier, since more hits fail to penetrate; lower lets more damage straight through. Shields use the same rule. Also feeds auto-resolve. With Armor Effectiveness: the threshold is worked out from the armor after Armor Effectiveness has scaled it, so the two multiply. For example, Armor Effectiveness 1.5 with this at 1.2 makes armor stop 1.8x as much as at the defaults. Default 1.00.");
 
         // Plain-text label/hint for the same reason as the row above.
         private float _arrowThicknessScale;
@@ -250,11 +250,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string ArrowThicknessScalet
         {
-            get { return new TextObject("Flying arrow thickness (experimental)").ToString(); }
+            get { return new TextObject("{=RBM_CFG_ARROW_THICK}Flying arrow thickness (experimental)").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel ArrowThicknessScaleHint { get; } = Hint("Experimental. Makes the realistic arrows and bolts of Better Arrow Visuals thicker while they fly, so they are easier to follow. Only the thickness is scaled, not the length, and only in flight: arrows in the quiver, on the string and stuck in a target stay true to size. Visual only, hits are unchanged. Does nothing when Better Arrow Visuals is disabled; at 1.00 it is switched off entirely. A change takes effect the next time a game is started or loaded. Default 1.00 (off, true to size).");
+        public BasicTooltipViewModel ArrowThicknessScaleHint { get; } = Hint("{=RBM_CFG_ARROW_THICK_HINT}Experimental. Makes the realistic arrows and bolts of Better Arrow Visuals thicker while they fly, so they are easier to follow. Only the thickness is scaled, not the length, and only in flight: arrows in the quiver, on the string and stuck in a target stay true to size. Visual only, hits are unchanged. Does nothing when Better Arrow Visuals is disabled; at 1.00 it is switched off entirely. A change takes effect the next time a game is started or loaded. Default 1.00 (off, true to size).");
 
         // Stuck missiles falling out (RBMCombat Ranged/RangedRework.StuckMissiles.cs). Whole seconds; 0 = never.
         private float _stuckThrownFallOutSeconds;
@@ -351,21 +351,21 @@ namespace RBMConfig
         [DataSourceProperty]
         public string RangedReloadAffectsAit
         {
-            get { return new TextObject("Ranged reload applies to AI").ToString(); }
+            get { return new TextObject("{=RBM_CFG_RELOAD_AI}Ranged reload applies to AI").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel RangedReloadAffectsAiHint { get; } = Hint("When enabled, AI archers and crossbowmen follow the Ranged reload speed setting too (Vanilla / Realistic / Semi-realistic) instead of their fixed AI reload. Off keeps that setting player-only. Default off.");
+        public BasicTooltipViewModel RangedReloadAffectsAiHint { get; } = Hint("{=RBM_CFG_RELOAD_AI_HINT}When enabled, AI archers and crossbowmen follow the Ranged reload speed setting too (Vanilla / Realistic / Semi-realistic) instead of their fixed AI reload. Off keeps that setting player-only. Default off.");
 
         // Plain-text label/hint for the same reason as the row above.
         [DataSourceProperty]
         public string RangedAimArcEnabledt
         {
-            get { return new TextObject("Ranged aim arc (player, experimental)").ToString(); }
+            get { return new TextObject("{=RBM_CFG_AIM_ARC}Ranged aim arc (player, experimental)").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel RangedAimArcEnabledHint { get; } = Hint("Experimental. While you draw a bow or crossbow or wind up a sling, shows the predicted flight of the missile as a dotted arc with a marker where it will land. Uses the same launch speed and air drag the real shot flies with. In third person, when you aim up the camera also lifts and tilts down so the landing point of a high shot stays on screen; where you aim is unchanged, and the crosshair is hidden while the camera is moved (the arc shows the aim). Also covers javelins, throwing axes, throwing knives and stones. Player only. Needs RBM Combat. Default off.");
+        public BasicTooltipViewModel RangedAimArcEnabledHint { get; } = Hint("{=RBM_CFG_AIM_ARC_HINT}Experimental. While you draw a bow or crossbow or wind up a sling, shows the predicted flight of the missile as a dotted arc with a marker where it will land. Uses the same launch speed and air drag the real shot flies with. In third person, when you aim up the camera also lifts and tilts down so the landing point of a high shot stays on screen; where you aim is unchanged, and the crosshair is hidden while the camera is moved (the arc shows the aim). Also covers javelins, throwing axes, throwing knives and stones. Player only. Needs RBM Combat. Default off.");
 
         [DataSourceProperty]
         public string PassiveShieldt
@@ -564,11 +564,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineEnabledt
         {
-            get { return new TextObject("Frontline System").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_SYSTEM}Frontline System").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineEnabledHint { get; } = Hint("Per-soldier jostling inside a charging infantry or archer line: each man decides every couple of seconds whether to press in, step back, close on a neighbour, slide around a flank or hold his rank. Off leaves melee lines on RBM's plain charge. Cavalry/archer free-charge rules and unit facing are unaffected either way. Default on.");
+        public BasicTooltipViewModel FrontlineEnabledHint { get; } = Hint("{=RBM_CFG_FL_SYSTEM_HINT}Per-soldier jostling inside a charging infantry or archer line: each man decides every couple of seconds whether to press in, step back, close on a neighbour, slide around a flank or hold his rank. Off leaves melee lines on RBM's plain charge. Cavalry/archer free-charge rules and unit facing are unaffected either way. Default on.");
 
         private float _frontlineMinFormationSize;
 
@@ -597,11 +597,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineMinFormationSizet
         {
-            get { return new TextObject("Frontline Min Formation Size").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_MIN_SIZE}Frontline Min Formation Size").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineMinFormationSizeHint { get; } = Hint("Formations smaller than this (undetached men) skip the frontline system entirely and charge normally -- there is no rank to hold in a handful of men. Default 25.");
+        public BasicTooltipViewModel FrontlineMinFormationSizeHint { get; } = Hint("{=RBM_CFG_FL_MIN_SIZE_HINT}Formations smaller than this (undetached men) skip the frontline system entirely and charge normally -- there is no rank to hold in a handful of men. Default 25.");
 
         private float _frontlineDecisionTimerMax;
 
@@ -630,11 +630,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineDecisionTimerMaxt
         {
-            get { return new TextObject("Frontline Decision Hold").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_HOLD}Frontline Decision Hold").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineDecisionTimerMaxHint { get; } = Hint("Once a man picks a move he sticks with it for a random 0 to this many seconds before reconsidering. Higher is steadier and cheaper; lower makes the line twitchier. Default 2.00.");
+        public BasicTooltipViewModel FrontlineDecisionTimerMaxHint { get; } = Hint("{=RBM_CFG_FL_HOLD_HINT}Once a man picks a move he sticks with it for a random 0 to this many seconds before reconsidering. Higher is steadier and cheaper; lower makes the line twitchier. Default 2.00.");
 
         private float _frontlineAttackWeight;
 
@@ -663,11 +663,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineAttackWeightt
         {
-            get { return new TextObject("Frontline Attack Weight").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_ATTACK}Frontline Attack Weight").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineAttackWeightHint { get; } = Hint("Multiplier on the 'press forward at my target' score. Above 1 makes lines more aggressive and thinner; below 1 makes them hang back. Default 1.00.");
+        public BasicTooltipViewModel FrontlineAttackWeightHint { get; } = Hint("{=RBM_CFG_FL_ATTACK_HINT}Multiplier on the 'press forward at my target' score. Above 1 makes lines more aggressive and thinner; below 1 makes them hang back. Default 1.00.");
 
         private float _frontlineBackStepWeight;
 
@@ -696,11 +696,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineBackStepWeightt
         {
-            get { return new TextObject("Frontline Back Step Weight").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_BACKSTEP}Frontline Back Step Weight").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineBackStepWeightHint { get; } = Hint("Multiplier on the 'give ground and let a fresh man through' score. Above 1 gives more rotation out of the front rank. Default 1.00.");
+        public BasicTooltipViewModel FrontlineBackStepWeightHint { get; } = Hint("{=RBM_CFG_FL_BACKSTEP_HINT}Multiplier on the 'give ground and let a fresh man through' score. Above 1 gives more rotation out of the front rank. Default 1.00.");
 
         private float _frontlineFindAllyWeight;
 
@@ -729,11 +729,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineFindAllyWeightt
         {
-            get { return new TextObject("Frontline Close Ranks Weight").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_CLOSE}Frontline Close Ranks Weight").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineFindAllyWeightHint { get; } = Hint("Multiplier on the 'close the gap to my nearest neighbour' score. Above 1 makes lines huddle tighter and shield walls hold better; below 1 lets them spread. Default 1.00.");
+        public BasicTooltipViewModel FrontlineFindAllyWeightHint { get; } = Hint("{=RBM_CFG_FL_CLOSE_HINT}Multiplier on the 'close the gap to my nearest neighbour' score. Above 1 makes lines huddle tighter and shield walls hold better; below 1 lets them spread. Default 1.00.");
 
         private float _frontlineFlankWeight;
 
@@ -762,11 +762,11 @@ namespace RBMConfig
         [DataSourceProperty]
         public string FrontlineFlankWeightt
         {
-            get { return new TextObject("Frontline Sidestep Weight").ToString(); }
+            get { return new TextObject("{=RBM_CFG_FL_SIDESTEP}Frontline Sidestep Weight").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel FrontlineFlankWeightHint { get; } = Hint("Multiplier on both the left and right 'slide sideways past the man in front' scores. Above 1 makes lines spread wide around a stalled front rank. Default 1.00.");
+        public BasicTooltipViewModel FrontlineFlankWeightHint { get; } = Hint("{=RBM_CFG_FL_SIDESTEP_HINT}Multiplier on both the left and right 'slide sideways past the man in front' scores. Above 1 makes lines spread wide around a stalled front rank. Default 1.00.");
 
     }
 }

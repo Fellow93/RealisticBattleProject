@@ -40,7 +40,7 @@ namespace RBMConfig
         public BasicTooltipViewModel RBMTournamentEnabledHint { get; } = Hint("{=RBM_CON_132}Tiered tournaments. Your tier comes from your level and the quality of your armor: below tier 5 you fight troops of your own tier, from tier 5 the lords and heroes in town. Arena gear, the prize (which can roll a better quality) and the renown you win follow your tier. Off restores the base game's tournaments. Default on.");
 
         [DataSourceProperty]
-        public BasicTooltipViewModel RBMCampaignEnabledHint { get; } = Hint("Master switch for RBM's campaign overhaul: the troop spoils economy, wages and upkeep, settlement wealth, village and town production, caravans, equipment-aware auto-resolve and troop power, and RBM's additions to the campaign screens. Off returns the campaign to the base game and every option in this section stops working. The screen additions only follow a change after a game restart. Default on.");
+        public BasicTooltipViewModel RBMCampaignEnabledHint { get; } = Hint("{=RBM_CFG_CAMPAIGN_HINT}Master switch for RBM's campaign overhaul: the troop spoils economy, wages and upkeep, settlement wealth, village and town production, caravans, equipment-aware auto-resolve and troop power, and RBM's additions to the campaign screens. Off returns the campaign to the base game and every option in this section stops working. The screen additions only follow a change after a game restart. Default on.");
 
         [DataSourceProperty]
         public string CancelText
@@ -119,7 +119,7 @@ namespace RBMConfig
         {
             get
             {
-                return new TextObject("RBM Campaign").ToString();
+                return new TextObject("{=RBM_CFG_CAT_CAMPAIGN}RBM Campaign").ToString();
             }
         }
 

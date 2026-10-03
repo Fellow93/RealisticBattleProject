@@ -238,6 +238,38 @@ namespace RBMCampaign
             SelectMetric("prosperity");
         }
 
+        // Column headings for this row's history table. The text never changes, but it has
+        // to be reachable from here: a widget nested inside a row can only bind to that
+        // row's own data source.
+        [DataSourceProperty] public string CitizenHeader => RBMLedgerHeaders.Citizen;
+        [DataSourceProperty] public string FoodHeader => RBMLedgerHeaders.Food;
+        [DataSourceProperty] public string DayHeader => RBMLedgerHeaders.Day;
+        [DataSourceProperty] public string EventsHeader => RBMLedgerHeaders.Events;
+        [DataSourceProperty] public string ProspHeader => RBMLedgerHeaders.Prosp;
+        [DataSourceProperty] public string CitInHeader => RBMLedgerHeaders.CitIn;
+        [DataSourceProperty] public string CitOutHeader => RBMLedgerHeaders.CitOut;
+        [DataSourceProperty] public string TreasHeader => RBMLedgerHeaders.Treas;
+        [DataSourceProperty] public string TrsInHeader => RBMLedgerHeaders.TrsIn;
+        [DataSourceProperty] public string TrsOutHeader => RBMLedgerHeaders.TrsOut;
+        [DataSourceProperty] public string EatenHeader => RBMLedgerHeaders.Eaten;
+        [DataSourceProperty] public string GarrHeader => RBMLedgerHeaders.Garr;
+        [DataSourceProperty] public string MilHeader => RBMLedgerHeaders.Mil;
+        [DataSourceProperty] public string DelivHeader => RBMLedgerHeaders.Deliv;
+        [DataSourceProperty] public string PartyHeader => RBMLedgerHeaders.Party;
+        [DataSourceProperty] public string CaravHeader => RBMLedgerHeaders.Carav;
+        [DataSourceProperty] public string DemandHeader => RBMLedgerHeaders.Demand;
+        [DataSourceProperty] public string WantedPerDayHeader => RBMLedgerHeaders.WantedPerDay;
+        [DataSourceProperty] public string FilledHeader => RBMLedgerHeaders.Filled;
+        [DataSourceProperty] public string WorkshopsHeader => RBMLedgerHeaders.Workshops;
+        [DataSourceProperty] public string ConsumedPerDayHeader => RBMLedgerHeaders.ConsumedPerDay;
+        [DataSourceProperty] public string ProducedPerDayHeader => RBMLedgerHeaders.ProducedPerDay;
+        [DataSourceProperty] public string GoodsHeader => RBMLedgerHeaders.Goods;
+        [DataSourceProperty] public string DemandPerDayHeader => RBMLedgerHeaders.DemandPerDay;
+        [DataSourceProperty] public string StockHeader => RBMLedgerHeaders.Stock;
+        [DataSourceProperty] public string DaysHeader => RBMLedgerHeaders.Days;
+        [DataSourceProperty] public string EquipmentHeader => RBMLedgerHeaders.Equipment;
+        [DataSourceProperty] public string ValueHeader => RBMLedgerHeaders.Value;
+
         [DataSourceProperty] public string TownName { get; }
         [DataSourceProperty] public string Prosperity { get; }
         [DataSourceProperty] public string Citizen { get; }
