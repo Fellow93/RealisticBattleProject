@@ -108,20 +108,20 @@ namespace RBMConfig
         [DataSourceProperty]
         public string SimulationLogHitst
         {
-            get { return new TextObject("Auto Resolve Per-Hit Detail").ToString(); }
+            get { return new TextObject("{=RBM_CFG_SIM_HIT_DETAIL}Auto Resolve Per-Hit Detail").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel SimulationLogHitsHint { get; } = Hint("Adds every simulated blow to the auto-resolve log -- thousands of lines for a big battle. Needs Detailed Auto Resolve and Detailed Auto Resolve Logging on. Default off.");
+        public BasicTooltipViewModel SimulationLogHitsHint { get; } = Hint("{=RBM_CFG_SIM_HIT_DETAIL_HINT}Adds every simulated blow to the auto-resolve log -- thousands of lines for a big battle. Needs Detailed Auto Resolve and Detailed Auto Resolve Logging on. Default off.");
 
         [DataSourceProperty]
         public string StrategicPowerLoggingt
         {
-            get { return new TextObject("Troop Power Logging").ToString(); }
+            get { return new TextObject("{=RBM_CFG_POWER_LOG}Troop Power Logging").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel StrategicPowerLoggingEnabledHint { get; } = Hint("Once a day, writes every party's troop power breakdown to logs/powerCalculation next to the config: its commander's perks and each troop stack's power per man. Needs Equipment Based Troop Power on. Default off.");
+        public BasicTooltipViewModel StrategicPowerLoggingEnabledHint { get; } = Hint("{=RBM_CFG_POWER_LOG_HINT}Once a day, writes every party's troop power breakdown to logs/powerCalculation next to the config: its commander's perks and each troop stack's power per man. Needs Equipment Based Troop Power on. Default off.");
 
         [DataSourceProperty]
         public string SpoilsLoggingt
@@ -154,10 +154,10 @@ namespace RBMConfig
         [DataSourceProperty]
         public string CaravanLoggingEnabledt
         {
-            get { return new TextObject("Caravan Logging").ToString(); }
+            get { return new TextObject("{=RBM_CFG_CARAVAN_LOG}Caravan Logging").ToString(); }
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel CaravanLoggingEnabledHint { get; } = Hint("Writes the supply-caravan system to logs/caravans next to the config: each caravan dispatched, its arrival and sale, capital injected and repaid, and any lost on the road. Needs Kingdom Supply Caravans on. Default off.");
+        public BasicTooltipViewModel CaravanLoggingEnabledHint { get; } = Hint("{=RBM_CFG_CARAVAN_LOG_HINT}Writes the supply-caravan system to logs/caravans next to the config: each caravan dispatched, its arrival and sale, capital injected and repaid, and any lost on the road. Needs Kingdom Supply Caravans on. Default off.");
     }
 }
