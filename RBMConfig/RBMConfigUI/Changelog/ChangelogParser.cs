@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using TaleWorlds.Localization;
 using TaleWorlds.ModuleManager;
 
 namespace RBMConfig
@@ -44,9 +45,42 @@ namespace RBMConfig
     {
         public const string FileName = "CHANGELOG.md";
 
+        // A translation can ship its own CHANGELOG.md in its language folder (ModuleData/Languages/<folder>/,
+        // next to the language_data.xml whose id is the active game language). The module-root file is the
+        // fallback, so nothing changes for languages without one.
         public static string GetFilePath()
         {
-            return Path.Combine(ModuleHelper.GetModuleFullPath("RBM"), FileName);
+            string moduleDir = ModuleHelper.GetModuleFullPath("RBM");
+            return FindTranslatedFile(moduleDir) ?? Path.Combine(moduleDir, FileName);
+        }
+
+        private static string FindTranslatedFile(string moduleDir)
+        {
+            try
+            {
+                string language = MBTextManager.ActiveTextLanguage;
+                string languagesDir = Path.Combine(moduleDir, "ModuleData", "Languages");
+                if (string.IsNullOrEmpty(language) || !Directory.Exists(languagesDir))
+                {
+                    return null;
+                }
+                string marker = "id=\"" + language + "\"";
+                foreach (string dir in Directory.GetDirectories(languagesDir))
+                {
+                    string candidate = Path.Combine(dir, FileName);
+                    string languageData = Path.Combine(dir, "language_data.xml");
+                    if (File.Exists(candidate) && File.Exists(languageData)
+                        && File.ReadAllText(languageData, Encoding.UTF8).Contains(marker))
+                    {
+                        return candidate;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TaleWorlds.Library.Debug.Print("[RBM] Could not look for a translated changelog: " + e.Message);
+            }
+            return null;
         }
 
         public static List<ChangelogEntry> Parse(string text)
