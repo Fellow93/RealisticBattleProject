@@ -160,8 +160,26 @@ spot fixed at deployment. RBM looks for a point on the map border behind the arm
 spot well away from enemy formations, and keeps the men out of water. When the base game's own spawn point is
 used, reinforcements appear 50 m in from the border instead of right on it.
 
+**Field share.** Your battle size setting is split between the sides by the square root of each side's men
+left, so the bigger army has more men on the field, but less than its full numbers advantage:
+
+| Army sizes | Men on the field |
+|---|---|
+| 1:1 | 50:50 |
+| 2:1 | 59:41 |
+| 3:1 | 63:37 |
+| 5:1 | 69:31 |
+| 9:1 or more | 75:25 (the limit) |
+
+A small army always gets at least as many places as the smaller of its own size and the battle size minus
+its size. So an army that fits in half the battle size brings everyone (at battle size 1000, 400 men against
+5000 start 400 vs 600), and the guarantee fades for slightly larger armies instead of cutting off.
+
+The share is recalculated from the men each side has left (on the field and in reserve) at every reinforcement
+wave, so it shifts as the armies take losses. A side that can't fill its share leaves the room to the other side.
+
 **Synced waves.** When one side's reinforcement wave arrives, the other side's wave is brought in too. Each
-wave brings its side back up to half of your battle size setting, as long as it has men left in reserve.
+wave brings its side back up to its field share, as long as it has men left in reserve.
 
 **Rallying.** AI infantry whose men are scattered far ahead of or behind the formation stops to regroup before
 pressing on, unless the enemy is close. After a reinforcement wave, the formation gathers at a point a little in

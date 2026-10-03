@@ -84,6 +84,73 @@ namespace RBMAI.AiModule
         }
 
         /// <summary>
+        /// How a field battle's battle size is split between the sides. A side's share follows its men left (on the
+        /// field plus still to spawn) through a square root, so the bigger army fields more men than the enemy but
+        /// less than its full numbers advantage: 2:1 gives 59:41, 3:1 gives 63:37, 5:1 gives 69:31. Clamped to
+        /// MinShare..MaxShare (75% is reached at 9:1). Used for the opening split and as every wave's refill target.
+        ///
+        /// Small-army exception: the smaller side always gets at least min(its men, battle size - its men), so an army
+        /// that fits in half the battle size fields everyone (the old RBM rule), and the guarantee fades smoothly to
+        /// zero as the army grows to the full battle size instead of dropping off a cliff. The larger side gets the rest.
+        /// </summary>
+        internal static class FieldShare
+        {
+            private const double Exponent = 0.5;
+            private const float MinShare = 0.25f;
+            private const float MaxShare = 0.75f;
+
+            internal static float Of(int mine, int theirs)
+            {
+                if (theirs <= 0)
+                {
+                    return 1f;
+                }
+                if (mine <= 0)
+                {
+                    return 0f;
+                }
+                double a = Math.Pow(mine, Exponent);
+                double b = Math.Pow(theirs, Exponent);
+                return Math.Max(MinShare, Math.Min(MaxShare, (float)(a / (a + b))));
+            }
+
+            /// <summary>
+            /// One side's field target. The smaller side's is computed (never more than its men); the larger side
+            /// gets the rest of the battle size, which also hands it any room the smaller side can't fill.
+            /// </summary>
+            internal static int Target(int battleSize, int mine, int theirs)
+            {
+                if (mine <= theirs)
+                {
+                    return Math.Min(battleSize, Math.Min(mine, SmallerSideTarget(battleSize, mine, theirs)));
+                }
+                return Math.Max(0, battleSize - Math.Min(theirs, SmallerSideTarget(battleSize, theirs, mine)));
+            }
+
+            private static int SmallerSideTarget(int battleSize, int smaller, int larger)
+            {
+                int target = (int)Math.Round(battleSize * Of(smaller, larger));
+                return Math.Max(target, Math.Min(smaller, battleSize - smaller));
+            }
+
+            /// <summary>
+            /// The DefenderAdvantageFactor that makes vanilla's BattleSizeAllocating split give the defender its
+            /// target: vanilla takes min(MaximumBattleSideRatio, D/T * factor) as the defender's share, so
+            /// factor = share * T / D. The smaller side gets ceil(share * B) capped at its army, the larger the rest
+            /// (also past MaximumBattleSideRatio when the smaller side can't fill its part).
+            /// </summary>
+            internal static float DefenderAdvantageFactor(int battleSize, int defenders, int attackers)
+            {
+                if (battleSize <= 0 || defenders <= 0 || attackers <= 0)
+                {
+                    return 1f;
+                }
+                float share = (float)Target(battleSize, defenders, attackers) / battleSize;
+                return share * (defenders + attackers) / defenders;
+            }
+        }
+
+        /// <summary>
         /// Field battles: when one side's reinforcement wave triggers, the other side's wave triggers too.
         ///
         /// Vanilla checks both sides on the same global timer tick, but the Wave method's per-side gate
@@ -215,12 +282,13 @@ namespace RBMAI.AiModule
             }
 
             /// <summary>
+            /// A side's field target is its FieldShare of the battle size, recomputed from both sides' men left.
             /// While a side still holds a reserve (the wave is stalled on the agent cap or still spawning in), every
-            /// global tick re-sizes it so on-field plus reserved equals half the battle size; men lost while waiting
-            /// are added to the wave. Otherwise two jobs at reservation time:
+            /// global tick re-sizes it so on-field plus reserved equals the target; men lost while waiting are added
+            /// to the wave. Otherwise two jobs at reservation time:
             ///  - with the force flag set and a zero result, return the side's wave size (casualty gate bypassed);
-            ///  - size every wave (triggered or forced) to refill the side to exactly half the battle size. Vanilla's
-            ///    fixed half-of-initial-spawn wave left a side that triggered late well under strength. Sizing here
+            ///  - size every wave (triggered or forced) to refill the side to its target. Vanilla's fixed
+            ///    half-of-initial-spawn wave left a side that triggered late well under strength. Sizing here
             ///    (rather than at spawn time) avoids a leftover reserve that trickles in one man at a time as losses
             ///    free room. The next wave then needs the side to lose half its initial spawn again.
             /// </summary>
@@ -231,6 +299,30 @@ namespace RBMAI.AiModule
                     AccessTools.FieldRefAccess<MissionBattleSideSpawnContext, int>("_reinforcementBatchSize");
                 private static readonly AccessTools.FieldRef<MissionBattleSideSpawnContext, IBattleMissionAgentSpawnLogic> SpawnLogic =
                     AccessTools.FieldRefAccess<MissionBattleSideSpawnContext, IBattleMissionAgentSpawnLogic>("_spawnLogic");
+                private static readonly AccessTools.FieldRef<MissionBattleSideSpawnContext, BattleSideEnum> Side =
+                    AccessTools.FieldRefAccess<MissionBattleSideSpawnContext, BattleSideEnum>("_side");
+
+                // The wave fills the field back up to the full battle size: this side gets the battle size minus what
+                // the other side will have after this wave -- its FieldShare target, or more if it is already above it
+                // (men on the field can't be sent back), or less if it has fewer men left. Men left = on the field plus
+                // still to spawn (RemainingSpawnNumber keeps counting reserved men until they spawn). BattleSize is the
+                // player's battle-size setting, mods included.
+                private static int SideTarget(DefaultBattleMissionAgentSpawnLogic logic, MissionBattleSideSpawnContext context)
+                {
+                    MissionBattleSideSpawnContext[] contexts = Contexts(logic);
+                    int me = (int)Side(context);
+                    if (contexts == null || contexts.Length < 2 || me < 0 || me > 1 || contexts[1 - me] == null)
+                    {
+                        return logic.BattleSize / 2;
+                    }
+                    MissionSpawnPhase myPhase = me == 0 ? logic.DefenderActivePhase : logic.AttackerActivePhase;
+                    MissionSpawnPhase theirPhase = me == 0 ? logic.AttackerActivePhase : logic.DefenderActivePhase;
+                    int theirActive = contexts[1 - me].NumberOfActiveTroops;
+                    int mine = context.NumberOfActiveTroops + (myPhase?.RemainingSpawnNumber ?? 0);
+                    int theirs = theirActive + (theirPhase?.RemainingSpawnNumber ?? 0);
+                    int theirTarget = Math.Min(theirs, FieldShare.Target(logic.BattleSize, theirs, mine));
+                    return Math.Max(0, logic.BattleSize - Math.Max(theirActive, theirTarget));
+                }
 
                 private static void Postfix(MissionBattleSideSpawnContext __instance, MissionSpawnPhase activePhase, ref int __result)
                 {
@@ -244,13 +336,13 @@ namespace RBMAI.AiModule
                         {
                             // A wave is still waiting for agent room or spawning in: re-size it to the side's current
                             // strength. CheckReinforcementBatch subtracts the reserve already held, so only the shortfall
-                            // is added and a stalled wave still brings the side back to half the battle size.
+                            // is added and a stalled wave still brings the side back to its target.
                             if (IsFieldBattle() && SpawnLogic(__instance) is DefaultBattleMissionAgentSpawnLogic pending)
                             {
-                                int pendingCap = pending.BattleSize / 2;
-                                if (pendingCap > 0)
+                                int pendingTarget = SideTarget(pending, __instance);
+                                if (pendingTarget > 0)
                                 {
-                                    __result = Math.Max(0, pendingCap - __instance.NumberOfActiveTroops);
+                                    __result = Math.Max(0, pendingTarget - __instance.NumberOfActiveTroops);
                                 }
                             }
                             return;
@@ -267,11 +359,10 @@ namespace RBMAI.AiModule
                         }
                         if (__result > 0 && IsFieldBattle() && SpawnLogic(__instance) is DefaultBattleMissionAgentSpawnLogic logic)
                         {
-                            // BattleSize is the player's battle-size setting (mods included), so the cap follows it.
-                            int sideCap = logic.BattleSize / 2;
-                            if (sideCap > 0)
+                            int target = SideTarget(logic, __instance);
+                            if (target > 0)
                             {
-                                __result = Math.Max(0, sideCap - __instance.NumberOfActiveTroops);
+                                __result = Math.Max(0, target - __instance.NumberOfActiveTroops);
                             }
                         }
                     }
@@ -403,11 +494,8 @@ namespace RBMAI.AiModule
 
                 if (totalBattleSize > battleSize)
                 {
-                    float defenderAdvantage = (float)battleSize / ((float)defenderInitialSpawn * ((battleSize * 2f) / (totalBattleSize)));
-                    if (defenderInitialSpawn < (battleSize / 2f))
-                    {
-                        defenderAdvantage = (float)totalBattleSize / (float)battleSize;
-                    }
+                    // Square-root share of the field by army size (FieldShare), not a flat 50/50.
+                    float defenderAdvantage = FieldShare.DefenderAdvantageFactor(battleSize, defenderInitialSpawn, attackerInitialSpawn);
                     ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Defender, !Mission.Current.IsSiegeBattle);
                     ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Attacker, !Mission.Current.IsSiegeBattle);
 
@@ -445,11 +533,8 @@ namespace RBMAI.AiModule
 
                     if (totalBattleSize > battleSize)
                     {
-                        float defenderAdvantage = (float)battleSize / ((float)defenderInitialSpawn * ((battleSize * 2f) / (totalBattleSize)));
-                        if (defenderInitialSpawn < (battleSize / 2f))
-                        {
-                            defenderAdvantage = (float)totalBattleSize / (float)battleSize;
-                        }
+                        // Square-root share of the field by army size (FieldShare), not a flat 50/50.
+                        float defenderAdvantage = FieldShare.DefenderAdvantageFactor(battleSize, defenderInitialSpawn, attackerInitialSpawn);
                         ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Defender, !Mission.Current.IsSiegeBattle);
                         ____missionAgentSpawnLogic.SetSpawnHorses(BattleSideEnum.Attacker, !Mission.Current.IsSiegeBattle);
 
