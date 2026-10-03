@@ -32,6 +32,15 @@ namespace RBMCampaign
             "olives", "cotton", "silver", "fur", "horse", "walrus_tusk", "whale_oil",
         };
 
+        // Village type -> icon style, pinned regardless of which good wins the rate*Value pick. Livestock
+        // farms out-earn their animals on dairy and wool, so without this a cattle farm shows butter and a
+        // sheep farm wool. Icon-only: PrimaryProduction (tooltip, trade issues) still reports the real good.
+        private static readonly Dictionary<string, string> StyleByVillageType = new Dictionary<string, string>
+        {
+            { "cattle_farm", "cow" },
+            { "sheep_farm", "sheep" },
+        };
+
         // RBM processed good -> raw-material icon style. Single source of the remap.
         public static string RemapProcessed(string productionStringId)
         {
@@ -73,6 +82,12 @@ namespace RBMCampaign
             if (village == null || village.VillageType == null)
             {
                 return string.Empty;
+            }
+
+            string pinned;
+            if (StyleByVillageType.TryGetValue(village.VillageType.StringId, out pinned))
+            {
+                return pinned;
             }
 
             ItemObject primary = village.VillageType.PrimaryProduction;
