@@ -7,6 +7,10 @@
 - AI soldiers now see an enemy whose posture is broken or nearly broken (25% or less) as an opening for a kick or bash. A kick or bash that just landed no longer counts as one.
 - **Flank cavalry stays organized before the lines meet:** cavalry guarding a flank only charges enemy cavalry within about 70 m of its post, or any enemy within about 35 m. Horse archers and arrow fire no longer draw it out. A charge is called off once the enemy pulls away, the riders get about 60 m from their post or start to scatter, or after 25 seconds. The riders then regroup at the post and wait 5 seconds before charging again.
 - **Horse archers keep formation:** AI horse archers ride and shoot in formation as it circles the enemy, instead of every rider breaking off to circle his own target. A rider only leaves his place to get away from an enemy within about 15 m, and draws his sword within about 5 m. The formation also no longer switches between enemy formations unless another one is clearly closer.
+- **Attackers keep advancing:** in field battles the attacking side could stop and stand in place after a reinforcement wave or a change of tactic. Its formations now regroup for at most 10 seconds at a time while advancing. While its archers shoot, its infantry keeps walking forward (6 m every 4 seconds) instead of holding, and without usable archers it simply advances. Enemy cavalry more than 150 m away no longer makes it stop and brace.
+- The rally after reinforcements now lasts at most 45 seconds and can't start again for 30 seconds. Men still spawning or stuck on terrain no longer keep a formation standing where the wave entered.
+- Soldiers who swam into deep water no longer stand frozen there after a charge order.
+- In first person, posture tiredness now staggers the player backward, so the camera no longer looks through your own body. AI soldiers and third-person players keep the forward stagger.
 
 ### Campaign
 - Clothing, armor and horse armor workshops make twice as many items from the same materials.
