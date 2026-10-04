@@ -311,6 +311,8 @@ namespace RBM
                 // so toggling posture on mid-mission would otherwise drain posture with no StanceLogic
                 // to regenerate it. StanceLogic's own tick and handlers check postureEnabled.
                 mission.AddMissionBehavior((MissionBehavior)(object)new StanceLogic());
+                // Inert until a first-person posture tiredness; needs no posture check of its own.
+                mission.AddMissionBehavior((MissionBehavior)(object)new PlayerExhaustionLogic());
             }
             else
             {
@@ -329,6 +331,10 @@ namespace RBM
                 if (mission.GetMissionBehavior<StanceLogic>() != null)
                 {
                     mission.RemoveMissionBehavior(mission.GetMissionBehavior<StanceLogic>());
+                }
+                if (mission.GetMissionBehavior<PlayerExhaustionLogic>() != null)
+                {
+                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<PlayerExhaustionLogic>());
                 }
             }
             base.OnMissionBehaviorInitialize(mission);

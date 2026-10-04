@@ -204,6 +204,7 @@
     <Compile Include="AiModule\Stance\AgentStances.cs" />
     <Compile Include="AiModule\Stance\StanceLogic.Core.cs" />
     <Compile Include="AiModule\Stance\StanceLogic.Visuals.cs" />
+    <Compile Include="AiModule\Stance\PlayerExhaustion.cs" />
     <Compile Include="AiModule\Stance\StanceLifecyclePatches.cs" />
     <Compile Include="AiModule\Stance\StanceMiscPatches.cs" />
     <Compile Include="AiModule\Stance\MeleeBlowPatch.cs" />
