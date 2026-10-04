@@ -243,6 +243,16 @@ namespace RBMAI
 
             private static void Postfix(HumanAIComponent __instance, ref SpawnedItemEntity ____itemToPickUp, ref Agent ___Agent, bool ____forceDisableItemPickup)
             {
+                // A Frontline pin is released only inside Formation.GetOrderPositionOfUnit, which native never calls for
+                // a man in the water (no formation slot off land). One pinned on the bank who then slips or is knocked
+                // into deep water would stay locked there, so the pin is dropped as soon as he is in the water.
+                if (___Agent.IsActive() && !___Agent.IsOnLand()
+                    && Frontline.aiDecisionCooldownDict.TryGetValue(___Agent, out Frontline.AIDecisionState frontlinePin)
+                    && frontlinePin != null && frontlinePin.AIMindset.shouldClearTargetFrame)
+                {
+                    ___Agent.ClearTargetFrame();
+                    frontlinePin.AIMindset.shouldClearTargetFrame = false;
+                }
                 // Banner bearers (Raise Your Banner) lock onto a distant enemy as their melee target and the native
                 // combat AI swings at it regardless of range - "attacking air". It is not gated by AIAttackOnDecideChance
                 // nor by the wielded weapon (an empty-handed bearer just punches). InvalidateTargetAgent alone does not

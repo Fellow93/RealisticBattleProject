@@ -271,7 +271,11 @@ namespace RBMAI
                 // Never pin a man who is getting away. A charge rout retreats him but keeps him in his formation (so
                 // the rally can bring him back), so he still reaches the mindset block below, which would lock him
                 // in place mid-flight: the "router stands still" bug again.
-                if (unit.IsRunningAway || (unit.CommonAIComponent != null && unit.CommonAIComponent.IsRetreating))
+                // Nor a man in the water: native asks for a swimmer's slot only on land (Agent.GetBaseFormationFrame),
+                // so only side paths (the AI log's slot sampling) reach here for him, and the pin they set is released
+                // only by the clear above on the NEXT call -- which for a swimmer may never come. Seen 2026-10-04: a
+                // group that swam into a river stood frozen there after a charge order.
+                if (unit.IsRunningAway || (unit.CommonAIComponent != null && unit.CommonAIComponent.IsRetreating) || !unit.IsOnLand())
                 {
                     return true;
                 }
