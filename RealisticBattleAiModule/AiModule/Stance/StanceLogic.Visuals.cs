@@ -198,13 +198,23 @@ namespace RBMAI
             // guards its own channel and attacks/blocks run on the upper-body channel 1, so a man on foot plays the clip
             // on both channels, rooted in place. A rider only plays it on the upper body, so his horse keeps moving.
             AnimFlags flags = AnimFlags.amf_priority_striked;
+            // The clip pitches the body forward and the first-person camera rides the head bone, so a first-person
+            // player would see the inside of his own model for the whole reaction. He gets a native backward stagger
+            // instead, made for the player camera, with the same priority and rooting so it is just as uncancellable.
+            ActionIndexCache action = TiredAnimation;
+            float startProgress = TiredAnimationStartProgress;
+            if (agent.IsMainAgent && agent.Mission != null && agent.Mission.CameraIsFirstPerson)
+            {
+                action = ActionIndexCache.act_stagger_backward;
+                startProgress = 0f;
+            }
             if (!agent.HasMount)
             {
-                agent.SetActionChannel(0, TiredAnimation, additionalFlags: flags | AnimFlags.anf_lock_movement,
-                    actionSpeed: actionSpeed, startProgress: TiredAnimationStartProgress);
+                agent.SetActionChannel(0, action, additionalFlags: flags | AnimFlags.anf_lock_movement,
+                    actionSpeed: actionSpeed, startProgress: startProgress);
             }
-            agent.SetActionChannel(1, TiredAnimation, additionalFlags: flags,
-                actionSpeed: actionSpeed, startProgress: TiredAnimationStartProgress);
+            agent.SetActionChannel(1, action, additionalFlags: flags,
+                actionSpeed: actionSpeed, startProgress: startProgress);
         }
     }
 }
