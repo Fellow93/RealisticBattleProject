@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.5.4 (changes since v4.5.3)
+
+### AI
+- **Flank cavalry stays organized before the lines meet:** cavalry guarding a flank only charges enemy cavalry within about 70 m of its post, or any enemy within about 35 m. Horse archers and arrow fire no longer draw it out. A charge is called off once the enemy pulls away, the riders get about 60 m from their post or start to scatter, or after 25 seconds. The riders then regroup at the post and wait 5 seconds before charging again.
+- **Horse archers keep formation:** AI horse archers ride and shoot in formation as it circles the enemy, instead of every rider breaking off to circle his own target. A rider only leaves his place to get away from an enemy within about 15 m, and draws his sword within about 5 m. The formation also no longer switches between enemy formations unless another one is clearly closer.
+
 ## v4.5.3 (changes since v4.5.2)
 
 ### Combat
