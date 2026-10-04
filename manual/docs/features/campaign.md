@@ -303,8 +303,9 @@ and luxury goods.
   Your caravan pays you a tenth of its purse above its seed capital each day.
 - **Kingdom supply caravans** (setting: *Kingdom Supply Caravans*) carry goods from towns with a surplus to
   towns running short, inside a kingdom and to kingdoms with a trade agreement. Besides the goods townsfolk
-  buy, they carry the workshop materials leather, linen, wool, flax and iron ingots. They can be raided. They
-  cost their owner nothing and pay nothing.
+  buy, they carry the workshop materials leather, linen, wool, flax and iron ingots. A caravan carries up to 10
+  goods, and part of it is kept for workshop materials so food and staples cannot crowd them out. They can be
+  raided. They cost their owner nothing and pay nothing.
 - **Caravan investment** (setting: *Caravan Investment*) lets rich towns lend to struggling ones along these
   routes.
 

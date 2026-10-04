@@ -40,7 +40,9 @@ archers if they fall too far behind.
 Most tactics have two phases.
 
 **Advance.** The main infantry moves forward in good order. Archers stand just behind it and shoot over it,
-cavalry guard the flanks, and javelin troops skirmish ahead.
+cavalry guard the flanks, and javelin troops skirmish ahead. The attacker never stands still in this phase: its
+formations stop to regroup for at most 10 seconds at a time, and in Ranged Harassment its infantry keeps walking
+forward (6 m every 4 seconds) while its archers shoot, or simply advances if it has no usable archers.
 
 **Battle joined.** The tactic switches to attack once the infantry lines are close (around 70 to 95 m depending
 on the tactic), once a good part of the main infantry is already fighting in melee, or once the enemy has only
@@ -57,8 +59,8 @@ These pacing rules also apply to your own formations when you give them a Move o
 enemy, an AI infantry formation of 30 or more men picks its own arrangement: a **shield wall** if most men carry
 a large shield, **loose** order if most carry two-handed weapons, otherwise a **line**.
 
-**Bracing against cavalry.** When enemy cavalry charges an AI infantry formation that is not yet fighting, the
-infantry stops, forms a shield wall and turns to face the horsemen.
+**Bracing against cavalry.** When enemy cavalry within 150 m charges an AI infantry formation that is not yet
+fighting, the infantry stops, forms a shield wall and turns to face the horsemen.
 
 **Javelin volleys.** When an AI infantry formation is busy throwing javelins at a nearby enemy, it holds its
 ground (or steps back a little) to finish its volley before closing in.
@@ -127,13 +129,19 @@ out. They reform quickly, and cut the reform short if they come under fire or an
 eager to charge downhill, and less eager to charge other cavalry.
 
 **Flank guards.** Before contact, cavalry guards the flanks of the main infantry, out to the side and somewhat
-forward. It charges any enemy that comes close, and returns to its post when it strays too far.
+forward. It only charges enemy cavalry within about 70 m of its post, or any enemy within about 35 m; horse
+archers and arrow fire do not draw it out. The charge is called off when the enemy pulls away, when the riders
+get about 60 m from their post or start to scatter, or after 25 seconds. The riders then regroup at the post and
+wait 5 seconds before they can charge again.
 
 **Embolon** (Empire). Heavy cavalry forms a wedge in front of the advancing infantry before the battle is
 joined.
 
-**Horse archers** ride an oval loop around their target formation, shooting as they go. If they get close to
-the map edge, they break off and reposition. Horse archers are much less likely to charge into melee.
+**Horse archers** ride an oval loop around their target formation, shooting as they go. The riders keep their
+places in the formation as it circles; a rider only breaks off on his own to get away from an enemy within about
+15 m, and draws his sword within about 5 m. The formation keeps its target unless another enemy formation is
+clearly closer. If they get close to the map edge, they break off and reposition. Horse archers are much less
+likely to charge into melee.
 
 **Mounted javelin troops** skirmish: they ride in, throw, ride back and repeat. In some tactics they are shared
 evenly between the two flank formations.
@@ -183,7 +191,8 @@ wave brings its side back up to its field share, as long as it has men left in r
 
 **Rallying.** AI infantry whose men are scattered far ahead of or behind the formation stops to regroup before
 pressing on, unless the enemy is close. After a reinforcement wave, the formation gathers at a point a little in
-front of where the wave arrived, so the newcomers join up before advancing.
+front of where the wave arrived, so the newcomers join up before advancing. A rally lasts at most 45 seconds,
+and the formation can't rally again for 30 seconds after that.
 
 **Ending the battle.** When you win a field battle in the campaign, the defeated side's remaining troops are
 counted as wounded, so the battle does not continue into a second round.
@@ -227,9 +236,10 @@ With **AI Kick and Bash** on (the default), AI soldiers kick, shield bash and we
 kicks.
 
 **When the AI tries.** Both fighters must be on foot, and the enemy close (about 1.4 m) and in front. The AI
-looks for an opening: an enemy who is blocking, holding his weapon ready, turning his back, or staggered.
-Without an opening, only a more skilled fighter will try. Attempts are more likely from behind and against a
-staggered enemy, and there is a pause of several seconds between attempts. Against an enemy holding a shield
+looks for an opening: an enemy who is blocking, holding his weapon ready, turning his back, or whose posture is
+broken or nearly broken (25% or less). Without an opening, only a more skilled fighter will try. Attempts are
+more likely from behind and against an enemy whose posture is broken or nearly broken, and there is a pause of
+several seconds between attempts. A man who is already down is left alone. Against an enemy holding a shield
 toward him, the AI kicks rather than bashes. Any AI soldier can kick or bash, whatever weapon he holds, but
 never while bracing a polearm.
 
@@ -244,10 +254,11 @@ weapon, and heavier boots kick harder. A bash blocked by a shield, or a kick int
 damage. Kicks and bashes do not wear down armor. Because the victim also loses posture and stamina in
 proportion to the damage, a kick or bash can break his posture.
 
-**Knockdown.** A kick or bash that lands knocks the victim down for certain if he is already staggered, or if it
-breaks his posture. Otherwise there is a chance to knock him down that is higher for a kick, from behind, and
-against a tired man, and lower against a man in heavy armor. These rules also apply to your own kicks and
-bashes.
+**Knockdown.** A kick or bash that lands knocks the victim down for certain if he is still reeling from a
+posture break or posture tiredness, or if it breaks his posture. Otherwise there is a chance to knock him down
+that is higher for a kick, from behind, against a man kicked or bashed within the last second or so, and
+against a tired man, and lower against a man in heavy armor. A man already down is not knocked down again. These
+rules only cover an enemy's kick or bash, and they also apply to your own kicks and bashes.
 
 ## Sieges
 

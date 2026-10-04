@@ -114,7 +114,7 @@ With **AI Kick and Bash** on, AI soldiers kick, shield bash and weapon bash, and
 - Each kick or bash costs posture and stamina as it starts, hit or miss. Higher skill makes it cheaper. Kicks and bashes use mostly Athletics with a smaller share of your weapon skill.
 - A raised shield stops a bash but not a kick.
 - One that lands deals damage and drains the victim's posture and stamina like any blow (see [Combat & Armor](combat.md)).
-- It **knocks a man on foot down** for certain if he is already staggered, was kicked moments before, or has his posture emptied by it. Otherwise it's a roll against relative skill. The chance is higher from behind, against a tired man, and for a kick rather than a bash, and lower the heavier his armor.
+- It **knocks an enemy on foot down** for certain if he is still reeling from a posture break or posture tiredness, or has his posture emptied by it. Otherwise it's a roll against relative skill. The chance is higher from behind, against a man kicked or bashed moments before, against a tired man, and for a kick rather than a bash, and lower the heavier his armor. A man already down is not knocked down again.
 
 ## What you see
 
