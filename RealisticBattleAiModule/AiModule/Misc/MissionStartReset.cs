@@ -46,7 +46,9 @@ namespace RBMAI
             OverrideBehaviorCautiousAdvance.waitCountShootingStorage.Clear();
             OverrideBehaviorCautiousAdvance.waitCountApproachingStorage.Clear();
             OverrideBehaviorMountedSkirmish.rotationDirectionDictionary.Clear();
+            OverrideBehaviorMountedSkirmish.orbitTargetStorage.Clear();
             OverrideBehaviorDefend.positionsStorage.Clear();
+            OverrideBehaviorProtectFlank.sortieStates.Clear();
             OverrideBehaviorHoldHighGround.positionsStorage.Clear();
             OverrideMovementOrder.positionsStorage.Clear();
             AiModule.RbmBehaviors.OverrideBehaviorCharge.cavHoldPositions.Clear();

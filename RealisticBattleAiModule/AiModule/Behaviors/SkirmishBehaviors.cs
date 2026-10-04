@@ -245,6 +245,30 @@ namespace RBMAI
 
         public static Dictionary<Formation, RotationChangeClass> rotationDirectionDictionary = new Dictionary<Formation, RotationChangeClass> { };
 
+        // The orbit's target formation, kept until it is gone or another candidate is clearly closer. Re-picked fresh
+        // every tick, the orbit re-centred on whichever enemy infantry/archer formation was nearest at that moment,
+        // and the circling itself kept changing which one that was, so the order point jumped tens of metres and back.
+        public static Dictionary<Formation, Formation> orbitTargetStorage = new Dictionary<Formation, Formation> { };
+
+        private const float OrbitTargetSwitchRatio = 0.7f;
+
+        private static Formation KeepOrbitTarget(Formation formation, Formation candidate)
+        {
+            if (orbitTargetStorage.TryGetValue(formation, out Formation previous)
+                && previous != null && previous.CountOfUnits > 0 && candidate != null && previous != candidate)
+            {
+                Vec2 center = RBMAI.Utilities.GetFormationCenter(formation);
+                float previousDistance = center.Distance(RBMAI.Utilities.GetFormationCenter(previous));
+                float candidateDistance = center.Distance(RBMAI.Utilities.GetFormationCenter(candidate));
+                if (candidateDistance > previousDistance * OrbitTargetSwitchRatio)
+                {
+                    candidate = previous;
+                }
+            }
+            orbitTargetStorage[formation] = candidate;
+            return candidate;
+        }
+
         private struct Ellipse
         {
             private readonly Vec2 _center;
@@ -353,7 +377,7 @@ namespace RBMAI
         {
             WorldPosition position = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
             WorldPosition position2 = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
-            Formation targetFormation = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
+            Formation targetFormation = KeepOrbitTarget(__instance.Formation, RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true));
             FormationQuerySystem targetFormationQS = null;
             if (targetFormation != null)
             {

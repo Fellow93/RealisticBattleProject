@@ -260,10 +260,15 @@ namespace RBMAI
                     {
                         if (___Agent.Formation.IsAIControlled)
                         {
+                            // AI horse archers ride the formation's orbit (BehaviorMountedSkirmish) in their slots and
+                            // shoot from it. RangedHorseback used to peak at 30 and only fall under GoToPos (3-5) about
+                            // 100 m out, and ChargeHorseback about 23 m out, so within bow range of anything every rider
+                            // left his slot to circle or ride down his own target and the formation dissolved. Now solo
+                            // horse archery only takes over to evade an enemy within ~15 m, and the sword within ~5 m.
                             __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
                             __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 50f, 4f, 20f, 6f, 0.55f);
-                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 40f, 5f, 20f, 30f, 0.55f);
-                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 10f, 30f, 120f, 0.5f);
+                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 6f, 4f, 3f, 10f, 0.01f);
+                            __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 8f, 10f, 6f, 25f, 0.05f);
                             __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0.5f, 10f, 1f, 30f, 30f);
 
                             if (___Agent.HasMount)
