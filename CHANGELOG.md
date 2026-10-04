@@ -3,8 +3,17 @@
 ## v4.5.4 (changes since v4.5.3)
 
 ### AI
+- **Kick and bash knockdowns are no longer certain on a second kick:** a kick or bash now always knocks a man down only when it empties his posture, or while he is still reeling from a posture break or posture tiredness. A second kick or bash within about a second only makes a knockdown more likely (×1.5). A man who is already down is not kicked at and not knocked down again, and a kick or bash from a friend gets no RBM knockdown.
+- AI soldiers now see an enemy whose posture is broken or nearly broken (25% or less) as an opening for a kick or bash. A kick or bash that just landed no longer counts as one.
 - **Flank cavalry stays organized before the lines meet:** cavalry guarding a flank only charges enemy cavalry within about 70 m of its post, or any enemy within about 35 m. Horse archers and arrow fire no longer draw it out. A charge is called off once the enemy pulls away, the riders get about 60 m from their post or start to scatter, or after 25 seconds. The riders then regroup at the post and wait 5 seconds before charging again.
 - **Horse archers keep formation:** AI horse archers ride and shoot in formation as it circles the enemy, instead of every rider breaking off to circle his own target. A rider only leaves his place to get away from an enemy within about 15 m, and draws his sword within about 5 m. The formation also no longer switches between enemy formations unless another one is clearly closer.
+
+### Campaign
+- Clothing, armor and horse armor workshops make twice as many items from the same materials.
+- The nine gambeson horse armor recipes (artisans, linen, wool and tannery) produced nothing while still using up labor and leather, linen or felt. They now make horse armor.
+- Wool, hides and cattle are cheaper (wool 100 → 80, hides 70 → 60, cows 480 → 380). Tanning now pays in towns where hides cost up to about 1.6 times their value (was about 1.4).
+- Supply caravans carry up to 10 goods (was 6), and part of each caravan is kept for workshop materials, so food and staples can no longer crowd them out. Food is still sold first on arrival.
+- Cattle and sheep farms show the cow or sheep icon on the map and in the ledger instead of butter or wool.
 
 ## v4.5.3 (changes since v4.5.2)
 
