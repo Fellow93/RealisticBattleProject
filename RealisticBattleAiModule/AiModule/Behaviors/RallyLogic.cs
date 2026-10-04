@@ -30,6 +30,7 @@ namespace RBMAI
 
         /// <summary>Start a rally when at least this fraction AND this many men are far.</summary>
         private const float StartFraction = 0.06f;
+
         private const int StartCount = 8;
 
         /// <summary>Keep rallying until the far fraction drops under this (hysteresis).</summary>
@@ -47,6 +48,7 @@ namespace RBMAI
 
         /// <summary>A unit-count jump of at least this many men AND this fraction counts as a reinforcement wave.</summary>
         private const int ReinforcementMinCount = 5;
+
         private const float ReinforcementMinFraction = 0.04f;
 
         /// <summary>How long after a wave lands the formation is biased toward regrouping.</summary>
@@ -58,6 +60,14 @@ namespace RBMAI
         /// <summary>Inside the window the ordinary (non-rally) Regroup weight is multiplied by this.</summary>
         internal const float ReinforcedWeightScale = 1.5f;
 
+        /// <summary>USER RULE (2026-10-03): a rally lasts at most this long (both sides). Without a cap, fresh men
+        /// still spawning behind the hold point, men stuck on terrain or a few veterans tied up in melee kept the
+        /// far count over the end threshold and the formation stood at its spawn anchor indefinitely.</summary>
+        private const float MaxRallyDuration = 45f;
+
+        /// <summary>After a capped rally, no new rally starts for this long, so the formation actually moves off.</summary>
+        private const float RallyCooldown = 30f;
+
         internal sealed class State
         {
             public float NextEval;
@@ -67,11 +77,15 @@ namespace RBMAI
             public int TotalCount;
             public int LastTotalCount;
             public float ReinforcedUntil;
+            public float RallyStartedAt;
+            public float NoRallyUntil;
             public Vec2 MainBodyCenter = Vec2.Invalid;
+
             /// <summary>Fixed hold point for the current rally. A formation ordered onto its own live centroid
             /// pushes that centroid around (front ranks step back, the average creeps), so the point is
             /// frozen at rally start and only re-anchored if the body ends up far from it.</summary>
             public Vec2 Anchor = Vec2.Invalid;
+
             /// <summary>The anchor is the latest wave's spawn point: fixed for the whole rally, never drift-re-anchored.</summary>
             public bool AnchorAtSpawn;
         }
@@ -246,8 +260,18 @@ namespace RBMAI
             }
             else
             {
-                state.Rallying = fraction >= StartFraction * thresholdScale
+                state.Rallying = now >= state.NoRallyUntil
+                    && fraction >= StartFraction * thresholdScale
                     && far >= MathF.Max(2, (int)(StartCount * thresholdScale));
+                if (state.Rallying)
+                {
+                    state.RallyStartedAt = now;
+                }
+            }
+            if (state.Rallying && wasRallying && now - state.RallyStartedAt >= MaxRallyDuration)
+            {
+                state.Rallying = false;
+                state.NoRallyUntil = now + RallyCooldown;
             }
 
             if (!state.Rallying)

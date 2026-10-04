@@ -23,6 +23,8 @@ namespace RBMAI
         // Mission time of each formation's last re-shape dispersal (see ReshapeDispersalCooldown).
         public static Dictionary<Formation, float> lastDispersalStorage = new Dictionary<Formation, float> { };
         private const float MaxArcherWaitSeconds = 30f;
+        // Brace against charging cavalry only when it is this close (same as BehaviorChargePatch).
+        private const float BraceDistance = 150f;
         // A width change bigger than this fraction is a re-shape (first advance tick: +78%); casualty drift is ~1-2%.
         private const float ReshapeWidthFraction = 0.15f;
         // At most one dispersal per formation in this many seconds. Re-shapes recur: every return from a Regroup
@@ -106,7 +108,9 @@ namespace RBMAI
 
                     if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && (signDist > 35f))
                     {
-                        if (enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
+                        // Within BraceDistance only, as in BehaviorChargePatch: TargetFormation stays set after a plain
+                        // Charge order, so without a distance cap a far-off cavalry formation froze the advance indefinitely.
+                        if (cavDist < BraceDistance && enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
                         {
                             Vec2 vec = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                             WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);

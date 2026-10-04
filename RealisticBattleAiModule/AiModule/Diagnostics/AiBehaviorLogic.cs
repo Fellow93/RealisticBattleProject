@@ -71,6 +71,13 @@ namespace RBMAI
         private static readonly FieldInfo _fReapplyNeeded =
             AccessTools.Field(typeof(TacticComponent), "IsTacticReapplyNeeded");
 
+        private static readonly FieldInfo _fAvailableTactics =
+            AccessTools.Field(typeof(TeamAIComponent), "_availableTactics");
+
+        /// <summary>protected internal virtual; Invoke dispatches to the override and through RBM's Harmony patches.</summary>
+        private static readonly MethodInfo _mGetTacticWeight =
+            AccessTools.Method(typeof(TacticComponent), "GetTacticWeight");
+
         /// <summary>_hasBattleBeenJoined is declared per concrete tactic, so it is looked up per type and cached.</summary>
         private static readonly Dictionary<Type, FieldInfo> _fBattleJoined = new Dictionary<Type, FieldInfo>();
 
@@ -159,7 +166,8 @@ namespace RBMAI
                 if (previous != null)
                 {
                     AiBehaviorLog.Write("t=" + AiBehaviorLog.Fmt(now) + "\tCHANGE\tTACTIC\t" + TeamName(team)
-                        + "\t" + previous + " -> " + tacticName);
+                        + "\t" + previous + " -> " + tacticName + "\tjoined=" + BattleJoined(tactic)
+                        + "\toptions=" + TacticOptions(team, tactic));
                 }
             }
 
@@ -682,7 +690,68 @@ namespace RBMAI
             sb.Append('\t').Append("reapply=").Append(ReapplyNeeded(tactic));
             sb.Append('\t').Append("aiForms=").Append(SafeInt(team.GetAIControlledFormationCount));
             sb.Append('\t').Append(Flag("allowAiTicking", Mission.Current.AllowAiTicking));
+            sb.Append('\t').Append("options=").Append(TacticOptions(team, tactic));
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Every tactic the team may pick, with its current weight, the active one starred. TeamAIComponent switches
+        /// when another option outweighs the active one x1.5, so this column shows why a switch happened.
+        /// TacticCoordinatedRetreat is not asked: RBM's prefix always returns 0, but it also zeroes the team's morale
+        /// as a side effect, which a logger must not do.
+        /// </summary>
+        private string TacticOptions(Team team, TacticComponent active)
+        {
+            if (team.TeamAI == null || _fAvailableTactics == null || _mGetTacticWeight == null)
+            {
+                return "-";
+            }
+            try
+            {
+                List<TacticComponent> options = _fAvailableTactics.GetValue(team.TeamAI) as List<TacticComponent>;
+                if (options == null || options.Count == 0)
+                {
+                    return "-";
+                }
+                StringBuilder sb = new StringBuilder();
+                foreach (TacticComponent option in options)
+                {
+                    if (option == null)
+                    {
+                        continue;
+                    }
+                    if (sb.Length > 0)
+                    {
+                        sb.Append(' ');
+                    }
+                    if (option == active)
+                    {
+                        sb.Append('*');
+                    }
+                    sb.Append(option.GetType().Name).Append(':');
+                    if (option is TacticCoordinatedRetreat)
+                    {
+                        sb.Append("0");
+                        continue;
+                    }
+                    float weight;
+                    try
+                    {
+                        weight = (float)_mGetTacticWeight.Invoke(option, null);
+                    }
+                    catch
+                    {
+                        weight = float.NaN;
+                    }
+                    sb.Append(AiBehaviorLog.Fmt(weight));
+                }
+                return (sb.Length > 0) ? sb.ToString() : "-";
+            }
+            catch (Exception e)
+            {
+                ReportOnce("tacticOptions", e);
+                return "?";
+            }
         }
 
         private string FormationLine(Team team, Formation formation, string behaviorName, string orderName, float now)
@@ -972,8 +1041,11 @@ namespace RBMAI
             sb.Append("# Tab separated. Three line kinds:").Append("\n");
             sb.Append("#").Append("\n");
             sb.Append("#   TEAM   t  TEAM  team  side  playerTeam  playerGeneral  playerSergeant  playerAlly").Append("\n");
-            sb.Append("#          teamAIType  tacticType  joined  reapply  aiForms  allowAiTicking").Append("\n");
-            sb.Append("#             joined  = the tactic's own _hasBattleBeenJoined (n/a if that tactic has none)").Append("\n");
+            sb.Append("#          teamAIType  tacticType  joined  reapply  aiForms  allowAiTicking  options").Append("\n");
+            sb.Append("#             joined  = the tactic's own _hasBattleBeenJoined (n/a if that tactic has none);").Append("\n");
+            sb.Append("#                       0 = advance phase, 1 = attack phase").Append("\n");
+            sb.Append("#             options = every tactic the team may pick as Name:GetTacticWeight, active one starred").Append("\n");
+            sb.Append("#                       (a switch needs another option to beat the active one x1.5)").Append("\n");
             sb.Append("#             reapply = TacticComponent.IsTacticReapplyNeeded").Append("\n");
             sb.Append("#             aiForms = Team.GetAIControlledFormationCount()").Append("\n");
             sb.Append("#").Append("\n");
@@ -992,6 +1064,7 @@ namespace RBMAI
             sb.Append("#             weights     = top 3 behaviors as Name:aiWeight*weightFactor/cCoherence").Append("\n");
             sb.Append("#").Append("\n");
             sb.Append("#   CHANGE t  CHANGE  TACTIC|BEHAVIOR|ORDER  team  [formation]  old -> new").Append("\n");
+            sb.Append("#          TACTIC also carries the new tactic's joined flag and the options column.").Append("\n");
             sb.Append("#          written the frame it happens, not on the next snapshot.").Append("\n");
             sb.Append("#").Append("\n");
             sb.Append("#   AGENTS t  AGENTS  team  formationIndex  units  then the columns below.").Append("\n");

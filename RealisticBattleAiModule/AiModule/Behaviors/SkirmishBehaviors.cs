@@ -99,10 +99,30 @@ namespace RBMAI
         public static Dictionary<Formation, int> waitCountShootingStorage = new Dictionary<Formation, int> { };
         public static Dictionary<Formation, int> waitCountApproachingStorage = new Dictionary<Formation, int> { };
 
+        // Attacker stepping state: when the next step is due and where the current step leads.
+        public static Dictionary<Formation, float> attackerNextStepTime = new Dictionary<Formation, float> { };
+        public static Dictionary<Formation, Vec2> attackerStepTarget = new Dictionary<Formation, Vec2> { };
+
+        /// <summary>USER RULE (2026-10-04): an attacker's advance phase must actually advance. While its archers shoot,
+        /// the attacker's infantry still closes this far every StepInterval (about 1.5 m/s), at any distance.</summary>
+        private const float StepMeters = 6f;
+        private const float StepInterval = 4f;
+
+        /// <summary>With no usable archer formation the infantry advances like BehaviorAdvance: dist * this, clamped.</summary>
+        private const float PlainAdvanceFraction = 0.3f;
+        private const float PlainAdvanceMin = 10f;
+        private const float PlainAdvanceMax = 50f;
+
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
         private static void PostfixCalculateCurrentOrder(ref Vec2 ____shootPosition, ref Formation ____archerFormation, BehaviorCautiousAdvance __instance, ref BehaviorState ____behaviorState, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
+            if (__instance.Formation != null && __instance.Formation.Team != null && __instance.Formation.Team.IsAttacker
+                && Mission.Current != null && Mission.Current.IsFieldBattle)
+            {
+                AttackerCautiousAdvance(__instance.Formation, ref ____shootPosition, ____archerFormation, ref ____behaviorState, ref ____currentOrder, ref ___CurrentFacingOrder);
+                return;
+            }
             if (__instance.Formation != null && ____archerFormation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, false);
@@ -180,7 +200,8 @@ namespace RBMAI
                                     }
                                     else
                                     {
-                                        if (distance < 150f)
+                                        // Native invalidates _shootPosition on entering Approaching; never move to NaN.
+                                        if (distance < 150f && ____shootPosition.IsValid)
                                         {
                                             WorldPosition medianPosition = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
                                             medianPosition.SetVec2(____shootPosition);
@@ -207,7 +228,7 @@ namespace RBMAI
                                 }
                                 else
                                 {
-                                    if (distance < 150f)
+                                    if (distance < 150f && ____shootPosition.IsValid)
                                     {
                                         WorldPosition medianPosition = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
                                         medianPosition.SetVec2(____shootPosition);
@@ -221,6 +242,65 @@ namespace RBMAI
                     }
                 }
             }
+        }
+
+        // Field-battle attacker: the infantry may shoot-and-wait with its archers, but never stands still or
+        // retreats. Native Approaching (march at the enemy) is kept; Shooting (hold at the shoot position, even
+        // forever if no archer formation was found at activation) and PullingBack are replaced by a steady
+        // StepMeters-per-StepInterval walk forward. Main thread (team tick).
+        private static void AttackerCautiousAdvance(Formation formation, ref Vec2 shootPosition, Formation archerFormation,
+            ref BehaviorState behaviorState, ref MovementOrder currentOrder, ref FacingOrder facingOrder)
+        {
+            Formation enemy = RBMAI.Utilities.FindSignificantEnemy(formation, true, true, false, false, false, false)
+                ?? formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation?.Formation
+                ?? formation.CachedClosestEnemyFormation?.Formation;
+            if (enemy == null || enemy.CountOfUnits <= 0)
+            {
+                return;
+            }
+            Vec2 center = RBMAI.Utilities.GetFormationCenter(formation);
+            Vec2 vec = RBMAI.Utilities.GetFormationCenter(enemy) - center;
+            float distance = vec.Normalize();
+            if (!vec.IsValid || distance < 0.1f)
+            {
+                return;
+            }
+
+            bool archersUsable = archerFormation != null && archerFormation.CountOfUnits > 0
+                && archerFormation.QuerySystem.IsRangedFormation;
+            WorldPosition target = RBMAI.Utilities.GetFormationCenterWorldPosition(formation);
+            if (!archersUsable)
+            {
+                // Nothing to wait for: advance.
+                target.SetVec2(center + vec * MathF.Clamp(distance * PlainAdvanceFraction, PlainAdvanceMin, PlainAdvanceMax));
+                currentOrder = MovementOrder.MovementOrderMove(target);
+                facingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
+                return;
+            }
+
+            if (behaviorState == BehaviorState.Approaching)
+            {
+                return;
+            }
+            if (behaviorState == BehaviorState.PullingBack)
+            {
+                behaviorState = BehaviorState.Shooting;
+            }
+
+            float now = Mission.Current.CurrentTime;
+            float nextStep;
+            Vec2 stepTarget;
+            if (!attackerNextStepTime.TryGetValue(formation, out nextStep) || now >= nextStep
+                || !attackerStepTarget.TryGetValue(formation, out stepTarget) || !stepTarget.IsValid)
+            {
+                stepTarget = center + vec * StepMeters;
+                attackerStepTarget[formation] = stepTarget;
+                attackerNextStepTime[formation] = now + StepInterval;
+            }
+            shootPosition = stepTarget;
+            target.SetVec2(stepTarget);
+            currentOrder = MovementOrder.MovementOrderMove(target);
+            facingOrder = FacingOrder.FacingOrderLookAtDirection(vec);
         }
     }
 

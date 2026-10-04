@@ -128,6 +128,32 @@ namespace RBMAI
     [HarmonyPatch(typeof(BehaviorRegroup))]
     internal class OverrideBehaviorRegroup
     {
+        /// <summary>USER RULE (2026-10-04): an attacker's advance phase must actually advance. Ordinary (non-rally)
+        /// Regroup holds the formation on its own centre, and on a ragged line it out-weighs Advance and only lets go
+        /// once the line is almost tidy, so it could hold indefinitely (worst after a reinforcement wave). For a
+        /// field-battle attacker in its advance phase it may stay active at most this long...</summary>
+        private const float AttackerRegroupMaxSeconds = 10f;
+
+        /// <summary>...and may not take over again until the forward behavior has run at least this long.</summary>
+        private const float AttackerAdvanceMinSeconds = 20f;
+
+        /// <summary>FormationAI.ActiveBehavior's setter stamps PreserveExpireTime = now + this on activation (its only writer).</summary>
+        private const float NativePreserveSeconds = 10f;
+
+        // Advance phase = a forward behavior is weighted. The split tactics' deliberate opening waits weight only
+        // Charge + Regroup, and the attack phase (FixCharge) zeroes Regroup, so neither is touched.
+        private static bool IsAttackerAdvancing(Formation formation)
+        {
+            Mission mission = Mission.Current;
+            if (mission == null || !mission.IsFieldBattle || formation.Team == null || !formation.Team.IsAttacker)
+            {
+                return false;
+            }
+            BehaviorAdvance advance = formation.AI.GetBehavior<BehaviorAdvance>();
+            BehaviorCautiousAdvance cautious = formation.AI.GetBehavior<BehaviorCautiousAdvance>();
+            return (advance != null && advance.WeightFactor > 0f) || (cautious != null && cautious.WeightFactor > 0f);
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch("GetAiWeight")]
         private static bool PrefixGetAiWeight(ref BehaviorRegroup __instance, ref float __result)
@@ -153,6 +179,17 @@ namespace RBMAI
                 {
                     __result = RallyLogic.RallyWeight;
                     return false;
+                }
+                if (IsAttackerAdvancing(__instance.Formation))
+                {
+                    BehaviorComponent active = __instance.Formation.AI.ActiveBehavior;
+                    float activeFor = Mission.Current.CurrentTime - (active.PreserveExpireTime - NativePreserveSeconds);
+                    bool regroupActive = active == __instance;
+                    if (regroupActive ? activeFor >= AttackerRegroupMaxSeconds : activeFor < AttackerAdvanceMinSeconds)
+                    {
+                        __result = 0f;
+                        return false;
+                    }
                 }
                 float coherence = __instance.Formation.AI.ActiveBehavior?.BehaviorCoherence ?? __instance.BehaviorCoherence;
                 __result = MBMath.Lerp(0.1f, 1.2f, MBMath.ClampFloat(coherence * (querySystem.Formation.CachedFormationIntegrityData.DeviationOfPositionsExcludeFarAgents + 1f) / (querySystem.IdealAverageDisplacement + 1f), 0f, 3f) / 3f);
