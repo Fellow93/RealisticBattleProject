@@ -698,7 +698,9 @@
 					output_count="8" />
 			</Outputs>
 		</Production>
-	<!--< Gambeson horse armour (T2?) >-->				
+	<!--< Gambeson horse armour. Outputs horse_equipment, not horse_equipment_2: RBM's harness tier formula
+	     (ItemValuesTiers.Tiers.cs) puts no harness at tier 2, so that category is empty and these recipes
+	     made nothing while still taking labour and drawing leather/linen/felt. >-->
 		<Production
 			conversion_speed="0.75">
 			<Inputs>
@@ -720,7 +722,7 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" 
+					output="ItemCategory.horse_equipment"
 					output_count="2"/>
 			</Outputs>
 		</Production>
@@ -745,7 +747,7 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" 
+					output="ItemCategory.horse_equipment"
 					output_count="2"/>
 			</Outputs>
 		</Production>
@@ -1141,7 +1143,7 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" 
+					output="ItemCategory.horse_equipment"
 					output_count="2"/>
 			</Outputs>
 		</Production>
@@ -1385,7 +1387,7 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" 
+					output="ItemCategory.horse_equipment"
 					output_count="2"/>
 			</Outputs>
 		</Production>
@@ -1410,7 +1412,7 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" 
+					output="ItemCategory.horse_equipment"
 					output_count="2"/>
 			</Outputs>
 		</Production>
@@ -1548,7 +1550,7 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" 
+					output="ItemCategory.horse_equipment"
 					output_count="2"/>
 			</Outputs>
 		</Production>
@@ -1573,7 +1575,7 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" 
+					output="ItemCategory.horse_equipment"
 					output_count="2"/>
 			</Outputs>
 		</Production>
@@ -1598,7 +1600,7 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" 
+					output="ItemCategory.horse_equipment"
 					output_count="2"/>
 			</Outputs>
 		</Production>
@@ -1623,7 +1625,7 @@
 			</Inputs>
 			<Outputs>
 				<Output
-					output="ItemCategory.horse_equipment_2" 
+					output="ItemCategory.horse_equipment"
 					output_count="2"/>
 			</Outputs>
 		</Production>

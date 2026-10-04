@@ -100,8 +100,14 @@ namespace RBMCampaign
 
         // A caravan bundles every good that shares its source→destination route, up to these limits, so
         // one trip can carry several goods rather than a single one.
-        private const int MaxGoodsPerCaravan = 6;
+        private const int MaxGoodsPerCaravan = 10;
         private const int MaxCaravanTotalUnits = 400;
+
+        // Room on each caravan held for workshop materials, so a source sending food and staples cannot
+        // fill the cart before the materials are considered. Materials are offered first, up to this
+        // reserve; whatever they leave unused goes to the citizen basket.
+        private const int MaterialSlotsReserved = 3;
+        private const int MaterialUnitsReserved = 150;
 
         // A sea route must beat the land route's travel TIME by at least this factor before a caravan is put
         // to ship. The margin keeps caravans off the water for break-even crossings, so the embark/disembark
@@ -132,26 +138,46 @@ namespace RBMCampaign
         };
 
         private static string[] _dispatchGoods;
+        private static HashSet<string> _materialIds;
 
-        /// <summary>Everything a supply caravan may carry: the citizen basket, then the workshop materials.</summary>
+        /// <summary>
+        /// Everything a supply caravan may carry: the workshop materials first, then the citizen basket.
+        /// Materials lead so they are loaded into their reserved room before the basket fills the rest.
+        /// </summary>
         private static string[] DispatchGoods
         {
             get
             {
                 if (_dispatchGoods == null)
                 {
-                    List<string> goods = new List<string>(CitizenDemand.ModelledGoods);
+                    List<string> goods = new List<string>();
+                    HashSet<string> materials = new HashSet<string>();
                     foreach (string id in WorkshopMaterials)
+                    {
+                        // A material that is also in the basket stays a basket good.
+                        if (!goods.Contains(id) && Array.IndexOf(CitizenDemand.ModelledGoods, id) < 0)
+                        {
+                            goods.Add(id);
+                            materials.Add(id);
+                        }
+                    }
+                    foreach (string id in CitizenDemand.ModelledGoods)
                     {
                         if (!goods.Contains(id))
                         {
                             goods.Add(id);
                         }
                     }
+                    _materialIds = materials;
                     _dispatchGoods = goods.ToArray();
                 }
                 return _dispatchGoods;
             }
+        }
+
+        private static bool IsWorkshopMaterial(string goodId)
+        {
+            return DispatchGoods != null && _materialIds.Contains(goodId);
         }
 
         /// <summary>
@@ -315,9 +341,15 @@ namespace RBMCampaign
                             continue; // source already committed elsewhere this pass
                         }
 
+                        // Materials are walked first and may only use their reserve; the basket then gets
+                        // the whole caravan, including any reserve the materials left unused.
+                        bool material = IsWorkshopMaterial(goodId);
+                        int unitLimit = material ? MaterialUnitsReserved : MaxCaravanTotalUnits;
+                        int slotLimit = material ? MaterialSlotsReserved : MaxGoodsPerCaravan;
+
                         bySourceUnits.TryGetValue(src, out int already);
                         int qty = Math.Min(remaining, Math.Min(room, MaxCaravanLoad));
-                        qty = Math.Min(qty, MaxCaravanTotalUnits - already); // keep the whole caravan reasonable
+                        qty = Math.Min(qty, unitLimit - already); // keep the whole caravan reasonable
                         if (qty < MinCaravanLoad)
                         {
                             continue;
@@ -328,7 +360,7 @@ namespace RBMCampaign
                             lots = new List<RBMCaravanRegister.GoodLot>();
                             bySource[src] = lots;
                         }
-                        if (lots.Count >= MaxGoodsPerCaravan)
+                        if (lots.Count >= slotLimit)
                         {
                             continue;
                         }
@@ -348,7 +380,13 @@ namespace RBMCampaign
                         {
                             break;
                         }
-                        if (SpawnCaravan(pair.Key, dst, pair.Value))
+                        // Loaded materials-first for the reserve, but sold basket-first: arrival sells in
+                        // manifest order until the town's purse runs out, and food must not be the part
+                        // left unsold.
+                        List<RBMCaravanRegister.GoodLot> manifest = new List<RBMCaravanRegister.GoodLot>(pair.Value.Count);
+                        manifest.AddRange(pair.Value.FindAll(lot => !IsWorkshopMaterial(lot.GoodId)));
+                        manifest.AddRange(pair.Value.FindAll(lot => IsWorkshopMaterial(lot.GoodId)));
+                        if (SpawnCaravan(pair.Key, dst, manifest))
                         {
                             goodsDispatched++;
                             served.Add(dst);

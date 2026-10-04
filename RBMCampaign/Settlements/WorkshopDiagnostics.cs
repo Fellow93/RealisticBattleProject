@@ -77,6 +77,12 @@ namespace RBMCampaign
         private static readonly Dictionary<Settlement, Dictionary<string, int>> _capped =
             new Dictionary<Settlement, Dictionary<string, int>>();
 
+        // Per settlement: margin key -> summed payout, net payout (after salary) and input cost of the
+        // refused cycles, so SHOPBLOCK can say by how much a recipe misses the margin test, not just
+        // that it did. Index: 0 payout, 1 net, 2 cost; the count is the matching _blocks entry.
+        private static readonly Dictionary<Settlement, Dictionary<string, long[]>> _marginMoney =
+            new Dictionary<Settlement, Dictionary<string, long[]>>();
+
         // The artisans recipe currently ticking, set for the span of one notable-shop production
         // attempt and null otherwise. Only ever non-null inside a HIDDEN workshop's cycle, which is what
         // scopes the input-sufficiency reading below to the artisans and away from the visible shops.
@@ -91,6 +97,7 @@ namespace RBMCampaign
             _blocks.Clear();
             _recipeDay.Clear();
             _capped.Clear();
+            _marginMoney.Clear();
             _ctxShop = null;
             _ctxKey = null;
         }
@@ -356,10 +363,30 @@ namespace RBMCampaign
                     // glut is RBM refusing a cycle on purpose, not the shop's economics refusing it.
                     return;
                 case RBMWorkshopCycle.Reason.Margin:
+                {
                     // Named by what it would have made -- the question about this gate has always been
-                    // which recipes it is biting on.
-                    Count(settlement, "margin:" + RBMWorkshopCycle.PrimaryOutput(production));
+                    // which recipes it is biting on. The artisans get their own key because they face a
+                    // different test (payout > cost, no salary) from a named shop (net >= cost x 1.15).
+                    bool hidden = workshop.WorkshopType != null && workshop.WorkshopType.IsHidden;
+                    string key = "margin:" + RBMWorkshopCycle.PrimaryOutput(production) + (hidden ? "/artisans" : "");
+                    Count(settlement, key);
+
+                    int net = verdict.Payout - RBMWorkshopExpense.SalaryFromPayout(workshop, verdict.Payout);
+                    if (!_marginMoney.TryGetValue(settlement, out Dictionary<string, long[]> byKey))
+                    {
+                        byKey = new Dictionary<string, long[]>();
+                        _marginMoney[settlement] = byKey;
+                    }
+                    if (!byKey.TryGetValue(key, out long[] money))
+                    {
+                        money = new long[3];
+                        byKey[key] = money;
+                    }
+                    money[0] += verdict.Payout;
+                    money[1] += net;
+                    money[2] += verdict.InputCost;
                     return;
+                }
                 case RBMWorkshopCycle.Reason.TownBroke:
                     Count(settlement, "town-broke");
                     return;
@@ -391,6 +418,8 @@ namespace RBMCampaign
                 return;
             }
             _blocks.Remove(settlement);
+            _marginMoney.TryGetValue(settlement, out Dictionary<string, long[]> marginMoney);
+            _marginMoney.Remove(settlement);
 
             if (!EconomyLog.IsEnabled || byReason.Count == 0)
             {
@@ -421,6 +450,18 @@ namespace RBMCampaign
             foreach (KeyValuePair<string, int> pair in reasons)
             {
                 breakdown.Append("  ").Append(pair.Key).Append(" x").Append(pair.Value);
+
+                // Average money of the refused cycles: "(payout 340 net 170 vs cost 1050)". A named shop
+                // needed net >= cost x (1 + MarginRate); the artisans needed payout > cost.
+                if (marginMoney != null && pair.Value > 0 && marginMoney.TryGetValue(pair.Key, out long[] money))
+                {
+                    breakdown.Append(" (payout ").Append(money[0] / pair.Value);
+                    if (!pair.Key.EndsWith("/artisans"))
+                    {
+                        breakdown.Append(" net ").Append(money[1] / pair.Value);
+                    }
+                    breakdown.Append(" vs cost ").Append(money[2] / pair.Value).Append(')');
+                }
             }
 
             EconomyLog.Log("SHOPBLOCK", settlement.Name != null ? settlement.Name.ToString() : settlement.StringId,

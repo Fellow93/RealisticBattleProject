@@ -69,7 +69,7 @@ namespace RBMCampaign
                 // StringIds taken from DefaultItems.RegisterAll, not from the mesh names.
                 { "grain",       (60,     30f) },
                 { "meat",        (200,    30f) },
-                { "hides",       (70,     0.8f) },
+                { "hides",       (60,     0.8f) },   // tanning (hides -> leather 176) must clear the workshop margin
                 { "planks",      (10,     20f) },
                 { "tools",       (48,     1f) },    // finished ironwork, ~4x the wrought iron in it
                 { "felt",        (250,    1f) },
