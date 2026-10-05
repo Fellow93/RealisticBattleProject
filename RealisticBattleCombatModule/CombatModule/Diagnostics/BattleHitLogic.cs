@@ -106,6 +106,12 @@ namespace RBMCombat
             header.Append("  SHOT/LAND = AI bow/crossbow aim trace (see MissileAimTrace): predRange ~ tgtRange means the aim").Append("\n");
             header.Append("              suited the launch; landRange short of predRange means the flight differs from the model").Append("\n");
             header.Append("\n");
+            header.Append("  head = a head hit, on the line before its blow: where it landed from the struck man's eyes (m, along his").Append("\n");
+            header.Append("         look: fwd ahead, side, up), dot = blow direction against his look (more negative = more head-on),").Append("\n");
+            header.Append("         nz = contact normal height, head-on = passed the angle test, zone = landed in the face zone,").Append("\n");
+            header.Append("         FACE = counted as a face hit (swings need both, thrusts and missiles only head-on).").Append("\n");
+            header.Append("         A posture crush-through can add a head row with nz 0; it is never a face hit.").Append("\n");
+            header.Append("\n");
             header.Append("    striker            -> struck                what     weapon           part    armor      raw   absorb    dealt   hp").Append("\n");
 
             BattleHitLog.StartBattle(header.ToString().Replace("\n", System.Environment.NewLine));

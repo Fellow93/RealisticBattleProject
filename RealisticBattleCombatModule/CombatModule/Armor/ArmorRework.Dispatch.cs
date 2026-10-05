@@ -119,6 +119,32 @@ namespace RBMCombat
         }
 
         /// <summary>
+        /// Armor of the face: the helmet's body armor, with the same head-armor perk bonus a head hit gets.
+        /// </summary>
+        public static float GetFaceArmorRBM(Agent agent)
+        {
+            return ApplyDrivenArmorBonus(agent, BoneBodyPartType.Head, agent.SpawnEquipment[EquipmentIndex.Head].GetModifiedBodyArmor());
+        }
+
+        /// <summary>
+        /// Armor under the shoulder: the arm armor of the body armor and cape, with the same arm-armor perk
+        /// bonus an arm hit gets.
+        /// </summary>
+        public static float GetUnderShoulderArmorRBM(Agent agent)
+        {
+            float armor = 0f;
+            if (!agent.SpawnEquipment[EquipmentIndex.Body].IsEmpty)
+            {
+                armor += agent.SpawnEquipment[EquipmentIndex.Body].GetModifiedArmArmor();
+            }
+            if (!agent.SpawnEquipment[EquipmentIndex.Cape].IsEmpty)
+            {
+                armor += agent.SpawnEquipment[EquipmentIndex.Cape].GetModifiedArmArmor();
+            }
+            return ApplyDrivenArmorBonus(agent, BoneBodyPartType.ArmLeft, armor);
+        }
+
+        /// <summary>
         /// Vanilla applies armor perks (Athletics.IgnorePain, Engineering.Metallurgy, Riding.DauntlessSteed,
         /// Riding.ToughSteed) by rewriting the ArmorHead/Torso/Arms/Legs driven properties on top of the
         /// plain equipment sums. RBM computes per-body-part armor from equipment directly, so carry the

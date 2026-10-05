@@ -97,6 +97,47 @@ namespace RBMCombat
             return victim.GetMovementDirection().DotProduct(toAttacker) >= 0.5f;
         }
 
+        // The face, as a box around the eyes (m, at agent scale 1, along the victim's look direction): from just
+        // behind the eye line to well in front of it, brow to chin, and no wider than the face so the cheeks and
+        // temples stay the helmet's. First guesses; the battle hit log's "head" rows record where hits land.
+        private const float FaceZoneMinForward = -0.02f;
+        private const float FaceZoneMaxForward = 0.15f;
+        private const float FaceZoneMaxUp = 0.04f;
+        private const float FaceZoneMinUp = -0.14f;
+        private const float FaceZoneHalfWidth = 0.07f;
+
+        // Where a hit landed relative to the victim's eyes: x forward along his look, y to his side, z up,
+        // in metres at agent scale 1.
+        private static Vec3 GetOffsetFromEyes(Agent victim, Vec3 hitPosition)
+        {
+            Mat3 look = victim.LookRotation;
+            Vec3 offset = hitPosition - victim.GetEyeGlobalPosition();
+            float scale = victim.AgentScale > 0f ? victim.AgentScale : 1f;
+            return new Vec3(Vec3.DotProduct(offset, look.f) / scale, Vec3.DotProduct(offset, look.s) / scale, Vec3.DotProduct(offset, look.u) / scale);
+        }
+
+        private static bool IsInFaceZone(Vec3 offsetFromEyes)
+        {
+            return offsetFromEyes.x >= FaceZoneMinForward && offsetFromEyes.x <= FaceZoneMaxForward
+                && offsetFromEyes.z <= FaceZoneMaxUp && offsetFromEyes.z >= FaceZoneMinUp
+                && Math.Abs(offsetFromEyes.y) <= FaceZoneHalfWidth;
+        }
+
+        // One row per human head hit in the battle hit log, written just before that blow's own row, to tune the face zone.
+        private static void LogHeadHit(in AttackCollisionData collision, Vec3 offsetFromEyes, float dotProduct, bool headOnBlow, bool inFaceZone, bool faceHit)
+        {
+            string strike = collision.IsMissile ? "missile" : collision.StrikeType == (int)StrikeType.Swing ? "swing" : "thrust";
+            BattleHitLog.Write("      head  " + strike.PadRight(8) + collision.AttackDirection.ToString().PadRight(12)
+                + "fwd " + BattleHitLog.Fmt(offsetFromEyes.x).PadLeft(6)
+                + "  side " + BattleHitLog.Fmt(offsetFromEyes.y).PadLeft(6)
+                + "  up " + BattleHitLog.Fmt(offsetFromEyes.z).PadLeft(6)
+                + "  dot " + BattleHitLog.Fmt(dotProduct).PadLeft(6)
+                + "  nz " + BattleHitLog.Fmt(collision.CollisionGlobalNormal.z).PadLeft(6)
+                + "  head-on " + (headOnBlow ? "y" : "n")
+                + "  zone " + (inFaceZone ? "y" : "n")
+                + (faceHit ? "  FACE" : ""));
+        }
+
         private static float GetBodyPartDamageMultiplier(BoneBodyPartType bodyPart, DamageTypes damageType)
         {
             switch (bodyPart)
@@ -218,12 +259,22 @@ namespace RBMCombat
                 if (victim != null && victim.IsHuman && attackCollisionData.VictimHitBodyPart == BoneBodyPartType.Head && !isThrustCut)
                 {
                     float dotProduct = Vec3.DotProduct(attackCollisionData.WeaponBlowDir, victim.LookFrame.rotation.f);
+                    bool isSwing = attackCollisionData.StrikeType == (int)StrikeType.Swing;
                     float dotProductThreshold = -0.75f;
-                    if (attackCollisionData.StrikeType == (int)StrikeType.Swing)
+                    if (isSwing)
                     {
                         dotProductThreshold = -0.8f;
                     }
-                    if (dotProduct < dotProductThreshold && attackCollisionData.CollisionGlobalNormal.z < 0f)
+                    bool headOnBlow = dotProduct < dotProductThreshold && attackCollisionData.CollisionGlobalNormal.z < 0f;
+                    // A head-on swing still often lands on the cheek, temple or brow, which the helmet covers, so a
+                    // swing must also land on the face itself.
+                    Vec3 offsetFromEyes = GetOffsetFromEyes(victim, attackCollisionData.CollisionGlobalPosition);
+                    bool inFaceZone = IsInFaceZone(offsetFromEyes);
+                    if (BattleHitLog.IsEnabled)
+                    {
+                        LogHeadHit(in attackCollisionData, offsetFromEyes, dotProduct, headOnBlow, inFaceZone, headOnBlow && (!isSwing || inFaceZone));
+                    }
+                    if (headOnBlow && (!isSwing || inFaceZone))
                     {
                         if (attacker != null && attacker.IsPlayerControlled)
                         {
@@ -257,7 +308,7 @@ namespace RBMCombat
                 {
                     if (!victim.SpawnEquipment[EquipmentIndex.Head].IsEmpty)
                     {
-                        armorAmount = victim.SpawnEquipment[EquipmentIndex.Head].GetModifiedBodyArmor() * armorPenetrationFactor;
+                        armorAmount = ArmorRework.GetFaceArmorRBM(victim) * armorPenetrationFactor;
 
                         if (victim.SpawnEquipment[EquipmentIndex.Head].Item.ArmorComponent != null)
                         {
@@ -279,11 +330,9 @@ namespace RBMCombat
 
                 if (lowerShoulderHit)
                 {
-                    armorAmount = 0f;
+                    armorAmount = ArmorRework.GetUnderShoulderArmorRBM(victim) * armorPenetrationFactor;
                     if (!victim.SpawnEquipment[EquipmentIndex.Body].IsEmpty)
                     {
-                        armorAmount = victim.SpawnEquipment[EquipmentIndex.Body].GetModifiedArmArmor();
-
                         if (victim.SpawnEquipment[EquipmentIndex.Body].Item.ArmorComponent != null)
                         {
                             armorMaterial = victim.SpawnEquipment[EquipmentIndex.Body].Item.ArmorComponent.MaterialType;
@@ -300,11 +349,6 @@ namespace RBMCombat
                             }
                         }
                     }
-                    if (!victim.SpawnEquipment[EquipmentIndex.Cape].IsEmpty)
-                    {
-                        armorAmount += victim.SpawnEquipment[EquipmentIndex.Cape].GetModifiedArmArmor();
-                    }
-                    armorAmount *= armorPenetrationFactor;
                 }
 
                 if (collidedWithShieldOnBack && shieldOnBack != null && victim != null)
