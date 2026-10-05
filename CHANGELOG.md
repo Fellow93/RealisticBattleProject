@@ -8,7 +8,7 @@
 - Swings with weapons that aren't built from crafting parts (torches, banners, many weapons from other mods) now do posture damage when blocked or parried. They used to do none.
 - Pommel and handle hits now hit as hard as the swing behind them. A graze with the hilt used to do as much damage as a full pommel strike, whatever the weapon weighed; a heavier weapon and a fuller swing now hit harder, and skill still adds to it. Even an unskilled man's pommel hit keeps a small minimum. Torches, whips, push forks, banners and maces are unchanged.
 - Pommel and handle hits on a shield no longer damage it as if the blade had struck: they get no edge bonus against shields (including the extra shield damage of axes and shield-breaking weapons) and strike the board as a blunt blow.
-- Weapons that aren't built from crafting parts (many weapons from other mods) can now land pommel and handle hits: a swing that connects with the quarter of the weapon nearest the hand is a handle hit. It used to count as a full blade hit.
+- Weapons that aren't built from crafting parts (many weapons from other mods) can now land pommel and handle hits: a swing that connects with the tenth of a sword or dagger nearest the hand, or below the top third or so of an axe, mace or polearm, is a handle hit. It used to count as a full blade hit.
 
 ### AI
 - **Kick and bash knockdowns are no longer certain on a second kick:** a kick or bash now always knocks a man down only when it empties his posture, or while he is still reeling from a posture break or posture tiredness. A second kick or bash within about a second only makes a knockdown more likely (×1.5). A man who is already down is not kicked at and not knocked down again, and a kick or bash from a friend gets no RBM knockdown.

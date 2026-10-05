@@ -67,21 +67,32 @@ namespace RBMCombat
                 }
                 return true;
             }
-            // Not built from crafting parts, so there is no blade length to read: the bottom share of the weapon
-            // counts as the handle.
+            // Not built from crafting parts, so there is no blade length to read. A sword's handle is its short hilt,
+            // the bottom share of its length; anything else is a head on a haft, so all but its top share is haft.
             if (attackerWeapon.Item != null && currentUsageItem != null)
             {
                 float realWeaponLength = currentUsageItem.GetRealWeaponLength();
-                if (realWeaponLength > 0f && collisionData.CollisionDistanceOnWeapon < realWeaponLength * NonCraftedHandleShare)
+                if (realWeaponLength > 0f)
                 {
-                    return false;
+                    WeaponClass weaponClass = currentUsageItem.WeaponClass;
+                    bool isSwordType = weaponClass == WeaponClass.Dagger || weaponClass == WeaponClass.OneHandedSword || weaponClass == WeaponClass.TwoHandedSword;
+                    float handleLength = isSwordType ? realWeaponLength * NonCraftedHiltShare : realWeaponLength * (1f - NonCraftedHeadShare);
+                    if (collisionData.CollisionDistanceOnWeapon < handleLength)
+                    {
+                        return false;
+                    }
                 }
             }
             return true;
         }
 
-        // Share of a non-crafted weapon's length, from the hand, that HitWithWeaponBlade treats as the handle.
-        private const float NonCraftedHandleShare = 0.25f;
+        // Share of a non-crafted sword's or dagger's length, from the hand, that HitWithWeaponBlade treats as the hilt.
+        private const float NonCraftedHiltShare = 0.1f;
+
+        // Share of any other non-crafted weapon's length, from the tip, that HitWithWeaponBlade treats as the head
+        // (blade plus the crafted rule's 0.15 m margin); the rest is haft. Crafted spears come out nearer 20%,
+        // crafted one-handed axes nearer 45%.
+        private const float NonCraftedHeadShare = 0.35f;
 
         public static bool HitWithWeaponBladeTip(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
         {
