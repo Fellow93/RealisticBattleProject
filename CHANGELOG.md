@@ -2,6 +2,9 @@
 
 ## v4.5.4 (changes since v4.5.3)
 
+### Combat
+- Ranged weapons from other mods whose item usage RBM doesn't know now fly at their own missile speed instead of 10 m/s, which made some of them useless. Vanilla light crossbows are treated as crossbows.
+
 ### AI
 - **Kick and bash knockdowns are no longer certain on a second kick:** a kick or bash now always knocks a man down only when it empties his posture, or while he is still reeling from a posture break or posture tiredness. A second kick or bash within about a second only makes a knockdown more likely (×1.5). A man who is already down is not kicked at and not knocked down again, and a kick or bash from a friend gets no RBM knockdown.
 - AI soldiers now see an enemy whose posture is broken or nearly broken (25% or less) as an opening for a kick or bash. A kick or bash that just landed no longer counts as one.
