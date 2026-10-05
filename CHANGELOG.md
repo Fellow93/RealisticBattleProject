@@ -21,6 +21,11 @@
 - Wool, hides and cattle are cheaper (wool 100 → 80, hides 70 → 60, cows 480 → 380). Tanning now pays in towns where hides cost up to about 1.6 times their value (was about 1.4).
 - Supply caravans carry up to 10 goods (was 6), and part of each caravan is kept for workshop materials, so food and staples can no longer crowd them out. Food is still sold first on arrival.
 - Cattle and sheep farms show the cow or sheep icon on the map and in the ledger instead of butter or wool.
+- **Expected daily gold now matches what you are paid:** the projected income could be positive while your gold went down every day.
+  - The 14-day averages of your spoils cut, companions' spoils share, mint revenue and gold-paid promotions are no longer counted as daily income or expenses. That gold is paid when the battle or minting happens.
+  - Garrison maintenance your fiefs can't pay is now charged once a day and shows in the Daily Gold Change message. The expected change shows tomorrow's charge, where it used to show only what had been paid since midnight.
+  - The settlement wealth tax line shows the next day's tax instead of yesterday's, which ran high while a rich town was paying down its savings.
+  - Your workshops that are low on capital are no longer charged their daily expense twice.
 
 ## v4.5.3 (changes since v4.5.2)
 
