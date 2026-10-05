@@ -78,7 +78,6 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel ThrustModifierHint { get; } = Hint("{=RBM_CON_147}Scales the thrust damage figures weapons carry, which the AI weighs when it chooses between thrusting and swinging. RBM undoes the scale when it works out piercing damage, so stabs hit about as hard at any setting; lower values make the AI favour swings. Default 0.05.");
 
-        // Plain-text label/hint (no {=RBM_CON_xxx} id) for the same reason as the Frontline rows below.
         // The one player-facing armor knob; the three rows after it are the "Advanced Armor" sub-group.
         private float _armorEffectiveness;
 
@@ -120,7 +119,6 @@ namespace RBMConfig
             get { return new TextObject("{=RBM_CFG_CAT_ADV_ARMOR}Advanced Armor").ToString(); }
         }
 
-        // Plain-text label/hint, same as Armor Effectiveness above.
         private float _armorMultiplier;
 
         [DataSourceProperty]
@@ -154,7 +152,6 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel ArmorMultiplierHint { get; } = Hint("{=RBM_CFG_ARMOR_MULT_HINT}How strongly armor absorbs blunt trauma, the damage that gets through armor without penetrating it: that part is scaled by 100 / (100 + armor x this). Higher makes armored troops tankier; lower makes them die faster. Penetrating damage is unchanged. Also feeds auto-resolve and troop power. With Armor Effectiveness: the formula uses the armor after Armor Effectiveness has scaled it, so the two multiply. For example, Armor Effectiveness 1.5 with this at 2 makes armor count 3x in this curve. Default 2.00.");
 
-        // Plain-text label/hint, same as Armor Multiplier above.
         private float _bluntTraumaMultiplier;
 
         [DataSourceProperty]
@@ -188,7 +185,6 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel BluntTraumaMultiplierHint { get; } = Hint("{=RBM_CFG_BLUNT_MULT_HINT}Scales blunt trauma, the damage that gets through armor without penetrating it, for every weapon type. Lower makes armored troops tankier; higher makes armor protect less. Penetrating damage is unchanged. Also feeds auto-resolve. With Armor Effectiveness: that setting first decides how much of a hit armor stops and how much of the stopped part it absorbs; this one then scales whatever blunt trauma is left. They don't multiply into each other: this does not make armor count for more, it only changes how much a stopped hit still hurts. Default 1.00.");
 
-        // Plain-text label/hint, same as Armor Multiplier above.
         private float _armorThresholdModifier;
 
         [DataSourceProperty]
@@ -222,7 +218,6 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel ArmorThresholdModifierHint { get; } = Hint("{=RBM_CFG_ARMOR_PEN_HINT}Scales how much of a blow armor stops outright: the part of a hit above armor x weapon factor x this penetrates, the rest becomes blunt trauma. Higher makes armored troops tankier, since more hits fail to penetrate; lower lets more damage straight through. Shields use the same rule. Also feeds auto-resolve. With Armor Effectiveness: the threshold is worked out from the armor after Armor Effectiveness has scaled it, so the two multiply. For example, Armor Effectiveness 1.5 with this at 1.2 makes armor stop 1.8x as much as at the defaults. Default 1.00.");
 
-        // Plain-text label/hint for the same reason as the row above.
         private float _arrowThicknessScale;
 
         [DataSourceProperty]
@@ -347,7 +342,6 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel RangedReloadSpeedHint { get; } = Hint("{=RBM_CON_153}How fast bows and crossbows are reloaded, scaling with skill. Realistic is slow, above all for unskilled shooters; Semi-realistic reloads much faster at low skill; both also slow the bow draw for everyone. Vanilla keeps the base game's speeds. The reload part applies to the player only unless 'Ranged reload applies to AI' is on. Default Semi-realistic.");
 
-        // Plain-text label/hint (no {=RBM_CON_xxx} id) for the same reason as the Frontline rows below.
         [DataSourceProperty]
         public string RangedReloadAffectsAit
         {
@@ -357,7 +351,6 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel RangedReloadAffectsAiHint { get; } = Hint("{=RBM_CFG_RELOAD_AI_HINT}When enabled, AI archers and crossbowmen follow the Ranged reload speed setting too (Vanilla / Realistic / Semi-realistic) instead of their fixed AI reload. Off keeps that setting player-only. Default off.");
 
-        // Plain-text label/hint for the same reason as the row above.
         [DataSourceProperty]
         public string RangedAimArcEnabledt
         {
@@ -557,9 +550,6 @@ namespace RBMConfig
                                                                 new TextObject("1.00").ToString()};
 
         // ---- Frontline (RBMAI melee jostling system) -------------------------------------------------
-        // Plain-text hints on purpose: the {=RBM_CON_xxx} ids are a contiguous block used by the campaign
-        // options and LOC-eng.xml overrides any id it defines, so new rows stay unkeyed like the other
-        // recently added toggles (Deserter Raiders, Caravan Logging).
 
         [DataSourceProperty]
         public string FrontlineEnabledt

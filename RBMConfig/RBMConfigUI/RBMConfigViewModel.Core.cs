@@ -29,7 +29,7 @@ namespace RBMConfig
 
         public TextViewModel RBMCampaignEnabledText { get; }
 
-        // Hover tooltips on the four "Module Status" rows. The Campaign one is plain text, matching its unkeyed caption.
+        // Hover tooltips on the four "Module Status" rows.
         [DataSourceProperty]
         public BasicTooltipViewModel RBMCombatEnabledHint { get; } = Hint("{=RBM_CON_130}Master switch for RBM's combat overhaul: damage, armor, weapon and missile physics, ranged reload, and RBM's reworked items, troops and siege engines. Off returns combat to the base game and every option in this section stops working. RBM's spear and weapon animation parameters only follow a change after a game restart. Default on.");
 
@@ -535,6 +535,12 @@ namespace RBMConfig
         /// localized string is resolved lazily, each time the tooltip is shown, so a language switch
         /// while the screen is open is honoured. Paired in the prefab with a HintWidget overlaying the
         /// label, which relays its parent's hover to this view model.
+        ///
+        /// Every label and hint carries an id so translations can reach it: the numbered
+        /// {=RBM_CON_nnn} run, or a mnemonic {=RBM_CFG_*} id. Never reuse an existing id for new
+        /// text, since other languages would keep showing the old translation. English always
+        /// shows the inline text; LOC-eng.xml is only the template translators work from, so list
+        /// a new id there with the exact same text.
         /// </summary>
         private static BasicTooltipViewModel Hint(string localizedText)
         {

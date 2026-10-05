@@ -792,9 +792,6 @@
 	<string id="RBM_construction_reserve" text="Construction reserve" />
 	<string id="RBM_construction_spend" text="Construction spend (daily)" />
 	<string id="RBM_garr_size" text="Town wealth (RBM)" />
-	<string id="RBM_militia_hardcap" text="Full muster" />
-	<string id="RBM_militia_prosperous" text="Prosperous citizens" />
-	<string id="RBM_militia_understrength" text="Mustering the levy" />
 	<string id="RBM_spoils_tt" text="Spoils" />
 	<string id="RBM_wealth_castle" text="Castle wealth" />
 	<string id="RBM_wsPayroll" text="Production Wages" />
@@ -806,7 +803,7 @@
 	<string id="rbm_garr_res" text="Held — treasury below reserve ({RES})" />
 	<string id="rbm_garr_shed" text="Over-strength — reducing (upkeep reserve {KEEP})" />
 	<string id="rbm_garr_subsidy" text="Held — upkeep subsidised by {WHO}" />
-	<string id="rbm_garr_subsidy_line" text="Garrison subsidies" />
+	<string id="rbm_garr_maint_subsidy_line" text="Garrison maintenance subsidies" />
 	<string id="rbm_garr_subsidy_town" text="the town reserve" />
 	<string id="rbm_garrison_drill" text="Garrison drill" />
 	<string id="rbm_villager_convoy_carry" text="Trade convoy" />

@@ -51,7 +51,36 @@ namespace RBMConfig
         public static string GetFilePath()
         {
             string moduleDir = ModuleHelper.GetModuleFullPath("RBM");
-            return FindTranslatedFile(moduleDir) ?? Path.Combine(moduleDir, FileName);
+            string englishPath = Path.Combine(moduleDir, FileName);
+            string translatedPath = FindTranslatedFile(moduleDir);
+            return translatedPath != null && IsUpToDate(translatedPath, englishPath) ? translatedPath : englishPath;
+        }
+
+        // A translation is used only while its newest entry is the English file's newest entry. One that lags
+        // behind would hide the newer releases, and the unseen badge (which compares the newest version against
+        // the last seen one) would stop firing for that language. One that parses to nothing falls back too.
+        private static bool IsUpToDate(string translatedPath, string englishPath)
+        {
+            try
+            {
+                List<ChangelogEntry> translated = Parse(File.ReadAllText(translatedPath, Encoding.UTF8));
+                if (translated.Count == 0)
+                {
+                    return false;
+                }
+                if (!File.Exists(englishPath))
+                {
+                    return true;
+                }
+                List<ChangelogEntry> english = Parse(File.ReadAllText(englishPath, Encoding.UTF8));
+                return english.Count == 0
+                    || string.Equals(translated[0].Version, english[0].Version, StringComparison.OrdinalIgnoreCase);
+            }
+            catch (Exception e)
+            {
+                TaleWorlds.Library.Debug.Print("[RBM] Could not compare the translated changelog: " + e.Message);
+                return false;
+            }
         }
 
         private static string FindTranslatedFile(string moduleDir)

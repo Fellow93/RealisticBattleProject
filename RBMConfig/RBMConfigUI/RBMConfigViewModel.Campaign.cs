@@ -620,7 +620,7 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel TroopSettlementFunWageFractionHint { get; } = Hint("{=RBM_CON_057}A day's wage a man drinks away for each day he sits idle in a settlement. Default 0.25.");
 
-        // Lord equipment toggle label and hint. Plain literal TextObjects (no {=KEY}), like the caravan ones.
+        // Lord equipment toggle label and hint.
         [DataSourceProperty]
         public string LordEquipmentUpgradeEnabledt
         {
@@ -630,8 +630,7 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel LordEquipmentUpgradeEnabledHint { get; } = Hint("{=RBM_CFG_LORD_EQUIP_HINT}AI lords spend gold in towns to upgrade their own battle gear to culture-matched items. Disable if another mod manages lord equipment. Default on.");
 
-        // Caravan toggle labels and hints. Plain literal TextObjects (no {=KEY}) to sidestep the
-        // LOC-eng.xml key-collision issue, like the category headers below.
+        // Caravan toggle labels and hints.
         [DataSourceProperty]
         public string KingdomCaravansEnabledt
         {
@@ -1129,8 +1128,7 @@ namespace RBMConfig
         [DataSourceProperty]
         public BasicTooltipViewModel ShowInventoryItemWeightHint { get; } = Hint("{=RBM_CON_134}Adds a weight column to the item rows of the inventory and trade screens, showing what one item weighs. Takes effect after restarting the game. Default on.");
 
-        // Campaign config category headers. Plain literal TextObjects (no {=KEY}) to sidestep
-        // the LOC-eng.xml key-collision issue; these are collapsible sub-section titles.
+        // Campaign config category headers: the collapsible sub-section titles.
         [DataSourceProperty]
         public string CampaignCatModulet
         {
