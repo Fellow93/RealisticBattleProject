@@ -496,7 +496,7 @@ namespace RBMAI
                 float healthModifier = MathF.Lerp(0.33f, 1f, unit.Health / unit.HealthLimit);
                 bool isSoldier = unit.Character.IsSoldier;
 
-                int alliesFrontCount = LimitCount(alliesFront.Count, 10);
+                float alliesFrontCount = MathF.Min(10f, CountFrontBlockers(alliesFront, unit, direction));
                 int alliesLeftCount = LimitCount(alliesLeft.Count, 5);
                 int alliesRightCount = LimitCount(alliesRight.Count, 5);
                 int enemiesFrontCount = LimitCount(enemiesFront.Count, 10);
@@ -715,6 +715,38 @@ namespace RBMAI
                     }
                 }
                 return false;
+            }
+
+            // A friend walking toward the enemy at least this fast (m/s along the unit's direction) only counts
+            // as FrontMovingBlockerWeight of a blocker; below FrontStillSpeed he is a full one, linear in between.
+            private const float FrontStillSpeed = 0.3f;
+            private const float FrontMovingSpeed = 1f;
+            private const float FrontMovingBlockerWeight = 0.25f;
+
+            // Allies ahead weighted by how much they actually block: a man in front who is advancing the same way
+            // opens the space as fast as the unit would fill it, so counting him in full made the rear ranks of an
+            // advancing line pick BackStep/Flank instead of following. Once he stops (engaged, or holding) he
+            // counts in full again, so the ranks still don't pile into a front that has met the enemy. Kept as a
+            // residual weight rather than zero so a dense moving crowd still spreads a little.
+            // AverageVelocity is the engine's smoothed world-space velocity; the raw one jitters in melee and would
+            // flip the count every decision. The unit itself (the query's circle reaches back to him) keeps its
+            // old full count.
+            private static float CountFrontBlockers(MBList<Agent> alliesFront, Agent unit, Vec2 direction)
+            {
+                float count = 0f;
+                for (int i = 0; i < alliesFront.Count; i++)
+                {
+                    Agent ally = alliesFront[i];
+                    if (ally == unit)
+                    {
+                        count += 1f;
+                        continue;
+                    }
+                    float forwardSpeed = ally.AverageVelocity.AsVec2.DotProduct(direction);
+                    float moving = MathF.Clamp((forwardSpeed - FrontStillSpeed) / (FrontMovingSpeed - FrontStillSpeed), 0f, 1f);
+                    count += MathF.Lerp(1f, FrontMovingBlockerWeight, moving);
+                }
+                return count;
             }
 
             private static int CountByMounted(MBList<Agent> agents, bool mounted)
