@@ -26,6 +26,8 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
             .Where((Formation f) => f.CountOfUnits > 0).ToList();
 
         _mainInfantry = ChooseAndSortByPriority(nonEmptyFormations, (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+        Formation previousLeft = _leftFlankingInfantry;
+        Formation previousRight = _rightFlankingInfantry;
         _flankingInfantry = null;
         _leftFlankingInfantry = null;
         _rightFlankingInfantry = null;
@@ -43,8 +45,9 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
             // player-controlled ones — never reshuffle men the player commands.
             if (_mainInfantry.IsAIControlled && flankingSlots.Count >= 2)
             {
-                Formation leftSlot = flankingSlots[0];
-                Formation rightSlot = flankingSlots[1];
+                Formation leftSlot;
+                Formation rightSlot;
+                RBMTacticAttackSplitInfantry.PickFlankSlots(flankingSlots, previousLeft, previousRight, out leftSlot, out rightSlot);
 
                 // Collect from the three known infantry slots directly.
                 // Avoid IsInfantryFormation check — QuerySystem can be stale right after

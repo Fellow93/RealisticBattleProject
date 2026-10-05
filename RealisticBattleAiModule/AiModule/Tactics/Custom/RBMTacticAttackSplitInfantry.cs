@@ -21,6 +21,8 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
             .Where((Formation f) => f.CountOfUnits > 0).ToList();
 
         _mainInfantry = ChooseAndSortByPriority(nonEmptyFormations, (Formation f) => f.QuerySystem.IsInfantryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
+        Formation previousLeft = _leftFlankingInfantry;
+        Formation previousRight = _rightFlankingInfantry;
         _flankingInfantry = null;
         _leftFlankingInfantry = null;
         _rightFlankingInfantry = null;
@@ -38,8 +40,9 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
             // player-controlled ones — never reshuffle men the player commands.
             if (_mainInfantry.IsAIControlled && flankingSlots.Count >= 2)
             {
-                Formation leftSlot = flankingSlots[0];
-                Formation rightSlot = flankingSlots[1];
+                Formation leftSlot;
+                Formation rightSlot;
+                PickFlankSlots(flankingSlots, previousLeft, previousRight, out leftSlot, out rightSlot);
 
                 // Collect from the three known infantry slots directly.
                 // Avoid IsInfantryFormation check — QuerySystem can be stale right after
@@ -147,6 +150,32 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
         _rangedCavalry = ChooseAndSortByPriority(nonEmptyFormations, (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 
         IsTacticReapplyNeeded = true;
+    }
+
+    // An EMPTY formation reads as infantry (every unit ratio is 0, and IsInfantryFormation is ratio >= ratio),
+    // so taking the first two slots in index order let a formation that had just emptied -- e.g. two horse
+    // archers losing their horses -- steal a flank slot on the re-run. The flank it displaced was no longer
+    // referenced by the tactic and kept its ProtectFlank weights for the rest of the battle: it never charged.
+    // So the previous flanks keep their slots and sides, and an open slot prefers a formation that has men.
+    internal static void PickFlankSlots(List<Formation> flankingSlots, Formation previousLeft, Formation previousRight, out Formation leftSlot, out Formation rightSlot)
+    {
+        leftSlot = flankingSlots.Contains(previousLeft) ? previousLeft : null;
+        rightSlot = flankingSlots.Contains(previousRight) ? previousRight : null;
+        foreach (Formation f in flankingSlots.OrderBy((Formation slot) => slot.CountOfUnits > 0 ? 0 : 1))
+        {
+            if (f == leftSlot || f == rightSlot)
+            {
+                continue;
+            }
+            if (leftSlot == null)
+            {
+                leftSlot = f;
+            }
+            else if (rightSlot == null)
+            {
+                rightSlot = f;
+            }
+        }
     }
 
     private bool _hasBattleBeenJoined;
