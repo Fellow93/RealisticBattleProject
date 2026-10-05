@@ -19,7 +19,7 @@ namespace RBMAI
         /// skill with the weapon in hand (RBMConfig.SkillDamage.GetKickBashSkill). Chances are relative: they scale
         /// with the attacker's share of the two fighters' skills (RelativeSkill).
         ///
-        /// Attempt (AI only, AiKickBashComponent): both men on foot, target close and in front, per-agent cooldown
+        /// Attempt (AI only, AiKickBashComponent): both men on foot, target an enemy, close and in front, no friend in reach in front (FriendClearCosine), per-agent cooldown
         /// up, cost affordable, target not knocked down, then a relative-skill roll; more likely from behind and
         /// against a target whose posture is broken or nearly so. It needs an opening: the target is blocking,
         /// holding his weapon ready, showing his back, or his posture is broken or nearly so (NearBrokenPostureShare).
@@ -56,6 +56,10 @@ namespace RBMAI
 
             // The target has to be in front (cosine of the angle between facing and the direction to him).
             public const float FacingCosine = 0.85f;
+
+            // No attempt while a friend stands within TriggerDistance and in front closer than this (cosine; 0.7 =
+            // within about 45 degrees): the kick/bash could land on him.
+            public const float FriendClearCosine = 0.7f;
 
             // A man with his shield raised, facing the attacker closer than this (cosine; 0.5 = within 60 degrees), is
             // kicked, never bashed.
@@ -496,8 +500,9 @@ namespace RBMAI
                     return false;
                 }
                 Agent target = Agent.GetTargetAgent();
-                // Nothing to kick over in a man already down.
-                if (target == null || !target.IsActive() || target.MountAgent != null || AiKickBash.IsKnockedDown(target))
+                // The target is not always an enemy: a banner bearer's is parked on a squadmate (TickPatches) to keep him
+                // from swinging at a distant enemy. Nothing to kick over in a man already down.
+                if (target == null || !target.IsActive() || !Agent.IsEnemyOf(target) || target.MountAgent != null || AiKickBash.IsKnockedDown(target))
                 {
                     return false;
                 }
@@ -508,7 +513,41 @@ namespace RBMAI
                     return false;
                 }
                 // No opening and no skill lead: not an attempt at all, so the cooldown is not spent on it.
-                return OpeningFactor(target) > 0f;
+                if (OpeningFactor(target) <= 0f)
+                {
+                    return false;
+                }
+                // Last, as it is the one engine query: the kick hits whatever is in its reach, not just the target.
+                return !FriendInTheWay();
+            }
+
+            // Main thread only (OnTick); reused so a check allocates nothing.
+            private static readonly MBList<Agent> NearbyFriends = new MBList<Agent>();
+
+            // A friend within kick reach and in front of this man, where the kick/bash could land on him instead.
+            private bool FriendInTheWay()
+            {
+                if (Agent.Team == null)
+                {
+                    return false;
+                }
+                Vec2 position = Agent.Position.AsVec2;
+                Vec2 facing = Agent.GetMovementDirection();
+                Agent.Mission.GetNearbyAllyAgents(position, AiKickBash.TriggerDistance, Agent.Team, NearbyFriends);
+                foreach (Agent friend in NearbyFriends)
+                {
+                    if (friend == Agent || !friend.IsActive())
+                    {
+                        continue;
+                    }
+                    Vec2 toFriend = friend.Position.AsVec2 - position;
+                    float distance = toFriend.Normalize();
+                    if (distance <= AiKickBash.TriggerDistance && facing.DotProduct(toFriend) >= AiKickBash.FriendClearCosine)
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
 
             // A raised shield stops a shield/weapon bash (only a kick gets past it), so a bash is for a man without a
