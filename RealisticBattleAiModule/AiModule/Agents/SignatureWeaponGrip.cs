@@ -217,7 +217,9 @@ namespace RBMAI
             private volatile bool _suspended;
 
             // Throwing weapons are only allowed out while the current target is at throwing distance; otherwise the
-            // engine periodically draws the axe with nothing to throw at.
+            // engine periodically draws the axe with nothing to throw at. No upper bound for a rider: the native
+            // mounted AI draws javelins well beyond ThrowWindowMax, and swapping them back to the lance there made
+            // Vanguard Faris dither on a charge and stand still after taking a position.
             private const float ThrowWindowMin = 6f;
             private const float ThrowWindowMax = 25f;
 
@@ -304,7 +306,7 @@ namespace RBMAI
                 if (target != null && target.IsActive())
                 {
                     float distance = Agent.Position.Distance(target.Position);
-                    inThrowWindow = distance >= ThrowWindowMin && distance <= ThrowWindowMax;
+                    inThrowWindow = distance >= ThrowWindowMin && (distance <= ThrowWindowMax || Agent.HasMount);
                 }
                 _inThrowWindow = inThrowWindow;
 

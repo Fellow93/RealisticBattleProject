@@ -21,6 +21,7 @@
 - Kicks, shield bashes and pommel strikes that hit a block now drain the blocker's posture as unarmed attacks, as intended, instead of as a swing of the weapon in hand. A kick from a man holding a two-handed axe no longer drains a blocker like an axe blow.
 - A kick or bash now costs the kicker only its cost when he starts it (20 posture and 50 stamina, less with skill), wherever it lands. A kick that landed used to cost him posture and stamina a second time.
 - Unarmed overhead attacks now cost as much posture as unarmed swings and thrusts.
+- Aserai Vanguard Faris no longer stand in place on a charge order. RBM forced their lance back into their hands whenever they drew a javelin more than 25 m from their target, so they kept swapping weapons and never charged. Riders now keep a drawn javelin at any range beyond 6 m, and still charge with the lance in both hands.
 
 ### Campaign
 - Clothing, armor and horse armor workshops make twice as many items from the same materials.
