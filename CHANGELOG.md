@@ -11,6 +11,7 @@
 - **Attackers keep advancing:** in field battles the attacking side could stop and stand in place after a reinforcement wave or a change of tactic. Its formations now regroup for at most 10 seconds at a time while advancing. While its archers shoot, its infantry keeps walking forward (6 m every 4 seconds) instead of holding, and without usable archers it simply advances. Enemy cavalry more than 150 m away no longer makes it stop and brace.
 - The rally after reinforcements now lasts at most 45 seconds and can't start again for 30 seconds. Men still spawning or stuck on terrain no longer keep a formation standing where the wave entered.
 - Soldiers who swam into deep water no longer stand frozen there after a charge order.
+- Rear ranks of a charging infantry line follow the men in front instead of stepping back or sideways. A friend ahead who is still moving toward the enemy now counts as only a quarter of an obstacle; once he stops to fight he counts in full again.
 - In first person, posture tiredness now staggers the player backward, so the camera no longer looks through your own body. AI soldiers and third-person players keep the forward stagger.
 
 ### Campaign
