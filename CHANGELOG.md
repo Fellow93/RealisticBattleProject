@@ -29,6 +29,7 @@
 
 ### Translations
 - **Most of the remaining English-only text can now be translated** (thanks to OhMyMike57, who maintains the Traditional Chinese translation): the ledger's column headings, tabs, tooltips and income/expense categories, the settlement spending bubbles on the map, supply caravan names, the RBM lines in building tooltips, the custom battle preset prompts, the whole auto-resolve battle chronicle (phases, flavor lines, kills and hero events), the posture/stamina bar titles, the starvation notice, and every settings label, hint and option caption. The English language template lists 176 texts that translators had no way to find before.
+- The "Vlandia Lance" is now named "Vlandian Lance". The English language template now has the current names of the lighter eastern and repeating crossbows, and the plural names of plain ceramics, decorated pottery, ale and sheep herds (thanks to DivineOblivion).
 - A translation can ship its own CHANGELOG.md in its language folder. It is shown only while it covers the newest release; otherwise the English changelog is shown.
 
 ## v4.5.3 (changes since v4.5.2)
