@@ -282,10 +282,11 @@ Serialized via `SyncData`:
 - `RBM_troopLuxuryCooldown` — when each stack may indulge again (`TroopUpkeep`).
 - `RBM_townTroopTrade` — what troops have spent in each town (`TroopMarketFeedback`).
 - `RBM_partyUpgradeCapGold`, `RBM_partyUpgradeCapEnabled` — per-party daily upgrade-gold caps (`PartyUpgradeBudget`).
-- `RBM_clanEventGoldByDay`, `RBM_clanEventGoldFirstDay` — the 14-day event-gold record (`ClanEventGoldLedger`).
+- `RBM_clanEventGoldByDay`, `RBM_clanEventGoldFirstDay` — the 14-day event-gold record (`ClanEventGoldLedger`; currently unread).
 - `RBM_settlementWealth` — the town/castle treasury pot (`SettlementWealth`; citizen wealth rides on vanilla's `Gold`, as does a village's single purse).
 - `RBM_settlementRecruitPool` — each settlement's manpower pool (`RecruitPool`); a settlement with no entry starts full.
 - `RBM_constructionToolDebt`, `RBM_pendingWealthTaxIncome`, `RBM_campaignSeeded` — construction, wealth tax and the one-time seeding flag.
+- `RBM_wealthTaxBookedFiefs`, `RBM_pendingGarrisonMaintSubsidy`, `RBM_garrisonMaintBookedFiefs` — which fiefs have booked today's wealth tax, and the owner's garrison-maintenance subsidy booked but not yet charged on the clan apply pass (`SettlementAccrualPool`).
 - `RBM_caravan*` (`RBMCaravanRegister`, `RBMCaravanInvestment`) and `RBM_town*Hist` / `RBM_village*Hist` (the Ledger's histories).
 
 ⚠️ A persisted store must be reset in its behavior's **constructor**, not from `OnSessionLaunched`:
@@ -365,7 +366,8 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Spoils/MaintenancePartyWageLine.cs` / `MaintenanceTroopTooltipLine.cs` | Maintenance in the party-wage tooltip and, per man, in the troop tooltip (display only). |
 | `Spoils/SpoilsTransferOnPartyScreen.cs` | Purse follows men moved on the party screen. |
 | `Spoils/SpoilsTransferOnSpecialScreens.cs` | Purse follows men on the two screens with no left owner party: garrison donation and creating a companion's clan party. |
-| `Finance/ClanEventGoldLedger.cs` | 14-day record of the gold paid to the player's clan per event (leader's cut, companions' share, mint cuts, gold-paid promotions), averaged into the finance breakdown. Display only. |
+| `Finance/ClanEventGoldLedger.cs` | 14-day record of the gold paid to the player's clan per event (leader's cut, companions' share, mint cuts, gold-paid promotions). Not on any finance breakdown (that gold is never on the apply pass); currently unread. |
+| `Finance/SettlementAccrualPool.cs` | Per-clan pool of money fief ticks book for the clan's next finance apply pass, plus which fiefs have booked their day, so the display can project exactly what the next apply settles. Used by the wealth tax and the garrison maintenance subsidy. |
 | `Finance/FiefProfitLines.cs` | Per-fief rows: the Fiefs tab's dead Tariffs row becomes the fief's wealth tax / castle surplus, Garrison Wages becomes the owner's residual after the treasury pays, both with hints; town management gets an owner-income row. Display only. |
 | `Finance/ClanFinanceTabLines.cs` | Deferred postfixes on `CalculateClanIncome` / `CalculateClanExpenses` so the Clan screen's Finances tab totals carry every RBM line the denar tooltip does. |
 

@@ -235,7 +235,8 @@ namespace RBMCampaign
         /// <list type="number">
         /// <item>capital, while the shop is above <c>CapitalLowLimit</c>;</item>
         /// <item>the player owner's own gold -- vanilla's signal that an undercapitalised shop is billed
-        /// to its owner, which is also what the clan finance expense line reports;</item>
+        /// to its owner. Under <c>CapitalLowLimit</c> that bill is the clan finance model's workshop
+        /// expense line, taken on the player clan's apply pass, so nothing is deducted here;</item>
         /// <item>capital again, if it covers the bill;</item>
         /// <item>bankruptcy, charging nothing: vanilla hands the shop to a new owner instead, and the
         /// capital goes with it.</item>
@@ -284,9 +285,17 @@ namespace RBMCampaign
             }
             else if (shop.Owner != null && shop.Owner == Hero.MainHero && shop.Owner.Gold >= overhead)
             {
-                // Mirrors vanilla's own write (WCB:738): the owner's pocket, not a GiveGoldAction, so no
-                // clan-income event fires for what is an expense.
-                shop.Owner.Gold -= overhead;
+                // The player's own pocket. Where the clan finance model already bills this shop -- every
+                // Hero.MainHero workshop under CapitalLowLimit, on the player clan's apply pass
+                // (DefaultClanFinanceModel.AddPlayerExpenseForWorkshops) -- taking it here too charged the
+                // overhead twice a day, a double bill copied from vanilla (WCB:738). Then the apply pass
+                // is the payment and the citizens below are credited the same sum. Only the edge the model
+                // misses (capital at or above the low limit but under the overhead) is still taken here,
+                // from the pocket rather than a GiveGoldAction so no clan-income event fires for an expense.
+                if (shop.Capital >= lowLimit)
+                {
+                    shop.Owner.Gold -= overhead;
+                }
             }
             else if (shop.Capital >= overhead)
             {

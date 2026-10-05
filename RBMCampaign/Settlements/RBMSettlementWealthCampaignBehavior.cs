@@ -20,6 +20,7 @@ namespace RBMCampaign
         {
             SettlementWealth.Reset();
             WealthTax.ResetForNewSession();
+            GarrisonSubsidy.ResetForNewSession();
             MilitiaUpkeep.ResetForNewSession();
             Construction.Reset();
         }
@@ -167,6 +168,9 @@ namespace RBMCampaign
             // The wealth-tax income owed but not yet paid to lords rides in the same store, so a save in
             // that window credits them on load rather than dropping coin the market already gave up.
             WealthTax.SyncData(dataStore);
+            // Likewise the garrison maintenance owners have been booked for but not yet charged: the
+            // market was already paid for that mending, so the bill must survive a save.
+            GarrisonSubsidy.SyncData(dataStore);
             // The tool wear each building site is carrying, which must survive a save or a reload would
             // clear a debt the fief has genuinely run up. See Construction.
             Construction.SyncData(dataStore);

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.Localization;
 
 namespace RBMCampaign
 {
@@ -20,16 +19,16 @@ namespace RBMCampaign
 
     /// <summary>
     /// A rolling record of the gold RBM pays the player's clan -- or takes from it -- per EVENT rather than
-    /// per day, so the clan finance breakdown can show it. The leader's cut of spoils, the companions' share,
-    /// a mint's cut and a clan party's gold-paid promotions all move through <c>GiveGoldAction</c> the moment
-    /// they happen, which the finance model never sees; without this they are the largest swings in the
-    /// player's purse that the Daily Gold Change cannot account for.
+    /// per day. The leader's cut of spoils, the companions' share, a mint's cut and a clan party's gold-paid
+    /// promotions all move through <c>GiveGoldAction</c> the moment they happen, which the finance model
+    /// never sees. <see cref="DailyAverage"/> reads a <see cref="WindowDays"/>-day daily average of each kind.
     ///
-    /// What the breakdown shows is a <see cref="WindowDays"/>-day daily average, labelled as such: a battle
-    /// does not come every day, so "today's" figure would be a meaningless spike, but the average is an honest
-    /// projection of what the clan's fighting has been earning it. Display only -- the gold was paid when the
-    /// event fired, so nothing here is ever applied to the clan's gold again. Player clan only: no one reads an
-    /// AI clan's finance screen, so the store stays tiny.
+    /// NOT shown on any finance breakdown, and it must not be: those breakdowns are projections of what the
+    /// clan's daily apply pass will do, and this gold is never on that pass -- it was paid when the event
+    /// fired. Folding its averages into the denar tooltip and the Finances tab's Expected Gold made both
+    /// promise a daily change the day never paid. Nothing reads the record at present; it is kept recording
+    /// (and its save keys kept) for a reader that reports it as what it is -- past event income -- rather
+    /// than ripped out of existing saves. Player clan only, so the store stays tiny.
     /// </summary>
     public static class ClanEventGoldLedger
     {
@@ -97,40 +96,6 @@ namespace RBMCampaign
                 days = 1;
             }
             return (int)Math.Round((double)sum / days);
-        }
-
-        /// <summary>
-        /// Adds the averaged event lines to a finance breakdown: the gains when <paramref name="income"/> is
-        /// set, the drains when <paramref name="expense"/> is. Display only; the caller guards the pass.
-        /// </summary>
-        public static void AddDisplayLines(ref ExplainedNumber breakdown, bool income, bool expense)
-        {
-            if (!RBMConfig.RBMConfig.rbmCampaignEnabled)
-            {
-                return;
-            }
-            if (income)
-            {
-                AddLine(ref breakdown, EventGoldKind.LeaderCut, 1, "{=RBM_fin_leader_cut}Your cut of the spoils ({DAYS}-day avg.)");
-                AddLine(ref breakdown, EventGoldKind.CompanionSpoils, 1, "{=RBM_fin_companion_spoils}Companions' spoils share ({DAYS}-day avg.)");
-                AddLine(ref breakdown, EventGoldKind.Minting, 1, "{=RBM_fin_minting}Mint revenue ({DAYS}-day avg.)");
-            }
-            if (expense)
-            {
-                AddLine(ref breakdown, EventGoldKind.UpgradeGold, -1, "{=RBM_fin_upgrade_gold}Clan party promotions paid in gold ({DAYS}-day avg.)");
-            }
-        }
-
-        private static void AddLine(ref ExplainedNumber breakdown, EventGoldKind kind, int sign, string text)
-        {
-            int average = DailyAverage(kind);
-            if (average <= 0)
-            {
-                return;
-            }
-            TextObject label = new TextObject(text);
-            label.SetTextVariable("DAYS", WindowDays);
-            breakdown.Add(sign * average, label);
         }
 
         private static int Today()

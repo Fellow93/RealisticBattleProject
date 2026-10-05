@@ -16,11 +16,13 @@ namespace RBMCampaign
     /// Expenses" / "Expected Gold" figures come from the two SEPARATE wrappers <c>CalculateClanIncome</c> and
     /// <c>CalculateClanExpenses</c> (<c>ClanManagementVM.RefreshDailyValues</c>), which none of those
     /// postfixes touch, so the tab silently omitted all of RBM's money. This routes the same lines into
-    /// whichever wrapper their sign belongs to, display pass only, player clan only.
+    /// whichever wrapper their sign belongs to, display pass only, player clan only. Each line reads the
+    /// same projection its <c>CalculateClanGoldChange</c> postfix shows, so the tab's Expected Gold is what
+    /// the apply pass will actually do.
     ///
-    /// It also books the event-paid gold <see cref="ClanEventGoldLedger"/> averages -- the leader's cut of
-    /// spoils, the companions' share, mint cuts, gold-paid promotions -- into all three calls, so the sources
-    /// the player gets most of his gold from finally show on the breakdown.
+    /// Event-paid gold -- the leader's cut of spoils, the companions' share, mint cuts, gold-paid promotions
+    /// -- is deliberately NOT here: it reaches the purse when the event fires, never on the apply pass, so a
+    /// recent average of it in the breakdown made Expected Gold promise a daily change the day never paid.
     /// </summary>
     /// <remarks>
     /// Held out of <c>PatchAll</c> and applied from <see cref="ApplyDeferred"/> once a game is live, for the
@@ -42,9 +44,6 @@ namespace RBMCampaign
             harmony.Patch(
                 AccessTools.Method(typeof(DefaultClanFinanceModel), "CalculateClanExpenses"),
                 postfix: new HarmonyMethod(AccessTools.Method(typeof(ClanFinanceTabLines), nameof(ExpensesPostfix))));
-            harmony.Patch(
-                AccessTools.Method(typeof(DefaultClanFinanceModel), "CalculateClanGoldChange"),
-                postfix: new HarmonyMethod(AccessTools.Method(typeof(ClanFinanceTabLines), nameof(GoldChangePostfix))));
         }
 
         private static bool IsPlayerDisplayPass(Clan clan, bool applyWithdrawals)
@@ -53,23 +52,22 @@ namespace RBMCampaign
                 && RBMConfig.RBMConfig.rbmCampaignEnabled;
         }
 
-        /// <summary>The Finances tab's income total: RBM's revenue lines plus the averaged event gains.</summary>
+        /// <summary>The Finances tab's income total: RBM's revenue lines.</summary>
         private static void IncomePostfix(Clan clan, bool applyWithdrawals, ref ExplainedNumber __result)
         {
             if (!IsPlayerDisplayPass(clan, applyWithdrawals))
             {
                 return;
             }
-            int wealthTax = WealthTax.GetClanDailyOwnerIncome(clan);
+            int wealthTax = WealthTax.ProjectNextOwnerPayment(clan);
             if (wealthTax > 0)
             {
                 __result.Add(wealthTax, new TextObject("{=RBM_wealth_income}Settlement wealth tax"));
             }
             MercenaryContractPay.AddDisplayLines(clan, ref __result, income: true, expense: false);
-            ClanEventGoldLedger.AddDisplayLines(ref __result, income: true, expense: false);
         }
 
-        /// <summary>The Finances tab's expense total: RBM's cost lines plus the averaged event drains.</summary>
+        /// <summary>The Finances tab's expense total: RBM's cost lines.</summary>
         private static void ExpensesPostfix(Clan clan, bool applyWithdrawals, ref ExplainedNumber __result)
         {
             if (!IsPlayerDisplayPass(clan, applyWithdrawals))
@@ -81,26 +79,12 @@ namespace RBMCampaign
                 MaintenanceResult projected = SpoilsPool.ChargeClanMaintenance(clan, apply: false);
                 SpoilsPool.AddMaintenanceBreakdown(ref __result, projected, -1f);
             }
-            int subsidies = GarrisonSubsidy.PaidTodayBy(clan);
+            int subsidies = GarrisonSubsidy.ProjectNextOwnerMaintenance(clan);
             if (subsidies > 0)
             {
-                __result.Add(-subsidies, new TextObject("{=rbm_garr_subsidy_line}Garrison subsidies"));
+                __result.Add(-subsidies, GarrisonSubsidyFinanceLine.Label());
             }
             MercenaryContractPay.AddDisplayLines(clan, ref __result, income: false, expense: true);
-            ClanEventGoldLedger.AddDisplayLines(ref __result, income: false, expense: true);
-        }
-
-        /// <summary>
-        /// The denar tooltip and Daily Gold Change breakdown. Only the event averages go here -- the other
-        /// RBM lines already reach this call through their own postfixes.
-        /// </summary>
-        private static void GoldChangePostfix(Clan clan, bool applyWithdrawals, ref ExplainedNumber __result)
-        {
-            if (!IsPlayerDisplayPass(clan, applyWithdrawals))
-            {
-                return;
-            }
-            ClanEventGoldLedger.AddDisplayLines(ref __result, income: true, expense: true);
         }
     }
 }

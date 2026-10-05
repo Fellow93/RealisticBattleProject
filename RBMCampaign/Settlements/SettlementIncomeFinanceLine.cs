@@ -18,9 +18,11 @@ namespace RBMCampaign
     /// The apply leg runs for EVERY clan, not just the player: every clan's fiefs accrue this income and
     /// must be paid it, exactly as <see cref="MaintenanceFinanceLine"/> charges every clan's maintenance
     /// on the apply pass. Consuming the pool there is what turns it into gold, and it is drained once so
-    /// the pay happens once. The display leg is player-only and cosmetic -- it reads the stable last-day
-    /// figure (the pending pool empties to zero the moment the clan is paid, so it would flicker), moves
-    /// no coin, and only makes the breakdown read true between payments.
+    /// the pay happens once. The display leg is player-only and moves no coin: it shows what the NEXT
+    /// apply pass will pay (<see cref="WealthTax.ProjectNextOwnerPayment"/>) -- the levies already in the
+    /// pool, plus the owner's share of the next levy of every fief that has not ticked since the clan was
+    /// last paid, projected off its current balance by the same formula the levy uses. Not yesterday's
+    /// take: a hoarding town's surplus shrinks by a fifth a day, so that figure ran a quarter high.
     /// </remarks>
     public static class SettlementIncomeFinanceLine
     {
@@ -47,15 +49,15 @@ namespace RBMCampaign
                     return;
                 }
 
-                // Display only, and only the player reads a finance breakdown. The stable last-day figure,
-                // not the volatile pending pool; nothing is consumed and no coin moves. Named apart from
-                // vanilla's trade-based "Settlement Income" line so the two read as the distinct taxes they
-                // are (this the stock levy, that the trade one).
+                // Display only, and only the player reads a finance breakdown. What the next apply pass
+                // will pay; nothing is consumed and no coin moves. Named apart from vanilla's trade-based
+                // "Settlement Income" line so the two read as the distinct taxes they are (this the stock
+                // levy, that the trade one).
                 if (clan != Clan.PlayerClan)
                 {
                     return;
                 }
-                int income = WealthTax.GetClanDailyOwnerIncome(clan);
+                int income = WealthTax.ProjectNextOwnerPayment(clan);
                 if (income > 0)
                 {
                     __result.Add(income, new TextObject("{=RBM_wealth_income}Settlement wealth tax"));

@@ -3,7 +3,6 @@ using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Library;
-using System.Collections.Generic;
 
 namespace RBMCampaign
 {
@@ -38,7 +37,10 @@ namespace RBMCampaign
     ///   the town trading its way back up. Castles have no such pot at all.
     ///
     /// Money is conserved throughout: every denar this hands over is actually taken from a purse, and the
-    /// caller is told exactly how much came from where so it can pay it over to whoever did the work.
+    /// caller is told exactly how much came from where so it can pay it over to whoever did the work. The
+    /// owner's MAINTENANCE share is the one leg taken late rather than on the spot: it is booked to his
+    /// clan and charged on the clan's next finance apply pass, so the recurring bill shows in the Daily
+    /// Gold Change and the finance breakdown can project it (see <see cref="GarrisonSubsidyFinanceLine"/>).
     /// </summary>
     public static class GarrisonSubsidy
     {
@@ -75,11 +77,14 @@ namespace RBMCampaign
             Upgrade
         }
 
-        // clanId -> gold the clan's leader handed over in garrison subsidies today. NOT persisted and not
-        // authoritative for anything: it exists so the player's clan finance breakdown can show the drain
-        // he is paying (see GarrisonSubsidyFinanceLine). Rolled the moment the campaign day changes.
-        private static readonly Dictionary<string, int> _paidToday = new Dictionary<string, int>();
-        private static int _tallyDay = int.MinValue;
+        // The owner's share of garrison MAINTENANCE, booked on each fief's daily tick and charged on the
+        // owning clan's next finance apply pass (GarrisonSubsidyFinanceLine), the way the wealth tax is
+        // paid. Running the recurring bill through CalculateClanGoldChange is what puts it in the Daily
+        // Gold Change and lets the breakdown project the next charge exactly; taking it straight from the
+        // leader's gold mid-day did neither. SERIALIZED: the market was paid on the tick, so a save taken
+        // before the apply must still bill the owner on load. Promotions are NOT booked here -- they are
+        // one-off, gated on the gold in hand, and are charged on the spot in Cover.
+        private static readonly SettlementAccrualPool _pendingMaintenance = new SettlementAccrualPool();
 
         /// <summary>
         /// True when this fief's owner has been told to carry the garrison's running costs -- the fief's
@@ -134,9 +139,11 @@ namespace RBMCampaign
             {
                 return 0;
             }
-            // The player meant it and may spend to zero; an AI clan pays only out of surplus.
+            // The player meant it and may spend to zero; an AI clan pays only out of surplus. Maintenance
+            // already booked but not yet charged is as good as spent, so it comes off the purse first --
+            // otherwise a clan's fiefs could each promise the same gold before the apply pass takes it.
             int floor = (fief.OwnerClan == Clan.PlayerClan) ? 0 : AiOwnerGoldFloor;
-            int spendable = payer.Gold - floor;
+            int spendable = payer.Gold - floor - _pendingMaintenance.Pending(fief.OwnerClan);
             if (spendable <= 0)
             {
                 return 0;
@@ -156,6 +163,16 @@ namespace RBMCampaign
             }
             int excess = SettlementWealth.GetCitizenWealth(fief) - CitizenReserveFloor;
             return (excess > 0) ? excess : 0;
+        }
+
+        /// <summary>
+        /// How much of <paramref name="shortfall"/> the owner covers: all of it, up to his
+        /// <see cref="OwnerCapacity"/>. The one split <see cref="Cover"/> charges with and the finance
+        /// projection (<see cref="GarrisonUpkeep.ProjectOwnerMaintenance"/>) reads, so the two agree.
+        /// </summary>
+        public static int OwnerShare(Settlement fief, int shortfall, Purpose purpose, int ownerCap)
+        {
+            return (shortfall <= 0) ? 0 : MathF.Min(shortfall, OwnerCapacity(fief, purpose, ownerCap));
         }
 
         /// <summary>
@@ -201,10 +218,15 @@ namespace RBMCampaign
         /// the shortfall -- what is left simply goes unpaid, exactly as before.
         /// </summary>
         /// <remarks>
-        /// The owner's gold is destroyed rather than transferred (<c>GiveGoldAction</c> with a null
-        /// recipient): it is not moved into the fief's treasury, because the treasury is not the thing
-        /// being paid -- the men and the market are, and the caller pays them the sum reported here. One
-        /// transfer, not two, so nothing is minted in between.
+        /// The owner's gold is destroyed rather than transferred: it is not moved into the fief's treasury,
+        /// because the treasury is not the thing being paid -- the men and the market are, and the caller
+        /// pays them the sum reported here. One transfer, not two, so nothing is minted in between.
+        ///
+        /// HOW the owner pays depends on the purpose. A promotion is taken from his gold on the spot
+        /// (<c>GiveGoldAction</c> with a null recipient), because whether it happens at all hangs on the
+        /// gold he has now. Maintenance is a recurring daily bill, so it is booked to his clan instead and
+        /// charged on its next finance apply pass (<see cref="ConsumePendingMaintenance"/>): the same coin,
+        /// leaving his purse a few hours later, through the Daily Gold Change.
         /// </remarks>
         public static int Cover(Settlement fief, int shortfall, Purpose purpose, int ownerCap,
             out int ownerPaid, out int citizensPaid)
@@ -216,15 +238,21 @@ namespace RBMCampaign
                 return 0;
             }
 
-            int fromOwner = MathF.Min(shortfall, OwnerCapacity(fief, purpose, ownerCap));
+            int fromOwner = OwnerShare(fief, shortfall, purpose, ownerCap);
             if (fromOwner > 0)
             {
                 Hero payer = PayerOf(fief);
                 if (payer != null)
                 {
-                    GiveGoldAction.ApplyBetweenCharacters(payer, null, fromOwner, true);
+                    if (purpose == Purpose.Maintenance)
+                    {
+                        _pendingMaintenance.Accrue(fief, fief.OwnerClan, fromOwner);
+                    }
+                    else
+                    {
+                        GiveGoldAction.ApplyBetweenCharacters(payer, null, fromOwner, true);
+                    }
                     ownerPaid = fromOwner;
-                    RecordOwnerSubsidy(fief.OwnerClan, fromOwner);
                 }
             }
 
@@ -267,48 +295,49 @@ namespace RBMCampaign
             return null;
         }
 
-        // ---- Daily owner tally (display only) ---------------------------------------------------------
+        // ---- Owner maintenance, charged through the finance model ---------------------------------------
 
-        /// <summary>Notes gold an owner handed over today, so the player's finance breakdown can show it.</summary>
-        private static void RecordOwnerSubsidy(Clan clan, int gold)
+        /// <summary>
+        /// Marks a fief's maintenance day as assessed, whatever the owner's share came to (usually nothing),
+        /// so the finance projection stops counting the fief until its owner's next apply pass. Called at
+        /// the top of every <see cref="GarrisonUpkeep.ChargeMaintenance"/>; the share itself, when there is
+        /// one, is booked by <see cref="Cover"/>.
+        /// </summary>
+        public static void MarkMaintenanceAssessed(Settlement fief)
         {
-            if (clan == null || gold <= 0)
-            {
-                return;
-            }
-            RollDayIfNeeded();
-            int paid;
-            _paidToday.TryGetValue(clan.StringId, out paid);
-            _paidToday[clan.StringId] = paid + gold;
+            _pendingMaintenance.Accrue(fief, null, 0);
         }
 
-        /// <summary>Gold this clan has paid in garrison subsidies today -- maintenance and promotions.</summary>
-        public static int PaidTodayBy(Clan clan)
+        /// <summary>
+        /// Hands over the maintenance subsidy the clan's fiefs booked since its last apply pass, and empties
+        /// the pool. Called once per clan per day from the apply pass, which charges the returned sum to the
+        /// leader as a negative line; every point of it is maintenance a market has already been paid for.
+        /// </summary>
+        internal static int ConsumePendingMaintenance(Clan clan)
         {
-            if (clan == null)
-            {
-                return 0;
-            }
-            RollDayIfNeeded();
-            int paid;
-            return _paidToday.TryGetValue(clan.StringId, out paid) ? paid : 0;
+            return _pendingMaintenance.Consume(clan);
         }
 
-        // Clears the tally the first time it is touched after the campaign day rolls over -- the same
-        // day-keyed pattern PartyUpgradeBudget uses, so no event hook is needed and a mid-day reload is
-        // harmless (the figure is cosmetic).
-        private static void RollDayIfNeeded()
+        /// <summary>
+        /// What the clan's next apply pass will charge it in garrison maintenance subsidies: what its fiefs
+        /// have already booked, plus the projected owner share of every fief that has not ticked since
+        /// (<see cref="GarrisonUpkeep.ProjectOwnerMaintenance"/>). The figure the finance breakdown shows.
+        /// </summary>
+        internal static int ProjectNextOwnerMaintenance(Clan clan)
         {
-            if (Campaign.Current == null)
-            {
-                return;
-            }
-            int today = (int)CampaignTime.Now.ToDays;
-            if (today != _tallyDay)
-            {
-                _paidToday.Clear();
-                _tallyDay = today;
-            }
+            return _pendingMaintenance.ProjectNext(clan, GarrisonUpkeep.ProjectOwnerMaintenance);
+        }
+
+        /// <summary>Persists the booked-but-uncharged maintenance with the settlement-wealth store.</summary>
+        internal static void SyncData(IDataStore dataStore)
+        {
+            _pendingMaintenance.SyncData(dataStore, "RBM_pendingGarrisonMaintSubsidy", "RBM_garrisonMaintBookedFiefs");
+        }
+
+        /// <summary>Drops the previous campaign's pool, before this one's save is read.</summary>
+        internal static void ResetForNewSession()
+        {
+            _pendingMaintenance.Reset();
         }
     }
 }

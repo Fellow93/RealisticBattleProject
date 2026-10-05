@@ -226,15 +226,13 @@ namespace RBMCampaign
                 {
                     continue;
                 }
-                Settlement creditor = RBMCaravanRegister.FindSettlement(creditorId);
-                if (creditor == null)
+                bool creditorGone;
+                if (!IsRepayableNow(debtor, creditorId, out creditorGone))
                 {
-                    (dead ?? (dead = new List<string>())).Add(pair.Key);
-                    continue;
-                }
-                if (debtor.MapFaction != null && creditor.MapFaction != null
-                    && debtor.MapFaction.IsAtWarWith(creditor.MapFaction))
-                {
+                    if (creditorGone)
+                    {
+                        (dead ?? (dead = new List<string>())).Add(pair.Key);
+                    }
                     continue;
                 }
                 eligible.Add(new KeyValuePair<string, int>(creditorId, pair.Value));
@@ -308,6 +306,50 @@ namespace RBMCampaign
             }
 
             return distributed;
+        }
+
+        /// <summary>
+        /// What <see cref="RepayFromHoardTax"/> would take for a levy offering <paramref name="cap"/>, without
+        /// moving a coin: the debt this town owes creditors it may repay right now, capped. The pure twin
+        /// the owner's wealth-tax projection uses, so the projected split matches the levy's.
+        /// </summary>
+        public static int ProjectRepayFromHoardTax(Settlement debtor, int cap)
+        {
+            if (!IsEnabled || debtor == null || cap <= 0 || _debt.Count == 0)
+            {
+                return 0;
+            }
+            long totalOwed = 0;
+            foreach (KeyValuePair<string, int> pair in _debt)
+            {
+                SplitKey(pair.Key, out string debtorId, out string creditorId);
+                if (debtorId != debtor.StringId || pair.Value <= 0)
+                {
+                    continue;
+                }
+                bool creditorGone;
+                if (IsRepayableNow(debtor, creditorId, out creditorGone))
+                {
+                    totalOwed += pair.Value;
+                }
+            }
+            int repay = (int)Math.Min(cap, totalOwed);
+            int available = SettlementWealth.GetCitizenWealth(debtor);
+            return Math.Max(0, Math.Min(repay, available));
+        }
+
+        // A debt is repaid only to a creditor that still exists and is not at war with the debtor; a debt
+        // to an enemy waits for peace. creditorGone flags the ones that can never be repaid (forgiven).
+        private static bool IsRepayableNow(Settlement debtor, string creditorId, out bool creditorGone)
+        {
+            Settlement creditor = RBMCaravanRegister.FindSettlement(creditorId);
+            creditorGone = creditor == null;
+            if (creditorGone)
+            {
+                return false;
+            }
+            return !(debtor.MapFaction != null && creditor.MapFaction != null
+                && debtor.MapFaction.IsAtWarWith(creditor.MapFaction));
         }
 
         private static int OutstandingByDebtor(string debtorId)

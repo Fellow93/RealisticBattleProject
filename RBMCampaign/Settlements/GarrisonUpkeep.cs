@@ -231,6 +231,29 @@ namespace RBMCampaign
             return (int)(bill * BuildingEffects.MaintenanceFactor(settlement.Town));
         }
 
+        /// <summary>
+        /// The owner's share of this fief's next maintenance charge, projected off the treasury and the
+        /// owner's purse as they stand: the bill, less what the treasury holds, up to what the owner will
+        /// cover (<see cref="GarrisonSubsidy.OwnerShare"/>) -- the same split <see cref="ChargeMaintenance"/>
+        /// charges. Display only; the clan finance breakdown sums it over the fiefs yet to tick.
+        /// </summary>
+        public static int ProjectOwnerMaintenance(Settlement settlement)
+        {
+            if (!RBMConfig.RBMConfig.rbmCampaignEnabled || settlement == null || settlement.Town == null)
+            {
+                return 0;
+            }
+            int bill = MaintenanceBill(settlement);
+            if (bill <= 0)
+            {
+                return 0;
+            }
+            int available = SettlementWealth.GetSettlementWealth(settlement);
+            int fromTreasury = (available <= 0) ? 0 : (available < bill ? available : bill);
+            return GarrisonSubsidy.OwnerShare(settlement, bill - fromTreasury,
+                GarrisonSubsidy.Purpose.Maintenance, int.MaxValue);
+        }
+
         /// <summary>The garrison's full daily cost -- wage plus maintenance -- for the reserve gates that size recruiting.</summary>
         public static int EstimateDailyBill(Settlement settlement)
         {
@@ -258,6 +281,9 @@ namespace RBMCampaign
             {
                 return;
             }
+            // The fief's day is assessed now, whatever the owner ends up owing -- the finance projection
+            // stops counting it from here until its owner's next apply pass (see GarrisonSubsidy).
+            GarrisonSubsidy.MarkMaintenanceAssessed(settlement);
             MobileParty garrison = settlement.Town.GarrisonParty;
             if (garrison == null || !garrison.IsActive || garrison.MemberRoster == null)
             {
@@ -274,7 +300,8 @@ namespace RBMCampaign
 
             // What the treasury could not reach is offered to the owner (only where he has taken the
             // fief's garrison on -- an unlimited wage limit) and then to the town's burghers. Anything
-            // still short is simply that day's mending left undone, as before.
+            // still short is simply that day's mending left undone, as before. The owner's share is booked
+            // to his clan and charged on its next finance apply pass; the market below is paid for it now.
             int ownerPaid;
             int citizensPaid;
             GarrisonSubsidy.Cover(settlement, bill - paid, GarrisonSubsidy.Purpose.Maintenance,
