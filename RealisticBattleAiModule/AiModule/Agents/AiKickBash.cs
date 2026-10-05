@@ -29,7 +29,8 @@ namespace RBMAI
         /// Kick or bash: a raised shield stops a bash but not a kick, so a man with his shield raised and facing the
         /// attacker is always kicked; otherwise either.
         ///
-        /// Cost (player too): posture and stamina charged once as the action starts, hit or miss, less with skill.
+        /// Cost (player too): posture and stamina charged once as the action starts, hit or miss, less with skill. It is
+        /// the whole cost: the posture patch charges the kicker nothing more when it lands (handleAttacker).
         ///
         /// Damage (RBMCombat, DamageRework.Core): the unarmed (punch) model with the boot, shield or weapon in place
         /// of the gauntlet, so blunt, skill-scaled, by body part and against that part's armour. None for a bash
@@ -334,8 +335,8 @@ namespace RBMAI
                     return;
                 }
                 bool aiControlled = Agent.IsAIControlled;
-                // The effort of the kick/bash itself, charged once as the action starts, hit or miss (a blow that lands
-                // costs its usual posture/stamina on top, through the posture patch). The player pays it too. The native
+                // The effort of the kick/bash itself, charged once as the action starts, hit or miss, and its whole cost:
+                // the posture patch charges nothing more when it lands. The player pays it too. The native
                 // AI never kicks, so an AI man only does in an attempt of ours: his action (two engine calls) is only
                 // read while one is watched.
                 Agent.ActionCodeType action = !aiControlled || _watching ? CurrentAlternativeAttack() : Agent.ActionCodeType.Other;

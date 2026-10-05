@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using TaleWorlds.CampaignSystem.TournamentGames;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -140,6 +141,12 @@ namespace RBMAI
                 MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission,
                 float staggerActionSpeed, bool dropWeapon, bool stagger, bool resetPosture, bool tired, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
+                // A kick or bash already paid its posture and stamina as it started (AiKickBash ChargeCost), wherever it
+                // lands; charging the table cost on top made a landed kick cost the kicker ~40% of his posture.
+                if (collisionData.IsAlternativeAttack && attackerAgent.GetComponent<AgentAi.AiKickBashComponent>() != null)
+                {
+                    return;
+                }
                 if (stance != null)
                 {
                     float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
@@ -609,6 +616,24 @@ namespace RBMAI
                     : BlowFlags.None;
             }
 
+            private static readonly MethodInfo HandleBlowAuxMethod = AccessTools.Method(typeof(Agent), "HandleBlowAux");
+
+            // Vanilla HandleBlow returns before HandleBlowAux (where the engine unseats a rider) on a 0-damage blow,
+            // so a posture blow carrying CanDismount never dismounted anyone. Replay it engine-side with 1 damage;
+            // the managed health change was already skipped. RBMCombat's HandleBlowPatch already replays kicks and
+            // bashes, so don't run them twice.
+            private static void registerPostureBlow(Agent target, Blow blow, ref AttackCollisionData collisionData)
+            {
+                target.RegisterBlow(blow, collisionData);
+                bool replayedByCombat = RBMConfig.RBMConfig.rbmCombatEnabled && (blow.AttackType == AgentAttackType.Bash || blow.AttackType == AgentAttackType.Kick);
+                if (blow.InflictedDamage <= 0 && (blow.BlowFlag & BlowFlags.CanDismount) != 0 && !replayedByCombat
+                    && HandleBlowAuxMethod != null && target.IsActive() && target.HasMount)
+                {
+                    blow.InflictedDamage = 1;
+                    HandleBlowAuxMethod.Invoke(target, new object[] { blow });
+                }
+            }
+
             private static void makePostureRiposteBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag)
             {
                 Blow newBLow = blow;
@@ -632,7 +657,7 @@ namespace RBMAI
                 newBLow.SwingDirection = blow.SwingDirection;
                 //blow.InflictedDamage = 1;
                 newBLow.VictimBodyPart = collisionData.VictimHitBodyPart;
-                attackerAgent.RegisterBlow(newBLow, collisionData);
+                registerPostureBlow(attackerAgent, newBLow, ref collisionData);
                 foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {
                     missionBehaviour.OnRegisterBlow(victimAgent, attackerAgent, WeakGameEntity.Invalid, newBLow, ref collisionData, in attackerWeapon);
@@ -664,7 +689,7 @@ namespace RBMAI
                 newBLow.Direction = blow.Direction;
                 newBLow.SwingDirection = blow.SwingDirection;
                 newBLow.VictimBodyPart = collisionData.VictimHitBodyPart;
-                victimAgent.RegisterBlow(newBLow, collisionData);
+                registerPostureBlow(victimAgent, newBLow, ref collisionData);
                 foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {
                     missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, WeakGameEntity.Invalid, newBLow, ref collisionData, in attackerWeapon);
@@ -696,7 +721,7 @@ namespace RBMAI
                 newBLow.Direction = blow.Direction;
                 newBLow.SwingDirection = blow.SwingDirection;
                 newBLow.VictimBodyPart = collisionData.VictimHitBodyPart;
-                victimAgent.RegisterBlow(newBLow, collisionData);
+                registerPostureBlow(victimAgent, newBLow, ref collisionData);
                 foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {
                     missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, WeakGameEntity.Invalid, newBLow, ref collisionData, in attackerWeapon);

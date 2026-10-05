@@ -198,7 +198,7 @@ namespace RBMAI
                 float strengthSkillModifier = 500f;
                 float weaponSkillModifier = 500f;
 
-                float basePostureDamage = getDefenderPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, meleeHitType);
+                float basePostureDamage = getDefenderPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, meleeHitType, isUnarmedAttack);
 
                 //SkillObject attackerWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
                 SkillObject attackerWeaponSkill = null;
@@ -422,7 +422,7 @@ namespace RBMAI
                 float strengthSkillModifier = 500f;
                 float weaponSkillModifier = 500f;
 
-                float basePostureDamage = getAttackerPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, meleeHitType);
+                float basePostureDamage = getAttackerPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, meleeHitType, isUnarmedAttack);
 
                 SkillObject attackerWeaponSkill = null;
                 if (!isUnarmedAttack && !weapon.IsEmpty && weapon.CurrentUsageItem != null)

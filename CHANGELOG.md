@@ -17,6 +17,10 @@
 - Rear ranks of a charging infantry line follow the men in front instead of stepping back or sideways. A friend ahead who is still moving toward the enemy now counts as only a quarter of an obstacle; once he stops to fight he counts in full again.
 - When a soldier in a charging line steps back, sideways or toward a friend, he now judges the spot by where the men around him, friend or enemy, will be half a second from now. He steps into a gap a man is just leaving, and not into the path of a man walking toward that spot.
 - In first person, posture tiredness now staggers the player backward, so the camera no longer looks through your own body. AI soldiers and third-person players keep the forward stagger.
+- A rider whose posture is broken by a heavy enough blow (a third of his posture or more) is now actually knocked off his horse. The dismount was there but never happened, unless a crush-through also dealt damage.
+- Kicks, shield bashes and pommel strikes that hit a block now drain the blocker's posture as unarmed attacks, as intended, instead of as a swing of the weapon in hand. A kick from a man holding a two-handed axe no longer drains a blocker like an axe blow.
+- A kick or bash now costs the kicker only its cost when he starts it (20 posture and 50 stamina, less with skill), wherever it lands. A kick that landed used to cost him posture and stamina a second time.
+- Unarmed overhead attacks now cost as much posture as unarmed swings and thrusts.
 
 ### Campaign
 - Clothing, armor and horse armor workshops make twice as many items from the same materials.

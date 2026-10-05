@@ -36,7 +36,7 @@ namespace RBMAI
         public const float UNARMED_SWING_COST = 10f;
 
         public const float UNARMED_THRUST_COST = 10f;
-        public const float UNARME_DOVERHEAD_COST = 10f;
+        public const float UNARMED_OVERHEAD_COST = 10f;
         public const float UNARMED_SWING_DRAIN = 0f;
         public const float UNARMED_THRUST_DRAIN = 0f;
         public const float UNARMED_OVERHEAD_DRAIN = 0f;
@@ -435,10 +435,11 @@ namespace RBMAI
             return wc;
         }
 
-        public static float getDefenderPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType)
+        // A kick, shield bash or pommel strike uses the UNARMED rows, not the wielded weapon's.
+        public static float getDefenderPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType, bool isUnarmedAttack)
         {
             WeaponClass defenderWC = getDefenderWeaponClass(defender);
-            WeaponClass attackerWC = getAttackerWeaponClass(attacker);
+            WeaponClass attackerWC = isUnarmedAttack ? WeaponClass.Undefined : getAttackerWeaponClass(attacker);
 
             float defenseCost = getDefenseCost(defenderWC, hitType);
             float attackDrain = getAttackDrain(attackerWC, attackDirection, strikeType);
@@ -448,10 +449,10 @@ namespace RBMAI
             return Math.Max(0f, defenseCost + attackDrain);
         }
 
-        public static float getAttackerPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType)
+        public static float getAttackerPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType, bool isUnarmedAttack)
         {
             WeaponClass defenderWC = getDefenderWeaponClass(defender);
-            WeaponClass attackerWC = getAttackerWeaponClass(attacker);
+            WeaponClass attackerWC = isUnarmedAttack ? WeaponClass.Undefined : getAttackerWeaponClass(attacker);
 
             float attackCost = getAttackCost(attackerWC, attackDirection, strikeType);
             float defenseReflect = getDefenseReflect(defenderWC, hitType);
