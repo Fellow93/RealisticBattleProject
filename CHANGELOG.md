@@ -12,6 +12,7 @@
 - The rally after reinforcements now lasts at most 45 seconds and can't start again for 30 seconds. Men still spawning or stuck on terrain no longer keep a formation standing where the wave entered.
 - Soldiers who swam into deep water no longer stand frozen there after a charge order.
 - Rear ranks of a charging infantry line follow the men in front instead of stepping back or sideways. A friend ahead who is still moving toward the enemy now counts as only a quarter of an obstacle; once he stops to fight he counts in full again.
+- When a soldier in a charging line steps back, sideways or toward a friend, he now judges the spot by where the men around him, friend or enemy, will be half a second from now. He steps into a gap a man is just leaving, and not into the path of a man walking toward that spot.
 - In first person, posture tiredness now staggers the player backward, so the camera no longer looks through your own body. AI soldiers and third-person players keep the forward stagger.
 
 ### Campaign

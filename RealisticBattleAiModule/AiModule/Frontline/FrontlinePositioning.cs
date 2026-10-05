@@ -767,11 +767,20 @@ namespace RBMAI
             // next to -- in a formation at ~1m spacing that is always true, and every branch collapsed to
             // stand-still. Judge the step against the status quo instead: a neighbour the unit is already
             // pressed against does not block a step that keeps or widens the gap to them.
+            // Everyone (friend or enemy) is judged where he will be OccupancyLookahead from now rather than
+            // where he stands: a man walking out of the spot no longer blocks it, and one walking into it does.
+            // The shift is capped at OccupancyMaxShift and the query widened by the same amount, so every agent
+            // whose predicted spot can fall inside the probe is found, and a fast rider is not projected metres
+            // away. AverageVelocity is the engine's smoothed world-space velocity (see CountFrontBlockers).
+            private const float OccupancyProbeRadius = 0.7f;
+            private const float OccupancyLookahead = 0.5f;
+            private const float OccupancyMaxShift = 0.5f;
+
             public static bool IsPositionOccupied(Mission mission, Vec2 position, Agent self)
             {
                 Vec2 currentPosition = self.Position.AsVec2;
                 MBList<Agent> nearbyAgents = ScratchOccupancy;
-                mission.GetNearbyAgents(position, 0.7f, nearbyAgents);
+                mission.GetNearbyAgents(position, OccupancyProbeRadius + OccupancyMaxShift, nearbyAgents);
                 for (int i = 0; i < nearbyAgents.Count; i++)
                 {
                     Agent other = nearbyAgents[i];
@@ -779,8 +788,15 @@ namespace RBMAI
                     {
                         continue;
                     }
-                    Vec2 otherPosition = other.Position.AsVec2;
-                    if (otherPosition.Distance(position) < otherPosition.Distance(currentPosition))
+                    Vec2 shift = other.AverageVelocity.AsVec2 * OccupancyLookahead;
+                    float shiftLength = shift.Length;
+                    if (shiftLength > OccupancyMaxShift)
+                    {
+                        shift *= OccupancyMaxShift / shiftLength;
+                    }
+                    Vec2 otherPosition = other.Position.AsVec2 + shift;
+                    float distanceToStep = otherPosition.Distance(position);
+                    if (distanceToStep < OccupancyProbeRadius && distanceToStep < otherPosition.Distance(currentPosition))
                     {
                         return true;
                     }
