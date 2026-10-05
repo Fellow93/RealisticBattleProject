@@ -190,8 +190,9 @@ namespace RBMAI
             public bool cavalryEnemyClose = false;
             public float cavalryEnemyCloseExpiry = float.MinValue;
 
-            // Under ChargeWithTarget a rider more than 60 m from his target heads for the target's WorldPosition;
-            // resolving it is an engine call, so it is reused until it expires or the target changes.
+            // Under ChargeWithTarget a rider more than 60 m from his target heads for an aim point built off the
+            // target's WorldPosition (OverrideFormation.ChargeHeading); resolving it is an engine call, so it is
+            // reused until it expires or the target changes.
             public Agent cachedHeadingTarget = null;
             public WorldPosition cachedHeadingPosition = WorldPosition.Invalid;
             public float cachedHeadingExpiry = float.MinValue;

@@ -70,6 +70,45 @@ namespace RBMAI
                 }
             }
 
+            // Where a rider more than 60 m out steers under ChargeWithTarget: his target soldier, pulled part of the
+            // way toward the target formation's centre and led by that formation's velocity over the rider's time to
+            // get there. Steering at the soldier himself ran the outer riders of a wide wedge at the near corner and
+            // chased a moving line along a pursuit curve, so the charge glanced down its flank instead of hitting it.
+            // Parallel movement job: cached formation fields only, and one SetVec2MT on a fresh copy (no navmesh query;
+            // native re-validates a Z-invalid position itself).
+            private const float ChargeAimCentrePull = 0.3f;
+            private const float ChargeAimClosingSpeed = 11f;
+            private const float ChargeAimMaxLeadSeconds = 4f;
+            private const float ChargeAimMaxLeadSpeed = 4f;
+
+            private static WorldPosition ChargeHeading(Agent targetAgent, float distance)
+            {
+                WorldPosition heading = targetAgent.GetWorldPosition();
+                Formation targetFormation = targetAgent.Formation;
+                if (targetFormation == null)
+                {
+                    return heading;
+                }
+                Vec2 aim = heading.AsVec2;
+                Vec2 centre = Utilities.GetFormationCenter(targetFormation);
+                if (centre.IsValid)
+                {
+                    aim += (centre - aim) * ChargeAimCentrePull;
+                }
+                // CachedCurrentVelocity is a ~0.1 s difference of the unit average and jumps when men die or join; capped.
+                Vec2 velocity = targetFormation.CachedCurrentVelocity;
+                if (velocity.IsValid && velocity.LengthSquared > ChargeAimMaxLeadSpeed * ChargeAimMaxLeadSpeed)
+                {
+                    velocity = velocity.Normalized() * ChargeAimMaxLeadSpeed;
+                }
+                if (velocity.IsValid)
+                {
+                    aim += velocity * MathF.Min(distance / ChargeAimClosingSpeed, ChargeAimMaxLeadSeconds);
+                }
+                heading.SetVec2MT(aim);
+                return heading;
+            }
+
             // This prefix runs on the parallel formation-movement job. An escaping exception there does not
             // surface as a managed error -- it tears down the worker. Mirror the sibling GetDirectionOfUnit
             // postfix and swallow, falling through to native with __result untouched.
@@ -190,13 +229,13 @@ namespace RBMAI
                             float now = mission.CurrentTime;
                             if (headingState == null)
                             {
-                                __result = targetAgent.GetWorldPosition();
+                                __result = ChargeHeading(targetAgent, distance);
                             }
                             else
                             {
                                 if (headingState.cachedHeadingTarget != targetAgent || now >= headingState.cachedHeadingExpiry)
                                 {
-                                    headingState.cachedHeadingPosition = targetAgent.GetWorldPosition();
+                                    headingState.cachedHeadingPosition = ChargeHeading(targetAgent, distance);
                                     headingState.cachedHeadingTarget = targetAgent;
                                     headingState.cachedHeadingExpiry = now + MBRandom.RandomFloatRanged(0.25f, 0.5f);
                                 }

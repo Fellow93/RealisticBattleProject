@@ -11,13 +11,17 @@ using TaleWorlds.MountAndBlade;
 ///
 /// Undetermined: no enemy in reach; plain charge order until the closest enemy is within
 ///   StartChargeTimeToContactSeconds at full speed.
-/// Charging: pick a target (infantry, then archers, then per the Charge* flags), form up to its width and
+/// Charging: pick a target (AcquireTarget: type, distance and power weighted, per the Charge* flags; picked only
+///   when a charge starts, never switched mid-charge), form up to its width and
 ///   ChargeToTarget. The charge is "through" once the target centre is behind us (dot product of the initial
 ///   charge direction flips); ChargeThroughGraceSeconds later we go to ChargingPast. If the wedge is in
 ///   contact with the target for ChargeContactTimeoutSeconds without ever passing through (bogged down in the
-///   melee), it goes to ChargingPast anyway so it pulls out instead of dying in place.
-/// ChargingPast: ride on to a reform point ChargeStopDistance + target depth beyond the enemy, on the side we
-///   came out on. If the wedge is already cohesive (ReformCohesionMinRatio of riders within
+///   melee), it goes to ChargingPast anyway so it pulls out instead of dying in place. That clock starts on real
+///   fighting (ContactMeleeMinRatio of riders landed or took a melee blow within ContactMeleeRecentSeconds), not
+///   on the centre-distance contact test alone, which is met 25-30 m out against a wide line.
+/// ChargingPast: ride on to a reform point ChargeStopDistance + target depth beyond the enemy, along the
+///   initial charge direction, so a wedge that stalled on the near side rides on through instead of turning
+///   back the way it came. If the wedge is already cohesive (ReformCohesionMinRatio of riders within
 ///   ReformCohesionRadius of the centre) with RechargeMinRunUpDistance of room, skip the reform and charge
 ///   straight away; otherwise switch to Reforming on arrival or after ChargingPastTimeoutSeconds.
 /// Reforming: hold the reform point only until the wedge is cohesive with enough run-up, or
@@ -66,6 +70,22 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
     private const float StartChargeTimeToContactSeconds = 5f;
     private const float ChargeThroughGraceSeconds = 3f;
     private const float ChargeContactTimeoutSeconds = 8f;
+    private const float ContactMeleeRecentSeconds = 3f;
+    private const float ContactMeleeMinRatio = 0.2f;
+    // Target pick (AcquireTarget): lowest distance / (type weight * power weight) wins. Enemy cavalry is the
+    // preferred target, then horse archers, then archers, then infantry.
+    private const float TargetWeightCavalry = 4f;
+    private const float TargetWeightHorseArchers = 2f;
+    private const float TargetWeightArchers = 1f;
+    private const float TargetWeightInfantry = 0.5f;
+    // Power weight = sqrt(enemy FormationPower / own FormationPower), clamped: a handful of stragglers or levies
+    // is not worth the ride and a strong block is worth a somewhat longer one, without power outweighing type
+    // and distance.
+    private const float TargetPowerWeightMin = 0.3f;
+    private const float TargetPowerWeightMax = 1.25f;
+    // Facing weight for foot formations (infantry and archers): 1 when they face us, 1 + TargetRearBonus when
+    // they face directly away, linear in between (1 + bonus/2 side-on). Riders don't get it, they turn fast.
+    private const float TargetRearBonus = 1f;
     private const float ChargingPastTimeoutSeconds = 19f;
     private const float ReformTimeoutSeconds = 10f;
     private const float ReformCohesionRadius = 20f;
@@ -119,8 +139,8 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
     public bool ChargeArchers = true;
     public bool ChargeInfantry = true;
-    public bool ChargeCavalry = false;
-    public bool ChargeHorseArchers = false;
+    public bool ChargeCavalry = true;
+    public bool ChargeHorseArchers = true;
 
     public override float NavmeshlessTargetPositionPenalty => 1f;
 
@@ -187,7 +207,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                         {
                             _chargeTimer = new Timer(Mission.Current.CurrentTime, ChargeThroughGraceSeconds);
                         }
-                        if (inContact && _contactTimer == null)
+                        if (inContact && _contactTimer == null && IsFightingInMelee())
                         {
                             _contactTimer = new Timer(Mission.Current.CurrentTime, ChargeContactTimeoutSeconds);
                         }
@@ -252,6 +272,24 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         return (target.Width + target.Depth + base.Formation.Depth) * 0.5f;
     }
 
+    // LastMeleeAttackTime / LastMeleeHitTime are only set when a blow lands (Agent.UpdateLastAttackAndHitTimes),
+    // so this is riders actually trading blows, not riders still closing in.
+    private bool IsFightingInMelee()
+    {
+        float now = Mission.Current.CurrentTime;
+        int total = 0;
+        int fighting = 0;
+        base.Formation.ApplyActionOnEachUnit(agent =>
+        {
+            total++;
+            if (now - agent.LastMeleeAttackTime < ContactMeleeRecentSeconds || now - agent.LastMeleeHitTime < ContactMeleeRecentSeconds)
+            {
+                fighting++;
+            }
+        });
+        return total > 0 && fighting >= total * ContactMeleeMinRatio;
+    }
+
     private bool IsReadyToRecharge(float distToTarget)
     {
         return distToTarget >= RechargeMinRunUpDistance && IsFormationCohesive();
@@ -279,17 +317,34 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         return total > 0 && near >= total * ReformCohesionMinRatio;
     }
 
+    // One pass over every enemy formation, scored by type, distance and power. This used to take infantry
+    // whenever any existed and only look at archers when none did, so the charge went for the infantry even
+    // with archers much closer.
     private void AcquireTarget()
     {
         Formation enemy = null;
-        if (ChargeInfantry)
-            enemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, true, false, false, false, false);
-        if (enemy == null && ChargeArchers)
-            enemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, true, false, false, false);
-        if (enemy == null && ChargeHorseArchers)
-            enemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, false, false, true, false);
-        if (enemy == null && ChargeCavalry)
-            enemy = RBMAI.Utilities.FindSignificantEnemy(base.Formation, false, false, true, false, false);
+        Mission mission = Mission.Current;
+        if (mission != null)
+        {
+            float ownPower = MathF.Max(0.01f, base.Formation.QuerySystem.FormationPower);
+            float bestScore = float.MaxValue;
+            foreach (Formation candidate in OtherFormations(mission, enemiesOnly: true))
+            {
+                float typeWeight = TargetTypeWeight(candidate.QuerySystem);
+                if (typeWeight <= 0f)
+                {
+                    continue;
+                }
+                float powerWeight = MBMath.ClampFloat(MathF.Sqrt(candidate.QuerySystem.FormationPower / ownPower), TargetPowerWeightMin, TargetPowerWeightMax);
+                float facingWeight = TargetFacingWeight(candidate);
+                float score = RBMAI.Utilities.GetFormationDistance(base.Formation, candidate) / (typeWeight * powerWeight * facingWeight);
+                if (score < bestScore)
+                {
+                    bestScore = score;
+                    enemy = candidate;
+                }
+            }
+        }
 
         _lastTarget = enemy != null ? enemy.QuerySystem : base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
         _hasNewTarget = true;
@@ -299,6 +354,47 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         }
     }
 
+    // Formation.Direction is the facing its facing order sets, so a line fighting someone else or marching away
+    // reads as turned away from us.
+    private float TargetFacingWeight(Formation enemy)
+    {
+        FormationQuerySystem query = enemy.QuerySystem;
+        if (query.IsCavalryFormation || query.IsRangedCavalryFormation)
+        {
+            return 1f;
+        }
+        Vec2 toUs = RBMAI.Utilities.GetFormationCenter(base.Formation) - RBMAI.Utilities.GetFormationCenter(enemy);
+        Vec2 facing = enemy.Direction;
+        if (toUs.LengthSquared < 0.01f || facing.LengthSquared < 0.01f)
+        {
+            return 1f;
+        }
+        float dot = MBMath.ClampFloat(Vec2.DotProduct(facing.Normalized(), toUs.Normalized()), -1f, 1f);
+        return 1f + TargetRearBonus * (1f - dot) * 0.5f;
+    }
+
+    // 0 = not a charge target (its Charge* flag is off, or it fits no class).
+    private float TargetTypeWeight(FormationQuerySystem enemy)
+    {
+        if (enemy.IsRangedCavalryFormation)
+        {
+            return ChargeHorseArchers ? TargetWeightHorseArchers : 0f;
+        }
+        if (enemy.IsCavalryFormation)
+        {
+            return ChargeCavalry ? TargetWeightCavalry : 0f;
+        }
+        if (enemy.IsRangedFormation)
+        {
+            return ChargeArchers ? TargetWeightArchers : 0f;
+        }
+        if (enemy.IsInfantryFormation)
+        {
+            return ChargeInfantry ? TargetWeightInfantry : 0f;
+        }
+        return 0f;
+    }
+
     private WorldPosition ComputeReformDestination()
     {
         if (_lastTarget?.Formation == null)
@@ -306,7 +402,11 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
             return WorldPosition.Invalid;
         }
         Vec2 enemyCenter = RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation);
-        Vec2 awayDir = (RBMAI.Utilities.GetFormationCenter(base.Formation) - enemyCenter).Normalized();
+        // Beyond the target along the way we charged in. "Away from the target from where we are now" put the
+        // point back on the approach side whenever the wedge pulled out of a stalled melee before getting through.
+        Vec2 awayDir = _initialChargeDirection.LengthSquared > 0.01f
+            ? _initialChargeDirection.Normalized()
+            : (RBMAI.Utilities.GetFormationCenter(base.Formation) - enemyCenter).Normalized();
         WorldPosition dest = RBMAI.Utilities.GetFormationCenterWorldPosition(_lastTarget.Formation);
         dest.SetVec2(enemyCenter + awayDir * (ChargeStopDistanceForTactic + _lastTarget.Formation.Depth));
         return dest;
@@ -580,6 +680,10 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
     protected override void OnBehaviorActivatedAux()
     {
+        // Start a fresh charge. The state machine and its timers survive deactivation (and CalculateCurrentOrder
+        // keeps running while inactive, via PrecalculateMovementOrder), so a formation put back on the charge
+        // could otherwise go straight to ChargingPast on an old, expired timer.
+        EnterState(ChargeState.Charging);
         CalculateCurrentOrder();
         base.Formation.SetMovementOrder(base.CurrentOrder);
         base.Formation.SetFacingOrder( CurrentFacingOrder);

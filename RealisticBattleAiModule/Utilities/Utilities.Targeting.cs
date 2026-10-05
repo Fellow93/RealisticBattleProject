@@ -44,6 +44,19 @@ namespace RBMAI
                     }
                     if (formation.QuerySystem.IsCavalryFormationReadOnly && movementOrder.OrderType == OrderType.ChargeWithTarget)
                     {
+                        // A targeted cavalry charge rides at its target formation only. Picking the nearest man
+                        // across every significant formation (the target is normally one of them, so it got no
+                        // priority) sent riders at whatever stood closest -- skirmishers in front, the next block
+                        // over -- while the charge behavior measured contact and pass-through against its target.
+                        Formation chargeTarget = movementOrder.TargetFormation;
+                        if (chargeTarget != null && chargeTarget.CountOfUnits > 0)
+                        {
+                            Agent inTarget = RBMAI.Utilities.NearestAgentFromFormation(agent.Position.AsVec2, chargeTarget, skipRouting: true);
+                            if (inTarget != null)
+                            {
+                                return inTarget;
+                            }
+                        }
                         formations = RBMAI.Utilities.FindSignificantFormationsCached(formation);
                         Formation priorityFormation = null;
                         if (movementOrder.OrderType == OrderType.ChargeWithTarget && movementOrder.TargetFormation != null && !formations.Contains(movementOrder.TargetFormation))
@@ -141,7 +154,7 @@ namespace RBMAI
             return snapshot;
         }
 
-        public static Agent NearestAgentFromFormation(Vec2 unitPosition, Formation targetFormation)
+        public static Agent NearestAgentFromFormation(Vec2 unitPosition, Formation targetFormation, bool skipRouting = false)
         {
             if (targetFormation == null)
             {
@@ -152,6 +165,10 @@ namespace RBMAI
             FormationUnitSnapshot snapshot = GetFormationUnitSnapshot(targetFormation);
             for (int i = 0; i < snapshot.Agents.Length; i++)
             {
+                if (skipRouting && !snapshot.Selectable[i])
+                {
+                    continue;
+                }
                 float newDist = unitPosition.Distance(snapshot.Positions[i]);
                 if (newDist < distance && snapshot.Agents[i].IsActive())
                 {
