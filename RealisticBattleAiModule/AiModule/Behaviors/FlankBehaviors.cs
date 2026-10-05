@@ -34,6 +34,12 @@ namespace RBMAI
         //    than ScatterRecallRatio of the riders are past it, or MaxSortieSeconds ran out.
         //  - Returning ends once ReturnGatherRatio of the riders are back at the post (or ReturnTimeoutSeconds), then
         //    ReengageCooldownSeconds of holding before the next sortie, unless an enemy is right on top of them.
+        // Guarding the post alone left the foot it is there to cover open: enemy cavalry and horse archers working the
+        // infantry from the front or the far end of the line never came near the post. So a rested guard also sorties
+        // against enemy melee cavalry within HarassCavDistance, or horse archers within HarassHorseArcherDistance, of
+        // the edge of any friendly foot formation (on its own side of the main line when the other flank is guarded).
+        // Such a sortie is leashed to the formation it protects as well as to the post, and is recalled once the
+        // harasser is HarassReleaseDistance clear of it.
         private const float CavThreatDistance = 70f;
         private const float CloseThreatDistance = 35f;
         private const float ReleaseDistance = 100f;
@@ -44,10 +50,16 @@ namespace RBMAI
         private const float ReturnGatherRatio = 0.75f;
         private const float ReturnTimeoutSeconds = 15f;
         private const float ReengageCooldownSeconds = 5f;
+        private const float HarassCavDistance = 70f;
+        private const float HarassHorseArcherDistance = 90f;
+        private const float HarassReleaseDistance = 110f;
+        private const float ProtectLeash = 50f;
 
         internal class FlankSortieState
         {
             public Formation Target;
+            // The friendly foot formation a harassment sortie covers; null for a sortie against a threat to the post.
+            public Formation Protected;
             public float SortieStartTime;
             public float ReturnStartTime;
             public float HoldStartTime = float.MinValue;
@@ -207,6 +219,9 @@ namespace RBMAI
                     {
                         case BehaviorState.HoldingFlank:
                             {
+                                bool rested = now - sortie.HoldStartTime >= ReengageCooldownSeconds;
+                                Formation target = null;
+                                Formation protectedFormation = null;
                                 FormationQuerySystem closestFormation = formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
                                 if (closestFormation != null && closestFormation.Formation != null)
                                 {
@@ -216,15 +231,25 @@ namespace RBMAI
                                     float cavDistance = CavThreatDistance + depths;
                                     bool closeThreat = distanceSq < closeDistance * closeDistance;
                                     bool cavThreat = closestFormation.IsCavalryFormation && distanceSq < cavDistance * cavDistance;
-                                    bool rested = now - sortie.HoldStartTime >= ReengageCooldownSeconds;
                                     if (closeThreat || (cavThreat && rested))
                                     {
-                                        sortie.Target = closestFormation.Formation;
-                                        sortie.SortieStartTime = now;
-                                        ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(closestFormation.Formation);
-                                        ____currentOrder = ____chargeToTargetOrder;
-                                        ____protectFlankState = BehaviorState.Charging;
+                                        target = closestFormation.Formation;
                                     }
+                                }
+                                if (target == null && rested && ____mainFormation != null)
+                                {
+                                    int sideSign = (____behaviorSide == FormationAI.BehaviorSide.Right || ___FlankSide == FormationAI.BehaviorSide.Right) ? 1
+                                        : (____behaviorSide == FormationAI.BehaviorSide.Left || ___FlankSide == FormationAI.BehaviorSide.Left) ? -1 : 0;
+                                    target = FindHarasser(formation, ____mainFormation, sideSign, out protectedFormation);
+                                }
+                                if (target != null)
+                                {
+                                    sortie.Target = target;
+                                    sortie.Protected = protectedFormation;
+                                    sortie.SortieStartTime = now;
+                                    ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(target);
+                                    ____currentOrder = ____chargeToTargetOrder;
+                                    ____protectFlankState = BehaviorState.Charging;
                                 }
                                 break;
                             }
@@ -233,6 +258,7 @@ namespace RBMAI
                                 if (ShouldRecallSortie(formation, sortie, position, now))
                                 {
                                     sortie.Target = null;
+                                    sortie.Protected = null;
                                     sortie.ReturnStartTime = now;
                                     ____currentOrder = ____movementOrder;
                                     ____protectFlankState = BehaviorState.Returning;
@@ -273,22 +299,36 @@ namespace RBMAI
                 return true;
             }
             float depths = (formation.Depth + target.Depth) / 2f;
-            float release = ReleaseDistance + depths;
-            if (RBMAI.Utilities.GetFormationCenter(target).DistanceSquared(holdPoint) > release * release)
+            Vec2 targetCenter = RBMAI.Utilities.GetFormationCenter(target);
+            Formation protectedFormation = sortie.Protected;
+            if (protectedFormation != null)
             {
-                return true;
+                if (protectedFormation.CountOfUnits == 0 || DistanceToFormationBox(protectedFormation, targetCenter) > HarassReleaseDistance + target.Depth / 2f)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                float release = ReleaseDistance + depths;
+                if (targetCenter.DistanceSquared(holdPoint) > release * release)
+                {
+                    return true;
+                }
             }
             float leash = SortieLeash + depths;
-            if (RBMAI.Utilities.GetFormationCenter(formation).DistanceSquared(holdPoint) > leash * leash)
+            float protectLeash = ProtectLeash + formation.Depth / 2f;
+            Vec2 center = RBMAI.Utilities.GetFormationCenter(formation);
+            if (center.DistanceSquared(holdPoint) > leash * leash && (protectedFormation == null || DistanceToFormationBox(protectedFormation, center) > protectLeash))
             {
                 return true;
             }
-            return 1f - RiderRatioWithin(formation, holdPoint, leash) > ScatterRecallRatio;
+            return 1f - RiderRatioWithin(formation, holdPoint, leash, protectedFormation, protectLeash) > ScatterRecallRatio;
         }
 
         // Counted over every rider rather than read off the average position, which a scattered formation keeps
-        // near the middle.
-        private static float RiderRatioWithin(Formation formation, Vec2 point, float radius)
+        // near the middle. A rider within protectRadius of the protected formation's edge counts as near too.
+        private static float RiderRatioWithin(Formation formation, Vec2 point, float radius, Formation protectedFormation = null, float protectRadius = 0f)
         {
             float radiusSq = radius * radius;
             int total = 0;
@@ -300,12 +340,109 @@ namespace RBMAI
                     return;
                 }
                 total++;
-                if (agent.Position.AsVec2.DistanceSquared(point) <= radiusSq)
+                Vec2 agentPosition = agent.Position.AsVec2;
+                if (agentPosition.DistanceSquared(point) <= radiusSq || (protectedFormation != null && DistanceToFormationBox(protectedFormation, agentPosition) <= protectRadius))
                 {
                     near++;
                 }
             });
             return total > 0 ? (float)near / total : 1f;
+        }
+
+        // The enemy cavalry or horse archer formation closest to the guard that is working a friendly foot formation.
+        // With sideSign set (+1 right, -1 left of the main line facing the enemy), harassers clearly on the far side
+        // of the main line are left to the other flank's guard, if there is one.
+        private static Formation FindHarasser(Formation guard, Formation mainFormation, int sideSign, out Formation protectedFormation)
+        {
+            protectedFormation = null;
+            Formation best = null;
+            float bestDistanceSq = float.MaxValue;
+            Vec2 guardCenter = RBMAI.Utilities.GetFormationCenter(guard);
+            Vec2 mainCenter = RBMAI.Utilities.GetFormationCenter(mainFormation);
+            Vec2 sideVec = (guard.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - mainCenter).Normalized().RightVec() * sideSign;
+            bool otherFlankGuarded = sideSign != 0 && IsFlankGuarded(guard, sideSign > 0 ? FormationAI.BehaviorSide.Left : FormationAI.BehaviorSide.Right);
+            foreach (Team team in Mission.Current.Teams)
+            {
+                if (!team.IsEnemyOf(guard.Team))
+                {
+                    continue;
+                }
+                foreach (Formation enemy in team.FormationsIncludingSpecialAndEmpty)
+                {
+                    if (enemy == null || enemy.CountOfUnits == 0)
+                    {
+                        continue;
+                    }
+                    bool horseArchers = enemy.QuerySystem.IsRangedCavalryFormation;
+                    if (!horseArchers && !enemy.QuerySystem.IsCavalryFormation)
+                    {
+                        continue;
+                    }
+                    Vec2 enemyCenter = RBMAI.Utilities.GetFormationCenter(enemy);
+                    if (otherFlankGuarded && (enemyCenter - mainCenter).DotProduct(sideVec) < -mainFormation.Width * 0.25f)
+                    {
+                        continue;
+                    }
+                    float threatDistance = (horseArchers ? HarassHorseArcherDistance : HarassCavDistance) + enemy.Depth / 2f;
+                    Formation victim = ClosestFootFormationWithin(guard, enemyCenter, threatDistance);
+                    if (victim == null)
+                    {
+                        continue;
+                    }
+                    float distanceSq = enemyCenter.DistanceSquared(guardCenter);
+                    if (distanceSq < bestDistanceSq)
+                    {
+                        bestDistanceSq = distanceSq;
+                        best = enemy;
+                        protectedFormation = victim;
+                    }
+                }
+            }
+            return best;
+        }
+
+        private static Formation ClosestFootFormationWithin(Formation guard, Vec2 point, float maxDistance)
+        {
+            Formation closest = null;
+            float closestDistance = maxDistance;
+            foreach (Formation friendly in guard.Team.FormationsIncludingSpecialAndEmpty)
+            {
+                if (friendly == null || friendly == guard || friendly.CountOfUnits == 0 || friendly.QuerySystem.IsCavalryFormation || friendly.QuerySystem.IsRangedCavalryFormation)
+                {
+                    continue;
+                }
+                float distance = DistanceToFormationBox(friendly, point);
+                if (distance <= closestDistance)
+                {
+                    closestDistance = distance;
+                    closest = friendly;
+                }
+            }
+            return closest;
+        }
+
+        private static bool IsFlankGuarded(Formation guard, FormationAI.BehaviorSide side)
+        {
+            foreach (Formation friendly in guard.Team.FormationsIncludingSpecialAndEmpty)
+            {
+                if (friendly != null && friendly != guard && friendly.CountOfUnits > 0 && friendly.AI.ActiveBehavior is BehaviorProtectFlank otherGuard
+                    && (otherGuard.FlankSide == side || friendly.AI.Side == side))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Distance from a point to the formation's footprint (0 inside it), so a long line is threatened along its
+        // whole length rather than only near its centre.
+        private static float DistanceToFormationBox(Formation formation, Vec2 point)
+        {
+            Vec2 local = point - RBMAI.Utilities.GetFormationCenter(formation);
+            Vec2 direction = formation.Direction;
+            float across = Math.Max(0f, Math.Abs(local.DotProduct(direction.RightVec())) - formation.Width * 0.5f);
+            float along = Math.Max(0f, Math.Abs(local.DotProduct(direction)) - formation.Depth * 0.5f);
+            return (float)Math.Sqrt(across * across + along * along);
         }
 
         [HarmonyPostfix]
