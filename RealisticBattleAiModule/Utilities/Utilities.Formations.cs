@@ -18,13 +18,6 @@ namespace RBMAI
 {
     public static partial class Utilities
     {
-
-        public static float swingSpeedTransfer = 4.5454545f;
-        public static float thrustSpeedTransfer = 11.7647057f;
-
-        public const float oneHandedPolearmThrustStrength = 2.5f;
-        public const float twoHandedPolearmThrustStrength = 5f;
-
         // Where a formation "is", for AI reasoning.
         //
         // Formation.CachedMedianPosition is the position of ONE soldier -- GetMedianAgent returns whichever unit

@@ -15,8 +15,6 @@
 	<string id="RBM_AI_008" text="SAV PİY:" />
 	<string id="RBM_AI_009" text="Duruşun bozuldu: Dayanıklılığın tükendi ve {DMG} hasar kırıp geçti" />
 	<string id="RBM_AI_010" text="Düşman duruşu bozuldu: Dayanıklılığı tükendi, {DMG} hasar kırıp geçti" />
-	<string id="RBM_AI_011" text="Duruşun bozuldu: Dayanıklılığın tükendi, mükemmel savuşturdun, {DMG} hasar kırıp geçti" />
-	<string id="RBM_AI_012" text="Düşman duruşu bozuldu: Dayanıklılığı tükendi, mükemmel savuşturdu, {DMG} hasar kırıp geçti" />
 	<string id="RBM_AI_013" text="Duruş bozuldu: Dayanıklılık tükendi, mükemmel savuşturuldu" />
 	<string id="RBM_AI_014" text="Duruş bozuldu: Dayanıklılık tükendi, yanlış yön bloklandı" />
 	<string id="RBM_AI_015" text="Duruş bozuldu: Dayanıklılık tükendi, doğru yön bloklandı" />

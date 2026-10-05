@@ -61,6 +61,11 @@ namespace RBMAI
         [ThreadStatic]
         private static bool _inMeleeHitContext;
 
+        // The strike's momentum left as MeleeHitCallback starts (below 1 once it has cut through someone); a
+        // crush-through re-runs the blocked strike with it.
+        [ThreadStatic]
+        private static float _meleeHitMomentumRemaining;
+
         private static bool IsAgentInQuickStaminaRegen(Agent agent, Stance stance)
         {
             float quickStaminaThreshold = 0.7f;

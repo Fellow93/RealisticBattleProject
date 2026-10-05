@@ -15,8 +15,6 @@
 	<string id="RBM_AI_008" text="DEF INF:" />
 	<string id="RBM_AI_009" text="Rupture de posture : Posture épuisée, {DMG} dégâts traversés" />
 	<string id="RBM_AI_010" text="Rupture de posture ennemie : Posture épuisée, {DMG} dégâts traversésh" />
-	<string id="RBM_AI_011" text="Rupture de posture : Posture épuisée, parade parfaite, {DMG} dégâts traversés" />
-	<string id="RBM_AI_012" text="Rupture de posture ennemie : Posture épuisée, parade parfaite, {DMG} dégâts traversés" />
 	<string id="RBM_AI_013" text="Rupture de posture : Posture épuisée, parade parfaite" />
 	<string id="RBM_AI_014" text="Rupture de posture : Posture épuisée, blocage du mauvais côté" />
 	<string id="RBM_AI_015" text="Rupture de posture : Posture épuisée, blocage du bon côté" />

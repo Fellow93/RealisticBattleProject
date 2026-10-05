@@ -108,7 +108,7 @@ RBMAI, RBMCombat and RBMConfig each have their own `Utilities` (partial static f
 - `SkillDamage.cs`: `GetSkillBasedDamage` (the per-weapon-class skill coefficient/clamp table) and the punch magnitude helpers (`GetPunchMaterialFactor`/`GetPunchMagnitude`).
 - `BlowDamage.cs`: `RBMComputeDamage` (armor, penetration and blunt trauma).
 
-RBMCombat's `Utilities.GetSkillBasedDamage`/`RBMComputeDamage` are thin forwarders to these, so live combat, RBMAI's posture crush-through estimate (`MeleeBlowPatch.Math.cs` `calculateHealthDamage`) and auto-resolve (`RBMCampaign/Simulation/SimulationWeaponModel.cs`) all use one table. **Retune damage there, never re-copy it into a module** (the AI copy drifted for three years before this). The weapon-type factors (`RBMCombatConfigWeaponType`) were already in RBMConfig.
+RBMCombat's `Utilities.GetSkillBasedDamage`/`RBMComputeDamage` are thin forwarders to these, so live combat (which RBMAI's posture crush-through now re-runs through `MissionCombatMechanicsHelper.GetAttackCollisionResults`, see `MeleeBlowPatch.Math.cs` `calculateHealthDamage`) and auto-resolve (`RBMCampaign/Simulation/SimulationWeaponModel.cs`) all use one table. **Retune damage there, never re-copy it into a module** (the AI copy drifted for three years before this). The weapon-type factors (`RBMCombatConfigWeaponType`) were already in RBMConfig.
 
 ## Key Conventions
 

@@ -511,6 +511,7 @@ namespace RBMCombat
 
                 int absoluteDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, stealthMagnitude, 0f, victimAgentAbsorbedDamageRatio, out _, out _, weaponDamageFactor) * dmgMultiplier), 0, 2000);
                 absorbedByArmor = absoluteDamage - inflictedDamage;
+                RBMConfig.BlowDamage.LastComputedDamageType = damageType;
 
                 return false;
             }

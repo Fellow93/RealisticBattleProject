@@ -15,8 +15,6 @@
 	<string id="RBM_AI_008" text="守る 歩兵:" />
 	<string id="RBM_AI_009" text="姿勢を崩した。体幹を失い{DMG}ダメージ" />
 	<string id="RBM_AI_010" text="敵の姿勢を崩した。 体幹を失った敵に{DMG}ダメージ" />
-	<string id="RBM_AI_011" text="姿勢を崩した。完全なタイミングのパリーだが体幹を失い{DMG}ダメージ" />
-	<string id="RBM_AI_012" text="敵の姿勢を崩した。完全なタイミングのパリーだが体幹を失い{DMG}ダメージ" />
 	<string id="RBM_AI_013" text="姿勢を崩した。完全なタイミングのパリーで体幹を失った" />
 	<string id="RBM_AI_014" text="姿勢を崩した。誤った向きの防御で体幹を失った" />
 	<string id="RBM_AI_015" text="姿勢を崩した。適切な方向の防御で体幹を失った" />

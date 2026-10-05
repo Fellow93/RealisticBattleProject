@@ -15,8 +15,6 @@
 	<string id="RBM_AI_008" text="DEF INF:" />
 	<string id="RBM_AI_009" text="Posture break: Posture depleted, {DMG} damage crushed through" />
 	<string id="RBM_AI_010" text="Enemy Posture break: Posture depleted, {DMG} damage crushed through" />
-	<string id="RBM_AI_011" text="Posture break: Posture depleted, perfect parry, {DMG} damage crushed through" />
-	<string id="RBM_AI_012" text="Enemy Posture break: Posture depleted, perfect parry, {DMG} damage crushed through" />
 	<string id="RBM_AI_013" text="Posture break: Posture depleted, perfect parry" />
 	<string id="RBM_AI_014" text="Posture break: Posture depleted, incorrect side block" />
 	<string id="RBM_AI_015" text="Posture break: Posture depleted, correct side block" />
@@ -37,6 +35,15 @@
 	<string id="RBM_AI_030" text="SHIELD BLOCKS:" />
 	<string id="RBM_AI_031" text="SHIELD PARRIES:" />
 	<string id="RBM_AI_032" text="WRONG-SIDE SHIELD:" />
+	<string id="RBM_AI_033" text="Posture break: Posture depleted, {DMG} damage crushed through to the {PART}" />
+	<string id="RBM_AI_034" text="Enemy Posture break: Posture depleted, {DMG} damage crushed through to the {PART}" />
+	<string id="RBM_AI_035" text="head" />
+	<string id="RBM_AI_036" text="neck" />
+	<string id="RBM_AI_037" text="chest" />
+	<string id="RBM_AI_038" text="abdomen" />
+	<string id="RBM_AI_039" text="legs" />
+	<string id="RBM_AI_040" text="left shoulder" />
+	<string id="RBM_AI_041" text="right shoulder" />
 	<!-- Combat Module Strings -->
 	<string id="RBM_COM_001" text="{TYPE} hit" />
 	<string id="RBM_COM_002" text="{TYPE} hit" />

@@ -15,8 +15,6 @@
 	<string id="RBM_AI_008" text="守方步兵:" />
 	<string id="RBM_AI_009" text="架势崩解，受到{DMG}点伤害" />
 	<string id="RBM_AI_010" text="敌方架势崩解，造成{DMG}点伤害" />
-	<string id="RBM_AI_011" text="架势崩解，完美格挡，受到{DMG}点伤害" />
-	<string id="RBM_AI_012" text="敌方架势崩解，完美格挡，造成{DMG}点伤害" />
 	<string id="RBM_AI_013" text="架势崩解，完美格挡" />
 	<string id="RBM_AI_014" text="架势崩解，格挡方向错误" />
 	<string id="RBM_AI_015" text="架势崩解，格挡方向正确" />

@@ -49,6 +49,51 @@ namespace RBMAI
                 }
             }
 
+            private static void crushThroughBlow(Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon,
+                ref Blow blow, ref Mission mission, float postureOverkill, BlowFlags addedBlowFlag)
+            {
+                BoneBodyPartType crushBodyPart = EstimateCrushThroughBodyPart(victimAgent, collisionData.CollisionGlobalPosition);
+                sbyte crushBone = FindCrushThroughBone(victimAgent, crushBodyPart, collisionData.CollisionGlobalPosition);
+                int hpDamage = (int)Math.Floor(calculateHealthDamage(attackerAgent, victimAgent, ref collisionData, in attackerWeapon, postureOverkill, crushBodyPart, crushBone, out DamageTypes crushDamageType));
+                makePostureCrashThroughBlow(ref mission, blow, attackerAgent, victimAgent, hpDamage, ref collisionData, attackerWeapon, addedBlowFlag, crushBodyPart, crushBone, crushDamageType);
+                if (victimAgent.IsPlayerControlled)
+                {
+                    TextObject message = new TextObject("{=RBM_AI_033}Posture break: Posture depleted, {DMG} damage crushed through to the {PART}");
+                    message.SetTextVariable("DMG", hpDamage);
+                    message.SetTextVariable("PART", CrushThroughBodyPartName(crushBodyPart));
+                    InformationManager.DisplayMessage(new InformationMessage(message.ToString(), Color.FromUint(4282569842u)));
+                }
+                if (attackerAgent.IsPlayerControlled)
+                {
+                    TextObject message = new TextObject("{=RBM_AI_034}Enemy Posture break: Posture depleted, {DMG} damage crushed through to the {PART}");
+                    message.SetTextVariable("DMG", hpDamage);
+                    message.SetTextVariable("PART", CrushThroughBodyPartName(crushBodyPart));
+                    InformationManager.DisplayMessage(new InformationMessage(message.ToString(), Color.FromUint(4282569842u)));
+                }
+            }
+
+            // EstimateCrushThroughBodyPart only returns these seven.
+            private static TextObject CrushThroughBodyPartName(BoneBodyPartType bodyPart)
+            {
+                switch (bodyPart)
+                {
+                    case BoneBodyPartType.Head:
+                        return new TextObject("{=RBM_AI_035}head");
+                    case BoneBodyPartType.Neck:
+                        return new TextObject("{=RBM_AI_036}neck");
+                    case BoneBodyPartType.Chest:
+                        return new TextObject("{=RBM_AI_037}chest");
+                    case BoneBodyPartType.ShoulderLeft:
+                        return new TextObject("{=RBM_AI_040}left shoulder");
+                    case BoneBodyPartType.ShoulderRight:
+                        return new TextObject("{=RBM_AI_041}right shoulder");
+                    case BoneBodyPartType.Abdomen:
+                        return new TextObject("{=RBM_AI_038}abdomen");
+                    default:
+                        return new TextObject("{=RBM_AI_039}legs");
+                }
+            }
+
             public static void handleDefender(Stance stance, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData,
                 MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission,
                 float staggerActionSpeed, bool dropWeapon, bool dropShield,
@@ -93,26 +138,7 @@ namespace RBMAI
                         }
                         if (crushThrough)
                         {
-                            float rawHpDamage = calculateHealthDamage(attackerWeapon, attackerAgent, victimAgent, postureOverkill, blow, isUnarmedAttack);
-                            // Route the crush-through damage through AgentApplyDamageModel exactly as
-                            // Mission.GetAttackCollisionResults does for a normal hit, so perk
-                            // amplifications/reductions, difficulty scaling and damage-ignore rules apply.
-                            if (rawHpDamage > 0f)
-                            {
-                                AttackInformation attackInformation = new AttackInformation(attackerAgent, victimAgent, WeakGameEntity.Invalid, in collisionData, in attackerWeapon);
-                                rawHpDamage = MissionGameModels.Current.AgentApplyDamageModel.CalculateDamage(in attackInformation, in collisionData, rawHpDamage);
-                            }
-                            int hpDamage = (int)Math.Floor(rawHpDamage);
-                            makePostureCrashThroughBlow(ref mission, blow, attackerAgent, victimAgent, hpDamage, ref collisionData, attackerWeapon, DismountFlags(victimAgent, stance, postureDmg));
-                            MBTextManager.SetTextVariable("DMG", hpDamage);
-                            if (victimAgent.IsPlayerControlled)
-                            {
-                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_011}Posture break: Posture depleted, {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
-                            }
-                            if (attackerAgent.IsPlayerControlled)
-                            {
-                                InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_012}Enemy Posture break: Posture depleted, {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
-                            }
+                            crushThroughBlow(victimAgent, attackerAgent, ref collisionData, in attackerWeapon, ref blow, ref mission, postureOverkill, DismountFlags(victimAgent, stance, postureDmg));
                         }
                         else if (DismountFlags(victimAgent, stance, postureDmg) == BlowFlags.CanDismount)
                         {
@@ -700,7 +726,10 @@ namespace RBMAI
                 }
             }
 
-            private static void makePostureCrashThroughBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, int hpDamage, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag)
+            // The blow lands on the estimated body part and bone, not the guarding arm the block reports, with the damage
+            // type the damage was computed with. The block's own collision data still goes with it, so listeners keep
+            // seeing a block (RBMCombat's armor wear, for one, only runs on StrikeAgent).
+            private static void makePostureCrashThroughBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, int hpDamage, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag, BoneBodyPartType bodyPart, sbyte bone, DamageTypes damageType)
             {
                 Blow newBLow = blow;
                 newBLow.BaseMagnitude = collisionData.BaseMagnitude;
@@ -711,16 +740,16 @@ namespace RBMAI
                 sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
                 newBLow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
                 newBLow.StrikeType = (StrikeType)collisionData.StrikeType;
-                newBLow.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
+                newBLow.DamageType = damageType;
                 newBLow.NoIgnore = collisionData.IsAlternativeAttack;
                 newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod / 5f;
                 newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod * 5f;
                 newBLow.BlowFlag = addedBlowFlag;
                 newBLow.GlobalPosition = collisionData.CollisionGlobalPosition;
-                newBLow.BoneIndex = collisionData.CollisionBoneIndex;
+                newBLow.BoneIndex = bone;
                 newBLow.Direction = blow.Direction;
                 newBLow.SwingDirection = blow.SwingDirection;
-                newBLow.VictimBodyPart = collisionData.VictimHitBodyPart;
+                newBLow.VictimBodyPart = bodyPart;
                 registerPostureBlow(victimAgent, newBLow, ref collisionData);
                 foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {

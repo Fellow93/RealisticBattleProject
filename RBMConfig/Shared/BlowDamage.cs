@@ -14,6 +14,12 @@ namespace RBMConfig
     /// </summary>
     public static class BlowDamage
     {
+        // The damage type RBMCombat's ComputeBlowDamage override last settled on, after its handle/pommel -> blunt and
+        // off-tip sword thrust -> cut rules; null until it runs. RBMAI's crush-through clears it, re-runs the blocked
+        // strike and reads it back, to register the blow with the type the damage was computed with.
+        [ThreadStatic]
+        public static DamageTypes? LastComputedDamageType;
+
         public static float RBMComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, out float penetratedDamage, out float bluntTraumaAfterArmor, float weaponDamageFactor = 1f, BasicCharacterObject player = null, bool isPlayerVictim = false, ArmorMaterialTypes armorMaterial = ArmorMaterialTypes.None)
         {
             // "Armor Effectiveness": every armor value counts as this many times itself. Applied first, so the

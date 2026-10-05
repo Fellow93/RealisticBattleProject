@@ -21,7 +21,11 @@ namespace RBMAI
         [HarmonyPatch("MeleeHitCallback")]
         private class MeleeHitContextPatch
         {
-            private static void Prefix() => _inMeleeHitContext = true;
+            private static void Prefix(ref float inOutMomentumRemaining)
+            {
+                _inMeleeHitContext = true;
+                _meleeHitMomentumRemaining = inOutMomentumRemaining;
+            }
 
             private static void Finalizer() => _inMeleeHitContext = false;
         }
@@ -77,7 +81,6 @@ namespace RBMAI
                 agentsToDropShield.Clear();
                 agentsToDropWeapon.Clear();
                 agentsToChangeFormation.Clear();
-                CreateMeleeBlowPatch.ClearSweetSpotMagnitudeCache();
             }
         }
 
@@ -92,7 +95,6 @@ namespace RBMAI
                 agentsToDropShield.Clear();
                 agentsToDropWeapon.Clear();
                 agentsToChangeFormation.Clear();
-                CreateMeleeBlowPatch.ClearSweetSpotMagnitudeCache();
             }
         }
     }
