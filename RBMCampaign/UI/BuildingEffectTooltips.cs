@@ -192,7 +192,7 @@ namespace RBMCampaign
             }
             if (type == DefaultBuildingTypes.SettlementDailyTrainMilitia)
             {
-                return "RBM: recruit pool growth +25% and militia soft cap +3% of the town's manpower while running";
+                return new TextObject("{=RBM_BLD_DAILY_TRAIN_MILITIA}RBM: recruit pool growth +25% and militia soft cap +3% of the town's manpower while running").ToString();
             }
             if (type == DefaultBuildingTypes.SettlementDailyHousing)
             {

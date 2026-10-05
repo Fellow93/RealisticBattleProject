@@ -623,10 +623,12 @@ namespace RBMCampaign
             }
             lines.Sort((a, b) => b.Value.CompareTo(a.Value));
             var sb = new System.Text.StringBuilder();
-            sb.Append(header).Append(" (").Append(total).Append("g)");
+            sb.Append(new TextObject("{=RBM_LEDGER_FLOW_HEADER}{HEADER} ({GOLD}g)")
+                .SetTextVariable("HEADER", header).SetTextVariable("GOLD", total).ToString());
             foreach (var l in lines)
             {
-                sb.Append('\n').Append(PrettifySource(l.Key)).Append(": ").Append(l.Value).Append('g');
+                sb.Append('\n').Append(new TextObject("{=RBM_LEDGER_FLOW_LINE}{NAME}: {GOLD}g")
+                    .SetTextVariable("NAME", PrettifySource(l.Key)).SetTextVariable("GOLD", l.Value).ToString());
             }
             string text = sb.ToString();
             return new BasicTooltipViewModel(() => text);
@@ -635,43 +637,43 @@ namespace RBMCampaign
         // Precise display names for the ledger's income/expense categories, keyed off the SettlementWealth
         // source tokens so the table cannot drift from the tokens it labels. A token with no entry falls
         // back to its auto-prettified form (see PrettifySource), so a source added later still reads
-        // sensibly until it is named here.
+        // sensibly until it is named here. Values are "{=id}English" strings, resolved on use.
         private static readonly Dictionary<string, string> SourceNames = new Dictionary<string, string>
         {
-            { SettlementWealth.Source.Tariff,         "Market tariff" },
-            { SettlementWealth.Source.Trade,          "Market trade" },
-            { SettlementWealth.Source.Commission,     "Stall commission" },
-            { SettlementWealth.Source.Delivery,       "Villager deliveries" },
-            { SettlementWealth.Source.Homecoming,     "Village earnings" },
-            { SettlementWealth.Source.VillageDemand,  "Village spending" },
-            { SettlementWealth.Source.Maintenance,    "Troop kit maintenance" },
-            { SettlementWealth.Source.Upgrade,        "Troop upgrades" },
-            { SettlementWealth.Source.TroopGoods,     "Troop provisions" },
-            { SettlementWealth.Source.Carousing,      "Soldiers carousing" },
-            { SettlementWealth.Source.Surgery,        "Field surgery" },
-            { SettlementWealth.Source.GarrisonWage,   "Garrison wages" },
-            { SettlementWealth.Source.GarrisonFood,   "Garrison food" },
-            { SettlementWealth.Source.GarrisonRecruit,"Garrison recruit kit" },
-            { SettlementWealth.Source.Militia,        "Militia upkeep" },
-            { SettlementWealth.Source.Admin,          "Administration" },
-            { SettlementWealth.Source.Construction,   "Construction" },
-            { SettlementWealth.Source.Boost,          "Construction labour" },
-            { SettlementWealth.Source.Recruit,        "Recruit fees" },
-            { SettlementWealth.Source.TownArms,       "Volunteer kit" },
-            { SettlementWealth.Source.VillageArms,    "Village recruit kit" },
-            { SettlementWealth.Source.CastleArms,     "Castle militia kit" },
-            { SettlementWealth.Source.Caravan,        "Supply caravan" },
-            { SettlementWealth.Source.CaravanInvest,  "Caravan investment" },
-            { SettlementWealth.Source.CaravanRepay,   "Caravan repayment" },
-            { SettlementWealth.Source.WealthTax,      "Wealth tax" },
-            { SettlementWealth.Source.Ransom,         "Prisoner ransom" },
-            { SettlementWealth.Source.WorkshopWages,  "Workshop wages" },
-            { SettlementWealth.Source.CastleIncome,   "Castle income" },
-            { SettlementWealth.Source.Dearth,         "Emergency food" },
-            { SettlementWealth.Source.Seed,           "World seeding" },
-            { SettlementWealth.Source.Raid,           "Raid losses" },
-            { SettlementWealth.Source.Siege,          "Siege losses" },
-            { SettlementWealth.Source.Sack,           "Sack losses" },
+            { SettlementWealth.Source.Tariff,         "{=RBM_LEDGER_SRC_TARIFF}Market tariff" },
+            { SettlementWealth.Source.Trade,          "{=RBM_LEDGER_SRC_TRADE}Market trade" },
+            { SettlementWealth.Source.Commission,     "{=RBM_LEDGER_SRC_COMMISSION}Stall commission" },
+            { SettlementWealth.Source.Delivery,       "{=RBM_LEDGER_SRC_DELIVERY}Villager deliveries" },
+            { SettlementWealth.Source.Homecoming,     "{=RBM_LEDGER_SRC_HOMECOMING}Village earnings" },
+            { SettlementWealth.Source.VillageDemand,  "{=RBM_LEDGER_SRC_VILLAGE_DEMAND}Village spending" },
+            { SettlementWealth.Source.Maintenance,    "{=RBM_LEDGER_SRC_MAINTENANCE}Troop kit maintenance" },
+            { SettlementWealth.Source.Upgrade,        "{=RBM_LEDGER_SRC_UPGRADE}Troop upgrades" },
+            { SettlementWealth.Source.TroopGoods,     "{=RBM_LEDGER_SRC_TROOP_GOODS}Troop provisions" },
+            { SettlementWealth.Source.Carousing,      "{=RBM_LEDGER_SRC_CAROUSING}Soldiers carousing" },
+            { SettlementWealth.Source.Surgery,        "{=RBM_LEDGER_SRC_SURGERY}Field surgery" },
+            { SettlementWealth.Source.GarrisonWage,   "{=RBM_LEDGER_SRC_GARRISON_WAGE}Garrison wages" },
+            { SettlementWealth.Source.GarrisonFood,   "{=RBM_LEDGER_SRC_GARRISON_FOOD}Garrison food" },
+            { SettlementWealth.Source.GarrisonRecruit,"{=RBM_LEDGER_SRC_GARRISON_RECRUIT}Garrison recruit kit" },
+            { SettlementWealth.Source.Militia,        "{=RBM_LEDGER_SRC_MILITIA}Militia upkeep" },
+            { SettlementWealth.Source.Admin,          "{=RBM_LEDGER_SRC_ADMIN}Administration" },
+            { SettlementWealth.Source.Construction,   "{=RBM_LEDGER_SRC_CONSTRUCTION}Construction" },
+            { SettlementWealth.Source.Boost,          "{=RBM_LEDGER_SRC_BOOST}Construction labour" },
+            { SettlementWealth.Source.Recruit,        "{=RBM_LEDGER_SRC_RECRUIT}Recruit fees" },
+            { SettlementWealth.Source.TownArms,       "{=RBM_LEDGER_SRC_TOWN_ARMS}Volunteer kit" },
+            { SettlementWealth.Source.VillageArms,    "{=RBM_LEDGER_SRC_VILLAGE_ARMS}Village recruit kit" },
+            { SettlementWealth.Source.CastleArms,     "{=RBM_LEDGER_SRC_CASTLE_ARMS}Castle militia kit" },
+            { SettlementWealth.Source.Caravan,        "{=RBM_LEDGER_SRC_CARAVAN}Supply caravan" },
+            { SettlementWealth.Source.CaravanInvest,  "{=RBM_LEDGER_SRC_CARAVAN_INVEST}Caravan investment" },
+            { SettlementWealth.Source.CaravanRepay,   "{=RBM_LEDGER_SRC_CARAVAN_REPAY}Caravan repayment" },
+            { SettlementWealth.Source.WealthTax,      "{=RBM_LEDGER_SRC_WEALTH_TAX}Wealth tax" },
+            { SettlementWealth.Source.Ransom,         "{=RBM_LEDGER_SRC_RANSOM}Prisoner ransom" },
+            { SettlementWealth.Source.WorkshopWages,  "{=RBM_LEDGER_SRC_WORKSHOP_WAGES}Workshop wages" },
+            { SettlementWealth.Source.CastleIncome,   "{=RBM_LEDGER_SRC_CASTLE_INCOME}Castle income" },
+            { SettlementWealth.Source.Dearth,         "{=RBM_LEDGER_SRC_DEARTH}Emergency food" },
+            { SettlementWealth.Source.Seed,           "{=RBM_LEDGER_SRC_SEED}World seeding" },
+            { SettlementWealth.Source.Raid,           "{=RBM_LEDGER_SRC_RAID}Raid losses" },
+            { SettlementWealth.Source.Siege,          "{=RBM_LEDGER_SRC_SIEGE}Siege losses" },
+            { SettlementWealth.Source.Sack,           "{=RBM_LEDGER_SRC_SACK}Sack losses" },
         };
 
         // The display label for a ledger source token: the precise name where one is defined, else the token
@@ -684,7 +686,7 @@ namespace RBMCampaign
             }
             if (SourceNames.TryGetValue(source, out string name))
             {
-                return name;
+                return new TextObject(name).ToString();
             }
             string spaced = source.Replace('-', ' ');
             return char.ToUpperInvariant(spaced[0]) + spaced.Substring(1);

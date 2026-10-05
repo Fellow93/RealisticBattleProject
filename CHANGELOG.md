@@ -28,7 +28,7 @@
   - Your workshops that are low on capital are no longer charged their daily expense twice.
 
 ### Translations
-- **Most of the remaining English-only text can now be translated** (thanks to OhMyMike57, who maintains the Traditional Chinese translation): the ledger's column headings, tabs and tooltips, the settlement spending bubbles on the map, supply caravan names, the RBM lines in building tooltips, the custom battle preset prompts, the auto-resolve panel and posture/stamina bar titles, the starvation notice and about 35 settings labels and hints. The English language template lists 176 texts that translators had no way to find before.
+- **Most of the remaining English-only text can now be translated** (thanks to OhMyMike57, who maintains the Traditional Chinese translation): the ledger's column headings, tabs, tooltips and income/expense categories, the settlement spending bubbles on the map, supply caravan names, the RBM lines in building tooltips, the custom battle preset prompts, the whole auto-resolve battle chronicle (phases, flavor lines, kills and hero events), the posture/stamina bar titles, the starvation notice, and every settings label, hint and option caption. The English language template lists 176 texts that translators had no way to find before.
 - A translation can ship its own CHANGELOG.md in its language folder. It is shown only while it covers the newest release; otherwise the English changelog is shown.
 
 ## v4.5.3 (changes since v4.5.2)
