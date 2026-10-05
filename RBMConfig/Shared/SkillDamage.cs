@@ -111,7 +111,18 @@ namespace RBMConfig
             return GetPunchMaterialFactor(ArmorMaterialTypes.None) + weaponWeight * 0.1f;
         }
 
-        public static float GetSkillBasedDamage(float magnitude, bool isPassiveUsage, string weaponType, DamageTypes damageType, float effectiveSkill, float skillModifier, StrikeType strikeType, float weaponWeight)
+        /// <summary>
+        /// Lower clamp for a handle hit, before the Blunt multipliers. Only matters for unskilled men, whose
+        /// skill term is near zero and whose hilt magnitude alone would make the blow nearly harmless.
+        /// </summary>
+        private const float HandleHitFloor = 4f;
+
+        /// <param name="isHandleHit">A swing that landed with the hilt, pommel or haft rather than the blade (the
+        /// caller has already turned its damage type to Blunt). Its Blunt branch uses the small HandleHitFloor
+        /// instead of the usual lower clamp, so the weapon's swing physics and the skill set the blow instead of a
+        /// floor that made a graze hit as hard as a full pommel strike. The ceiling still applies. Genuinely blunt
+        /// items in these classes keep the usual floor.</param>
+        public static float GetSkillBasedDamage(float magnitude, bool isPassiveUsage, string weaponType, DamageTypes damageType, float effectiveSkill, float skillModifier, StrikeType strikeType, float weaponWeight, bool isHandleHit = false)
         {
             float skillBasedDamage = 0f;
             const float ashBreakTreshold = 430f;
@@ -135,7 +146,7 @@ namespace RBMConfig
                         else if (damageType == DamageTypes.Blunt)
                         {
                             //skillBasedDamage = magnitude + 0.50f * (40f + (effectiveSkill * 0.53f));
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.075f), 15f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f) * 0.4f;
+                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.075f), isHandleHit ? HandleHitFloor : 15f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f) * 0.4f;
                         }
                         else
                         {
@@ -148,7 +159,7 @@ namespace RBMConfig
                                 skillBasedDamage = magnitude;
                             }
                         }
-                        if (magnitude > 1f)
+                        if (magnitude > 1f || isHandleHit)
                         {
                             magnitude = skillBasedDamage;
                         }
@@ -166,7 +177,7 @@ namespace RBMConfig
                         else if (damageType == DamageTypes.Blunt)
                         {
                             //skillBasedDamage = magnitude * 1.3f + 0.5f * ((40f + (effectiveSkill * 0.53f)) * 1.3f);
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.112f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.4f;
+                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.112f), isHandleHit ? HandleHitFloor : 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.4f;
                         }
                         else
                         {
@@ -179,7 +190,7 @@ namespace RBMConfig
                                 skillBasedDamage = magnitude;
                             }
                         }
-                        if (magnitude > 1f)
+                        if (magnitude > 1f || isHandleHit)
                         {
                             magnitude = skillBasedDamage;
                         }
@@ -195,9 +206,9 @@ namespace RBMConfig
                         if (damageType == DamageTypes.Blunt)
                         {
                             //skillBasedDamage = magnitude + 0.5f * (60f + (effectiveSkill * 0.4f));
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.075f), 15f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
+                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.075f), isHandleHit ? HandleHitFloor : 15f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
                         }
-                        if (magnitude > 1f)
+                        if (magnitude > 1f || isHandleHit)
                         {
                             magnitude = skillBasedDamage;
                         }
@@ -212,9 +223,9 @@ namespace RBMConfig
                         if (damageType == DamageTypes.Blunt)
                         {
                             //skillBasedDamage = magnitude * 1.3f + 0.5f * ((60f + (effectiveSkill * 0.4f)) * 1.30f);
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.112f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
+                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.112f), isHandleHit ? HandleHitFloor : 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
                         }
-                        if (magnitude > 1f)
+                        if (magnitude > 1f || isHandleHit)
                         {
                             magnitude = skillBasedDamage;
                         }
@@ -276,7 +287,7 @@ namespace RBMConfig
                         else if (damageType == DamageTypes.Blunt && !isPassiveUsage)
                         {
                             //skillBasedDamage = magnitude + 30f + (effectiveSkill * 0.26f);
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.075f), 15f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
+                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.075f), isHandleHit ? HandleHitFloor : 15f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
                         }
                         else
                         {
@@ -338,7 +349,7 @@ namespace RBMConfig
                                 skillBasedDamage = magnitude;
                             }
                         }
-                        if (magnitude > 0.15f && !isPassiveUsage)
+                        if ((magnitude > 0.15f || isHandleHit) && !isPassiveUsage)
                         {
                             magnitude = skillBasedDamage;
                         }
@@ -356,7 +367,7 @@ namespace RBMConfig
                         else if (damageType == DamageTypes.Blunt && !isPassiveUsage)
                         {
                             //skillBasedDamage = magnitude + (30f + (effectiveSkill * 0.26f) * 1.3f);
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.0975f), 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
+                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.0975f), isHandleHit ? HandleHitFloor : 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
                         }
                         else
                         {
@@ -418,7 +429,7 @@ namespace RBMConfig
                                 skillBasedDamage = magnitude;
                             }
                         }
-                        if (magnitude > 0.15f && !isPassiveUsage)
+                        if ((magnitude > 0.15f || isHandleHit) && !isPassiveUsage)
                         {
                             magnitude = skillBasedDamage;
                         }

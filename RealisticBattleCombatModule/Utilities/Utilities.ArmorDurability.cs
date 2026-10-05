@@ -83,51 +83,16 @@ namespace RBMCombat
                 WeaponClass weaponType = attackerWeapon.CurrentUsageItem.WeaponClass;
 
                 float weaponTypeScaling = 1f;
-                float weaponDamageFactor = 1f;
-                float magnitude = blow.BaseMagnitude;
                 RBMCombatConfigWeaponType rbmCombatConfigWeaponType = RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType.ToString());
                 float armorThreshold = 4f;
                 float armorValue = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBM(agent, attackCollisionData.VictimHitBodyPart);
 
                 ArmorMaterialTypes armorMaterialType = equipmentElement.Item.ArmorComponent.MaterialType;
                 DamageTypes damageType = (DamageTypes)attackCollisionData.DamageType;
-                // attacker is null for a missile whose shooter left the mission mid-flight
-                if (attacker != null && attacker.IsHuman)
-                {
-                    EquipmentIndex slotIndex = attacker.GetPrimaryWieldedItemIndex();
-                    if (slotIndex != EquipmentIndex.None)
-                    {
-                        WeaponComponentData wcd = attackerWeapon.CurrentUsageItem;
-                        ItemModifier itemModifier = null;
-                        if (!attackCollisionData.IsAlternativeAttack && attacker.IsHuman && !attackCollisionData.IsFallDamage && attacker.Origin != null && !attackCollisionData.IsMissile && wcd != null)
-                        {
-                            if (!attackCollisionData.IsMissile)
-                            {
-                                float wdm = MissionGameModels.Current.AgentStatCalculateModel.GetWeaponDamageMultiplier(attacker, wcd);
-                                magnitude = attackCollisionData.BaseMagnitude / wdm;
-                            }
-                            SkillObject skill = (wcd == null) ? DefaultSkills.Athletics : wcd.RelevantSkill;
-                            if (skill != null)
-                            {
-                                int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attacker, skill);
-                                float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
-                                float skillModifier = Utilities.CalculateSkillModifier(ef);
-                                if (attacker != null && attacker.Equipment != null && attacker.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
-                                {
-                                    itemModifier = attacker.Equipment[attacker.GetPrimaryWieldedItemIndex()].ItemModifier;
-                                    magnitude = Utilities.GetSkillBasedDamage(blow.BaseMagnitude, attacker.IsDoingPassiveAttack, weaponType.ToString(), damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetPrimaryWieldedItemIndex()].GetWeight());
-                                }
-                                else
-                                {
-                                }
-                            }
-                        }
-                        weaponDamageFactor = (float)Math.Sqrt((attackCollisionData.StrikeType == (int)StrikeType.Thrust)
-                        ? Utilities.getThrustDamageFactor(wcd, itemModifier)
-                        : Utilities.getSwingDamageFactor(wcd, itemModifier));
-                    }
-                }
 
+                // the wear roll reads only blow.AbsorbedByArmor, which the live damage pass already computed with the
+                // weapon's skill, swing and modifier factors (and the handle-hit rules), so none are recomputed here
+                // attacker is null for a missile whose shooter left the mission mid-flight
                 if (attacker != null && attackCollisionData.StrikeType == (int)StrikeType.Swing && !attackCollisionData.AttackBlockedWithShield && !attacker.WieldedWeapon.IsEmpty && !Utilities.HitWithWeaponBlade(in attackCollisionData, attacker.WieldedWeapon))
                 {
                     damageType = DamageTypes.Blunt;
@@ -246,11 +211,6 @@ namespace RBMCombat
                         }
                 }
                 float defaultProbability = 0.05f;
-                if (damageType == DamageTypes.Pierce && !blow.IsMissile)
-                {
-                    magnitude = magnitude * RBMConfig.RBMConfig.OneHandedThrustDamageBonus;
-                }
-                //float magScaling = (float)Math.Pow((magnitude * weaponDamageFactor) / (armorThreshold * armorValue), 2);
                 // The blow math scaled the armor by armorEffectivenessMultiplier, so AbsorbedByArmor grows with it;
                 // scale the capacity it is measured against the same way, or stronger armor would wear faster.
                 float magScaling = (blow.AbsorbedByArmor / (armorValue * RBMConfig.RBMConfig.armorEffectivenessMultiplier * armorThreshold)) / 5f;

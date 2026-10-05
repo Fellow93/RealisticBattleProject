@@ -7,9 +7,9 @@ namespace RBMCombat
     public static partial class Utilities
     {
         // Body lives in RBMConfig.SkillDamage so RBMAI's crush-through estimate uses the same table.
-        public static float GetSkillBasedDamage(float magnitude, bool isPassiveUsage, string weaponType, DamageTypes damageType, float effectiveSkill, float skillModifier, StrikeType strikeType, float weaponWeight)
+        public static float GetSkillBasedDamage(float magnitude, bool isPassiveUsage, string weaponType, DamageTypes damageType, float effectiveSkill, float skillModifier, StrikeType strikeType, float weaponWeight, bool isHandleHit = false)
         {
-            return SkillDamage.GetSkillBasedDamage(magnitude, isPassiveUsage, weaponType, damageType, effectiveSkill, skillModifier, strikeType, weaponWeight);
+            return SkillDamage.GetSkillBasedDamage(magnitude, isPassiveUsage, weaponType, damageType, effectiveSkill, skillModifier, strikeType, weaponWeight, isHandleHit);
         }
 
         // Body lives in RBMConfig.BlowDamage so RBMAI's crush-through estimate uses the same armor math.

@@ -67,8 +67,21 @@ namespace RBMCombat
                 }
                 return true;
             }
+            // Not built from crafting parts, so there is no blade length to read: the bottom share of the weapon
+            // counts as the handle.
+            if (attackerWeapon.Item != null && currentUsageItem != null)
+            {
+                float realWeaponLength = currentUsageItem.GetRealWeaponLength();
+                if (realWeaponLength > 0f && collisionData.CollisionDistanceOnWeapon < realWeaponLength * NonCraftedHandleShare)
+                {
+                    return false;
+                }
+            }
             return true;
         }
+
+        // Share of a non-crafted weapon's length, from the hand, that HitWithWeaponBlade treats as the handle.
+        private const float NonCraftedHandleShare = 0.25f;
 
         public static bool HitWithWeaponBladeTip(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
         {

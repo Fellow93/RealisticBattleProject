@@ -75,8 +75,21 @@ namespace RBMAI
                 }
                 return true;
             }
+            // Not built from crafting parts, so there is no blade length to read: the bottom share of the weapon
+            // counts as the handle. Same rule as RBMCombat's copy.
+            if (attackerWeapon.Item != null && currentUsageItem != null)
+            {
+                float realWeaponLength = currentUsageItem.GetRealWeaponLength();
+                if (realWeaponLength > 0f && collisionData.CollisionDistanceOnWeapon < realWeaponLength * NonCraftedHandleShare)
+                {
+                    return false;
+                }
+            }
             return true;
         }
+
+        // Share of a non-crafted weapon's length, from the hand, that HitWithWeaponBlade treats as the handle.
+        private const float NonCraftedHandleShare = 0.25f;
 
         public static float GetComHitModifier(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
         {
@@ -93,10 +106,13 @@ namespace RBMAI
                 }
             }
 
-            float comHitModifier = 0f;
-            if (attackerWeapon.Item != null && currentUsageItem != null && attackerWeapon.Item.WeaponDesign != null &&
-                attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0)
+            // neutral when the weapon can't be measured; 0 here used to zero all block/parry posture damage
+            float comHitModifier = 1f;
+            // the centre-of-mass distance only needs the usage item, so non-crafted weapons get it too
+            if (attackerWeapon.Item != null && currentUsageItem != null)
             {
+                bool hasDesign = attackerWeapon.Item.WeaponDesign != null &&
+                    attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0;
                 float impactPointAsPercent = MBMath.ClampFloat(collisionData.CollisionDistanceOnWeapon, -0.2f, currentUsageItem.GetRealWeaponLength()) / currentUsageItem.GetRealWeaponLength();
                 float comAsPercent = MBMath.ClampFloat(currentUsageItem.CenterOfMass, -0.2f, currentUsageItem.GetRealWeaponLength()) / currentUsageItem.GetRealWeaponLength();
                 comHitModifier = 1f - Math.Abs(comAsPercent - impactPointAsPercent);
@@ -127,6 +143,10 @@ namespace RBMAI
                         case WeaponClass.OneHandedSword:
                         case WeaponClass.TwoHandedSword:
                             {
+                                if (!hasDesign)
+                                {
+                                    break;
+                                }
                                 float bladeLength = attackerWeapon.Item.WeaponDesign.UsedPieces[0].ScaledBladeLength + 0f;
                                 float realWeaponLength = currentUsageItem.GetRealWeaponLength();
                                 if (collisionData.CollisionDistanceOnWeapon < (realWeaponLength - bladeLength))

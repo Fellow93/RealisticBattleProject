@@ -187,9 +187,11 @@ namespace RBMCombat
 
                 ArmorMaterialTypes armorMaterial = ArmorRework.GetArmorMaterialForBodyPartRBM(victim, attackCollisionData.VictimHitBodyPart);
 
+                bool isHandleHit = false;
                 if (attacker != null && attackCollisionData.StrikeType == (int)StrikeType.Swing && damageType != DamageTypes.Blunt && !attacker.WieldedWeapon.IsEmpty && !Utilities.HitWithWeaponBlade(in attackCollisionData, attacker.WieldedWeapon))
                 {
                     damageType = DamageTypes.Blunt;
+                    isHandleHit = true;
                 }
                 bool isThrustCut = false;
                 if (attackerWeapon != null && attacker != null)
@@ -399,7 +401,7 @@ namespace RBMCombat
                         else if (attacker != null && attacker.Equipment != null && attacker.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
                         {
                             itemModifier = attacker.Equipment[attacker.GetPrimaryWieldedItemIndex()].ItemModifier;
-                            magnitude = Utilities.GetSkillBasedDamage(magnitude, attackInformation.IsAttackerAgentDoingPassiveAttack, weaponType, damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetPrimaryWieldedItemIndex()].GetWeight());
+                            magnitude = Utilities.GetSkillBasedDamage(magnitude, attackInformation.IsAttackerAgentDoingPassiveAttack, weaponType, damageType, effectiveSkill, skillModifier, (StrikeType)attackCollisionData.StrikeType, attacker.Equipment[attacker.GetPrimaryWieldedItemIndex()].GetWeight(), isHandleHit);
                         }
                     }
                 }
@@ -474,7 +476,8 @@ namespace RBMCombat
                 {
                     weaponDamageFactor *= 3f;
                 }
-                if (isKickOrBash)
+                // pommel/handle hits never touch the blade, so its sharpness and the item modifier don't apply
+                if (isKickOrBash || isHandleHit)
                 {
                     weaponDamageFactor = 1f;
                 }
@@ -562,7 +565,14 @@ namespace RBMCombat
                     float BraceBonus = 0f;
                     float BraceModifier = 0.34f;
 
-                    switch (weaponType)
+                    // A swing that lands with the hilt, pommel or haft has no edge to bite into the board: it keeps
+                    // its swing magnitude but gets none of the edge bonuses below (flat swing bonus, axe x1.5,
+                    // BonusAgainstShield x2), is computed against the board as Blunt and takes the blunt share instead.
+                    // Same test as the body hit.
+                    bool isHandleHit = !attackCollisionData.IsMissile && !attackCollisionData.IsAlternativeAttack && attackCollisionData.StrikeType == (int)StrikeType.Swing && damageType != DamageTypes.Blunt
+                        && attackerWeapon != null && attacker != null && !attacker.WieldedWeapon.IsEmpty && !Utilities.HitWithWeaponBlade(in attackCollisionData, attacker.WieldedWeapon);
+
+                    switch (isHandleHit ? string.Empty : weaponType)
                     {
                         case "Dagger":
                         case "OneHandedSword":
@@ -705,7 +715,7 @@ namespace RBMCombat
                             }
                     }
 
-                    localInflictedDamage = Utilities.RBMComputeDamage(weaponType, damageType, blowMagnitude, (float)shieldArmorForCurrentUsage * 10f, absorbedDamageRatio, out _, out _);
+                    localInflictedDamage = Utilities.RBMComputeDamage(weaponType, isHandleHit ? DamageTypes.Blunt : damageType, blowMagnitude, (float)shieldArmorForCurrentUsage * 10f, absorbedDamageRatio, out _, out _);
 
                     if (attackCollisionData.IsMissile)
                     {
@@ -750,7 +760,7 @@ namespace RBMCombat
                     }
                     else if (!attackCollisionData.IsMissile)
                     {
-                        switch (weaponType)
+                        switch (isHandleHit ? string.Empty : weaponType)
                         {
                             case "OneHandedAxe":
                             case "TwoHandedAxe":
@@ -767,7 +777,11 @@ namespace RBMCombat
                                 }
                             default:
                                 {
-                                    if (attackCollisionData.DamageType == (int)DamageTypes.Pierce)
+                                    if (isHandleHit)
+                                    {
+                                        localInflictedDamage *= 0.75f;
+                                    }
+                                    else if (attackCollisionData.DamageType == (int)DamageTypes.Pierce)
                                     {
                                         localInflictedDamage *= 0.09f;
                                     }
@@ -783,7 +797,7 @@ namespace RBMCombat
                     // A thrown pilum's edge against shields is punching through them (RangedRework's
                     // PilumShieldPenetration), not splitting them, so it does not get the doubling.
                     bool isThrownPilum = attackCollisionData.IsMissile && weaponType == "Javelin";
-                    if (attackerWeapon != null && attackerWeapon.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield) && !isThrownPilum)
+                    if (attackerWeapon != null && attackerWeapon.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield) && !isThrownPilum && !isHandleHit)
                     {
                         localInflictedDamage *= 2f;
                     }
