@@ -6117,10 +6117,10 @@
                  id="Item.sling_wool" />
       <equipment slot="Item2"
                  id="Item.sling_leadammo" />
-      <equipment slot="Item4"
-                 id="Item.sling_leadammo" />
       <equipment slot="Item1"
                  id="Item.easter_polesword_t4" />
+      <equipment slot="Item3"
+                 id="Item.sling_leadammo" />
       <equipment slot="Body"
                  id="Item.assassin_armor" />
       <equipment slot="Head"
@@ -6170,12 +6170,12 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.sling_braided" />
+      <equipment slot="Item1"
+                 id="Item.sling_leadammo_50g" />
       <equipment slot="Item3"
-                 id="Item.sling_leadammo_50g" />
-      <equipment slot="Item4"
-                 id="Item.sling_leadammo_50g" />
-      <equipment slot="Item2"
                  id="Item.easter_polesword_t4" />
+      <equipment slot="Item2"
+                 id="Item.sling_leadammo_50g" />
       <equipment slot="Head"
                  id="Item.improved_assassin_hood_q5" />
       <equipment slot="Body"
@@ -6223,9 +6223,9 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.sling_reinforced" />
-      <equipment slot="Item2"
+      <equipment slot="Item1"
                  id="Item.sling_leadammo_80g" />
-      <equipment slot="Item4"
+      <equipment slot="Item2"
                  id="Item.sling_leadammo_80g" />
       <equipment slot="Item3"
                  id="Item.khuzait_polearm_2_t5" />
@@ -6243,9 +6243,9 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.sling_reinforced" />
-      <equipment slot="Item2"
+      <equipment slot="Item1"
                  id="Item.sling_leadammo_80g" />
-      <equipment slot="Item4"
+      <equipment slot="Item2"
                  id="Item.sling_leadammo_80g" />
       <equipment slot="Item3"
                  id="Item.empire_polearm_2_t5" />
@@ -6263,9 +6263,9 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.sling_reinforced" />
-      <equipment slot="Item2"
+      <equipment slot="Item1"
                  id="Item.sling_leadammo_80g" />
-      <equipment slot="Item4"
+      <equipment slot="Item2"
                  id="Item.sling_leadammo_80g" />
       <equipment slot="Item3"
                  id="Item.vlandia_polearm_1_t5" />
@@ -6283,9 +6283,9 @@
       <EquipmentRoster>
       <equipment slot="Item0"
                  id="Item.sling_reinforced" />
-      <equipment slot="Item2"
+      <equipment slot="Item1"
                  id="Item.sling_leadammo_80g" />
-      <equipment slot="Item4"
+      <equipment slot="Item2"
                  id="Item.sling_leadammo_80g" />
       <equipment slot="Item3"
                  id="Item.battania_polearm_1_t5" />
