@@ -1,0 +1,1709 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RBM Item Editor</title>
+<style>
+:root {
+  --bg: #f6f6f4;
+  --panel: #ffffff;
+  --panel-2: #f0f0ec;
+  --border: #d9d9d2;
+  --text: #1d1d1b;
+  --muted: #6b6b64;
+  --faint: #9a9a92;
+  --accent: #2f6f9f;
+  --accent-bg: #e3eef7;
+  --ok: #2d7a3e;
+  --ok-bg: #e2f2e5;
+  --warn: #9a5b00;
+  --warn-bg: #fbefd9;
+  --bad: #a3322b;
+  --bad-bg: #f8e1df;
+  --sel: #dbe9f5;
+  --chg: #fff3c4;
+  --shadow: 0 1px 2px rgba(0,0,0,.06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17181a;
+    --panel: #202225;
+    --panel-2: #292b2f;
+    --border: #3a3d42;
+    --text: #e6e6e3;
+    --muted: #a3a39c;
+    --faint: #75756f;
+    --accent: #79b4e3;
+    --accent-bg: #1f3446;
+    --ok: #7fcf8e;
+    --ok-bg: #1d3524;
+    --warn: #e8b260;
+    --warn-bg: #3d2f17;
+    --bad: #ef8a83;
+    --bad-bg: #44211f;
+    --sel: #263c50;
+    --chg: #4a3f17;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 13px/1.4 "Segoe UI", system-ui, -apple-system, sans-serif;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button {
+  background: var(--panel-2); border: 1px solid var(--border); border-radius: 5px;
+  padding: 4px 10px; cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button:disabled { opacity: .5; cursor: default; border-color: var(--border); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) { button.primary { color: #10202c; } }
+button.small { padding: 1px 7px; font-size: 12px; }
+button.link { background: none; border: none; padding: 0; color: var(--accent); cursor: pointer; }
+button.link:hover { text-decoration: underline; }
+input[type=search], input[type=text], input[type=number], select, textarea {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 4px 7px;
+}
+textarea { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12px; width: 100%; }
+code, .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12px; }
+header {
+  display: flex; align-items: center; gap: 12px; padding: 8px 14px;
+  background: var(--panel); border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+header h1 { font-size: 15px; margin: 0; font-weight: 600; }
+header .meta { color: var(--muted); font-size: 12px; }
+header .spacer { flex: 1; }
+#modified { font-size: 12px; padding: 2px 8px; border-radius: 10px; }
+#modified.on { background: var(--warn-bg); color: var(--warn); }
+#modified.off { background: var(--ok-bg); color: var(--ok); }
+main {
+  flex: 1; min-height: 0; display: grid; gap: 10px; padding: 10px;
+  grid-template-columns: minmax(290px, .8fr) minmax(430px, 1.25fr) minmax(430px, 1.45fr);
+}
+@media (max-width: 1250px) {
+  main { grid-template-columns: 1fr; overflow-y: auto; }
+  main > .pane { height: 80vh; }
+}
+.pane {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  display: flex; flex-direction: column; min-height: 0; min-width: 0; box-shadow: var(--shadow);
+}
+.pane > .head { padding: 8px 10px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+.pane > .head h2 { font-size: 13px; margin: 0; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.pane > .head h2 .sp { flex: 1; }
+.pane > .body { overflow-y: auto; flex: 1; min-height: 0; }
+.filters { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.filters select { max-width: 150px; }
+.filters label { display: inline-flex; align-items: center; gap: 3px; color: var(--muted); font-size: 12px; }
+.count { color: var(--muted); font-weight: 400; font-size: 12px; }
+.item-row {
+  display: grid; grid-template-columns: 18px 1fr auto; gap: 6px; align-items: center;
+  padding: 5px 10px; border-bottom: 1px solid var(--panel-2); cursor: pointer; user-select: none;
+}
+.item-row:hover { background: var(--panel-2); }
+.item-row.sel { background: var(--sel); }
+.item-row.ticked { box-shadow: inset 3px 0 0 var(--accent); }
+.item-row .nm { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item-row .sub { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item-row .st { color: var(--muted); font-size: 11px; text-align: right; white-space: nowrap; }
+.badge {
+  display: inline-block; font-size: 11px; padding: 0 6px; border-radius: 9px; line-height: 17px;
+  background: var(--panel-2); color: var(--muted); border: 1px solid var(--border); white-space: nowrap;
+}
+.badge.acc { background: var(--accent-bg); color: var(--accent); border-color: transparent; font-weight: 600; }
+.badge.zero { opacity: .45; }
+.badge.bad { background: var(--bad-bg); color: var(--bad); border-color: transparent; }
+.badge.warn { background: var(--warn-bg); color: var(--warn); border-color: transparent; }
+.badge.ok { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+.badge.outline { background: transparent; border: 1px dashed var(--muted); color: var(--muted); }
+button.badge { cursor: pointer; font: inherit; font-size: 11px; }
+.details { padding: 10px 12px; }
+.details h3 { margin: 0 0 2px; font-size: 16px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.details h4 { margin: 14px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted);
+  display: flex; gap: 8px; align-items: center; }
+.details h4 .sp { flex: 1; }
+.details h4 .lc { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 12px; }
+.kv .k { color: var(--muted); }
+.note { font-size: 12px; padding: 5px 8px; border-radius: 6px; margin: 6px 0 0; }
+.note.warn { background: var(--warn-bg); color: var(--warn); }
+.note.bad { background: var(--bad-bg); color: var(--bad); }
+.note.info { background: var(--accent-bg); color: var(--accent); }
+.empty { color: var(--muted); padding: 14px 12px; }
+.hint { color: var(--muted); font-size: 12px; }
+.bulk { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12px; }
+.bulk input[type=text] { width: 80px; }
+.bulk select { max-width: 170px; }
+#problems { display: none; padding: 6px 14px; background: var(--bad-bg); color: var(--bad); font-size: 12px; border-bottom: 1px solid var(--border);
+  max-height: 30vh; overflow-y: auto; }
+#problems.show { display: block; }
+#problems .row { padding: 1px 0; }
+#problems .row.warn { color: var(--warn); }
+#warnings { display: none; padding: 6px 14px; background: var(--warn-bg); color: var(--warn); font-size: 12px; border-bottom: 1px solid var(--border);
+  max-height: 40vh; overflow-y: auto; }
+#warnings.show { display: block; }
+#warnings .sec { font-weight: 600; margin: 4px 0 2px; }
+#warnings .sec:first-child { margin-top: 0; }
+#warnings .row { padding: 1px 0; }
+#banner { display: none; padding: 6px 14px; background: var(--warn-bg); color: var(--warn); font-size: 12px; border-bottom: 1px solid var(--border); }
+#banner.show { display: flex; gap: 10px; align-items: center; }
+/* fields */
+.fields { display: grid; grid-template-columns: minmax(110px, 170px) 1fr; gap: 3px 10px; align-items: center; font-size: 12px; }
+.fields .lbl { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fields .lbl.chg { color: var(--text); background: var(--chg); border-radius: 4px; padding: 0 4px; }
+.fields .ctl { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.fields input[type=text] { padding: 1px 5px; width: 100%; max-width: 360px; min-width: 60px; }
+.fields input.num { width: 90px; text-align: right; }
+.fields select { padding: 1px 4px; max-width: 220px; }
+.fields .chg input, .fields .chg select, input.chg, select.chg { background: var(--chg); }
+.van { color: var(--faint); font-size: 11px; white-space: nowrap; }
+.van.diff { color: var(--warn); }
+.chk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 1px 8px; font-size: 12px; }
+.chk-grid label { display: flex; gap: 4px; align-items: center; padding: 1px 3px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chk-grid label.chg { background: var(--chg); }
+.chk-grid label.off { color: var(--faint); }
+.chk-grid .vh { color: var(--warn); font-size: 10px; }
+.box { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-top: 8px; }
+.box > .bh { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; font-weight: 600; font-size: 12px; }
+.box > .bh .sp { flex: 1; }
+details.all { margin-top: 6px; font-size: 12px; }
+details.all summary { cursor: pointer; color: var(--muted); }
+.addrow { display: flex; gap: 6px; align-items: center; margin-top: 4px; flex-wrap: wrap; font-size: 12px; }
+.addrow select { max-width: 200px; padding: 1px 4px; }
+.addrow input { width: 140px; padding: 1px 5px; }
+.derived { font-size: 12px; display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; }
+.derived .k { color: var(--muted); }
+.derived .f { color: var(--faint); font-size: 11px; }
+pre.xml { margin: 0; padding: 8px; background: var(--panel-2); border-radius: 6px; font-size: 11px; overflow: auto; max-height: 360px; white-space: pre; }
+pre.xml .chg { background: var(--chg); display: inline-block; min-width: 100%; }
+/* compare */
+.cmp-table { overflow: auto; flex: 1; min-height: 0; }
+.cmp-table table { border-collapse: collapse; width: 100%; font-size: 12px; }
+.cmp-table th { position: sticky; top: 0; background: var(--panel-2); text-align: left; padding: 4px 6px; cursor: pointer; white-space: nowrap; font-weight: 600; z-index: 1; }
+.cmp-table th.num, .cmp-table td.num { text-align: right; }
+.cmp-table td { padding: 3px 6px; border-bottom: 1px solid var(--panel-2); white-space: nowrap; }
+.cmp-table tr.it { cursor: pointer; }
+.cmp-table tr.it:hover { background: var(--sel); }
+.cmp-table tr.cur { background: var(--accent-bg); }
+.cmp-table td.chg { background: var(--chg); }
+.cmp-table td.ed { cursor: text; }
+.cmp-table td input { width: 70px; padding: 0 3px; text-align: right; }
+.cmp-table td .id { color: var(--faint); }
+.cmp-table td .was { color: var(--faint); font-size: 10px; margin-left: 3px; }
+/* modals */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 10; }
+.modal-bg.show { display: flex; }
+.modal {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px; width: min(1000px, 96vw);
+  max-height: 92vh; display: flex; flex-direction: column; padding: 14px; gap: 10px;
+}
+.modal h2 { margin: 0; font-size: 15px; }
+.modal textarea { flex: 1; min-height: 260px; resize: vertical; }
+.modal .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.msgs { font-size: 12px; max-height: 200px; overflow-y: auto; }
+.msgs div { padding: 1px 0; }
+.msgs .bad { color: var(--bad); }
+.msgs .warn { color: var(--warn); }
+.msgs .ok { color: var(--ok); }
+.msgs ul { margin: 2px 0 4px; padding-left: 18px; color: var(--muted); }
+#nodata { max-width: 720px; margin: 60px auto; padding: 24px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; }
+#nodata pre { background: var(--panel-2); padding: 10px; border-radius: 6px; overflow-x: auto; }
+.toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg);
+  padding: 6px 14px; border-radius: 6px; font-size: 12px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; }
+.toast.show { opacity: .92; }
+/* crafting piece autocomplete */
+.ac-pop { position: fixed; z-index: 15; background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.18); max-height: 340px; overflow-y: auto; overflow-x: hidden; font-size: 12px; }
+.ac-pop .ac-head { position: sticky; top: 0; background: var(--panel-2); color: var(--muted); padding: 3px 8px; font-size: 11px; border-bottom: 1px solid var(--border); }
+.ac-pop .ac-row { display: grid; grid-template-columns: minmax(120px, 1.1fr) minmax(0, 1.4fr) minmax(0, 80px) 54px 58px 30px; gap: 8px;
+  padding: 3px 8px; cursor: pointer; align-items: baseline; white-space: nowrap; }
+.ac-pop .ac-row > span { overflow: hidden; text-overflow: ellipsis; }
+.ac-pop .ac-row .id { font-family: Consolas, "Cascadia Mono", monospace; }
+.ac-pop .ac-row .n { color: var(--muted); }
+.ac-pop .ac-row .num { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ac-pop .ac-row.other .id { color: var(--warn); }
+.ac-pop .ac-row.cur { font-weight: 600; }
+.ac-pop .ac-row.hi { background: var(--sel); }
+.ac-pop .ac-row mark { background: var(--chg); color: inherit; border-radius: 2px; }
+.ac-pop .ac-sep { padding: 3px 8px; color: var(--warn); font-size: 11px; border-top: 1px solid var(--border); background: var(--warn-bg); }
+.ac-pop .ac-empty { padding: 6px 8px; color: var(--faint); }
+</style>
+</head>
+<body>
+<script src="item-editor-data.js"></script>
+<script src="../TroopLoadoutEditor/troop-loadout-core.js"></script>
+<script src="item-editor-core.js"></script>
+
+<div id="nodata" style="display:none">
+  <h2>No data file</h2>
+  <p><code>item-editor-data.js</code> was not found next to this page. It is generated from your game install and the
+  decompiled sources (it is not committed). From the repository root run:</p>
+  <pre>powershell -ExecutionPolicy Bypass -File tools\ItemEditor\Build-ItemData.ps1</pre>
+  <p>then reload this page. The page also needs <code>../TroopLoadoutEditor/troop-loadout-core.js</code> (shared XML
+  text helpers), which is in the repository.</p>
+  <p id="nodataWhat" class="hint"></p>
+</div>
+
+<header id="hdr" style="display:none">
+  <h1>RBM Item Editor</h1>
+  <span class="meta" id="meta"></span>
+  <span id="modified" class="off">no item edited</span>
+  <button id="btnWarnings" class="badge warn" style="display:none" title="Warnings about the data as a whole (not only edited items). Click to list them."></button>
+  <span class="spacer"></span>
+  <button id="btnReset" title="Discard the work in progress and go back to the items as they were when the data file was generated">Reset to file</button>
+  <button id="btnProblems" class="badge bad" style="display:none" title="Problems in the edited and new items. Click to list them."></button>
+  <button id="btnExport" class="primary">Export…</button>
+</header>
+<div id="warnings"></div>
+<div id="problems"></div>
+<div id="banner"></div>
+
+<main id="app" style="display:none">
+  <section class="pane" id="itemPane">
+    <div class="head">
+      <h2>Items <span class="count" id="itemCount"></span></h2>
+      <input type="search" id="fSearch" placeholder="Search name or id…">
+      <div class="filters">
+        <select id="fType"><option value="">All types</option></select>
+        <select id="fWClass" title="weapon_class of any Weapon usage; a crafted weapon has no Weapon element, its class comes from the pieces, so it is filtered by crafting template"><option value="">All weapon classes</option></select>
+        <select id="fCulture"><option value="">All cultures</option></select>
+        <select id="fTier" title="RBM tier as the game computes it (tier_override wins)"><option value="">All tiers</option></select>
+        <select id="fModule" title="The module of the definition the game uses"><option value="">All modules</option></select>
+        <select id="fSource"><option value="">RBM file or not</option><option value="rbm">In an RBM item file</option><option value="native">Not in an RBM file</option><option value="twin">In 2+ RBM files</option><option value="new">New items</option></select>
+        <select id="fEdited"><option value="">Edited or not</option><option value="y">Edited</option><option value="n">Not edited</option></select>
+        <select id="fProb"><option value="">Problems or not</option><option value="any">Has problems</option><option value="bad">Has serious problems</option></select>
+        <label title="Items only defined in files not loaded in campaigns (multiplayer items)"><input type="checkbox" id="fNc">not in campaign</label>
+      </div>
+      <div class="bulk" id="bulkBar"></div>
+      <div id="bulkTools"></div>
+    </div>
+    <div class="body" id="itemList"></div>
+  </section>
+
+  <section class="pane" id="detailPane">
+    <div class="head"><h2>Selected item <span class="sp"></span><span class="hint" id="detailHint"></span></h2></div>
+    <div class="body" id="details"><div class="empty">Select an item on the left.</div></div>
+  </section>
+
+  <section class="pane" id="comparePane">
+    <div class="head">
+      <h2>Compare <span class="count" id="cmpCount"></span><span class="sp"></span>
+        <select id="cmpMode" title="Which items the table lists">
+          <option value="type">Same type as the selected item</option>
+          <option value="list">The filtered list</option>
+          <option value="ticked">Ticked items</option>
+        </select>
+      </h2>
+      <div class="hint">Click a row to select it, click a column to sort. Double-click a number with a dotted underline to edit it.
+        Changed cells are highlighted; the small number is the file's value.</div>
+    </div>
+    <div class="cmp-table" id="cmpTable"></div>
+  </section>
+</main>
+
+<div class="modal-bg" id="exportModal">
+  <div class="modal">
+    <h2>Export</h2>
+    <div class="hint">Each file below is the full RBM item file with only the edited items changed (or appended). Replace the file in the
+      repository with it (Download, Save, or Copy), then build: the build copies it into the RBM module (never copy it there by hand).
+      Re-run <code>Build-ItemData.ps1</code> afterwards so the page starts from the new files.</div>
+    <div class="row" id="exportFiles"></div>
+    <div class="msgs" id="exportMsgs"></div>
+    <textarea id="exportText" readonly spellcheck="false"></textarea>
+    <div class="row">
+      <span id="exportButtons" style="display:flex;gap:8px">
+        <button id="btnDownload" class="primary">Download</button>
+        <button id="btnSave" title="Write the file straight to disk (pick the file in the repository)">Save to file…</button>
+        <button id="btnCopy">Copy to clipboard</button>
+      </span>
+      <span style="flex:1"></span>
+      <button data-close>Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="datalists" style="display:none"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+  var DATA = window.ITEM_EDITOR_DATA, C = window.ItemEditorCore;
+  if (!DATA || !C || !window.TroopLoadoutCore) {
+    document.getElementById('nodata').style.display = 'block';
+    document.getElementById('nodataWhat').textContent = !DATA ? 'Missing: item-editor-data.js.' :
+      'Missing: ../TroopLoadoutEditor/troop-loadout-core.js or item-editor-core.js.';
+    return;
+  }
+  document.getElementById('hdr').style.display = 'flex';
+  document.getElementById('app').style.display = 'grid';
+
+  var STORE_KEY = 'rbm-item-editor.v1';
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ------------------------------------------------------------------ data
+  var itemById = {};
+  DATA.items.forEach(function (it) { itemById[it.id] = it; });
+  var fileByPath = {};
+  DATA.rbmFiles.forEach(function (f) { fileByPath[f.path] = f; });
+  var VOCAB = DATA.vocab || {};
+  function vocab(el) { return VOCAB[el] || {}; }
+  function isRbmFinal(it) { return it.module === 'RBM' || it.module === 'RBM_WS'; }
+
+  // ------------------------------------------------------------------ state
+  // models: item id -> current model (see item-editor-core.js parseItem), only for items the user touched.
+  // news: new items [{key: 'new:N', from: source item id, model, target}]. targets: item id -> append target override.
+  var origCache = {}, vanCache = {};
+  function orig(id) { return origCache[id] || (origCache[id] = C.parseItem(itemById[id].raw)); }
+  // The definition before RBM replaced it (null for an item only RBM defines).
+  function vanilla(id) {
+    if (id in vanCache) return vanCache[id];
+    var it = itemById[id];
+    vanCache[id] = it.nativeRaw ? C.parseItem(it.nativeRaw) : (isRbmFinal(it) ? null : orig(id));
+    return vanCache[id];
+  }
+  var models = {}, targets = {}, news = [], newSeq = 1;
+  var selectedKey = null, checked = {}, lastClicked = null;
+  function isNewKey(k) { return k.indexOf('new:') === 0; }
+  function newOf(k) { for (var i = 0; i < news.length; i++) if (news[i].key === k) return news[i]; return null; }
+  function exists(k) { return isNewKey(k) ? !!newOf(k) : !!itemById[k]; }
+  function srcItem(k) { return isNewKey(k) ? itemById[newOf(k).from] : itemById[k]; }
+  function cur(k) { return isNewKey(k) ? newOf(k).model : (models[k] || orig(k)); }
+  // What changes are marked against: the file's item, or for a new item its source.
+  function base(k) { return isNewKey(k) ? orig(newOf(k).from) : orig(k); }
+  function van(k) { return isNewKey(k) ? null : vanilla(k); }
+  var cache = {};   // key -> {tier, price, probs}
+  function touch(k) { delete cache[k]; }
+  function edit(k) {
+    touch(k);
+    if (isNewKey(k)) return newOf(k).model;
+    if (!models[k]) models[k] = C.cloneModel(orig(k));
+    return models[k];
+  }
+  function isEdited(k) { return isNewKey(k) || (!!models[k] && !C.sameModel(models[k], orig(k))); }
+  function editedKeys() { return Object.keys(models).filter(isEdited).concat(news.map(function (n) { return n.key; })); }
+  function targetOf(k) { return isNewKey(k) ? newOf(k).target : targets[k]; }
+  function inRbm(k) { var it = itemById[k]; return !isNewKey(k) && it && it.rbm && it.rbm.length; }
+  function effTargets(k) {
+    var t = targetOf(k);
+    if (inRbm(k)) return itemById[k].rbm.slice();
+    if (t && t.length) return t;
+    return C.defaultTargets(cur(k), srcItem(k), DATA);
+  }
+  function displayName(m, k) {
+    var n = (m.attrs.name || '').replace(/^\{=[^}]*\}/, '');
+    return n || m.attrs.id || k;
+  }
+
+  (function restore() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return;
+      var s = JSON.parse(raw);
+      if (!s || typeof s !== 'object') return;
+      var n = 0, missed = 0, gone = 0;
+      Object.keys(s.edits || {}).forEach(function (id) {
+        if (!itemById[id]) { gone++; return; }
+        var m = C.cloneModel(orig(id));
+        missed += C.applyOps(m, s.edits[id]);
+        models[id] = m;
+        if (isEdited(id)) n++; else delete models[id];
+      });
+      Object.keys(s.targets || {}).forEach(function (id) { if (itemById[id] && Array.isArray(s.targets[id])) targets[id] = s.targets[id]; });
+      (s.news || []).forEach(function (x) {
+        if (!x || !itemById[x.from]) { gone++; return; }
+        var m = C.cloneModel(orig(x.from));
+        missed += C.applyOps(m, x.ops);
+        news.push({ key: x.key, from: x.from, model: m, target: Array.isArray(x.target) ? x.target : null });
+        n++;
+      });
+      newSeq = Math.max(+s.newSeq || 1, news.length + 1);
+      if (n || gone) {
+        var msg = 'Restored your unsaved work in progress (' + n + ' item' + (n === 1 ? '' : 's') + ') from ' + (s.savedAt || 'an earlier session') + '.';
+        if (s.generated && s.generated !== DATA.generated) msg += ' The data file was regenerated since (' + s.generated + ' → ' + DATA.generated + '): your changes were re-applied to the new files.';
+        if (missed) msg += ' ' + missed + ' change(s) no longer fit (a component or piece is gone) and were dropped.';
+        if (gone) msg += ' ' + gone + ' item(s) no longer exist and were dropped.';
+        msg += ' Use “Reset to file” to start from the files again.';
+        showBanner(msg);
+      }
+    } catch (e) { /* storage unavailable: start from the files */ }
+  })();
+
+  function save() {
+    Object.keys(models).forEach(function (id) { if (!isEdited(id)) delete models[id]; });
+    Object.keys(targets).forEach(function (id) { if (!targets[id] || !targets[id].length) delete targets[id]; });
+    try {
+      if (!Object.keys(models).length && !news.length && !Object.keys(targets).length) localStorage.removeItem(STORE_KEY);
+      else {
+        var edits = {};
+        Object.keys(models).forEach(function (id) { edits[id] = C.diff(orig(id), models[id]); });
+        localStorage.setItem(STORE_KEY, JSON.stringify({
+          edits: edits, targets: targets, newSeq: newSeq, savedAt: new Date().toLocaleString(), generated: DATA.generated,
+          news: news.map(function (x) { return { key: x.key, from: x.from, ops: C.diff(orig(x.from), x.model), target: x.target }; })
+        }));
+      }
+    } catch (e) { /* ignore */ }
+    updateModified();
+  }
+  function changed() { save(); renderItems(); renderDetailsKeepFocus(); renderCompare(); }
+
+  // ------------------------------------------------------------------ helpers
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast._h); toast._h = setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+  function showBanner(text) {
+    var b = $('banner');
+    b.innerHTML = '<span>' + esc(text) + '</span><button class="small" id="bannerClose">Dismiss</button>';
+    b.classList.add('show');
+    $('bannerClose').onclick = function () { b.classList.remove('show'); };
+  }
+  function updateModified() {
+    var n = editedKeys().length, m = $('modified');
+    if (!n) { m.textContent = 'no item edited'; m.className = 'off'; }
+    else { m.textContent = n + ' item' + (n === 1 ? '' : 's') + ' edited or new (not exported)'; m.className = 'on'; }
+    updateProblems();
+  }
+  function kv(k, v) { return '<span class="k">' + esc(k) + '</span><span>' + esc(v) + '</span>'; }
+  function kvHtml(k, html) { return '<span class="k">' + esc(k) + '</span><span>' + html + '</span>'; }
+  function cssEsc(s) { return String(s).replace(/["\\]/g, '\\$&'); }
+  function fmt(n) { return n == null || n === '' || isNaN(n) ? '' : (Math.round(n * 100) / 100).toString(); }
+  function isNumStr(s) { return s != null && /^\s*[+-]?(\d+\.?\d*|\.\d+)\s*$/.test(s); }
+  function fileName(p) { return p.split('/').pop(); }
+  function pathStr(p) { return p.el + (p.i != null ? ':' + p.i : '') + (p.t != null ? ':' + p.t : ''); }
+  function parsePath(s) {
+    var a = s.split(':');
+    if (a[0] === 'comp' || a[0] === 'wf') return { el: a[0], i: +a[1] };
+    if (a[0] === 'piece') return { el: 'piece', t: a.slice(1).join(':') };
+    return { el: a[0] };
+  }
+  function elName(m, path) {
+    if (path.el === 'item') return m.kind;
+    if (path.el === 'comp') return m.comps[path.i] ? m.comps[path.i].el : '';
+    if (path.el === 'wf') return 'WeaponFlags';
+    if (path.el === 'flag') return 'Flags';
+    return 'Piece';
+  }
+
+  // ------------------------------------------------------------------ derived values (cached per key)
+  function info(k) {
+    var c = cache[k];
+    if (c) return c;
+    var m = cur(k), tier = C.computeTier(m, DATA);
+    c = cache[k] = { tier: tier, price: C.computePrice(m, DATA, tier) };
+    return c;
+  }
+  function newIdCounts() {
+    var o = {};
+    news.forEach(function (n) { var id = n.model.attrs.id; o[id] = (o[id] || 0) + 1; });
+    return o;
+  }
+  function probsOf(k) {
+    var c = info(k);
+    if (c.probs && !isNewKey(k)) return c.probs;
+    var it = isNewKey(k) ? null : itemById[k];
+    c.probs = C.problems(cur(k), DATA, { item: it, isNew: isNewKey(k), edited: isEdited(k), targets: effTargets(k), allIds: itemById, newIds: newIdCounts(), vanilla: van(k) });
+    return c.probs;
+  }
+  function seriousProbs(k) { return probsOf(k).filter(function (p) { return p.cls !== 'info'; }); }
+  function tierLabel(t) { return t.tier == null ? '—' : 'T' + t.tier; }
+  function typeOfKey(k) { return C.typeOf(cur(k), DATA); }
+
+  // ------------------------------------------------------------------ datalists
+  (function buildDatalists() {
+    var h = [];
+    var dl = function (id, vals, label) {
+      h.push('<datalist id="' + id + '">' + vals.map(function (v) {
+        return '<option value="' + esc(v) + '"' + (label ? ' label="' + esc(label(v)) + '"' : '') + '></option>';
+      }).join('') + '</datalist>');
+    };
+    dl('dl-culture', Object.keys(DATA.cultures || {}).map(function (c) { return 'Culture.' + c; }), function (v) { var c = DATA.cultures[v.slice(8)]; return c.name + (c.campaign ? '' : ' (not in campaign)'); });
+    dl('dl-category', Object.keys(DATA.itemCategories || {}).sort());
+    dl('dl-modgroup', DATA.modifierGroups || []);
+    dl('dl-usage', DATA.itemUsages || []);
+    dl('dl-monster', Object.keys(DATA.monsters || {}).map(function (m) { return 'Monster.' + m; }));
+    dl('dl-template', Object.keys(DATA.templates || {}));
+    dl('dl-holster', Object.keys(DATA.holsters || {}));
+    $('datalists').innerHTML = h.join('');
+  })();
+  var REF_LIST = { culture: 'dl-culture', category: 'dl-category', modgroup: 'dl-modgroup', usage: 'dl-usage', monster: 'dl-monster', template: 'dl-template' };
+
+  // ------------------------------------------------------------------ list filters
+  function fillSelect(sel, values, label) {
+    values.forEach(function (v) {
+      var o = document.createElement('option'); o.value = v; o.textContent = label ? label(v) : v; sel.appendChild(o);
+    });
+  }
+  function uniq(fn) {
+    var s = {}; DATA.items.forEach(function (it) { var v = fn(it); if (v !== '' && v != null) s[v] = true; });
+    return Object.keys(s).sort();
+  }
+  fillSelect($('fType'), uniq(function (it) { return it.type; }));
+  fillSelect($('fCulture'), uniq(function (it) { return it.culture; }));
+  fillSelect($('fTier'), ['0', '1', '2', '3', '4', '5', '6', '?'], function (v) { return v === '?' ? 'Tier not previewed' : 'Tier ' + v; });
+  fillSelect($('fModule'), uniq(function (it) { return it.module; }));
+  // Weapon class filter: "c:<weapon_class>" matches any Weapon usage, "t:<crafting_template>" a crafted weapon.
+  (function () {
+    var cls = {}, tpl = {};
+    DATA.items.forEach(function (it) {
+      var m = orig(it.id);
+      if (m.kind === 'CraftedItem') { if (m.attrs.crafting_template) tpl[m.attrs.crafting_template] = true; }
+      else C.weapons(m).forEach(function (w) { if (w.attrs.weapon_class) cls[w.attrs.weapon_class] = true; });
+    });
+    var group = function (label, prefix, vals) {
+      var g = document.createElement('optgroup'); g.label = label;
+      vals.sort().forEach(function (v) { var o = document.createElement('option'); o.value = prefix + v; o.textContent = v; g.appendChild(o); });
+      $('fWClass').appendChild(g);
+    };
+    group('Weapon class (any usage)', 'c:', Object.keys(cls));
+    group('Crafted: template', 't:', Object.keys(tpl));
+  })();
+  function matchesWClass(m, f) {
+    var v = f.slice(2);
+    if (f.charAt(0) === 't') return m.kind === 'CraftedItem' && m.attrs.crafting_template === v;
+    return C.weapons(m).some(function (w) { return w.attrs.weapon_class === v; });
+  }
+
+  function allKeys() { return DATA.items.map(function (it) { return it.id; }).concat(news.map(function (n) { return n.key; })); }
+  var TYPE_ORDER = {};
+  ['BodyArmor', 'HeadArmor', 'HandArmor', 'LegArmor', 'Cape', 'HorseHarness', 'Horse', 'Shield', 'Bow', 'Crossbow', 'Sling', 'Arrows', 'Bolts',
+    'SlingStones', 'Thrown', 'OneHandedWeapon', 'TwoHandedWeapon', 'Polearm', 'Goods', 'Animal', 'Banner'].forEach(function (t, i) { TYPE_ORDER[t] = i; });
+  function sortKey(k) {
+    var t = typeOfKey(k), it = srcItem(k);
+    return (TYPE_ORDER[t] != null ? 100 + TYPE_ORDER[t] : 200) + '|' + ((isNewKey(k) ? cur(k).attrs.culture : it.culture) || '~') + '|' + displayName(cur(k), k).toLowerCase();
+  }
+  var sortCache = null;
+  function filteredKeys() {
+    var q = $('fSearch').value.trim().toLowerCase();
+    var ft = $('fType').value, fw = $('fWClass').value, fc = $('fCulture').value, fti = $('fTier').value, fm = $('fModule').value;
+    var fs = $('fSource').value, fe = $('fEdited').value, fp = $('fProb').value, nc = $('fNc').checked;
+    var keys = allKeys();
+    if (!sortCache || sortCache.n !== keys.length) {
+      var sk = {};
+      keys.forEach(function (k) { sk[k] = sortKey(k); });
+      keys.sort(function (a, b) { return sk[a] < sk[b] ? -1 : sk[a] > sk[b] ? 1 : 0; });
+      sortCache = { n: keys.length, keys: keys };
+    }
+    return sortCache.keys.filter(function (k) {
+      if (!exists(k)) return false;
+      var it = srcItem(k), isNew = isNewKey(k), m = cur(k), ed = isEdited(k);
+      if (!nc && !isNew && it.nc && !ed) return false;
+      if (q) {
+        var id = (m.attrs.id || '').toLowerCase(), nm = displayName(m, k).toLowerCase();
+        if (id.indexOf(q) < 0 && nm.indexOf(q) < 0) return false;
+      }
+      if (ft && typeOfKey(k) !== ft) return false;
+      if (fw && !matchesWClass(m, fw)) return false;
+      if (fc && (m.attrs.culture || '').replace(/^Culture\./, '') !== fc) return false;
+      if (fti) { var t = info(k).tier.tier; if (fti === '?' ? t != null : String(t) !== fti) return false; }
+      if (fm && (isNew || it.module !== fm)) return false;
+      if (fs === 'rbm' && !inRbm(k)) return false;
+      if (fs === 'native' && (inRbm(k) || isNew)) return false;
+      if (fs === 'twin' && !(inRbm(k) && it.rbm.length > 1)) return false;
+      if (fs === 'new' && !isNew) return false;
+      if (fe === 'y' && !ed) return false;
+      if (fe === 'n' && ed) return false;
+      if (fp) {
+        var ps = seriousProbs(k);
+        if (fp === 'any' && !ps.length) return false;
+        if (fp === 'bad' && !ps.some(function (p) { return p.cls === 'bad'; })) return false;
+      }
+      return true;
+    });
+  }
+
+  function shortStat(k) {
+    var m = cur(k), c = C.mainComp(m);
+    if (!c) return '';
+    var a = c.attrs, t = typeOfKey(k);
+    if (c.el === 'Armor') return ['head_armor', 'body_armor', 'arm_armor', 'leg_armor'].filter(function (n) { return +a[n]; }).map(function (n) { return n.charAt(0) + a[n]; }).join(' ');
+    if (c.el === 'Horse') return 'spd ' + (a.speed || 0) + ' man ' + (a.maneuver || 0);
+    if (c.el === 'Weapon') {
+      var w = C.weapons(m)[0].attrs;
+      if (t === 'Shield') return 'arm ' + (w.body_armor || 0) + ' hp ' + (w.hit_points || 0);
+      if (t === 'Bow' || t === 'Crossbow') return w.missile_speed + ' lb';
+      if (C.AMMO_TYPES.indexOf(t) >= 0) return 'dmg ' + (w.thrust_damage || 0) + ' ×' + (w.stack_amount || '');
+      return (w.swing_damage ? 'sw ' + w.swing_damage + ' ' : '') + (w.thrust_damage ? 'th ' + w.thrust_damage : '');
+    }
+    return '';
+  }
+  var MAX_ROWS = 3000;
+  function renderItems() {
+    var keys = filteredKeys();
+    $('itemCount').textContent = keys.length + ' / ' + (DATA.items.length + news.length);
+    var html = [];
+    keys.slice(0, MAX_ROWS).forEach(function (k) {
+      var m = cur(k), it = srcItem(k), ed = isEdited(k), isNew = isNewKey(k);
+      var probs = ed ? seriousProbs(k) : [];
+      var t = info(k).tier;
+      var sub = [m.attrs.id, typeOfKey(k), (m.attrs.culture || '').replace(/^Culture\./, '') || 'no culture'].join(' · ');
+      var probBadge = probs.length ? ' <span class="badge ' + (probs.some(function (x) { return x.cls === 'bad'; }) ? 'bad' : 'warn') +
+        '" title="' + esc(probs.map(function (x) { return x.text; }).join('\n')) + '">' + probs.length + '</span>' : '';
+      html.push('<div class="item-row' + (k === selectedKey ? ' sel' : '') + (checked[k] ? ' ticked' : '') + '" data-key="' + esc(k) + '">' +
+        '<input type="checkbox" class="chk" title="Tick for bulk changes"' + (checked[k] ? ' checked' : '') + '>' +
+        '<div style="min-width:0"><div class="nm">' + esc(displayName(m, k)) +
+        (isNew ? ' <span class="badge ok">new</span>' : ed ? ' <span class="badge warn">edited</span>' : '') +
+        (inRbm(k) ? ' <span class="badge acc" title="' + esc(it.rbm.join('\n')) + '">RBM' + (it.rbm.length > 1 ? ' ×' + it.rbm.length : '') + '</span>' : '') +
+        (!isNew && it.nc ? ' <span class="badge">not in campaign</span>' : '') + probBadge +
+        '</div><div class="sub">' + esc(sub) + '</div></div>' +
+        '<div class="st"><span class="badge' + (t.tier == null ? ' zero' : '') + '" title="' + esc(t.text) + '">' + tierLabel(t) + '</span><br>' + esc(shortStat(k)) + '</div></div>');
+    });
+    if (keys.length > MAX_ROWS) html.push('<div class="empty">… ' + (keys.length - MAX_ROWS) + ' more: refine the search or filters.</div>');
+    $('itemList').innerHTML = html.join('') || '<div class="empty">No item matches.</div>';
+    renderBulk();
+  }
+
+  $('itemList').addEventListener('click', function (e) {
+    var row = e.target.closest('.item-row'); if (!row) return;
+    var k = row.getAttribute('data-key');
+    if (e.target.classList.contains('chk') || e.ctrlKey || e.metaKey || e.shiftKey) {
+      if (e.shiftKey && lastClicked) {
+        var keys = filteredKeys(), a = keys.indexOf(lastClicked), b = keys.indexOf(k);
+        if (a >= 0 && b >= 0) { keys.slice(Math.min(a, b), Math.max(a, b) + 1).forEach(function (x) { checked[x] = true; }); }
+      } else if (e.target.classList.contains('chk')) {
+        if (e.target.checked) checked[k] = true; else delete checked[k];
+      } else {
+        if (checked[k]) delete checked[k]; else checked[k] = true;
+      }
+      lastClicked = k;
+      renderItems(); if ($('cmpMode').value === 'ticked') renderCompare();
+      return;
+    }
+    lastClicked = k;
+    select(k);
+  });
+  function select(k, scroll) {
+    selectedKey = k;
+    renderItems(); renderDetails(); renderCompare();
+    if (scroll) {
+      var row = $('itemList').querySelector('.item-row[data-key="' + cssEsc(k) + '"]');
+      if (row) row.scrollIntoView({ block: 'center' });
+    }
+  }
+  ['fSearch', 'fType', 'fWClass', 'fCulture', 'fTier', 'fModule', 'fSource', 'fEdited', 'fProb', 'fNc'].forEach(function (id) {
+    $(id).addEventListener(id === 'fSearch' ? 'input' : 'change', function () { renderItems(); if ($('cmpMode').value === 'list') renderCompare(); });
+  });
+
+  // ------------------------------------------------------------------ bulk
+  function checkedKeys() { return Object.keys(checked).filter(exists); }
+  var BULK_ELS = [['item', 'Item / CraftedItem'], ['Armor', 'Armor'], ['Weapon', 'Weapon (every usage)'], ['Horse', 'Horse']];
+  function renderBulk() {
+    var ks = checkedKeys(), bar = $('bulkBar'), tools = $('bulkTools');
+    if (!ks.length) {
+      bar.innerHTML = '<span class="hint">Tick items (or Ctrl/Shift+click) for bulk changes.</span>' +
+        ' <button class="small link" id="bulkAll">Tick all shown</button>';
+      $('bulkAll').onclick = function () { filteredKeys().forEach(function (k) { checked[k] = true; }); renderItems(); if ($('cmpMode').value === 'ticked') renderCompare(); };
+      tools.innerHTML = '';
+      return;
+    }
+    bar.innerHTML = '<span class="badge acc">' + ks.length + ' ticked</span>' +
+      '<button class="small" id="bulkRevert" title="Revert every ticked item to the file (new items are removed)">Revert ticked</button>' +
+      '<button class="small" id="bulkNone">Untick all</button>';
+    $('bulkNone').onclick = function () { checked = {}; renderItems(); if ($('cmpMode').value === 'ticked') renderCompare(); };
+    $('bulkRevert').onclick = function () {
+      var n = ks.filter(isEdited).length;
+      if (n && !confirm('Revert ' + n + ' edited/new item(s)?')) return;
+      ks.forEach(function (k) { touch(k); if (isNewKey(k)) { news = news.filter(function (x) { return x.key !== k; }); delete checked[k]; } else { delete models[k]; delete targets[k]; } });
+      sortCache = null;
+      if (selectedKey && !exists(selectedKey)) selectedKey = null;
+      changed();
+    };
+    if (tools.getAttribute('data-built') === '1' && tools.innerHTML) { $('bkCount').textContent = ks.length; return; }
+    var flagOpts = function (which) { return C.flagNames(DATA, which).map(function (n) { return '<option>' + esc(n) + '</option>'; }).join(''); };
+    tools.innerHTML =
+      '<div class="bulk"><b>Bulk</b> on <span id="bkCount">' + ks.length + '</span>: ' +
+      '<select id="bkEl">' + BULK_ELS.map(function (e) { return '<option value="' + e[0] + '">' + esc(e[1]) + '</option>'; }).join('') + '</select>' +
+      '<select id="bkAttr"></select>' +
+      '<select id="bkOp"><option value="set">set to</option><option value="pct">change by %</option><option value="add">add</option><option value="del">remove</option></select>' +
+      '<input type="text" id="bkVal" placeholder="value">' +
+      '<button class="small" id="bkApply">Apply</button></div>' +
+      '<div class="bulk"><select id="bkFlagEl"><option value="Flags">Flags</option><option value="WeaponFlags">WeaponFlags (every usage)</option></select>' +
+      '<select id="bkFlag">' + flagOpts('Flags') + '</select>' +
+      '<button class="small" id="bkFlagOn">Set</button><button class="small" id="bkFlagOff">Clear</button>' +
+      '<span style="flex:1"></span><select id="bkCulture"><option value="">— culture —</option>' + Object.keys(DATA.cultures || {}).map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('') +
+      '<option value="-">(no culture)</option></select><button class="small" id="bkCultureSet">Set culture</button></div>';
+    tools.setAttribute('data-built', '1');
+    var fillAttrs = function () {
+      var el = $('bkEl').value, names = Object.keys(vocab(el === 'item' ? 'Item' : el));
+      if (el === 'item') Object.keys(vocab('CraftedItem')).forEach(function (n) { if (names.indexOf(n) < 0) names.push(n); });
+      var numFirst = names.filter(function (n) { var k = C.attrKind(vocab(el === 'item' ? 'Item' : el)[n] || vocab('CraftedItem')[n]); return k !== 'str' && k !== 'bool'; });
+      var rest = names.filter(function (n) { return numFirst.indexOf(n) < 0; });
+      $('bkAttr').innerHTML = numFirst.sort().concat(rest.sort()).map(function (n) { return '<option>' + esc(n) + '</option>'; }).join('');
+    };
+    fillAttrs();
+    $('bkEl').onchange = fillAttrs;
+    $('bkFlagEl').onchange = function () { $('bkFlag').innerHTML = flagOpts(this.value); };
+    $('bkApply').onclick = function () {
+      var el = $('bkEl').value, n = $('bkAttr').value, op = $('bkOp').value, val = $('bkVal').value.trim();
+      if (op !== 'del' && val === '') { toast('Enter a value'); return; }
+      if ((op === 'pct' || op === 'add') && !isNumStr(val)) { toast('Enter a number'); return; }
+      var done = 0, skipped = 0;
+      checkedKeys().forEach(function (k) {
+        var m0 = cur(k), paths = [];
+        if (el === 'item') paths.push({ el: 'item' });
+        else m0.comps.forEach(function (c, i) { if (c.el === el) paths.push({ el: 'comp', i: i }); });
+        if (!paths.length) { skipped++; return; }
+        var hit = false;
+        paths.forEach(function (p) {
+          var old = C.getAt(m0, p, n);
+          var kindEl = el === 'item' ? m0.kind : el, kind = C.attrKind(vocab(kindEl)[n]);
+          var nv;
+          if (op === 'del') { if (old == null) return; nv = null; }
+          else if (op === 'set') nv = val;
+          else {
+            if (!isNumStr(old)) return;
+            var x = op === 'pct' ? +old * (1 + +val / 100) : +old + +val;
+            nv = kind === 'int' || kind === 'uint' ? String(Math.round(x)) : String(Math.round(x * 1000) / 1000);
+            if (kind === 'uint' && +nv < 0) nv = '0';
+          }
+          C.setAt(edit(k), p, n, nv); hit = true;
+        });
+        if (hit) done++; else skipped++;
+      });
+      toast(n + ': changed on ' + done + ' item(s)' + (skipped ? ', ' + skipped + ' skipped (no such element or no number to change)' : ''));
+      changed();
+    };
+    var bulkFlag = function (on) {
+      var which = $('bkFlagEl').value, n = $('bkFlag').value, done = 0;
+      checkedKeys().forEach(function (k) {
+        var m0 = cur(k), paths = which === 'Flags' ? [{ el: 'flag' }] : [];
+        if (which === 'WeaponFlags') m0.comps.forEach(function (c, i) { if (c.el === 'Weapon' || c.el === 'Banner') paths.push({ el: 'wf', i: i }); });
+        paths.forEach(function (p) { C.setAt(edit(k), p, n, on ? 'true' : null); });
+        if (paths.length) done++;
+      });
+      toast(n + (on ? ' set' : ' cleared') + ' on ' + done + ' item(s)');
+      changed();
+    };
+    $('bkFlagOn').onclick = function () { bulkFlag(true); };
+    $('bkFlagOff').onclick = function () { bulkFlag(false); };
+    $('bkCultureSet').onclick = function () {
+      var c = $('bkCulture').value;
+      if (!c) { toast('Pick a culture'); return; }
+      checkedKeys().forEach(function (k) { C.setAt(edit(k), { el: 'item' }, 'culture', c === '-' ? null : 'Culture.' + c); });
+      toast('Culture set on ' + checkedKeys().length + ' item(s)');
+      changed();
+    };
+  }
+
+  // ------------------------------------------------------------------ details (middle)
+  var GENERAL = {
+    Item: ['name', 'culture', 'Type', 'weight', 'value', 'appearance', 'difficulty', 'tier_override', 'is_merchandise', 'item_category', 'subtype', 'mesh', 'item_holsters'],
+    CraftedItem: ['name', 'crafting_template', 'culture', 'modifier_group', 'value', 'is_merchandise', 'has_modifier', 'tier_override']
+  };
+  var KEY_ATTRS = {
+    Armor: ['head_armor', 'body_armor', 'arm_armor', 'leg_armor', 'material_type', 'modifier_group', 'covers_head', 'covers_body', 'covers_hands', 'covers_legs'],
+    Horse: ['monster', 'speed', 'maneuver', 'charge_damage', 'extra_health', 'body_length', 'is_mountable', 'is_pack_animal', 'modifier_group'],
+    Trade: ['morale_bonus'],
+    Banner: ['banner_level', 'effect', 'weapon_class']
+  };
+  // Weapon attributes shown up front, by what the weapon is.
+  function weaponKeys(c, type) {
+    var cls = c.attrs.weapon_class;
+    var common = ['weapon_class', 'item_usage'];
+    if (type === 'Shield' || cls === 'SmallShield' || cls === 'LargeShield') return common.concat(['body_armor', 'hit_points', 'weapon_length', 'speed_rating', 'thrust_speed', 'shield_width', 'shield_down_length', 'modifier_group']);
+    if (cls === 'Bow' || cls === 'Crossbow' || cls === 'Sling' || cls === 'Pistol' || cls === 'Musket') return common.concat(['missile_speed', 'thrust_damage', 'thrust_damage_type', 'accuracy', 'speed_rating', 'thrust_speed', 'ammo_class', 'ammo_limit', 'reload_phase_count', 'weapon_length', 'modifier_group']);
+    if (C.AMMO_TYPES.indexOf(C.CLASS_TYPE[cls]) >= 0) return common.concat(['thrust_damage', 'thrust_damage_type', 'stack_amount', 'missile_speed', 'weapon_length', 'accuracy', 'speed_rating', 'modifier_group']);
+    if (C.CLASS_TYPE[cls] === 'Thrown') return common.concat(['thrust_damage', 'thrust_damage_type', 'swing_damage', 'swing_damage_type', 'stack_amount', 'missile_speed', 'speed_rating', 'thrust_speed', 'weapon_length', 'accuracy', 'modifier_group']);
+    return common.concat(['swing_damage', 'swing_damage_type', 'thrust_damage', 'thrust_damage_type', 'speed_rating', 'thrust_speed', 'weapon_length', 'weapon_balance', 'body_armor', 'modifier_group']);
+  }
+  var LABELS = {
+    head_armor: 'Head armor', body_armor: 'Body armor', arm_armor: 'Arm armor', leg_armor: 'Leg armor', material_type: 'Material',
+    swing_damage: 'Swing damage', thrust_damage: 'Thrust/missile damage', speed_rating: 'Swing speed (speed_rating)', thrust_speed: 'Thrust speed / handling',
+    weapon_length: 'Length', missile_speed: 'Missile speed', stack_amount: 'Stack', ammo_limit: 'Ammo limit', hit_points: 'Hit points',
+    charge_damage: 'Charge', extra_health: 'Extra health', body_length: 'Body length', tier_override: 'tier_override'
+  };
+  function labelFor(el, n, c) {
+    if (n === 'missile_speed' && c && (c.attrs.weapon_class === 'Bow' || c.attrs.weapon_class === 'Crossbow')) return 'Draw weight (missile_speed)';
+    if (n === 'body_armor' && el === 'Weapon') return 'Shield armor';
+    return LABELS[n] || n;
+  }
+
+  function control(el, path, n, val) {
+    var key = el + '@' + n, es = C.ATTR_ENUMS[key], inf = vocab(el)[n], kind = C.attrKind(inf), rs = C.ATTR_REFS[key];
+    var dp = ' data-p="' + esc(pathStr(path)) + '" data-n="' + esc(n) + '" data-focus="' + esc(pathStr(path) + '|' + n) + '"';
+    var opts = function (list) {
+      var h = '<option value="">—</option>', seen = {};
+      list.forEach(function (v) { seen[v] = 1; h += '<option' + (v === val ? ' selected' : '') + '>' + esc(v) + '</option>'; });
+      if (val != null && !seen[val]) h += '<option selected>' + esc(val) + '</option>';
+      return h;
+    };
+    if (es) return '<select' + dp + '>' + opts(C.cleanEnum(C.enumValues(es, DATA))) + '</select>';
+    if (kind === 'bool') return '<select' + dp + '>' + opts(['true', 'false']) + '</select>';
+    if (inf && inf.values) return '<select' + dp + '>' + opts(inf.values) + '</select>';
+    if (rs && rs.ref === 'culture') {
+      // A dropdown of the cultures by name; a value the file has that is no known culture is kept as an option.
+      var ch = '<option value="">—</option>', known = false;
+      Object.keys(DATA.cultures || {}).sort(function (a, b) { return DATA.cultures[a].name < DATA.cultures[b].name ? -1 : 1; }).forEach(function (c) {
+        var cv = 'Culture.' + c, cu = DATA.cultures[c];
+        if (cv === val) known = true;
+        ch += '<option value="' + esc(cv) + '"' + (cv === val ? ' selected' : '') + '>' + esc(cu.name + ' (' + c + ')' + (cu.campaign ? '' : ', not in campaign')) + '</option>';
+      });
+      if (val != null && val !== '' && !known) ch += '<option value="' + esc(val) + '" selected>' + esc(val) + ' (unknown)</option>';
+      return '<select' + dp + '>' + ch + '</select>';
+    }
+    if (rs && rs.ref === 'modgroup') return '<input type="text"' + dp + ' data-ac="modgroup" autocomplete="off" value="' + esc(val == null ? '' : val) + '" placeholder="(not set)" spellcheck="false">';
+    var list = rs && REF_LIST[rs.ref] ? ' list="' + REF_LIST[rs.ref] + '"' : '';
+    var cls = kind === 'int' || kind === 'uint' || kind === 'dec' ? ' class="num" inputmode="decimal"' : '';
+    return '<input type="text"' + dp + list + cls + ' value="' + esc(val == null ? '' : val) + '" placeholder="(not set)" spellcheck="false">';
+  }
+  // A field row: label, control, file value when edited, vanilla value when different, reset.
+  function fieldRow(k, el, path, n, label) {
+    var m = cur(k), b = base(k), v0 = van(k);
+    var val = C.getAt(m, path, n), bv = C.getAt(b, path, n), vv = v0 ? C.getAt(v0, path, n) : null;
+    var ch = val !== bv;
+    var hints = '';
+    if (ch) hints += '<span class="van" title="Value in the file">file: ' + esc(bv == null ? '(not set)' : bv) + '</span>' +
+      '<button class="small link" data-act="reset" data-p="' + esc(pathStr(path)) + '" data-n="' + esc(n) + '" title="Back to the file\'s value">↺</button>';
+    if (v0 && vv !== val && (vv != null || val != null)) hints += '<span class="van diff" title="Before RBM (' + esc(srcItem(k).nativeFrom || 'vanilla') + ')">vanilla: ' + esc(vv == null ? '(not set)' : vv) + '</span>';
+    var inf = vocab(el)[n];
+    return '<span class="lbl' + (ch ? ' chg' : '') + '" title="' + esc(n + (inf ? ' (' + inf.type + (inf.use === 'required' ? ', required' : '') + ')' : ' (not in Items.xsd)')) + '">' + esc(label || n) + '</span>' +
+      '<span class="ctl' + (ch ? ' chg' : '') + '">' + control(el, path, n, val) + hints + '</span>';
+  }
+  // Every attribute of an element (except the ones shown above), plus an "add" row.
+  function allAttrsBlock(k, el, path, shown, title) {
+    var m = cur(k), b = base(k), v0 = van(k);
+    var map = C.mapAt(m, path) || {}, bmap = C.mapAt(b, path) || {}, vmap = v0 ? (C.mapAt(v0, path) || {}) : {};
+    var names = [];
+    // The id is shown at the top (and edited in General for a new item): an existing item keeps its id.
+    [map, bmap, vmap].forEach(function (o) { Object.keys(o).forEach(function (n) { if (names.indexOf(n) < 0 && shown.indexOf(n) < 0 && n !== 'id') names.push(n); }); });
+    var rows = names.map(function (n) {
+      return fieldRow(k, el, path, n) + '';
+    });
+    var present = Object.keys(map);
+    var addable = Object.keys(vocab(el)).filter(function (n) { return present.indexOf(n) < 0; }).sort();
+    var rm = present.filter(function (n) { return n !== 'id'; });
+    return '<details class="all"' + (openAll[pathStr(path)] ? ' open' : '') + ' data-all="' + esc(pathStr(path)) + '"><summary>' + esc(title || 'All attributes') +
+      ' (' + present.length + ' set' + (names.length ? ', ' + names.length + ' more below' : '') + ')</summary>' +
+      (rows.length ? '<div class="fields" style="margin-top:4px">' + rows.join('') + '</div>' : '') +
+      '<div class="addrow"><select data-add-sel="' + esc(pathStr(path)) + '"><option value="">add attribute…</option>' +
+      addable.map(function (n) { return '<option>' + esc(n) + '</option>'; }).join('') + '<option value="*">other (not in Items.xsd)…</option></select>' +
+      '<input type="text" data-add-val="' + esc(pathStr(path)) + '" placeholder="value">' +
+      '<button class="small" data-act="add-attr" data-p="' + esc(pathStr(path)) + '">Add</button>' +
+      (rm.length ? '<select data-rm-sel="' + esc(pathStr(path)) + '"><option value="">remove attribute…</option>' + rm.map(function (n) { return '<option>' + esc(n) + '</option>'; }).join('') + '</select>' +
+        '<button class="small" data-act="rm-attr" data-p="' + esc(pathStr(path)) + '">Remove</button>' : '') +
+      '</div></details>';
+  }
+  var openAll = {};
+  function flagGrid(k, path, which) {
+    var m = cur(k), b = base(k), v0 = van(k);
+    var map = C.mapAt(m, path) || {}, bmap = C.mapAt(b, path) || {}, vmap = v0 ? (C.mapAt(v0, path) || {}) : null;
+    var on = function (o, n) { return o && o[n] != null && String(o[n]).toLowerCase() !== 'false'; };
+    var names = C.flagNames(DATA, which);
+    Object.keys(map).concat(Object.keys(bmap)).forEach(function (n) { if (names.indexOf(n) < 0) names.push(n); });
+    return '<div class="chk-grid">' + names.map(function (n) {
+      var a = on(map, n), bo = on(bmap, n), ch = a !== bo || map[n] !== bmap[n];
+      var vh = vmap && on(vmap, n) !== a ? '<span class="vh" title="vanilla: ' + (on(vmap, n) ? 'set' : 'not set') + '">' + (on(vmap, n) ? 'v+' : 'v−') + '</span>' : '';
+      return '<label class="' + (ch ? 'chg' : '') + (a ? '' : ' off') + '" title="' + esc(n + (map[n] != null ? ' = "' + map[n] + '"' : '') + (ch ? '\nfile: ' + (bmap[n] == null ? 'not set' : bmap[n]) : '')) + '">' +
+        '<input type="checkbox" data-flag="' + esc(pathStr(path)) + '" data-n="' + esc(n) + '"' + (a ? ' checked' : '') + '>' + esc(n) + vh + '</label>';
+    }).join('') + '</div>';
+  }
+
+  function targetSelect(k) {
+    var opts = [['', 'default for its type']].concat([['TWINS', 'both ranged files (RBMCombat_ranged + RBMEconomyCombat_ranged)']]).concat(DATA.rbmFiles.map(function (f) { return [f.path, f.path + (f.loadsInCampaign ? '' : ' (not loaded in campaigns)')]; }));
+    var t = targetOf(k), v = !t || !t.length ? '' : t.length === 2 && t.indexOf(C.RANGED_TWINS[0]) >= 0 && t.indexOf(C.RANGED_TWINS[1]) >= 0 ? 'TWINS' : t[0];
+    return '<select id="targetSel">' + opts.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (o[0] === v ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>';
+  }
+
+  function derivedBlock(k) {
+    var m = cur(k), inf = info(k), t = inf.tier, p = inf.price, b = base(k), h = [];
+    var bt = C.computeTier(b, DATA);
+    h.push(kvHtml('RBM tier', '<b>' + tierLabel(t) + '</b>' + (t.tierf != null ? ' (Tierf ' + fmt(t.tierf) + ')' : '') +
+      (bt.tierf !== t.tierf && !isNewKey(k) ? ' <span class="van">file: ' + tierLabel(bt) + (bt.tierf != null ? ' (' + fmt(bt.tierf) + ')' : '') + '</span>' : '') +
+      '<div class="f">' + esc(t.text) + '</div>'));
+    var ptxt;
+    if (p.src === 'value') {
+      var m2 = C.cloneModel(m); delete m2.attrs.value;
+      var cp = C.computePrice(m2, DATA, t);
+      ptxt = '<b>' + p.value + '</b> (value attribute)' + (cp.value != null ? ' <span class="van">without it: ' + cp.value + '</span>' : '');
+    } else if (p.src === 'computed') {
+      ptxt = '<b>' + p.value + '</b> computed (RBM campaign on) <span class="van">RBM campaign off: ' + p.legacy + '</span><div class="f">' + esc(p.text) + '</div>';
+    } else ptxt = '<span class="hint">' + esc(p.text) + '</span>';
+    h.push(kvHtml('Price', ptxt + '<div class="f">Price multipliers assumed at the RBM defaults (armor 1, weapon 1, horse 0.2); the value attribute wins over the formula. ' +
+      'Port of CombatModule/Items/ItemValuesTiers.Pricing.cs; float rounding may differ by 1.</div>'));
+    var li = C.launcherInfo(m);
+    if (li) {
+      h.push(kvHtml('Launcher (RBM)', 'draw weight <b>' + li.drawWeight + '</b> · ideal ammo <b>' + Math.round(li.idealWeight * 1000) + ' g</b> · launch speed at ideal <b>' + li.idealSpeed + ' m/s</b>' +
+        '<div class="f">' + esc(li.text) + '; item_usage "' + esc(li.itemUsage) + '". Speed with ' + li.speeds.map(function (s) { return Math.round(s.weight * 1000) + ' g: ' + s.speed; }).join(', ') +
+        ' m/s (RBMConfig/Shared/MissileBallistics.CalculateMissileSpeed; no item modifier).</div>'));
+    }
+    var c = C.mainComp(m);
+    if (c && c.el === 'Horse') {
+      var mon = (c.attrs.monster || '').replace(/^Monster\./, ''), mhp = DATA.monsters ? DATA.monsters[mon] : null;
+      if (mhp != null) h.push(kv('Horse HP', (mhp + (+c.attrs.extra_health || 0)) + ' (monster ' + mon + ' ' + mhp + ' + extra_health ' + (c.attrs.extra_health || 0) + ')'));
+    }
+    return '<div class="derived">' + h.join('') + '</div>';
+  }
+
+  function previewBlock(k) {
+    var it = srcItem(k), m = cur(k), isNew = isNewKey(k);
+    var pv;
+    try { pv = C.previewElement(DATA, it, m, effTargets(k), isNew); } catch (e) { return '<div class="note bad">Preview failed: ' + esc(e.message) + '</div>'; }
+    if (!pv) return '<div class="hint">No RBM file to write it to: pick a target file.</div>';
+    var text = pv.text.replace(/\r\n/g, '\n');
+    var origLines = {};
+    if (pv.mode === 'patch') {
+      var f = fileByPath[pv.path], sp = (C.itemSpans(f.text)[it.kind + '|' + it.id] || []).slice(-1)[0];
+      if (sp) f.text.slice(sp.start, sp.end).replace(/\r\n/g, '\n').split('\n').forEach(function (l) { origLines[l] = 1; });
+    }
+    var lines = text.split('\n').map(function (l) { return pv.mode === 'patch' && !origLines[l] ? '<span class="chg">' + esc(l) + '</span>' : esc(l); });
+    return '<div class="hint" style="margin-bottom:4px">' + (pv.mode === 'patch' ? 'Patched in place in' : 'Appended to') + ' <code>' + esc(pv.path) + '</code>' +
+      (pv.mode === 'patch' ? ' (changed lines highlighted)' : '') + '</div>' +
+      (pv.notes || []).map(function (n) { return '<div class="note ' + n[0] + '">' + esc(n[1]) + '</div>'; }).join('') +
+      '<pre class="xml">' + lines.join('\n') + '</pre>';
+  }
+
+  function renderDetails() {
+    var box = $('details');
+    if (!selectedKey || !exists(selectedKey)) { box.innerHTML = '<div class="empty">Select an item on the left.</div>'; $('detailHint').textContent = ''; return; }
+    var k = selectedKey, m = cur(k), it = srcItem(k), isNew = isNewKey(k), ed = isEdited(k), v0 = van(k);
+    var type = typeOfKey(k), h = [];
+    $('detailHint').textContent = v0 ? 'Orange "vanilla" = the value before RBM' : (isNew ? 'New item' : 'Only RBM defines this item');
+    h.push('<div class="details"><h3>' + esc(displayName(m, k)) + (isNew ? ' <span class="badge ok">new</span>' : ed ? ' <span class="badge warn">edited</span>' : '') +
+      (ed && !isNew ? ' <button class="small" data-act="revert" title="Discard this item\'s changes">Revert item</button>' : '') +
+      (isNew ? ' <button class="small" data-act="delete-new" title="Remove this new item">Delete new item</button>' : '') +
+      ' <button class="small" data-act="duplicate" title="Copy this item (with its current changes) under a new id">Duplicate as new item</button></h3>' +
+      '<div class="mono" style="color:var(--muted)">' + esc(m.attrs.id || '') + '</div>');
+    var placement = isNew ? null : C.placement(it, m, DATA, targetOf(k));
+    h.push('<h4>Item</h4><div class="kv">' +
+      kv('Kind / type', m.kind + ' · ' + type + (m.kind === 'Item' && m.attrs.Type && C.canonType(m.attrs.Type, DATA) !== type ? ' (Type attribute ' + m.attrs.Type + ', replaced by the weapon class)' : '')) +
+      (isNew ? kv('Duplicated from', it.id + ' (' + it.module + '/' + it.file + ')') : kv('Defined in', (it.sources || [it.module + '/' + it.file]).join(' → '))) +
+      (!isNew && it.alsoIn ? kv('Also in', it.alsoIn.join(', ') + ' (not used in campaigns)') : '') +
+      (!isNew && it.nativeFrom ? kv('Before RBM', it.nativeFrom) : '') +
+      (inRbm(k) ? kvHtml('RBM files', it.rbm.map(function (p) { var f = fileByPath[p]; return '<code>' + esc(p) + '</code>' + (f && !f.loadsInCampaign ? ' <span class="badge">not loaded in campaigns</span>' : ''); }).join('<br>')) : '') +
+      '</div>');
+    if (inRbm(k)) {
+      h.push('<div class="note info">The export patches the changed attributes in ' + (it.rbm.length > 1 ? 'each of the ' + it.rbm.length + ' RBM files that define this item; attributes you do not change keep their per-file values (the ranged twins keep their own values).' : '<code>' + esc(it.rbm[0]) + '</code> in place.') + '</div>');
+    } else {
+      var tg = effTargets(k);
+      var where = tg.length ? tg.map(function (p) { return '<code>' + esc(p) + '</code>'; }).join(' and ') : '<b>no file: pick one</b>';
+      h.push('<div class="note ' + (tg.length ? 'info' : 'bad') + '">' +
+        (isNew ? 'A new item: the export appends it (a copy of ' + esc(it.id) + ' with your changes) to ' + where + '.' :
+          'Not in an RBM item file. Editing it makes the export append a full copy of its definition (from ' +
+          esc(it.rawMerged ? (it.sources || []).join(' + ') + ', merged' : it.module + '/' + it.file) + ') to ' + where +
+          ', where it replaces the original in game (RBM/XmlLoadingPatches.cs).') +
+        ' Target: ' + targetSelect(k) + '</div>');
+    }
+    // problems
+    var probs = probsOf(k);
+    if (probs.length) h.push('<h4>Problems</h4>' + probs.map(function (p) { return '<div class="note ' + (p.cls === 'info' ? 'info' : p.cls) + '">' + esc(p.text) + '</div>'; }).join(''));
+    // derived
+    h.push('<h4>RBM tier and price</h4>' + derivedBlock(k));
+    // general
+    var gen = (isNew ? ['id'] : []).concat(GENERAL[m.kind] || []);
+    h.push('<h4>General</h4><div class="fields">' + gen.map(function (n) { return fieldRow(k, m.kind, { el: 'item' }, n); }).join('') + '</div>' +
+      allAttrsBlock(k, m.kind, { el: 'item' }, gen, 'All ' + m.kind + ' attributes'));
+    // components
+    m.comps.forEach(function (c, i) {
+      var keys = c.el === 'Weapon' ? weaponKeys(c, type) : (KEY_ATTRS[c.el] || []);
+      var title = c.el + (c.el === 'Weapon' && C.weapons(m).length > 1 ? ' usage ' + (C.weapons(m).indexOf(c) + 1) : '') + (c.attrs.weapon_class ? ' · ' + c.attrs.weapon_class : '');
+      h.push('<div class="box"><div class="bh">' + esc(title) + '<span class="sp"></span><span class="hint">&lt;ItemComponent&gt; child ' + (i + 1) + '</span></div>' +
+        '<div class="fields">' + keys.map(function (n) { return fieldRow(k, c.el, { el: 'comp', i: i }, n, labelFor(c.el, n, c)); }).join('') + '</div>' +
+        (c.el === 'Weapon' || c.el === 'Banner' ? '<div style="margin-top:6px" class="hint">WeaponFlags</div>' + flagGrid(k, { el: 'wf', i: i }, 'WeaponFlags') : '') +
+        allAttrsBlock(k, c.el, { el: 'comp', i: i }, keys, 'All ' + c.el + ' attributes') + '</div>');
+    });
+    if (!m.comps.length && m.kind === 'Item') h.push('<div class="note warn">No &lt;ItemComponent&gt;: the editor does not add components.</div>');
+    // flags
+    if (m.kind === 'Item') h.push('<h4>Flags</h4>' + flagGrid(k, { el: 'flag' }, 'Flags'));
+    // pieces
+    if (m.kind === 'CraftedItem') {
+      var tpl = DATA.templates && DATA.templates[m.attrs.crafting_template];
+      var types = tpl && tpl.pieceTypes.length ? tpl.pieceTypes : C.cleanEnum((DATA.enums && DATA.enums.PieceTypes) || []);
+      var have = m.pieces.map(function (p) { return p.attrs.Type; });
+      h.push('<h4>Pieces <span class="sp"></span><span class="hint lc">template ' + esc(m.attrs.crafting_template || '?') + '</span></h4><div class="fields">');
+      m.pieces.forEach(function (p) {
+        var t = p.attrs.Type || '', pc = DATA.pieces && DATA.pieces[p.attrs.id];
+        var path = { el: 'piece', t: t };
+        var bp = (C.mapAt(base(k), path) || {}), ch = bp.id !== p.attrs.id || bp.scale_factor !== p.attrs.scale_factor;
+        h.push('<span class="lbl' + (ch ? ' chg' : '') + '">' + esc(t) + '</span><span class="ctl' + (ch ? ' chg' : '') + '">' +
+          '<input type="text" style="max-width:220px" data-p="' + esc(pathStr(path)) + '" data-n="id" data-focus="' + esc(pathStr(path)) + '|id" data-ac="piece:' + esc(t) + '" autocomplete="off" value="' + esc(p.attrs.id || '') + '" spellcheck="false" placeholder="type to search pieces">' +
+          ' scale <input type="text" class="num" style="width:60px" data-p="' + esc(pathStr(path)) + '" data-n="scale_factor" data-focus="' + esc(pathStr(path)) + '|scale_factor" value="' + esc(p.attrs.scale_factor || '') + '" placeholder="100">' +
+          ' <span class="van">' + esc(pc ? pc.name + (pc.len ? ' · ' + pc.len + ' cm' : '') + (pc.weight ? ' · ' + pc.weight + ' kg' : '') : (p.attrs.id ? 'unknown piece' : '')) + '</span>' +
+          (bp.id && bp.id !== p.attrs.id ? ' <span class="van">file: ' + esc(bp.id) + '</span>' : '') +
+          ' <button class="small link" data-act="rm-piece" data-t="' + esc(t) + '" title="Remove this piece">✕</button></span>');
+      });
+      h.push('</div>');
+      var missing = types.filter(function (t) { return have.indexOf(t) < 0; });
+      if (missing.length) h.push('<div class="addrow"><select id="addPieceType">' + missing.map(function (t) { return '<option>' + esc(t) + '</option>'; }).join('') + '</select><button class="small" data-act="add-piece">Add piece</button></div>');
+      h.push('<div class="hint" style="margin-top:4px">A crafted item\'s stats, weight, tier and price are computed in game from its pieces (no preview here).</div>');
+    }
+    // preview
+    h.push('<h4>XML as exported</h4>' + previewBlock(k));
+    h.push('</div>');
+    box.innerHTML = h.join('');
+    var ts = $('targetSel');
+    if (ts) ts.onchange = function () {
+      var v = ts.value, list = v === 'TWINS' ? C.RANGED_TWINS.slice() : v ? [v] : null;
+      if (isNew) newOf(k).target = list; else { if (list) targets[k] = list; else delete targets[k]; edit(k); }
+      touch(k); changed();
+    };
+  }
+  // Re-renders after a change without losing the focused field (a change fires on blur, before focus moves on).
+  function renderDetailsKeepFocus() {
+    setTimeout(function () {
+      var a = document.activeElement, fk = a && a.getAttribute && a.getAttribute('data-focus'), sel = null;
+      if (fk && a.selectionStart != null) sel = [a.selectionStart, a.selectionEnd];
+      var scroll = $('details').scrollTop;
+      renderDetails();
+      $('details').scrollTop = scroll;
+      if (fk) {
+        var el = $('details').querySelector('[data-focus="' + cssEsc(fk) + '"]');
+        if (el) { el.focus(); if (sel && el.setSelectionRange) try { el.setSelectionRange(sel[0], sel[1]); } catch (e) { /* select */ } }
+      }
+    }, 0);
+  }
+
+  function applyValue(k, path, n, v) {
+    var b = base(k), bv = C.getAt(b, path, n);
+    if (v === '') v = null;
+    // An unchanged number typed differently ("4.0" for "4") keeps the file's text.
+    if (v != null && bv != null && v !== bv && isNumStr(v) && isNumStr(bv) && +v === +bv) v = bv;
+    C.setAt(edit(k), path, n, v);
+  }
+  $('details').addEventListener('change', function (e) {
+    var t = e.target, k = selectedKey;
+    if (!k) return;
+    if (t.hasAttribute('data-flag')) {
+      var path = parsePath(t.getAttribute('data-flag')), n = t.getAttribute('data-n');
+      var bv = C.getAt(base(k), path, n), bOn = bv != null && String(bv).toLowerCase() !== 'false';
+      // Back to the file's own text when the state returns to the file's state ("True", or an explicit "false").
+      var v = t.checked ? (bOn ? bv : 'true') : (bOn ? null : bv);
+      C.setAt(edit(k), path, n, v);
+      changed();
+      return;
+    }
+    if (t.hasAttribute('data-p') && t.hasAttribute('data-n')) {
+      applyValue(k, parsePath(t.getAttribute('data-p')), t.getAttribute('data-n'), t.value);
+      changed();
+    }
+  });
+  $('details').addEventListener('toggle', function (e) {
+    var d = e.target; if (d.getAttribute && d.getAttribute('data-all')) openAll[d.getAttribute('data-all')] = d.open;
+  }, true);
+  $('details').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]'); if (!b) return;
+    var k = selectedKey, act = b.getAttribute('data-act');
+    if (act === 'reset') {
+      var path = parsePath(b.getAttribute('data-p')), n = b.getAttribute('data-n');
+      C.setAt(edit(k), path, n, C.getAt(base(k), path, n)); changed(); return;
+    }
+    if (act === 'revert') { touch(k); delete models[k]; delete targets[k]; changed(); toast('Reverted ' + k); return; }
+    if (act === 'delete-new') {
+      if (!confirm('Remove the new item ' + cur(k).attrs.id + '?')) return;
+      touch(k); news = news.filter(function (x) { return x.key !== k; }); delete checked[k]; selectedKey = null; sortCache = null; changed(); return;
+    }
+    if (act === 'duplicate') {
+      var src = isNewKey(k) ? newOf(k).from : k, m = cur(k);
+      var id = prompt('Id of the new item (a copy of ' + m.attrs.id + ' with its current changes):', m.attrs.id + '_copy');
+      if (!id) return;
+      id = id.trim();
+      if (itemById[id] || news.some(function (x) { return x.model.attrs.id === id; })) { alert('The id "' + id + '" already exists.'); return; }
+      var nm = C.cloneModel(m); nm.attrs.id = id;
+      var key = 'new:' + (newSeq++);
+      news.push({ key: key, from: src, model: nm, target: targetOf(k) && targetOf(k).length ? targetOf(k).slice() : (inRbm(k) ? [itemById[k].rbm[itemById[k].rbm.length - 1]] : null) });
+      // A copy of an item in both ranged twins goes to both.
+      if (inRbm(k) && itemById[k].rbm.length > 1) news[news.length - 1].target = itemById[k].rbm.slice();
+      sortCache = null;
+      changed(); select(key, true); toast('Created ' + id);
+      return;
+    }
+    if (act === 'add-attr') {
+      var ps = b.getAttribute('data-p'), path2 = parsePath(ps);
+      var sel = $('details').querySelector('[data-add-sel="' + cssEsc(ps) + '"]'), inp = $('details').querySelector('[data-add-val="' + cssEsc(ps) + '"]');
+      var name = sel.value;
+      if (name === '*') { name = (prompt('Attribute name:') || '').trim(); if (!/^[A-Za-z_][\w.:-]*$/.test(name)) { if (name) alert('Not a valid attribute name'); return; } }
+      if (!name) { toast('Pick an attribute'); return; }
+      if (inp.value === '') { toast('Enter a value first'); return; }
+      openAll[ps] = true;
+      C.setAt(edit(k), path2, name, inp.value);
+      changed(); return;
+    }
+    if (act === 'rm-attr') {
+      var ps2 = b.getAttribute('data-p'), sel2 = $('details').querySelector('[data-rm-sel="' + cssEsc(ps2) + '"]');
+      if (!sel2.value) { toast('Pick an attribute'); return; }
+      openAll[ps2] = true;
+      C.setAt(edit(k), parsePath(ps2), sel2.value, null); changed(); return;
+    }
+    if (act === 'rm-piece') {
+      var t = b.getAttribute('data-t'), mm = edit(k);
+      mm.pieces = mm.pieces.filter(function (p) { return (p.attrs.Type || '') !== t; }); changed(); return;
+    }
+    if (act === 'add-piece') {
+      var pt = $('addPieceType').value, m3 = edit(k), tpl = DATA.templates && DATA.templates[m3.attrs.crafting_template];
+      var first = '';
+      if (tpl) tpl.usable.some(function (pid) { var p = DATA.pieces[pid]; if (p && p.type === pt) { first = pid; return true; } return false; });
+      var at = { id: first, Type: pt };
+      m3.pieces.push({ attrs: at }); changed(); return;
+    }
+  });
+
+  // ------------------------------------------------------------------ autocomplete
+  // Fields with data-ac open a dropdown (a datalist only lists exact matches once the field holds a value):
+  //   "piece:<Type>"  a crafted item's piece id: the pieces of that type, the template's usable pieces first,
+  //                   with name, culture, length, weight and tier;
+  //   "modgroup"      an ItemModifierGroup id, with how many campaign items use it.
+  // Every typed word must match. Only a known id is accepted (a modifier_group may also be cleared): anything else
+  // typed is put back when the field is left.
+  var ac = { input: null, pop: null, rows: [], hi: -1, orig: '', typed: false, quietUntil: 0 };
+  var modGroupUse = null;
+  function modGroupUses() {
+    if (modGroupUse) return modGroupUse;
+    modGroupUse = {};
+    var count = function (v) { if (v) modGroupUse[v] = (modGroupUse[v] || 0) + 1; };
+    DATA.items.forEach(function (it) {
+      if (it.nc) return;
+      var m = orig(it.id);
+      count(m.attrs.modifier_group);
+      m.comps.forEach(function (c) { count(c.attrs.modifier_group); });
+    });
+    return modGroupUse;
+  }
+  function acValid(spec, v) {
+    if (spec.indexOf('piece:') === 0) return !!(DATA.pieces && DATA.pieces[v]);
+    return v === '' || (DATA.modifierGroups || []).indexOf(v) >= 0;
+  }
+  function acSource(input) {
+    var spec = input.getAttribute('data-ac');
+    var q = ac.typed ? input.value.trim().toLowerCase() : '', terms = q ? q.split(/\s+/) : [];
+    var hit = function (hay) {
+      hay = hay.toLowerCase();
+      for (var i = 0; i < terms.length; i++) if (hay.indexOf(terms[i]) < 0) return false;
+      return true;
+    };
+    var score = function (id) { var l = id.toLowerCase(); return !q || l === q ? 0 : l.indexOf(q) === 0 ? 1 : l.indexOf(q) >= 0 ? 2 : 3; };
+    var by = function (a, b) { return a.s - b.s || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0); };
+    if (spec.indexOf('piece:') === 0) {
+      var t = spec.slice(6), m = cur(selectedKey), tpl = DATA.templates && DATA.templates[m.attrs.crafting_template];
+      var usable = {}, ins = [], outs = [];
+      if (tpl) tpl.usable.forEach(function (id) { usable[id] = true; });
+      Object.keys(DATA.pieces || {}).forEach(function (id) {
+        var p = DATA.pieces[id];
+        if (p.type !== t || (p.nc && id !== ac.orig)) return;
+        if (!hit(id + ' ' + (p.name || '') + ' ' + (p.culture || '') + (p.tier != null ? ' t' + p.tier : ''))) return;
+        var other = !!(tpl && tpl.usable.length && !usable[id]);
+        (other ? outs : ins).push({
+          id: id, s: score(id),
+          title: id + (other ? ' (not in the template\'s UsablePieces: the smithy cannot build it)' : '') + (p.nc ? ' (not loaded in campaigns)' : ''),
+          cells: [[p.name, 'n'], [p.culture, 'n'], [p.len != null ? p.len + ' cm' : '', 'num'], [p.weight != null ? p.weight + ' kg' : '', 'num'], [p.tier != null ? 'T' + p.tier : '', 'num']]
+        });
+      });
+      ins.sort(by); outs.sort(by);
+      return {
+        terms: terms, minW: 620, cols: 'minmax(120px, 1.1fr) minmax(0, 1.4fr) minmax(0, 80px) 54px 58px 30px',
+        head: t + ' pieces' + (tpl ? ' for template ' + m.attrs.crafting_template : ''),
+        groups: [{ rows: ins }, { rows: outs, other: true, sep: 'Not in the template\'s UsablePieces (' + outs.length + '): the smithy cannot build these' }],
+        empty: 'No ' + t + ' piece matches.'
+      };
+    }
+    var uses = modGroupUses(), rows = [];
+    (DATA.modifierGroups || []).forEach(function (id) {
+      if (!hit(id)) return;
+      var u = uses[id] || 0;
+      rows.push({ id: id, s: score(id), cells: [[u ? u + ' item' + (u === 1 ? '' : 's') : 'unused', 'num']] });
+    });
+    rows.sort(by);
+    return {
+      terms: terms, minW: 300, cols: 'minmax(120px, 1fr) 90px', head: 'Item modifier groups (empty the field to remove the attribute)',
+      groups: [{ rows: rows }], empty: 'No modifier group matches.'
+    };
+  }
+  function acMark(s, terms) {
+    s = String(s == null ? '' : s);
+    if (!terms.length) return esc(s);
+    var low = s.toLowerCase(), hit = [], out = '', on = false, i, j;
+    terms.forEach(function (t) {
+      for (i = low.indexOf(t); i >= 0; i = low.indexOf(t, i + 1)) for (j = i; j < i + t.length; j++) hit[j] = true;
+    });
+    for (i = 0; i < s.length; i++) {
+      if (!!hit[i] !== on) { out += on ? '</mark>' : '<mark>'; on = !on; }
+      out += esc(s.charAt(i));
+    }
+    return out + (on ? '</mark>' : '');
+  }
+  function acRender() {
+    var r = acSource(ac.input), h = [], n = 0;
+    ac.rows = [];
+    r.groups.forEach(function (g) { n += g.rows.length; });
+    h.push('<div class="ac-head">' + esc(r.head) + ' · ' + n + (r.terms.length ? ' match' + (n === 1 ? '' : 'es') : '') +
+      ' · ↑↓ and Enter to pick, Esc to cancel</div>');
+    r.groups.forEach(function (g) {
+      if (!g.rows.length) return;
+      if (g.sep) h.push('<div class="ac-sep">' + esc(g.sep) + '</div>');
+      g.rows.forEach(function (x) {
+        var i = ac.rows.length;
+        ac.rows.push(x.id);
+        h.push('<div class="ac-row' + (g.other ? ' other' : '') + (x.id === ac.orig ? ' cur' : '') + '" data-i="' + i + '" style="grid-template-columns:' + r.cols + '" title="' + esc(x.title || x.id) + '">' +
+          '<span class="id">' + acMark(x.id, r.terms) + '</span>' +
+          x.cells.map(function (c) { return '<span class="' + c[1] + '">' + (c[1] === 'n' ? acMark(c[0], r.terms) : esc(c[0])) + '</span>'; }).join('') + '</div>');
+      });
+    });
+    if (!ac.rows.length) h.push('<div class="ac-empty">' + esc(r.empty) + '</div>');
+    ac.minW = r.minW;
+    ac.pop.innerHTML = h.join('');
+    ac.hi = ac.rows.length ? (ac.typed ? 0 : Math.max(0, ac.rows.indexOf(ac.orig))) : -1;
+    acHighlight(true);
+  }
+  function acHighlight(scroll) {
+    var rows = ac.pop.querySelectorAll('.ac-row');
+    for (var i = 0; i < rows.length; i++) rows[i].classList.toggle('hi', i === ac.hi);
+    if (scroll && rows[ac.hi]) {
+      var r = rows[ac.hi], top = r.offsetTop - 24;
+      if (top < ac.pop.scrollTop || r.offsetTop + r.offsetHeight > ac.pop.scrollTop + ac.pop.clientHeight) ac.pop.scrollTop = Math.max(0, top);
+    }
+  }
+  function acPlace() {
+    var b = ac.input.getBoundingClientRect(), w = Math.min(Math.max(b.width, ac.minW || 300), window.innerWidth - 16);
+    var left = Math.max(8, Math.min(b.left, window.innerWidth - w - 8));
+    var below = window.innerHeight - b.bottom - 8, above = b.top - 8;
+    ac.pop.style.left = left + 'px';
+    ac.pop.style.width = w + 'px';
+    if (below >= 200 || below >= above) { ac.pop.style.top = (b.bottom + 2) + 'px'; ac.pop.style.bottom = ''; ac.pop.style.maxHeight = Math.min(340, below) + 'px'; }
+    else { ac.pop.style.top = ''; ac.pop.style.bottom = (window.innerHeight - b.top + 2) + 'px'; ac.pop.style.maxHeight = Math.min(340, above) + 'px'; }
+  }
+  function acOpen(input) {
+    // defaultValue is the id the field was rendered with, i.e. the committed one.
+    if (ac.input !== input) { ac.input = input; ac.orig = input.defaultValue; ac.typed = input.value !== input.defaultValue; }
+    if (!ac.pop) {
+      ac.pop = document.createElement('div');
+      ac.pop.className = 'ac-pop';
+      // Keep focus in the field while the list is clicked or scrolled.
+      ac.pop.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        var r = e.target.closest('.ac-row');
+        if (r) acPick(+r.getAttribute('data-i'));
+      });
+      document.body.appendChild(ac.pop);
+    }
+    ac.pop.style.display = '';
+    acRender();
+    acPlace();
+  }
+  function acClose() {
+    if (ac.pop) ac.pop.style.display = 'none';
+    ac.input = null; ac.rows = []; ac.hi = -1;
+  }
+  function acIsOpen() {
+    if (ac.input && !document.body.contains(ac.input)) acClose();   // the pane was re-rendered under it
+    return !!(ac.input && ac.pop && ac.pop.style.display !== 'none');
+  }
+  function acPick(i) {
+    var id = ac.rows[i], input = ac.input;
+    if (id == null || !input) return;
+    acClose();
+    input.value = id;
+    ac.quietUntil = Date.now() + 400;   // the re-render puts focus back in the field: don't reopen the list for that
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  var details = $('details');
+  details.addEventListener('focusin', function (e) {
+    var t = e.target;
+    if (t.hasAttribute && t.hasAttribute('data-ac') && Date.now() > ac.quietUntil) acOpen(t);
+  });
+  details.addEventListener('mousedown', function (e) {
+    var t = e.target;
+    if (t.hasAttribute && t.hasAttribute('data-ac') && document.activeElement === t && !acIsOpen()) acOpen(t);
+  });
+  details.addEventListener('input', function (e) {
+    var t = e.target;
+    if (!t.hasAttribute || !t.hasAttribute('data-ac')) return;
+    if (!acIsOpen() || ac.input !== t) acOpen(t);
+    ac.typed = true;
+    acRender();
+  });
+  details.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if (!t.hasAttribute || !t.hasAttribute('data-ac')) return;
+    if (!acIsOpen()) {
+      if (e.key === 'ArrowDown' || (e.key === ' ' && e.ctrlKey)) { e.preventDefault(); acOpen(t); }
+      return;
+    }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (ac.rows.length) { ac.hi = (ac.hi + (e.key === 'ArrowDown' ? 1 : -1) + ac.rows.length) % ac.rows.length; acHighlight(true); }
+    } else if (e.key === 'PageDown' || e.key === 'PageUp') {
+      e.preventDefault();
+      if (ac.rows.length) { ac.hi = Math.max(0, Math.min(ac.rows.length - 1, ac.hi + (e.key === 'PageDown' ? 10 : -10))); acHighlight(true); }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (ac.hi >= 0) acPick(ac.hi);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      t.value = ac.orig;
+      acClose();
+    } else if (e.key === 'Tab' && ac.typed && ac.hi >= 0) {
+      acPick(ac.hi);   // Tab takes the highlighted match and moves on
+    }
+  });
+  // Leaving the field: anything that is not a known id goes back to what the field held.
+  details.addEventListener('change', function (e) {
+    var t = e.target;
+    if (!t.hasAttribute || !t.hasAttribute('data-ac')) return;
+    var spec = t.getAttribute('data-ac'), v = t.value.trim();
+    if (acValid(spec, v)) { t.value = v; return; }
+    e.stopImmediatePropagation();
+    t.value = t.defaultValue;
+    if (v) toast('No ' + (spec.indexOf('piece:') === 0 ? 'crafting piece' : 'item modifier group') + ' "' + v + '": pick one from the list');
+  }, true);
+  details.addEventListener('focusout', function (e) {
+    if (e.target === ac.input) acClose();
+  });
+  details.addEventListener('scroll', function () { if (acIsOpen()) acPlace(); });
+  window.addEventListener('resize', function () { if (acIsOpen()) acPlace(); });
+
+  // ------------------------------------------------------------------ compare (right)
+  var GROUP_OF = {
+    HeadArmor: 'armor', BodyArmor: 'armor', HandArmor: 'armor', LegArmor: 'armor', Cape: 'armor', HorseHarness: 'armor',
+    Horse: 'horse', Animal: 'horse', Shield: 'shield', Bow: 'launcher', Crossbow: 'launcher', Sling: 'launcher', Pistol: 'launcher', Musket: 'launcher',
+    Arrows: 'ammo', Bolts: 'ammo', SlingStones: 'ammo', Bullets: 'ammo', Thrown: 'thrown', OneHandedWeapon: 'melee', TwoHandedWeapon: 'melee',
+    Polearm: 'melee', Goods: 'goods'
+  };
+  function A(n) { return { path: { el: 'item' }, n: n }; }
+  function W(n) { return { comp: 'Weapon', n: n }; }
+  function R(n) { return { comp: 'Armor', n: n }; }
+  function H(n) { return { comp: 'Horse', n: n }; }
+  var COLS = {
+    name: { label: 'Name', get: function (k) { return displayName(cur(k), k); } },
+    type: { label: 'Type', get: function (k) { return typeOfKey(k); } },
+    culture: { label: 'Culture', get: function (k) { return (cur(k).attrs.culture || '').replace(/^Culture\./, ''); } },
+    tier: { label: 'Tier', num: true, get: function (k) { return info(k).tier.tierf; }, show: function (k) { var t = info(k).tier; return t.tier == null ? '' : 'T' + t.tier + ' (' + fmt(t.tierf) + ')'; } },
+    price: { label: 'Price', num: true, get: function (k) { return info(k).price.value; }, show: function (k) { var p = info(k).price; return p.value == null ? '' : p.value + (p.src === 'computed' ? '*' : ''); }, title: 'The value attribute, else the RBM formula (*)' },
+    value: { label: 'value', num: true, attr: A('value') },
+    weight: { label: 'Weight', num: true, attr: A('weight') },
+    appearance: { label: 'Appear.', num: true, attr: A('appearance') },
+    head: { label: 'Head', num: true, attr: R('head_armor') }, body: { label: 'Body', num: true, attr: R('body_armor') },
+    arm: { label: 'Arm', num: true, attr: R('arm_armor') }, leg: { label: 'Leg', num: true, attr: R('leg_armor') },
+    mat: { label: 'Material', attr: R('material_type') },
+    hspd: { label: 'Speed', num: true, attr: H('speed') }, man: { label: 'Maneuver', num: true, attr: H('maneuver') },
+    chg: { label: 'Charge', num: true, attr: H('charge_damage') }, xhp: { label: 'Extra HP', num: true, attr: H('extra_health') },
+    blen: { label: 'Length', num: true, attr: H('body_length') },
+    sarm: { label: 'Sh. armor', num: true, attr: W('body_armor') }, shp: { label: 'Sh. HP', num: true, attr: W('hit_points') },
+    len: { label: 'Length', num: true, attr: W('weapon_length') }, spd: { label: 'Speed', num: true, attr: W('speed_rating') },
+    tspd: { label: 'Thr. speed', num: true, attr: W('thrust_speed') },
+    dw: { label: 'Draw wt', num: true, attr: W('missile_speed') }, ms: { label: 'Missile spd', num: true, attr: W('missile_speed') },
+    th: { label: 'Thrust/dmg', num: true, attr: W('thrust_damage') }, tht: { label: 'Type', attr: W('thrust_damage_type') },
+    sw: { label: 'Swing', num: true, attr: W('swing_damage') }, swt: { label: 'Type', attr: W('swing_damage_type') },
+    acc: { label: 'Accuracy', num: true, attr: W('accuracy') }, ammo: { label: 'Ammo lim.', num: true, attr: W('ammo_limit') },
+    stack: { label: 'Stack', num: true, attr: W('stack_amount') }, usage: { label: 'Usage', attr: W('item_usage') },
+    ideal: { label: 'Ideal ammo g', num: true, get: function (k) { var li = C.launcherInfo(cur(k)); return li ? Math.round(li.idealWeight * 1000) : null; } },
+    launch: { label: 'Launch m/s', num: true, get: function (k) { var li = C.launcherInfo(cur(k)); return li ? li.idealSpeed : null; }, title: 'At the ideal ammo weight' },
+    tpl: { label: 'Template', attr: A('crafting_template') },
+    blade: { label: 'Blade/head', get: function (k) { var p = cur(k).pieces.filter(function (x) { return x.attrs.Type === 'Blade'; })[0]; return p ? p.attrs.id : ''; } },
+    cat: { label: 'Category', attr: A('item_category') }
+  };
+  var COLSETS = {
+    armor: ['name', 'tier', 'price', 'culture', 'head', 'body', 'arm', 'leg', 'mat', 'weight', 'appearance'],
+    horse: ['name', 'tier', 'price', 'culture', 'hspd', 'man', 'chg', 'xhp', 'blen', 'weight'],
+    shield: ['name', 'tier', 'price', 'culture', 'sarm', 'shp', 'len', 'spd', 'tspd', 'weight'],
+    launcher: ['name', 'type', 'tier', 'price', 'dw', 'th', 'acc', 'spd', 'tspd', 'ammo', 'usage', 'ideal', 'launch', 'weight'],
+    ammo: ['name', 'type', 'tier', 'price', 'th', 'tht', 'stack', 'weight', 'ms', 'len'],
+    thrown: ['name', 'tier', 'price', 'th', 'tht', 'sw', 'stack', 'ms', 'len', 'weight', 'tpl'],
+    melee: ['name', 'type', 'tier', 'price', 'culture', 'tpl', 'blade', 'sw', 'th', 'spd', 'len', 'weight'],
+    goods: ['name', 'price', 'value', 'weight', 'cat', 'culture'],
+    any: ['name', 'type', 'tier', 'price', 'culture', 'weight']
+  };
+  // The model path of a column's attribute in an item: {path, n} or null (first component of that kind).
+  function colPath(col, m) {
+    var a = col.attr;
+    if (!a) return null;
+    if (a.path) return { path: a.path, n: a.n };
+    for (var i = 0; i < m.comps.length; i++) if (m.comps[i].el === a.comp) return { path: { el: 'comp', i: i }, n: a.n };
+    return null;
+  }
+  function colVal(col, k) {
+    if (col.get) return col.get(k);
+    var cp = colPath(col, cur(k));
+    if (!cp) return null;
+    var v = C.getAt(cur(k), cp.path, cp.n);
+    return col.num && isNumStr(v) ? +v : v;
+  }
+  var cmpSort = { key: 'name', dir: 1 };
+  function renderCompare() {
+    var mode = $('cmpMode').value, keys;
+    var selType = selectedKey && exists(selectedKey) ? typeOfKey(selectedKey) : '';
+    if (mode === 'type') {
+      if (!selType) { $('cmpTable').innerHTML = '<div class="empty">Select an item: the table lists the items of its type.</div>'; $('cmpCount').textContent = ''; return; }
+      var nc = $('fNc').checked;
+      keys = allKeys().filter(function (k) { return exists(k) && typeOfKey(k) === selType && (nc || isNewKey(k) || !srcItem(k).nc || k === selectedKey); });
+    } else if (mode === 'list') keys = filteredKeys();
+    else keys = checkedKeys();
+    var groups = {};
+    keys.forEach(function (k) { groups[GROUP_OF[typeOfKey(k)] || 'any'] = 1; });
+    // One kind of item: its columns; a mix: the common ones.
+    var g = Object.keys(groups).length === 1 ? Object.keys(groups)[0] : 'any';
+    if (mode === 'type' && GROUP_OF[selType]) g = GROUP_OF[selType];
+    var cols = COLSETS[g] || COLSETS.any;
+    if (cols.indexOf(cmpSort.key) < 0) cmpSort = { key: 'name', dir: 1 };
+    var col = COLS[cmpSort.key], dir = cmpSort.dir, vals = {};
+    keys.forEach(function (k) { vals[k] = colVal(col, k); });
+    keys = keys.slice().sort(function (a, b) {
+      var x = vals[a], y = vals[b];
+      if (x == null || x === '') return 1;
+      if (y == null || y === '') return -1;
+      if (col.num) return (x - y) * dir || (a < b ? -1 : 1);
+      x = String(x).toLowerCase(); y = String(y).toLowerCase();
+      return (x < y ? -1 : x > y ? 1 : 0) * dir;
+    });
+    var MAX = 600, shown = keys.slice(0, MAX);
+    $('cmpCount').textContent = keys.length + ' item(s)' + (keys.length > MAX ? ', first ' + MAX : '') + (mode === 'type' ? ' · ' + selType : '');
+    var h = ['<table><thead><tr>'];
+    cols.forEach(function (c) {
+      var C2 = COLS[c];
+      h.push('<th data-sort="' + c + '" class="' + (C2.num ? 'num' : '') + '"' + (C2.title ? ' title="' + esc(C2.title) + '"' : (C2.attr ? ' title="' + esc(C2.attr.n) + '"' : '')) + '>' +
+        esc(C2.label) + (cmpSort.key === c ? (dir > 0 ? ' ▲' : ' ▼') : '') + '</th>');
+    });
+    h.push('</tr></thead><tbody>');
+    shown.forEach(function (k) {
+      var m = cur(k), b = base(k);
+      h.push('<tr class="it' + (k === selectedKey ? ' cur' : '') + '" data-key="' + esc(k) + '">');
+      cols.forEach(function (c) {
+        var C2 = COLS[c];
+        if (c === 'name') {
+          h.push('<td>' + esc(displayName(m, k)) + (isNewKey(k) ? ' <span class="badge ok">new</span>' : isEdited(k) ? ' <span class="badge warn">edited</span>' : '') +
+            '<br><span class="id mono">' + esc(m.attrs.id) + '</span></td>');
+          return;
+        }
+        var v = C2.show ? C2.show(k) : colVal(C2, k);
+        var cp = colPath(C2, m), bv = cp ? C.getAt(b, cp.path, cp.n) : null, cv = cp ? C.getAt(m, cp.path, cp.n) : null;
+        var ch = cp && cv !== bv;
+        var editable = cp && C2.num;
+        h.push('<td class="' + (C2.num ? 'num' : '') + (ch ? ' chg' : '') + (editable ? ' ed' : '') + '"' +
+          (editable ? ' data-col="' + c + '" title="Double-click to edit ' + esc(cp.n) + '" style="text-decoration:underline dotted var(--faint)"' : '') + '>' +
+          esc(v == null ? '' : (C2.num && !C2.show && typeof v === 'number' ? fmt(v) : v)) + (ch ? '<span class="was">' + esc(bv == null ? '—' : bv) + '</span>' : '') + '</td>');
+      });
+      h.push('</tr>');
+    });
+    h.push('</tbody></table>');
+    $('cmpTable').innerHTML = keys.length ? h.join('') : '<div class="empty">' + (mode === 'ticked' ? 'No item ticked.' : 'No item.') + '</div>';
+  }
+  $('cmpMode').onchange = renderCompare;
+  $('cmpTable').addEventListener('click', function (e) {
+    var th = e.target.closest('th[data-sort]');
+    if (th) {
+      var c = th.getAttribute('data-sort');
+      if (cmpSort.key === c) cmpSort.dir = -cmpSort.dir; else cmpSort = { key: c, dir: COLS[c].num ? -1 : 1 };
+      renderCompare(); return;
+    }
+    if (e.target.tagName === 'INPUT') return;
+    var tr = e.target.closest('tr[data-key]');
+    if (tr && tr.getAttribute('data-key') !== selectedKey) select(tr.getAttribute('data-key'), true);
+  });
+  $('cmpTable').addEventListener('dblclick', function (e) {
+    var td = e.target.closest('td[data-col]'); if (!td) return;
+    var k = td.parentNode.getAttribute('data-key'), col = COLS[td.getAttribute('data-col')], cp = colPath(col, cur(k));
+    if (!cp) return;
+    var old = C.getAt(cur(k), cp.path, cp.n);
+    td.innerHTML = '<input type="text" value="' + esc(old == null ? '' : old) + '">';
+    var inp = td.firstChild, done = false;
+    inp.focus(); inp.select();
+    var commit = function (ok) {
+      if (done) return; done = true;
+      if (ok && inp.value !== (old == null ? '' : old)) { applyValue(k, cp.path, cp.n, inp.value.trim()); changed(); }
+      else renderCompare();
+    };
+    inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') commit(true); else if (ev.key === 'Escape') { ev.stopPropagation(); commit(false); } });
+    inp.addEventListener('blur', function () { commit(true); });
+  });
+
+  // ------------------------------------------------------------------ problems
+  function allProblems() {
+    var out = [];
+    editedKeys().forEach(function (k) { seriousProbs(k).forEach(function (p) { out.push({ key: k, cls: p.cls, text: p.text }); }); });
+    out.sort(function (a, b) { return (a.cls === b.cls ? 0 : a.cls === 'bad' ? -1 : 1) || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0); });
+    return out;
+  }
+  // Data warnings, over every item and not only the edited ones: the generator's warnings, and the <Armor>
+  // attributes vanilla sets that the item's RBM definition (or its edited copy) leaves out.
+  function dataWarnings() {
+    var out = [];
+    DATA.items.forEach(function (it) {
+      var k = it.id;
+      if (!exists(k) || (!inRbm(k) && !isEdited(k))) return;
+      C.lostVanillaArmor(cur(k), van(k)).forEach(function (t) { out.push({ key: k, text: t }); });
+    });
+    return out;
+  }
+  function updateWarnings() {
+    var gen = DATA.warnings || [], lost = dataWarnings(), btn = $('btnWarnings'), box = $('warnings');
+    var n = gen.length + lost.length;
+    if (!n) { btn.style.display = 'none'; box.classList.remove('show'); box.innerHTML = ''; return; }
+    var items = {};
+    lost.forEach(function (x) { items[x.key] = 1; });
+    btn.style.display = '';
+    btn.textContent = n + ' data warning' + (n === 1 ? '' : 's');
+    var h = [];
+    if (gen.length) {
+      h.push('<div class="sec">Generator warnings (' + gen.length + ')</div>');
+      gen.forEach(function (w) { h.push('<div class="row">' + esc(w) + '</div>'); });
+    }
+    if (lost.length) {
+      h.push('<div class="sec">Vanilla &lt;Armor&gt; attributes lost to RBM\'s full replacement (' + Object.keys(items).length + ' items)</div>');
+      lost.forEach(function (x) {
+        var m = cur(x.key);
+        h.push('<div class="row"><button class="link" data-link="' + esc(x.key) + '">' + esc(displayName(m, x.key)) + '</button> ' +
+          '<span class="mono">' + esc(m.attrs.id) + '</span> (' + esc((itemById[x.key].rbm || []).join(', ') || 'edited copy') + '): ' + esc(x.text) + '</div>');
+      });
+    }
+    box.innerHTML = h.join('');
+  }
+  $('btnWarnings').onclick = function () { $('warnings').classList.toggle('show'); };
+  $('warnings').addEventListener('click', function (e) {
+    var k = e.target.getAttribute && e.target.getAttribute('data-link'); if (!k) return;
+    select(k, true);
+  });
+  function updateProblems() {
+    updateWarnings();
+    var list = allProblems(), btn = $('btnProblems'), box = $('problems');
+    if (!list.length) { btn.style.display = 'none'; box.classList.remove('show'); box.innerHTML = ''; return; }
+    var bad = list.filter(function (x) { return x.cls === 'bad'; }).length;
+    btn.style.display = '';
+    btn.className = 'badge ' + (bad ? 'bad' : 'warn');
+    btn.textContent = list.length + ' problem' + (list.length === 1 ? '' : 's') + ' in edited items' + (bad ? ' (' + bad + ' serious)' : '');
+    box.innerHTML = list.map(function (x) {
+      var m = cur(x.key);
+      return '<div class="row ' + x.cls + '"><button class="link" data-link="' + esc(x.key) + '">' + esc(displayName(m, x.key)) + '</button> ' +
+        '<span class="mono">' + esc(m.attrs.id) + '</span>: ' + esc(x.text) + '</div>';
+    }).join('');
+  }
+  $('btnProblems').onclick = function () { $('problems').classList.toggle('show'); };
+  $('problems').addEventListener('click', function (e) {
+    var k = e.target.getAttribute && e.target.getAttribute('data-link'); if (!k) return;
+    select(k, true);
+  });
+
+  // ------------------------------------------------------------------ export
+  var lastExport = null, exportIdx = 0;
+  function renderMsgs(box, msgs) {
+    box.innerHTML = msgs.map(function (m) { return '<div class="' + m[0] + '">' + (m[2] ? m[1] : esc(m[1])) + '</div>'; }).join('');
+  }
+  function keyOfId(id) {
+    if (itemById[id] && models[id]) return id;
+    for (var i = 0; i < news.length; i++) if (news[i].model.attrs.id === id) return news[i].key;
+    return itemById[id] ? id : null;
+  }
+  function showExportFile(i) {
+    exportIdx = i;
+    var f = lastExport.files[i];
+    document.querySelectorAll('#exportFiles button').forEach(function (b, k) { b.className = k === i ? 'small primary' : 'small'; });
+    var count = function (mode) { return f.items.filter(function (x) { return x.mode === mode; }).length; };
+    var msgs = [['ok', '<b>' + esc(f.path) + '</b>: ' + f.items.length + ' item(s) — ' + count('patch') + ' patched in place, ' + count('append') + ' appended, ' + count('new') + ' new', true]];
+    f.items.forEach(function (x) {
+      var k = keyOfId(x.id), it = itemById[x.id];
+      var how = x.mode === 'patch' ? 'patched in place' : x.mode === 'append' ? 'appended (copied from ' + esc(it ? it.module + '/' + it.file : '?') + ')' : 'new item';
+      msgs.push(['', '<b>' + esc(k ? displayName(cur(k), k) : x.id) + '</b> <span class="mono">' + esc(x.id) + '</span> · ' + how +
+        '<ul>' + x.summary.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>', true]);
+      (x.notes || []).forEach(function (n) { msgs.push([n[0], '⚠ ' + x.id + ': ' + n[1]]); });
+      if (k) seriousProbs(k).forEach(function (p) { msgs.push([p.cls, '⚠ ' + x.id + ': ' + p.text]); });
+    });
+    var ta = $('exportText');
+    ta.value = f.text;
+    var a = 0;
+    while (a < f.original.length && f.original.charCodeAt(a) === f.text.charCodeAt(a)) a++;
+    var before = f.text.slice(0, a), line = before.split('\n').length - 1;
+    var idx = a - (before.match(/\r/g) || []).length;
+    msgs.splice(1, 0, ['', 'First change at line ' + (line + 1) + '.']);
+    renderMsgs($('exportMsgs'), lastExport.messages.concat(msgs));
+    setTimeout(function () {
+      var lh = parseFloat(getComputedStyle(ta).lineHeight) || 16;
+      ta.setSelectionRange(idx, idx);
+      ta.scrollTop = Math.max(0, (line - 3) * lh);
+    }, 0);
+    $('btnDownload').textContent = 'Download ' + fileName(f.path);
+  }
+  $('btnExport').onclick = function () {
+    var edits = {}, newList = [];
+    Object.keys(models).forEach(function (id) { if (isEdited(id)) edits[id] = { model: models[id], target: targets[id] }; });
+    Object.keys(targets).forEach(function (id) { if (!edits[id] && models[id]) edits[id] = { model: models[id], target: targets[id] }; });
+    news.forEach(function (n) { newList.push({ id: n.model.attrs.id, from: n.from, model: n.model, target: n.target }); });
+    try {
+      lastExport = C.buildExport(DATA, edits, newList);
+    } catch (err) {
+      lastExport = null;
+      $('exportFiles').innerHTML = ''; $('exportText').style.display = 'none'; $('exportButtons').style.display = 'none';
+      renderMsgs($('exportMsgs'), [['bad', 'Export failed: ' + err.message]]);
+      $('exportModal').classList.add('show');
+      return;
+    }
+    var has = lastExport.files.length > 0;
+    $('exportText').style.display = has ? '' : 'none';
+    $('exportButtons').style.display = has ? '' : 'none';
+    $('exportFiles').innerHTML = lastExport.files.map(function (f, i) {
+      return '<button class="small" data-file="' + i + '">' + esc(f.path) + ' (' + f.items.length + ')</button>';
+    }).join('');
+    $('exportFiles').querySelectorAll('[data-file]').forEach(function (b) { b.onclick = function () { showExportFile(+b.getAttribute('data-file')); }; });
+    if (has) showExportFile(0);
+    else renderMsgs($('exportMsgs'), lastExport.messages.concat([['ok', 'Nothing to export: no item differs from the files.']]));
+    $('btnSave').style.display = window.showSaveFilePicker ? '' : 'none';
+    $('exportModal').classList.add('show');
+  };
+  function exportBlob(f) { return new Blob([(f.bom ? '\ufeff' : '') + f.text], { type: 'application/xml' }); }
+  $('btnCopy').onclick = function () {
+    // From the export, not the textarea: a textarea's value turns CRLF into LF.
+    var text = lastExport.files[exportIdx].text;
+    var done = function () { toast('Copied to clipboard'); };
+    var fallback = function () {
+      var ta = $('exportText'); ta.removeAttribute('readonly'); ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { toast('Copy failed: select the text and press Ctrl+C'); }
+      ta.setAttribute('readonly', '');
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  };
+  $('btnDownload').onclick = function () {
+    var f = lastExport.files[exportIdx];
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(exportBlob(f)); a.download = fileName(f.path);
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  };
+  $('btnSave').onclick = function () {
+    var f = lastExport.files[exportIdx];
+    window.showSaveFilePicker({ suggestedName: fileName(f.path), types: [{ description: 'XML', accept: { 'application/xml': ['.xml'] } }] })
+      .then(function (h) { return h.createWritable().then(function (w) { return w.write(exportBlob(f)).then(function () { return w.close(); }); }); })
+      .then(function () { toast('Saved ' + fileName(f.path)); }, function (e) { if (e && e.name !== 'AbortError') toast('Save failed: ' + e.message); });
+  };
+
+  // ------------------------------------------------------------------ reset, init
+  $('btnReset').onclick = function () {
+    var n = editedKeys().length;
+    if (n && !confirm('Discard your changes to ' + n + ' item(s) (new items included) and go back to the files?')) return;
+    models = {}; targets = {}; news = []; checked = {}; cache = {}; sortCache = null;
+    if (selectedKey && isNewKey(selectedKey)) selectedKey = null;
+    try { localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
+    $('banner').classList.remove('show');
+    changed();
+    toast('Reset to the files');
+  };
+
+  document.querySelectorAll('[data-close]').forEach(function (b) {
+    b.onclick = function () { b.closest('.modal-bg').classList.remove('show'); };
+  });
+  document.querySelectorAll('.modal-bg').forEach(function (m) {
+    m.addEventListener('mousedown', function (e) { if (e.target === m) m.classList.remove('show'); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') document.querySelectorAll('.modal-bg.show').forEach(function (m) { m.classList.remove('show'); });
+  });
+
+  var nRbm = DATA.items.filter(function (it) { return it.rbm; }).length;
+  $('meta').textContent = (DATA.gameVersion ? 'Bannerlord ' + DATA.gameVersion : '') + (DATA.navalDlc ? ' + War Sails' : '') +
+    ' · ' + DATA.items.length + ' items (' + nRbm + ' in RBM files) · ' + DATA.rbmFiles.length + ' RBM item files · data ' + DATA.generated;
+  $('meta').title = 'Assumed: ' + (DATA.assumptions || '');
+
+  updateModified();
+  var first = editedKeys()[0];
+  if (first) select(first, true); else { renderItems(); renderDetails(); renderCompare(); }
+})();
+</script>
+</body>
+</html>

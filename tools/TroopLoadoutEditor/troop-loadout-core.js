@@ -754,7 +754,10 @@
     sameMap: sameMap, sameRosters: sameRosters, sameList: sameList, sameUpgrades: sameUpgrades,
     parseChildren: parseChildren, rootRange: rootRange, troopSpans: troopSpans, getAttr: getAttr, setAttr: setAttr,
     patchTroop: patchTroop, patchUpgradeTargets: patchUpgradeTargets, buildExport: buildExport, summarize: summarize,
-    targetFile: targetFile, wantedExplicit: wantedExplicit
+    targetFile: targetFile, wantedExplicit: wantedExplicit,
+    // Text helpers, also used by the item editor (../ItemEditor/item-editor-core.js).
+    removeAttr: removeAttr, tokens: tokens, startTagOf: startTagOf, indentAt: indentAt, isWs: isWs, unitFor: unitFor,
+    reindent: reindent, normEol: normEol, escAttr: escAttr, TOKEN_SRC: TOKEN_SRC
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.TroopLoadoutCore = api;

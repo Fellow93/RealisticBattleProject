@@ -17,6 +17,17 @@ its data first with `powershell -ExecutionPolicy Bypass -File tools\TroopLoadout
 (the output is gitignored). See `TroopLoadoutEditor/README.md`, which also explains how
 `RBM/XmlLoadingPatches.cs` applies these files.
 
+## ItemEditor/
+
+A local page (`index.html`) for editing equipment items in RBM's item files (`RBMXML/RBMCombat_*` armors, shields,
+horses, ranged weapons and ammo, crafted weapons, trade goods, and `RBM_WS_XML/`): every item the game loads (merged
+as the game does), each value next to the vanilla one, RBM's tier and price preview, a comparison table for balancing,
+bulk edits, problem checks against `Items.xsd` and the game's parsers, and a diff-based export that patches only the
+changed attributes in every RBM file defining the item (both ranged twins) or appends a full copy of a native item.
+Generate its data first with `powershell -ExecutionPolicy Bypass -File tools\ItemEditor\Build-ItemData.ps1` (the
+output is gitignored). It shares `TroopLoadoutEditor/troop-loadout-core.js`'s XML text helpers. See
+`ItemEditor/README.md`, which also explains how RBM replaces items and where the tier and price formulas live.
+
 ## check_crafting_coverage.py
 
 Finds smithing piece combinations that no weapon description covers — the cause
