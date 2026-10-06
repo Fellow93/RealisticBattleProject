@@ -1,5 +1,6 @@
-// Troop loadout editor: the data model and the text-splicing export. No DOM; index.html uses it, and it can be
-// run under node (module.exports) to test an export. See README.md.
+// Troop loadout editor: the data model and the text-splicing export. No DOM; index.html and the upgrade tree
+// editor (../TroopUpgradeTreeEditor/index.html) use it, and it can be run under node (module.exports) to test an
+// export. See README.md.
 (function (root) {
   'use strict';
 
@@ -49,6 +50,8 @@
     return m;
   }
   // The troop as the data file describes it. skills = effective values (template overlaid with explicit ones).
+  // upgrades = upgrade target ids in order. A model without upgrades (the loadout page's saved work) leaves them as
+  // the file has them.
   function origModel(t) {
     var skills = {};
     Object.keys(t.templateSkills || {}).forEach(function (k) { skills[k] = t.templateSkills[k]; });
@@ -57,16 +60,19 @@
       level: t.level,
       skills: skills,
       rosters: (t.rosters || []).map(function (r, i) { return { type: r.type, slots: pairsToMap(r.slots), o: i }; }),
-      loose: pairsToMap(t.loose)
+      loose: pairsToMap(t.loose),
+      upgrades: (t.upgrades || []).slice()
     };
   }
   function cloneModel(m) {
-    return {
+    var c = {
       level: m.level,
       skills: Object.assign({}, m.skills),
       rosters: m.rosters.map(function (r) { return { type: r.type, slots: Object.assign({}, r.slots), o: r.o }; }),
       loose: Object.assign({}, m.loose)
     };
+    if (m.upgrades) c.upgrades = m.upgrades.slice();
+    return c;
   }
   function sameMap(a, b) {
     var ka = Object.keys(a).filter(function (k) { return a[k]; }), kb = Object.keys(b).filter(function (k) { return b[k]; });
@@ -84,8 +90,16 @@
     for (var i = 0; i < a.length; i++) { if (a[i].o !== b[i].o || !sameRoster(a[i], b[i])) return false; }
     return true;
   }
+  // Upgrade targets: the order matters (the party screen's first button and xp bar, RBM's spoils bar).
+  function sameList(a, b) {
+    if (a.length !== b.length) return false;
+    for (var i = 0; i < a.length; i++) { if (a[i] !== b[i]) return false; }
+    return true;
+  }
+  function sameUpgrades(a, b) { return !a.upgrades || !b.upgrades || sameList(a.upgrades, b.upgrades); }
   function sameModel(a, b) {
-    return a.level === b.level && sameSkills(a.skills, b.skills) && sameRosters(a.rosters, b.rosters) && sameMap(a.loose, b.loose);
+    return a.level === b.level && sameSkills(a.skills, b.skills) && sameRosters(a.rosters, b.rosters) && sameMap(a.loose, b.loose) &&
+      sameUpgrades(a, b);
   }
 
   // ---------------------------------------------------------------- XML text scanning
@@ -456,6 +470,70 @@
     return want;
   }
 
+  // ---------------------------------------------------------------- upgrade targets
+
+  // CharacterObject.Deserialize reads <upgrade_targets><upgrade_target id="NPCCharacter.x"/> (element names exact,
+  // the id must carry the "NPCCharacter." prefix) and sets UpgradeTargets to that list: no element, or an empty one,
+  // means no targets.
+  function upgradeIdOf(tok) {
+    var v = getAttr(tok.text, 'id');
+    return v == null ? null : v.replace(/^NPCCharacter\./, '');
+  }
+  function isUpgradeEntry(t) { return t.kind === 'el' && t.name === 'upgrade_target'; }
+  // An <upgrade_targets> element's text holding the wanted ids, in order. Entries of ids that stay keep their text;
+  // a new entry is shaped like the element's first entry, else like the file's first one (ctx.sampleUpgrade). The
+  // entries fill the existing entries' places in order (comments stay put); extra ones go after the last entry with
+  // the whitespace it has, surplus ones are removed with the whitespace before them. Emptied, it is written
+  // <upgrade_targets></upgrade_targets>, as RBM's files write a troop without targets.
+  function patchUpgradeTargets(text, want, ctx, indent) {
+    var st = startTagOf(text);
+    var entryIndent = indent + unitFor(indent);
+    var close = st.self ? text.length : text.lastIndexOf('</');
+    var toks = st.self ? [] : tokens(text, st.end, close);
+    var entryIdx = [];
+    toks.forEach(function (t, i) { if (isUpgradeEntry(t)) entryIdx.push(i); });
+    var first = entryIdx.length ? toks[entryIdx[0]].text : null;
+    var sampleText = function () {
+      return first != null ? first : reindent(ctx.sampleUpgrade.text, ctx.sampleUpgrade.indent, entryIndent);
+    };
+    var pool = {};
+    entryIdx.forEach(function (i) { var k = upgradeIdOf(toks[i]); (pool[k] = pool[k] || []).push(toks[i].text); });
+    var texts = want.map(function (id) {
+      if (pool[id] && pool[id].length) return pool[id].shift();
+      return setAttr(sampleText(), 'id', 'NPCCharacter.' + id);
+    });
+    var k = entryIdx.length, m = texts.length;
+    for (var j = 0; j < Math.min(k, m); j++) toks[entryIdx[j]].text = texts[j];
+    if (m > k) {
+      var extra = [];
+      if (k > 0) {
+        var li = entryIdx[k - 1];
+        var lws = li > 0 && toks[li - 1].kind === 'text' && isWs(toks[li - 1].text) ? toks[li - 1].text : ctx.eol + entryIndent;
+        for (var e = k; e < m; e++) extra.push({ kind: 'text', text: lws }, { kind: 'el', name: 'upgrade_target', text: texts[e] });
+        Array.prototype.splice.apply(toks, [li + 1, 0].concat(extra));
+      } else {
+        var lastEl = -1;
+        toks.forEach(function (t, i) { if (t.kind !== 'text') lastEl = i; });
+        for (var e2 = 0; e2 < m; e2++) extra.push({ kind: 'text', text: ctx.eol + entryIndent }, { kind: 'el', name: 'upgrade_target', text: texts[e2] });
+        if (lastEl < 0) toks = extra.concat([{ kind: 'text', text: ctx.eol + indent }]);
+        else Array.prototype.splice.apply(toks, [lastEl + 1, 0].concat(extra));
+      }
+    } else if (m < k) {
+      for (var r = k - 1; r >= m; r--) {
+        var ri = entryIdx[r];
+        if (ri > 0 && toks[ri - 1].kind === 'text' && isWs(toks[ri - 1].text)) toks.splice(ri - 1, 2);
+        else toks.splice(ri, 1);
+      }
+    }
+    if (!toks.some(function (t) { return t.kind !== 'text'; })) toks = [];
+    var inner = join(toks);
+    if (st.self) {
+      if (!m) return text;
+      return st.text.replace(/\s*\/>$/, '>') + inner + '</' + st.name + '>';
+    }
+    return st.text + inner + text.slice(close);
+  }
+
   // The whole <NPCCharacter> element text with level, skills, rosters and loose overrides as in cur.
   function patchTroop(elText, t, orig, cur, ctx) {
     var text = elText;
@@ -494,6 +572,29 @@
         }
       }
     }
+    if (cur.upgrades && !sameList(cur.upgrades, orig.upgrades || [])) {
+      // Every <upgrade_targets> element is read (their entries add up): the first one gets the list, others go.
+      var uts = findChild(['upgrade_targets']);
+      if (uts.length) {
+        for (var x = uts.length - 1; x >= 1; x--) {
+          var u = uts[x], before = text.slice(0, u.start), ws = /\s*$/.exec(before)[0];
+          text = before.slice(0, before.length - ws.length) + text.slice(u.end);
+        }
+        var u0 = findChild(['upgrade_targets'])[0];
+        replaceTok(u0, patchUpgradeTargets(u0.text, cur.upgrades, ctx, indentAt(text, u0.start)));
+      } else if (cur.upgrades.length) {
+        // Where the game's files put it: after face/Traits/skills, before <Equipments>.
+        var ci3 = childIndentOf();
+        var utText = patchUpgradeTargets('<upgrade_targets></upgrade_targets>', cur.upgrades, ctx, ci3);
+        var eqAnchor = findChild(['Equipments', 'equipments'])[0];
+        if (eqAnchor) text = text.slice(0, eqAnchor.start) + utText + ctx.eol + indentAt(text, eqAnchor.start) + text.slice(eqAnchor.start);
+        else {
+          var cs3 = text.lastIndexOf('</');
+          var pre3 = text.slice(0, cs3).replace(/\s*$/, '');
+          text = pre3 + ctx.eol + ci3 + utText + ctx.eol + elIndent + text.slice(cs3);
+        }
+      }
+    }
     if (!sameRosters(cur.rosters, orig.rosters) || !sameMap(cur.loose, orig.loose)) {
       var eqs = findChild(['Equipments', 'equipments']);
       if (eqs.length) {
@@ -519,6 +620,8 @@
     ctx.sampleEquip = m ? { text: m[0].slice(m[1].length), indent: m[1] } : { text: '<equipment slot="Item0" id="Item.x" />', indent: '' };
     m = /^([ \t]*)<skill\b[^>]*\/>/m.exec(text);
     ctx.sampleSkill = m ? { text: m[0].slice(m[1].length), indent: m[1] } : { text: '<skill id="x" value="0" />', indent: '' };
+    m = /^([ \t]*)<upgrade_target\b[^>]*\/>/m.exec(text);
+    ctx.sampleUpgrade = m ? { text: m[0].slice(m[1].length), indent: m[1] } : { text: '<upgrade_target id="NPCCharacter.x" />', indent: '' };
     m = /^([ \t]*)<EquipmentRoster\b/m.exec(text);
     if (m) {
       var at = m.index + m[1].length;
@@ -637,6 +740,10 @@
       });
       parts.push('shared slots: ' + lc.join(', '));
     }
+    if (cur.upgrades && !sameList(cur.upgrades, orig.upgrades || [])) {
+      var lst = function (l) { return l.length ? l.join(', ') : '(none)'; };
+      parts.push('upgrade targets: ' + lst(orig.upgrades || []) + ' → ' + lst(cur.upgrades));
+    }
     return parts;
   }
 
@@ -644,9 +751,10 @@
     SLOTS: SLOTS, SLOT_ORDER: SLOT_ORDER, WEAPON_SLOTS: WEAPON_SLOTS, WEAPON_TYPES: WEAPON_TYPES,
     fits: fits, shoulderBase: shoulderBase, tierOf: tierOf,
     origModel: origModel, cloneModel: cloneModel, sameModel: sameModel, sameRoster: sameRoster, sameSkills: sameSkills,
-    sameMap: sameMap, sameRosters: sameRosters,
+    sameMap: sameMap, sameRosters: sameRosters, sameList: sameList, sameUpgrades: sameUpgrades,
     parseChildren: parseChildren, rootRange: rootRange, troopSpans: troopSpans, getAttr: getAttr, setAttr: setAttr,
-    patchTroop: patchTroop, buildExport: buildExport, summarize: summarize, targetFile: targetFile, wantedExplicit: wantedExplicit
+    patchTroop: patchTroop, patchUpgradeTargets: patchUpgradeTargets, buildExport: buildExport, summarize: summarize,
+    targetFile: targetFile, wantedExplicit: wantedExplicit
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.TroopLoadoutCore = api;

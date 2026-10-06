@@ -25,10 +25,18 @@ This writes `troop-loadout-data.js` next to the page (about 6 MB, a minute to bu
     (attributes overlaid, children merged by the `XmlSchemas/*.xsd` AlwaysPreferMerge / `xs:unique` keys, other
     children appended). NavalDLC uses this to add to vanilla troops (the sea raiders, ...) and items;
   - RBM's files go through `RBM/XmlLoadingPatches.cs` instead (see below);
+  - a registered `.xslt` transforms the definitions merged so far, before that entry's own file is merged
+    (`MBObjectManager.CreateMergedXmlFile`). War Sails' `XSLT/NavalDLC_SandBoxCore_SPCultures.xslt` makes Nord a main
+    culture with its own troops (`nord_youngling` / `nord_ungmann`, instead of the Sturgian ones vanilla gives it);
+    the cultures read here go through it;
   - a file not loaded in campaigns (custom battle or multiplayer only) never changes a campaign definition; it only
     adds ids no campaign file has (marked "not in campaign" in the item picker).
   Heroes are skipped. Tier is `clamp(ceil((level - 5) / 5), 0, 6)` (`DefaultCharacterStatsModel.GetTier`).
 - **The two RBM troop files' full text**, which the page splices on export.
+- For the upgrade tree editor (`../TroopUpgradeTreeEditor/`, which uses this data and `troop-loadout-core.js`): each
+  troop's `upgrade_requires`, the hero ids, the campaign cultures' troop references (`SPCultures`: `basic_troop`,
+  `elite_basic_troop`, militia, caravan guards, `<basic_mercenary_troops>`, ...) and the campaign party templates
+  that spawn each troop (`partyTemplates`).
 
 Assumed RBM settings: combat, campaign and troop overhaul on, `passiveShoulderShields` off (the defaults).
 So `RBM_COMBAT_ONLY_XML_TAG` item files (`RBMCombat_ranged.xml`) are skipped and `RBM_ECONOMY_COMBAT` ones load.
@@ -51,7 +59,10 @@ The game's Modules folder is taken to be the one this repo sits in; pass `-Modul
 ## 2. Edit
 
 Open `index.html` in a browser (double-click it; no server needed). It loads `troop-loadout-data.js` and
-`troop-loadout-core.js` (the model and the export splicing, also usable from node).
+`troop-loadout-core.js` (the model and the export splicing, also usable from node). Upgrade targets are edited in the
+sibling page `../TroopUpgradeTreeEditor/index.html`, which uses the same data and core. **Both pages export the same
+RBM files** and each keeps its own work in progress: after saving an export from either, re-run the script before
+using the other.
 
 - **Left**: troops, with search and filters (culture, tier, formation, occupation, module, edited, in an RBM file,
   templates/obsolete). Tick troops (or Ctrl+click) for bulk changes; "Revert ticked" undoes them.
@@ -92,11 +103,15 @@ included; the textarea preview shows LF, Download/Save/Copy keep the file's line
   values (new skills are added as entries shaped like their siblings) and the changed `<equipment>` entries change.
   Unchanged rosters keep their text, changed ones keep their entries' formatting and comments, new rosters are
   shaped like the troop's first roster. Attributes (names like `{=s3IJIFUw}Imperial Recruit` verbatim), face,
-  upgrade targets, comments, `EquipmentSet` references and their order are untouched.
+  comments, `EquipmentSet` references and their order are untouched. Upgrade targets are untouched by this page; an
+  upgrade tree editor edit changes only the `<upgrade_targets>` children (kept entries keep their text, new ones are
+  shaped like their siblings, an emptied list is written `<upgrade_targets></upgrade_targets>`, a missing element is
+  created before `<Equipments>`); see `../TroopUpgradeTreeEditor/README.md`. In the model (`origModel`), `upgrades`
+  is the ordered target list; a model without it (this page's saved work) leaves the targets as the file has them.
 - A troop not yet in an RBM file is appended before `</NPCCharacters>` as a full copy of its definition (from its
   source file; the merged, re-formatted element when several files define it), with the same edits applied and a
   comment naming where it was copied from: to `RBM_WS_XML/RBMCombat_WS_unit_overhaul.xml` when it comes from
-  NavalDLC, else to `RBMXML/RBMCombat_unit_overhaul.xml`.
+  NavalDLC, else to `RBMXML/RBMCombat_unit_overhaul.xml`. The same holds for an upgrade tree editor edit.
 - Skills: an edited skill of a troop with a `skill_template` is written as an explicit `<skill>` entry.
   `BasicCharacterObject.Deserialize` uses the template as is when the troop has no `<skills>` element; with one
   (even empty) it copies the template and applies each `<skill>` entry over it. Entries are never removed.
@@ -107,8 +122,9 @@ included; the textarea preview shows LF, Download/Save/Copy keep the file's line
   whose id matches one in the RBM file, the earlier node is removed **only when both have an
   `<Equipments><EquipmentRoster>`**, then RBM's nodes are appended. So an RBM troop with a roster is a full
   replacement; one with only `EquipmentSet` references (or replacing one that has none) leaves both definitions in,
-  and the game deserializes both: the later sets level and skills, the rosters and sets of both are added. The
-  editor flags such troops (today: `fighter_nord`) and warns when an exported troop has no roster.
+  and the game deserializes both: the later sets level, skills and upgrade targets (each `Deserialize` replaces
+  `UpgradeTargets`), the rosters and sets of both are added. The editor flags such troops (today: `fighter_nord`) and
+  warns when an exported troop has no roster.
 - RBM `Item` / `CraftedItem` elements replace earlier ones of the same element kind and id.
 - With `passiveShoulderShields` off (the default), equipment ids containing `shield` and ending in `_shoulder`
   (also `_kalkan_shoulder` / `_cataphract_shoulder`) are rewritten to the base shield id, but only inside the

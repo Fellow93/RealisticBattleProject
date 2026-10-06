@@ -10,9 +10,12 @@
         installed), found through each module's SubModule.xml, merged in module order the way the game does it
         (see "merging" below; a file not loaded in campaigns never changes a campaign definition). Per troop:
         level, explicit and template skills, every EquipmentRoster, EquipmentSet reference and loose <equipment>
-        override, upgrade targets, flags, the defining files, and - for troops not defined in an RBM unit
-        overhaul file - the element's XML text (merged and re-formatted when several files define it), for the
-        export;
+        override, upgrade targets and upgrade_requires, flags, the defining files, and - for troops not defined in
+        an RBM unit overhaul file - the element's XML text (merged and re-formatted when several files define it),
+        for the export;
+      - the ids of the hero characters (skipped above), the campaign cultures' troop references (basic_troop,
+        elite_basic_troop, militia, caravan guard, basic_mercenary_troops, ...) and which campaign party
+        templates spawn each troop, for the upgrade tree editor (../TroopUpgradeTreeEditor);
       - the equipment sets (EquipmentRosters XML) that troops reference;
       - every item (Item and CraftedItem) from the Items XML, RBM's own item XML replacing by id the way
         RBM/XmlLoadingPatches.cs MergeTwoXmlsPatch does. Assumes RBM combat AND campaign on (so RBM_COMBAT_ONLY
@@ -242,8 +245,9 @@ if ($navalInstalled) {
 $rbmTroopFiles = @('RBMXML/RBMCombat_unit_overhaul.xml')
 if ($navalInstalled) { $rbmTroopFiles += 'RBM_WS_XML/RBMCombat_WS_unit_overhaul.xml' }
 
-function Get-XmlFiles($module, [string]$xmlId) {
+function Get-XmlFiles($module, [string]$xmlId, [switch]$WithXslt) {
     # Like MBObjectManager.GetMergedXmlForManaged: "<path>.xml", else every *.xml in the folder "<path>".
+    # With -WithXslt, a "<path>.xslt" entry is returned too, in registration order, as @{ xslt = <file> }.
     $result = @()
     if (-not (Test-Path -LiteralPath $module.sub)) { Add-Warning "$($module.id): SubModule.xml not found ($($module.sub))"; return ,$result }
     $doc = New-Object System.Xml.XmlDocument
@@ -263,6 +267,19 @@ function Get-XmlFiles($module, [string]$xmlId) {
         $campaign = ($types.Count -eq 0)
         foreach ($t in $types) { if ($t -ieq 'Campaign' -or $t -ieq 'CampaignStoryMode') { $campaign = $true } }
         $file = Join-Path $module.data ($path + '.xml')
+        # A "<path>.xsl(t)" (e.g. XSLT/NavalDLC_SandBoxCore_SPCultures) transforms the XML merged so far, before this
+        # entry's own file is merged (MBObjectManager.CreateMergedXmlFile / HandleXsltList). Only Collect-Merged applies
+        # them. (A folder entry's per-file transforms are not handled; no installed module has one.)
+        # The repo keeps RBM_WS_XML's transforms at its root (the build puts them in XSLT/), hence the leaf name.
+        $xslt = $null
+        $leaf = ($path -split '/')[-1]
+        foreach ($x in @(($path + '.xsl'), ($path + '.xslt'), ($leaf + '.xsl'), ($leaf + '.xslt'))) {
+            $xf = Join-Path $module.data $x
+            if ($null -eq $xslt -and (Test-Path -LiteralPath $xf)) { $xslt = $xf }
+        }
+        if ($null -ne $xslt -and $WithXslt) {
+            $result += @{ xslt = $xslt; name = ($path + [System.IO.Path]::GetExtension($xslt)); campaign = $campaign; types = ($types -join ',') }
+        }
         if (Test-Path -LiteralPath $file) {
             $result += @{ file = $file; name = ($path + '.xml'); campaign = $campaign; types = ($types -join ',') }
             continue
@@ -274,9 +291,7 @@ function Get-XmlFiles($module, [string]$xmlId) {
             }
             continue
         }
-        # XSLT transforms (e.g. XSLT/..._CraftingTemplates) only change already-loaded XML; not read here.
-        $leaf = ($path -split '/')[-1]
-        if ((Test-Path -LiteralPath (Join-Path $module.data ($path + '.xslt'))) -or (Test-Path -LiteralPath (Join-Path $module.data ($leaf + '.xslt')))) { continue }
+        if ($null -ne $xslt) { continue }
         Add-Warning "$($module.id): $xmlId file not found: $file"
     }
     return ,$result
@@ -419,6 +434,52 @@ function Format-Element($el) {
 # { kind, id, el (merged XmlElement), module, file, campaign, sources, alsoIn, merged, raw, rawIndent, rbm, rel, dupOf, order }.
 # A file not loaded in campaigns never changes a campaign definition (it only adds ids no campaign file has).
 $script:Order = 0
+function Invoke-XsltOnStore([System.Xml.XmlDocument]$store, [string]$xsltPath, $entries, [string]$src) {
+    # MBObjectManager.ApplyXslt over the definitions merged so far; then re-point every entry (and the definitions an
+    # RBM troop sits next to, dupOf) at its transformed element, matched by element name and id in document order.
+    $xsl = New-Object System.Xml.Xsl.XslCompiledTransform
+    $xsl.Load($xsltPath)
+    $out = New-Object System.Xml.XmlDocument
+    $w = $out.CreateNavigator().AppendChild()
+    $xsl.Transform([System.Xml.XPath.IXPathNavigable]$store, $w)
+    $w.Close()
+    $queues = @{}
+    foreach ($node in $out.DocumentElement.ChildNodes) {
+        if ($node.NodeType -ne [System.Xml.XmlNodeType]::Element) { continue }
+        $k = $node.LocalName + '|' + (Get-Attr $node 'id')
+        if (-not $queues.ContainsKey($k)) { $queues[$k] = New-Object System.Collections.Generic.Queue[object] }
+        $queues[$k].Enqueue($node)
+    }
+    $map = New-Object 'System.Collections.Generic.Dictionary[object,object]'
+    foreach ($node in $store.DocumentElement.ChildNodes) {
+        if ($node.NodeType -ne [System.Xml.XmlNodeType]::Element) { continue }
+        $k = $node.LocalName + '|' + (Get-Attr $node 'id')
+        if ($queues.ContainsKey($k) -and $queues[$k].Count -gt 0) { $map[$node] = $queues[$k].Dequeue() }
+    }
+    $changed = 0
+    $removed = @()
+    foreach ($key in @($entries.Keys)) {
+        $e = $entries[$key]
+        while ($null -ne $e) {
+            if ($null -ne $e.el) {
+                if ($map.ContainsKey($e.el)) {
+                    $new = $map[$e.el]
+                    if ($new.OuterXml -ne $e.el.OuterXml) { $e.sources += $src; $e.merged = $true; $e.raw = $null; $changed++ }
+                    $e.el = $new
+                }
+                elseif ($e -eq $entries[$key]) { $removed += $key }
+            }
+            $e = $e.dupOf
+        }
+    }
+    foreach ($key in $removed) { Add-Warning "${src}: removes $key; the editor drops it"; $entries.Remove($key) }
+    foreach ($q in $queues.Values) {
+        foreach ($node in $q) { Add-Warning "${src}: adds $($node.LocalName) '$(Get-Attr $node 'id')'; not read by the editor" }
+    }
+    $script:XsltChanged = $changed
+    return ,$out   # the comma: an XmlDocument is enumerable and would be unrolled into its child nodes
+}
+
 function Collect-Merged([string]$xmlId, [string[]]$kinds, [bool]$keepRaw) {
     $schema = Read-Schema $xmlId
     $store = New-Object System.Xml.XmlDocument
@@ -426,7 +487,14 @@ function Collect-Merged([string]$xmlId, [string[]]$kinds, [bool]$keepRaw) {
     $entries = New-Object System.Collections.Specialized.OrderedDictionary
     foreach ($module in $moduleList) {
         if (-not (Test-Path -LiteralPath $module.sub)) { continue }
-        foreach ($f in (Get-XmlFiles $module $xmlId)) {
+        foreach ($f in (Get-XmlFiles $module $xmlId -WithXslt)) {
+            if ($f.ContainsKey('xslt')) {
+                if (-not $f.campaign) { Add-FileLog $module $f $xmlId 0 'XSLT skipped: not loaded in campaigns'; continue }
+                $store = Invoke-XsltOnStore $store $f.xslt $entries ($module.id + '/' + $f.name)
+                $root = $store.DocumentElement
+                Add-FileLog $module $f $xmlId $script:XsltChanged 'XSLT: definitions changed'
+                continue
+            }
             $text = [System.IO.File]::ReadAllText($f.file)
             $doc = New-Object System.Xml.XmlDocument
             $doc.LoadXml($text)
@@ -744,14 +812,25 @@ function Read-Equipments($n) {
     return $r
 }
 
+function Get-Upgrades($n) {
+    # CharacterObject.Deserialize: every <upgrade_targets>/<upgrade_target id="NPCCharacter.x"> child, in order.
+    $list = @()
+    foreach ($u in $n.SelectNodes('upgrade_targets/upgrade_target')) {
+        $uid = Get-Attr $u 'id'
+        if ($null -ne $uid) { $list += ($uid -replace '^NPCCharacter\.', '') }
+    }
+    return , $list
+}
+
 $troops = New-Object System.Collections.Specialized.OrderedDictionary
 $heroCount = 0
+$heroIds = New-Object System.Collections.Generic.List[string]
 $mountedClasses = @('Cavalry', 'HorseArcher', 'LightCavalry', 'HeavyCavalry')
 $troopEntries = Collect-Merged 'NPCCharacters' @('NPCCharacter') $true
 foreach ($e in $troopEntries.Values) {
     $n = $e.el
     $id = $e.id
-    if (Test-True (Get-Attr $n 'is_hero')) { $heroCount++; continue }
+    if (Test-True (Get-Attr $n 'is_hero')) { $heroCount++; $heroIds.Add($id); continue }
     $isRbmTroopFile = ($rbmTroopFiles -contains $e.rel)
     $notes = @()
     $dupFrom = $null
@@ -761,7 +840,10 @@ foreach ($e in $troopEntries.Values) {
         $why = $(if (-not (Test-HasRoster $n)) { 'the RBM definition has no EquipmentRoster' } else { 'the earlier definition (' + ($prev.sources -join ' > ') + ') has no EquipmentRoster' })
         $notes += "Not replaced: $why, so RBM/XmlLoadingPatches keeps both definitions. The game deserializes both: the later one sets level and skills, the equipment rosters and sets of both are added."
         $pe = Read-Equipments $prev.el
-        $dupFrom = [ordered]@{ file = ($prev.sources -join ' > '); rosters = $pe.rosters; sets = $pe.sets; loose = $pe.loose }
+        # upgrades: the earlier definition's targets. Each Deserialize sets UpgradeTargets anew, so the later
+        # (RBM) definition's list is the one the game keeps.
+        $dupFrom = [ordered]@{ file = ($prev.sources -join ' > '); rosters = $pe.rosters; sets = $pe.sets; loose = $pe.loose
+            upgrades = (Get-Upgrades $prev.el) }
     }
     $level = 1
     $lv = Get-Attr $n 'level'
@@ -805,11 +887,7 @@ foreach ($e in $troopEntries.Values) {
         }
     }
 
-    $upgrades = @()
-    foreach ($u in $n.SelectNodes('upgrade_targets/upgrade_target')) {
-        $uid = Get-Attr $u 'id'
-        if ($null -ne $uid) { $upgrades += ($uid -replace '^NPCCharacter\.', '') }
-    }
+    $upgrades = Get-Upgrades $n
     $eqs = Read-Equipments $n
 
     $name = Remove-LocKey (Get-Attr $n 'name')
@@ -832,6 +910,9 @@ foreach ($e in $troopEntries.Values) {
         notes = $notes
     }
     if ($null -ne $dupFrom) { $troop.dupFrom = $dupFrom }
+    # CharacterObject.Deserialize: upgrade_requires="ItemCategory.x", the item category a party needs to upgrade into it.
+    $ur = Get-Attr $n 'upgrade_requires'
+    if ($null -ne $ur) { $troop.upgradeRequires = ($ur -replace '^ItemCategory\.', '') }
     if ($null -ne (Get-Attr $n 'default_equipment_set')) { $troop.notes += "Has default_equipment_set=""$(Get-Attr $n 'default_equipment_set')"": the first equipment is filled from that game default set." }
     if (-not $isRbmTroopFile) {
         # The export appends a copy: the element's own text when one file defines it, else the merged element
@@ -846,6 +927,56 @@ foreach ($e in $troopEntries.Values) {
     }
     $troops[$id] = $troop
 }
+
+# ---------------------------------------------------------------- cultures and party templates (upgrade tree roots)
+# CultureObject.Deserialize reads its troops from attributes (basic_troop, elite_basic_troop, melee_militia_troop,
+# caravan_guard, ...: every "NPCCharacter.x" value is kept, keyed by attribute name) and from
+# <basic_mercenary_troops><template name="NPCCharacter.x"/> (tavern mercenaries are drawn from these trees).
+# PartyTemplateObject.Deserialize: <stacks><PartyTemplateStack troop="NPCCharacter.x"/> spawns the troop directly.
+# Campaign files only. The upgrade tree editor uses these to tell a tree root from a troop nobody upgrades into.
+
+Write-Host 'Reading cultures and party templates...'
+$culturesOut = [ordered]@{}
+foreach ($e in (Collect-Merged 'SPCultures' @('Culture') $false).Values) {
+    if (-not $e.campaign) { continue }
+    $c = $e.el
+    $roots = [ordered]@{}
+    foreach ($a in $c.Attributes) {
+        if ($a.Value.StartsWith('NPCCharacter.')) { $roots[$a.Name] = $a.Value.Substring('NPCCharacter.'.Length) }
+    }
+    $mercs = @()
+    foreach ($m in $c.SelectNodes('basic_mercenary_troops/template')) {
+        $mn = Get-Attr $m 'name'
+        if ($null -ne $mn) { $mercs += ($mn -replace '^NPCCharacter\.', '') }
+    }
+    $cname = Remove-LocKey (Get-Attr $c 'name')
+    if ($cname -eq '') { $cname = $e.id }
+    $culturesOut[$e.id] = [ordered]@{ id = $e.id; name = $cname; bandit = (Test-True (Get-Attr $c 'is_bandit'))
+        main = (Test-True (Get-Attr $c 'is_main_culture')); roots = $roots; mercenaries = $mercs; module = $e.module }
+}
+$templateTroops = @{}
+foreach ($module in $moduleList) {
+    if (-not (Test-Path -LiteralPath $module.sub)) { continue }
+    foreach ($f in (Get-XmlFiles $module 'partyTemplates')) {
+        if (-not $f.campaign) { continue }
+        $doc = New-Object System.Xml.XmlDocument
+        $doc.Load($f.file)
+        if ($module.rbm -and -not (Test-RbmFileLoads (Get-RbmTags $doc))) { continue }
+        foreach ($pt in $doc.SelectNodes('//MBPartyTemplate')) {
+            $ptid = Get-Attr $pt 'id'
+            if ($null -eq $ptid) { continue }
+            foreach ($st in $pt.SelectNodes('stacks/PartyTemplateStack')) {
+                $tr = Get-Attr $st 'troop'
+                if ($null -eq $tr) { continue }
+                $tr = $tr -replace '^NPCCharacter\.', ''
+                if (-not $templateTroops.ContainsKey($tr)) { $templateTroops[$tr] = New-Object System.Collections.Generic.List[string] }
+                if (-not $templateTroops[$tr].Contains($ptid)) { $templateTroops[$tr].Add($ptid) }
+            }
+        }
+    }
+}
+$templateTroopsOut = [ordered]@{}
+foreach ($k in ($templateTroops.Keys | Sort-Object)) { $templateTroopsOut[$k] = @($templateTroops[$k]) }
 
 # ---------------------------------------------------------------- checks
 
@@ -971,6 +1102,9 @@ $data = [ordered]@{
     equipmentSets = $setsOut
     items = @($items.Values)
     rbmFiles = $rbmFilesOut
+    cultures = $culturesOut
+    partyTemplateTroops = $templateTroopsOut
+    heroIds = @($heroIds | Sort-Object)
     files = $fileLog
     warnings = $script:Warnings
 }

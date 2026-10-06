@@ -1,0 +1,1370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RBM Troop Upgrade Tree Editor</title>
+<style>
+:root {
+  --bg: #f6f6f4;
+  --panel: #ffffff;
+  --panel-2: #f0f0ec;
+  --border: #d9d9d2;
+  --text: #1d1d1b;
+  --muted: #6b6b64;
+  --faint: #9a9a92;
+  --accent: #2f6f9f;
+  --accent-bg: #e3eef7;
+  --ok: #2d7a3e;
+  --ok-bg: #e2f2e5;
+  --warn: #9a5b00;
+  --warn-bg: #fbefd9;
+  --bad: #a3322b;
+  --bad-bg: #f8e1df;
+  --sel: #dbe9f5;
+  --chg: #fff3c4;
+  --shadow: 0 1px 2px rgba(0,0,0,.06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17181a;
+    --panel: #202225;
+    --panel-2: #292b2f;
+    --border: #3a3d42;
+    --text: #e6e6e3;
+    --muted: #a3a39c;
+    --faint: #75756f;
+    --accent: #79b4e3;
+    --accent-bg: #1f3446;
+    --ok: #7fcf8e;
+    --ok-bg: #1d3524;
+    --warn: #e8b260;
+    --warn-bg: #3d2f17;
+    --bad: #ef8a83;
+    --bad-bg: #44211f;
+    --sel: #263c50;
+    --chg: #4a3f17;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 13px/1.4 "Segoe UI", system-ui, -apple-system, sans-serif;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button {
+  background: var(--panel-2); border: 1px solid var(--border); border-radius: 5px;
+  padding: 4px 10px; cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button:disabled { opacity: .5; cursor: default; border-color: var(--border); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) { button.primary { color: #10202c; } }
+button.small { padding: 1px 7px; font-size: 12px; }
+button.link { background: none; border: none; padding: 0; color: var(--accent); cursor: pointer; }
+button.link:hover { text-decoration: underline; }
+input[type=search], input[type=text], input[type=number], select, textarea {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 4px 7px;
+}
+textarea { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12px; width: 100%; }
+code, .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12px; }
+header {
+  display: flex; align-items: center; gap: 12px; padding: 8px 14px;
+  background: var(--panel); border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+header h1 { font-size: 15px; margin: 0; font-weight: 600; }
+header .meta { color: var(--muted); font-size: 12px; }
+header .spacer { flex: 1; }
+#modified { font-size: 12px; padding: 2px 8px; border-radius: 10px; }
+#modified.on { background: var(--warn-bg); color: var(--warn); }
+#modified.off { background: var(--ok-bg); color: var(--ok); }
+main {
+  flex: 1; min-height: 0; display: grid; gap: 10px; padding: 10px;
+  grid-template-columns: minmax(280px, .8fr) minmax(420px, 1.9fr) minmax(360px, 1fr);
+}
+@media (max-width: 1150px) {
+  main { grid-template-columns: 1fr; overflow-y: auto; }
+  main > .pane { height: 80vh; }
+}
+.pane {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  display: flex; flex-direction: column; min-height: 0; min-width: 0; box-shadow: var(--shadow);
+}
+.pane > .head { padding: 8px 10px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+.pane > .head h2 { font-size: 13px; margin: 0; font-weight: 600; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pane > .body { overflow-y: auto; flex: 1; min-height: 0; }
+.filters { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.filters select { max-width: 150px; }
+.filters label { display: inline-flex; align-items: center; gap: 3px; color: var(--muted); font-size: 12px; }
+.count { color: var(--muted); font-weight: 400; font-size: 12px; }
+.troop-row {
+  display: grid; grid-template-columns: 18px 1fr auto; gap: 6px; align-items: center;
+  padding: 5px 10px; border-bottom: 1px solid var(--panel-2); cursor: pointer;
+}
+.troop-row > div { min-width: 0; }
+.troop-row:hover { background: var(--panel-2); }
+.troop-row.sel { background: var(--sel); }
+.troop-row .nm { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.troop-row .sub { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badge {
+  display: inline-block; font-size: 11px; padding: 0 6px; border-radius: 9px; line-height: 17px;
+  background: var(--panel-2); color: var(--muted); border: 1px solid var(--border); white-space: nowrap;
+}
+.badge.acc { background: var(--accent-bg); color: var(--accent); border-color: transparent; font-weight: 600; }
+.badge.zero { opacity: .45; }
+.badge.bad { background: var(--bad-bg); color: var(--bad); border-color: transparent; }
+.badge.warn { background: var(--warn-bg); color: var(--warn); border-color: transparent; }
+.badge.ok { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+.badge.outline { background: transparent; border: 1px dashed var(--muted); color: var(--muted); }
+button.badge { cursor: pointer; font: inherit; font-size: 11px; }
+.details { padding: 10px 12px; }
+.details h3 { margin: 0 0 2px; font-size: 16px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.details h4 { margin: 14px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted);
+  display: flex; gap: 8px; align-items: center; }
+.details h4 .sp { flex: 1; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 12px; }
+.kv .k { color: var(--muted); }
+.note { font-size: 12px; padding: 5px 8px; border-radius: 6px; margin: 6px 0 0; }
+.note.warn { background: var(--warn-bg); color: var(--warn); }
+.note.bad { background: var(--bad-bg); color: var(--bad); }
+.note.info { background: var(--accent-bg); color: var(--accent); }
+.empty { color: var(--muted); padding: 14px 12px; }
+.hint { color: var(--muted); font-size: 12px; }
+.bulk { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12px; }
+#problems { display: none; padding: 6px 14px; background: var(--bad-bg); color: var(--bad); font-size: 12px; border-bottom: 1px solid var(--border);
+  max-height: 30vh; overflow-y: auto; }
+#problems.show { display: block; }
+#problems .row { padding: 1px 0; }
+#problems .row.warn { color: var(--warn); }
+#banner { display: none; padding: 6px 14px; background: var(--warn-bg); color: var(--warn); font-size: 12px; border-bottom: 1px solid var(--border); }
+#banner.show { display: flex; gap: 10px; align-items: center; }
+/* view switch */
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.seg button { border: none; border-radius: 0; padding: 2px 10px; font-size: 12px; }
+.seg button.on { background: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) { .seg button.on { color: #10202c; } }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--muted); align-items: center; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid var(--faint); vertical-align: middle; margin-right: 4px; }
+.legend i.new { border-top-color: var(--accent); border-top-width: 3px; }
+.legend i.gone { border-top: 2px dashed var(--bad); }
+.legend i.bad { border-top-color: var(--bad); border-top-width: 3px; }
+/* tree */
+#tree { overflow: auto; cursor: grab; }
+#tree.panning, #tree.panning .node { cursor: grabbing; }
+#tree > * { zoom: var(--tree-zoom, 1); }
+.tree-sec { padding: 8px 12px 4px; font-size: 12px; color: var(--muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.tree-sec b { color: var(--text); font-weight: 600; }
+.tree-wrap { position: relative; margin: 0 12px 10px; }
+.tree-svg { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.tree-svg .e { fill: none; stroke: var(--faint); stroke-width: 1.5; }
+.tree-svg .e.new { stroke: var(--accent); stroke-width: 2.6; }
+.tree-svg .e.gone { stroke: var(--bad); stroke-width: 1.5; stroke-dasharray: 5 4; opacity: .75; }
+.tree-svg .e.bad { stroke: var(--bad); stroke-width: 2.6; }
+.tree-svg .ah { fill: var(--faint); }
+.tree-svg .ah.new { fill: var(--accent); }
+.tree-svg .ah.gone { fill: var(--bad); opacity: .75; }
+.tree-svg .ah.bad { fill: var(--bad); }
+.tree-svg .ei { font-size: 10px; fill: var(--muted); font-family: "Segoe UI", system-ui, sans-serif; }
+.tier-h { position: absolute; top: 0; font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .05em; }
+.node {
+  position: absolute; border: 1px solid var(--border); border-radius: 6px; background: var(--panel);
+  padding: 3px 7px; cursor: pointer; box-shadow: var(--shadow); overflow: hidden;
+}
+.node:hover { border-color: var(--accent); }
+.node.sel { background: var(--sel); border-color: var(--accent); border-width: 2px; padding: 2px 6px; }
+.node.edited { background: var(--chg); }
+.node.sel.edited { background: var(--sel); box-shadow: inset 0 -3px 0 var(--warn); }
+.node.pbad { border-left: 4px solid var(--bad); }
+.node.pwarn { border-left: 4px solid var(--warn); }
+.node.foreign { border-style: dashed; }
+.node.ghost { opacity: .65; border-style: dotted; }
+.node.gonly { opacity: .55; }
+.node .nm { font-weight: 600; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.node .sb { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.node .rt { position: absolute; right: 4px; top: 2px; font-size: 10px; color: var(--accent); font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 12px 12px; }
+/* targets */
+.tlist { display: flex; flex-direction: column; gap: 4px; }
+.trow { display: grid; grid-template-columns: 20px 1fr auto; gap: 6px; align-items: center; padding: 4px 6px;
+  border: 1px solid var(--border); border-radius: 6px; }
+.trow.new { background: var(--chg); }
+.trow.gone { opacity: .7; border-style: dashed; }
+.trow .ix { color: var(--muted); font-size: 12px; text-align: right; }
+.trow .nm { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.trow .sb { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.trow .pb { font-size: 11px; color: var(--bad); }
+.trow .pw { font-size: 11px; color: var(--warn); }
+.trow .acts { display: flex; gap: 3px; align-items: center; }
+/* modals */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 10; }
+.modal-bg.show { display: flex; }
+.modal {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px; width: min(1000px, 96vw);
+  max-height: 92vh; display: flex; flex-direction: column; padding: 14px; gap: 10px;
+}
+.modal h2 { margin: 0; font-size: 15px; }
+.modal textarea { flex: 1; min-height: 260px; resize: vertical; }
+.modal .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.msgs { font-size: 12px; max-height: 200px; overflow-y: auto; }
+.msgs div { padding: 1px 0; }
+.msgs .bad { color: var(--bad); }
+.msgs .warn { color: var(--warn); }
+.msgs .ok { color: var(--ok); }
+.msgs ul { margin: 2px 0 4px; padding-left: 18px; color: var(--muted); }
+.picker-table { overflow: auto; flex: 1; min-height: 200px; border: 1px solid var(--border); border-radius: 6px; }
+.picker-table table { border-collapse: collapse; width: 100%; font-size: 12px; }
+.picker-table th { position: sticky; top: 0; background: var(--panel-2); text-align: left; padding: 4px 6px; cursor: pointer; white-space: nowrap; font-weight: 600; }
+.picker-table th.num, .picker-table td.num { text-align: right; }
+.picker-table td { padding: 3px 6px; border-bottom: 1px solid var(--panel-2); white-space: nowrap; }
+.picker-table tr.it { cursor: pointer; }
+.picker-table tr.it:hover { background: var(--sel); }
+.picker-table tr.cur { background: var(--accent-bg); }
+.picker-table tr.cyc { cursor: not-allowed; opacity: .55; }
+.picker-table td .id { color: var(--faint); }
+#nodata { max-width: 720px; margin: 60px auto; padding: 24px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; }
+#nodata pre { background: var(--panel-2); padding: 10px; border-radius: 6px; overflow-x: auto; }
+.toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg);
+  padding: 6px 14px; border-radius: 6px; font-size: 12px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; }
+.toast.show { opacity: .92; }
+</style>
+</head>
+<body>
+<!-- The data and the model/export core are the troop loadout editor's: one build script, one export path. -->
+<script src="../TroopLoadoutEditor/troop-loadout-data.js"></script>
+<script src="../TroopLoadoutEditor/troop-loadout-core.js"></script>
+
+<div id="nodata" style="display:none">
+  <h2>No data file</h2>
+  <p>This page uses the troop loadout editor's data, <code>tools/TroopLoadoutEditor/troop-loadout-data.js</code>, which was not
+  found (or <code>troop-loadout-core.js</code> is missing). The data is generated from your game install and the decompiled
+  sources (it is not committed). From the repository root run:</p>
+  <pre>powershell -ExecutionPolicy Bypass -File tools\TroopLoadoutEditor\Build-TroopLoadoutData.ps1</pre>
+  <p>then reload this page.</p>
+</div>
+
+<header id="hdr" style="display:none">
+  <h1>RBM Troop Upgrade Tree Editor</h1>
+  <span class="meta" id="meta"></span>
+  <span id="modified" class="off">no troop edited</span>
+  <span class="spacer"></span>
+  <button id="btnReset" title="Discard the work in progress and go back to the upgrade targets as they were when the data file was generated">Reset to file</button>
+  <button id="btnProblems" class="badge bad" style="display:none" title="Problems in the edited troops and the troops the edits affect. Click to list them."></button>
+  <button id="btnExport" class="primary">Export…</button>
+</header>
+<div id="problems"></div>
+<div id="banner"></div>
+
+<main id="app" style="display:none">
+  <section class="pane" id="troopPane">
+    <div class="head">
+      <h2>Troops <span class="count" id="troopCount"></span></h2>
+      <input type="search" id="tSearch" placeholder="Search name or id…">
+      <div class="filters">
+        <select id="fCulture"><option value="">All cultures</option></select>
+        <select id="fTier"><option value="">All tiers</option></select>
+        <select id="fGroup"><option value="">All formations</option></select>
+        <select id="fOcc"><option value="">All occupations</option></select>
+        <select id="fModule"><option value="">All modules</option></select>
+        <select id="fEdited"><option value="">Edited or not</option><option value="y">Edited</option><option value="n">Not edited</option></select>
+        <select id="fTargets"><option value="">With or without targets</option><option value="y">Has upgrade targets</option><option value="n">No upgrade targets</option><option value="p">With problems</option></select>
+        <label title="Templates (is_template) and obsolete characters are not real troops"><input type="checkbox" id="fHideTpl" checked>Hide templates/obsolete</label>
+      </div>
+      <div class="bulk" id="bulkBar"></div>
+    </div>
+    <div class="body" id="troopList"></div>
+  </section>
+
+  <section class="pane" id="treePane">
+    <div class="head">
+      <h2>Upgrade trees
+        <span class="seg"><button id="vTroop" class="on" title="The trees the selected troop belongs to: from the topmost troops that upgrade into it">Selected troop</button><button id="vCulture" title="Every tree of a culture, from its culture troops (basic, elite, mercenaries, caravan guards, militia...)">Culture</button></span>
+        <select id="vCultureSel" title="Culture to show"></select>
+        <span class="count" id="treeCount"></span>
+        <button id="treeZoom" class="small" title="Mouse wheel over the diagram zooms. Click to reset to 100%">100%</button>
+      </h2>
+      <div class="legend"><span><i></i>upgrade target</span><span><i class="new"></i>added or moved</span><span><i class="gone"></i>removed (in the file)</span><span><i class="bad"></i>problem</span>
+        <span>numbers = target order</span><span>dashed box = other culture (not expanded)</span></div>
+    </div>
+    <div class="body" id="tree"><div class="empty">Select a troop on the left.</div></div>
+  </section>
+
+  <section class="pane" id="targetPane">
+    <div class="head"><h2>Upgrade targets <span class="count" id="targetCount"></span></h2></div>
+    <div class="body" id="targets"><div class="empty">Select a troop on the left.</div></div>
+  </section>
+</main>
+
+<div class="modal-bg" id="exportModal">
+  <div class="modal">
+    <h2>Export</h2>
+    <div class="hint">Each file below is the full RBM troop file with only the edited troops changed. Replace the file in the repository
+      with it (Download, Save, or Copy), then build: the build copies it into the RBM module (never copy it there by hand). Re-run
+      <code>tools\TroopLoadoutEditor\Build-TroopLoadoutData.ps1</code> afterwards: this page and the loadout editor both start from
+      that data and export the same files.</div>
+    <div class="row" id="exportFiles"></div>
+    <div class="msgs" id="exportMsgs"></div>
+    <textarea id="exportText" readonly spellcheck="false"></textarea>
+    <div class="row">
+      <span id="exportButtons" style="display:flex;gap:8px">
+        <button id="btnDownload" class="primary">Download</button>
+        <button id="btnSave" title="Write the file straight to disk (pick the file in the repository)">Save to file…</button>
+        <button id="btnCopy">Copy to clipboard</button>
+      </span>
+      <span style="flex:1"></span>
+      <button data-close>Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="pickModal">
+  <div class="modal" style="height:88vh">
+    <h2 id="pickTitle">Pick a troop</h2>
+    <div class="row">
+      <input type="search" id="kSearch" placeholder="Search name or id…" style="flex:1;min-width:200px">
+      <select id="kCulture"><option value="">All cultures</option></select>
+      <select id="kTier"><option value="">All tiers</option></select>
+      <select id="kGroup"><option value="">All formations</option></select>
+      <select id="kOcc"><option value="">All occupations</option></select>
+      <label class="hint" title="Templates (is_template), obsolete characters and troops only defined in files not loaded in campaigns"><input type="checkbox" id="kAll">templates/obsolete/not in campaign</label>
+      <span class="count" id="kCount"></span>
+    </div>
+    <div class="hint" id="pickHint"></div>
+    <div class="picker-table" id="kTable"></div>
+    <div class="row">
+      <span style="flex:1"></span>
+      <button data-close>Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+  var DATA = window.TROOP_LOADOUT_DATA, C = window.TroopLoadoutCore;
+  if (!DATA || !C || !C.sameList) {
+    document.getElementById('nodata').style.display = 'block';
+    return;
+  }
+  document.getElementById('hdr').style.display = 'flex';
+  document.getElementById('app').style.display = 'grid';
+
+  // Its own key: the loadout editor keeps its work in 'rbm-troop-loadout-editor.v1'.
+  var STORE_KEY = 'rbm-troop-upgrade-tree-editor.v1';
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ------------------------------------------------------------------ data
+  var troopById = {};
+  DATA.troops.forEach(function (t) { troopById[t.id] = t; });
+  var heroIds = {};
+  (DATA.heroIds || []).forEach(function (id) { heroIds[id] = true; });
+  var CULTURES = DATA.cultures || {};
+  var TEMPLATES = DATA.partyTemplateTroops || {};
+  var oldData = !DATA.cultures;
+  // Culture troops (CultureObject attributes + basic_mercenary_troops): troop id -> [{culture, role}].
+  var rootRoles = {};
+  Object.keys(CULTURES).forEach(function (c) {
+    var cu = CULTURES[c];
+    Object.keys(cu.roots || {}).forEach(function (role) {
+      var id = cu.roots[role];
+      (rootRoles[id] = rootRoles[id] || []).push({ culture: c, role: role });
+    });
+    (cu.mercenaries || []).forEach(function (id) { (rootRoles[id] = rootRoles[id] || []).push({ culture: c, role: 'basic_mercenary_troops' }); });
+  });
+  var ROLE_LABEL = { basic_troop: 'basic troop', elite_basic_troop: 'elite basic troop', basic_mercenary_troops: 'tavern mercenary',
+    caravan_guard: 'caravan guard', veteran_caravan_guard: 'veteran caravan guard', melee_militia_troop: 'militia',
+    ranged_militia_troop: 'ranged militia', melee_elite_militia_troop: 'elite militia', ranged_elite_militia_troop: 'elite ranged militia' };
+  var ROLE_SHORT = { basic_troop: 'basic', elite_basic_troop: 'elite', basic_mercenary_troops: 'merc', caravan_guard: 'caravan',
+    veteran_caravan_guard: 'caravan', melee_militia_troop: 'militia', ranged_militia_troop: 'militia', melee_elite_militia_troop: 'militia',
+    ranged_elite_militia_troop: 'militia' };
+  var ROLE_ORDER = ['basic_troop', 'elite_basic_troop', 'basic_mercenary_troops', 'caravan_guard', 'veteran_caravan_guard',
+    'melee_militia_troop', 'ranged_militia_troop', 'melee_elite_militia_troop', 'ranged_elite_militia_troop'];
+  // DefaultAlleyModel.GetTroopsToRecruitFromAlleyDependingOnAlleyRandom reads these bandit cultures' basic troop's UpgradeTargets[0].
+  var ALLEY_CULTURES = ['mountain_bandits', 'steppe_bandits', 'desert_bandits', 'forest_bandits', 'sea_raiders'];
+  var VANILLA_MAX = 2;   // the most targets a troop has in the game's own files (SandBoxCore, NavalDLC's own troops)
+  var RBM_FILE_MAIN = 'RBM/RBMCombat_unit_overhaul.xml';
+
+  function tierOf(t) { return C.tierOf(t.level); }
+  function cultureName(c) { return (CULTURES[c] && CULTURES[c].name) || c || 'no culture'; }
+  function navalOnly(t) { return (t.sources || []).every(function (s) { return /^(NavalDLC|RBM_WS)\//.test(s); }); }
+
+  // ------------------------------------------------------------------ state
+  // ups: troop id -> current upgrade targets, only for troops the user touched.
+  var ups = {};
+  function origUps(id) { return ((troopById[id] || {}).upgrades || []); }
+  function curUps(id) { return ups[id] || origUps(id); }
+  function isEdited(id) { return !!ups[id] && !C.sameList(ups[id], origUps(id)); }
+  function editedIds() { return Object.keys(ups).filter(isEdited); }
+  function setUps(id, list) { ups[id] = list.slice(); changed(); }
+  var selectedId = null;
+  var checked = {};
+  var view = 'troop', viewCulture = '';
+
+  (function restore() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return;
+      var s = JSON.parse(raw);
+      if (!s || typeof s.ups !== 'object') return;
+      var n = 0;
+      Object.keys(s.ups).forEach(function (id) {
+        var l = s.ups[id];
+        if (!troopById[id] || !Array.isArray(l)) return;
+        ups[id] = l.filter(function (x) { return typeof x === 'string' && x; });
+        if (isEdited(id)) n++; else delete ups[id];
+      });
+      if (n) showBanner('Restored your unsaved work in progress (' + n + ' troop' + (n === 1 ? '' : 's') + ') from ' +
+        (s.savedAt || 'an earlier session') + '. Use “Reset to file” to start from the files again.' +
+        (s.generated && s.generated !== DATA.generated ? ' The data file has been regenerated since: check the edits against it.' : ''));
+    } catch (e) { /* storage unavailable: start from the file */ }
+  })();
+
+  function save() {
+    Object.keys(ups).forEach(function (id) { if (!isEdited(id)) delete ups[id]; });
+    try {
+      if (!Object.keys(ups).length) localStorage.removeItem(STORE_KEY);
+      else localStorage.setItem(STORE_KEY, JSON.stringify({ ups: ups, savedAt: new Date().toLocaleString(), generated: DATA.generated }));
+    } catch (e) { /* ignore */ }
+  }
+  function changed() { save(); recompute(); renderAll(); }
+  function renderAll() { updateModified(); renderTroops(); renderTree(); renderTargets(); }
+
+  // ------------------------------------------------------------------ graph
+  var parentsOrig = {}, parentsCur = {};
+  var reachOrig = null, reachCur = null;
+  var cycleOf = {};      // troop id -> the cycle (list of ids) it is on, current targets
+  var relevant = {};     // troops whose problems the header lists: edited + those the edits affect
+  function buildParents(get) {
+    var p = {};
+    DATA.troops.forEach(function (t) { get(t.id).forEach(function (u) { (p[u] = p[u] || []).indexOf(t.id) < 0 && p[u].push(t.id); }); });
+    return p;
+  }
+  function rootIds() {
+    var out = [];
+    Object.keys(rootRoles).forEach(function (id) { if (troopById[id]) out.push(id); });
+    return out;
+  }
+  // Troops reachable by upgrades from a culture troop.
+  function reach(get) {
+    var seen = {}, q = rootIds();
+    q.forEach(function (id) { seen[id] = true; });
+    for (var i = 0; i < q.length; i++) {
+      get(q[i]).forEach(function (u) { if (!seen[u] && troopById[u]) { seen[u] = true; q.push(u); } });
+    }
+    return seen;
+  }
+  // Tarjan's strongly connected components over the current targets: a component of 2+ troops (or a troop that
+  // targets itself) is a cycle.
+  function findCycles() {
+    var index = 0, idx = {}, low = {}, on = {}, stack = [], out = {};
+    function sc(v) {
+      idx[v] = low[v] = index++; stack.push(v); on[v] = true;
+      curUps(v).forEach(function (w) {
+        if (!troopById[w]) return;
+        if (idx[w] == null) { sc(w); low[v] = Math.min(low[v], low[w]); }
+        else if (on[w]) low[v] = Math.min(low[v], idx[w]);
+      });
+      if (low[v] === idx[v]) {
+        var comp = [], w;
+        do { w = stack.pop(); on[w] = false; comp.push(w); } while (w !== v);
+        var cyc = comp.slice().reverse();
+        if (comp.length > 1 || curUps(v).indexOf(v) >= 0) comp.forEach(function (x) { out[x] = cyc; });
+      }
+    }
+    DATA.troops.forEach(function (t) { if (idx[t.id] == null) sc(t.id); });
+    return out;
+  }
+  function recompute() {
+    parentsCur = buildParents(curUps);
+    reachCur = reach(curUps);
+    cycleOf = findCycles();
+    relevant = {};
+    editedIds().forEach(function (id) { relevant[id] = true; });
+    Object.keys(reachOrig).forEach(function (id) { if (!reachCur[id]) relevant[id] = true; });
+    Object.keys(cycleOf).forEach(function (id) { relevant[id] = true; });
+    ALLEY_CULTURES.forEach(function (c) { var b = CULTURES[c] && CULTURES[c].roots && CULTURES[c].roots.basic_troop; if (b && troopById[b] && !curUps(b).length) relevant[b] = true; });
+  }
+  parentsOrig = buildParents(origUps);
+  reachOrig = reach(origUps);
+  // All ancestors (troops that can upgrade into id, directly or not), current targets.
+  function ancestors(id) {
+    var seen = {}, q = [id];
+    for (var i = 0; i < q.length; i++) (parentsCur[q[i]] || []).forEach(function (p) { if (!seen[p]) { seen[p] = true; q.push(p); } });
+    return seen;
+  }
+
+  // ------------------------------------------------------------------ checks
+  // One edge's problems: [{cls, text, red}]. red: the diagram draws the edge as a problem.
+  function edgeProblems(src, u, isNew) {
+    var t = troopById[src], x = troopById[u], out = [];
+    var add = function (cls, text, red) { out.push({ cls: cls, text: text, red: !!red }); };
+    if (!x) {
+      if (heroIds[u]) add('bad', u + ' is a hero: a hero is a unique character, not a troop type to upgrade into', true);
+      else add('bad', 'Unknown troop id "' + u + '": the game makes an empty placeholder for it (MBObjectManager presumed object), drops it after loading, and the target stays a broken character', true);
+      return out;
+    }
+    if (!x.campaign) add('bad', u + ' is only defined in ' + x.module + '/' + x.file + ', which is not loaded in campaigns: there the id is unknown', true);
+    if (x.template) add('warn', u + ' is a template (is_template), not a real troop');
+    if (x.obsolete) add('warn', u + ' is obsolete (is_obsolete)');
+    var ts = tierOf(t), tu = tierOf(x);
+    if (x.level < t.level) add('warn', u + ' has a lower level (' + x.level + ' < ' + t.level + '): the party screen never lets the player upgrade into it (PartyCharacterVM.InitializeUpgrades wants the target\'s level ≥ the troop\'s)', true);
+    if (tu <= ts) add('warn', u + ' is tier ' + tu + ', not above tier ' + ts + ': the upgrade costs no XP (GetXpCostForUpgrade adds the tier steps between them), so AI parties upgrade the whole stack at once', true);
+    // The file has no cycle, so only an added edge can close one.
+    if (isNew && cycleOf[src] && cycleOf[src] === cycleOf[u]) add('bad', 'Upgrading into ' + u + ' closes an upgrade cycle (see below)', true);
+    if (isNew && x.culture !== t.culture) {
+      var cs = CULTURES[t.culture], cx = CULTURES[x.culture];
+      add('warn', 'Cross-culture: ' + cultureName(t.culture) + ' → ' + cultureName(x.culture) +
+        (cs && cs.bandit && cx && !cx.bandit ? ' (from a bandit to a non-bandit culture the player needs Leadership: Veteran\'s Respect, DefaultPartyTroopUpgradeModel.DoesPartyHaveRequiredPerksForUpgrade)' : ''));
+    }
+    if (isNew && navalOnly(x) && !navalOnly(t) && (C.targetFile(t, DATA) || '').indexOf('RBM_WS_XML') !== 0)
+      add('warn', u + ' only exists with War Sails (NavalDLC / RBM_WS), but this troop is written to ' + C.targetFile(t, DATA) + ', which also loads without it: there the id is unknown');
+    return out;
+  }
+  // A troop's problems: [{troop, cls, text, key}]: the checks of each current target, then the troop's own.
+  function troopProblems(id) {
+    var out = [], list = curUps(id), orig = origUps(id), seen = {};
+    if (!troopById[id]) return out;
+    list.forEach(function (u) {
+      if (seen[u]) out.push({ troop: id, cls: 'warn', text: u + ' is listed twice: both entries load (two party-screen buttons for the same troop) and the XSD\'s unique key logs an error' });
+      seen[u] = true;
+      edgeProblems(id, u, orig.indexOf(u) < 0).forEach(function (p) { out.push({ troop: id, cls: p.cls, text: p.text }); });
+    });
+    return out.concat(troopLevelProblems(id));
+  }
+  // The troop's own checks (count, cycle, reachability, alley root, how the export applies).
+  function troopLevelProblems(id) {
+    var t = troopById[id], out = [];
+    if (!t) return out;
+    var add = function (cls, text, key) { out.push({ troop: id, cls: cls, text: text, key: key || '' }); };
+    var list = curUps(id);
+    if (list.length > VANILLA_MAX && isEdited(id))
+      add('warn', list.length + ' upgrade targets: the game\'s own troops have at most ' + VANILLA_MAX + ' (RBM gives up to 4). There is no limit in the game: the party screen scrolls the row, and the AI, volunteers and tavern mercenaries pick among any number');
+    // Said once per cycle-closing troop (one with an added target on the cycle), not for every troop on it.
+    var closes = cycleOf[id] && list.some(function (u) { return origUps(id).indexOf(u) < 0 && cycleOf[u] === cycleOf[id]; });
+    if (closes) add('bad', 'Closes an upgrade cycle (' + cycleOf[id].concat(cycleOf[id][0]).join(' → ') + '). The game walks upgrade trees without a guard: ' +
+      'FightTournamentGame.GetUpgradeTargets and RecruitmentCampaignBehavior.FindTotalMercenaryProbability recurse forever (stack overflow), CharacterHelper.GetTroopTree never ends; the encyclopedia page shows an error');
+    if (reachOrig[id] && !reachCur[id]) {
+      var pt = TEMPLATES[id] || [];
+      add('warn', 'No longer reachable: in the file a culture troop\'s upgrade tree reaches it, now none does' +
+        (pt.length ? ' (party templates still spawn it directly: ' + pt.slice(0, 4).join(', ') + (pt.length > 4 ? ', … ' + pt.length + ' in all' : '') + ')' : ', and no party template spawns it'));
+    }
+    (rootRoles[id] || []).forEach(function (r) {
+      if (r.role === 'basic_troop' && ALLEY_CULTURES.indexOf(r.culture) >= 0 && !list.length)
+        add('bad', 'Basic troop of ' + r.culture + ' with no upgrade target: DefaultAlleyModel recruits its UpgradeTargets[0] for alleys and throws');
+    });
+    if (isEdited(id)) {
+      if (!t.rbmFile) {
+        if (!t.rosters.length) add('warn', 'Not in an RBM file and without an EquipmentRoster: the appended copy does not replace the original (RBM/XmlLoadingPatches only replaces when both have one), so both load. The copy loads last, so its upgrade targets win, but the game adds the equipment of both', 'append');
+      } else if (t.dupFrom) {
+        add('warn', 'Both definitions load (RBM/XmlLoadingPatches only replaces a troop when both have an EquipmentRoster). The game deserializes both and the later one, RBM\'s, sets the upgrade targets' +
+          ((t.dupFrom.upgrades || []).length ? '; the earlier one\'s (' + t.dupFrom.upgrades.join(', ') + ') are dropped' : ''), 'dup');
+      }
+      if (t.rbmFile && /^RBM_WS_XML\//.test(t.rbmFile) && (t.sources || []).indexOf(RBM_FILE_MAIN) >= 0)
+        add('warn', 'Also defined in RBMXML/RBMCombat_unit_overhaul.xml, which is what loads without War Sails; the export only changes ' + t.rbmFile, 'wsdouble');
+    }
+    return out;
+  }
+  function allProblems() {
+    var out = [];
+    Object.keys(relevant).forEach(function (id) { out = out.concat(troopProblems(id)); });
+    out.sort(function (a, b) { return (a.cls === b.cls ? 0 : a.cls === 'bad' ? -1 : 1) || (a.troop < b.troop ? -1 : a.troop > b.troop ? 1 : 0); });
+    return out;
+  }
+  function worst(probs) { return probs.some(function (p) { return p.cls === 'bad'; }) ? 'bad' : probs.length ? 'warn' : ''; }
+
+  // ------------------------------------------------------------------ helpers
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast._h); toast._h = setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+  function showBanner(text) {
+    var b = $('banner');
+    b.innerHTML = '<span>' + esc(text) + '</span><button class="small" id="bannerClose">Dismiss</button>';
+    b.classList.add('show');
+    $('bannerClose').onclick = function () { b.classList.remove('show'); };
+  }
+  function updateModified() {
+    var n = editedIds().length, m = $('modified');
+    if (!n) { m.textContent = 'no troop edited'; m.className = 'off'; }
+    else { m.textContent = n + ' troop' + (n === 1 ? '' : 's') + ' edited (not exported)'; m.className = 'on'; }
+    updateProblems();
+  }
+  function kv(k, v) { return '<span class="k">' + esc(k) + '</span><span>' + esc(v) + '</span>'; }
+  function kvHtml(k, html) { return '<span class="k">' + esc(k) + '</span><span>' + html + '</span>'; }
+  function cssEsc(s) { return String(s).replace(/["\\]/g, '\\$&'); }
+  function subLine(t) { return ['T' + tierOf(t), t.group, t.culture || 'no culture'].filter(Boolean).join(' · '); }
+  function link(id) {
+    var t = troopById[id];
+    return '<button class="link" data-link="' + esc(id) + '" title="' + esc(id) + '">' + esc(t ? t.name : id) + '</button>' +
+      (isEdited(id) ? ' <span class="badge warn">edited</span>' : '');
+  }
+  function rolesText(id) {
+    return (rootRoles[id] || []).map(function (r) { return (ROLE_LABEL[r.role] || r.role) + ' of ' + cultureName(r.culture); }).join(', ');
+  }
+  function rootBadge(id) {
+    var r = (rootRoles[id] || []).filter(function (x) { return ROLE_SHORT[x.role]; })[0];
+    return r ? ROLE_SHORT[r.role] : '';
+  }
+
+  // ------------------------------------------------------------------ troop list (left)
+  function fillSelect(sel, values, label) {
+    values.forEach(function (v) {
+      var o = document.createElement('option'); o.value = v; o.textContent = label ? label(v) : v; sel.appendChild(o);
+    });
+  }
+  function uniq(fn) {
+    var s = {}; DATA.troops.forEach(function (t) { var v = fn(t); if (v !== '' && v != null) s[v] = true; });
+    return Object.keys(s).sort();
+  }
+  var cultureIds = uniq(function (t) { return t.culture; });
+  fillSelect($('fCulture'), cultureIds);
+  fillSelect($('fTier'), ['0', '1', '2', '3', '4', '5', '6'], function (v) { return 'Tier ' + v; });
+  fillSelect($('fGroup'), uniq(function (t) { return t.group; }));
+  fillSelect($('fOcc'), uniq(function (t) { return t.occupation; }));
+  fillSelect($('fModule'), uniq(function (t) { return t.module; }));
+  fillSelect($('vCultureSel'), cultureIds.filter(function (c) { return CULTURES[c]; }).concat(cultureIds.filter(function (c) { return !CULTURES[c]; })),
+    function (c) { return cultureName(c) + (CULTURES[c] ? '' : ' (no culture entry)'); });
+
+  function troopSortKey(t) { return (t.culture || '~') + '|' + tierOf(t) + '|' + t.name.toLowerCase(); }
+  var sortedTroops = DATA.troops.slice().sort(function (a, b) { var x = troopSortKey(a), y = troopSortKey(b); return x < y ? -1 : x > y ? 1 : 0; });
+  function filteredTroops() {
+    var q = $('tSearch').value.trim().toLowerCase();
+    var fc = $('fCulture').value, ft = $('fTier').value, fg = $('fGroup').value, fmod = $('fModule').value, fo = $('fOcc').value;
+    var fe = $('fEdited').value, fx = $('fTargets').value, hideTpl = $('fHideTpl').checked;
+    return sortedTroops.filter(function (t) {
+      var ed = isEdited(t.id);
+      if (q && t.name.toLowerCase().indexOf(q) < 0 && t.id.toLowerCase().indexOf(q) < 0) return false;
+      if (fc && t.culture !== fc) return false;
+      if (ft && String(tierOf(t)) !== ft) return false;
+      if (fg && t.group !== fg) return false;
+      if (fo && t.occupation !== fo) return false;
+      if (fmod && t.module !== fmod) return false;
+      if (fe === 'y' && !ed) return false;
+      if (fe === 'n' && ed) return false;
+      if (fx === 'y' && !curUps(t.id).length) return false;
+      if (fx === 'n' && curUps(t.id).length) return false;
+      if (fx === 'p' && !(relevant[t.id] && troopProblems(t.id).length)) return false;
+      if (hideTpl && (t.template || t.obsolete) && !ed && !relevant[t.id]) return false;
+      return true;
+    });
+  }
+  function renderTroops() {
+    var list = filteredTroops();
+    $('troopCount').textContent = list.length + ' / ' + DATA.troops.length;
+    var html = [];
+    list.forEach(function (t) {
+      var ed = isEdited(t.id), n = curUps(t.id).length;
+      var probs = relevant[t.id] ? troopProblems(t.id) : [];
+      var probBadge = probs.length ? ' <span class="badge ' + worst(probs) + '" title="' + esc(probs.map(function (x) { return x.text; }).join('\n')) + '">' +
+        probs.length + ' problem' + (probs.length === 1 ? '' : 's') + '</span>' : '';
+      var rb = rootBadge(t.id);
+      var sub = [t.id, t.culture || 'no culture', 'T' + tierOf(t), t.group].filter(Boolean).join(' · ');
+      html.push('<div class="troop-row' + (t.id === selectedId ? ' sel' : '') + '" data-id="' + esc(t.id) + '">' +
+        '<input type="checkbox" class="chk" title="Tick for bulk actions"' + (checked[t.id] ? ' checked' : '') + '>' +
+        '<div><div class="nm">' + esc(t.name) + (ed ? ' <span class="badge warn">edited</span>' : '') +
+        (t.rbmFile ? ' <span class="badge acc" title="Defined in ' + esc(t.rbmFile) + '">RBM</span>' : '') +
+        (rb ? ' <span class="badge" title="' + esc(rolesText(t.id)) + '">' + esc(rb) + '</span>' : '') +
+        (t.template ? ' <span class="badge">template</span>' : '') + (t.obsolete ? ' <span class="badge">obsolete</span>' : '') + probBadge +
+        '</div><div class="sub">' + esc(sub) + '</div></div>' +
+        '<span class="badge' + (n ? '' : ' zero') + '" title="upgrade targets: ' + esc(curUps(t.id).join(', ') || 'none') + '">' + n + '</span></div>');
+    });
+    $('troopList').innerHTML = html.join('') || '<div class="empty">No troop matches.</div>';
+    renderBulk();
+  }
+  $('troopList').addEventListener('click', function (e) {
+    var row = e.target.closest('.troop-row'); if (!row) return;
+    var id = row.getAttribute('data-id');
+    if (e.target.classList.contains('chk')) {
+      if (e.target.checked) checked[id] = true; else delete checked[id];
+      renderBulk(); return;
+    }
+    if (e.ctrlKey || e.metaKey) {
+      if (checked[id]) delete checked[id]; else checked[id] = true;
+      renderTroops(); return;
+    }
+    select(id);
+  });
+  function select(id, scroll) {
+    if (!troopById[id]) { toast('Unknown troop "' + id + '"'); return; }
+    selectedId = id;
+    if (view === 'culture' && troopById[id].culture && troopById[id].culture !== viewCulture && !$('tree').querySelector('.node[data-id="' + cssEsc(id) + '"]')) {
+      viewCulture = troopById[id].culture;
+    }
+    renderTroops(); renderTree(true); renderTargets();
+    if (scroll) {
+      var row = $('troopList').querySelector('.troop-row[data-id="' + cssEsc(id) + '"]');
+      if (row) row.scrollIntoView({ block: 'center' });
+    }
+  }
+  ['tSearch', 'fCulture', 'fTier', 'fGroup', 'fOcc', 'fModule', 'fEdited', 'fTargets', 'fHideTpl'].forEach(function (id) {
+    $(id).addEventListener(id === 'tSearch' ? 'input' : 'change', renderTroops);
+  });
+  function checkedIds() { return Object.keys(checked); }
+  function renderBulk() {
+    var ids = checkedIds(), bar = $('bulkBar');
+    if (!ids.length) {
+      bar.innerHTML = '<span class="hint">Tick troops (or Ctrl+click) to revert several at once.</span>' +
+        ' <button class="small link" id="bulkAll">Tick all shown</button>';
+      $('bulkAll').onclick = function () { filteredTroops().forEach(function (t) { checked[t.id] = true; }); renderTroops(); };
+      return;
+    }
+    bar.innerHTML = '<span class="badge acc">' + ids.length + ' ticked</span>' +
+      '<button class="small" id="bulkRevert" title="Revert every ticked troop\'s upgrade targets to the file">Revert ticked</button>' +
+      '<button class="small" id="bulkNone">Untick all</button>';
+    $('bulkNone').onclick = function () { checked = {}; renderTroops(); };
+    $('bulkRevert').onclick = function () {
+      var n = ids.filter(isEdited).length;
+      if (n && !confirm('Revert ' + n + ' edited troop(s) to the file?')) return;
+      ids.forEach(function (id) { delete ups[id]; });
+      changed();
+    };
+  }
+
+  // ------------------------------------------------------------------ tree (middle)
+  var NODE_W = 178, NODE_H = 42, COL_GAP = 64, ROW_GAP = 8, TOP = 18, UNKNOWN_COL = 99;
+  // Edges of a troop for drawing: current targets in order, then the file's targets that were removed.
+  function drawEdges(id) {
+    var cur = curUps(id), orig = origUps(id), out = [];
+    cur.forEach(function (u, i) { out.push({ to: u, kind: orig.indexOf(u) < 0 || (orig.length > 1 && orig.indexOf(u) !== i) ? 'new' : 'keep', i: i }); });
+    orig.forEach(function (u) { if (cur.indexOf(u) < 0) out.push({ to: u, kind: 'gone' }); });
+    return out;
+  }
+  function allParents(id) {
+    var p = (parentsCur[id] || []).slice();
+    (parentsOrig[id] || []).forEach(function (x) { if (p.indexOf(x) < 0) p.push(x); });
+    return p;
+  }
+  // Lays out the trees from roots: one column per tier, a row per leaf; a troop shares its first child's row.
+  // expand(id) says whether to follow a troop's targets. Returns {nodes: {id: {x, y, col, row}}, order, cols}.
+  function layout(roots, expand) {
+    var placed = {}, order = [], occ = {}, nextRow = 0;
+    var tiers = {};
+    function colKey(id) { var t = troopById[id]; return t ? tierOf(t) : UNKNOWN_COL; }
+    function put(id, row) {
+      var c = colKey(id);
+      while (occ[c + ':' + row]) row = nextRow++;
+      occ[c + ':' + row] = true;
+      placed[id] = { col: c, row: row };
+      if (row >= nextRow) nextRow = row + 1;
+      tiers[c] = true;
+      order.push(id);
+      return row;
+    }
+    function place(id) {
+      if (placed[id]) return placed[id].row;
+      placed[id] = { pending: true };
+      var kids = expand(id) ? drawEdges(id).map(function (e) { return e.to; }).filter(function (u) { return !placed[u]; }) : [];
+      var rows = [];
+      kids.forEach(function (u) { if (!placed[u]) rows.push(place(u)); });
+      return put(id, rows.length ? Math.min.apply(null, rows) : nextRow++);
+    }
+    roots.forEach(function (r) { if (!placed[r]) place(r); });
+    var cols = Object.keys(tiers).map(Number).sort(function (a, b) { return a - b; });
+    var colIndex = {};
+    cols.forEach(function (c, i) { colIndex[c] = i; });
+    var nodes = {};
+    order.forEach(function (id) {
+      var p = placed[id];
+      nodes[id] = { col: colIndex[p.col], row: p.row, x: colIndex[p.col] * (NODE_W + COL_GAP), y: TOP + p.row * (NODE_H + ROW_GAP) };
+    });
+    return { nodes: nodes, order: order, cols: cols, rows: nextRow };
+  }
+  function nodeHtml(id, n, opts) {
+    var t = troopById[id];
+    var probs = t && relevant[id] ? troopProblems(id) : [];
+    var cls = 'node' + (id === selectedId ? ' sel' : '') + (isEdited(id) ? ' edited' : '') +
+      (probs.length ? ' p' + worst(probs) : '') + (!t ? ' ghost' : '') + (opts.foreign ? ' foreign' : '') + (opts.goneOnly ? ' gonly' : '');
+    var title = (t ? t.name + '\n' + id + '\n' + subLine(t) + (rolesText(id) ? '\n' + rolesText(id) : '') : 'Unknown troop id ' + id) +
+      (probs.length ? '\n\n' + probs.map(function (p) { return '• ' + p.text; }).join('\n') : '');
+    var rb = rootBadge(id);
+    return '<div class="' + cls + '" data-id="' + esc(id) + '" style="left:' + n.x + 'px;top:' + n.y + 'px;width:' + NODE_W + 'px;height:' + NODE_H + 'px" title="' + esc(title) + '">' +
+      (rb ? '<span class="rt">' + esc(rb) + '</span>' : '') +
+      '<div class="nm"' + (rb ? ' style="padding-right:34px"' : '') + '>' + esc(t ? t.name : '? ' + id) + '</div>' +
+      '<div class="sb">' + esc(t ? subLine(t) + ' · ' + (t.occupation || '') : 'not a loaded troop') + '</div></div>';
+  }
+  function edgePath(a, b) {
+    var x1 = a.x + NODE_W, y1 = a.y + NODE_H / 2, x2 = b.x, y2 = b.y + NODE_H / 2;
+    if (x2 > x1 + 8) {
+      var mx = (x1 + x2) / 2;
+      return 'M' + x1 + ',' + y1 + ' C' + mx + ',' + y1 + ' ' + mx + ',' + y2 + ' ' + (x2 - 2) + ',' + y2;
+    }
+    // Backwards or same column (a target not above the troop's tier): loop out to the right and back in from the left.
+    var r = 26, top = Math.min(a.y, b.y) - 6;
+    return 'M' + x1 + ',' + y1 + ' C' + (x1 + r) + ',' + y1 + ' ' + (x1 + r) + ',' + top + ' ' + (x1 - 10) + ',' + top +
+      ' L' + (x2 + 10) + ',' + top + ' C' + (x2 - r) + ',' + top + ' ' + (x2 - r) + ',' + y2 + ' ' + (x2 - 2) + ',' + y2;
+  }
+  // One diagram: nodes + edges for the given roots.
+  function diagramHtml(roots, expand, foreignOf) {
+    var L = layout(roots, expand);
+    if (!L.order.length) return '';
+    var w = L.cols.length * (NODE_W + COL_GAP) - COL_GAP, h = TOP + L.rows * (NODE_H + ROW_GAP);
+    var svg = ['<svg class="tree-svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '">',
+      '<defs>' + ['', 'new', 'gone', 'bad'].map(function (k) {
+        return '<marker id="ah' + k + '" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto">' +
+          '<path class="ah ' + k + '" d="M0,0 L10,5 L0,10 z"/></marker>';
+      }).join('') + '</defs>'];
+    var labels = [];
+    L.order.forEach(function (id) {
+      var a = L.nodes[id];
+      if (!expand(id)) return;
+      var n = curUps(id).length;
+      drawEdges(id).forEach(function (e) {
+        var b = L.nodes[e.to]; if (!b) return;
+        var kind = e.kind;
+        if (kind !== 'gone' && edgeProblems(id, e.to, origUps(id).indexOf(e.to) < 0).some(function (p) { return p.red; })) kind = 'bad';
+        var cls = kind === 'keep' ? '' : kind;
+        svg.push('<path class="e ' + cls + '" d="' + edgePath(a, b) + '" marker-end="url(#ah' + cls + ')"><title>' +
+          esc(id + ' → ' + e.to + (kind === 'gone' ? ' (removed)' : kind === 'new' ? ' (added or moved)' : '')) + '</title></path>');
+        if (e.kind !== 'gone' && n > 1) labels.push('<text class="ei" x="' + (a.x + NODE_W + 4) + '" y="' + (a.y + NODE_H / 2 - 4 + (e.i - (n - 1) / 2) * 9) + '">' + (e.i + 1) + '</text>');
+      });
+    });
+    svg.push(labels.join(''), '</svg>');
+    var heads = L.cols.map(function (c, i) {
+      return '<div class="tier-h" style="left:' + (i * (NODE_W + COL_GAP)) + 'px">' + (c === UNKNOWN_COL ? 'unknown id' : 'Tier ' + c) + '</div>';
+    }).join('');
+    var nodes = L.order.map(function (id) {
+      var goneOnly = (parentsCur[id] || []).length === 0 && (parentsOrig[id] || []).length > 0 && roots.indexOf(id) < 0;
+      return nodeHtml(id, L.nodes[id], { foreign: foreignOf ? foreignOf(id) : false, goneOnly: goneOnly });
+    }).join('');
+    return { html: '<div class="tree-wrap" style="width:' + w + 'px;height:' + h + 'px">' + svg.join('') + heads + nodes + '</div>', count: L.order.length, order: L.order };
+  }
+  // The topmost troops above id (following upgrade edges backwards, current and removed).
+  function topsOf(id) {
+    var seen = {}, tops = [], q = [id];
+    seen[id] = true;
+    for (var i = 0; i < q.length; i++) {
+      var ps = allParents(q[i]);
+      if (!ps.length) tops.push(q[i]);
+      ps.forEach(function (p) { if (!seen[p]) { seen[p] = true; q.push(p); } });
+    }
+    if (!tops.length) tops.push(id);   // only on a cycle: start from the troop itself
+    // Culture troops first, in role order, then by tier and name.
+    return tops.sort(function (a, b) { return rootRank(a) - rootRank(b) || (a < b ? -1 : 1); });
+  }
+  function rootRank(id) {
+    var best = 99;
+    (rootRoles[id] || []).forEach(function (r) { var k = ROLE_ORDER.indexOf(r.role); if (k >= 0 && k < best) best = k; });
+    return best;
+  }
+  function renderTree(scrollToSel) {
+    var box = $('tree');
+    $('vTroop').className = view === 'troop' ? 'on' : '';
+    $('vCulture').className = view === 'culture' ? 'on' : '';
+    $('vCultureSel').style.display = view === 'culture' ? '' : 'none';
+    if (view === 'culture') {
+      if (!viewCulture) viewCulture = (selectedId && troopById[selectedId].culture) || 'empire';
+      $('vCultureSel').value = viewCulture;
+      renderCultureTree(box);
+    } else renderTroopTree(box);
+    if (scrollToSel && selectedId) {
+      var el = box.querySelector('.node[data-id="' + cssEsc(selectedId) + '"]');
+      if (el) el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+  }
+  function renderTroopTree(box) {
+    if (!selectedId) { box.innerHTML = '<div class="empty">Select a troop on the left.</div>'; $('treeCount').textContent = ''; return; }
+    var t = troopById[selectedId];
+    var tops = topsOf(selectedId);
+    var d = diagramHtml(tops, function () { return true; }, null);
+    var hasEdges = drawEdges(selectedId).length || allParents(selectedId).length;
+    $('treeCount').textContent = d.count + ' troop' + (d.count === 1 ? '' : 's');
+    box.innerHTML = '<div class="tree-sec">From <b>' + tops.map(function (x) { return esc(troopById[x] ? troopById[x].name : x); }).join('</b>, <b>') + '</b>' +
+      (rolesText(tops[0]) ? ' <span class="badge acc">' + esc(rolesText(tops[0])) + '</span>' : '') +
+      (!hasEdges ? ' <span class="hint">· ' + esc(t.name) + ' has no upgrade targets and nothing upgrades into it</span>' : '') + '</div>' + d.html;
+  }
+  function renderCultureTree(box) {
+    var c = viewCulture, cu = CULTURES[c];
+    var inCulture = function (id) { return troopById[id] && troopById[id].culture === c; };
+    var hasEdges = function (id) { return drawEdges(id).length || allParents(id).length; };
+    // Roots: the culture's troops (basic, elite, mercenaries, caravan guards, militia, then any other with edges) and
+    // this culture's other trees, minus those a troop of this culture upgrades into (villagers upgrade into recruits:
+    // the tree starts at the villager). Trees leading to a basic/elite troop come first.
+    var roots = [], seen = {};
+    var addRoot = function (id) {
+      if (!id || !troopById[id] || seen[id]) return;
+      seen[id] = true;
+      if (!allParents(id).some(inCulture)) roots.push(id);
+    };
+    if (cu) {
+      ROLE_ORDER.forEach(function (role) {
+        if (role === 'basic_mercenary_troops') (cu.mercenaries || []).forEach(addRoot);
+        else addRoot(cu.roots[role]);
+      });
+      Object.keys(cu.roots).forEach(function (role) { var id = cu.roots[role]; if (troopById[id] && hasEdges(id)) addRoot(id); });
+    }
+    sortedTroops.forEach(function (t) { if (t.culture === c && hasEdges(t.id)) addRoot(t.id); });
+    var rank = function (id) { return curUps(id).reduce(function (m, u) { return Math.min(m, rootRank(u)); }, rootRank(id)); };
+    var pos = {};
+    roots.forEach(function (id, i) { pos[id] = i; });
+    roots.sort(function (a, b) { return rank(a) - rank(b) || pos[a] - pos[b]; });
+    // Troops of another culture are drawn but not expanded.
+    var expand = function (id) { return inCulture(id) || roots.indexOf(id) >= 0; };
+    var sections = [], total = 0;
+    var d = diagramHtml(roots, expand, function (id) { return !inCulture(id); });
+    if (d) {
+      total = d.count;
+      sections.push('<div class="tree-sec"><b>' + esc(cultureName(c)) + '</b> · trees from its culture troops' +
+        (cu ? '' : ' <span class="badge warn">no culture entry in the data</span>') + '</div>' + d.html);
+    }
+    // Everything still not in a tree but on an edge (a cycle with no way in).
+    var layoutIds = {};
+    if (d) d.order.forEach(function (id) { layoutIds[id] = true; });
+    var rest = sortedTroops.filter(function (t) { return t.culture === c && hasEdges(t.id) && !layoutIds[t.id]; }).map(function (t) { return t.id; });
+    if (rest.length) {
+      var d2 = diagramHtml(rest, expand, function (id) { return !inCulture(id); });
+      total += d2.count;
+      sections.push('<div class="tree-sec"><b>Not reached from a tree above</b> (on a cycle with no way in)</div>' + d2.html);
+    }
+    var lone = sortedTroops.filter(function (t) {
+      return t.culture === c && !hasEdges(t.id) && !t.template && !t.obsolete && ['Soldier', 'Mercenary', 'Bandit'].indexOf(t.occupation) >= 0;
+    });
+    if (lone.length) {
+      sections.push('<div class="tree-sec"><b>Soldiers, mercenaries and bandits with no upgrade edges</b> (' + lone.length + ')</div><div class="chips">' +
+        lone.map(function (t) { return '<button class="badge" data-link="' + esc(t.id) + '" title="' + esc(t.id + ' · ' + subLine(t) + (rolesText(t.id) ? '\n' + rolesText(t.id) : '') + (TEMPLATES[t.id] ? '\nparty templates: ' + TEMPLATES[t.id].length : '')) + '">' +
+          esc(t.name) + ' · T' + tierOf(t) + '</button>'; }).join('') + '</div>');
+    }
+    $('treeCount').textContent = total + ' troop' + (total === 1 ? '' : 's') + ' in trees';
+    box.innerHTML = sections.join('') || '<div class="empty">No troop of this culture has upgrade edges.</div>';
+  }
+  $('tree').addEventListener('click', function (e) {
+    var n = e.target.closest('.node, [data-link]'); if (!n) return;
+    var id = n.getAttribute('data-id') || n.getAttribute('data-link');
+    if (troopById[id]) select(id, true);
+  });
+  // Drag the tree (left or middle button) to scroll it. A drag that moves more than a few pixels is not a click on the
+  // node it started on.
+  (function () {
+    var box = $('tree'), drag = null, eatClick = false;
+    box.addEventListener('mousedown', function (e) {
+      if ((e.button !== 0 && e.button !== 1) || e.target.closest('button, input, select, a, [data-link]')) return;
+      drag = { x: e.clientX, y: e.clientY, l: box.scrollLeft, t: box.scrollTop, moved: false };
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', function (e) {
+      if (!drag) return;
+      var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 5) return;
+      if (!drag.moved) { drag.moved = true; box.classList.add('panning'); }
+      box.scrollLeft = drag.l - dx;
+      box.scrollTop = drag.t - dy;
+    });
+    window.addEventListener('mouseup', function () {
+      if (!drag) return;
+      eatClick = drag.moved;
+      drag = null;
+      box.classList.remove('panning');
+      setTimeout(function () { eatClick = false; }, 0);   // the click, if any, fires before this
+    });
+    box.addEventListener('click', function (e) {
+      if (eatClick) { eatClick = false; e.stopPropagation(); e.preventDefault(); }
+    }, true);
+    // Mouse wheel zooms (CSS zoom on the diagram, so the scroll area follows), keeping the point under the cursor
+    // in place. The zoom stays across re-renders.
+    var zoom = 1;
+    function setZoom(z, mx, my) {
+      z = Math.min(2, Math.max(0.25, z));
+      if (Math.abs(z - 1) < 0.03) z = 1;
+      var px = (box.scrollLeft + mx) / zoom, py = (box.scrollTop + my) / zoom;
+      zoom = z;
+      box.style.setProperty('--tree-zoom', z);
+      box.scrollLeft = px * z - mx;
+      box.scrollTop = py * z - my;
+      $('treeZoom').textContent = Math.round(z * 100) + '%';
+    }
+    box.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      var r = box.getBoundingClientRect();
+      var dy = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;
+      setZoom(zoom * Math.exp(-dy * 0.0015), e.clientX - r.left - box.clientLeft, e.clientY - r.top - box.clientTop);
+    }, { passive: false });
+    $('treeZoom').onclick = function () { setZoom(1, 0, 0); };
+  })();
+  $('vTroop').onclick = function () { view = 'troop'; renderTree(true); };
+  $('vCulture').onclick = function () { view = 'culture'; viewCulture = (selectedId && troopById[selectedId].culture) || viewCulture; renderTree(true); };
+  $('vCultureSel').onchange = function () { viewCulture = this.value; renderTree(); };
+
+  // ------------------------------------------------------------------ targets (right)
+  function targetRowHtml(id, u, i, n, kind) {
+    var x = troopById[u], probs = kind === 'gone' ? [] : edgeProblems(id, u, origUps(id).indexOf(u) < 0);
+    var dup = kind !== 'gone' && curUps(id).indexOf(u) !== i;
+    return '<div class="trow' + (kind === 'new' ? ' new' : kind === 'gone' ? ' gone' : '') + '">' +
+      '<span class="ix">' + (kind === 'gone' ? '–' : (i + 1) + '.') + '</span>' +
+      '<div style="min-width:0"><div class="nm">' + (x ? link(u) : '<span class="mono">' + esc(u) + '</span>') +
+      (kind === 'new' ? ' <span class="badge warn">' + (origUps(id).indexOf(u) < 0 ? 'new' : 'moved') + '</span>' : '') +
+      (kind === 'gone' ? ' <span class="badge outline">removed</span>' : '') + '</div>' +
+      '<div class="sb">' + esc(x ? u + ' · ' + subLine(x) + ' · ' + (x.occupation || '') + (x.upgradeRequires ? ' · requires ' + x.upgradeRequires : '') : 'not a loaded troop') + '</div>' +
+      (dup ? '<div class="pw">Listed twice</div>' : '') +
+      probs.map(function (p) { return '<div class="' + (p.cls === 'bad' ? 'pb' : 'pw') + '">' + esc(p.text) + '</div>'; }).join('') + '</div>' +
+      '<div class="acts">' + (kind === 'gone'
+        ? '<button class="small" data-restore="' + esc(u) + '" title="Add it back at the end">Restore</button>'
+        : '<button class="small" data-up="' + i + '"' + (i ? '' : ' disabled') + ' title="Move up">↑</button>' +
+          '<button class="small" data-down="' + i + '"' + (i < n - 1 ? '' : ' disabled') + ' title="Move down">↓</button>' +
+          '<button class="small" data-replace="' + i + '" title="Replace with another troop">Replace…</button>' +
+          '<button class="small" data-remove="' + i + '" title="Remove this target">✕</button>') + '</div></div>';
+  }
+  function renderTargets() {
+    var box = $('targets');
+    if (!selectedId) { box.innerHTML = '<div class="empty">Select a troop on the left.</div>'; $('targetCount').textContent = ''; return; }
+    var t = troopById[selectedId], id = t.id, cur = curUps(id), orig = origUps(id), ed = isEdited(id);
+    $('targetCount').textContent = cur.length + ' · ' + t.name;
+    var h = [];
+    h.push('<div class="details"><h3>' + esc(t.name) + (ed ? ' <span class="badge warn">edited</span>' : '') +
+      (ed ? ' <button class="small" id="revertTroop" title="Back to the file\'s upgrade targets">Revert troop</button>' : '') + '</h3>' +
+      '<div class="mono" style="color:var(--muted)">' + esc(id) + '</div>');
+    var target = C.targetFile(t, DATA);
+    var pt = TEMPLATES[id] || [];
+    h.push('<h4>Troop</h4><div class="kv">' +
+      kv('Culture', cultureName(t.culture) + (t.culture ? ' (' + t.culture + ')' + (CULTURES[t.culture] && CULTURES[t.culture].bandit ? ', bandit' : '') : '')) +
+      kv('Level / tier', t.level + ' / tier ' + tierOf(t)) +
+      kv('Formation', (t.group || '—') + (t.mounted ? ' · mounted class' : '')) +
+      kv('Occupation', t.occupation || '—') +
+      kv('Defined in', (t.sources || []).join(' → ')) +
+      kv('Upgrading into it requires', t.upgradeRequires ? 'an item of category ' + t.upgradeRequires + ' (upgrade_requires; read-only here)' : '—') +
+      kv('Culture troop', rolesText(id) || '—') +
+      kvHtml('Party templates', pt.length ? '<span title="' + esc(pt.join('\n')) + '">' + pt.length + ' spawn it directly</span>' : '—') +
+      kv('Flags', [t.template ? 'template' : '', t.obsolete ? 'obsolete' : '', t.hidden ? 'hidden in encyclopedia' : '', t.basic ? 'basic troop' : '',
+        !t.campaign ? 'not in campaigns' : ''].filter(Boolean).join(', ') || '—') +
+      '</div>');
+    if (t.rbmFile) h.push('<div class="note info">In <code>' + esc(t.rbmFile) + '</code>: the export rewrites only this troop\'s <code>&lt;upgrade_targets&gt;</code> in place.</div>');
+    else h.push('<div class="note info">Not in an RBM troop file. Editing it makes the export append a full copy of its definition (from ' +
+      esc(t.module + '/' + t.file) + ') to <code>' + esc(target || '?') + '</code>' +
+      (t.rosters.length ? ', which replaces the original in game (both have an EquipmentRoster).' : '. It has no EquipmentRoster, so the copy does not replace the original: both load; the copy loads last, so its upgrade targets still win.') + '</div>');
+    if (t.dupFrom) h.push('<div class="note warn">RBM\'s definition does not replace ' + esc(t.dupFrom.file) + ' (RBM/XmlLoadingPatches only replaces when both have an EquipmentRoster): both load. ' +
+      'Each one sets the upgrade targets anew, so the later one, RBM\'s, is what the game keeps' + ((t.dupFrom.upgrades || []).length ? ' (the earlier lists ' + esc(t.dupFrom.upgrades.join(', ')) + ')' : '') + '.</div>');
+    if (t.rbmFile && /^RBM_WS_XML\//.test(t.rbmFile) && (t.sources || []).indexOf(RBM_FILE_MAIN) >= 0)
+      h.push('<div class="note warn">Also defined in <code>RBMXML/RBMCombat_unit_overhaul.xml</code>, which is the definition that loads without War Sails. The export only changes <code>' + esc(t.rbmFile) + '</code>.</div>');
+    // The troop's own problems (each target's are on its row; the notes above cover dup / wsdouble / append).
+    troopLevelProblems(id).forEach(function (p) {
+      if (p.key === 'dup' || p.key === 'wsdouble' || (p.key === 'append' && !t.rbmFile)) return;
+      h.push('<div class="note ' + p.cls + '">' + esc(p.text) + '</div>');
+    });
+
+    h.push('<h4>Upgrades to <span class="sp"></span>' +
+      (ed ? '<button class="small" id="revertTargets">Revert targets</button>' : '') +
+      '<button class="small primary" id="addTarget">+ Add target…</button></h4>');
+    h.push('<div class="tlist">');
+    if (!cur.length) h.push('<div class="hint">No upgrade targets: this troop is the end of its line.</div>');
+    var edges = drawEdges(id);
+    edges.forEach(function (e) {
+      h.push(targetRowHtml(id, e.to, e.kind === 'gone' ? -1 : e.i, cur.length, e.kind));
+    });
+    h.push('</div>');
+    if (cur.length > 1) h.push('<div class="hint" style="margin-top:4px">Order matters: the first target is the one the party screen\'s XP bar and RBM\'s spoils bar measure against.</div>');
+
+    var from = parentsCur[id] || [], fromGone = (parentsOrig[id] || []).filter(function (p) { return from.indexOf(p) < 0; });
+    h.push('<h4>Upgraded from</h4><div class="tlist">');
+    if (!from.length && !fromGone.length) h.push('<div class="hint">Nothing upgrades into it' + (rolesText(id) ? ': it is a culture troop (' + esc(rolesText(id)) + ')' : '') + '.</div>');
+    from.forEach(function (p) {
+      var pt2 = troopById[p];
+      h.push('<div class="trow' + (origUps(p).indexOf(id) < 0 ? ' new' : '') + '"><span class="ix"></span><div style="min-width:0"><div class="nm">' + link(p) + '</div>' +
+        '<div class="sb">' + esc(p + ' · ' + subLine(pt2) + ' · target ' + (curUps(p).indexOf(id) + 1) + ' of ' + curUps(p).length) + '</div></div>' +
+        '<div class="acts"><button class="small" data-unparent="' + esc(p) + '" title="Remove ' + esc(t.name) + ' from ' + esc(pt2.name) + '\'s upgrade targets">✕</button></div></div>');
+    });
+    fromGone.forEach(function (p) {
+      h.push('<div class="trow gone"><span class="ix"></span><div style="min-width:0"><div class="nm">' + link(p) + ' <span class="badge outline">removed</span></div>' +
+        '<div class="sb">' + esc(p + ' · ' + subLine(troopById[p])) + '</div></div>' +
+        '<div class="acts"><button class="small" data-reparent="' + esc(p) + '" title="Add it back to ' + esc(troopById[p].name) + '\'s targets">Restore</button></div></div>');
+    });
+    h.push('</div>');
+    h.push('<h4>Bulk</h4><div class="bulk"><button class="small" id="tickTree">Tick this troop + everything it upgrades into</button></div>');
+    h.push('</div>');
+    box.innerHTML = h.join('');
+
+    var rv = $('revertTroop');
+    if (rv) rv.onclick = function () { delete ups[id]; changed(); toast('Reverted ' + t.name); };
+    var rt = $('revertTargets');
+    if (rt) rt.onclick = function () { delete ups[id]; changed(); };
+    $('addTarget').onclick = function () {
+      openPicker({ title: 'Add an upgrade target to ' + t.name, source: id, current: null, onPick: function (u) { setUps(id, curUps(id).concat([u])); } });
+    };
+    $('tickTree').onclick = function () {
+      var q = [id]; checked[id] = true;
+      for (var i = 0; i < q.length; i++) curUps(q[i]).forEach(function (u) { if (troopById[u] && !checked[u]) { checked[u] = true; q.push(u); } });
+      renderTroops();
+    };
+  }
+  $('targets').addEventListener('click', function (e) {
+    if (!selectedId) return;
+    var id = selectedId, el = e.target;
+    var attr = function (n) { var x = el.closest('[' + n + ']'); return x ? x.getAttribute(n) : null; };
+    var v, l = curUps(id).slice();
+    if ((v = attr('data-link')) != null) { select(v, true); return; }
+    if ((v = attr('data-up')) != null) { var i = +v; var x = l[i]; l[i] = l[i - 1]; l[i - 1] = x; setUps(id, l); return; }
+    if ((v = attr('data-down')) != null) { var j = +v; var y = l[j]; l[j] = l[j + 1]; l[j + 1] = y; setUps(id, l); return; }
+    if ((v = attr('data-remove')) != null) { l.splice(+v, 1); setUps(id, l); return; }
+    if ((v = attr('data-restore')) != null) { l.push(v); setUps(id, l); return; }
+    if ((v = attr('data-replace')) != null) {
+      var k = +v;
+      openPicker({ title: 'Replace ' + ((troopById[l[k]] || {}).name || l[k]) + ' (target ' + (k + 1) + ' of ' + troopById[id].name + ')', source: id, current: l[k],
+        onPick: function (u) { var m = curUps(id).slice(); m[k] = u; setUps(id, m); } });
+      return;
+    }
+    if ((v = attr('data-unparent')) != null) {
+      var pl = curUps(v).filter(function (u) { return u !== id; }); ups[v] = pl; changed(); toast('Removed from ' + troopById[v].name + '\'s targets'); return;
+    }
+    if ((v = attr('data-reparent')) != null) {
+      ups[v] = curUps(v).concat([id]); changed(); toast('Added back to ' + troopById[v].name + '\'s targets'); return;
+    }
+  });
+
+  // ------------------------------------------------------------------ troop picker
+  fillSelect($('kCulture'), cultureIds);
+  fillSelect($('kTier'), ['0', '1', '2', '3', '4', '5', '6'], function (v) { return 'Tier ' + v; });
+  fillSelect($('kGroup'), uniq(function (t) { return t.group; }));
+  fillSelect($('kOcc'), uniq(function (t) { return t.occupation; }));
+  var PCOLS = {
+    name: { label: 'Name', get: function (t) { return t.name.toLowerCase(); } },
+    culture: { label: 'Culture', get: function (t) { return t.culture || '~'; } },
+    tier: { label: 'Tier', num: true, get: function (t) { return tierOf(t); } },
+    level: { label: 'Level', num: true, get: function (t) { return t.level; } },
+    group: { label: 'Formation', get: function (t) { return t.group || '~'; } },
+    occ: { label: 'Occupation', get: function (t) { return t.occupation || '~'; } },
+    targets: { label: 'Targets', num: true, get: function (t) { return curUps(t.id).length; } },
+    from: { label: 'Upgraded from', num: true, get: function (t) { return (parentsCur[t.id] || []).length; } }
+  };
+  var picker = null;
+  function openPicker(opts) {
+    var src = troopById[opts.source];
+    picker = { opts: opts, sort: 'suggested', dir: 1, anc: ancestors(opts.source), src: src };
+    $('pickTitle').textContent = opts.title;
+    $('pickHint').textContent = 'Suggested order: ' + cultureName(src.culture) + ' troops above tier ' + tierOf(src) + ' first (same occupation first, lowest tier first), then other cultures\' higher-tier troops, then the rest. ' +
+      'Greyed rows would close a cycle. Click a row to pick it; click a column to sort.';
+    $('kSearch').value = ''; $('kCulture').value = ''; $('kTier').value = ''; $('kGroup').value = ''; $('kOcc').value = ''; $('kAll').checked = false;
+    $('pickModal').classList.add('show');
+    renderPicker();
+    setTimeout(function () { $('kSearch').focus(); }, 30);
+  }
+  function suggestedKey(t) {
+    var s = picker.src, ts = tierOf(s), tt = tierOf(t);
+    var grp = t.culture === s.culture ? (tt > ts ? 0 : 2) : (tt > ts ? 1 : 3);
+    return grp * 100 + (t.occupation === s.occupation ? 0 : 50) + (tt > ts ? tt : 10 - tt);
+  }
+  function renderPicker() {
+    if (!picker) return;
+    var q = $('kSearch').value.trim().toLowerCase(), fc = $('kCulture').value, fti = $('kTier').value, fg = $('kGroup').value, fo = $('kOcc').value, all = $('kAll').checked;
+    var src = picker.src, cur0 = picker.opts.current, curList = curUps(src.id);
+    var list = DATA.troops.filter(function (t) {
+      if (t.id === src.id) return false;
+      if (!all && (t.template || t.obsolete || !t.campaign) && t.id !== cur0) return false;
+      if (fc && t.culture !== fc) return false;
+      if (fti && String(tierOf(t)) !== fti) return false;
+      if (fg && t.group !== fg) return false;
+      if (fo && t.occupation !== fo) return false;
+      if (q && t.name.toLowerCase().indexOf(q) < 0 && t.id.toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+    var dir = picker.dir;
+    if (picker.sort === 'suggested') {
+      list.sort(function (a, b) { return suggestedKey(a) - suggestedKey(b) || (a.name < b.name ? -1 : a.name > b.name ? 1 : 0); });
+    } else {
+      var col = PCOLS[picker.sort];
+      list.sort(function (a, b) {
+        var x = col.get(a), y = col.get(b);
+        if (col.num) return (x - y) * dir || (a.name < b.name ? -1 : 1);
+        return (x < y ? -1 : x > y ? 1 : 0) * dir;
+      });
+    }
+    var MAX = 400, shown = list.slice(0, MAX);
+    $('kCount').textContent = list.length + ' troop(s)' + (list.length > MAX ? ', showing ' + MAX + ': refine the search' : '');
+    var cols = ['name', 'culture', 'tier', 'level', 'group', 'occ', 'targets', 'from'];
+    var h = ['<table><thead><tr>'];
+    cols.forEach(function (c) {
+      h.push('<th data-sort="' + c + '" class="' + (PCOLS[c].num ? 'num' : '') + '">' + esc(PCOLS[c].label) + (picker.sort === c ? (dir > 0 ? ' ▲' : ' ▼') : '') + '</th>');
+    });
+    h.push('</tr></thead><tbody>');
+    shown.forEach(function (t) {
+      var cyc = !!picker.anc[t.id];
+      var isCur = t.id === cur0, inList = curList.indexOf(t.id) >= 0;
+      var tags = (isCur ? ' <span class="badge acc">current</span>' : inList ? ' <span class="badge">already a target</span>' : '') +
+        (cyc ? ' <span class="badge bad">cycle</span>' : '') + (tierOf(t) <= tierOf(src) ? ' <span class="badge warn">not above T' + tierOf(src) + '</span>' : '') +
+        (t.template ? ' <span class="badge">template</span>' : '') + (t.obsolete ? ' <span class="badge">obsolete</span>' : '') +
+        (!t.campaign ? ' <span class="badge warn">not in campaign</span>' : '') + (t.culture !== src.culture ? ' <span class="badge outline">other culture</span>' : '');
+      h.push('<tr class="it' + (isCur ? ' cur' : '') + (cyc ? ' cyc' : '') + '" data-troop="' + esc(t.id) + '" title="' + esc(t.id + ' · ' + (t.sources || []).join(' → ') +
+        (cyc ? '\nIt upgrades (directly or not) into ' + src.name + ': adding it would close a cycle' : '') + '\nTargets: ' + (curUps(t.id).join(', ') || 'none')) + '">' +
+        '<td>' + esc(t.name) + tags + '<br><span class="id mono">' + esc(t.id) + '</span></td>' +
+        '<td>' + esc(t.culture) + '</td><td class="num">' + tierOf(t) + '</td><td class="num">' + t.level + '</td><td>' + esc(t.group) + '</td><td>' + esc(t.occupation) + '</td>' +
+        '<td class="num">' + curUps(t.id).length + '</td><td class="num">' + (parentsCur[t.id] || []).length + '</td></tr>');
+    });
+    h.push('</tbody></table>');
+    $('kTable').innerHTML = h.join('');
+  }
+  ['kSearch', 'kCulture', 'kTier', 'kGroup', 'kOcc', 'kAll'].forEach(function (id) { $(id).addEventListener(id === 'kSearch' ? 'input' : 'change', renderPicker); });
+  $('kTable').addEventListener('click', function (e) {
+    var th = e.target.closest('th[data-sort]');
+    if (th) {
+      var c = th.getAttribute('data-sort');
+      if (picker.sort === c) picker.dir = -picker.dir; else { picker.sort = c; picker.dir = 1; }
+      renderPicker(); return;
+    }
+    var tr = e.target.closest('tr[data-troop]');
+    if (!tr || tr.classList.contains('cyc')) { if (tr) toast('That would close an upgrade cycle'); return; }
+    var p = picker; picker = null;
+    $('pickModal').classList.remove('show');
+    p.opts.onPick(tr.getAttribute('data-troop'));
+  });
+
+  // ------------------------------------------------------------------ problems
+  function updateProblems() {
+    var list = allProblems(), btn = $('btnProblems'), box = $('problems');
+    if (!list.length) { btn.style.display = 'none'; box.classList.remove('show'); box.innerHTML = ''; return; }
+    var bad = list.filter(function (x) { return x.cls === 'bad'; }).length;
+    btn.style.display = '';
+    btn.className = 'badge ' + (bad ? 'bad' : 'warn');
+    btn.textContent = list.length + ' problem' + (list.length === 1 ? '' : 's') + (bad ? ' (' + bad + ' serious)' : '');
+    box.innerHTML = list.map(function (x) {
+      var t = troopById[x.troop];
+      return '<div class="row ' + x.cls + '"><button class="link" data-link="' + esc(x.troop) + '">' + esc(t ? t.name : x.troop) + '</button> ' +
+        '<span class="mono">' + esc(x.troop) + '</span>: ' + esc(x.text) + '</div>';
+    }).join('');
+  }
+  $('btnProblems').onclick = function () { $('problems').classList.toggle('show'); };
+  $('problems').addEventListener('click', function (e) {
+    var id = e.target.getAttribute && e.target.getAttribute('data-link'); if (!id) return;
+    select(id, true);
+  });
+
+  // ------------------------------------------------------------------ export (troop-loadout-core.js buildExport)
+  var lastExport = null, exportIdx = 0;
+  function renderMsgs(box, msgs) {
+    box.innerHTML = msgs.map(function (m) { return '<div class="' + m[0] + '">' + (m[2] ? m[1] : esc(m[1])) + '</div>'; }).join('');
+  }
+  function fileName(p) { return p.split('/').pop(); }
+  function exportModels() {
+    var ms = {};
+    editedIds().forEach(function (id) {
+      var m = C.cloneModel(C.origModel(troopById[id]));
+      m.upgrades = ups[id].slice();
+      ms[id] = m;
+    });
+    return ms;
+  }
+  function showExportFile(i) {
+    exportIdx = i;
+    var f = lastExport.files[i];
+    document.querySelectorAll('#exportFiles button').forEach(function (b, k) { b.className = k === i ? 'small primary' : 'small'; });
+    var msgs = [['ok', '<b>' + esc(f.path) + '</b>: ' + f.troops.length + ' troop(s) — ' +
+      f.troops.filter(function (x) { return x.mode === 'replace'; }).length + ' rewritten in place, ' +
+      f.troops.filter(function (x) { return x.mode === 'append'; }).length + ' appended', true]];
+    f.troops.forEach(function (x) {
+      var t = troopById[x.id];
+      msgs.push(['', '<b>' + esc(t.name) + '</b> <span class="mono">' + esc(x.id) + '</span> · ' +
+        (x.mode === 'replace' ? 'rewritten in place' : 'appended (copied from ' + esc(t.module + '/' + t.file) + ')') +
+        '<ul>' + x.summary.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>', true]);
+      troopProblems(x.id).forEach(function (p) { msgs.push([p.cls, '⚠ ' + x.id + ': ' + p.text]); });
+    });
+    // Problems of troops the edits affect (no longer reachable, cycles) that are not themselves exported.
+    var exported = {};
+    lastExport.files.forEach(function (ff) { ff.troops.forEach(function (x) { exported[x.id] = true; }); });
+    if (i === 0) Object.keys(relevant).forEach(function (id) {
+      if (exported[id]) return;
+      troopProblems(id).forEach(function (p) { msgs.push([p.cls, '⚠ ' + id + ' (not edited): ' + p.text]); });
+    });
+    var ta = $('exportText');
+    ta.value = f.text;
+    var a = 0;
+    while (a < f.original.length && f.original.charCodeAt(a) === f.text.charCodeAt(a)) a++;
+    var before = f.text.slice(0, a), line = before.split('\n').length - 1;
+    var idx = a - (before.match(/\r/g) || []).length;
+    msgs.splice(1, 0, ['', 'First change at line ' + (line + 1) + '.']);
+    renderMsgs($('exportMsgs'), lastExport.messages.concat(msgs));
+    setTimeout(function () {
+      var lh = parseFloat(getComputedStyle(ta).lineHeight) || 16;
+      ta.setSelectionRange(idx, idx);
+      ta.scrollTop = Math.max(0, (line - 3) * lh);
+    }, 0);
+    $('btnDownload').textContent = 'Download ' + fileName(f.path);
+  }
+  $('btnExport').onclick = function () {
+    try {
+      lastExport = C.buildExport(DATA, exportModels(), troopById);
+    } catch (err) {
+      lastExport = null;
+      $('exportFiles').innerHTML = ''; $('exportText').style.display = 'none'; $('exportButtons').style.display = 'none';
+      renderMsgs($('exportMsgs'), [['bad', 'Export failed: ' + err.message]]);
+      $('exportModal').classList.add('show');
+      return;
+    }
+    var has = lastExport.files.length > 0;
+    $('exportText').style.display = has ? '' : 'none';
+    $('exportButtons').style.display = has ? '' : 'none';
+    $('exportFiles').innerHTML = lastExport.files.map(function (f, i) {
+      return '<button class="small" data-file="' + i + '">' + esc(f.path) + ' (' + f.troops.length + ')</button>';
+    }).join('');
+    $('exportFiles').querySelectorAll('[data-file]').forEach(function (b) { b.onclick = function () { showExportFile(+b.getAttribute('data-file')); }; });
+    if (has) showExportFile(0);
+    else renderMsgs($('exportMsgs'), lastExport.messages.concat([['ok', 'Nothing to export: no troop\'s upgrade targets differ from the files.']]));
+    $('btnSave').style.display = window.showSaveFilePicker ? '' : 'none';
+    $('exportModal').classList.add('show');
+  };
+  function exportBlob(f) { return new Blob([(f.bom ? '﻿' : '') + f.text], { type: 'application/xml' }); }
+  $('btnCopy').onclick = function () {
+    // From the export, not the textarea: a textarea's value turns CRLF into LF.
+    var text = lastExport.files[exportIdx].text;
+    var done = function () { toast('Copied to clipboard'); };
+    var fallback = function () {
+      var ta = $('exportText'); ta.removeAttribute('readonly'); ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { toast('Copy failed: select the text and press Ctrl+C'); }
+      ta.setAttribute('readonly', '');
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  };
+  $('btnDownload').onclick = function () {
+    var f = lastExport.files[exportIdx];
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(exportBlob(f)); a.download = fileName(f.path);
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  };
+  $('btnSave').onclick = function () {
+    var f = lastExport.files[exportIdx];
+    window.showSaveFilePicker({ suggestedName: fileName(f.path), types: [{ description: 'XML', accept: { 'application/xml': ['.xml'] } }] })
+      .then(function (h) { return h.createWritable().then(function (w) { return w.write(exportBlob(f)).then(function () { return w.close(); }); }); })
+      .then(function () { toast('Saved ' + fileName(f.path)); }, function (e) { if (e && e.name !== 'AbortError') toast('Save failed: ' + e.message); });
+  };
+
+  // ------------------------------------------------------------------ reset, init
+  $('btnReset').onclick = function () {
+    var n = editedIds().length;
+    if (n && !confirm('Discard your changes to ' + n + ' troop(s) and go back to the files?')) return;
+    ups = {}; checked = {};
+    try { localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
+    $('banner').classList.remove('show');
+    changed();
+    toast('Reset to the files');
+  };
+  document.querySelectorAll('[data-close]').forEach(function (b) {
+    b.onclick = function () { b.closest('.modal-bg').classList.remove('show'); picker = null; };
+  });
+  document.querySelectorAll('.modal-bg').forEach(function (m) {
+    m.addEventListener('mousedown', function (e) { if (e.target === m) { m.classList.remove('show'); picker = null; } });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { document.querySelectorAll('.modal-bg.show').forEach(function (m) { m.classList.remove('show'); }); picker = null; }
+  });
+
+  $('meta').textContent = (DATA.gameVersion ? 'Bannerlord ' + DATA.gameVersion : '') + (DATA.navalDlc ? ' + War Sails' : '') +
+    ' · ' + DATA.troops.length + ' troops · ' + Object.keys(CULTURES).length + ' cultures · data ' + DATA.generated;
+  $('meta').title = 'Data: tools/TroopLoadoutEditor/troop-loadout-data.js (shared with the loadout editor)\nAssumed: ' + (DATA.assumptions || '');
+  if (oldData) showBanner('The data file predates this page (no cultures or party templates): culture views and the "no longer reachable" check are off. Re-run tools\\TroopLoadoutEditor\\Build-TroopLoadoutData.ps1.');
+
+  recompute();
+  updateModified();
+  var first = editedIds()[0];
+  if (first) select(first, true);
+  else { renderTroops(); renderTree(); renderTargets(); }
+})();
+</script>
+</body>
+</html>

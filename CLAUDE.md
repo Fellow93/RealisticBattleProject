@@ -101,7 +101,7 @@ Settings are static fields on `RBMConfig.RBMConfig`, persisted to user XML at `U
 
 `RBM_WS_XML/` contains compatibility files for the War Sails (Naval) DLC.
 
-Troop skills/levels/equipment rosters in `RBMCombat_unit_overhaul.xml` (+ the WS one) can be edited with the local page in `tools/TroopLoadoutEditor/` (run its `Build-TroopLoadoutData.ps1` first; its README explains how `XmlLoadingPatches` applies those files).
+Troop skills/levels/equipment rosters in `RBMCombat_unit_overhaul.xml` (+ the WS one) can be edited with the local page in `tools/TroopLoadoutEditor/` (run its `Build-TroopLoadoutData.ps1` first; its README explains how `XmlLoadingPatches` applies those files). Upgrade targets are edited with `tools/TroopUpgradeTreeEditor/` (tree diagrams + checks), which has no data or build script of its own: it loads the loadout editor's data and `troop-loadout-core.js`, so both pages export the same files through one splice path (re-run the script after exporting from either). Its README lists the verified game rules (later definition replaces `UpgradeTargets`, cycles crash, no count limit, tier ≤ → 0 XP).
 
 ### Large Utility Files
 
