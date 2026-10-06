@@ -78,11 +78,15 @@ re-indent) both editors share.
   attribute not in `Items.xsd`, an invalid enum value, a non-numeric number (or a fraction where the game uses
   `int.Parse`), unknown cultures, item categories, modifier groups, holsters, monsters, item usages, crafting templates
   or pieces, a piece of the wrong type or not usable by its template, a `Type` the weapon class overrides, a duplicate id
-  on a new item, a missing target file, an `<Armor>` attribute vanilla sets that the item's definition leaves out
-  (RBM replaces the whole item, so it falls back to the game default; only reported when vanilla's value differs from
-  that default, per `ArmorComponent.Deserialize`); and, as a note, an item defined in several RBM files.
+  on a new item, a missing target file, a vanilla attribute the item's definition leaves out (RBM replaces the whole
+  item, so it falls back to the game default; only reported when vanilla's value differs from that default): any
+  `<Armor>` attribute (defaults per `ArmorComponent.Deserialize`), a `<Weapon>`'s `modifier_group` (absent = no
+  modifier group, so no quality modifiers: `ItemComponent.Deserialize`) and a `<CraftedItem>`'s `modifier_group`
+  (absent = the crafting template's group: `ItemObject.Deserialize`); a vanilla group that does not exist is not
+  reported; and, as a note, an item defined in several RBM files.
 - **Data warnings** (yellow button next to the edited-items pill in the header): warnings about the data as a whole rather than the edited items: the
-  generator's warnings, and every RBM item whose definition leaves out a vanilla `<Armor>` attribute (as above). Each
+  generator's warnings, and every RBM item whose definition leaves out a vanilla attribute (as above), in collapsible
+  groups by item type whose headings name the lost attributes (e.g. "Cape (45 items): Armor arm_armor"). Each
   item links to it, and a warning goes away once the attribute is set.
 
 Work in progress is kept in the browser's local storage (`rbm-item-editor.v1`) as changes against the files, so after

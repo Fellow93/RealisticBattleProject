@@ -152,6 +152,9 @@ button.badge { cursor: pointer; font: inherit; font-size: 11px; }
 #warnings .sec { font-weight: 600; margin: 4px 0 2px; }
 #warnings .sec:first-child { margin-top: 0; }
 #warnings .row { padding: 1px 0; }
+#warnings details { margin: 1px 0; }
+#warnings summary { cursor: pointer; padding: 1px 0; }
+#warnings details > .row { padding-left: 16px; }
 #banner { display: none; padding: 6px 14px; background: var(--warn-bg); color: var(--warn); font-size: 12px; border-bottom: 1px solid var(--border); }
 #banner.show { display: flex; gap: 10px; align-items: center; }
 /* fields */
@@ -1552,10 +1555,11 @@ pre.xml .chg { background: var(--chg); display: inline-block; min-width: 100%; }
     DATA.items.forEach(function (it) {
       var k = it.id;
       if (!exists(k) || (!inRbm(k) && !isEdited(k))) return;
-      C.lostVanillaArmor(cur(k), van(k)).forEach(function (t) { out.push({ key: k, text: t }); });
+      C.lostVanillaAttrs(cur(k), van(k), DATA).forEach(function (t) { out.push({ key: k, text: t }); });
     });
     return out;
   }
+  var warnOpen = {};   // item type -> its group in the warnings panel is expanded (kept across re-renders)
   function updateWarnings() {
     var gen = DATA.warnings || [], lost = dataWarnings(), btn = $('btnWarnings'), box = $('warnings');
     var n = gen.length + lost.length;
@@ -1570,15 +1574,37 @@ pre.xml .chg { background: var(--chg); display: inline-block; min-width: 100%; }
       gen.forEach(function (w) { h.push('<div class="row">' + esc(w) + '</div>'); });
     }
     if (lost.length) {
-      h.push('<div class="sec">Vanilla &lt;Armor&gt; attributes lost to RBM\'s full replacement (' + Object.keys(items).length + ' items)</div>');
-      lost.forEach(function (x) {
-        var m = cur(x.key);
-        h.push('<div class="row"><button class="link" data-link="' + esc(x.key) + '">' + esc(displayName(m, x.key)) + '</button> ' +
-          '<span class="mono">' + esc(m.attrs.id) + '</span> (' + esc((itemById[x.key].rbm || []).join(', ') || 'edited copy') + '): ' + esc(x.text) + '</div>');
+      h.push('<div class="sec">Vanilla attributes lost to RBM\'s full replacement (' + Object.keys(items).length + ' items), by item type</div>');
+      // One collapsible group per item type, in the type filter's order; the summary names the lost attributes.
+      var byType = {}, order = [];
+      TYPE_CATS.forEach(function (c) { order = order.concat(c[2]); });
+      lost.forEach(function (x) { var t = typeOfKey(x.key) || '?'; (byType[t] = byType[t] || []).push(x); });
+      Object.keys(byType).sort(function (a, b) {
+        var ia = order.indexOf(a), ib = order.indexOf(b);
+        return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib) || (a < b ? -1 : 1);
+      }).forEach(function (t) {
+        var rows = byType[t], attrs = {}, its = {};
+        rows.forEach(function (x) {
+          its[x.key] = 1;
+          var el = x.text.split(':')[0];
+          (x.text.match(/(\w+)="/g) || []).forEach(function (a) { attrs[el.replace(/ .*/, '') + ' ' + a.slice(0, -2)] = 1; });
+        });
+        h.push('<details data-wtype="' + esc(t) + '"' + (warnOpen[t] ? ' open' : '') + '><summary><b>' + esc(t) + '</b> (' + Object.keys(its).length +
+          ' item' + (Object.keys(its).length === 1 ? '' : 's') + '): ' + esc(Object.keys(attrs).join(', ')) + '</summary>');
+        rows.forEach(function (x) {
+          var m = cur(x.key);
+          h.push('<div class="row"><button class="link" data-link="' + esc(x.key) + '">' + esc(displayName(m, x.key)) + '</button> ' +
+            '<span class="mono">' + esc(m.attrs.id) + '</span> (' + esc((itemById[x.key].rbm || []).join(', ') || 'edited copy') + '): ' + esc(x.text) + '</div>');
+        });
+        h.push('</details>');
       });
     }
     box.innerHTML = h.join('');
   }
+  $('warnings').addEventListener('toggle', function (e) {
+    var d = e.target, t = d.getAttribute && d.getAttribute('data-wtype');
+    if (t != null) warnOpen[t] = d.open;
+  }, true);
   $('btnWarnings').onclick = function () { $('warnings').classList.toggle('show'); };
   $('warnings').addEventListener('click', function (e) {
     var k = e.target.getAttribute && e.target.getAttribute('data-link'); if (!k) return;

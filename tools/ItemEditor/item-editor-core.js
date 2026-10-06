@@ -517,12 +517,30 @@
     if (n === 'reins_mesh') return 'none';
     return 'not set';
   }
-  // RBM replaces the whole element (no attribute merge), so an <Armor> attribute vanilla sets and the item's definition
-  // m leaves out falls back to the game's default; only a vanilla value that differs from that default is lost.
-  // v0 is the definition before RBM replaced it. Returns one message per <Armor> component.
-  function lostVanillaArmor(m, v0) {
+  // RBM replaces the whole element (no attribute merge), so an attribute vanilla sets and the item's definition m
+  // leaves out falls back to the game's default; only a vanilla value that differs from that default is lost.
+  // v0 is the definition before RBM replaced it. Checked: every <Armor> attribute, and modifier_group on <Weapon>
+  // (absent = no modifier group: ItemComponent.Deserialize) and on <CraftedItem> (absent = the crafting template's
+  // group: ItemObject.Deserialize). Returns one message per element.
+  function lostVanillaAttrs(m, v0, data) {
     var out = [];
     if (!v0 || v0 === m || v0.kind !== m.kind) return out;
+    // A vanilla group that does not exist (vanilla's shield_wood) resolves to null in game too: nothing is lost.
+    var groups = data && data.modifierGroups, realGroup = function (g) { return !groups || groups.indexOf(g) >= 0; };
+    var vWpn = weapons(v0), mWpn = weapons(m);
+    vWpn.forEach(function (vc, i) {
+      var mg = vc.attrs.modifier_group, mc = mWpn[i], where = 'Weapon' + (vWpn.length > 1 ? ' usage ' + (i + 1) : '');
+      if (mg == null || mg === '' || !realGroup(mg) || !mc || mc.attrs.modifier_group != null) return;
+      out.push(where + ': vanilla sets modifier_group="' + mg + '" but this definition does not, so RBM\'s full replacement leaves the weapon without a modifier group (no quality modifiers)');
+    });
+    if (m.kind === 'CraftedItem') {
+      var vg = v0.attrs.modifier_group, tpl = data && data.templates && data.templates[m.attrs.crafting_template];
+      var fallback = tpl && tpl.modifierGroup ? tpl.modifierGroup : '';
+      if (vg != null && vg !== '' && realGroup(vg) && m.attrs.modifier_group == null && String(m.attrs.has_modifier).toLowerCase() !== 'false' && vg !== fallback) {
+        out.push('CraftedItem: vanilla sets modifier_group="' + vg + '" but this definition does not, so RBM\'s full replacement uses template ' +
+          (m.attrs.crafting_template || '?') + '\'s group (' + (fallback || 'none') + ')');
+      }
+    }
     var vArm = v0.comps.filter(function (c) { return c.el === 'Armor'; }), mArm = m.comps.filter(function (c) { return c.el === 'Armor'; });
     vArm.forEach(function (vc, i) {
       var mc = mArm[i], where = 'Armor' + (vArm.length > 1 ? ' ' + (i + 1) : '');
@@ -566,7 +584,7 @@
       if (c.el === 'Weapon' || c.el === 'Banner') checkFlags(add, data, 'WeaponFlags', c.wflags, where + ' WeaponFlags');
     });
     checkFlags(add, data, 'Flags', m.flags, 'Flags');
-    lostVanillaArmor(m, info.vanilla).forEach(function (t) { add('warn', t); });
+    lostVanillaAttrs(m, info.vanilla, data).forEach(function (t) { add('warn', t); });
     if (m.kind === 'CraftedItem') {
       var tpl = data.templates && data.templates[m.attrs.crafting_template];
       if (!m.pieces.length) add('bad', 'No pieces');
@@ -978,7 +996,7 @@
     cleanEnum: cleanEnum, enumValues: enumValues, flagNames: flagNames, attrKind: attrKind,
     attrsOf: attrsOf, decode: decode, parseItem: parseItem, cloneModel: cloneModel, diff: diff, diffWithOld: diffWithOld, sameModel: sameModel,
     applyOps: applyOps,
-    lostVanillaArmor: lostVanillaArmor, getAt: getAt, setAt: setAt, mapAt: mapAt, typeOf: typeOf, canonType: canonType, weapons: weapons, mainComp: mainComp,
+    lostVanillaAttrs: lostVanillaAttrs, getAt: getAt, setAt: setAt, mapAt: mapAt, typeOf: typeOf, canonType: canonType, weapons: weapons, mainComp: mainComp,
     computeTier: computeTier, computePrice: computePrice, missileSpeed: missileSpeed, launcherInfo: launcherInfo, roundEven: roundEven,
     problems: problems, patchElement: patchElement, fileCtx: fileCtx, itemSpans: itemSpans, restyle: restyle,
     defaultTargets: defaultTargets, placement: placement, appendText: appendText, buildExport: buildExport,
