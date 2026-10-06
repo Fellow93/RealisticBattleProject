@@ -274,8 +274,9 @@ namespace RBMCampaign
             return sb.Length > 0 ? sb.ToString() : "-";
         }
 
-        // String-valued counterpart of AppendInt: appends one CSV column, sharing the amortized trim.
-        private static void AppendStr(Dictionary<string, string> dict, string id, string value)
+        // String-valued counterpart of AppendInt: appends one CSV column, sharing the amortized trim. Also
+        // used by RBMClanFinanceLedger, which keeps the same 30-day window.
+        internal static void AppendStr(Dictionary<string, string> dict, string id, string value)
         {
             if (dict.TryGetValue(id, out string csv) && !string.IsNullOrEmpty(csv))
             {
@@ -329,7 +330,7 @@ namespace RBMCampaign
         // runs it once per (TrimWatermark - HistoryDays) days instead; the other days are a single concat.
         private const int TrimWatermark = HistoryDays * 2;
 
-        private static void AppendInt(Dictionary<string, string> dict, string id, int value)
+        internal static void AppendInt(Dictionary<string, string> dict, string id, int value)
         {
             if (dict.TryGetValue(id, out string csv) && !string.IsNullOrEmpty(csv))
             {
@@ -441,7 +442,7 @@ namespace RBMCampaign
         public static string[] GetSettlementFlowSeries(string settlementId) => GetStringSeries(_settlementFlow, settlementId);
         public static string[] GetCitizenFlowSeries(string settlementId) => GetStringSeries(_citizenFlow, settlementId);
 
-        private static string[] GetStringSeries(Dictionary<string, string> dict, string settlementId)
+        internal static string[] GetStringSeries(Dictionary<string, string> dict, string settlementId)
         {
             if (!dict.TryGetValue(settlementId, out string csv) || string.IsNullOrEmpty(csv))
             {

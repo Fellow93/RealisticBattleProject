@@ -192,7 +192,11 @@ namespace RBMCampaign
                 int total = contract.StipendPaid + contract.WagePaid;
                 if (total > 0)
                 {
+                    int rulerGoldBefore = contract.Ruler.Gold;
                     GiveGoldAction.ApplyBetweenCharacters(contract.Ruler, null, total, true);
+                    // A ruling player pays this on the mercenary's apply pass, never his own, so his
+                    // finance ledger sees it only as event gold. Ignored unless the ruler is the player's.
+                    ClanEventGoldLedger.Record(contract.Ruler, EventGoldKind.MercenaryPay, rulerGoldBefore - contract.Ruler.Gold);
                 }
             }
 

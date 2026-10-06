@@ -64,9 +64,16 @@ namespace RBMCampaign
         public static string Equipment => new TextObject("{=RBM_LEDGER_H_EQUIPMENT}Equipment & materials").ToString();
         public static string Value => new TextObject("{=RBM_LEDGER_H_VALUE}Value").ToString();
 
-        // Clan gold tab.
-        public static string ClanGoldKind => new TextObject("{=RBM_LEDGER_H_CG_KIND}Source").ToString();
-        public static string ClanGoldTotal => new TextObject("{=RBM_LEDGER_H_CG_TOTAL}Total").ToString();
-        public static string ClanGoldDays => new TextObject("{=RBM_LEDGER_H_CG_DAYS}Days").ToString();
+        // Clan finances tab.
+        public static string FinanceIncome => new TextObject("{=RBM_LEDGER_H_CF_INCOME}Income").ToString();
+        public static string FinanceExpenses => new TextObject("{=RBM_LEDGER_H_CF_EXPENSES}Expenses").ToString();
+        public static string FinanceNet => new TextObject("{=RBM_LEDGER_H_CF_NET}Net").ToString();
+        public static string FinanceGold => new TextObject("{=RBM_LEDGER_H_CF_GOLD}Gold").ToString();
+        public static string FinanceSource => new TextObject("{=RBM_LEDGER_H_CF_SOURCE}Source").ToString();
+        public static string FinanceItem => new TextObject("{=RBM_LEDGER_H_CF_ITEM}Goods traded").ToString();
+        public static string FinanceBought => new TextObject("{=RBM_LEDGER_H_CF_BOUGHT}Bought").ToString();
+        public static string FinancePaid => new TextObject("{=RBM_LEDGER_H_CF_PAID}Paid").ToString();
+        public static string FinanceSold => new TextObject("{=RBM_LEDGER_H_CF_SOLD}Sold").ToString();
+        public static string FinanceReceived => new TextObject("{=RBM_LEDGER_H_CF_RECEIVED}Received").ToString();
     }
 }

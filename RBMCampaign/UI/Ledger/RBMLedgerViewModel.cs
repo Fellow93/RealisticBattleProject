@@ -15,27 +15,24 @@ namespace RBMCampaign
 {
     // Backing view model for the RBM Ledger screen (RBMLedger.xml). Extensible shell: a data-bound
     // tab strip on the left and a content area on the right that shows EITHER a plain text pane
-    // (placeholder tabs) OR the villages, towns or clan gold panel, toggled by the selected tab's id.
+    // (placeholder tabs) OR the villages, towns or clan finances panel, toggled by the selected tab's id.
     public class RBMLedgerViewModel : ViewModel
     {
         private const string TabVillages = "villages";
         private const string TabTowns = "towns";
-        private const string TabClanGold = "clangold";
+        private const string TabClanFinances = "clanfinances";
 
         private MBBindingList<RBMLedgerTabVM> _tabs;
         private MBBindingList<RBMLedgerTownGroupVM> _townGroups;
         private MBBindingList<RBMLedgerFactionGroupVM> _factionGroups;
-        private MBBindingList<RBMLedgerClanGoldRowVM> _clanGoldRows;
-        private RBMLedgerClanGoldRowVM _clanGoldNet;
-        private string _clanGoldIntro;
-        private bool _hasClanGold;
+        private RBMLedgerClanFinanceVM _clanFinance;
         private string _titleText;
         private string _closeText;
         private string _currentTitle;
         private string _currentContent;
         private bool _showVillages;
         private bool _showTowns;
-        private bool _showClanGold;
+        private bool _showClanFinance;
         private bool _showText;
 
         public RBMLedgerViewModel()
@@ -43,12 +40,15 @@ namespace RBMCampaign
             _tabs = new MBBindingList<RBMLedgerTabVM>();
             _townGroups = new MBBindingList<RBMLedgerTownGroupVM>();
             _factionGroups = new MBBindingList<RBMLedgerFactionGroupVM>();
-            _clanGoldRows = new MBBindingList<RBMLedgerClanGoldRowVM>();
             TitleText = new TextObject("{=RBM_LEDGER_TITLE}RBM Ledger").ToString();
             CloseText = new TextObject("{=RBM_LEDGER_CLOSE}Close").ToString();
             BuildVillages();
             BuildTowns();
-            BuildClanGold();
+            // The player's gold record (RBMClanFinanceLedger), read once as the screen opens.
+            if (Campaign.Current != null)
+            {
+                ClanFinance = new RBMLedgerClanFinanceVM();
+            }
             BuildTabs();
         }
 
@@ -66,9 +66,9 @@ namespace RBMCampaign
                 new TextObject("{=RBM_LEDGER_TAB_TOWNS}Towns").ToString(),
                 new TextObject("{=RBM_LEDGER_TAB_TOWNS}Towns").ToString(),
                 string.Empty);
-            AddTab(TabClanGold,
-                new TextObject("{=RBM_LEDGER_TAB_CLAN_GOLD}Clan gold").ToString(),
-                new TextObject("{=RBM_LEDGER_TAB_CLAN_GOLD}Clan gold").ToString(),
+            AddTab(TabClanFinances,
+                new TextObject("{=RBM_LEDGER_TAB_CLAN_FINANCES}Clan finances").ToString(),
+                new TextObject("{=RBM_LEDGER_TAB_CLAN_FINANCES}Clan finances").ToString(),
                 string.Empty);
 
             if (Tabs.Count > 0)
@@ -96,31 +96,8 @@ namespace RBMCampaign
             CurrentContent = tab.Content;
             ShowVillages = tab.TabId == TabVillages;
             ShowTowns = tab.TabId == TabTowns;
-            ShowClanGold = tab.TabId == TabClanGold;
-            ShowText = !ShowVillages && !ShowTowns && !ShowClanGold;
-        }
-
-        // --- Clan gold projection --------------------------------------------
-
-        // One-off gold the player's clan gained or paid over the ledger window (RBMLedgerClanGold), read
-        // live from ClanEventGoldLedger. The intro says plainly that none of it is in the daily projection.
-        private void BuildClanGold()
-        {
-            if (Campaign.Current == null)
-            {
-                return;
-            }
-            ClanGoldRows = RBMLedgerClanGold.BuildRows(out RBMLedgerClanGoldRowVM net);
-            ClanGoldNet = net;
-            HasClanGold = ClanGoldRows.Count > 0;
-            var intro = new System.Text.StringBuilder();
-            intro.Append(new TextObject("{=RBM_LEDGER_CG_INTRO}Gold your clan gained or paid as it happened over the last {DAYS} days: spoils, mint cuts, promotions and other one-off payments. It is not part of the daily gold change or Expected Gold.")
-                .SetTextVariable("DAYS", ClanEventGoldLedger.HistoryDays).ToString());
-            if (!HasClanGold)
-            {
-                intro.Append("\n\n").Append(new TextObject("{=RBM_LEDGER_CG_EMPTY}Nothing recorded yet.").ToString());
-            }
-            ClanGoldIntro = intro.ToString();
+            ShowClanFinance = tab.TabId == TabClanFinances && ClanFinance != null;
+            ShowText = !ShowVillages && !ShowTowns && !ShowClanFinance;
         }
 
         // --- Villages projection --------------------------------------------
@@ -839,7 +816,7 @@ namespace RBMCampaign
         // thrown / ranged weapons, ammo, materials, ...): each row aggregates the category's stock and
         // total market value, with the per-item breakdown on hover. Category order is fixed; sorted rows
         // are dropped when empty.
-        private static readonly string[] OtherGoodCategoryOrder =
+        internal static readonly string[] OtherGoodCategoryOrder =
         {
             "armor", "shields", "harness", "horses", "packanimals", "livestock",
             "melee", "thrown", "ranged", "ammo", "materials", "other"
@@ -908,8 +885,9 @@ namespace RBMCampaign
             public List<KeyValuePair<string, long>> Items;
         }
 
-        // Buckets a non-basket market item into one of the fixed equipment/materials categories.
-        private static string ClassifyOtherGood(ItemObject item)
+        // Buckets a non-basket market item into one of the fixed equipment/materials categories. Also groups
+        // the Clan finances tab's traded goods (RBMLedgerClanFinanceVM), where "materials" covers trade goods.
+        internal static string ClassifyOtherGood(ItemObject item)
         {
             switch (item.ItemType)
             {
@@ -964,7 +942,7 @@ namespace RBMCampaign
             }
         }
 
-        private static string OtherGoodCategoryName(string cat)
+        internal static string OtherGoodCategoryName(string cat)
         {
             switch (cat)
             {
@@ -1110,43 +1088,19 @@ namespace RBMCampaign
         [DataSourceProperty] public string TreasuryHeader => RBMLedgerHeaders.Treasury;
         [DataSourceProperty] public string FoodHeader => RBMLedgerHeaders.Food;
         [DataSourceProperty] public string GarrisonHeader => RBMLedgerHeaders.Garrison;
-        [DataSourceProperty] public string ClanGoldKindHeader => RBMLedgerHeaders.ClanGoldKind;
-        [DataSourceProperty] public string ClanGoldTotalHeader => RBMLedgerHeaders.ClanGoldTotal;
-        [DataSourceProperty] public string ClanGoldDaysHeader => RBMLedgerHeaders.ClanGoldDays;
-
+        // The Clan finances panel's own view model; the panel scopes onto it with DataSource="{ClanFinance}".
         [DataSourceProperty]
-        public MBBindingList<RBMLedgerClanGoldRowVM> ClanGoldRows
+        public RBMLedgerClanFinanceVM ClanFinance
         {
-            get => _clanGoldRows;
-            set { if (value != _clanGoldRows) { _clanGoldRows = value; OnPropertyChangedWithValue(value, "ClanGoldRows"); } }
+            get => _clanFinance;
+            set { if (value != _clanFinance) { _clanFinance = value; OnPropertyChangedWithValue(value, "ClanFinance"); } }
         }
 
         [DataSourceProperty]
-        public RBMLedgerClanGoldRowVM ClanGoldNet
+        public bool ShowClanFinance
         {
-            get => _clanGoldNet;
-            set { if (value != _clanGoldNet) { _clanGoldNet = value; OnPropertyChangedWithValue(value, "ClanGoldNet"); } }
-        }
-
-        [DataSourceProperty]
-        public string ClanGoldIntro
-        {
-            get => _clanGoldIntro;
-            set { if (value != _clanGoldIntro) { _clanGoldIntro = value; OnPropertyChangedWithValue(value, "ClanGoldIntro"); } }
-        }
-
-        [DataSourceProperty]
-        public bool HasClanGold
-        {
-            get => _hasClanGold;
-            set { if (value != _hasClanGold) { _hasClanGold = value; OnPropertyChangedWithValue(value, "HasClanGold"); } }
-        }
-
-        [DataSourceProperty]
-        public bool ShowClanGold
-        {
-            get => _showClanGold;
-            set { if (value != _showClanGold) { _showClanGold = value; OnPropertyChangedWithValue(value, "ShowClanGold"); } }
+            get => _showClanFinance;
+            set { if (value != _showClanFinance) { _showClanFinance = value; OnPropertyChangedWithValue(value, "ShowClanFinance"); } }
         }
 
         [DataSourceProperty]

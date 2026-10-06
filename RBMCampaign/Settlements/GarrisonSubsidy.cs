@@ -250,7 +250,11 @@ namespace RBMCampaign
                     }
                     else
                     {
+                        int payerGoldBefore = payer.Gold;
                         GiveGoldAction.ApplyBetweenCharacters(payer, null, fromOwner, true);
+                        // A promotion paid in gold, the same event a clan party's is; ignored unless the
+                        // payer is in the player's clan.
+                        ClanEventGoldLedger.Record(payer, EventGoldKind.UpgradeGold, payerGoldBefore - payer.Gold);
                     }
                     ownerPaid = fromOwner;
                 }

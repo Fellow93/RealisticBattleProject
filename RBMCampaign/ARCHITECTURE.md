@@ -308,7 +308,8 @@ Serialized via `SyncData`:
 - `RBM_troopLuxuryCooldown` — when each stack may indulge again (`TroopUpkeep`).
 - `RBM_townTroopTrade` — what troops have spent in each town (`TroopMarketFeedback`).
 - `RBM_partyUpgradeCapGold`, `RBM_partyUpgradeCapEnabled` — per-party daily upgrade-gold caps (`PartyUpgradeBudget`).
-- `RBM_clanEventGoldByDay`, `RBM_clanEventGoldFirstDay` — the 30-day event-gold record (`ClanEventGoldLedger`; read by the RBM Ledger's Clan gold tab).
+- `RBM_clanEventGoldByDay`, `RBM_clanEventGoldElsewhereByDay`, `RBM_clanEventGoldFirstDay` — the 30-day event-gold record and the part of it paid to clan members other than the player (`ClanEventGoldLedger`; read by the RBM Ledger's Clan finances tab).
+- `RBM_clanFinanceHist`, `RBM_clanFinanceDay` — the Clan finances record: one CSV series per field, one column per closed day, and the open day's running totals with its day, opening balance and partial flag (`RBMClanFinanceLedger`).
 - `RBM_settlementWealth` — the town/castle treasury pot (`SettlementWealth`; citizen wealth rides on vanilla's `Gold`, as does a village's single purse).
 - `RBM_settlementRecruitPool` — each settlement's manpower pool (`RecruitPool`); a settlement with no entry starts full.
 - `RBM_constructionToolDebt`, `RBM_pendingWealthTaxIncome`, `RBM_campaignSeeded` — construction, wealth tax and the one-time seeding flag.
@@ -394,7 +395,7 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Spoils/MaintenancePartyWageLine.cs` / `MaintenanceTroopTooltipLine.cs` | Maintenance in the party-wage tooltip and, per man, in the troop tooltip (display only). |
 | `Spoils/SpoilsTransferOnPartyScreen.cs` | Purse follows men moved on the party screen. |
 | `Spoils/SpoilsTransferOnSpecialScreens.cs` | Purse follows men on the two screens with no left owner party: garrison donation and creating a companion's clan party. |
-| `Finance/ClanEventGoldLedger.cs` | 30-day record of the gold paid to the player's clan per event (leader's cut, companions' share, mint cuts, gold-paid promotions, blood money, ship scrap), pruned to the window. Not on any finance breakdown (that gold is never on the apply pass); shown only on the RBM Ledger's Clan gold tab (`UI/Ledger/RBMLedgerClanGoldVM.cs`). |
+| `Finance/ClanEventGoldLedger.cs` | 30-day record of the gold paid to the player's clan per event (leader's cut, companions' share, mint cuts, gold-paid promotions incl. owner-paid garrison promotions, blood money, ship scrap, a ruling player's mercenary pay), pruned to the window, with the share that went to a clan member other than the player kept apart (`GetDayElsewhere`). Not on any finance breakdown (that gold is never on the apply pass); read only by the Clan finances record (`UI/Ledger/RBMClanFinanceLedger.cs`). |
 | `Finance/BloodMoney.cs` | Blood money paid to a ransom broker to end a feud is credited to that town's citizen wealth (vanilla paid it to nobody), and recorded in the event-gold ledger. |
 | `Finance/ShipScrapGold.cs` | Records the scrap gold a disbanded clan party's leftover ships pay the player in the event-gold ledger. |
 | `Finance/SettlementAccrualPool.cs` | Per-clan pool of money fief ticks book for the clan's next finance apply pass, plus which fiefs have booked their day, so the display can project exactly what the next apply settles. Used by the wealth tax and the garrison maintenance subsidy. |
@@ -431,7 +432,7 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Simulation/` | The equipment-aware auto-resolve: weapon model, hit points, arm targeting, perks and command structure, morale, rout, wounded capture, player participation, the battle state and snapshot, the two-phase wall assault (`SimulationSiege.cs`) and siege artillery (`SimulationSiegeEngines.cs`). See `AUTO_RESOLVE.md`. |
 | `Power/` | `StrategicTroopPower` and its tooltip — the campaign-side power figure; `SiegeDecisionGate` (the strength an AI lord needs before he besieges) and `StrategicPowerLog`. |
 | `Spectate/` | Watching an AI-vs-AI battle as a no-agent spectator. |
-| `UI/` | The party-screen spoils bar, maintenance label and map party tooltip, the clan-screen upgrade-budget control, the inventory weight column, settlement nameplate bubbles (`RBMMapNotifications`), the smithy refine-row layout, building-effect tooltips and the Projects grid (below), each with its prefab injection; `UI/Ledger/` (the RBM Ledger screen, Ctrl+Shift+K or the Escape menu, with its 30-day town/village histories and the Clan gold tab of one-off clan gold from `ClanEventGoldLedger`) and `UI/SimulationPanel/` (a live auto-resolve panel on the map battle-simulation view). |
+| `UI/` | The party-screen spoils bar, maintenance label and map party tooltip, the clan-screen upgrade-budget control, the inventory weight column, settlement nameplate bubbles (`RBMMapNotifications`), the smithy refine-row layout, building-effect tooltips and the Projects grid (below), each with its prefab injection; `UI/Ledger/` (the RBM Ledger screen, Ctrl+Shift+K or the Escape menu, with its 30-day town/village histories and the Clan finances tab, below) and `UI/SimulationPanel/` (a live auto-resolve panel on the map battle-simulation view). |
 | `SwitchLord/` | `LordSwitcher` — debug tool to take over another lord's party. |
 | `Diagnostics/` | `SpoilsLog`, `EconomyLog`, `SimulationLog`, `CaravanLog`, `GarrisonRefillLog`, `LogRetention`. |
 | `RBMCampaignPatcher.cs` | Entry point (`DoPatching`), at the project root. |
@@ -575,6 +576,52 @@ values by the same 90/110 factor (caption `MarginTop`, progress strip, hammer cl
 buttons). They are split by file because each redirects to `%TEMP%\RBM\Prefabs\<name>.xml` and would collide
 otherwise. `DevelopmentItem.xml` has exactly one call site (this grid), so scaling the file is safe.
 
+#### Clan finances ledger (`UI/Ledger/RBMClanFinanceLedger.cs`)
+
+A 30-day record of what actually happened to the player's gold, shown on the RBM Ledger's Clan finances tab.
+A record, never a projection: nothing here touches the denar tooltip, the Finances totals or Expected Gold.
+
+| File | Role |
+|---|---|
+| `UI/Ledger/RBMClanFinanceLedger.cs` | The store, the day boundary and the five hooks below; `GetDays()` for the view model. |
+| `UI/Ledger/RBMClanFinanceLedgerCampaignBehavior.cs` | Ctor reset, starts tracking on session launch, closes a finished day every hour, `SyncData`. |
+| `UI/Ledger/RBMLedgerClanFinanceVM.cs` | The tab: headline, Income/Expenses/Net/Gold bar chart, day table, by-source table with Net row, traded goods grouped by the Towns tab's equipment categories. |
+
+What is captured, and where:
+
+- **Apply pass** — `ClanVariablesCampaignBehavior.DailyTickClan` (prefix/postfix/finalizer, player clan only) brackets
+  the one call that pays the day, reading the leader's gold before and after. Inside it, a prefix on
+  `DefaultClanFinanceModel.CalculateClanGoldChange` turns `includeDescriptions` on for that call alone, and a
+  `Priority.Last` postfix keeps a copy of the result; the lines are read after the tick (the copy shares the
+  explainer, so War Sails' wrapping model's line is in it too). The model is never called a second time, and
+  descriptions change no number (`ExplainedNumber` sums the same with or without its explainer; the model only
+  picks labelled vs unlabelled `Add` of the same value). Gold the pass moved beyond its lines (an empty purse,
+  rounding, a leaderless party's wage taken straight from the leader) is the `#adj` row.
+- **Event gold** — read from `ClanEventGoldLedger` per day, never copied: only the part that touched the
+  player's purse (`GetDay − GetDayElsewhere`). The elsewhere part (a companion's party paying its own leader's
+  cut or promotions) is only noted, since it reaches the player later through the model's party income.
+- **Trades** — `InventoryLogic.DoneLogic` (main party, `IsTrading`, `__result`): per item from the screen's
+  transaction history, plus a `#tradeadj` row for the difference to the purse's real movement (a merchant short
+  of gold, an accepted trader offer). `SellItemsAction.ApplyInternal` with the main party on either side is a
+  zero-alloc safety net (vanilla's trading behaviours all skip the main party).
+- **Other** — the day's real change in gold minus everything above, banked when the day closes.
+
+Day boundary: everything is filed under `(int)CampaignTime.Now.ToDays`, the key `ClanEventGoldLedger` uses. The
+closing balance is read by `RollIfNeeded`, called first thing from a `Priority.First` prefix on
+`GiveGoldAction.ApplyInternal` whenever the player's hero or main party is a side, from each hook above before it
+records, hourly, and when the ledger opens. Every tracked flow therefore falls on the same side of midnight as
+the gold it moved; an untracked change between midnight and the first look lands in the previous day's Other.
+Days with no look are closed flat. The first tracked day (new game, or a save older than the ledger) starts at
+the moment tracking does, with the event gold already recorded that day held back as a baseline (`evbase`);
+an heir taking over the player's purse closes the old one and starts a new partial day.
+
+Storage: `RBM_clanFinanceHist` holds one CSV series per field (`day`, `start`, `end`, `other`, `lines`, `trade`,
+`evbase`, `flags`) appended with `RBMTownLedger.AppendInt/AppendStr`, so the same amortised trim; `RBM_clanFinanceDay`
+holds the open day's running totals (`L|row`, `T|item|bu/bg/su/sg`, `B|kind`) and, while saving, its day, opening
+balance and partial flag. Finance lines are keyed by their display text (the explainer exposes no id), escaped
+(`%xx`) so it is safe in the columns; events by `EventGoldKind` name; goods by item string id. A language switch
+therefore starts new rows for the finance lines.
+
 ## Lifecycle wiring (in `RBM/SubModule.cs`)
 
 - `ApplyHarmonyPatches()` → `RBMCampaignPatcher.DoPatching(ref rbmcampaignHarmony)` (PatchAll +
@@ -587,11 +634,11 @@ otherwise. `DevelopmentItem.xml` has exactly one call site (this grid), so scali
   spoils log is not opened here: early traces buffer until `SpoilsLog.StartCampaignLog` opens the file
   on session launch.
 - `OnApplicationTick` (on the map) → `LordSwitcher.CheckHotkey()` and `RBMLedgerHotkey.CheckHotkey()`.
-- `OnGameStart()` (Campaign only, under `rbmCampaignEnabled`) → adds fourteen behaviors:
+- `OnGameStart()` (Campaign only, under `rbmCampaignEnabled`) → adds fifteen behaviors:
   `RBMSpoilsCampaignBehavior`, `RBMTroopUpkeepCampaignBehavior`, `RBMSimulationCampaignBehavior`,
   `RBMSpectateCampaignBehavior`, `RBMEconomyCampaignBehavior`, `RBMSettlementWealthCampaignBehavior`,
   `RBMCaravanBehavior`, `RBMVillageLedgerCampaignBehavior`, `RBMTownLedgerCampaignBehavior`,
-  `RBMGarrisonRefillBehavior`, `RBMRecruitBiasBehavior`, `RBMSettlementDefenseBehavior`,
+  `RBMClanFinanceLedgerCampaignBehavior`, `RBMGarrisonRefillBehavior`, `RBMRecruitBiasBehavior`, `RBMSettlementDefenseBehavior`,
   `RBMDeserterRaiderBehavior`, `RBMRecruitPoolCampaignBehavior` — and, registered last,
   `AddModel(new RBMWorkshopModel())`. (`SaveRosterRepairBehavior`, added for every campaign, is RBM's,
   not RBMCampaign's.)

@@ -154,6 +154,14 @@ PropertyOwnerObject
 
 > **Fill bars fill on `InitialAmount`, not `CurrentAmount`.** Set `InitialAmount` (or
 > `InitialAmountAsFloat`) to make the bar render at load — a known trap.
+>
+> **Vertical `FillBar` (`IsVertical="true"`) is scale-buggy:** its fill is offset below the baseline at any UI
+> scale other than 1080p. For vertical bars use `FillBarVerticalWidget` with `IsDirectionUpward="true"`,
+> `FillWidget="ChildId"` and a fixed-height child `Widget` as the fill (native `GameMenuSiegeWallItem.xml`; RBM's
+> Ledger charts). A brush used by a `FillBar` must define both `DefaultFill` and `ChangeFill` layers, or
+> `FillBar.OnRender` throws. Bar heights cannot come from a bound `SuggestedHeight` (not bindable); bind
+> `InitialAmount` instead. A bar cannot grow below its baseline, so the Ledger draws a negative value as a red bar
+> of its size (a second, toggled `FillBarVerticalWidget`).
 
 ### 1g. Special / helpers (ExtraWidgets)
 
@@ -397,6 +405,11 @@ bindings/commands in the child prefab.
 - `<ItemTemplate Type="First">` / `Type="Last"` provide edge variants.
 - An `<ItemTemplate>` may just reference another prefab: `<ItemTemplate><RecruitTroopPanel/></ItemTemplate>`.
 - List mutations flow `MBBindingList` → `ListChanged` → the view adds/removes child views.
+- A whole panel can be scoped onto a child view model the same way, without a list:
+  `<Widget DataSource="{ClanFinance}">` makes every `@`/`{}` binding beneath it resolve against that VM (a
+  `[DataSourceProperty]` returning a `ViewModel`). RBM's Ledger does this for its Clan finances panel and keeps
+  the panel's `IsVisible="@ShowClanFinance"` on an OUTER widget bound to the screen VM, so the toggle never
+  depends on which scope a widget's own attributes resolve against when it also sets `DataSource`.
 
 ### 3f. Commands — `Command.<Event>`
 

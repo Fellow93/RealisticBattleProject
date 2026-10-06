@@ -18,7 +18,12 @@ namespace RBMCampaign
         /// <summary>Blood money paid to a ransom broker to end a feud (a drain; see <see cref="BloodMoney"/>).</summary>
         BloodMoney,
         /// <summary>Scrap value of a disbanded clan party's ships paid to the player (see <see cref="ShipScrapGold"/>).</summary>
-        ShipScrap
+        ShipScrap,
+        /// <summary>
+        /// What a ruling player pays the mercenary companies in his kingdom's service, taken on THEIR clans'
+        /// apply passes (a drain; see <see cref="MercenaryContractPay"/>), so it is never on his own.
+        /// </summary>
+        MercenaryPay
     }
 
     /// <summary>
@@ -31,9 +36,14 @@ namespace RBMCampaign
     /// NOT shown on any finance breakdown, and it must not be: those breakdowns are projections of what the
     /// clan's daily apply pass will do, and this gold is never on that pass -- it was paid when the event
     /// fired. Folding its averages into the denar tooltip and the Finances tab's Expected Gold made both
-    /// promise a daily change the day never paid. Its one reader is the RBM Ledger's Clan gold tab
-    /// (<see cref="RBMLedgerClanGold"/>), which reports it as what it is: past event gold, day by day.
+    /// promise a daily change the day never paid. Its one reader is the RBM Ledger's Clan finances tab
+    /// (<see cref="RBMClanFinanceLedger"/>), which reports it as what it is: past event gold, day by day.
     /// Player clan only, so the store stays tiny.
+    ///
+    /// Gold paid to a clan member other than the player -- a companion leading his own party takes that
+    /// party's leader's cut, and pays its promotions -- lands in HIS purse, not the clan treasury, and only
+    /// reaches the player later through the finance model's party income. So that share is also kept apart
+    /// (<see cref="GetDayElsewhere"/>), and the finance ledger counts only what touched the player's gold.
     /// </summary>
     public static class ClanEventGoldLedger
     {
@@ -45,6 +55,9 @@ namespace RBMCampaign
 
         // "kind#day" -> gold that kind paid (or took) that campaign day. Only the player's clan is recorded.
         private static Dictionary<string, int> _byDay = new Dictionary<string, int>();
+        // The part of each "kind#day" total that was paid to (or taken from) a clan member other than the
+        // player, so it never moved the player's own gold. Same keys, same pruning.
+        private static Dictionary<string, int> _elsewhereByDay = new Dictionary<string, int>();
         // The first campaign day anything was recorded, so a window younger than HistoryDays is averaged
         // over the days actually tracked rather than diluted by days that never happened.
         private static int _firstDay = -1;
@@ -73,6 +86,12 @@ namespace RBMCampaign
             int current;
             _byDay.TryGetValue(key, out current);
             _byDay[key] = current + gold;
+            if (hero != Hero.MainHero)
+            {
+                int elsewhere;
+                _elsewhereByDay.TryGetValue(key, out elsewhere);
+                _elsewhereByDay[key] = elsewhere + gold;
+            }
             PruneIfNeeded(today);
         }
 
@@ -123,10 +142,21 @@ namespace RBMCampaign
             return _byDay.TryGetValue(Key(kind, day), out gold) ? gold : 0;
         }
 
+        /// <summary>
+        /// The part of <see cref="GetDay"/> that was paid to (or taken from) a clan member other than the
+        /// player -- gold that never moved the player's own purse. Unsigned, like <see cref="GetDay"/>.
+        /// </summary>
+        public static int GetDayElsewhere(EventGoldKind kind, int day)
+        {
+            int gold;
+            return _elsewhereByDay.TryGetValue(Key(kind, day), out gold) ? gold : 0;
+        }
+
         /// <summary>True for the kinds that take gold from the clan rather than pay it.</summary>
         public static bool IsDrain(EventGoldKind kind)
         {
-            return kind == EventGoldKind.UpgradeGold || kind == EventGoldKind.BloodMoney;
+            return kind == EventGoldKind.UpgradeGold || kind == EventGoldKind.BloodMoney
+                || kind == EventGoldKind.MercenaryPay;
         }
 
         private static int Today()
@@ -168,6 +198,8 @@ namespace RBMCampaign
                 foreach (string key in stale)
                 {
                     _byDay.Remove(key);
+                    // Every elsewhere key also has a _byDay key (Record writes both), so this prunes it too.
+                    _elsewhereByDay.Remove(key);
                 }
             }
         }
@@ -180,6 +212,7 @@ namespace RBMCampaign
         public static void Reset()
         {
             _byDay = new Dictionary<string, int>();
+            _elsewhereByDay = new Dictionary<string, int>();
             _firstDay = -1;
             _lastPruneDay = int.MinValue;
         }
@@ -187,10 +220,15 @@ namespace RBMCampaign
         public static void SyncData(IDataStore dataStore)
         {
             dataStore.SyncData("RBM_clanEventGoldByDay", ref _byDay);
+            dataStore.SyncData("RBM_clanEventGoldElsewhereByDay", ref _elsewhereByDay);
             dataStore.SyncData("RBM_clanEventGoldFirstDay", ref _firstDay);
             if (_byDay == null)
             {
                 _byDay = new Dictionary<string, int>();
+            }
+            if (_elsewhereByDay == null)
+            {
+                _elsewhereByDay = new Dictionary<string, int>();
             }
         }
     }
