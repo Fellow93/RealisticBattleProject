@@ -18,6 +18,10 @@ namespace RBMConfig
         public TextViewModel BattleHitLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> BattleHitLoggingEnabled { get; }
 
+        // Per-mission record of which troop perks the game actually asked about (logs/troopperks). Needs Troop Perks.
+        public TextViewModel TroopPerkLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> TroopPerkLoggingEnabled { get; }
+
         // Per-second tactic / behavior / movement-order trace of every team and formation (logs/ai).
         public TextViewModel AiBehaviorLogEnabledText { get; }
         public SelectorVM<SelectorItemVM> AiBehaviorLogEnabled { get; }
@@ -76,6 +80,15 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel BattleHitLoggingEnabledHint { get; } = Hint("{=RBM_DBG_011}Writes every blow of a fought battle to logs/battles next to the config, one file per battle: attacker, target, weapon, body part, armor, damage and health left, plus the standings every 15 seconds and a summary at the end. Arenas and town visits are left out. Default off.");
+
+        [DataSourceProperty]
+        public string TroopPerkLoggingt
+        {
+            get { return new TextObject("{=RBM_DBG_012}Troop Perk Logging").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopPerkLoggingEnabledHint { get; } = Hint("{=RBM_DBG_013}For each battle or other mission, writes to logs/troopperks next to the config which perks from the troop perks file the game actually checked for the troops that fought: perks that took effect (how often, and which game code asked), perks checked where their effect does not apply, and perks never checked, which had no effect. For testing the troop perks file. Needs Troop Perks and RBM Combat on. Takes effect from the next battle. Default off.");
 
         [DataSourceProperty]
         public string AiBehaviorLogt

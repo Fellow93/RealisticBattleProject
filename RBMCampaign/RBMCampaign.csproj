@@ -340,6 +340,7 @@
     <Compile Include="UI\RBMMapNotifications.cs" />
     <Compile Include="UI\SpoilsBarWidget.cs" />
     <Compile Include="UI\SpoilsBarPrefabPatch.cs" />
+    <Compile Include="UI\TroopHoverWidget.cs" />
     <Compile Include="UI\SpoilsPartyTooltip.cs" />
     <Compile Include="UI\MaintenanceLabelWidget.cs" />
     <Compile Include="UI\MaintenanceLabelPrefabPatch.cs" />

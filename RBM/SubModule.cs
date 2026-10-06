@@ -251,11 +251,21 @@ namespace RBM
             ApplyHarmonyPatches();
         }
 
+        public override void OnGameEnd(Game game)
+        {
+            // Drop the previous campaign's troop/perk objects so nothing stale survives into the next game.
+            RBMConfig.TroopPerks.Clear();
+            base.OnGameEnd(game);
+        }
+
         public override void OnBeforeMissionBehaviorInitialize(Mission mission)
         {
             // Unconditional: turning the AI module off mid-session must still release the previous mission's
             // formations, or Formation._simulationFormationTemp outlives its scene.
             MissionStartReset.Reset();
+            // Likewise unconditional: a mission that ended without OnEndMission must not leave the troop perk
+            // recorder running (and holding its entries) into this one. TroopPerkLogLogic restarts it if it is on.
+            TroopPerkLog.Reset();
             base.OnBeforeMissionBehaviorInitialize(mission);
         }
 
@@ -283,6 +293,12 @@ namespace RBM
                 if (RBMConfig.RBMConfig.battleHitLoggingEnabled)
                 {
                     mission.AddMissionBehavior((MissionBehavior)(object)new BattleHitLogic());
+                }
+                // Which listed troop perks the game actually asks about (logs/troopperks). Only meaningful when troop
+                // perks apply at all; without this logic the GetPerkValue postfixes record nothing.
+                if (RBMConfig.RBMConfig.troopPerksEnabled && RBMConfig.RBMConfig.troopPerkLoggingEnabled)
+                {
+                    mission.AddMissionBehavior((MissionBehavior)(object)new TroopPerkLogLogic());
                 }
                 // The view also turns on the aim camera (its own Harmony instance), which frames the view's prediction.
                 if (RBMConfig.RBMConfig.rangedAimArcEnabled)
@@ -367,6 +383,18 @@ namespace RBM
         /// </summary>
         public override void OnGameInitializationFinished(Game game)
         {
+            // Troop perks (RBMConfig.TroopPerks): resolved here because this runs for a new campaign and a loaded
+            // save alike, after every troop and perk object exists. Rebuilt per campaign and only read through
+            // TroopPerks.IsActive (rbmCombatEnabled + troopPerksEnabled), so it is loaded whatever the toggles are and
+            // a toggle flipped mid-game takes effect without a reload. Plain data; no patch or behaviour is added.
+            if (game.GameType is Campaign)
+            {
+                RBMConfig.TroopPerks.Load();
+            }
+            else
+            {
+                RBMConfig.TroopPerks.Clear();
+            }
             if (Campaign.Current != null && Campaign.Current.Clans != null)
             {
                 MBList<Clan> clansToRemove = new MBList<Clan>();

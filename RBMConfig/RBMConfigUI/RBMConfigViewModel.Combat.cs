@@ -60,6 +60,9 @@ namespace RBMConfig
         public TextViewModel RangedAimArcEnabledText { get; }
         public SelectorVM<SelectorItemVM> RangedAimArcEnabled { get; }
 
+        public TextViewModel TroopPerksEnabledText { get; }
+        public SelectorVM<SelectorItemVM> TroopPerksEnabled { get; }
+
         public TextViewModel PassiveShoulderShieldsText { get; }
         public SelectorVM<SelectorItemVM> PassiveShoulderShields { get; }
 
@@ -359,6 +362,15 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel RangedAimArcEnabledHint { get; } = Hint("{=RBM_CFG_AIM_ARC_HINT}Experimental. While you draw a bow or crossbow or wind up a sling, shows the predicted flight of the missile as a dotted arc with a marker where it will land. Uses the same launch speed and air drag the real shot flies with. In third person, when you aim up the camera also lifts and tilts down so the landing point of a high shot stays on screen; where you aim is unchanged, and the crosshair is hidden while the camera is moved (the arc shows the aim). Also covers javelins, throwing axes, throwing knives and stones. Player only. Needs RBM Combat. Default off.");
+
+        [DataSourceProperty]
+        public string TroopPerksEnabledt
+        {
+            get { return new TextObject("{=RBM_CFG_TROOP_PERKS}Troop Perks").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TroopPerksEnabledHint { get; } = Hint("{=RBM_CFG_TROOP_PERKS_HINT}Lets regular soldiers have hero perks, listed per troop in the mod's troop perks file (rbm_troop_perks.xml). Only personal perks have an effect, and only in battle. A troop's perks are listed in its tooltip and on its encyclopedia page. The perks need RBM Combat. This setting also shows a troop's tooltip when you hover its row on the party screen (needs RBM Campaign; that hover only follows a change after a game restart). No troops have perks yet. Default on.");
 
         [DataSourceProperty]
         public string PassiveShieldt

@@ -236,6 +236,24 @@
 											  </Children>
 											</ListPanel>
 
+											<!-- Troop Perk Logging (needs Troop Perks in the Combat section; displayed just below Field Battle Logging) -->
+											<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+											  <Children>
+												<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+												  <Children>
+													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopPerkLoggingt"/>
+													<HintWidget DataSource="{TroopPerkLoggingEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+												  </Children>
+												</Widget>
+												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
+												  <Children>
+													<RichTextWidget DataSource="{TroopPerkLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+													<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{TroopPerkLoggingEnabled}" />
+												  </Children>
+												</ListPanel>
+											  </Children>
+											</ListPanel>
+
 											<!-- Field Battle Logging -->
 											<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 											  <Children>
@@ -1688,6 +1706,24 @@
 										  <Children>
 										    <ListPanel Id="CombatOptions" DoNotAcceptEvents="true" IsVisible="false" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
 										      <Children>
+										<!-- Troop Perks (first child = displayed at the bottom of the Combat section) -->
+										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+										  <Children>
+											<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+											  <Children>
+												<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@TroopPerksEnabledt"/>
+												<HintWidget DataSource="{TroopPerksEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+											  </Children>
+											</Widget>
+											<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
+											  <Children>
+												<RichTextWidget DataSource="{TroopPerksEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+												<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{TroopPerksEnabled}" />
+											  </Children>
+											</ListPanel>
+										  </Children>
+										</ListPanel>
+
 										<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 										  <Children>
 

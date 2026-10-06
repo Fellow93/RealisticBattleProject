@@ -48,6 +48,7 @@ namespace RBMCampaign
                 rbmcampaignHarmony.CreateClassProcessor(type).Patch();
             }
             RBMTroopSpoilsBarWidget.RegisterWidgetType();
+            RBMTroopHoverTooltipWidget.RegisterWidgetType();
             UpgradeLimitWidgets.RegisterWidgetTypes();
             // Drop any nameplate view-models left subscribed to RBM's map-bubble events by a previous
             // session, so a save reload does not pin the old map's nameplates in memory. See RBMMapNotifications.

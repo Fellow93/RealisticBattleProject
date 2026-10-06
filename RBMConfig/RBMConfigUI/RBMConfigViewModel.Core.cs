@@ -142,6 +142,10 @@ namespace RBMConfig
             RangedAimArcEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_AIM_ARC}Ranged aim arc (player, experimental)"));
             RangedAimArcEnabled = new SelectorVM<SelectorItemVM>(rangedAimArcEnabled, 0, null);
 
+            List<string> troopPerksOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            TroopPerksEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_TROOP_PERKS}Troop Perks"));
+            TroopPerksEnabled = new SelectorVM<SelectorItemVM>(troopPerksOptions, 0, null);
+
             List<string> passiveShoulderShields = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
             PassiveShoulderShieldsText = new TextViewModel(new TextObject("{=RBM_CON_008}Passive Shoulder Shields"));
             PassiveShoulderShields = new SelectorVM<SelectorItemVM>(passiveShoulderShields, 0, null);
@@ -209,6 +213,8 @@ namespace RBMConfig
             RangedReloadAffectsAi.SelectedIndex = RBMConfig.rangedReloadAffectsAi ? 1 : 0;
 
             RangedAimArcEnabled.SelectedIndex = RBMConfig.rangedAimArcEnabled ? 1 : 0;
+
+            TroopPerksEnabled.SelectedIndex = RBMConfig.troopPerksEnabled ? 1 : 0;
 
             if (RBMConfig.passiveShoulderShields)
             {
@@ -436,6 +442,8 @@ namespace RBMConfig
             DeveloperMode = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.developerMode ? 1 : 0, null);
             BattleHitLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_095}Field Battle Logging"));
             BattleHitLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.battleHitLoggingEnabled ? 1 : 0, null);
+            TroopPerkLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_DBG_012}Troop Perk Logging"));
+            TroopPerkLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.troopPerkLoggingEnabled ? 1 : 0, null);
             AiBehaviorLogEnabledText = new TextViewModel(new TextObject("{=RBM_DBG_004}AI Behavior Logging"));
             AiBehaviorLogEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.aiBehaviorLogEnabled ? 1 : 0, null);
             ArmorPenetrationMessageText = new TextViewModel(new TextObject("{=RBM_DBG_006}Armor Penetration Messages"));
@@ -579,6 +587,7 @@ namespace RBMConfig
             RBMConfig.rangedReloadAffectsAi = RangedReloadAffectsAi.SelectedIndex == 1;
 
             RBMConfig.rangedAimArcEnabled = RangedAimArcEnabled.SelectedIndex == 1;
+            RBMConfig.troopPerksEnabled = TroopPerksEnabled.SelectedIndex == 1;
 
             if (PassiveShoulderShields.SelectedIndex == 0)
             {
@@ -771,6 +780,7 @@ namespace RBMConfig
             // Debug & Logging
             RBMConfig.developerMode = DeveloperMode.SelectedIndex == 1;
             RBMConfig.battleHitLoggingEnabled = BattleHitLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.troopPerkLoggingEnabled = TroopPerkLoggingEnabled.SelectedIndex == 1;
             RBMConfig.aiBehaviorLogEnabled = AiBehaviorLogEnabled.SelectedIndex == 1;
             RBMConfig.armorPenetrationMessage = ArmorPenetrationMessage.SelectedIndex == 1;
             RBMConfig.simulationLoggingEnabled = SimulationLoggingEnabled.SelectedIndex == 1;
@@ -821,6 +831,7 @@ namespace RBMConfig
             RangedReloadSpeed.SelectedIndex = 2;
             RangedReloadAffectsAi.SelectedIndex = 0;
             RangedAimArcEnabled.SelectedIndex = 0;
+            TroopPerksEnabled.SelectedIndex = 1;
             ActiveTroopOverhaul.SelectedIndex = 1;
             RBMCombatEnabled.SelectedIndex = 1;
 
@@ -888,6 +899,7 @@ namespace RBMConfig
             // Debug & Logging: all off
             DeveloperMode.SelectedIndex = 0;
             BattleHitLoggingEnabled.SelectedIndex = 0;
+            TroopPerkLoggingEnabled.SelectedIndex = 0;
             AiBehaviorLogEnabled.SelectedIndex = 0;
             ArmorPenetrationMessage.SelectedIndex = 0;
             SimulationLoggingEnabled.SelectedIndex = 0;

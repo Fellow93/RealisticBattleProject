@@ -8,12 +8,15 @@
 ### Combat
 - With War Sails, the swing that cuts a ship's boarding rope now carries on through it, as in vanilla, instead of stopping as if it had hit something solid.
 - Crouching soldiers again move faster with Roguery skill, as in vanilla v1.5. RBM's agent stats had left the bonus out.
+- **Regular troops can now have hero perks.** Perks are given to a troop type in a new troop perks file (`ModuleData/rbm_troop_perks.xml`), and work in battle as they do for a hero. Only a perk's personal effect counts, and some perks do nothing for troops: they are only checked for heroes (such as Horse Master, Mounted Crossbowman, Projectile Deflection and Running Throw), or only act on the campaign map (most Charm, Trade and Roguery perks). About 150 perks do work for troops. Mighty Blow (Athletics) is only given to a troop with more than 250 Athletics, since below that its hit point bonus would take hit points away. A troop's perks are listed in its tooltip (hold Alt for what each one does) and as perk icons on its encyclopedia page. No troops have perks yet: this release only adds the system. It can be switched off with the new Troop Perks setting (Combat section, needs RBM Combat).
+- New Troop Perk Logging setting (RBM Debug & Logging, off by default): writes a file per battle to `logs/troopperks` listing which troop perks the game actually checked for the troops that fought, and which it never checked.
 - Shield bashes and weapon bashes now reach about as far as a kick. They used to fall short at the same distance, so AI bashes often hit only air. The larger kick hit radius from v4.5.3 had never applied to weapon bashes, and the arm of a shield bash reaches less far forward than a kicking leg.
 
 ### AI
 - Formations under arrow fire raise their shields and react again (shields up in the ranks, a cautious advance under fire). Since v1.5 a formation only counted as under fire when an arrow hit a shield; arrows that struck men did not count.
 
 ### Campaign
+- Hovering a soldier's row on the party screen (either side) now shows his troop tooltip: tier, the experience he needs to upgrade, wage, maintenance, skills and any troop perks. The base game showed no tooltip there. On with the Troop Perks setting; a change to that setting reaches the party screen after a game restart.
 - A town's governor now changes how much food its garrison eats according to his Generosity, as in vanilla v1.5 (a generous governor's garrison eats 10% more). The militia's ration is unaffected.
 - With War Sails, the Accuracy Training governor perk now adds militia to villages of a port town only while the governor is in the town, as the perk already worked for the town itself.
 - Forcing supplies out of a village now takes the coin from the village's own wealth, and a poor village hands over only what it has. The coin goes to your men as spoils and you get your usual cut, as in a raid. The goods you take are cut like a raid's haul: about half of vanilla's, more with Roguery or a Nord leader. Vanilla paid the coin out of nowhere and left the village's wealth untouched.

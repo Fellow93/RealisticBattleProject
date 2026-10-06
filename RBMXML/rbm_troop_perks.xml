@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  RBM troop perks: hero perks for regular (non-hero) troops.
+
+  Format
+    <TroopPerks>
+      <Troop id="troop_string_id">        the troop's id, as in spnpccharacters.xml (e.g. vlandian_sharpshooter)
+        <Perk id="PerkStringId"/>          one per perk; any number
+      </Troop>
+    </TroopPerks>
+
+  Perk ids are the perk's StringId: the skill name followed by the perk name, no spaces, as in vanilla's
+  DefaultPerks (e.g. CrossbowSteady, CrossbowWindWinder, BowRapidFire, BowMountedArchery, RidingSagittarius,
+  OneHandedShieldBearer, AthleticsIgnorePain, PolearmFootwork, TwoHandedStrongGrip). War Sails perks use their
+  own ids (e.g. ShipwrightsInsight). The perk icon files in SandBox/GUI/SandBoxSpriteData.xml (SPPerks\<id>) list
+  them all.
+
+  How it works
+    - A listed perk counts as owned by that troop in battle, with its normal vanilla effect. Nothing on the
+      campaign map changes. Needs RBM Combat and the Troop Perks setting (RBM Configuration > Combat).
+    - Only PERSONAL perk effects do anything: a troop is never a captain, party leader, quartermaster or
+      governor, so the captain/party/leader halves of a perk are ignored. A perk with no personal effect at
+      all does nothing.
+    - Entries are not inherited along the upgrade tree: list each troop that should have a perk.
+    - Heroes (lords, companions, the player) are ignored; they have their own perks.
+    - The troop's perks are listed in its tooltip and on its encyclopedia page.
+    - Unknown troop or perk ids are skipped and reported in the game log (rgl_log), as are perks below.
+    - Other modules can ship their own ModuleData/rbm_troop_perks.xml; all active modules' files are merged.
+
+  Perks that do NOT work for troops (troop-perk audit, v1.5.4; full list with reasons in
+  tools/TroopPerkEditor/audit/README.md of the RBM repository):
+    Hero or player only (never checked for a troop): BowHorseMaster, CrossbowMountedCrossbowman,
+      TwoHandedProjectileDeflection, TwoHandedBaptisedInBlood, ThrowingRunningThrow, BowEagleEye,
+      ThrowingFocus, CrossbowLongShots, RidingWellStraped, AthleticsDurable, AthleticsSteady, AthleticsStrong,
+      VigorousSmith, StrongSmith, EnduringSmith, WeaponMasterSmith, MedicineMinisterOfHealth,
+      ShipwrightsInsight (War Sails).
+    Campaign only (map, trade, persuasion, smithing, post-battle healing): every personal Charm and Trade
+      perk, the smithing-screen Smithing perks (all but CraftingSharpenedEdge/SharpenedTip), and the
+      off-battlefield personal perks of Roguery, Leadership, Medicine, Tactics and Athletics (e.g.
+      RogueryScarface, LeadershipPresence, MedicineWalkItOff, TacticsBesieged, AthleticsStamina), plus Arr
+      and Resilience (War Sails).
+    Removed by RBM for everyone: OneHandedArrowCatcher (RBM fixes the shield's missile catch size).
+    Perks with no personal effect at all (captain, party leader, governor, ... only) also do nothing.
+  AthleticsMightyBlow is only given to a troop with Athletics above 250 (skipped otherwise, and logged): its HP
+  bonus is (Athletics skill - 250), so below that a troop would lose hit points.
+
+  Example (not active):
+    <Troop id="vlandian_sharpshooter">
+      <Perk id="CrossbowSteady"/>
+      <Perk id="CrossbowWindWinder"/>
+    </Troop>
+-->
+<TroopPerks>
+  <!-- TEST entry: remove before release -->
+  <Troop id="vlandian_sharpshooter">
+    <Perk id="CrossbowSteady"/>
+    <Perk id="CrossbowWindWinder"/>
+  </Troop>
+</TroopPerks>

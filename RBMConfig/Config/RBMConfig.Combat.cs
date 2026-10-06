@@ -60,6 +60,11 @@ namespace RBMConfig
         // stays on screen (RBMCombat RangedAimCamera). Needs rbmCombatEnabled too; when either is off the view is
         // not even added to the mission and nothing is patched.
         public static bool rangedAimArcEnabled = false;
+        // Hero perks for regular (non-hero) troops, listed per troop in ModuleData/rbm_troop_perks.xml
+        // (loader: Shared/TroopPerks.cs; battle effect + troop tooltip/encyclopedia rows: RBMCombat
+        // CombatModule/TroopPerks/; party-screen troop hover: RBMCampaign UI/TroopHoverWidget.cs). Needs
+        // rbmCombatEnabled too for the perks to apply or be listed; the party-screen hover needs rbmCampaignEnabled.
+        public static bool troopPerksEnabled = true;
         public static float maceBluntModifier = 1f;
         public static float armorThresholdModifier = 1f;
         public static float bluntTraumaBonus = 0f;

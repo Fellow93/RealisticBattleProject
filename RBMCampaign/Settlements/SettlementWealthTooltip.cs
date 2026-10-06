@@ -11,14 +11,17 @@ namespace RBMCampaign
     /// top of them can be watched settlement by settlement rather than only in the log.
     /// </summary>
     /// <remarks>
-    /// The settlement tooltip is not driven by a live method call the way a Harmony patch would catch it:
-    /// the game captures a delegate to TooltipRefresherCollection.RefreshSettlementTooltip once, in
-    /// SandBox.View's OnSubModuleLoad, and every hover fires through that captured delegate. A patch
-    /// applied later never routes through it, and one applied early enough to be captured runs while the
-    /// campaign map is still loading and crashes the load. So rather than patching, we re-register the
-    /// Settlement tooltip with a wrapper that calls whatever refresher was registered and then adds our
-    /// lines. Registration happens once at startup, so re-registering after the session is up
-    /// (see <see cref="RBMSettlementWealthCampaignBehavior"/>) sticks for the whole process.
+    /// A Harmony patch on TooltipRefresherCollection.RefreshSettlementTooltip is not enough. SandBox.View
+    /// registers it as the Settlement refresher (SandBoxViewSubModule.RegisterTooltipTypes, from
+    /// OnSubModuleLoad), and every hover looks the refresher up again in InformationManager.RegisteredTypes
+    /// (TooltipBaseVM.InvokeRefreshData), so a patch on that method would fire as long as it stays registered.
+    /// But War Sails re-registers Settlement with its own NavalTooltipRefresherCollection.RefreshSettlementTooltip
+    /// (NavalDLCViewSubModule.RegisterTooltipTypes), a full replacement that never calls vanilla's, so with the
+    /// DLC active a patch on vanilla's method never runs. An early patch was also seen to crash the campaign load.
+    /// So rather than patching, we re-register the Settlement tooltip with a wrapper that calls whatever refresher
+    /// is registered (vanilla's or War Sails') and then adds our lines. The modules register theirs once at
+    /// startup, so re-registering after the session is up (see <see cref="RBMSettlementWealthCampaignBehavior"/>)
+    /// sticks for the whole process.
     /// </remarks>
     public static class SettlementWealthTooltip
     {

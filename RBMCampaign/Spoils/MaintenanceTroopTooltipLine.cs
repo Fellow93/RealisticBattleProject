@@ -11,7 +11,10 @@ namespace RBMCampaign
     /// <summary>
     /// Adds a per-man "Maintenance" line to the troop tooltip, directly under the wage line vanilla
     /// already shows, so a soldier's daily upkeep reads beside his daily pay wherever his troop card is
-    /// hovered -- the party screen above all. Display only: it reports the figure the daily charge prices
+    /// hovered: the recruit screen, the encyclopedia troop tree and list, and the party screen's troop rows.
+    /// Vanilla's party rows have no troop tooltip; RBM's <see cref="RBMTroopHoverTooltipWidget"/> adds it
+    /// (on with the Troop Perks setting), and the party screen's selected-troop panel shows the same figure
+    /// in its own label (<see cref="RBMTroopMaintenanceTextWidget"/>). Display only: it reports the figure the daily charge prices
     /// upkeep at (see <see cref="SpoilsPool.GetDailyMaintenancePerMan"/>) and touches no purse. Off when
     /// the spoils economy or maintenance itself is off.
     /// </summary>

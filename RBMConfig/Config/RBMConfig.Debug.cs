@@ -58,5 +58,12 @@ namespace RBMConfig
         // actually happened: who was shooting, who had reached anybody yet, what armour a blow met, what it did.
         // Off by default. A real battle lands thousands of blows and each is a line.
         public static bool battleHitLoggingEnabled = false;
+
+        // Writes, per mission, which perks from rbm_troop_perks.xml the game actually asked about for the listed
+        // troops that fought -- granted (how often, and from which caller), asked where the effect does not apply,
+        // or never asked (no effect at all) -- to logs/troopperks (RBMCombat CombatModule/TroopPerks/TroopPerkLog*).
+        // Kept under /Config/RBMCombat/Global with the hit log. Only meaningful with troopPerksEnabled and
+        // rbmCombatEnabled; the mission logic is not even added otherwise. Off by default.
+        public static bool troopPerkLoggingEnabled = false;
     }
 }

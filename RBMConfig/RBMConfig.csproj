@@ -297,6 +297,7 @@
     <Compile Include="Shared\MeleeBlockKind.cs" />
     <Compile Include="Shared\MissileBallistics.cs" />
     <Compile Include="Shared\SkillDamage.cs" />
+    <Compile Include="Shared\TroopPerks.cs" />
     <!-- Helpers -->
     <Compile Include="Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

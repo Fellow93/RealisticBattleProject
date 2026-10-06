@@ -281,6 +281,8 @@ namespace RBMConfig
             realisticRangedReload = ReadOrCreate("/Config/RBMCombat/Global", "RealisticRangedReload", "2");
             rangedReloadAffectsAi = ReadOrCreate("/Config/RBMCombat/Global", "RangedReloadAffectsAi", "0").Equals("1");
             rangedAimArcEnabled = ReadOrCreate("/Config/RBMCombat/Global", "RangedAimArcEnabled", "0").Equals("1");
+            troopPerksEnabled = ReadOrCreate("/Config/RBMCombat/Global", "TroopPerksEnabled", "1").Equals("1");
+            troopPerkLoggingEnabled = ReadOrCreate("/Config/RBMCombat/Global", "TroopPerkLoggingEnabled", "0").Equals("1");
             maceBluntModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "MaceBluntModifier", "1"));
             armorThresholdModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "ArmorThresholdModifier", "1"));
             bluntTraumaBonus = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "BluntTraumaBonus", "0"));
@@ -475,6 +477,8 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RealisticRangedReload"), realisticRangedReload.ToString());
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RangedReloadAffectsAi"), rangedReloadAffectsAi);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/RangedAimArcEnabled"), rangedAimArcEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/TroopPerksEnabled"), troopPerksEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/TroopPerkLoggingEnabled"), troopPerkLoggingEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/MaceBluntModifier"), maceBluntModifier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/ArmorThresholdModifier"), armorThresholdModifier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/BluntTraumaBonus"), bluntTraumaBonus.ToString(CultureInfo.InvariantCulture));

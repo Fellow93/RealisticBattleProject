@@ -507,6 +507,21 @@ native modules include no `SpriteData/` folders** — sprites are packed in `.tp
 resolved by name globally. RBM ships no sprites of its own; its prefabs/brushes reference
 base-game sprite names (`BlankWhiteSquare`, `HintBG@2x_9`, `mission_health_bar_fill_9`, …).
 
+**A sprite only renders when its sprite category is loaded.** Every `<SpritePart>` names a
+`<CategoryName>`; resolving the name always succeeds (`SpriteData.GetSprite` returns the `Sprite`,
+`null` only for an unknown name), but if the category's sheets are not loaded the widget simply
+draws nothing (no crash). Categories marked `<AlwaysLoad/>` are always there (§4e); any other must be
+loaded by the screen that uses it: `UIResourceManager.LoadSpriteCategory("name")` (throws on an
+unknown name, so check `UIResourceManager.GetSpriteCategory` first), or `category.Load(
+UIResourceManager.ResourceContext, UIResourceManager.ResourceDepot)` on the category from
+`((SpriteGeneric)sprite).SpritePart.Category`. `SpriteCategory.Load`/`Unload` have **no reference
+count**: the first `Unload` frees the sheets for everyone. So a mod that borrows a category another
+screen owns should load it and **never unload it**. Example: perk icons (`SPPerks\<PerkStringId>`,
+fallback `SPPerks\locked_fallback`) are in `ui_characterdeveloper` (War Sails perks in
+`ui_naval_character_developer`), which only `GauntletCharacterDeveloperScreen` loads and unloads; RBM's
+encyclopedia troop-perk icons (`RBMCombat/CombatModule/TroopPerks/TroopPerkDisplay.cs`) load the
+category and leave it loaded.
+
 `ImageFit` (on widgets and layers): `Type` = `StretchToFit` (distort) · `Cover` (fill, may
 crop) · `Contain` (fit, letterbox), with H/V alignment.
 
@@ -589,19 +604,38 @@ public class MyVM : ViewModel                     // TaleWorlds.Library.ViewMode
 
 ### 5c. Map hover tooltips (`PropertyBasedTooltipVM`) — adding lines
 
-- Map-object tooltips (settlement, party, hero…) are **not prefabs you edit**: each type is
-  registered once via `InformationManager.RegisterTooltip<T, PropertyBasedTooltipVM>(refresher, "PropertyBasedTooltip")`
-  (SandBox.View `MapScreen.RegisterTooltipTypes`), and the refresher fills rows with
-  `vm.AddProperty(definition, value, textHeight, flags)` (`TaleWorlds.Core.ViewModelCollection.Information`).
+- Map-object tooltips (settlement, party, hero, troop…) are **not prefabs you edit**: each type is
+  registered via `InformationManager.RegisterTooltip<T, PropertyBasedTooltipVM>(refresher, "PropertyBasedTooltip")`
+  (SandBox.View `SandBoxViewSubModule.RegisterTooltipTypes`, called from its `OnSubModuleLoad`; other
+  modules register theirs the same way, e.g. `NavalDLCViewSubModule.RegisterTooltipTypes`), and the
+  refresher fills rows with `vm.AddProperty(definition, value, textHeight, flags)`
+  (`TaleWorlds.Core.ViewModelCollection.Information`). Show one from code with
+  `InformationManager.ShowTooltip(typeof(T), args…)`; hide with `MBInformationManager.HideInformations()`.
+- The refresher is **looked up on every show**: `TooltipBaseVM.InvokeRefreshData` reads
+  `InformationManager.RegisteredTypes[_invokedType].OnRefreshData` each time, and
+  `PropertyBasedTooltipVM` clears and re-runs it on every Alt (`IsExtended`) toggle. So a Harmony patch on
+  a registered refresher method fires as long as that method is still the registered one, and a postfix can
+  gate long text on `vm.IsExtended`.
 - Row shapes vanilla uses: `AddProperty(label, value)` for a label/value pair;
   `AddProperty("", text)` for a single free-text line (empty *definition*, text in *value*);
-  `AddProperty("", "", -1)` for a blank separator; `TooltipPropertyFlags.Title`/`MultiLine` for headings/wrapped text.
-- **Settlement tooltip:** do NOT Harmony-patch `TooltipRefresherCollection.RefreshSettlementTooltip`
-  (early patch crashes save load, late patch never fires — the delegate was captured at startup).
+  `AddProperty("", "", -1)` for a blank separator; `TooltipPropertyFlags.Title`/`MultiLine` for headings/wrapped text;
+  `RundownSeperator` (0x200) for the rule under a section header.
+- **Settlement tooltip:** do NOT Harmony-patch `TooltipRefresherCollection.RefreshSettlementTooltip`.
+  War Sails re-registers `Settlement` with its own `NavalTooltipRefresherCollection.RefreshSettlementTooltip`
+  (`NavalDLCViewSubModule.cs` ~109), a full replacement that never calls vanilla's, so with the DLC on a
+  patch on vanilla's method never runs (an early patch was also seen to crash the campaign load).
   Re-register a wrapper instead: read `InformationManager.RegisteredTypes[typeof(Settlement)]`,
   chain its `OnRefreshData`, re-register with the same `MovieName`. RBM does this once in
   `RBMCampaign/Settlements/SettlementWealthTooltip.cs` (`Install()`, from `OnSessionLaunched`) —
   **add new settlement rows to its `Append`**, don't install a second wrapper. (Memory: `settlement-hover-tooltip-hook`.)
+- **Troop tooltip** (`CharacterObject`): `TooltipRefresherCollection.RefreshCharacterTooltip` (title, tier,
+  upgrade xp, wage, blank, "Skills", rundown separator, skill rows). Nobody re-registers it, so it IS
+  patched directly; RBM has three postfixes: `MaintenanceTroopTooltipLine` (inserts under the wage by index),
+  `RBMCombat TroopPerkDisplay` (appends a "Perks" block, `[HarmonyPriority(Priority.High)]`) and
+  `RecruitCostHint` (appends the recruit cost, normal priority, so it stays last). Shown by the recruit
+  screen, the encyclopedia troop tree and unit list, and RBM's party-screen row hover. Vanilla party-screen
+  rows have **no** troop tooltip (hovering only calls `ExecuteSetFocused`); RBM's
+  `RBMTroopHoverTooltipWidget` adds one (§8).
 - **`ExplainedNumber`-driven tooltips** (garrison/militia change, finance lines) drop any line whose
   value is ~0, so a purely informational figure must ride in the **label** of a non-zero line
   (e.g. `GarrisonRecruitCost.GetGarrisonChangeExplained` embeds the recruit pool in its recruitment line).
@@ -790,8 +824,32 @@ parse):
 
 Sibling patches using the same trick: `SpoilsBarPrefabPatch`, `MaintenanceLabelPrefabPatch`,
 `UpgradeLimitPrefabPatch` (all under `RBMCampaign/UI/`). Injected custom widgets are
-ordinary `Widget` subclasses registered into `WidgetFactory._builtinTypes` before the
-patched XML loads.
+ordinary `Widget` subclasses registered into `WidgetFactory._builtinTypes` (and
+`WidgetInfo._widgetInfos`) before the patched XML loads.
+
+**Codegen'd prefabs** (a generated C# class in `<Module>/bin/…/*.AutoGenerated.N.dll`, keyed by
+`<PrefabName>__<VM full type name with _>`) never read their XML, so step 1 is required before any XML
+edit of them or of a prefab nested in them. Ones RBM skips: `PartyScreen` (whose nested
+`PartyTroopTuple`/`PartyTroopTupleLeft` then load from XML), `Inventory`, `ClanScreen`, `TownManagement`,
+`DevelopmentItem`, `Crafting` and the map escape menu. `EncyclopediaUnitPage` is codegen'd too
+(`SandBox.GauntletUI.AutoGenerated.0.dll`) and would need the same skip for an XML edit. To check a prefab, grep the
+AutoGenerated DLLs for its name. Changing only the **data** a codegen'd prefab binds (e.g. adding items to
+a bound `MBBindingList` from a VM postfix) needs no skip: RBM's encyclopedia troop-perk icons are appended
+to `EncyclopediaUnitPageVM.PropertiesList` (the tier/type icon row, an `ItemTemplate` with
+`Sprite="@Text"` + `HintWidget DataSource="{Hint}"`) from a `RefreshValues` postfix. The unit page's
+Skills grid (`{Skills}`) is **commented out** in `EncyclopediaUnitPage.xml`, so `Skills` is never shown.
+
+**One redirect per file, several additions.** `SpoilsBarPrefabPatch` owns the `PartyTroopTuple.xml`
+redirect (and `PartyTroopTupleLeft.xml`); new party-row additions go into its rewrite with their own gate
+(spoils bar: `SpoilsPool.IsEnabled`; troop hover: `RBMTroopHoverTooltipWidget.IsFeatureEnabled`), not into a
+second `LoadFrom` prefix. Decided once per file at first load; a config change needs a restart.
+
+**A hover that does not steal input** (`RBMTroopHoverTooltipWidget`, `RBMCampaign/UI/TroopHoverWidget.cs`):
+a zero-sized, `IsDisabled`, `DoNotAcceptEvents` custom widget injected as a direct child of the row's root
+button that, like `HintWidget`, subscribes to `ParentWidget.EventFire` in `OnConnectedToRoot` (unsubscribe in
+`OnDisconnectedFromRoot`) and reacts to `"HoverBegin"` / `"HoverEnd"` (plus `"MouseDown"`,
+`"MouseAlternateDown"`, `"DragBegin"` to hide). The row stays the click/drag target; any child that accepts
+events (buttons, icons with hints) takes the hover and so ends the row's.
 
 See the memory `injecting-into-native-gauntlet-prefabs` for the FillBar-fills-on-InitialAmount
 caveat and the `WidgetPrefab.LoadFrom` redirect details.
