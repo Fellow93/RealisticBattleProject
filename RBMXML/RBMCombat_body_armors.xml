@@ -418,7 +418,7 @@
 	</Item>
 	<Item id="tied_cloth_tunic" name="{=MQ8LCvCE}Tied Cloth Tunic" mesh="roman_cloth_tunic_a" culture="Culture.empire" weight="0.4" Type="BodyArmor" appearance="1" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5"/>
+			<Armor body_armor="8" leg_armor="8" covers_body="true" modifier_group="cloth_unarmoured" material_type="Cloth" arm_armor="5" stealth_factor="5"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true" Civilian="true"/>
 	</Item>
@@ -1372,7 +1372,7 @@
 	</Item>
 	<Item id="coat_of_plates_over_mail" name="{=PtfbqMeg}Brigandine over Mail" mesh="tunic_ironplate_armor" culture="Culture.vlandia" weight="20.11" Type="BodyArmor" appearance="3" difficulty="0" subtype="body_armor">
 		<ItemComponent>
-			<Armor body_armor="82" leg_armor="38" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="49"/>
+			<Armor body_armor="82" leg_armor="38" covers_body="true" modifier_group="plate" material_type="Plate" arm_armor="49" has_gender_variations="false"/>
 		</ItemComponent>
 		<Flags UseTeamColor="true"/>
 	</Item>
