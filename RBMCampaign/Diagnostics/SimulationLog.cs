@@ -181,7 +181,7 @@ namespace RBMCampaign
         {
             try
             {
-                if (Campaign.Current == null)
+                if (!SpoilsLog.CampaignClockReady())
                 {
                     return "----";
                 }

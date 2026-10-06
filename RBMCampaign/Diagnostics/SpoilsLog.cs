@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using TaleWorlds.CampaignSystem;
@@ -45,6 +46,10 @@ namespace RBMCampaign
         // every line and the eye can scan straight down. Category holds the longest tag ("UPGRADE").
         private const int CategoryWidth = 8;
         private static readonly string[] SeasonNames = { "Spring", "Summer", "Autumn", "Winter" };
+
+        // Campaign.MapTimeTracker is internal; read it to tell whether CampaignTime.Now is safe yet.
+        private static readonly PropertyInfo MapTimeTrackerProperty =
+            typeof(Campaign).GetProperty("MapTimeTracker", BindingFlags.Instance | BindingFlags.NonPublic);
 
         /// <summary>
         /// The timestamp is fixed for the span of a log so every line of a single run lands in the
@@ -377,11 +382,27 @@ namespace RBMCampaign
         /// CampaignTime.Now reads Campaign.Current, null before a campaign exists (the early UI lines),
         /// and can throw while the time system is still mid-init; both cases simply yield no divider.
         /// </remarks>
-        private static string DayDividerIfChanged()
+        /// <summary>
+        /// True once CampaignTime.Now and its date getters can be read without throwing. Shared by
+        /// every campaign log's date stamp.
+        /// </summary>
+        internal static bool CampaignClockReady()
         {
             // DaysInYear is zero until CampaignTime.Initialize has run the time model; GetYear divides
             // by the tick count derived from it, so a line written before then would divide by zero.
             if (Campaign.Current == null || CampaignTime.DaysInYear <= 0)
+            {
+                return false;
+            }
+            // CampaignTime.Now dereferences Campaign.MapTimeTracker, which stays null on a new campaign
+            // until OnInitialize creates it. The callers' catch would swallow the NRE, but a first-chance
+            // exception on every early line stops an attached debugger, so check it up front.
+            return MapTimeTrackerProperty == null || MapTimeTrackerProperty.GetValue(Campaign.Current) != null;
+        }
+
+        private static string DayDividerIfChanged()
+        {
+            if (!CampaignClockReady())
             {
                 return null;
             }

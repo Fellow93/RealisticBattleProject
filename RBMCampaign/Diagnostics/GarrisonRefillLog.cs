@@ -135,8 +135,7 @@ namespace RBMCampaign
 
         private static string DayDividerIfChanged()
         {
-            // DaysInYear is zero until the campaign time model has initialized; GetYear would divide by zero.
-            if (Campaign.Current == null || CampaignTime.DaysInYear <= 0)
+            if (!SpoilsLog.CampaignClockReady())
             {
                 return null;
             }
