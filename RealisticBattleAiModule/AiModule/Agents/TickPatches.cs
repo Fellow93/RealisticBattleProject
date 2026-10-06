@@ -370,7 +370,7 @@ namespace RBMAI
                 // ordered to retreat is left alone too: the Retreat order is applied once and never re-applied,
                 // so rallying it would leave it standing with no movement target.
                 CommonAIComponent rallyAi = ___Agent.CommonAIComponent;
-                if (rallyAi != null && chargeRoutedAgents.Contains(___Agent) && ___Agent.GetMorale() > 0f && currentTime - ___Agent.LastMeleeHitTime > 10f
+                if (rallyAi != null && chargeRoutedAgents.Contains(___Agent) && ___Agent.GetMorale() > 0f && currentTime - ___Agent.LastRecievedMeleeHitTime > 10f
                     && ___Agent.Formation?.GetReadonlyMovementOrderReference().OrderEnum != MovementOrder.MovementOrderEnum.Retreat)
                 {
                     chargeRoutedAgents.Remove(___Agent);

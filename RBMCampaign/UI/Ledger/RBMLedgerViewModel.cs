@@ -667,6 +667,7 @@ namespace RBMCampaign
             { SettlementWealth.Source.CaravanRepay,   "{=RBM_LEDGER_SRC_CARAVAN_REPAY}Caravan repayment" },
             { SettlementWealth.Source.WealthTax,      "{=RBM_LEDGER_SRC_WEALTH_TAX}Wealth tax" },
             { SettlementWealth.Source.Ransom,         "{=RBM_LEDGER_SRC_RANSOM}Prisoner ransom" },
+            { SettlementWealth.Source.Execution,      "{=RBM_LEDGER_SRC_EXECUTION}Executed captives' kit" },
             { SettlementWealth.Source.WorkshopWages,  "{=RBM_LEDGER_SRC_WORKSHOP_WAGES}Workshop wages" },
             { SettlementWealth.Source.CastleIncome,   "{=RBM_LEDGER_SRC_CASTLE_INCOME}Castle income" },
             { SettlementWealth.Source.Dearth,         "{=RBM_LEDGER_SRC_DEARTH}Emergency food" },

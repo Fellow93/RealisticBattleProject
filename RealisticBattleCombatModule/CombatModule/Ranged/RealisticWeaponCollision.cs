@@ -151,11 +151,26 @@ namespace RBMCombat
             }
         }
 
+        // v1.5.x: a one-shot reaction override (NavalDLC sets SlicedThrough when a blow cuts a ship rope) is
+        // consumed and cleared by vanilla before the postfix runs, so note here whether one was pending.
+        [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
+        [HarmonyPrefix]
+        [HarmonyPatch("DecideWeaponCollisionReaction")]
+        private static void DecideWeaponCollisionReactionOverridePrefix(out bool __state)
+        {
+            __state = MissionCombatMechanicsHelper.NextBlowCollisionReactionOverride.HasValue;
+        }
+
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPostfix]
         [HarmonyPatch("DecideWeaponCollisionReaction")]
-        private static void DecideWeaponCollisionReactionMOD(Blow registeredBlow, in AttackCollisionData collisionData, Agent attacker, Agent defender, in MissionWeapon attackerWeapon, bool isFatalHit, bool isShruggedOff, float momentumRemaining, out MeleeCollisionReaction colReaction)
+        private static void DecideWeaponCollisionReactionMOD(Blow registeredBlow, in AttackCollisionData collisionData, Agent attacker, Agent defender, in MissionWeapon attackerWeapon, bool isFatalHit, bool isShruggedOff, float momentumRemaining, ref MeleeCollisionReaction colReaction, bool __state)
         {
+            // Keep the overridden reaction vanilla already applied.
+            if (__state)
+            {
+                return;
+            }
             if (collisionData.IsColliderAgent && collisionData.StrikeType == 1 && collisionData.CollisionHitResultFlags.HasAnyFlag(CombatHitResultFlags.HitWithStartOfTheAnimation))
             {
                 colReaction = MeleeCollisionReaction.Staggered;

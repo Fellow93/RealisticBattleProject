@@ -44,7 +44,7 @@ namespace RBMCampaign
     [HarmonyPatch(typeof(DefaultCombatSimulationModel), "SimulateHit", new Type[]
     {
         typeof(CharacterObject), typeof(CharacterObject), typeof(PartyBase), typeof(PartyBase),
-        typeof(float), typeof(MapEvent), typeof(float), typeof(float)
+        typeof(float), typeof(MapEvent), typeof(BattleEnvironment), typeof(float), typeof(float)
     })]
     internal static class SimulationEquipmentPower
     {

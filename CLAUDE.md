@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Realistic Battle Mod (RBM) for Mount & Blade II: Bannerlord. A comprehensive combat overhaul mod that rewrites damage calculations, armor mechanics, AI behavior, and adds a stamina/posture system. Built on Harmony 2.4.2 for non-invasive runtime patching of game methods.
 
-Current version: v4.5.4 (`RBMXML/SubModule.xml`). Targets Bannerlord v1.4.8+ (per the
-`DependedModules` entries there); currently developed against v1.4.8.
+Current version: v4.6.0 (`RBMXML/SubModule.xml`). Targets Bannerlord v1.5.4+ (per the
+`DependedModules` entries there); currently developed against v1.5.4.
 
 ## Build
 

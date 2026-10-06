@@ -898,16 +898,16 @@ namespace RBMCampaign
 
                 if (settlement.Town.Governor != null)
                 {
-                    PerkHelper.AddPerkBonusForTown(DefaultPerks.OneHanded.SwiftStrike, settlement.Town, ref result);
-                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Polearm.KeepAtBay, settlement.Town, ref result);
-                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Bow.MerryMen, settlement.Town, ref result);
-                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Crossbow.LongShots, settlement.Town, ref result);
-                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Throwing.SlingingCompetitions, settlement.Town, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.OneHanded.SwiftStrike, settlement.Town, isPrimaryBonus: false, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Polearm.KeepAtBay, settlement.Town, isPrimaryBonus: false, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Bow.MerryMen, settlement.Town, isPrimaryBonus: false, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Crossbow.LongShots, settlement.Town, isPrimaryBonus: false, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Throwing.SlingingCompetitions, settlement.Town, isPrimaryBonus: false, ref result);
                     if (settlement.IsUnderSiege)
                     {
-                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Roguery.ArmsDealer, settlement.Town, ref result);
+                        PerkHelper.AddPerkBonusForTown(DefaultPerks.Roguery.ArmsDealer, settlement.Town, isPrimaryBonus: false, ref result);
                     }
-                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.SevenVeterans, settlement.Town, ref result);
+                    PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.SevenVeterans, settlement.Town, isPrimaryBonus: false, ref result);
                 }
 
                 Campaign.Current.Models.IssueModel.GetIssueEffectsOfSettlement(
@@ -1163,8 +1163,8 @@ namespace RBMCampaign
 
             /// <summary>
             /// War Sails' Accuracy Training governor perk, reproduced from <c>NavalDLCSettlementMilitiaModel</c>:
-            /// a coastal town whose governor has it gains the perk's bonus through the standard town-perk helper;
-            /// a village bound to a coastal town whose governor has it gains its secondary bonus.
+            /// a coastal town, or a village bound to one, whose resident governor has it gains the perk's
+            /// secondary bonus through the standard town-perk helper.
             /// </summary>
             private static void AddAccuracyTraining(Settlement settlement, ref ExplainedNumber result)
             {
@@ -1177,14 +1177,16 @@ namespace RBMCampaign
                 }
                 if (settlement.IsTown && settlement.HasPort)
                 {
-                    PerkHelper.AddPerkBonusForTown(perk, settlement.Town, ref result);
+                    PerkHelper.AddPerkBonusForTown(perk, settlement.Town, isPrimaryBonus: false, ref result);
                 }
                 else if (settlement.IsVillage && settlement.Village != null && settlement.Village.Bound != null)
                 {
+                    // v1.5: War Sails now routes the village bonus through the town-perk helper too, which
+                    // also requires the governor to be in residence.
                     Town town = settlement.Village.Bound.Town;
-                    if (town != null && town.Settlement.HasPort && town.Governor != null && town.Governor.GetPerkValue(perk))
+                    if (town != null && town.Settlement.HasPort)
                     {
-                        result.Add(perk.SecondaryBonus, perk.SecondaryDescription);
+                        PerkHelper.AddPerkBonusForTown(perk, town, isPrimaryBonus: false, ref result);
                     }
                 }
             }

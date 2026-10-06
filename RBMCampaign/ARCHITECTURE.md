@@ -82,6 +82,22 @@ The goods side of a raid is cut at the model: `RaidGoodsDestruction` postfixes
 `DefaultRaidModel.GetRaidLootMultiplier` so a raid keeps `0.5 + 0.001 × Roguery (+0.2 Nord)`,
 clamped to 1, of vanilla's haul.
 
+**Forcing supplies** (`Spoils/VillageCoercion.cs`) is wired the same way. Both the no-resist and the
+fought (force-supplies `MapEvent`, not a raid) roads end in
+`VillageHostileActionCampaignBehavior.village_force_supplies_ended_successfully_on_consequence`, which
+pays the player from a null giver. While it runs, that hand-off is debited from the village purse
+(`Source.Raid`, clamped) and the whole draw goes through `SpoilsPool.OnVillageCoerced` (tier-weight
+split + leader's cut, no destroyed share); with the spoils economy off the clamped amount still reaches
+the player. The goods go through `InventoryScreenHelper.OpenScreenAsLoot`, scaled by
+`RaidGoodsDestruction.TakenFraction`.
+
+**Battle sites** (`Spoils/BattleSiteSpoils.cs`): the coin a site search finds is taken off
+`BattleWreckageCampaignBehavior._lootedGoldAmount` just before vanilla's gold branch pays it and granted
+through `SpoilsPool.OnBattleSiteGold` (same split). The site's goods target
+(`GetTradeGoodTargetValueAndRogueryXp`) is scaled by the same taken fraction, since sites only form on
+battles the player was not in and RBM's loot pass already stripped those dead. Recovered troops get no
+recruit seed (nobody paid for them).
+
 ### 3. Siege drain and town/castle sacking (`SpoilsPool.OnBesiegedFortificationDailyTick`, `SpoilsPool.OnSiegeAftermathApplied`)
 
 While a siege holds, a daily settlement tick drains 5% (`SiegeDailyDrainRate`) of a besieged
@@ -122,7 +138,13 @@ as the backstop for any capture path that raises no aftermath at all (sacked at 
   lord ransomed by courier offer or barter, outside a sale), and the manual-labourers delivery quest's
   `OnDoneClicked`. The gold for the man himself is vanilla's, but `Settlements/RansomFunding.cs`
   debits it from the buying town's citizen wealth instead of minting it (left alone where there is no
-  citizen purse). `RansomMenuTooltip` / `RansomScreenSpoilsLabel` show the spoils half.
+  citizen purse). `RansomMenuTooltip` / `RansomScreenSpoilsLabel` show the spoils half. A courier
+  ransom offer the player accepts is capped at what the AI payer holds above vanilla's 1,000 reserve
+  (`RansomFunding.CapRansomOfferPatch`), so vanilla's top-up never mints the payer's gold.
+- **Executed**: an executed captive lord (`Executed` / `ExecutionAfterMapEvent`, incl. v1.5 blood-feud
+  dungeon executions) is stripped off `CampaignEvents.BeforeHeroKilledEvent`, while
+  `PartyBelongedToAsPrisoner` still names the captor (`SpoilsPool.OnBeforeHeroKilled`). A mobile captor
+  splits the kit as ransom spoils; a settlement captor credits it to its treasury (`Source.Execution`).
 - **Left behind**: prisoners the player declines on the post-battle loot screen are stripped for half
   their kit worth (`LeftoverPrisonerStripFraction`), via a prefix on
   `PlayerEncounter.OnPlayerLootMembersAndPrisonerEnd`.
@@ -350,7 +372,9 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Spoils/SpoilsPool.Casualties.cs` | The fallen's purse shares: the winners' own losses, wiped-stack recovery, the enemy purse captured; `GrantSpoilsWeightedByTier`. |
 | `Spoils/SpoilsPool.Plunder.cs` | The raid pot, the daily siege drain and besieger snapshot, the wealth leg of the sack, the capture/aftermath handshake, and the multi-party split. |
 | `Spoils/RaidGoodsDestruction.cs` | Scales a raid's goods haul by the taken fraction (base 0.5, Roguery and Nord lift it). |
-| `Spoils/SpoilsPool.Ransom.cs` | Ransomed (and quest-delivered) prisoners' kit into spoils, with its three hooks. |
+| `Spoils/VillageCoercion.cs` | Forcing supplies: the coin is drawn from the village purse into spoils, the goods scaled by the taken fraction. |
+| `Spoils/BattleSiteSpoils.cs` | Battle-site coin into spoils instead of player gold; the site's goods target scaled by the taken fraction. |
+| `Spoils/SpoilsPool.Ransom.cs` | Ransomed (and quest-delivered) prisoners' kit into spoils, with its three hooks; an executed captive's kit to his captors' spoils or the dungeon's treasury. |
 | `Spoils/SpoilsPool.PrisonerStrip.cs` | Prisoners left on the loot screen stripped for half their kit. |
 | `Spoils/RansomMenuTooltip.cs` / `RansomScreenSpoilsLabel.cs` | The spoils half of a ransom on the tavern option and the ransom screen (display only). |
 | `Spoils/SpoilsPool.MarketSack.cs` | The sack of a stormed fief, tiered by the vanilla aftermath choice (Devastate / Pillage / Show Mercy): wealth and prosperity fractions, the market-goods sack, and the orphaned-capture sweep. |
@@ -366,7 +390,9 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Spoils/MaintenancePartyWageLine.cs` / `MaintenanceTroopTooltipLine.cs` | Maintenance in the party-wage tooltip and, per man, in the troop tooltip (display only). |
 | `Spoils/SpoilsTransferOnPartyScreen.cs` | Purse follows men moved on the party screen. |
 | `Spoils/SpoilsTransferOnSpecialScreens.cs` | Purse follows men on the two screens with no left owner party: garrison donation and creating a companion's clan party. |
-| `Finance/ClanEventGoldLedger.cs` | 14-day record of the gold paid to the player's clan per event (leader's cut, companions' share, mint cuts, gold-paid promotions). Not on any finance breakdown (that gold is never on the apply pass); currently unread. |
+| `Finance/ClanEventGoldLedger.cs` | 14-day record of the gold paid to the player's clan per event (leader's cut, companions' share, mint cuts, gold-paid promotions, blood money, ship scrap). Not on any finance breakdown (that gold is never on the apply pass); currently unread. |
+| `Finance/BloodMoney.cs` | Blood money paid to a ransom broker to end a feud is credited to that town's citizen wealth (vanilla paid it to nobody), and recorded in the event-gold ledger. |
+| `Finance/ShipScrapGold.cs` | Records the scrap gold a disbanded clan party's leftover ships pay the player in the event-gold ledger. |
 | `Finance/SettlementAccrualPool.cs` | Per-clan pool of money fief ticks book for the clan's next finance apply pass, plus which fiefs have booked their day, so the display can project exactly what the next apply settles. Used by the wealth tax and the garrison maintenance subsidy. |
 | `Finance/FiefProfitLines.cs` | Per-fief rows: the Fiefs tab's dead Tariffs row becomes the fief's wealth tax / castle surplus, Garrison Wages becomes the owner's residual after the treasury pays, both with hints; town management gets an owner-income row. Display only. |
 | `Finance/ClanFinanceTabLines.cs` | Deferred postfixes on `CalculateClanIncome` / `CalculateClanExpenses` so the Clan screen's Finances tab totals carry every RBM line the denar tooltip does. |

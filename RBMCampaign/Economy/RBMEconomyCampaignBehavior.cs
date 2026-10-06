@@ -190,8 +190,13 @@ namespace RBMCampaign
         /// keeps the gold it was saved with. (From v1.5 the event is raised ten times with an index
         /// 0..9 and this must act on the last pass only, or the multiplier compounds.)
         /// </summary>
-        private void OnCharacterCreationIsOver()
+        private void OnCharacterCreationIsOver(int index)
         {
+            if (index != 9)
+            {
+                return;
+            }
+
             Hero player = Hero.MainHero;
             if (player == null)
             {

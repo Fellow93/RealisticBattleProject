@@ -272,7 +272,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         return (target.Width + target.Depth + base.Formation.Depth) * 0.5f;
     }
 
-    // LastMeleeAttackTime / LastMeleeHitTime are only set when a blow lands (Agent.UpdateLastAttackAndHitTimes),
+    // LastMeleeHitTime / LastRecievedMeleeHitTime are only set when a blow lands (Agent.UpdateLastAttackAndHitTimes),
     // so this is riders actually trading blows, not riders still closing in.
     private bool IsFightingInMelee()
     {
@@ -282,7 +282,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         base.Formation.ApplyActionOnEachUnit(agent =>
         {
             total++;
-            if (now - agent.LastMeleeAttackTime < ContactMeleeRecentSeconds || now - agent.LastMeleeHitTime < ContactMeleeRecentSeconds)
+            if (now - agent.LastMeleeHitTime < ContactMeleeRecentSeconds || now - agent.LastRecievedMeleeHitTime < ContactMeleeRecentSeconds)
             {
                 fighting++;
             }

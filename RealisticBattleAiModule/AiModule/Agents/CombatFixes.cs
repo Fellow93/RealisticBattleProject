@@ -165,34 +165,38 @@ namespace RBMAI
         [HarmonyPatch("UpdateLastAttackAndHitTimes")]
         internal class UpdateLastAttackAndHitTimesFix
         {
-            private static readonly PropertyInfo _lastRangedHitTime = typeof(Agent).GetProperty("LastRangedHitTime");
-            private static readonly PropertyInfo _lastRangedAttackTime = typeof(Agent).GetProperty("LastRangedAttackTime");
-            private static readonly PropertyInfo _lastMeleeHitTime = typeof(Agent).GetProperty("LastMeleeHitTime");
-            private static readonly PropertyInfo _lastMeleeAttackTime = typeof(Agent).GetProperty("LastMeleeAttackTime");
+            private static readonly PropertyInfo _lastRangedHitTime = typeof(Agent).GetProperty("LastRecievedRangedHitTime");
+            private static readonly PropertyInfo _lastRangedAttackTime = typeof(Agent).GetProperty("LastRangedHitTime");
+            private static readonly PropertyInfo _lastMeleeHitTime = typeof(Agent).GetProperty("LastRecievedMeleeHitTime");
+            private static readonly PropertyInfo _lastMeleeAttackTime = typeof(Agent).GetProperty("LastMeleeHitTime");
 
             private static bool Prefix(ref Agent __instance, Agent attackerAgent, bool isMissile)
             {
                 float currentTime = MBCommon.GetTotalMissionTime();
                 if (isMissile)
                 {
-                    //__instance.LastRangedHitTime = currentTime;
+                    //__instance.LastRecievedRangedHitTime = currentTime;
                     _lastRangedHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
                 else
                 {
-                    //LastMeleeHitTime = currentTime;
+                    //LastRecievedMeleeHitTime = currentTime;
                     _lastMeleeHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                 }
+                // v1.5.x: vanilla also stamps the contact times here. FormationQuerySystem.IsUnderRangedAttack
+                // reads only those, so without this a formation counts as under fire only from shield-blocked
+                // missiles. The public helper uses Mission.CurrentTime, the clock the Formation readers use.
+                __instance.UpdateLastRecievedContactTimes(isMissile);
                 if (attackerAgent != __instance && attackerAgent != null)
                 {
                     if (isMissile)
                     {
-                        //attackerAgent.LastRangedAttackTime = currentTime;
+                        //attackerAgent.LastRangedHitTime = currentTime;
                         _lastRangedAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                     else
                     {
-                        //attackerAgent.LastMeleeAttackTime = currentTime;
+                        //attackerAgent.LastMeleeHitTime = currentTime;
                         _lastMeleeAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                     }
                 }
@@ -203,14 +207,15 @@ namespace RBMAI
                     {
                         if (isMissile)
                         {
-                            //__instance.LastRangedHitTime = currentTime;
+                            //__instance.LastRecievedRangedHitTime = currentTime;
                             _lastRangedHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                         }
                         else
                         {
-                            //LastMeleeHitTime = currentTime;
+                            //LastRecievedMeleeHitTime = currentTime;
                             _lastMeleeHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
                         }
+                        __instance.RiderAgent.UpdateLastRecievedContactTimes(isMissile);
                     }
                 }
                 return false;

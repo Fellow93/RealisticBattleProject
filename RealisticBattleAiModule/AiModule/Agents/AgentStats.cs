@@ -47,13 +47,14 @@ namespace RBMAI
                 Agent captainAgent = agent.Formation?.Captain;
                 CharacterObject captain = (captainAgent != null && captainAgent != agent) ? captainAgent.Character as CharacterObject : null;
 
+                BattleEnvironment battleEnvironment = agent.CurrentBattleEnvironment;
                 ExplainedNumber bonuses = new ExplainedNumber(1f);
-                PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Throwing.PerfectTechnique, agentCharacter, true, ref bonuses);
+                PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Throwing.PerfectTechnique, battleEnvironment, agentCharacter, true, ref bonuses);
                 if (captain != null)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.PerfectTechnique, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.PerfectTechnique, battleEnvironment, captain, ref bonuses);
                 }
-                PerkHelper.AddEpicPerkBonusForCharacter(DefaultPerks.Throwing.UnstoppableForce, agentCharacter, DefaultSkills.Throwing, true, ref bonuses, Campaign.Current.Models.CharacterDevelopmentModel.MinSkillRequiredForEpicPerkBonus);
+                PerkHelper.AddEpicPerkBonusForCharacter(DefaultPerks.Throwing.UnstoppableForce, battleEnvironment, agentCharacter, DefaultSkills.Throwing, true, ref bonuses,Campaign.Current.Models.CharacterDevelopmentModel.MinSkillRequiredForEpicPerkBonus);
                 return bonuses.ResultNumber;
             }
 
@@ -421,6 +422,13 @@ namespace RBMAI
                     agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier = stat2.ResultNumber;
                     agentDrivenProperties.ReloadSpeed = stat3.ResultNumber;
                 }
+
+                // v1.5 vanilla tail: Roguery drives crouched movement speed. Mirrored so the prefix replacement
+                // does not silently drop it.
+                int rogueryskill = __instance.GetEffectiveSkill(agent, DefaultSkills.Roguery);
+                ExplainedNumber crouchedSpeed = new ExplainedNumber(1f);
+                SkillHelper.AddSkillBonusForSkillLevel(DefaultSkillEffects.CrouchedSpeed, ref crouchedSpeed, rogueryskill);
+                agentDrivenProperties.CrouchedSpeedMultiplier = crouchedSpeed.ResultNumber;
 
                 return false;
             }

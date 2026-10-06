@@ -252,10 +252,11 @@ namespace RBMCampaign
             // the same result as applying it to their sum because the perk is a proportional factor.
             if (town.IsUnderSiege)
             {
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, ref garrison);
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, ref militia);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, isPrimaryBonus: false, ref garrison);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, isPrimaryBonus: false, ref militia);
             }
-            PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, ref households);
+            PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, isPrimaryBonus: false, ref households);
+            ApplyGovernorGenerosity(town, ref garrison);
 
             breakdown.Citizens = (int)MathF.Round(households.ResultNumber);
             breakdown.Garrison = (int)MathF.Round(garrison.ResultNumber);
@@ -732,7 +733,7 @@ namespace RBMCampaign
                 // Flat Add (2f), so it needs no base to scale off -- unlike an AddFactor perk, which
                 // would have to be folded into a running total to mean anything.
                 ExplainedNumber smuggled = new ExplainedNumber(0f);
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Roguery.DirtyFighting, town, ref smuggled);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Roguery.DirtyFighting, town, isPrimaryBonus: false, ref smuggled);
                 DeliverGood(town, RandomSmuggledFood(), smuggled.ResultNumber, "smuggled", delivered);
             }
 
@@ -777,6 +778,21 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// v1.5 governor trait effect: a resident governor's Generosity scales the garrison's ration
+        /// (DefaultPersonalityTraitEffects.GenerosityFoodCostEffect, +10% for a generous one). Mirrors the
+        /// guard vanilla uses in CalculateTownFoodChangeInternal, which RBM replaces for towns. Vanilla never
+        /// charged the militia, so the effect applies to the garrison leg only.
+        /// </summary>
+        private static void ApplyGovernorGenerosity(Town town, ref ExplainedNumber garrison)
+        {
+            Hero governor = town.Governor;
+            if (governor != null && governor.CurrentSettlement?.Town == town)
+            {
+                TraitEffectHelper.ApplyTraitEffect(governor, DefaultPersonalityTraitEffects.GenerosityFoodCostEffect, ref garrison);
+            }
+        }
+
+        /// <summary>
         /// Buys the town's rations out of the market: the townspeople by household, the garrison and
         /// militia by head.
         ///
@@ -801,19 +817,24 @@ namespace RBMCampaign
             SettlementFoodModel foodModel = Campaign.Current.Models.SettlementFoodModel;
 
             ExplainedNumber households = new ExplainedNumber(town.Prosperity / foodModel.NumberOfProsperityToEatOneFood);
-            float men = (town.GarrisonParty?.Party.NumberOfAllMembers ?? 0) + town.Militia;
-            ExplainedNumber soldiers = new ExplainedNumber(men / foodModel.NumberOfMenOnGarrisonToEatOneFood);
+            // Garrison and militia kept as separate legs: the governor's Generosity trait (v1.5) only
+            // scales the garrison's ration, exactly as in vanilla's CalculateTownFoodChangeInternal.
+            ExplainedNumber garrison = new ExplainedNumber((town.GarrisonParty?.Party.NumberOfAllMembers ?? 0) / (float)foodModel.NumberOfMenOnGarrisonToEatOneFood);
+            ExplainedNumber militia = new ExplainedNumber(town.Militia / (float)foodModel.NumberOfMenOnGarrisonToEatOneFood);
             ExplainedNumber rations = new ExplainedNumber(0f);
 
             if (town.IsUnderSiege)
             {
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, ref soldiers);
-                PerkHelper.AddPerkBonusForTown(DefaultPerks.Medicine.TriageTent, town, ref rations);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, isPrimaryBonus: false, ref garrison);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.Gourmet, town, isPrimaryBonus: false, ref militia);
+                PerkHelper.AddPerkBonusForTown(DefaultPerks.Medicine.TriageTent, town, isPrimaryBonus: false, ref rations);
             }
-            PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, ref households);
+            PerkHelper.AddPerkBonusForTown(DefaultPerks.Steward.MasterOfWarcraft, town, isPrimaryBonus: false, ref households);
+            ApplyGovernorGenerosity(town, ref garrison);
 
             rations.Add(households.ResultNumber);
-            rations.Add(soldiers.ResultNumber);
+            rations.Add(garrison.ResultNumber);
+            rations.Add(militia.ResultNumber);
             town.AddEffectOfBuildings(BuildingEffectEnum.FoodConsumption, ref rations);
 
             // A NaN ration (poisoned prosperity or militia) rounds to int.MinValue, which would zero
@@ -849,7 +870,7 @@ namespace RBMCampaign
             // Split by the pre-building shares rather than by recomputing each leg through the perk
             // and building chain, so the day's total ration is exactly what it was before the split.
             // The food balance is calibrated on that total and must not move.
-            float soldierPart = soldiers.ResultNumber;
+            float soldierPart = garrison.ResultNumber + militia.ResultNumber;
             float bothParts = households.ResultNumber + soldierPart;
             int soldierUnits = (units > 0 && bothParts > 0f) ? MBRandom.RoundRandomized(units * soldierPart / bothParts) : 0;
             if (soldierUnits > units)

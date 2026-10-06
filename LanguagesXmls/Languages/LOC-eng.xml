@@ -178,6 +178,9 @@
 		<string id="RBM_SPOILS_029" text="Your men strip the delivered prisoners' kit and keep {AMOUNT} in spoils." />
 		<string id="RBM_SPOILS_030" text="Your men sack {SETTLEMENT}, stripping its markets bare, and pocket {AMOUNT} in spoils." />
 		<string id="RBM_SPOILS_031" text="All {COUNT}: you pay {AMOUNT}" />
+		<string id="RBM_SPOILS_032" text="Your men squeeze {SETTLEMENT} for supplies and pocket {AMOUNT} in spoils." />
+		<string id="RBM_SPOILS_033" text="Your men pick over the battle site and pocket {AMOUNT} in spoils." />
+		<string id="RBM_SPOILS_034" text="Your men strip the executed captive's kit and split {AMOUNT} in spoils." />
 		<string id="RBM_UPGCAP_TITLE" text="Upgrade Budget / Day" />
 	<string id="RBM_UPGCAP_UNLIMITED" text="Unlimited" />
 	<string id="RBM_militia_unpaid" text="Cannot be paid" />
@@ -719,6 +722,7 @@
 	<string id="RBM_LEDGER_SRC_CARAVAN_REPAY" text="Caravan repayment" />
 	<string id="RBM_LEDGER_SRC_WEALTH_TAX" text="Wealth tax" />
 	<string id="RBM_LEDGER_SRC_RANSOM" text="Prisoner ransom" />
+	<string id="RBM_LEDGER_SRC_EXECUTION" text="Executed captives' kit" />
 	<string id="RBM_LEDGER_SRC_WORKSHOP_WAGES" text="Workshop wages" />
 	<string id="RBM_LEDGER_SRC_CASTLE_INCOME" text="Castle income" />
 	<string id="RBM_LEDGER_SRC_DEARTH" text="Emergency food" />

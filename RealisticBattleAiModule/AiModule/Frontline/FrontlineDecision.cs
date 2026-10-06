@@ -179,7 +179,7 @@ namespace RBMAI
             // True when cachedTarget is a "no target" answer taken under ChargeWithTarget (see GetCachedCorrectTarget).
             public bool cachedTargetIsNullUnderCharge = false;
 
-            // RBM-side stand-in for the old forged write to Agent.LastRangedAttackTime: records when the
+            // RBM-side stand-in for the old forged write to Agent.LastRangedHitTime: records when the
             // >50s "archer has stalled" reset fired, so the 20s/50s logic keeps its effect without
             // reflecting into engine state from a worker thread.
             public float stallResetTime = float.MinValue;

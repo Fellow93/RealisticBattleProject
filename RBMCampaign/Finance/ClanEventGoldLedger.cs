@@ -4,7 +4,7 @@ using TaleWorlds.CampaignSystem;
 
 namespace RBMCampaign
 {
-    /// <summary>The kinds of gold RBM hands the player's clan outside the daily finance model.</summary>
+    /// <summary>The kinds of gold the player's clan gains or loses outside the daily finance model.</summary>
     public enum EventGoldKind
     {
         /// <summary>The commander's cut of a gather -- battle loot, raid plunder or a sack (<see cref="SpoilsPool.ApplyLeaderCut"/>).</summary>
@@ -14,14 +14,20 @@ namespace RBMCampaign
         /// <summary>The owner's and ruler's cuts of a settlement's mint output (<see cref="Minting"/>).</summary>
         Minting,
         /// <summary>Gold a clan party's leader was billed for troop promotions its spoils could not cover (a drain).</summary>
-        UpgradeGold
+        UpgradeGold,
+        /// <summary>Blood money paid to a ransom broker to end a feud (a drain; see <see cref="BloodMoney"/>).</summary>
+        BloodMoney,
+        /// <summary>Scrap value of a disbanded clan party's ships paid to the player (see <see cref="ShipScrapGold"/>).</summary>
+        ShipScrap
     }
 
     /// <summary>
     /// A rolling record of the gold RBM pays the player's clan -- or takes from it -- per EVENT rather than
     /// per day. The leader's cut of spoils, the companions' share, a mint's cut and a clan party's gold-paid
     /// promotions all move through <c>GiveGoldAction</c> the moment they happen, which the finance model
-    /// never sees. <see cref="DailyAverage"/> reads a <see cref="WindowDays"/>-day daily average of each kind.
+    /// never sees; so do two one-off vanilla v1.5 flows RBM only notes, blood money paid to end a feud and
+    /// the scrap value of a disbanded clan party's ships. <see cref="DailyAverage"/> reads a
+    /// <see cref="WindowDays"/>-day daily average of each kind.
     ///
     /// NOT shown on any finance breakdown, and it must not be: those breakdowns are projections of what the
     /// clan's daily apply pass will do, and this gold is never on that pass -- it was paid when the event

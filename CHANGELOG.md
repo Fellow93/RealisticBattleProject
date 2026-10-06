@@ -1,5 +1,26 @@
 # Changelog
 
+## v4.6.0 (changes since v4.5.4)
+
+### Compatibility
+- RBM is updated for Bannerlord v1.5.4 (and War Sails v1.3.4). It no longer runs on v1.4.8.
+
+### Combat
+- With War Sails, the swing that cuts a ship's boarding rope now carries on through it, as in vanilla, instead of stopping as if it had hit something solid.
+- Crouching soldiers again move faster with Roguery skill, as in vanilla v1.5. RBM's agent stats had left the bonus out.
+
+### AI
+- Formations under arrow fire raise their shields and react again (shields up in the ranks, a cautious advance under fire). Since v1.5 a formation only counted as under fire when an arrow hit a shield; arrows that struck men did not count.
+
+### Campaign
+- A town's governor now changes how much food its garrison eats according to his Generosity, as in vanilla v1.5 (a generous governor's garrison eats 10% more). The militia's ration is unaffected.
+- With War Sails, the Accuracy Training governor perk now adds militia to villages of a port town only while the governor is in the town, as the perk already worked for the town itself.
+- Forcing supplies out of a village now takes the coin from the village's own wealth, and a poor village hands over only what it has. The coin goes to your men as spoils and you get your usual cut, as in a raid. The goods you take are cut like a raid's haul: about half of vanilla's, more with Roguery or a Nord leader. Vanilla paid the coin out of nowhere and left the village's wealth untouched.
+- Coin found when you search a battle site goes to your men as spoils, with your usual cut, instead of straight into your purse. The valuables you find there are cut like a raid's haul (about half of vanilla's, more with Roguery or a Nord leader), since the winners of that battle already stripped the dead.
+- An executed captive lord's arms, armor and horse are no longer lost with him. When a party executes him, its men split their worth as spoils, as for a ransomed prisoner. When he is executed in a castle or town dungeon, the kit is sold into that settlement's treasury.
+- Blood money you pay a ransom broker to end a feud now goes to the town where you paid it, instead of disappearing.
+- When you accept a clan's ransom offer for a lord you hold and the clan can no longer afford the price, it now pays only what it has above 1,000 denars, so you may receive less than offered. Vanilla gave the clan the missing gold out of nowhere.
+
 ## v4.5.4 (changes since v4.5.3)
 
 ### Combat

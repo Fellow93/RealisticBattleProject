@@ -74,10 +74,10 @@ namespace RBMAI
                 return false;
             }
             float currentTime = MBCommon.GetTotalMissionTime();
-            if (currentTime - agent.LastMeleeAttackTime > 10f &&
-                currentTime - agent.LastMeleeHitTime > 10f &&
-                currentTime - agent.LastRangedAttackTime > 10f &&
-                currentTime - agent.LastRangedHitTime > 10f
+            if (currentTime - agent.LastMeleeHitTime > 10f &&
+                currentTime - agent.LastRecievedMeleeHitTime > 10f &&
+                currentTime - agent.LastRangedHitTime > 10f &&
+                currentTime - agent.LastRecievedRangedHitTime > 10f
                 )
             {
                 return true;
@@ -88,10 +88,10 @@ namespace RBMAI
         private static bool IsAgentInQuickPostureRegen(Agent agent)
         {
             float currentTime = MBCommon.GetTotalMissionTime();
-            if (currentTime - agent.LastMeleeAttackTime > 10f &&
-                currentTime - agent.LastMeleeHitTime > 10f &&
-                currentTime - agent.LastRangedAttackTime > 10f &&
-                currentTime - agent.LastRangedHitTime > 10f
+            if (currentTime - agent.LastMeleeHitTime > 10f &&
+                currentTime - agent.LastRecievedMeleeHitTime > 10f &&
+                currentTime - agent.LastRangedHitTime > 10f &&
+                currentTime - agent.LastRecievedRangedHitTime > 10f
                 )
             {
                 return true;
