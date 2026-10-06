@@ -258,6 +258,10 @@
     <!-- collision radii -->
     <def name="kick_shieldbash_radius"
          val="0.35" />
+    <!-- A shield bash is checked around the forearm (bone 19), which reaches far less forward than a kicking foot,
+         and the shield face sits in front of it: a larger sphere so a bash reaches about as far as a kick. -->
+    <def name="shield_bash_radius"
+         val="0.45" />
   </definitions>
 
   <combat_parameters>
@@ -2295,7 +2299,7 @@
     <combat_parameter id="shield_bash_params"
                       collision_check_starting_percent="0.38"
                       collision_check_ending_percent="0.48"
-                      collision_radius="kick_shieldbash_radius"
+                      collision_radius="shield_bash_radius"
                       alternative_attack_cooldown_period="shield_bash_cooldown"
                       hit_bone_index="19"
                       shoulder_hit_bone_index="14"
@@ -2305,7 +2309,7 @@
     <combat_parameter id="hand_shield_bash_params"
                       collision_check_starting_percent="0.38"
                       collision_check_ending_percent="0.48"
-                      collision_radius="kick_shieldbash_radius"
+                      collision_radius="shield_bash_radius"
                       alternative_attack_cooldown_period="hand_shield_bash_cooldown"
                       hit_bone_index="19"
                       shoulder_hit_bone_index="14"
@@ -2322,9 +2326,10 @@
                       vertical_rot_limit_multiplier_up="0.4"
                       vertical_rot_limit_multiplier_down="0.4">
 
+      <!-- The capsule, not collision_radius, is a weapon bash's hit shape; vanilla's r 0.1 left it far shorter than a kick. -->
       <custom_collision_capsule p1="0, 0, 0"
                                 p2="0, 0, -0.2"
-                                r="0.1" />
+                                r="0.25" />
     </combat_parameter>
 
     <combat_parameter id="weapon_bash_params_spear"
@@ -2339,7 +2344,7 @@
 
       <custom_collision_capsule p1="0, 0, 0.1"
                                 p2="0, 0, 0.6"
-                                r="0.1" />
+                                r="0.25" />
     </combat_parameter>
     <combat_parameter id="weapon_bash_params_1h"
                       collision_check_starting_percent="0.20"
@@ -2353,7 +2358,7 @@
 
       <custom_collision_capsule p1="0, 0, 0.1"
                                 p2="0, 0, 0.4"
-                                r="0.1" />
+                                r="0.25" />
     </combat_parameter>
   </combat_parameters>
 </base>

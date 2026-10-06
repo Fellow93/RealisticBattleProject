@@ -8,6 +8,7 @@
 ### Combat
 - With War Sails, the swing that cuts a ship's boarding rope now carries on through it, as in vanilla, instead of stopping as if it had hit something solid.
 - Crouching soldiers again move faster with Roguery skill, as in vanilla v1.5. RBM's agent stats had left the bonus out.
+- Shield bashes and weapon bashes now reach about as far as a kick. They used to fall short at the same distance, so AI bashes often hit only air. The larger kick hit radius from v4.5.3 had never applied to weapon bashes, and the arm of a shield bash reaches less far forward than a kicking leg.
 
 ### AI
 - Formations under arrow fire raise their shields and react again (shields up in the ranks, a cautious advance under fire). Since v1.5 a formation only counted as under fire when an arrow hit a shield; arrows that struck men did not count.
