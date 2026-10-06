@@ -469,6 +469,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="40"
 				physics_material="missile"
 				accuracy="45"
@@ -509,6 +510,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="40"
 				physics_material="missile"
 				accuracy="45"
@@ -549,6 +551,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="30"
 				physics_material="missile"
 				accuracy="45"
@@ -589,6 +592,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="20"
 				physics_material="missile"
 				accuracy="45"
@@ -629,6 +633,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="15"
 				physics_material="missile"
 				accuracy="45"
@@ -669,6 +674,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="11"
 				physics_material="missile"
 				accuracy="45"
@@ -709,6 +715,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="8"
 				physics_material="missile"
 				accuracy="45"
@@ -749,6 +756,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="6"
 				physics_material="missile"
 				accuracy="45"
@@ -789,6 +797,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="40"
 				physics_material="missile"
 				accuracy="45"
@@ -829,6 +838,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="40"
 				physics_material="missile"
 				accuracy="45"
@@ -869,6 +879,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="30"
 				physics_material="missile"
 				accuracy="45"
@@ -909,6 +920,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="17"
 				physics_material="missile"
 				accuracy="45"
@@ -949,6 +961,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="60"
 				physics_material="missile"
 				accuracy="45"
@@ -989,6 +1002,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="60"
 				physics_material="missile"
 				accuracy="45"
@@ -1028,6 +1042,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="SlingStone"
+				modifier_group="sling_stones"
 				stack_amount="50"
 				physics_material="missile"
 				accuracy="45"
@@ -1192,6 +1207,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="Sling"
+				modifier_group="sling"
 				ammo_class="SlingStone"
 				ammo_limit="1"
 				accuracy="55"
@@ -1233,6 +1249,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="Sling"
+				modifier_group="sling"
 				ammo_class="SlingStone"
 				ammo_limit="1"
 				accuracy="50"
@@ -1274,6 +1291,7 @@
 		<ItemComponent>
 			<Weapon
 				weapon_class="Sling"
+				modifier_group="sling"
 				ammo_class="SlingStone"
 				ammo_limit="1"
 				accuracy="45"
