@@ -1,0 +1,302 @@
+{
+  "group": "Bow",
+  "skills": ["Bow"],
+  "auditedAt": "2026-10-06",
+  "perks": [
+    {
+      "id": "BowBowControl",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "With a bow wielded the troop's accuracy penalty while moving (WeaponMaxMovementAccuracyPenalty) is cut by 30%.",
+      "conditions": "Bow wielded. Effect reduced at sea (NavalReduced).",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1038", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the agent's own character, bow branch" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:173", "reachesTroop": false, "why": "captain half (+5% bow damage to formation)" }
+      ],
+      "rbm": "RBMAI SetAiRelatedProperties postfix multiplies WeaponMaxMovementAccuracyPenalty (*0.33 bow, *0.1 mounted, stamina) after the perk, so the perk's factor is preserved (AgentStats.cs:169, :205, :324)."
+    },
+    {
+      "id": "BowDeadAim",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "Bow headshots by the troop deal +30% damage.",
+      "conditions": "Missile from a bow hits the victim's head (AttackInformation.IsHeadShot = hit body part Head). Reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:176", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's own character, bow consumable + IsHeadShot" },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveSkill", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:182", "reachesTroop": false, "why": "captain half (+20 bow skill to formation)" }
+      ],
+      "rbm": "ApplyDamageAmplifications still runs on RBM's computed damage via Mission.GetAttackCollisionResults -> CalculateDamage (bypass map note 8). Applies on top of RBM's face-hit armor logic."
+    },
+    {
+      "id": "BowBodkin",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop's arrows treat the target's armor as 10% lower.",
+      "conditions": "Bow ammunition against an armored hit location (armor > 0). Reduced at sea.",
+      "sites": [
+        { "method": "SandboxStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:260", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's own character" },
+        { "method": "SandboxStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:263", "reachesTroop": false, "why": "captain half" },
+        { "method": "NavalStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/NavalDLC/NavalDLC.GameComponents/NavalStrikeMagnitudeModel.cs:95", "reachesTroop": true, "why": "naval copy of the same personal check" },
+        { "method": "DamageRework.OverrideDamageCalc.Prefix", "file": "RealisticBattleCombatModule/CombatModule/Damage/DamageRework.Core.cs:205", "reachesTroop": true, "why": "RBM calls CalculateAdjustedArmorForBlow and uses the result as armorAmount (and its ratio on face/under-shoulder hits, :311/:333)" }
+      ],
+      "rbm": "ComputeBlowDamage is skipped (bypass #1) but RBM re-calls CalculateAdjustedArmorForBlow, so the armor reduction feeds RBM's penetration math. Nothing lost."
+    },
+    {
+      "id": "BowRangersSwiftness",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "A wielded bow no longer adds its extra length-and-weight encumbrance, so the troop moves faster with a bow in hand.",
+      "conditions": "Bow is the wielded (primary hand) item. Only removes the wielded-weapon term (4*sqrt(length)*weight); the bow's plain weight still counts like any carried weapon. Reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.UpdateHumanStats", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:659", "reachesTroop": true, "why": "characterObject.GetPerkValue(env overload) on the agent's own character; result feeds WeaponsEncumbrance -> MaxSpeedMultiplier/CombatMaxSpeedMultiplier/TopSpeedReachDuration" }
+      ],
+      "rbm": "No RBM patch touches WeaponsEncumbrance; RBMCombat's UpdateHumanStats postfix only sets the shield missile-collision adder, RBMAI only scales speed by stamina (*=)."
+    },
+    {
+      "id": "BowRapidFire",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+25% bow reload speed for the troop.",
+      "conditions": "Bow wielded. Reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1039", "reachesTroop": true, "why": "AddPerkBonusForCharacter on own character (ReloadSpeed)" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1046", "reachesTroop": false, "why": "captain half" },
+        { "method": "RangedRework.OverrideSetAiRelatedProperties.GetReloadPerkFactor", "file": "RealisticBattleCombatModule/CombatModule/Ranged/RangedRework.Reload.cs:61", "reachesTroop": true, "why": "RBM re-applies the perk as a factor on its own ReloadSpeed" }
+      ],
+      "rbm": "RBMCombat overwrites ReloadSpeed for bow/long_bow usages (bypass #8) but multiplies RapidFire back in via GetReloadPerkFactor. Where RBM does not assign (other usages, player on vanilla reload), vanilla's perk value stays."
+    },
+    {
+      "id": "BowQuickAdjustments",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "partial",
+      "confidence": "high",
+      "summary": "On foot the troop's accuracy penalty while turning with a bow is halved; on horseback RBM replaces that stat with a fixed value, so the perk does nothing there.",
+      "conditions": "Bow wielded; effective only while not mounted (with RBM AI on). Reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1040", "reachesTroop": true, "why": "AddPerkBonusForCharacter on own character (WeaponRotationalAccuracyPenaltyInRadians)" },
+        { "method": "SandboxAgentStatCalculateModel.GetWeaponInaccuracy", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:369", "reachesTroop": false, "why": "captain half" },
+        { "method": "AgentAi.OverrideSetAiRelatedProperties.Postfix", "file": "RealisticBattleAiModule/AiModule/Agents/AgentStats.cs:207", "reachesTroop": false, "why": "mounted bow user: WeaponRotationalAccuracyPenaltyInRadians = 0.015f, discarding the perk" }
+      ],
+      "rbm": "Bypass #9(b): RBMAI assigns a constant rotational penalty to mounted bow users after the perk is applied. Lost for horse archers (only when rbmAiEnabled); foot archers keep it."
+    },
+    {
+      "id": "BowMerryMen",
+      "skill": "Bow",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Party size / governor militia perk; nothing for a troop.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultPartySizeLimitModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartySizeLimitModel.cs:292", "reachesTroop": false, "why": "party leader (hero), campaign map" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "BowMountedArchery",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "While mounted with a bow, the troop's movement and unsteady accuracy penalties are cut by 30%.",
+      "conditions": "Mounted, bow wielded, land battles only (LandOnly).",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1023", "reachesTroop": true, "why": "one-arg GetPerkValue gate + AddPerkBonusForCharacter x2 on own character (WeaponMaxMovementAccuracyPenalty, WeaponMaxUnsteadyAccuracyPenalty), agent.HasMount" },
+        { "method": "DefaultSettlementSecurityModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementSecurityModel.cs:221", "reachesTroop": false, "why": "governor half" }
+      ],
+      "rbm": "RBMAI multiplies both fields for mounted bow users (*0.1, *0.2, stamina) after the perk; multiplicative, so preserved."
+    },
+    {
+      "id": "BowTrainer",
+      "skill": "Bow",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Party-leader daily XP perk; nothing for a troop.",
+      "conditions": "",
+      "sites": [
+        { "method": "MobilePartyTrainingBehavior / DefaultPartyTrainingModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyTrainingModel.cs:72", "reachesTroop": false, "why": "MobileParty.HasPerk, campaign map" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "BowStrongBows",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+8% damage with the troop's arrows.",
+      "conditions": "Bow ammunition hitting an agent (CollisionBoneIndex != -1). Reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:178", "reachesTroop": true, "why": "AddPerkBonusForCharacter on attacker's own character" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:181", "reachesTroop": false, "why": "captain half (tier 3+ troops)" }
+      ],
+      "rbm": "Damage-amplification pipeline intact under RBM (bypass map note 8)."
+    },
+    {
+      "id": "BowDiscipline",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop can hold a drawn bow 50% longer before its aim starts to shake.",
+      "conditions": "Bow wielded (code is in the bow branch although the perk is flagged for all ranged users). Reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1041", "reachesTroop": true, "why": "AddPerkBonusForCharacter on own character: WeaponUnsteadyBeginTime and WeaponUnsteadyEndTime (:1042)" },
+        { "method": "DefaultSettlementLoyaltyModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementLoyaltyModel.cs:143", "reachesTroop": false, "why": "governor half" }
+      ],
+      "rbm": "No RBM code writes WeaponUnsteadyBeginTime/EndTime."
+    },
+    {
+      "id": "BowHunterClan",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+30% damage with the troop's arrows against horses.",
+      "conditions": "Bow ammunition hitting a mount (IsVictimAgentMount). Land battles only.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:185", "reachesTroop": true, "why": "AddPerkBonusForCharacter on attacker's own character" },
+        { "method": "DefaultPartyWageModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyWageModel.cs:149", "reachesTroop": false, "why": "governor half" }
+      ],
+      "rbm": "Damage-amplification pipeline intact under RBM."
+    },
+    {
+      "id": "BowSkirmishPhaseMaster",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop takes 10% less damage from all projectiles (arrows, bolts, javelins, stones), and so does its horse.",
+      "conditions": "Attacker weapon is a consumable (any missile). Applies when the troop's mount is hit too (victim character resolves to the rider). Not bow-specific: works for any troop. Reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:375", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the victim's own character (rider character when the mount is hit)" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:379", "reachesTroop": false, "why": "captain half (ranged troops)" }
+      ],
+      "rbm": "Damage-reduction pipeline intact under RBM. Shield-on-back hits never wound under RBM (bypass #13/#15), so the perk only matters for body hits."
+    },
+    {
+      "id": "BowEagleEye",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "hero-only",
+      "confidence": "high",
+      "summary": "Bow zoom only affects the player's camera, and the player is always a hero, so a troop gets nothing.",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.GetMaxCameraZoom", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:419", "reachesTroop": false, "why": "check is on the agent's CharacterObject, but the only caller is Mission for MainAgent (Mission.cs:2299)" },
+        { "method": "DefaultMapVisibilityModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultMapVisibilityModel.cs:37", "reachesTroop": false, "why": "party-leader half, campaign map" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "BowBullsEye",
+      "skill": "Bow",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Party battle-XP / governor garrison-XP perk; nothing for a troop.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultCombatXpModel.GetBattleXpBonusFromPerks", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultCombatXpModel.cs:104", "reachesTroop": false, "why": "AddPerkBonusForParty (hero); RBM keeps it via reflection (CampaignChanges.Xp.cs)" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "BowRenownedArcher",
+      "skill": "Bow",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Party-leader morale / recruit-cost perk; nothing for a troop.",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxBattleMoraleModel.GetEffectiveInitialMorale", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:304", "reachesTroop": false, "why": "AddPerkBonusForParty (party leader hero)" }
+      ],
+      "rbm": "RBMCampaign also reads it for upgrade/recruit cost (Upgrades/RBMCampaignPatches.cs:45, Economy/RecruitSupply.cs:311), heroes/parties only."
+    },
+    {
+      "id": "BowHorseMaster",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "hero-only",
+      "confidence": "high",
+      "summary": "Using every bow on horseback is an agent flag set only for heroes; a troop gets nothing.",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.InitializeAgentStats", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:37", "reachesTroop": false, "why": "inside if (agent.IsHero) (:33); sets AgentFlag.CanUseAllBowsMounted" },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveSkill", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:185", "reachesTroop": false, "why": "captain half (+30 bow skill to mounted troops)" },
+        { "method": "CampaignUIHelper", "file": "decompiled/TaleWorlds.CampaignSystem.ViewModelCollection/TaleWorlds.CampaignSystem.ViewModelCollection/CampaignUIHelper.cs:1770", "reachesTroop": false, "why": "UI tooltip only" }
+      ],
+      "rbm": "Listed in TroopPerks.NoTroopEffectPerkIds (HeroOnly, RBMConfig/Shared/TroopPerks.cs); the loader logs it as having no effect."
+    },
+    {
+      "id": "BowDeepQuivers",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "Each arrow stack the troop carries gets +3 arrows at spawn.",
+      "conditions": "Bow ammunition slots, applied once when the agent is built. Reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.InitializeMissionEquipment", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:95", "reachesTroop": true, "why": "AddPerkBonusForCharacter on own character; called from Agent.Build for every agent" },
+        { "method": "SandboxAgentStatCalculateModel.InitializeMissionEquipment", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:96", "reachesTroop": true, "why": "party-leader half reads PartyBaseHelper.GetVisualPartyLeader's CharacterObject, which is the first roster troop in a party with no leader hero; a troop granted DeepQuivers there gives +1 arrow per stack to the party's other bow users" }
+      ],
+      "rbm": "No RBM patch on InitializeMissionEquipment or arrow amounts (RangedRework's ammo refill is siege-defender javelins/axes only)."
+    },
+    {
+      "id": "BowQuickDraw",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+25% bow draw (ready) speed for the troop.",
+      "conditions": "Bow wielded. Reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1043", "reachesTroop": true, "why": "AddPerkBonusForCharacter on own character (ThrustOrRangedReadySpeedMultiplier)" },
+        { "method": "DefaultSettlementTaxModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementTaxModel.cs:83", "reachesTroop": false, "why": "governor half" }
+      ],
+      "rbm": "RBMAI only scales ThrustOrRangedReadySpeedMultiplier by stamina (*=); RBM's item-stat rewrites change the bow's base speed, the multiplier still applies on top."
+    },
+    {
+      "id": "BowNockingPoint",
+      "skill": "Bow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop's movement-speed penalty while reloading is halved.",
+      "conditions": "Any ranged weapon wielded: the personal call sits outside the bow branch, so crossbows and throwing weapons benefit too. Reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1002", "reachesTroop": true, "why": "AddPerkBonusForCharacter on own character (ReloadMovementPenaltyFactor)" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1049", "reachesTroop": false, "why": "captain half (+3% speed to foot archers)" }
+      ],
+      "rbm": "RBMAI sets ReloadMovementPenaltyFactor = 0.1 only for non-ranged agents in infantry formations (AgentStats.cs:269), which never covers a ranged shooter; moot."
+    },
+    {
+      "id": "BowDeadshot",
+      "skill": "Bow",
+      "personalHalf": "both",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "For each Bow skill point above 200 the troop gets +0.2% bow reload speed and +0.5% bow damage.",
+      "conditions": "Troop's raw Bow skill (CharacterObject.GetSkillValue) above 200; nothing at 200 or below. Reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1052", "reachesTroop": true, "why": "AddEpicPerkBonusForCharacter primary (ReloadSpeed); overwritten by RBM, see rbm" },
+        { "method": "RangedRework.OverrideSetAiRelatedProperties.GetReloadPerkFactor", "file": "RealisticBattleCombatModule/CombatModule/Ranged/RangedRework.Reload.cs:66", "reachesTroop": true, "why": "RBM re-applies the epic reload bonus as a factor" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:187", "reachesTroop": true, "why": "AddEpicPerkBonusForCharacter secondary (isPrimaryBonus: false), bow damage" }
+      ],
+      "rbm": "Reload half: RBMCombat assigns ReloadSpeed (bypass #8) and multiplies Deadshot back in. Damage half untouched."
+    }
+  ]
+}

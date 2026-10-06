@@ -1,0 +1,315 @@
+{
+  "group": "Crossbow",
+  "skills": ["Crossbow"],
+  "auditedAt": "2026-10-06",
+  "perks": [
+    {
+      "id": "CrossbowPiercer",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "Crossbow bolts treat the hit body part's armor as 0 when that armor (RBM's per-part value) is below 20; armor of 20 or more is not reduced at all.",
+      "conditions": "Bolt hit on a body part whose armor is above 0 and below 20 (threshold reduced at sea: NavalReduced).",
+      "sites": [
+        { "method": "SandboxStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:235", "reachesTroop": true, "why": "Env overload on the attacker's own CharacterObject; effectValue (20) is the threshold." },
+        { "method": "NavalStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/NavalDLC/NavalDLC.GameComponents/NavalStrikeMagnitudeModel.cs:70", "reachesTroop": true, "why": "Same check repeated by the War Sails wrapper (it recomputes from baseArmor)." },
+        { "method": "DefaultPartyWageModel (recruitment cost)", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyWageModel.cs:268", "reachesTroop": false, "why": "Secondary, PartyLeader, campaign map." },
+        { "method": "RecruitSupply (RBMCampaign)", "file": "RBMCampaign/Economy/RecruitSupply.cs:315", "reachesTroop": false, "why": "Hero.GetPerkValue, campaign map." }
+      ],
+      "rbm": "DamageRework.OverrideDamageCalc (bypass #1) still calls CalculateAdjustedArmorForBlow with RBM's armor (ArmorRework, bypass #6) and keeps the adjusted/raw ratio, so face and under-shoulder hits also drop to 0."
+    },
+    {
+      "id": "CrossbowMarksmen",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+25% ranged ready (aiming) speed while a crossbow is wielded.",
+      "conditions": "Crossbow wielded.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1068", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the agent's character into ThrustOrRangedReadySpeedMultiplier." },
+        { "method": "SandboxBattleMoraleModel (initial morale)", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:305", "reachesTroop": false, "why": "Secondary, AddPerkBonusForParty (party leader hero)." }
+      ],
+      "rbm": "ThrustOrRangedReadySpeedMultiplier is only multiplied afterwards (RBMAI stamina); RBMAI's SetWeaponSkillEffectsOnAgent replacement runs before the perk step. Kept."
+    },
+    {
+      "id": "CrossbowUnhorser",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+40% damage when the troop's crossbow bolt hits a horse.",
+      "conditions": "Bolt hit on a mount (land only).",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:194", "reachesTroop": true, "why": "Attacker's own character, consumable crossbow ammo, IsVictimAgentMount." },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:195", "reachesTroop": false, "why": "Captain half." }
+      ],
+      "rbm": "CalculateDamage still runs on RBM's inflicted damage (bypass note 8). Kept."
+    },
+    {
+      "id": "CrossbowWindWinder",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+25% crossbow reload speed.",
+      "conditions": "Crossbow wielded.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1062", "reachesTroop": true, "why": "AddPerkBonusForCharacter into ReloadSpeed (used as-is for crossbow usages RBM does not assign)." },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1065", "reachesTroop": false, "why": "Captain half." },
+        { "method": "RangedRework.OverrideSetAiRelatedProperties.GetReloadPerkFactor", "file": "RealisticBattleCombatModule/CombatModule/Ranged/RangedRework.Reload.cs:70", "reachesTroop": true, "why": "RBM re-applies the perk as a factor on its own ReloadSpeed for crossbow/crossbow_fast usages." }
+      ],
+      "rbm": "Bypass #8: RBM overwrites ReloadSpeed for crossbow/crossbow_fast and multiplies the perk back in (GetReloadPerkFactor)."
+    },
+    {
+      "id": "CrossbowDonkeysSwiftness",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "-30% crossbow accuracy loss while moving (WeaponMaxMovementAccuracyPenalty x0.7).",
+      "conditions": "Crossbow wielded; reduced at sea (NavalReduced).",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1067", "reachesTroop": true, "why": "AddPerkBonusForCharacter into WeaponMaxMovementAccuracyPenalty." },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveSkill", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:199", "reachesTroop": false, "why": "Captain half (+30 crossbow skill)." },
+        { "method": "SimulationPerks (RBMCampaign auto-resolve)", "file": "RBMCampaign/Simulation/SimulationPerks.cs:253", "reachesTroop": false, "why": "Captain half, auto-resolve (no mission)." }
+      ],
+      "rbm": "RBMAI only multiplies WeaponMaxMovementAccuracyPenalty afterwards (AgentStats.cs:159, :223, :324). Kept."
+    },
+    {
+      "id": "CrossbowSheriff",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+50% damage on crossbow headshots.",
+      "conditions": "Bolt hit to the head (reduced at sea).",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:199", "reachesTroop": true, "why": "Attacker's own character, IsHeadShot." },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:203", "reachesTroop": false, "why": "Captain half (vs foot victims)." }
+      ],
+      "rbm": "CalculateDamage runs on RBM's damage (bypass note 8). Kept."
+    },
+    {
+      "id": "CrossbowPeasantLeader",
+      "skill": "Crossbow",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing: party-leader morale and governor wage perk.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultPartyMoraleModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyMoraleModel.cs:166", "reachesTroop": false, "why": "MobileParty.HasPerk (hero)." },
+        { "method": "DefaultPartyWageModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyWageModel.cs:143", "reachesTroop": false, "why": "Governor, campaign map." }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "CrossbowRenownMarksmen",
+      "skill": "Crossbow",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing: party-leader daily XP and governor security perk.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultPartyTrainingModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyTrainingModel.cs:77", "reachesTroop": false, "why": "MobileParty.HasPerk, campaign map." },
+        { "method": "DefaultSettlementSecurityModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementSecurityModel.cs:231", "reachesTroop": false, "why": "Governor." }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "CrossbowFletcher",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+4 bolts in every bolt stack the troop spawns with.",
+      "conditions": "Troop carries crossbow ammo (any consumable whose skill is Crossbow); applied once at spawn.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.InitializeMissionEquipment", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:103", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the agent's character, called from Agent.Build in the mission." },
+        { "method": "SandboxAgentStatCalculateModel.InitializeMissionEquipment", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:104", "reachesTroop": true, "why": "Party-leader half: GetVisualPartyLeader returns the FIRST ROSTER TROOP of a party with no hero leader (bandits, caravans, villagers, garrison/militia), so a listed troop in that slot gives +2 bolts to the rest of its party (troops of its own type excluded)." }
+      ],
+      "rbm": "RBM does not patch InitializeMissionEquipment or quiver amounts at spawn."
+    },
+    {
+      "id": "CrossbowPuncture",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "Crossbow bolts treat the victim's armor as 10% lower.",
+      "conditions": "Bolt hits; reduced at sea.",
+      "sites": [
+        { "method": "SandboxStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:268", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's character." },
+        { "method": "SandboxStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:271", "reachesTroop": false, "why": "Captain half." },
+        { "method": "NavalStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/NavalDLC/NavalDLC.GameComponents/NavalStrikeMagnitudeModel.cs:103", "reachesTroop": true, "why": "War Sails wrapper recomputes the same reduction from baseArmor." }
+      ],
+      "rbm": "Bypass #1: the adjusted/raw armor ratio is kept, including the rebuilt face and under-shoulder armor."
+    },
+    {
+      "id": "CrossbowLooseAndMove",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "A wielded crossbow adds no wielded-weapon encumbrance, so it no longer cuts movement speed.",
+      "conditions": "Only while the crossbow is wielded (not when slung); reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.UpdateHumanStats", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:660", "reachesTroop": true, "why": "Env overload on the agent's character; skips the 4*sqrt(length)*weight wielded-weapon term." },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1005", "reachesTroop": false, "why": "Captain half (+5% speed for ranged)." }
+      ],
+      "rbm": "RBM never reassigns WeaponsEncumbrance or MaxSpeedMultiplier (only stamina multiplies). Kept."
+    },
+    {
+      "id": "CrossbowDeftHands",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+50% stagger threshold while reloading a crossbow, so a blow at or under that damage does not interrupt the reload.",
+      "conditions": "Hit while reloading a wielded crossbow; reduced at sea. Does not cover RBM posture-break knockdowns.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.CalculateStaggerThresholdDamage", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:700", "reachesTroop": true, "why": "Defender's own character; called from MissionCombatMechanicsHelper.DecideAgentShrugOffBlow." },
+        { "method": "SandboxAgentApplyDamageModel.CalculateStaggerThresholdDamage", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:703", "reachesTroop": false, "why": "Captain half." }
+      ],
+      "rbm": "DecideAgentShrugOffBlow is not patched and RBM never touches BlowFlags.ShrugOff. Kept."
+    },
+    {
+      "id": "CrossbowCounterFire",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "-10% damage taken from missiles while holding a crossbow in the main hand.",
+      "conditions": "Crossbow wielded in the main hand (not just carried); any missile, thrown weapons included; reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:385", "reachesTroop": true, "why": "Victim's own character, VictimMainHandWeapon is a Crossbow, consumable attacker weapon." },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:386", "reachesTroop": false, "why": "Captain half." }
+      ],
+      "rbm": "CalculateDamage runs on RBM's damage (bypass note 8). Kept."
+    },
+    {
+      "id": "CrossbowMountedCrossbowman",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "hero-only",
+      "confidence": "high",
+      "summary": "Nothing for troops: the reload-any-crossbow-on-horseback flag is only set for hero agents.",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.InitializeAgentStats", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:41", "reachesTroop": false, "why": "Inside if (agent.IsHero); sets AgentFlag.CanReloadAllXBowsMounted." },
+        { "method": "DefaultCombatXpModel (battle XP)", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultCombatXpModel.cs:103", "reachesTroop": false, "why": "Secondary, AddPerkBonusForParty." },
+        { "method": "CampaignUIHelper (item tooltip)", "file": "decompiled/TaleWorlds.CampaignSystem.ViewModelCollection/TaleWorlds.CampaignSystem.ViewModelCollection/CampaignUIHelper.cs:1746", "reachesTroop": false, "why": "UI text only, outside missions." }
+      ],
+      "rbm": "Listed in TroopPerks.NoTroopEffectPerkIds (HeroOnly, RBMConfig/Shared/TroopPerks.cs). RBM's party XP replacement (bypass #20) re-invokes the party half."
+    },
+    {
+      "id": "CrossbowSteady",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "partial",
+      "confidence": "high",
+      "summary": "On horseback with a crossbow: -50% movement accuracy penalty works; the -50% turning (rotational) accuracy penalty is lost because RBM AI sets that value to a fixed 0.010 for mounted shooters.",
+      "conditions": "Mounted, crossbow wielded. The rotational half is only lost while RBM AI is on.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1059", "reachesTroop": true, "why": "Movement accuracy penalty (bonuses8), agent.HasMount." },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1060", "reachesTroop": false, "why": "Rotational accuracy penalty (bonuses10); overwritten later by RBMAI." },
+        { "method": "AgentAi.OverrideSetAiRelatedProperties.Postfix", "file": "RealisticBattleAiModule/AiModule/Agents/AgentStats.cs:225", "reachesTroop": false, "why": "WeaponRotationalAccuracyPenaltyInRadians = 0.010f when mounted with a crossbow (movement penalty only multiplied at :223)." },
+        { "method": "DefaultClanFinanceModel (tariffs)", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultClanFinanceModel.cs:439", "reachesTroop": false, "why": "Secondary, governor." }
+      ],
+      "rbm": "Bypass #9(b): rotational half lost (rbmAi)."
+    },
+    {
+      "id": "CrossbowLongShots",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "no-check-found",
+      "confidence": "high",
+      "summary": "Nothing for AI troops: the extra crossbow zoom is only read for the player's own agent camera.",
+      "conditions": "Only Mission.MainAgent's camera zoom; a regular troop is never the main agent in normal campaign play.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.GetMaxCameraZoom", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:423", "reachesTroop": false, "why": "Only called from Mission (MainAgent camera), Mission.cs:2299." },
+        { "method": "DefaultSettlementMilitiaModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementMilitiaModel.cs:157", "reachesTroop": false, "why": "Secondary, governor." },
+        { "method": "MilitiaUpkeep (RBMCampaign)", "file": "RBMCampaign/Settlements/MilitiaUpkeep.cs:904", "reachesTroop": false, "why": "Secondary, governor, campaign map." }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "CrossbowHammerBolts",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "The troop's crossbow bolts can dismount riders, with +0.5 dismount penetration (ignores half the rider's dismount resistance).",
+      "conditions": "Bolt hit on a mounted rider that survives the hit and does not shrug it off; land only.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.CanWeaponDismount", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:538", "reachesTroop": true, "why": "One-argument GetPerkValue on the attacker's character, consumable crossbow ammo." },
+        { "method": "SandboxAgentApplyDamageModel.GetDismountPenetration", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:617", "reachesTroop": true, "why": "AddPerkBonusForCharacter, primary." },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:205", "reachesTroop": false, "why": "Captain half (+10% crossbow damage)." }
+      ],
+      "rbm": "Bypass #5 (HorseChanges DecideAgentDismountedByBlowPatch) only short-circuits non-missile couch/brace thrusts; missile hits go through vanilla DecideAgentDismountedByBlow."
+    },
+    {
+      "id": "CrossbowPavise",
+      "skill": "Crossbow",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "medium",
+      "summary": "Under RBM every non-penetrating missile that hits a shield on the back is already a block for everyone; the perk only gives a 75% chance to take no damage from missiles that pass through a non-metal shield on the back.",
+      "conditions": "Shield on the back hit by a missile that penetrates it (MultiplePenetration/CanPenetrateShield missiles, e.g. Impale throws); non-metal shield; reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.IsDamageIgnored", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:21", "reachesTroop": true, "why": "Victim's own character, env overload; effectValue (0.75) is the roll chance; called from AgentApplyDamageModel.CalculateDamage." },
+        { "method": "RangedRework.MissileHitCallbackPatch.Prefix", "file": "RealisticBattleCombatModule/CombatModule/Ranged/RangedRework.Collision.cs:243", "reachesTroop": false, "why": "RBM rewrites non-penetrating back-shield hits into shield blocks, so IsDamageIgnored is moot for them." },
+        { "method": "DefaultSiegeEventModel (ballista accuracy)", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSiegeEventModel.cs:309", "reachesTroop": false, "why": "Secondary, governor." }
+      ],
+      "rbm": "Bypass #13: back-shield hits become blocks for all agents unless the missile penetrates (metal shields stop even those), which leaves the perk only the penetrating-missile case."
+    },
+    {
+      "id": "CrossbowTerror",
+      "skill": "Crossbow",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing: party-leader siege-bombardment perk and captain morale perk.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultSiegeEventModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSiegeEventModel.cs:261", "reachesTroop": false, "why": "MobileParty.HasPerk." },
+        { "method": "SandboxBattleMoraleModel", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:171", "reachesTroop": false, "why": "Captain half." },
+        { "method": "NavalDLCCombatSimulationModel", "file": "decompiled/NavalDLC/NavalDLC.GameComponents/NavalDLCCombatSimulationModel.cs:236", "reachesTroop": false, "why": "Party, auto-resolve." }
+      ],
+      "rbm": "Captain morale half is also lost for kills of siege defenders (bypass #17)."
+    },
+    {
+      "id": "CrossbowBoltenGuard",
+      "skill": "Crossbow",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing: Picked Shots is a party-leader wage and party hit-point perk.",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveMaxHealth", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:550", "reachesTroop": false, "why": "AddPerkBonusForParty (party leader hero)." },
+        { "method": "DefaultPartyWageModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyWageModel.cs:127", "reachesTroop": false, "why": "Party, campaign map." },
+        { "method": "SimulationTroopHitPoints (RBMCampaign)", "file": "RBMCampaign/Simulation/SimulationTroopHitPoints.cs:298", "reachesTroop": false, "why": "Party, auto-resolve." }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "CrossbowMightyPull",
+      "skill": "Crossbow",
+      "personalHalf": "both",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+0.2% crossbow reload speed and +0.5% crossbow damage per point of the troop's own Crossbow skill above 200.",
+      "conditions": "Troop's raw Crossbow skill above 200 (few troops; captain skill bonuses do not count); reduced at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1069", "reachesTroop": true, "why": "AddEpicPerkBonusForCharacter (primary) into ReloadSpeed." },
+        { "method": "RangedRework.OverrideSetAiRelatedProperties.GetReloadPerkFactor", "file": "RealisticBattleCombatModule/CombatModule/Ranged/RangedRework.Reload.cs:75", "reachesTroop": true, "why": "RBM re-applies the epic reload bonus after overwriting ReloadSpeed." },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:207", "reachesTroop": true, "why": "AddEpicPerkBonusForCharacter (secondary, Personal) on bolt hits." }
+      ],
+      "rbm": "Bypass #8: reload half re-implemented; damage half untouched."
+    }
+  ]
+}

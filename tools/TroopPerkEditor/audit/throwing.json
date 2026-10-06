@@ -1,0 +1,320 @@
+{
+  "group": "Throwing",
+  "skills": ["Throwing"],
+  "auditedAt": "2026-10-06",
+  "perks": [
+    {
+      "id": "ThrowingQuickDraw",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "medium",
+      "summary": "With a Throwing-skill weapon wielded (javelin, throwing axe/knife, stone, sling) the troop's ReloadSpeed is raised by 20%, i.e. it readies the next throw faster.",
+      "conditions": "Throwing-skill ranged weapon wielded. Halved at sea (NavalReduced).",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1073", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the agent's own character, throwing branch, into ReloadSpeed" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1077", "reachesTroop": false, "why": "captain half (+10% to formation)" }
+      ],
+      "rbm": "RBMCombat's SetAiRelatedProperties reload postfix assigns ReloadSpeed only for bow/long_bow/crossbow_fast/crossbow usages, so throwing ReloadSpeed is untouched (RangedRework.Reload.cs:35, :96-114). RBMAI only multiplies it by stamina (AgentStats.cs:321). How the engine uses ReloadSpeed for throwing weapons is native code (not verifiable here)."
+    },
+    {
+      "id": "ThrowingShieldBreaker",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "The troop's thrown missiles do +40% damage to shields.",
+      "conditions": "Thrown (Throwing-skill consumable) missile hits a raised shield or a shield on the back. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:214", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's own character, throwing consumable + shield hit (flag5)" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:215", "reachesTroop": false, "why": "captain half (+8% to formation)" },
+        { "method": "Mission.GetAttackCollisionResults", "file": "decompiled/TaleWorlds.MountAndBlade/TaleWorlds.MountAndBlade/Mission.cs:6542", "reachesTroop": true, "why": "CalculateDamage runs on the shield damage RBM computed" }
+      ],
+      "rbm": "RBM replaces ComputeBlowDamageOnShield (bypass #2) but its InflictedDamage still goes through CalculateDamage; RBM's shield-on-back handling subtracts that post-perk InflictedDamage from the shield (RangedRework.Collision.cs:340, :366). Metal shields still take the damage."
+    },
+    {
+      "id": "ThrowingHunter",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "The troop's thrown missiles do +40% damage to horses.",
+      "conditions": "Thrown missile hits a mount. Land battles only (LandOnly).",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:224", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's own character, throwing consumable + IsVictimAgentMount" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:225", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "Damage-model amplification, still runs on RBM's damage (bypass map note 8)."
+    },
+    {
+      "id": "ThrowingFlexibleFighter",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "Melee hits made with a throwing item (javelin, throwing axe or knife used in its melee mode) deal +10% damage.",
+      "conditions": "Melee attack with an item of type Thrown. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:144", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's own character, melee branch, Item.ItemType == Thrown" },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveSkill", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:175", "reachesTroop": false, "why": "captain half (+15 skills to formation)" },
+        { "method": "SimulationPerks (auto-resolve)", "file": "RBMCampaign/Simulation/SimulationPerks.cs:235", "reachesTroop": false, "why": "captain, auto-resolve (no mission)" }
+      ],
+      "rbm": "Applies on RBM's melee damage via CalculateDamage; posture crush-through re-runs CalculateDamage too (MeleeBlowPatch.Math.cs:552)."
+    },
+    {
+      "id": "ThrowingMountedSkirmisher",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "While mounted with a throwing weapon wielded, the troop's movement and unsteadiness accuracy penalties are cut by 20%.",
+      "conditions": "Mounted, Throwing-skill ranged weapon wielded. Land only.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1028", "reachesTroop": true, "why": "one-arg GetPerkValue gate on the agent's own character, then AddPerkBonusForCharacter into WeaponMaxMovementAccuracyPenalty / WeaponMaxUnsteadyAccuracyPenalty (:1030, :1031)" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:229", "reachesTroop": false, "why": "captain half (+10% mounted throwing damage)" }
+      ],
+      "rbm": "RBMAI multiplies both fields afterwards (mounted non-bow/crossbow: *0.20 and *0.3, AgentStats.cs:241-242; stamina :324-325), so the perk's -20% is preserved. RBMAI's constant WeaponRotationalAccuracyPenaltyInRadians (:243) is a different field."
+    },
+    {
+      "id": "ThrowingWellPrepared",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "Each throwing ammo stack the troop carries (javelins, throwing axes/knives, stones, sling stones) gets +1 at spawn.",
+      "conditions": "Carries a consumable Throwing-skill stack. Halved at sea (0.5, combined with other bonuses before MathF.Round; alone it rounds to 0).",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.InitializeMissionEquipment", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:111", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the agent's own character, per throwing consumable slot" },
+        { "method": "SandboxAgentStatCalculateModel.InitializeMissionEquipment", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:117", "reachesTroop": false, "why": "party-leader half (AddPerkBonusForParty)" }
+      ],
+      "rbm": "InitializeMissionEquipment is not patched by RBM."
+    },
+    {
+      "id": "ThrowingRunningThrow",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "hero-only",
+      "confidence": "high",
+      "summary": "Nothing for a regular troop: the speed-to-damage bonus is only applied to heroes, in vanilla and in RBM's replacement.",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxStrikeMagnitudeModel.CalculateStrikeMagnitudeForMissile", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:35", "reachesTroop": false, "why": "gated on CharacterObject { IsHero: true }; also skipped by RBM's ComputeBlowMagnitudeMissile prefix (bypass #4)" },
+        { "method": "MagnitudeChanges.ApplyRunningThrowPerk", "file": "RealisticBattleCombatModule/CombatModule/Magnitude/MagnitudeChanges.Perks.cs:91", "reachesTroop": false, "why": "RBM re-implementation keeps the !character.IsHero early return" },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveSkill", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:194", "reachesTroop": false, "why": "captain half (+30 throwing skill to formation)" },
+        { "method": "SimulationPerks (auto-resolve)", "file": "RBMCampaign/Simulation/SimulationPerks.cs:249", "reachesTroop": false, "why": "captain, auto-resolve" }
+      ],
+      "rbm": "Listed in TroopPerks.NoTroopEffectPerkIds (HeroOnly, RBMConfig/Shared/TroopPerks.cs)."
+    },
+    {
+      "id": "ThrowingKnockOff",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "The troop's thrown missiles can dismount riders, ignoring 25% of their dismount resistance.",
+      "conditions": "Thrown consumable missile hits a mounted rider who survives the hit and does not shrug it off; dismount then rolls on damage vs. health/resistance. Land only.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.CanWeaponDismount", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:539", "reachesTroop": true, "why": "one-arg GetPerkValue on the attacker's own character, throwing consumable" },
+        { "method": "SandboxAgentApplyDamageModel.GetDismountPenetration", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:621", "reachesTroop": true, "why": "AddPerkBonusForCharacter, +0.25 penetration" },
+        { "method": "Mission.MissileHitCallback", "file": "decompiled/TaleWorlds.MountAndBlade/TaleWorlds.MountAndBlade/Mission.cs:5933", "reachesTroop": true, "why": "missile path calls DecideAgentDismountedByBlow" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:234", "reachesTroop": false, "why": "captain half (+5% vs cavalry)" }
+      ],
+      "rbm": "RBM's DecideAgentDismountedByBlow prefix returns true (vanilla) for missiles (HorseChanges.MountedCombat.cs:69). The roll uses RBM's damage numbers."
+    },
+    {
+      "id": "ThrowingSkirmisher",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "The troop takes 10% less damage from ranged attacks while its main-hand weapon is a throwing weapon.",
+      "conditions": "Troop is hit by a missile (any consumable) while its wielded main-hand usage is Throwing-skill (javelin/axe/knife in throw mode, or a sling). Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:390", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the victim's own character, VictimMainHandWeapon is Throwing" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:376", "reachesTroop": false, "why": "captain half (-3% to formation)" }
+      ],
+      "rbm": "ApplyDamageReductions still runs on RBM's damage (bypass map note 8)."
+    },
+    {
+      "id": "ThrowingSaddlebags",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "A troop that spawns mounted gets +2 on each throwing ammo stack.",
+      "conditions": "Spawned on a horse (the mount is attached before InitializeMissionEquipment) and carries a consumable Throwing-skill stack. Land only.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.InitializeMissionEquipment", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:115", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the agent's own character when agent.HasMount" },
+        { "method": "DefaultPartyTrainingModel (daily XP)", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyTrainingModel.cs:62", "reachesTroop": false, "why": "party-leader half, campaign map" }
+      ],
+      "rbm": "Not patched. Mount set via SetMountAgentBeforeBuild (Mission.cs:4331) before Agent.Build calls InitializeMissionEquipment (Agent.cs:5208)."
+    },
+    {
+      "id": "ThrowingFocus",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "hero-only",
+      "confidence": "high",
+      "summary": "Nothing for a regular troop: the only effect is extra camera zoom, which exists only for the player's own agent.",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.GetMaxCameraZoom", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:427", "reachesTroop": false, "why": "the check itself would pass for a troop, but camera zoom is a player-camera value; AI agents have no camera" },
+        { "method": "DefaultSettlementSecurityModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementSecurityModel.cs:289", "reachesTroop": false, "why": "governor half, campaign" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "ThrowingLastHit",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "The troop's thrown missiles do +50% damage to targets at or below half health.",
+      "conditions": "Only thrown (Throwing-skill consumable) missile hits, victim health <= 50% of max. Not melee or other weapons despite the description. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:238", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's own character inside the throwing-consumable branch" },
+        { "method": "SandboxBattleMoraleModel (initial morale)", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:263", "reachesTroop": false, "why": "party-leader half (AddPerkBonusForParty)" }
+      ],
+      "rbm": "Damage-model amplification, still runs on RBM's damage."
+    },
+    {
+      "id": "ThrowingHeadHunter",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "The troop's thrown missiles do +50% damage on headshots.",
+      "conditions": "Thrown missile hits the head (IsHeadShot). Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:242", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's own character, throwing consumable + IsHeadShot" },
+        { "method": "DefaultPartyWageModel / RBM RecruitSupply", "file": "RBMCampaign/Economy/RecruitSupply.cs:290", "reachesTroop": false, "why": "party-leader half (recruit cost), hero, campaign" }
+      ],
+      "rbm": "Applies on top of RBM's face-hit armor logic (damage model runs after ComputeBlowDamage)."
+    },
+    {
+      "id": "ThrowingSlingingCompetitions",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "The troop's sling stones ignore head armor entirely.",
+      "conditions": "Missile of class SlingStone hits the head.",
+      "sites": [
+        { "method": "SandboxStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:239", "reachesTroop": true, "why": "env-overload GetPerkValue on the attacker's own character; sets armor to 0" },
+        { "method": "NavalStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/NavalDLC/NavalDLC.GameComponents/NavalStrikeMagnitudeModel.cs:74", "reachesTroop": true, "why": "same check in the naval model" },
+        { "method": "DamageRework.OverrideDamageCalc.Prefix", "file": "RealisticBattleCombatModule/CombatModule/Damage/DamageRework.Core.cs:205", "reachesTroop": true, "why": "RBM calls CalculateAdjustedArmorForBlow and carries the 0 ratio into face-hit armor (:311)" },
+        { "method": "DefaultSettlementMilitiaModel / RBM MilitiaUpkeep", "file": "RBMCampaign/Settlements/MilitiaUpkeep.cs:905", "reachesTroop": false, "why": "governor half, campaign" }
+      ],
+      "rbm": "Kept: RBM's ComputeBlowDamage replacement uses the adjusted armor (bypass #1)."
+    },
+    {
+      "id": "ThrowingResourceful",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "Each throwing ammo stack the troop carries gets +2 at spawn.",
+      "conditions": "Carries a consumable Throwing-skill stack. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.InitializeMissionEquipment", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:112", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the agent's own character" },
+        { "method": "DefaultCombatXpModel.GetBattleXpBonusFromPerks", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultCombatXpModel.cs:94", "reachesTroop": false, "why": "party-leader half (battle XP)" }
+      ],
+      "rbm": "InitializeMissionEquipment not patched."
+    },
+    {
+      "id": "ThrowingSplinters",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "The troop's thrown axes do +300% damage to shields (about x4, stacking additively with Shield Breaker).",
+      "conditions": "Missile of class ThrowingAxe hits a raised shield or a shield on the back. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:218", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's own character, ThrowingAxe + shield hit" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:220", "reachesTroop": false, "why": "captain half (+50%, all throwing weapons)" }
+      ],
+      "rbm": "As Shield Breaker: shield damage still passes CalculateDamage."
+    },
+    {
+      "id": "ThrowingPerfectTechnique",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "partial",
+      "confidence": "medium",
+      "summary": "+25% launch speed for the troop's javelins, throwing axes/knives and stones; lost for slings, whose launch speed RBM sets itself.",
+      "conditions": "Throwing-skill weapon wielded. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1074", "reachesTroop": true, "why": "AddPerkBonusForCharacter into MissileSpeedMultiplier (then overwritten by RBMAI)" },
+        { "method": "AgentAi.OverrideSetAiRelatedProperties.GetThrowingMissileSpeedMultiplier", "file": "RealisticBattleAiModule/AiModule/Agents/AgentStats.cs:52", "reachesTroop": true, "why": "RBMAI re-applies the personal half on the agent's own character" },
+        { "method": "RangedRework.OverrideOnAgentShootMissile.Prefix", "file": "RealisticBattleCombatModule/CombatModule/Ranged/RangedRework.MissileSpeed.cs:191", "reachesTroop": false, "why": "sling launch velocity replaced by MissileBallistics.GetSlingSpeed, which ignores MissileSpeedMultiplier" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1078", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "Bypass #9a (re-implemented) and #19 (sling lost). Whether the engine folds MissileSpeedMultiplier into thrown-weapon launch velocity is native and UNVERIFIED."
+    },
+    {
+      "id": "ThrowingLongReach",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "medium",
+      "summary": "While mounted the troop's item/usable interaction distance becomes 3 m instead of 1.5 m, so mounted AI can grab ground items from further away.",
+      "conditions": "Mounted. The code only extends reach; it does not unlock anything (description says it enables mounted pickup).",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.GetInteractionDistance", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:398", "reachesTroop": true, "why": "env-overload GetPerkValue on the agent's own character when HasMount" },
+        { "method": "HumanAIComponent.OnTick", "file": "decompiled/TaleWorlds.MountAndBlade/TaleWorlds.MountAndBlade/HumanAIComponent.cs:259", "reachesTroop": true, "why": "AI item pickup uses GetInteractionDistance x3" },
+        { "method": "RBMAI TickPatches item pickup", "file": "RealisticBattleAiModule/AiModule/Agents/TickPatches.cs:395", "reachesTroop": true, "why": "RBMAI's pickup stall check uses the same distance" },
+        { "method": "DefaultBattleRewardModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultBattleRewardModel.cs:50", "reachesTroop": false, "why": "party-leader half (morale/renown), campaign" }
+      ],
+      "rbm": "Not overridden."
+    },
+    {
+      "id": "ThrowingWeakSpot",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop's Throwing-skill hits (thrown weapons and sling stones) treat the target's armor as 30% lower.",
+      "conditions": "Attack weapon usage is Throwing-skill (in practice missiles; melee modes of javelins/axes use other skills). Halved at sea.",
+      "sites": [
+        { "method": "SandboxStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:276", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's own character" },
+        { "method": "NavalStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/NavalDLC/NavalDLC.GameComponents/NavalStrikeMagnitudeModel.cs:111", "reachesTroop": true, "why": "naval model, same check" },
+        { "method": "DamageRework.OverrideDamageCalc.Prefix", "file": "RealisticBattleCombatModule/CombatModule/Damage/DamageRework.Core.cs:205", "reachesTroop": true, "why": "RBM uses the adjusted armor and its ratio" },
+        { "method": "SandboxStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:279", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "Kept (bypass #1)."
+    },
+    {
+      "id": "ThrowingImpale",
+      "skill": "Throwing",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "The troop's javelins go through wooden shields (raised or on the back) via the engine's shield-penetration path; metal shields still stop them.",
+      "conditions": "Missile weapon class Javelin; shield is not metal (RBM strips penetration against metal_shield).",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.DecideMissileWeaponFlags", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:491", "reachesTroop": true, "why": "one-arg GetPerkValue on the attacker's own character, adds CanPenetrateShield" },
+        { "method": "RangedRework.MissileHitCallbackPatch.DecideMissileWeaponFlagsAgainstShield", "file": "RealisticBattleCombatModule/CombatModule/Ranged/RangedRework.Collision.cs:187", "reachesTroop": true, "why": "model still called; flag stripped on metal shield blocks (:196)" },
+        { "method": "RangedRework.MissileHitCallbackPatch.PenetratesShieldOnBack", "file": "RealisticBattleCombatModule/CombatModule/Ranged/RangedRework.Collision.cs:294", "reachesTroop": true, "why": "model call lets a troop's Impale javelin pass a wooden shield on the back; the HeroObject fallback at :303 is hero-only and redundant" },
+        { "method": "RangedRework.PilumShieldPenetration.TryWoundBehindShield", "file": "RealisticBattleCombatModule/CombatModule/Ranged/RangedRework.ShieldPenetration.cs:112", "reachesTroop": true, "why": "Impale pila skip RBM's partial pilum-through-shield wound and use full engine penetration instead" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:231", "reachesTroop": false, "why": "captain half (+10% throwing damage)" }
+      ],
+      "rbm": "Bypass #12/#13: cancelled against metal shields by design; works against wooden ones."
+    },
+    {
+      "id": "ThrowingUnstoppableForce",
+      "skill": "Throwing",
+      "personalHalf": "both",
+      "verdict": "conditional",
+      "confidence": "medium",
+      "summary": "Epic perk: for each Throwing skill point above 200 the troop gets +0.2% throw speed and +0.5% thrown-missile damage; low-skill troops get nothing.",
+      "conditions": "Troop's own Throwing skill > 200 (raw GetSkillValue). Speed half: not for slings under RBM. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1080", "reachesTroop": true, "why": "AddEpicPerkBonusForCharacter primary (speed), then overwritten by RBMAI" },
+        { "method": "AgentAi.OverrideSetAiRelatedProperties.GetThrowingMissileSpeedMultiplier", "file": "RealisticBattleAiModule/AiModule/Agents/AgentStats.cs:57", "reachesTroop": true, "why": "RBMAI re-applies the speed half" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:244", "reachesTroop": true, "why": "AddEpicPerkBonusForCharacter isPrimaryBonus:false, SecondaryRole is Personal, thrown missiles" },
+        { "method": "RangedRework.OverrideOnAgentShootMissile.Prefix", "file": "RealisticBattleCombatModule/CombatModule/Ranged/RangedRework.MissileSpeed.cs:191", "reachesTroop": false, "why": "sling velocity ignores MissileSpeedMultiplier" }
+      ],
+      "rbm": "Speed half re-implemented by RBMAI (lost for slings, bypass #19); damage half intact via CalculateDamage."
+    }
+  ]
+}

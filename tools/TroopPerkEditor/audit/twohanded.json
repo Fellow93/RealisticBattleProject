@@ -1,0 +1,271 @@
+{
+  "group": "TwoHanded",
+  "skills": ["TwoHanded"],
+  "auditedAt": "2026-10-06",
+  "perks": [
+    {
+      "id": "TwoHandedStrongGrip",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+10% handling while wielding a two-handed sword, axe or mace; under RBM it also reduces the posture the troop loses when blocking or parrying with that weapon.",
+      "conditions": "Wielding a TwoHanded-skill melee weapon (two-handed sword/axe/mace; not two-handed polearms, which are Polearm skill). The captain half (+30 two-handed skill to infantry in the formation) never applies to a troop.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:975", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the agent's own CharacterObject into HandlingMultiplier; method is not patched by RBM." },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveSkill", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:231", "reachesTroop": false, "why": "Captain half (AddPerkBonusFromCaptain), needs the troop to be the formation captain." },
+        { "method": "MeleeBlowPatch.ComputeDefenderBlockPerkFactors", "file": "RealisticBattleAiModule/AiModule/Stance/MeleeBlowPatch.Math.cs:380", "reachesTroop": true, "why": "RBM posture: AddPerkBonusForCharacter on the defender's CharacterObject; divides posture lost on blocks/parries by the handling bonus (postureEnabled, rbmAi)." },
+        { "method": "SimulationPerks (auto-resolve)", "file": "RBMCampaign/Simulation/SimulationPerks.cs:270", "reachesTroop": false, "why": "Auto-resolve captain check; no Mission.Current so troop perks never apply." }
+      ],
+      "rbm": "RBMAI multiplies HandlingMultiplier by stamina (*=, perk kept). RBM posture adds its own read of the perk (block posture cost). Posture factor is cached per Stance and not refreshed if the troop-perk map changes mid-mission."
+    },
+    {
+      "id": "TwoHandedWoodChopper",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+30% damage to shields when a two-handed weapon hit is blocked by a shield (or lands on a shield on the back).",
+      "conditions": "TwoHanded-skill melee weapon; the hit is a shield block or a shield-on-back collision. Halved at sea (NavalReduced).",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:79", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's CharacterObject when AttackBlockedWithShield || CollidedWithShieldOnBack; runs via Mission.GetAttackCollisionResults -> CalculateDamage on RBM's shield damage." },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:80", "reachesTroop": false, "why": "Captain half." }
+      ],
+      "rbm": "RBM replaces ComputeBlowDamageOnShield (bypass #2) but still writes InflictedDamage, which CalculateDamage then amplifies, so the perk applies on top of RBM's shield damage."
+    },
+    {
+      "id": "TwoHandedOnTheEdge",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+3% swing (attack animation) speed while wielding a two-handed sword, axe or mace.",
+      "conditions": "Wielding a TwoHanded-skill melee weapon; personal half is not foot-gated. Halved at sea. Captain half (+2% swing speed to infantry) needs a hero captain.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:972", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the agent's CharacterObject into SwingSpeedMultiplier." },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:957", "reachesTroop": false, "why": "Captain half." }
+      ],
+      "rbm": "RBMAI's SetWeaponSkillEffectsOnAgent replacement runs before the perk; RBMAI stamina scaling is *=. Like vanilla, swing magnitude (RBM's CalculateBaseMeleeBlowMagnitude rewrite) uses the item's swing speed, so the perk speeds the animation but adds no damage."
+    },
+    {
+      "id": "TwoHandedHeadBasher",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+10% damage with two-handed axes and two-handed maces.",
+      "conditions": "WeaponClass TwoHandedAxe or TwoHandedMace (not two-handed swords). Halved at sea. Captain half (+2% infantry damage) needs a hero captain.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:86", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's CharacterObject." },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:291", "reachesTroop": false, "why": "Captain half (foot attackers)." }
+      ],
+      "rbm": "CalculateDamage still runs on RBM's damage (bypass-map note 8), also in RBM's posture crush-through recalculation."
+    },
+    {
+      "id": "TwoHandedShowOfStrength",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "medium",
+      "summary": "Two-handed swings with a knockdown-capable weapon ignore 30% of the victim's knockdown resistance, making knockdowns more likely; in practice only heavy two-handed maces qualify.",
+      "conditions": "Swing with a TwoHanded-skill weapon whose flags include CanKnockDown (vanilla: only the crafting pieces mace_head_24/34/37/38, i.e. two-handed maces), sweet-spot hit on a foot victim's head/torso/arms/legs. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.GetKnockDownPenetration", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:656", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's CharacterObject; called from MissionCombatMechanicsHelper.DecideWeaponKnockDown, gated by CanWeaponKnockDown; neither patched by RBM." },
+        { "method": "DefaultPartyWageModel (recruit cost)", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyWageModel.cs:262", "reachesTroop": false, "why": "PartyLeader half." },
+        { "method": "RecruitSupply", "file": "RBMCampaign/Economy/RecruitSupply.cs:300", "reachesTroop": false, "why": "Campaign recruit cost, Hero.GetPerkValue." }
+      ],
+      "rbm": "Mission.CreateMeleeBlow's knockdown decision is not patched; RBM's postfixes only add knockdowns (passive attacks, posture, kicks). RBM's mace_head_24/34/37/38 overrides have no Flags node, so the attribute merge keeps vanilla's CanKnockDown (not verified in game)."
+    },
+    {
+      "id": "TwoHandedBaptisedInBlood",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "hero-only",
+      "confidence": "high",
+      "summary": "Nothing for a troop: the infantry XP on two-handed kills is only handed out from the hero combat-hit event and read with Hero.GetPerkValue.",
+      "conditions": "",
+      "sites": [
+        { "method": "BattleCampaignBehavior.OnHeroCombatHit", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.CampaignBehaviors/BattleCampaignBehavior.cs:49", "reachesTroop": false, "why": "attacker.HeroObject.GetPerkValue; the event is only fired for heroes (MapEventParty.OnTroopScoreHit, decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.MapEvents/MapEventParty.cs:392)." },
+        { "method": "DefaultCombatXpModel.GetBattleXpBonusFromPerks", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultCombatXpModel.cs:90", "reachesTroop": false, "why": "PartyLeader half (AddPerkBonusForParty); RBM's GetXpFromHit rewrite re-invokes it by reflection." }
+      ],
+      "rbm": "Was missing from the loader's hero-only list; added to TroopPerks.NoTroopEffectPerkIds (HeroOnly) after this audit, so the loader now logs it as having no effect."
+    },
+    {
+      "id": "TwoHandedBeastSlayer",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+50% damage to horses and other mounts with two-handed swords, axes and maces.",
+      "conditions": "TwoHanded-skill melee weapon, the victim is a mount. Land only.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:90", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's CharacterObject when IsVictimAgentMount." },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:91", "reachesTroop": false, "why": "Captain half." }
+      ],
+      "rbm": "CalculateDamage still runs on RBM's damage."
+    },
+    {
+      "id": "TwoHandedShieldBreaker",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+40% damage to shields when a two-handed weapon hit is blocked by a shield (stacks with Wood Chopper).",
+      "conditions": "TwoHanded-skill melee weapon; the hit is a shield block or a shield-on-back collision. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:81", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's CharacterObject inside the shield-hit branch." },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:82", "reachesTroop": false, "why": "Captain half." }
+      ],
+      "rbm": "As Wood Chopper: RBM's shield damage still passes through CalculateDamage."
+    },
+    {
+      "id": "TwoHandedBerserker",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+20% damage with two-handed swords, axes and maces while the troop is below half health.",
+      "conditions": "TwoHanded-skill melee weapon, attacker Health/HealthLimit < 0.5. Halved at sea. Governor half is campaign-only.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:95", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's CharacterObject when AttackerHitPointRate < 0.5." },
+        { "method": "DefaultPartyWageModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyWageModel.cs:138", "reachesTroop": false, "why": "Governor half (garrison wages)." }
+      ],
+      "rbm": "CalculateDamage still runs on RBM's damage."
+    },
+    {
+      "id": "TwoHandedConfidence",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+15% damage with two-handed swords, axes and maces while the troop is above 90% health.",
+      "conditions": "TwoHanded-skill melee weapon, attacker Health/HealthLimit > 0.9. Halved at sea. Governor half is campaign-only.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:99", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's CharacterObject when AttackerHitPointRate > 0.9." },
+        { "method": "DefaultBuildingConstructionModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultBuildingConstructionModel.cs:135", "reachesTroop": false, "why": "Governor half (build speed)." },
+        { "method": "Construction", "file": "RBMCampaign/Settlements/Construction.cs:226", "reachesTroop": false, "why": "Governor half, RBM campaign." }
+      ],
+      "rbm": "CalculateDamage still runs on RBM's damage."
+    },
+    {
+      "id": "TwoHandedProjectileDeflection",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "hero-only",
+      "confidence": "high",
+      "summary": "Nothing for a troop: the arrow-deflection agent flag is only set for hero agents.",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.InitializeAgentStats", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:45", "reachesTroop": false, "why": "Inside if (agent.IsHero): sets AgentFlag.CanDeflectArrowsWith2HSword." },
+        { "method": "DefaultCombatXpModel / DefaultDailyTroopXpBonusModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultDailyTroopXpBonusModel.cs:21", "reachesTroop": false, "why": "Governor half (garrison XP)." }
+      ],
+      "rbm": "Listed in TroopPerks.NoTroopEffectPerkIds (HeroOnly); the loader logs it as having no effect."
+    },
+    {
+      "id": "TwoHandedTerror",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "Kills and knock-outs with a two-handed sword, axe or mace cause 20% more morale loss to nearby enemies, except when killing siege defenders under RBM AI.",
+      "conditions": "Killing blow weapon class TwoHandedSword/Axe/Mace (not two-handed polearms). Lost when the victim is a siege defender with rbmAiEnabled (unless the keep-battle exception applies). Halved at sea.",
+      "sites": [
+        { "method": "SandboxBattleMoraleModel.CalculateMaxMoraleChangeDueToAgentIncapacitatedExplained", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:159", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the killer's CharacterObject into the affected-side loss (bonuses2 is returned as affectedSideMaxMoraleLoss)." },
+        { "method": "DefaultPartySizeLimitModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartySizeLimitModel.cs:210", "reachesTroop": false, "why": "PartyLeader half (prisoner limit)." }
+      ],
+      "rbm": "Bypass #17: RBMAI's AgentMoraleInteractionLogic.ApplyMoraleEffectOnAgentIncapacitated prefix discards the morale shock when a siege defender goes down."
+    },
+    {
+      "id": "TwoHandedHope",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "Kills and knock-outs with a two-handed sword, axe or mace give nearby allies 30% more morale, except when killing siege defenders under RBM AI.",
+      "conditions": "Killing blow weapon class TwoHandedSword/Axe/Mace. Lost when the victim is a siege defender with rbmAiEnabled (unless the keep-battle exception applies). Halved at sea.",
+      "sites": [
+        { "method": "SandboxBattleMoraleModel.CalculateMaxMoraleChangeDueToAgentIncapacitatedExplained", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:158", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the killer's CharacterObject into the affector-side gain (bonuses is returned as affectorSideMaxMoraleGain)." },
+        { "method": "DefaultPartySizeLimitModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartySizeLimitModel.cs:290", "reachesTroop": false, "why": "PartyLeader half (party size)." },
+        { "method": "PerkActivationHandlerCampaignBehavior", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.CampaignBehaviors/PerkActivationHandlerCampaignBehavior.cs:68", "reachesTroop": false, "why": "Main-hero perk-activation hook, campaign." }
+      ],
+      "rbm": "Bypass #17 as Terror."
+    },
+    {
+      "id": "TwoHandedRecklessCharge",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "On foot, +20% to the forward-movement speed bonus that two-handed swings and thrusts get, so attacks made while advancing hit harder.",
+      "conditions": "On foot, TwoHanded-skill weapon, extra linear speed > 0 (attacker moving into the blow). Halved at sea. Captain half (+2% damage and speed to infantry) needs a hero captain.",
+      "sites": [
+        { "method": "SandboxStrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:94", "reachesTroop": false, "why": "Vanilla path skipped by RBM's CalculateBaseMeleeBlowMagnitude prefix (bypass #3)." },
+        { "method": "SandboxStrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:149", "reachesTroop": false, "why": "Same, skipped when RBM handles the thrust." },
+        { "method": "MagnitudeChanges.ApplyMeleeSpeedPerks", "file": "RealisticBattleCombatModule/CombatModule/Magnitude/MagnitudeChanges.Perks.cs:44", "reachesTroop": true, "why": "RBM re-implementation, AddPerkBonusForCharacter on the attacker's CharacterObject, called for RBM swings and thrusts." },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:292", "reachesTroop": false, "why": "Captain half." },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1133", "reachesTroop": false, "why": "Captain half (movement speed)." }
+      ],
+      "rbm": "Vanilla magnitude path replaced; RBM re-applies the perk with the same foot/2H/extra-speed conditions."
+    },
+    {
+      "id": "TwoHandedThickHides",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+5 maximum hit points in battle (only in battle; the party screen still shows the base value).",
+      "conditions": "Any weapon, land and sea. The PartyLeader half (+5 HP to party troops) needs a hero party leader.",
+      "sites": [
+        { "method": "DefaultCharacterStatsModel.MaxHitpoints", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultCharacterStatsModel.cs:31", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the troop; read via Agent.Character setter (BaseHealthLimit = MaxHitPoints(), Agent.cs:1438) during spawn with Mission.Current set, then GetEffectiveMaxHealth builds HealthLimit on it." },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveMaxHealth", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:546", "reachesTroop": false, "why": "PartyLeader half (AddPerkBonusForParty)." },
+        { "method": "SimulationTroopHitPoints", "file": "RBMCampaign/Simulation/SimulationTroopHitPoints.cs:292", "reachesTroop": false, "why": "Auto-resolve party half, no mission." },
+        { "method": "PerkActivationHandlerCampaignBehavior", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.CampaignBehaviors/PerkActivationHandlerCampaignBehavior.cs:20", "reachesTroop": false, "why": "Hero HP refresh on perk activation, campaign." }
+      ],
+      "rbm": "No RBM patch touches MaxHitpoints, BaseHealthLimit or GetEffectiveMaxHealth."
+    },
+    {
+      "id": "TwoHandedBladeMaster",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+10% damage with two-handed swords, axes and maces.",
+      "conditions": "TwoHanded-skill melee weapon, mounted or on foot. Halved at sea. Captain half (+2% attack speed to infantry) needs a hero captain.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:101", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's CharacterObject." },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:958", "reachesTroop": false, "why": "Captain half (swing and thrust speed)." }
+      ],
+      "rbm": "CalculateDamage still runs on RBM's damage."
+    },
+    {
+      "id": "TwoHandedVandal",
+      "skill": "TwoHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The victim's armor counts 25% lower against all of the troop's attacks, any weapon (melee, ranged, unarmed), not only two-handed.",
+      "conditions": "Victim armor > 0. Halved at sea. The captain half (+20% damage to destructible objects) needs a hero captain.",
+      "sites": [
+        { "method": "SandboxStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:251", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's CharacterObject; called by RBM's ComputeBlowDamage rewrite (DamageRework.Core.cs:205)." },
+        { "method": "NavalStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/NavalDLC/NavalDLC.GameComponents/NavalStrikeMagnitudeModel.cs:86", "reachesTroop": true, "why": "Same check in the War Sails copy." },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:314", "reachesTroop": false, "why": "Captain half (entity damage)." }
+      ],
+      "rbm": "Bypass #1: RBM calls CalculateAdjustedArmorForBlow and uses the adjusted armor, re-applying the ratio for its rebuilt face / under-shoulder armor (DamageRework.Core.cs:198-210)."
+    },
+    {
+      "id": "TwoHandedWayOfTheGreatAxe",
+      "skill": "TwoHanded",
+      "personalHalf": "both",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "For each point of two-handed skill above 250: +0.2% swing and thrust speed and +0.5% damage with two-handed weapons; no shipped troop has more than 220 skill, so it does nothing unless the troop's skill is raised.",
+      "conditions": "The troop's raw TwoHanded skill (GetSkillValue) above 250; TwoHanded-skill melee weapon. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:973", "reachesTroop": true, "why": "AddEpicPerkBonusForCharacter (primary) into SwingSpeedMultiplier, skill above MaxSkillRequiredForEpicPerkBonus (250)." },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:974", "reachesTroop": true, "why": "Same, into ThrustOrRangedReadySpeedMultiplier." },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:103", "reachesTroop": true, "why": "AddEpicPerkBonusForCharacter (secondary, damage), same 250 threshold." }
+      ],
+      "rbm": "Neither path is touched by RBM. Vanilla troop TwoHanded skills top out at 220 (spnpccharacters.xml), RBM's unit overhaul at 200."
+    }
+  ]
+}

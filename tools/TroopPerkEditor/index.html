@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RBM Troop Perk Editor</title>
+<style>
+:root {
+  --bg: #f6f6f4;
+  --panel: #ffffff;
+  --panel-2: #f0f0ec;
+  --border: #d9d9d2;
+  --text: #1d1d1b;
+  --muted: #6b6b64;
+  --faint: #9a9a92;
+  --accent: #2f6f9f;
+  --accent-bg: #e3eef7;
+  --ok: #2d7a3e;
+  --ok-bg: #e2f2e5;
+  --warn: #9a5b00;
+  --warn-bg: #fbefd9;
+  --bad: #a3322b;
+  --bad-bg: #f8e1df;
+  --sel: #dbe9f5;
+  --shadow: 0 1px 2px rgba(0,0,0,.06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17181a;
+    --panel: #202225;
+    --panel-2: #292b2f;
+    --border: #3a3d42;
+    --text: #e6e6e3;
+    --muted: #a3a39c;
+    --faint: #75756f;
+    --accent: #79b4e3;
+    --accent-bg: #1f3446;
+    --ok: #7fcf8e;
+    --ok-bg: #1d3524;
+    --warn: #e8b260;
+    --warn-bg: #3d2f17;
+    --bad: #ef8a83;
+    --bad-bg: #44211f;
+    --sel: #263c50;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 13px/1.4 "Segoe UI", system-ui, -apple-system, sans-serif;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button {
+  background: var(--panel-2); border: 1px solid var(--border); border-radius: 5px;
+  padding: 4px 10px; cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) { button.primary { color: #10202c; } }
+button.small { padding: 1px 7px; font-size: 12px; }
+button.link { background: none; border: none; padding: 0; color: var(--accent); cursor: pointer; }
+button.link:hover { text-decoration: underline; }
+input[type=search], input[type=text], select, textarea {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 4px 7px;
+}
+textarea { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12px; width: 100%; }
+code, .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12px; }
+header {
+  display: flex; align-items: center; gap: 12px; padding: 8px 14px;
+  background: var(--panel); border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+header h1 { font-size: 15px; margin: 0; font-weight: 600; }
+header .meta { color: var(--muted); font-size: 12px; }
+header .spacer { flex: 1; }
+#modified { font-size: 12px; padding: 2px 8px; border-radius: 10px; }
+#modified.on { background: var(--warn-bg); color: var(--warn); }
+#modified.off { background: var(--ok-bg); color: var(--ok); }
+main {
+  flex: 1; min-height: 0; display: grid; gap: 10px; padding: 10px;
+  grid-template-columns: minmax(330px, 1fr) minmax(330px, 1.1fr) minmax(420px, 1.5fr);
+}
+.pane {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  display: flex; flex-direction: column; min-height: 0; box-shadow: var(--shadow);
+}
+.pane > .head { padding: 8px 10px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+.pane > .head h2 { font-size: 13px; margin: 0; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.pane > .body { overflow-y: auto; flex: 1; min-height: 0; }
+.filters { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.filters select { max-width: 150px; }
+.filters label { display: inline-flex; align-items: center; gap: 3px; color: var(--muted); font-size: 12px; }
+.count { color: var(--muted); font-weight: 400; font-size: 12px; }
+.troop-row {
+  display: grid; grid-template-columns: 18px 1fr auto; gap: 6px; align-items: center;
+  padding: 5px 10px; border-bottom: 1px solid var(--panel-2); cursor: pointer;
+}
+.troop-row:hover { background: var(--panel-2); }
+.troop-row.sel { background: var(--sel); }
+.troop-row .nm { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.troop-row .sub { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badge {
+  display: inline-block; font-size: 11px; padding: 0 6px; border-radius: 9px; line-height: 17px;
+  background: var(--panel-2); color: var(--muted); border: 1px solid var(--border); white-space: nowrap;
+}
+.badge.perks { background: var(--accent-bg); color: var(--accent); border-color: transparent; font-weight: 600; }
+.badge.zero { opacity: .45; }
+.badge.bad { background: var(--bad-bg); color: var(--bad); border-color: transparent; }
+.badge.warn { background: var(--warn-bg); color: var(--warn); border-color: transparent; }
+.badge.ok { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+.badge.outline { background: transparent; border: 1px dashed var(--muted); color: var(--muted); }
+.badge.harm { background: var(--bad); color: var(--panel); border-color: transparent; font-weight: 600; }
+.badge.verdict { font-weight: 600; }
+button.badge { cursor: pointer; font: inherit; font-size: 11px; }
+.details { padding: 10px 12px; }
+.details h3 { margin: 0 0 2px; font-size: 16px; }
+.details h4 { margin: 14px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 12px; }
+.kv .k { color: var(--muted); }
+.skills { display: grid; grid-template-columns: 90px 1fr 34px; gap: 3px 8px; align-items: center; font-size: 12px; }
+.bar { height: 7px; background: var(--panel-2); border-radius: 4px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--accent); opacity: .7; }
+.assigned { display: flex; flex-direction: column; gap: 5px; }
+.assigned .ap {
+  display: grid; grid-template-columns: 1fr auto; gap: 6px; padding: 6px 8px;
+  border: 1px solid var(--border); border-radius: 6px; background: var(--panel-2);
+}
+.assigned .ap .t { font-weight: 600; }
+.assigned .ap .d { font-size: 12px; }
+.assigned .ap .w { font-size: 12px; color: var(--bad); }
+.assigned .ap .w.warn { color: var(--warn); }
+.assigned .ap .w.bad { font-weight: 600; }
+.empty { color: var(--muted); padding: 14px 12px; }
+.hint { color: var(--muted); font-size: 12px; }
+.perk-group { padding: 6px 10px 2px; font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase;
+  letter-spacing: .04em; background: var(--panel); position: sticky; top: 0; border-bottom: 1px solid var(--panel-2); z-index: 1; }
+.perk {
+  display: grid; grid-template-columns: 22px 1fr; gap: 6px; padding: 7px 10px;
+  border-bottom: 1px solid var(--panel-2);
+}
+.perk.on { background: var(--sel); }
+.perk.dim .main { opacity: .55; }
+.perk input[type=checkbox] { margin-top: 3px; width: 15px; height: 15px; cursor: pointer; }
+.perk input[disabled] { cursor: default; }
+.perk .top { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+.perk .top .pn { font-weight: 600; }
+.perk .top .pid { color: var(--faint); }
+.perk .req { font-size: 11px; color: var(--muted); }
+.perk .req .lo { color: var(--warn); }
+.perk .personal { margin-top: 2px; }
+.perk .personal .lbl { font-size: 11px; color: var(--ok); font-weight: 600; margin-right: 4px; }
+.perk .other { margin-top: 2px; font-size: 12px; color: var(--faint); }
+.perk .other .lbl { font-size: 11px; margin-right: 4px; }
+.perk .badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px; }
+.perk .gets { margin-top: 2px; }
+.perk .gets .lbl, .perk .note .lbl { font-size: 11px; font-weight: 600; margin-right: 4px; }
+.perk .gets .lbl { color: var(--ok); }
+.perk .gets.v-warn .lbl { color: var(--warn); }
+.perk .gets.v-bad .lbl { color: var(--bad); }
+.perk .gets.v-grey .lbl { color: var(--muted); }
+.perk .note { margin-top: 2px; font-size: 12px; color: var(--muted); }
+.perk .harmful, .assigned .ap .harmful { margin-top: 3px; font-size: 12px; color: var(--bad); font-weight: 600; }
+.perk details.sites { margin-top: 3px; font-size: 12px; }
+.perk details.sites summary { cursor: pointer; color: var(--accent); }
+.perk details.sites ul { margin: 3px 0 0; padding-left: 16px; }
+.perk details.sites li { margin: 2px 0; }
+.perk details.sites .yes { color: var(--ok); font-weight: 600; }
+.perk details.sites .no { color: var(--faint); font-weight: 600; }
+.perk details.sites .file { color: var(--faint); word-break: break-all; }
+#problems { display: none; padding: 6px 14px; background: var(--bad-bg); color: var(--bad); font-size: 12px; border-bottom: 1px solid var(--border);
+  max-height: 30vh; overflow-y: auto; }
+#problems.show { display: block; }
+#problems .row { padding: 1px 0; }
+#problems .row.warn { color: var(--warn); }
+.bulk { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12px; }
+#banner { display: none; padding: 6px 14px; background: var(--warn-bg); color: var(--warn); font-size: 12px; border-bottom: 1px solid var(--border); }
+#banner.show { display: flex; gap: 10px; align-items: center; }
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 10; }
+.modal-bg.show { display: flex; }
+.modal {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px; width: min(900px, 94vw);
+  max-height: 90vh; display: flex; flex-direction: column; padding: 14px; gap: 10px;
+}
+.modal h2 { margin: 0; font-size: 15px; }
+.modal textarea { flex: 1; min-height: 340px; resize: vertical; }
+.modal .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.msgs { font-size: 12px; max-height: 120px; overflow-y: auto; }
+.msgs div { padding: 1px 0; }
+.msgs .bad { color: var(--bad); }
+.msgs .warn { color: var(--warn); }
+.msgs .ok { color: var(--ok); }
+#nodata { max-width: 720px; margin: 60px auto; padding: 24px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; }
+#nodata pre { background: var(--panel-2); padding: 10px; border-radius: 6px; overflow-x: auto; }
+.toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg);
+  padding: 6px 14px; border-radius: 6px; font-size: 12px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; }
+.toast.show { opacity: .92; }
+</style>
+</head>
+<body>
+<script src="troop-perk-data.js"></script>
+
+<div id="nodata" style="display:none">
+  <h2>No data file</h2>
+  <p><code>troop-perk-data.js</code> was not found next to this page. It is generated from your game install and the
+  decompiled sources (it is not committed). From the repository root run:</p>
+  <pre>powershell -ExecutionPolicy Bypass -File tools\TroopPerkEditor\Build-TroopPerkData.ps1</pre>
+  <p>then reload this page.</p>
+</div>
+
+<header id="hdr" style="display:none">
+  <h1>RBM Troop Perk Editor</h1>
+  <span class="meta" id="meta"></span>
+  <span id="modified" class="off">matches file</span>
+  <span class="spacer"></span>
+  <button id="btnImport">Import…</button>
+  <button id="btnReset" title="Discard the work in progress and reload the mapping from rbm_troop_perks.xml as it was when the data file was generated">Reset to file</button>
+  <button id="btnProblems" class="badge bad" style="display:none" title="Assigned perks that do nothing for the troop or harm it. Click to list them."></button>
+  <button id="btnExport" class="primary">Export XML…</button>
+</header>
+<div id="problems"></div>
+<div id="banner"></div>
+
+<main id="app" style="display:none">
+  <section class="pane" id="troopPane">
+    <div class="head">
+      <h2>Troops <span class="count" id="troopCount"></span></h2>
+      <input type="search" id="tSearch" placeholder="Search name or id…">
+      <div class="filters">
+        <select id="fCulture"><option value="">All cultures</option></select>
+        <select id="fTier"><option value="">All tiers</option></select>
+        <select id="fGroup"><option value="">All formations</option></select>
+        <select id="fOcc"><option value="">All occupations</option></select>
+        <select id="fMounted"><option value="">Mounted or foot</option><option value="m">Mounted</option><option value="f">On foot</option></select>
+        <select id="fPerks"><option value="">With or without perks</option><option value="y">Has perks</option><option value="n">No perks</option></select>
+        <select id="fModule"><option value="">All modules</option></select>
+        <label title="Templates (is_template) and obsolete characters are not real troops"><input type="checkbox" id="fHideTpl" checked>Hide templates/obsolete</label>
+      </div>
+      <div class="bulk" id="bulkBar"></div>
+    </div>
+    <div class="body" id="troopList"></div>
+  </section>
+
+  <section class="pane" id="detailPane">
+    <div class="head"><h2>Selected troop</h2></div>
+    <div class="body" id="details"><div class="empty">Select a troop on the left.</div></div>
+  </section>
+
+  <section class="pane" id="perkPane">
+    <div class="head">
+      <h2>Perks <span class="count" id="perkCount"></span></h2>
+      <input type="search" id="pSearch" placeholder="Search perk name, id or description…">
+      <div class="filters">
+        <select id="pSkill"><option value="">All skills</option></select>
+        <label title="Hide perks the audit says do nothing for a regular troop (hero-only, campaign-only, never checked, removed by RBM, no personal effect). Perks already given to the troop are always shown."><input type="checkbox" id="pWorks" checked>Only perks that work for troops</label>
+        <select id="pVerdict" title="Audit verdict (tools/TroopPerkEditor/audit)"><option value="">Any verdict</option></select>
+        <label><input type="checkbox" id="pAssigned">Assigned to troop</label>
+        <label><input type="checkbox" id="pUsed">Used by any troop</label>
+      </div>
+      <div class="hint">Troop perks ignore the skill requirement; the troop's skill is shown for reference only.
+        Paired (alternative) perks can both be given to a troop.</div>
+    </div>
+    <div class="body" id="perkList"></div>
+  </section>
+</main>
+
+<div class="modal-bg" id="exportModal">
+  <div class="modal">
+    <h2>Export rbm_troop_perks.xml</h2>
+    <div class="hint">Replace <code>RBMXML/rbm_troop_perks.xml</code> in the repository with this file; the build copies it into the RBM module.</div>
+    <div class="msgs" id="exportMsgs"></div>
+    <textarea id="exportText" readonly spellcheck="false"></textarea>
+    <div class="row">
+      <button id="btnCopy" class="primary">Copy to clipboard</button>
+      <button id="btnDownload">Download rbm_troop_perks.xml</button>
+      <span class="spacer" style="flex:1"></span>
+      <button data-close>Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="importModal">
+  <div class="modal">
+    <h2>Import rbm_troop_perks.xml</h2>
+    <div class="hint">Replaces the whole current mapping (and the header comment, if the file has one). Unknown troop or perk ids are kept and reported.</div>
+    <div class="row"><input type="file" id="importFile" accept=".xml,text/xml"></div>
+    <textarea id="importText" spellcheck="false" placeholder="…or paste the XML here"></textarea>
+    <div class="msgs" id="importMsgs"></div>
+    <div class="row">
+      <button id="btnDoImport" class="primary">Replace mapping</button>
+      <span class="spacer" style="flex:1"></span>
+      <button data-close>Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+  var DATA = window.TROOP_PERK_DATA;
+  if (!DATA) {
+    document.getElementById('nodata').style.display = 'block';
+    return;
+  }
+  document.getElementById('hdr').style.display = 'flex';
+  document.getElementById('app').style.display = 'grid';
+
+  var STORE_KEY = 'rbm-troop-perk-editor.v1';
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ------------------------------------------------------------------ data
+  var perkById = {};
+  DATA.perks.forEach(function (p) { perkById[p.id] = p; });
+  var troopById = {};
+  DATA.troops.forEach(function (t) { troopById[t.id] = t; });
+  var parents = {};   // troop id -> troops that upgrade into it
+  DATA.troops.forEach(function (t) {
+    (t.upgrades || []).forEach(function (u) { (parents[u] = parents[u] || []).push(t.id); });
+  });
+  var skillName = function (id) { return (DATA.skills && DATA.skills[id]) || id; };
+  var ROLE_LABEL = { Personal: 'Personal', Captain: 'Captain', PartyLeader: 'Party leader', Governor: 'Governor',
+    Quartermaster: 'Quartermaster', Engineer: 'Engineer', Scout: 'Scout', Surgeon: 'Surgeon', ArmyCommander: 'Army commander',
+    ClanLeader: 'Clan leader', Ruler: 'Ruler', Faction: 'Faction', Boatswain: 'Boatswain', Navigator: 'Navigator', None: '' };
+  var ENV_LABEL = { LandOnly: 'land battles only', NavalOnly: 'naval battles only', NavalReduced: 'halved in naval battles' };
+
+  // Audit verdicts (audit/*.json, merged by Build-TroopPerkData.ps1). "none": does nothing for a troop.
+  // tone: badge/label colour (ok = green, warn = amber, bad = red, grey, outline).
+  var VERDICT = {
+    'works': { tone: 'ok', label: 'works', tip: 'Works for a regular troop' },
+    'conditional': { tone: 'warn', label: 'conditional', tip: 'Works for a troop only in some situations (see "When")' },
+    'partial': { tone: 'warn', label: 'partial', tip: 'Part of the personal effect works for a troop, part does not' },
+    'hero-only': { tone: 'bad', label: 'hero only: no effect for troops', none: true, tip: 'Only checked for heroes (or the player)' },
+    'campaign-only': { tone: 'bad', label: 'campaign only: no effect for troops', none: true, tip: 'Only acts on the campaign map / a hero\'s own actions; nothing in battle' },
+    'no-check-found': { tone: 'bad', label: 'never checked: no effect for troops', none: true, tip: 'No battle code reads it for an AI troop' },
+    'rbm-bypassed': { tone: 'bad', label: 'removed by RBM: no effect for anyone', none: true, tip: 'RBM overrides what the perk changes, for heroes too' },
+    'no-personal-effect': { tone: 'grey', label: 'no personal effect', none: true, tip: 'Only captain/party/governor halves, which troops never get' },
+    'unclear': { tone: 'outline', label: 'unclear', tip: 'The audit could not decide' }
+  };
+  var VERDICT_ORDER = ['works', 'conditional', 'partial', 'unclear', 'hero-only', 'campaign-only', 'no-check-found', 'rbm-bypassed', 'no-personal-effect'];
+  function toneClass(tone) { return tone === 'grey' ? '' : tone; }
+  function verdictOf(p) {
+    if (!p || p.unknown) return null;
+    if (p.audit && VERDICT[p.audit.verdict]) return p.audit.verdict;
+    if (p.loaderNoEffect && VERDICT[p.loaderNoEffect]) return p.loaderNoEffect;  // not audited: the loader's list
+    if (!p.personal) return 'no-personal-effect';
+    return null;  // personal effect, not audited
+  }
+  function noTroopEffect(p) { var v = verdictOf(p); return !!(v && VERDICT[v].none); }
+
+  // Perks that actively hurt a troop. Each returns { harm: bool, text } for a troop (or null for no troop).
+  var HARMFUL = {
+    AthleticsMightyBlow: function (t) {
+      var max = (DATA.epicPerkSkill && DATA.epicPerkSkill.max) || 250;
+      var rule = 'Mighty Blow adds (Athletics - ' + max + ') to max HP (DefaultCharacterStatsModel.MaxHitpoints), so RBM only gives it to a troop with Athletics above ' + max;
+      if (!t || t.unknown) return { harm: true, text: 'Skipped below ' + max + ' Athletics: ' + rule + '.' };
+      var a = (t.skills || {}).Athletics || 0, d = a - max;
+      if (d <= 0) return { harm: true, text: 'Skipped for ' + t.name + ' (Athletics ' + a + '): the game will not load it. ' + rule + '.' };
+      return { harm: false, text: t.name + ': max HP +' + d + ' (Athletics ' + a + ' - ' + max + '). ' + rule + '.' };
+    }
+  };
+  function harmOf(p, troop) { return p && HARMFUL[p.id] ? HARMFUL[p.id](troop) : null; }
+
+  // ------------------------------------------------------------------ state
+  var fileState = {
+    header: DATA.current.header || '',
+    map: cloneMap(DATA.current.map || {}),
+    comments: Object.assign({}, DATA.current.comments || {})
+  };
+  var state = { header: fileState.header, map: cloneMap(fileState.map), comments: Object.assign({}, fileState.comments) };
+  var selectedId = null;
+  var checked = {};   // multi-select: troop id -> true
+
+  function cloneMap(m) { var r = {}; Object.keys(m).forEach(function (k) { r[k] = (m[k] || []).slice(); }); return r; }
+
+  (function restore() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return;
+      var s = JSON.parse(raw);
+      if (!s || typeof s.map !== 'object') return;
+      state.map = cloneMap(s.map);
+      state.comments = s.comments || {};
+      if (typeof s.header === 'string') state.header = s.header;
+      if (!sameMap(state.map, fileState.map)) {
+        showBanner('Restored your unsaved work in progress from ' + (s.savedAt || 'an earlier session') +
+          '. Use “Reset to file” to start from rbm_troop_perks.xml again.');
+      }
+    } catch (e) { /* storage unavailable: start from the file */ }
+  })();
+
+  function save() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({ map: state.map, comments: state.comments, header: state.header,
+        savedAt: new Date().toLocaleString() }));
+    } catch (e) { /* ignore */ }
+    updateModified();
+  }
+
+  function sameMap(a, b) {
+    var ka = Object.keys(a).filter(function (k) { return a[k] && a[k].length; }).sort();
+    var kb = Object.keys(b).filter(function (k) { return b[k] && b[k].length; }).sort();
+    if (ka.join('\n') !== kb.join('\n')) return false;
+    return ka.every(function (k) { return a[k].join(',') === b[k].join(','); });
+  }
+
+  function perksOf(id) { return state.map[id] || []; }
+  function hasPerk(id, perkId) { return perksOf(id).indexOf(perkId) >= 0; }
+  function addPerk(id, perkId) {
+    var list = state.map[id] || (state.map[id] = []);
+    if (list.indexOf(perkId) < 0) list.push(perkId);
+  }
+  function removePerk(id, perkId) {
+    var list = state.map[id];
+    if (!list) return;
+    var i = list.indexOf(perkId);
+    if (i >= 0) list.splice(i, 1);
+    if (!list.length) { delete state.map[id]; delete state.comments[id]; }
+  }
+  function changed() { save(); renderTroops(); renderDetails(); renderPerks(); }
+
+  // ------------------------------------------------------------------ helpers
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast._h); toast._h = setTimeout(function () { t.classList.remove('show'); }, 1800);
+  }
+  function showBanner(html) {
+    var b = $('banner');
+    b.innerHTML = '<span>' + esc(html) + '</span><button class="small" id="bannerClose">Dismiss</button>';
+    b.classList.add('show');
+    $('bannerClose').onclick = function () { b.classList.remove('show'); };
+  }
+  function updateModified() {
+    var m = $('modified');
+    if (sameMap(state.map, fileState.map)) { m.textContent = 'matches file'; m.className = 'off'; }
+    else { m.textContent = 'modified (not exported)'; m.className = 'on'; }
+    updateProblems();
+  }
+  // What is wrong with giving perk p to troop t: { cls: 'bad' | 'warn', kind, text } or null.
+  function perkProblem(p, t) {
+    if (!p) return { cls: 'bad', kind: 'unknown', text: 'unknown perk id: not in the game data, skipped by the game' };
+    var h = harmOf(p, t);
+    if (h && h.harm) return { cls: 'bad', kind: 'harmful', text: h.text };
+    var v = verdictOf(p);
+    if (v && VERDICT[v].none) {
+      var why = p.audit && p.audit.summary ? p.audit.summary : VERDICT[v].tip;
+      return { cls: v === 'no-personal-effect' ? 'warn' : 'bad', kind: 'none', text: VERDICT[v].label + '. ' + why };
+    }
+    return null;
+  }
+  function troopProblems(id) {
+    var t = troopOf(id);
+    return perksOf(id).map(function (pid) {
+      var pr = perkProblem(perkById[pid], t);
+      return pr ? { troop: id, pid: pid, cls: pr.cls, kind: pr.kind, text: pr.text } : null;
+    }).filter(Boolean);
+  }
+  function allProblems() {
+    var out = [];
+    Object.keys(state.map).forEach(function (id) { out = out.concat(troopProblems(id)); });
+    var rank = { harmful: 0, unknown: 1, none: 2 };
+    out.sort(function (a, b) { return (rank[a.kind] - rank[b.kind]) || (a.troop < b.troop ? -1 : a.troop > b.troop ? 1 : 0); });
+    return out;
+  }
+  function problemCounts(list) {
+    var c = { harmful: 0, unknown: 0, none: 0 };
+    list.forEach(function (x) { c[x.kind]++; });
+    var parts = [];
+    if (c.harmful) parts.push(c.harmful + ' harmful');
+    if (c.none) parts.push(c.none + ' with no effect');
+    if (c.unknown) parts.push(c.unknown + ' unknown');
+    return parts.join(', ');
+  }
+  function updateProblems() {
+    var list = allProblems(), btn = $('btnProblems'), box = $('problems');
+    if (!list.length) { btn.style.display = 'none'; box.classList.remove('show'); box.innerHTML = ''; return; }
+    btn.style.display = '';
+    btn.textContent = list.length + ' perk problem' + (list.length === 1 ? '' : 's') + ': ' + problemCounts(list);
+    box.innerHTML = list.map(function (x) {
+      var t = troopById[x.troop], p = perkById[x.pid];
+      return '<div class="row ' + x.cls + '"><button class="link" data-link="' + esc(x.troop) + '">' + esc(t ? t.name : x.troop) + '</button> / ' +
+        esc(p ? p.name : x.pid) + ' <span class="mono">' + esc(x.pid) + '</span>: ' + esc(x.text) + '</div>';
+    }).join('');
+  }
+  function personalHalf(p) {
+    if (!p) return null;
+    if (p.personal === 'primary' || p.personal === 'both') return p.primary;
+    if (p.personal === 'secondary') return p.secondary;
+    return null;
+  }
+  function allTroopIds() {
+    var ids = DATA.troops.map(function (t) { return t.id; });
+    Object.keys(state.map).forEach(function (id) { if (!troopById[id]) ids.push(id); });
+    return ids;
+  }
+  function troopOf(id) {
+    return troopById[id] || { id: id, name: id, culture: '', tier: 0, level: 0, occupation: '', group: '', unknown: true,
+      skills: {}, upgrades: [], module: '', sources: [], mounted: false };
+  }
+  function upgradeTree(id) {
+    var out = [], seen = {}; seen[id] = true;
+    (function walk(x) {
+      (troopOf(x).upgrades || []).forEach(function (u) {
+        if (seen[u]) return; seen[u] = true; out.push(u); walk(u);
+      });
+    })(id);
+    return out;
+  }
+
+  // ------------------------------------------------------------------ troop filters
+  function fillSelect(sel, values, label) {
+    values.forEach(function (v) {
+      var o = document.createElement('option'); o.value = v; o.textContent = label ? label(v) : v; sel.appendChild(o);
+    });
+  }
+  function uniq(fn) {
+    var s = {}; DATA.troops.forEach(function (t) { var v = fn(t); if (v !== '' && v != null) s[v] = true; });
+    return Object.keys(s).sort();
+  }
+  fillSelect($('fCulture'), uniq(function (t) { return t.culture; }));
+  fillSelect($('fTier'), ['0', '1', '2', '3', '4', '5', '6'], function (v) { return 'Tier ' + v; });
+  fillSelect($('fGroup'), uniq(function (t) { return t.group; }));
+  fillSelect($('fOcc'), uniq(function (t) { return t.occupation; }));
+  fillSelect($('fModule'), uniq(function (t) { return t.module; }));
+
+  var sortedTroopIds = null;
+  function troopSortKey(t) {
+    return (t.unknown ? '0' : '1') + '|' + (t.culture || '~') + '|' + t.tier + '|' + t.name.toLowerCase();
+  }
+
+  function filteredTroops() {
+    var q = $('tSearch').value.trim().toLowerCase();
+    var fc = $('fCulture').value, ft = $('fTier').value, fg = $('fGroup').value, fo = $('fOcc').value;
+    var fm = $('fMounted').value, fp = $('fPerks').value, fmod = $('fModule').value, hideTpl = $('fHideTpl').checked;
+    var ids = allTroopIds().map(troopOf);
+    ids.sort(function (a, b) { var x = troopSortKey(a), y = troopSortKey(b); return x < y ? -1 : x > y ? 1 : 0; });
+    return ids.filter(function (t) {
+      var n = perksOf(t.id).length;
+      if (t.unknown) return !fp || fp === 'y' ? (!q || t.id.toLowerCase().indexOf(q) >= 0) : false;
+      if (q && t.name.toLowerCase().indexOf(q) < 0 && t.id.toLowerCase().indexOf(q) < 0) return false;
+      if (fc && t.culture !== fc) return false;
+      if (ft && String(t.tier) !== ft) return false;
+      if (fg && t.group !== fg) return false;
+      if (fo && t.occupation !== fo) return false;
+      if (fm === 'm' && !(t.mounted || t.horse)) return false;
+      if (fm === 'f' && (t.mounted || t.horse)) return false;
+      if (fp === 'y' && !n) return false;
+      if (fp === 'n' && n) return false;
+      if (fmod && t.module !== fmod) return false;
+      if (hideTpl && (t.template || t.obsolete) && !n) return false;
+      return true;
+    });
+  }
+
+  function renderTroops() {
+    var list = filteredTroops();
+    $('troopCount').textContent = list.length + ' / ' + allTroopIds().length;
+    var html = [];
+    list.forEach(function (t) {
+      var n = perksOf(t.id).length;
+      var probs = n ? troopProblems(t.id) : [];
+      var sub = t.unknown ? 'unknown troop id' :
+        [t.id, t.culture || 'no culture', 'T' + t.tier, t.group].filter(Boolean).join(' · ');
+      var probBadge = probs.length ? ' <span class="badge ' + (probs.some(function (x) { return x.cls === 'bad'; }) ? 'bad' : 'warn') +
+        '" title="' + esc(probs.map(function (x) { return x.pid + ': ' + x.text; }).join('\n')) + '">' + probs.length + ' problem' + (probs.length === 1 ? '' : 's') + '</span>' : '';
+      html.push('<div class="troop-row' + (t.id === selectedId ? ' sel' : '') + '" data-id="' + esc(t.id) + '">' +
+        '<input type="checkbox" class="chk" title="Check for bulk actions"' + (checked[t.id] ? ' checked' : '') + '>' +
+        '<div><div class="nm">' + esc(t.name) + (t.template ? ' <span class="badge">template</span>' : '') +
+        (t.obsolete ? ' <span class="badge">obsolete</span>' : '') + (t.unknown ? ' <span class="badge bad">unknown</span>' : '') + probBadge +
+        '</div><div class="sub">' + esc(sub) + '</div></div>' +
+        '<span class="badge perks' + (n ? '' : ' zero') + '" title="perks">' + n + '</span></div>');
+    });
+    $('troopList').innerHTML = html.join('') || '<div class="empty">No troop matches.</div>';
+    renderBulk();
+  }
+
+  $('troopList').addEventListener('click', function (e) {
+    var row = e.target.closest('.troop-row'); if (!row) return;
+    var id = row.getAttribute('data-id');
+    if (e.target.classList.contains('chk')) {
+      if (e.target.checked) checked[id] = true; else delete checked[id];
+      renderBulk(); renderPerks();
+      return;
+    }
+    if (e.ctrlKey || e.metaKey) {
+      if (checked[id]) delete checked[id]; else checked[id] = true;
+      renderTroops(); renderPerks();
+      return;
+    }
+    select(id);
+  });
+
+  function select(id, scroll) {
+    selectedId = id;
+    renderTroops(); renderDetails(); renderPerks();
+    if (scroll) {
+      var row = $('troopList').querySelector('.troop-row[data-id="' + cssEsc(id) + '"]');
+      if (row) row.scrollIntoView({ block: 'center' });
+    }
+  }
+  function cssEsc(s) { return String(s).replace(/["\\]/g, '\\$&'); }
+
+  ['tSearch', 'fCulture', 'fTier', 'fGroup', 'fOcc', 'fMounted', 'fPerks', 'fModule', 'fHideTpl'].forEach(function (id) {
+    $(id).addEventListener(id === 'tSearch' ? 'input' : 'change', renderTroops);
+  });
+
+  // ------------------------------------------------------------------ bulk
+  function checkedIds() { return Object.keys(checked); }
+  function renderBulk() {
+    var ids = checkedIds();
+    var bar = $('bulkBar');
+    if (!ids.length) {
+      bar.innerHTML = '<span class="hint">Tick troops (or Ctrl+click) to add or remove a perk on several at once.</span>' +
+        ' <button class="small link" id="bulkAll">Tick all shown</button>';
+      $('bulkAll').onclick = function () {
+        filteredTroops().forEach(function (t) { checked[t.id] = true; }); renderTroops(); renderPerks();
+      };
+      return;
+    }
+    bar.innerHTML = '<span class="badge perks">' + ids.length + ' ticked</span>' +
+      '<span class="hint">Perk checkboxes now add/remove on all ticked troops.</span>' +
+      '<button class="small" id="bulkClearPerks" title="Remove every perk from the ticked troops">Clear their perks</button>' +
+      '<button class="small" id="bulkNone">Untick all</button>';
+    $('bulkNone').onclick = function () { checked = {}; renderTroops(); renderPerks(); };
+    $('bulkClearPerks').onclick = function () {
+      if (!confirm('Remove all perks from ' + ids.length + ' troop(s)?')) return;
+      ids.forEach(function (id) { delete state.map[id]; delete state.comments[id]; });
+      changed();
+    };
+  }
+
+  // ------------------------------------------------------------------ details
+  function renderDetails() {
+    var box = $('details');
+    if (!selectedId) { box.innerHTML = '<div class="empty">Select a troop on the left.</div>'; return; }
+    var t = troopOf(selectedId);
+    var h = [];
+    h.push('<div class="details"><h3>' + esc(t.name) + '</h3><div class="mono" style="color:var(--muted)">' + esc(t.id) + '</div>');
+    if (t.unknown) {
+      h.push('<p class="badge bad">Not found in the game data: the game skips this entry. It is kept in the export.</p>');
+    } else {
+      h.push('<h4>Troop</h4><div class="kv">' +
+        kv('Culture', t.culture || '—') + kv('Tier', t.tier + ' (level ' + t.level + ')') +
+        kv('Formation', (t.group || '—') + (t.mounted || t.horse ? ' · mounted' : '')) +
+        kv('Occupation', t.occupation || '—') +
+        kv('Defined in', (t.sources || []).join(', ')) +
+        (t.alsoIn ? kv('Also in', t.alsoIn.join(', ') + ' (not used in campaigns)') : '') +
+        kv('Flags', [t.template ? 'template' : '', t.obsolete ? 'obsolete' : '', t.hidden ? 'hidden in encyclopedia' : '',
+          t.basic ? 'basic troop' : ''].filter(Boolean).join(', ') || '—') +
+        '</div>');
+      var ups = (t.upgrades || []), from = parents[t.id] || [];
+      h.push('<h4>Upgrade tree</h4><div class="kv">' +
+        '<span class="k">Upgrades to</span><span>' + (ups.length ? ups.map(link).join(', ') : '—') + '</span>' +
+        '<span class="k">Upgrades from</span><span>' + (from.length ? from.map(link).join(', ') : '—') + '</span></div>');
+      var sk = Object.keys(t.skills || {});
+      if (sk.length) {
+        h.push('<h4>Skills</h4><div class="skills">');
+        sk.forEach(function (k) {
+          var v = t.skills[k];
+          h.push('<span>' + esc(skillName(k)) + '</span><div class="bar"><i style="width:' + Math.min(100, v / 3) + '%"></i></div><span class="mono">' + v + '</span>');
+        });
+        h.push('</div>');
+      }
+    }
+    var mine = perksOf(t.id);
+    h.push('<h4>Assigned perks (' + mine.length + ')</h4>');
+    if (state.comments[t.id]) h.push('<div class="hint" style="margin-bottom:6px">File comment: <code>' + esc(state.comments[t.id]) + '</code></div>');
+    if (!mine.length) h.push('<div class="hint">None. Tick perks on the right to add them.</div>');
+    else {
+      h.push('<div class="assigned">');
+      mine.forEach(function (pid, i) {
+        var p = perkById[pid], half = personalHalf(p), prob = perkProblem(p, t), v = verdictOf(p), harm = harmOf(p, t);
+        var gets = p && p.audit && p.audit.summary ? p.audit.summary : (half ? half.text : '');
+        h.push('<div class="ap"><div><div class="t">' + esc(p ? p.name : pid) + ' <span class="mono" style="color:var(--faint)">' + esc(pid) + '</span> ' +
+          verdictBadge(p) + '</div>' +
+          (gets && !(prob && prob.kind === 'none') ? '<div class="d">' + esc(gets) + '</div>' : '') +
+          (p && p.audit && p.audit.conditions && v !== null && !VERDICT[v].none ? '<div class="d" style="color:var(--muted)">When: ' + esc(p.audit.conditions) + '</div>' : '') +
+          (harm && !harm.harm ? '<div class="d">' + esc(harm.text) + '</div>' : '') +
+          (prob ? '<div class="w ' + prob.cls + '">' + esc(prob.text) + '</div>' : '') + '</div>' +
+          '<div style="display:flex;gap:4px;align-items:start">' +
+          '<button class="small" data-up="' + i + '" title="Move up"' + (i ? '' : ' disabled') + '>↑</button>' +
+          '<button class="small" data-rm="' + esc(pid) + '">Remove</button></div></div>');
+      });
+      h.push('</div>');
+    }
+    if (!t.unknown) {
+      var tree = upgradeTree(t.id);
+      h.push('<h4>Bulk</h4><div class="bulk">' +
+        '<button class="small" id="copyTree"' + (mine.length && tree.length ? '' : ' disabled') + ' title="Adds this troop\'s perks to every troop it can upgrade into (keeps their own perks)">Copy perks to upgrade tree (' + tree.length + ')</button>' +
+        '<button class="small" id="tickTree"' + (tree.length ? '' : ' disabled') + '>Tick this troop + its upgrade tree</button>' +
+        '<button class="small" id="clearOne"' + (mine.length ? '' : ' disabled') + '>Clear perks</button></div>');
+    }
+    h.push('</div>');
+    box.innerHTML = h.join('');
+
+    box.querySelectorAll('[data-rm]').forEach(function (b) {
+      b.onclick = function () { removePerk(t.id, b.getAttribute('data-rm')); changed(); };
+    });
+    box.querySelectorAll('[data-up]').forEach(function (b) {
+      b.onclick = function () {
+        var i = +b.getAttribute('data-up'), list = state.map[t.id];
+        var x = list[i - 1]; list[i - 1] = list[i]; list[i] = x; changed();
+      };
+    });
+    box.querySelectorAll('[data-link]').forEach(function (a) {
+      a.onclick = function () { select(a.getAttribute('data-link'), true); };
+    });
+    var ct = $('copyTree');
+    if (ct) ct.onclick = function () {
+      var tree = upgradeTree(t.id);
+      tree.forEach(function (u) { mine.forEach(function (pid) { addPerk(u, pid); }); });
+      toast('Copied ' + mine.length + ' perk(s) to ' + tree.length + ' troop(s)');
+      changed();
+    };
+    var tt = $('tickTree');
+    if (tt) tt.onclick = function () {
+      checked[t.id] = true; upgradeTree(t.id).forEach(function (u) { checked[u] = true; });
+      renderTroops(); renderPerks();
+    };
+    var co = $('clearOne');
+    if (co) co.onclick = function () { delete state.map[t.id]; delete state.comments[t.id]; changed(); };
+  }
+  function kv(k, v) { return '<span class="k">' + esc(k) + '</span><span>' + esc(v) + '</span>'; }
+  function link(id) {
+    var t = troopById[id];
+    return '<button class="link" data-link="' + esc(id) + '" title="' + esc(id) + '">' + esc(t ? t.name : id) + '</button>' +
+      (perksOf(id).length ? ' <span class="badge perks">' + perksOf(id).length + '</span>' : '');
+  }
+
+  // ------------------------------------------------------------------ perks
+  var skillOrder = (DATA.skillOrder || []).slice();
+  fillSelect($('pSkill'), skillOrder, skillName);
+  fillSelect($('pVerdict'), VERDICT_ORDER.concat(['harmful', 'unaudited']), function (v) {
+    var n = DATA.perks.filter(function (p) { return perkVerdictMatches(p, v); }).length;
+    return (v === 'harmful' ? 'harmful to troops' : v === 'unaudited' ? 'not audited' : VERDICT[v].label) + ' (' + n + ')';
+  });
+  function perkVerdictMatches(p, v) {
+    if (v === 'harmful') return !!HARMFUL[p.id];
+    if (v === 'unaudited') return !p.audit;
+    return verdictOf(p) === v;
+  }
+  var openSites = {};  // perk id -> "where it's checked" list left open
+  var usage = {};
+  function computeUsage() {
+    usage = {};
+    Object.keys(state.map).forEach(function (tid) { state.map[tid].forEach(function (pid) { usage[pid] = (usage[pid] || 0) + 1; }); });
+  }
+
+  function renderPerks() {
+    computeUsage();
+    var q = $('pSearch').value.trim().toLowerCase();
+    var fs = $('pSkill').value, onlyWorking = $('pWorks').checked, fv = $('pVerdict').value;
+    var onlyAssigned = $('pAssigned').checked, onlyUsed = $('pUsed').checked;
+    var bulk = checkedIds();
+    var targetIds = bulk.length ? bulk : (selectedId ? [selectedId] : []);
+    var troop = selectedId ? troopOf(selectedId) : null;
+
+    var perks = DATA.perks.slice();
+    // unknown perk ids referenced by the mapping, so they can be seen and removed
+    var unknown = {};
+    Object.keys(state.map).forEach(function (tid) { state.map[tid].forEach(function (pid) { if (!perkById[pid]) unknown[pid] = true; }); });
+    Object.keys(unknown).forEach(function (pid) { perks.push({ id: pid, name: pid, skill: '', level: 0, unknown: true, primary: null, secondary: null, personal: '' }); });
+
+    var shown = perks.filter(function (p) {
+      var on = targetIds.some(function (id) { return hasPerk(id, p.id); });
+      if (!p.unknown) {
+        if (fs && p.skill !== fs) return false;
+        if (onlyWorking && noTroopEffect(p) && !on) return false;
+        if (fv && !perkVerdictMatches(p, fv)) return false;
+      }
+      if (onlyAssigned && !(troop && hasPerk(troop.id, p.id))) return false;
+      if (onlyUsed && !usage[p.id]) return false;
+      if (q) {
+        var hay = (p.name + ' ' + p.id + ' ' + (p.primary ? p.primary.text : '') + ' ' + (p.secondary ? p.secondary.text : '') + ' ' +
+          (p.audit ? p.audit.summary + ' ' + p.audit.conditions + ' ' + p.audit.rbm : '')).toLowerCase();
+        if (hay.indexOf(q) < 0) return false;
+      }
+      return true;
+    });
+    $('perkCount').textContent = shown.length + ' / ' + DATA.perks.length +
+      (bulk.length ? ' · editing ' + bulk.length + ' ticked troop(s)' : troop ? ' · editing ' + troop.name : ' · select a troop to edit');
+
+    var groups = {}, order = [];
+    shown.forEach(function (p) {
+      var g = p.unknown ? '~unknown' : p.skill;
+      if (!groups[g]) { groups[g] = []; order.push(g); }
+      groups[g].push(p);
+    });
+    order.sort(function (a, b) {
+      var ia = skillOrder.indexOf(a), ib = skillOrder.indexOf(b);
+      if (ia < 0) ia = 999; if (ib < 0) ib = 999; return ia - ib;
+    });
+    var h = [];
+    order.forEach(function (g) {
+      var list = groups[g].sort(function (a, b) { return (a.level - b.level) || (a.id < b.id ? -1 : 1); });
+      h.push('<div class="perk-group">' + esc(g === '~unknown' ? 'Unknown perk ids' : skillName(g)) + ' <span class="count">' + list.length + '</span></div>');
+      list.forEach(function (p) { h.push(perkHtml(p, targetIds, troop)); });
+    });
+    $('perkList').innerHTML = h.join('') || '<div class="empty">No perk matches.</div>';
+  }
+
+  function perkHtml(p, targetIds, troop) {
+    var nOn = targetIds.filter(function (id) { return hasPerk(id, p.id); }).length;
+    var on = nOn > 0, partial = nOn > 0 && nOn < targetIds.length;
+    var half = personalHalf(p), v = verdictOf(p), vd = v ? VERDICT[v] : null, harm = harmOf(p, troop);
+    var badges = [];
+    if (p.unknown) badges.push('<span class="badge bad">unknown id: skipped by the game</span>');
+    if (half && ENV_LABEL[half.env]) badges.push('<span class="badge">' + esc(ENV_LABEL[half.env]) + '</span>');
+    if (p.alt) {
+      var a = perkById[p.alt];
+      badges.push('<span class="badge" title="In game a hero picks one of the pair; a troop can be given both">paired with ' +
+        '<button class="link" data-perk-jump="' + esc(p.alt) + '">' + esc(a ? a.name : p.alt) + '</button>' +
+        (troop && hasPerk(troop.id, p.alt) ? ' (assigned)' : '') + '</span>');
+    }
+    if (usage[p.id]) badges.push('<span class="badge ok" title="Number of troops that have this perk">' + usage[p.id] + ' troop(s)</span>');
+    if (p.source === 'NavalPerks') badges.push('<span class="badge">War Sails</span>');
+
+    var req = '';
+    if (!p.unknown) {
+      req = '<span class="req">' + esc(skillName(p.skill)) + ' ' + p.level;
+      if (troop && !troop.unknown) {
+        var v = (troop.skills || {})[p.skill] || 0;
+        req += ' · troop <span class="' + (v < p.level ? 'lo' : '') + '">' + v + '</span>';
+      }
+      req += '</span>';
+    }
+    var personalHtml = '', otherHtml = '';
+    [p.primary, p.secondary].forEach(function (x) {
+      if (!x) return;
+      if (x.role === 'Personal') {
+        personalHtml += '<div class="personal"><span class="lbl">' + (p.audit ? 'GAME TEXT' : 'PERSONAL') + '</span>' + esc(x.text || '(no description)') + '</div>';
+      } else if (x.text) {
+        otherHtml += '<div class="other"><span class="lbl">' + esc(ROLE_LABEL[x.role] || x.role) + ' – not applied to troops:</span>' + esc(x.text) + '</div>';
+      }
+    });
+    var auditHtml = '';
+    if (p.audit) {
+      var a = p.audit, tone = vd ? vd.tone : 'grey';
+      if (a.summary) auditHtml += '<div class="gets v-' + tone + '"><span class="lbl">TROOP GETS</span>' + esc(a.summary) + '</div>';
+      if (a.conditions) auditHtml += '<div class="note"><span class="lbl">When</span>' + esc(a.conditions) + '</div>';
+      if (a.rbm) auditHtml += '<div class="note"><span class="lbl">RBM</span>' + esc(a.rbm) + '</div>';
+    }
+    if (harm) auditHtml += '<div class="' + (harm.harm ? 'harmful' : 'note') + '">' + esc(harm.text) + '</div>';
+    var sitesHtml = '';
+    if (p.audit && p.audit.sites && p.audit.sites.length) {
+      sitesHtml = '<details class="sites" data-sites="' + esc(p.id) + '"' + (openSites[p.id] ? ' open' : '') + '><summary>Where it\'s checked (' +
+        p.audit.sites.length + ')</summary><ul>' + p.audit.sites.map(function (s) {
+          return '<li><span class="' + (s.reachesTroop ? 'yes' : 'no') + '">' + (s.reachesTroop ? 'troop' : 'not troop') + '</span> ' +
+            '<code>' + esc(s.method) + '</code> <span class="file mono">' + esc(s.file) + '</span>' + (s.why ? ' – ' + esc(s.why) : '') + '</li>';
+        }).join('') + '</ul></details>';
+    }
+    var disabled = targetIds.length ? '' : ' disabled';
+    return '<div class="perk' + (on ? ' on' : '') + (noTroopEffect(p) ? ' dim' : '') + '">' +
+      '<input type="checkbox" data-perk="' + esc(p.id) + '"' + (on ? ' checked' : '') + disabled +
+      (partial ? ' data-partial="1" title="' + nOn + ' of ' + targetIds.length + ' ticked troops have it"' : '') + '>' +
+      '<div class="main"><div class="top"><span class="pn">' + esc(p.name) + '</span><span class="pid mono">' + esc(p.id) + '</span>' + req +
+      verdictBadge(p) + (harm && harm.harm ? '<span class="badge harm">harmful</span>' : '') + '</div>' +
+      auditHtml + personalHtml + otherHtml + sitesHtml + '<div class="badges">' + badges.join('') + '</div></div></div>';
+  }
+  function verdictBadge(p) {
+    var v = verdictOf(p);
+    if (!v) return p && !p.unknown ? '<span class="badge outline" title="No audit entry for this perk">not audited</span>' : '';
+    var vd = VERDICT[v], a = p.audit;
+    var tip = vd.tip + (a ? ' (audit: ' + a.group + ', ' + a.confidence + ' confidence)' : ' (TroopPerks.cs list; no audit entry)');
+    return '<span class="badge verdict ' + toneClass(vd.tone) + '" title="' + esc(tip) + '">' + esc(vd.label) + '</span>';
+  }
+
+  $('perkList').addEventListener('change', function (e) {
+    var pid = e.target.getAttribute && e.target.getAttribute('data-perk'); if (!pid) return;
+    var bulk = checkedIds();
+    var ids = bulk.length ? bulk : (selectedId ? [selectedId] : []);
+    if (!ids.length) return;
+    var add = e.target.checked;
+    if (e.target.getAttribute('data-partial')) add = true;  // partial -> give it to all
+    ids.forEach(function (id) { if (add) addPerk(id, pid); else removePerk(id, pid); });
+    if (ids.length > 1) toast((add ? 'Added ' : 'Removed ') + pid + (add ? ' to ' : ' from ') + ids.length + ' troops');
+    changed();
+  });
+  $('perkList').addEventListener('click', function (e) {
+    var j = e.target.getAttribute && e.target.getAttribute('data-perk-jump'); if (!j) return;
+    e.preventDefault();
+    var p = perkById[j];
+    $('pSearch').value = j; $('pSkill').value = ''; $('pVerdict').value = ''; $('pAssigned').checked = false; $('pUsed').checked = false;
+    if (p && noTroopEffect(p)) $('pWorks').checked = false;
+    renderPerks();
+  });
+  $('perkList').addEventListener('toggle', function (e) {
+    var id = e.target.getAttribute && e.target.getAttribute('data-sites'); if (!id) return;
+    if (e.target.open) openSites[id] = true; else delete openSites[id];
+  }, true);
+  $('pVerdict').addEventListener('change', function () {
+    var v = $('pVerdict').value;
+    if (VERDICT[v] && VERDICT[v].none) $('pWorks').checked = false;  // otherwise the list would be empty
+  });
+  ['pSearch', 'pSkill', 'pWorks', 'pVerdict', 'pAssigned', 'pUsed'].forEach(function (id) {
+    $(id).addEventListener(id === 'pSearch' ? 'input' : 'change', renderPerks);
+  });
+  $('btnProblems').onclick = function () { $('problems').classList.toggle('show'); };
+  $('problems').addEventListener('click', function (e) {
+    var id = e.target.getAttribute && e.target.getAttribute('data-link'); if (!id) return;
+    select(id, true);
+  });
+
+  // ------------------------------------------------------------------ export
+  function xmlAttr(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function xmlComment(s) { return String(s).replace(/--/g, '- -').replace(/-$/, '- '); }
+  function buildXml() {
+    var msgs = [];
+    var ids = Object.keys(state.map).filter(function (id) { return state.map[id] && state.map[id].length; });
+    ids.sort(function (a, b) { var x = troopSortKey(troopOf(a)), y = troopSortKey(troopOf(b)); x = x.replace(/^0/, '2'); y = y.replace(/^0/, '2'); return x < y ? -1 : x > y ? 1 : (a < b ? -1 : 1); });
+    var out = ['<?xml version="1.0" encoding="utf-8"?>'];
+    if (state.header) out.push('<!--' + xmlComment(state.header) + '-->');
+    out.push('<TroopPerks>');
+    ids.forEach(function (id) {
+      if (!troopById[id]) msgs.push(['bad', 'Unknown troop id "' + id + '" (kept; the game will skip it)']);
+      if (state.comments[id]) out.push('  <!-- ' + xmlComment(state.comments[id]) + ' -->');
+      out.push('  <Troop id="' + xmlAttr(id) + '">');
+      state.map[id].forEach(function (pid) {
+        out.push('    <Perk id="' + xmlAttr(pid) + '"/>');
+      });
+      out.push('  </Troop>');
+    });
+    out.push('</TroopPerks>');
+    var probs = allProblems();
+    probs.forEach(function (x) { msgs.push([x.cls, x.troop + ' / ' + x.pid + ': ' + x.text]); });
+    if (probs.length) msgs.unshift([probs.some(function (x) { return x.cls === 'bad'; }) ? 'bad' : 'warn',
+      probs.length + ' assigned perk(s) need attention: ' + problemCounts(probs) + ' (listed below; they are still exported)']);
+    msgs.unshift(['ok', ids.length + ' troop(s), ' + ids.reduce(function (s, id) { return s + state.map[id].length; }, 0) + ' perk entries']);
+    return { text: out.join('\n') + '\n', msgs: msgs };
+  }
+  function renderMsgs(box, msgs) {
+    box.innerHTML = msgs.map(function (m) { return '<div class="' + m[0] + '">' + esc(m[1]) + '</div>'; }).join('');
+  }
+  $('btnExport').onclick = function () {
+    var r = buildXml();
+    $('exportText').value = r.text;
+    renderMsgs($('exportMsgs'), r.msgs);
+    $('exportModal').classList.add('show');
+  };
+  $('btnCopy').onclick = function () {
+    var text = $('exportText').value;
+    var done = function () { toast('Copied to clipboard'); };
+    var fallback = function () {
+      var ta = $('exportText'); ta.removeAttribute('readonly'); ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { toast('Copy failed: select the text and press Ctrl+C'); }
+      ta.setAttribute('readonly', '');
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  };
+  $('btnDownload').onclick = function () {
+    var blob = new Blob([$('exportText').value], { type: 'application/xml' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'rbm_troop_perks.xml';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  };
+
+  // ------------------------------------------------------------------ import
+  function parseXml(text) {
+    var doc = new DOMParser().parseFromString(text, 'application/xml');
+    var err = doc.getElementsByTagName('parsererror')[0];
+    if (err) throw new Error('XML parse error: ' + err.textContent.trim().split('\n')[0]);
+    var root = doc.documentElement;
+    if (!root || root.nodeName !== 'TroopPerks') throw new Error('Root element is <' + (root ? root.nodeName : '?') + '>, expected <TroopPerks>');
+    var header = null;
+    for (var n = doc.firstChild; n && n !== root; n = n.nextSibling) { if (n.nodeType === 8) { header = n.nodeValue; break; } }
+    var map = {}, comments = {}, msgs = [], pending = null, troops = 0, perks = 0;
+    for (var c = root.firstChild; c; c = c.nextSibling) {
+      if (c.nodeType === 8) { pending = c.nodeValue.trim(); continue; }
+      if (c.nodeType !== 1) continue;
+      if (c.nodeName !== 'Troop') { msgs.push(['warn', 'Ignored element <' + c.nodeName + '>']); pending = null; continue; }
+      var id = c.getAttribute('id');
+      if (!id) { msgs.push(['warn', 'A <Troop> without an id was ignored']); pending = null; continue; }
+      if (!troopById[id]) msgs.push(['bad', 'Unknown troop id "' + id + '" (kept)']);
+      var list = map[id] || (map[id] = []);
+      troops++;
+      for (var p = c.firstChild; p; p = p.nextSibling) {
+        if (p.nodeType !== 1 || p.nodeName !== 'Perk') continue;
+        var pid = p.getAttribute('id');
+        if (!pid) { msgs.push(['warn', id + ': a <Perk> without an id was ignored']); continue; }
+        if (!perkById[pid]) msgs.push(['bad', id + ': unknown perk id "' + pid + '" (kept)']);
+        if (list.indexOf(pid) < 0) { list.push(pid); perks++; }
+      }
+      if (!list.length) delete map[id];
+      if (pending) { comments[id] = pending; pending = null; }
+    }
+    msgs.unshift(['ok', 'Read ' + troops + ' troop entr' + (troops === 1 ? 'y' : 'ies') + ', ' + perks + ' perk entries']);
+    return { header: header, map: map, comments: comments, msgs: msgs };
+  }
+  $('btnImport').onclick = function () {
+    $('importMsgs').innerHTML = ''; $('importModal').classList.add('show');
+  };
+  $('importFile').onchange = function () {
+    var f = this.files && this.files[0]; if (!f) return;
+    var r = new FileReader();
+    r.onload = function () { $('importText').value = r.result; };
+    r.readAsText(f);
+  };
+  $('btnDoImport').onclick = function () {
+    var text = $('importText').value;
+    if (!text.trim()) { renderMsgs($('importMsgs'), [['bad', 'Choose a file or paste the XML first.']]); return; }
+    try {
+      var r = parseXml(text);
+      state.map = r.map; state.comments = r.comments;
+      if (r.header !== null) state.header = r.header;
+      checked = {};
+      renderMsgs($('importMsgs'), r.msgs.concat([['ok', 'Mapping replaced.']]));
+      changed();
+    } catch (e) {
+      renderMsgs($('importMsgs'), [['bad', e.message]]);
+    }
+  };
+
+  // ------------------------------------------------------------------ reset, modals, init
+  $('btnReset').onclick = function () {
+    if (!sameMap(state.map, fileState.map) && !confirm('Discard your changes and reload the mapping from rbm_troop_perks.xml?')) return;
+    state = { header: fileState.header, map: cloneMap(fileState.map), comments: Object.assign({}, fileState.comments) };
+    checked = {};
+    try { localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
+    $('banner').classList.remove('show');
+    updateModified(); renderTroops(); renderDetails(); renderPerks();
+    toast('Reset to the file');
+  };
+  document.querySelectorAll('[data-close]').forEach(function (b) {
+    b.onclick = function () { b.closest('.modal-bg').classList.remove('show'); };
+  });
+  document.querySelectorAll('.modal-bg').forEach(function (m) {
+    m.addEventListener('mousedown', function (e) { if (e.target === m) m.classList.remove('show'); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') document.querySelectorAll('.modal-bg.show').forEach(function (m) { m.classList.remove('show'); });
+  });
+
+  var personalCount = DATA.perks.filter(function (p) { return p.personal; }).length;
+  var workingCount = DATA.perks.filter(function (p) { return !noTroopEffect(p); }).length;
+  var auditedCount = DATA.perks.filter(function (p) { return p.audit; }).length;
+  var auditDates = {};
+  (DATA.auditGroups || []).forEach(function (g) { if (g.auditedAt) auditDates[g.auditedAt] = true; });
+  $('meta').textContent = (DATA.gameVersion ? 'Bannerlord ' + DATA.gameVersion : '') + (DATA.navalDlc ? ' + War Sails' : '') +
+    ' · ' + DATA.troops.length + ' troops · ' + DATA.perks.length + ' perks (' + personalCount + ' personal, ' + workingCount + ' work for troops)' +
+    ' · audit ' + auditedCount + ' perks' + (Object.keys(auditDates).length ? ' (' + Object.keys(auditDates).sort().join(', ') + ')' : '') +
+    ' · data ' + DATA.generated +
+    (DATA.warnings && DATA.warnings.length ? ' · ' + DATA.warnings.length + ' generator warning(s)' : '');
+  if (DATA.warnings && DATA.warnings.length) $('meta').title = DATA.warnings.join('\n');
+
+  updateModified();
+  var first = Object.keys(state.map)[0];
+  if (first) select(first, true); else { renderTroops(); renderDetails(); renderPerks(); }
+})();
+</script>
+</body>
+</html>

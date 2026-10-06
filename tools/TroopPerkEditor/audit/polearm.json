@@ -1,0 +1,313 @@
+{
+  "group": "Polearm",
+  "skills": ["Polearm"],
+  "auditedAt": "2026-10-06",
+  "perks": [
+    {
+      "id": "PolearmPikeman",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+2% damage with melee polearm hits while on foot (halved at sea).",
+      "conditions": "Attacker on foot (no mount), melee weapon whose relevant skill is Polearm.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:113", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the attacker's own CharacterObject, primary (Personal); runs inside CalculateDamage, which RBM keeps" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:293", "reachesTroop": false, "why": "captain half (AddPerkBonusFromCaptain)" }
+      ],
+      "rbm": "None. Mission.GetAttackCollisionResults still runs AgentApplyDamageModel.CalculateDamage on RBM's InflictedDamage (bypass map note 8); RBM posture crush-through re-runs it too (MeleeBlowPatch.Math.cs:552)."
+    },
+    {
+      "id": "PolearmCavalry",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+2% damage with melee polearm hits while mounted.",
+      "conditions": "Attacker mounted, melee weapon whose relevant skill is Polearm (land and sea, full value).",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:109", "reachesTroop": true, "why": "AddPerkBonusForCharacter on attacker CharacterObject, primary (Personal)" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:301", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "None (damage pipeline intact)."
+    },
+    {
+      "id": "PolearmBraced",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "medium",
+      "summary": "+0.25 dismount penetration (ignores 25% of the rider's dismount resistance) when a polearm hit can dismount a rider.",
+      "conditions": "Melee polearm blow on a mounted human that CanWeaponDismount allows (thrust with a CanDismount weapon, or an on-foot swing with a CanHook weapon), victim survives, not shrugged off. Moot when RBM's couch/brace shortcut fires (polearm_couch / polearm_bracing usage thrust to head/neck/chest/shoulders above the magnitude threshold): that blow always dismounts.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.GetDismountPenetration", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:613", "reachesTroop": true, "why": "AddPerkBonusForCharacter on attacker CharacterObject, primary (Personal); called from MissionCombatMechanicsHelper.DecideAgentDismountedByBlow (MissionCombatMechanicsHelper.cs:38)" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:296", "reachesTroop": false, "why": "captain half (infantry damage vs cavalry)" },
+        { "method": "HorseChanges.DecideAgentDismountedByBlowPatch.PrefixDecideAgentDismountedByBlow", "file": "RealisticBattleCombatModule/CombatModule/Horse/HorseChanges.MountedCombat.cs:67", "reachesTroop": true, "why": "RBM skip only for strong couch/brace thrusts (forced dismount); every other case falls through to vanilla where the perk counts" }
+      ],
+      "rbm": "Bypass map #5: conditional skip for couched/braced thrusts above threshold (outcome forced, perk moot); otherwise vanilla."
+    },
+    {
+      "id": "PolearmKeepAtBay",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+0.3 knockback penetration on polearm thrusts against men on foot.",
+      "conditions": "Active (non-couched) melee polearm thrust with a WideGrip weapon that lacks CanKnockDown, victim a human on foot, not shrugged off. Couched/braced (passive) hits are always knocked down/back by RBM anyway.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.GetKnockBackPenetration", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:632", "reachesTroop": true, "why": "AddPerkBonusForCharacter on attacker CharacterObject, primary (Personal); called from MissionCombatMechanicsHelper.DecideAgentKnockedBackByBlow (MissionCombatMechanicsHelper.cs:69), only for unmounted human victims (Mission.cs:5634)" },
+        { "method": "DefaultSettlementMilitiaModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementMilitiaModel.cs:155", "reachesTroop": false, "why": "governor half, campaign map" },
+        { "method": "MilitiaUpkeep", "file": "RBMCampaign/Settlements/MilitiaUpkeep.cs:902", "reachesTroop": false, "why": "governor half, campaign map" },
+        { "method": "DamageRework.CreateMeleeBlowPatch.Postfix", "file": "RealisticBattleCombatModule/CombatModule/Damage/DamageRework.Blows.cs:33", "reachesTroop": false, "why": "RBM forces KnockDown on every passive (couched/braced) agent hit and KnockBack on blocked ones; perk irrelevant there" }
+      ],
+      "rbm": "Knockback decision path is not patched; RBM's CreateMeleeBlow postfix only adds flags for passive attacks."
+    },
+    {
+      "id": "PolearmSwiftSwing",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+5% swing speed while wielding a polearm (halved at sea).",
+      "conditions": "Wielded melee weapon's relevant skill is Polearm (mounted or on foot).",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:980", "reachesTroop": true, "why": "AddPerkBonusForCharacter on agent CharacterObject -> SwingSpeedMultiplier; method not patched" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:959", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "RBMAI's SetWeaponSkillEffectsOnAgent replacement (AgentStats.cs:421) runs BEFORE the perk step, and the later stamina scaling (AgentStats.cs:317) is multiplicative, so the perk is kept."
+    },
+    {
+      "id": "PolearmCleanThrust",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+10% damage on melee polearm thrusts (halved at sea).",
+      "conditions": "Melee polearm hit with StrikeType thrust (includes couched/braced lance hits).",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:117", "reachesTroop": true, "why": "AddPerkBonusForCharacter on attacker CharacterObject, primary (Personal)" },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveSkill", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:235", "reachesTroop": false, "why": "captain half (+30 polearm skill to infantry)" }
+      ],
+      "rbm": "None (damage pipeline intact)."
+    },
+    {
+      "id": "PolearmFootwork",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+2% combat movement speed while wielding a polearm (halved at sea).",
+      "conditions": "Wielded weapon's relevant skill is Polearm; affects CombatMaxSpeedMultiplier (combat stance movement).",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:979", "reachesTroop": true, "why": "AddPerkBonusForCharacter on agent CharacterObject -> CombatMaxSpeedMultiplier (assigned at :1207)" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1134", "reachesTroop": false, "why": "captain half (MaxSpeedMultiplier to infantry)" }
+      ],
+      "rbm": "No RBM code reassigns CombatMaxSpeedMultiplier."
+    },
+    {
+      "id": "PolearmHardKnock",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+0.25 knockdown penetration with knockdown-capable polearms; also raises the knockdown-dismount fallback against riders.",
+      "conditions": "Melee polearm with the CanKnockDown weapon flag: thrusts always, swings only on a sweet-spot hit (the description says thrusts only). Victim on foot (knockdown) or a rider (DecideAgentDismountedByBlow falls back to DecideWeaponKnockDown). Moot for couched/braced hits, which RBM always knocks down.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.GetKnockDownPenetration", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:665", "reachesTroop": true, "why": "AddPerkBonusForCharacter on attacker CharacterObject, primary (Personal); called from MissionCombatMechanicsHelper.DecideWeaponKnockDown (MissionCombatMechanicsHelper.cs:337)" },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveMaxHealth", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:555", "reachesTroop": false, "why": "secondary half is PartyLeader (AddPerkBonusForParty, +3 HP to infantry)" },
+        { "method": "SimulationTroopHitPoints", "file": "RBMCampaign/Simulation/SimulationTroopHitPoints.cs:311", "reachesTroop": false, "why": "auto-resolve, party half" }
+      ],
+      "rbm": "Knockdown path not patched. RBM's couch/brace dismount shortcut (HorseChanges.MountedCombat.cs:74-87) and passive-attack KnockDown (DamageRework.Blows.cs:39) make it irrelevant for those hits."
+    },
+    {
+      "id": "PolearmSteadKiller",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+70% damage to horses with melee polearm hits.",
+      "conditions": "Melee polearm hit whose victim is a mount (land and sea, full value).",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:122", "reachesTroop": true, "why": "AddPerkBonusForCharacter on attacker CharacterObject, primary (Personal); not gated on foot" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:125", "reachesTroop": false, "why": "captain half (foot attackers)" }
+      ],
+      "rbm": "None (damage pipeline intact). Note the StringId is 'PolearmSteadKiller' (TaleWorlds typo), the property is Polearm.SteedKiller."
+    },
+    {
+      "id": "PolearmLancer",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+20% to the movement-speed bonus of polearm strikes while mounted (swing, thrust and couched lance).",
+      "conditions": "Attacker mounted, polearm weapon, positive closing speed (extra linear speed > 0 for swing/thrust; couched lance via the vanilla passive path).",
+      "sites": [
+        { "method": "SandboxStrikeMagnitudeModel.CalculateBaseBlowMagnitudeForPassiveUsage", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:66", "reachesTroop": true, "why": "couched lance; this model method is not patched (RBM only replaces the CombatStatCalculator math it calls)" },
+        { "method": "SandboxStrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:105", "reachesTroop": false, "why": "skipped: RBM's CalculateBaseMeleeBlowMagnitude prefix never calls the model (bypass map #3)" },
+        { "method": "SandboxStrikeMagnitudeModel.CalculateStrikeMagnitudeForThrust", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:160", "reachesTroop": false, "why": "skipped by RBM (bypass map #3)" },
+        { "method": "MagnitudeChanges.ApplyMeleeSpeedPerks", "file": "RealisticBattleCombatModule/CombatModule/Magnitude/MagnitudeChanges.Perks.cs:55", "reachesTroop": true, "why": "RBM re-implementation for swing/thrust, same mounted+polearm condition; called from MagnitudeChanges.Melee.cs:132 and :237" }
+      ],
+      "rbm": "Swing/thrust path re-implemented by RBM (MagnitudeChanges.Perks.cs); passive path vanilla."
+    },
+    {
+      "id": "PolearmSkewer",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "Couched-lance kills pass through (lance stays couched) 30% of the time instead of 5%.",
+      "conditions": "Mounted attacker doing a passive (couched) thrust that kills the victim. Land only.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.DecidePassiveAttackCollisionReaction", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:751", "reachesTroop": true, "why": "AddPerkBonusForCharacter on attacker CharacterObject, primary (Personal), base 0.05 + 0.25" },
+        { "method": "RealisticWeaponCollision.DecideWeaponCollisionReactionMOD", "file": "RealisticBattleCombatModule/CombatModule/Ranged/RealisticWeaponCollision.cs:197", "reachesTroop": true, "why": "RBM overwrites the collision reaction but re-calls the model for passive attacks, so the perk-adjusted roll decides" },
+        { "method": "DefaultSettlementSecurityModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementSecurityModel.cs:290", "reachesTroop": false, "why": "governor half, campaign map" }
+      ],
+      "rbm": "Bypass map #16: overwritten but re-implemented (vanilla's roll discarded, RBM's roll includes the perk)."
+    },
+    {
+      "id": "PolearmGuards",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+50% damage on melee polearm hits to the head (halved at sea).",
+      "conditions": "Melee polearm hit on the Head body part.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:130", "reachesTroop": true, "why": "AddPerkBonusForCharacter on attacker CharacterObject, primary (Personal), IsHeadShot = VictimHitBodyPart == Head" },
+        { "method": "DefaultCombatXpModel.GetBattleXpBonusFromPerks", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultCombatXpModel.cs:116", "reachesTroop": false, "why": "governor half (town)" }
+      ],
+      "rbm": "None (damage pipeline intact)."
+    },
+    {
+      "id": "PolearmStandardBearer",
+      "skill": "Polearm",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing: captain (formation morale) and governor (garrison wages) perk only.",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxBattleMoraleModel", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:38", "reachesTroop": false, "why": "captain" },
+        { "method": "SandboxBattleMoraleModel", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:202", "reachesTroop": false, "why": "captain" },
+        { "method": "DefaultPartyWageModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyWageModel.cs:141", "reachesTroop": false, "why": "governor, campaign map" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "PolearmPhalanx",
+      "skill": "Polearm",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing: party-leader (shield-wall skill bonus) and captain (formation damage) perk only.",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveSkill", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:220", "reachesTroop": false, "why": "AddPerkBonusForParty (party leader hero)" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:132", "reachesTroop": false, "why": "captain" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "PolearmHardyFrontline",
+      "skill": "Polearm",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing: party-leader perk (party HP, infantry recruit cost).",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveMaxHealth", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:547", "reachesTroop": false, "why": "AddPerkBonusForParty" },
+        { "method": "DefaultPartyWageModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyWageModel.cs:263", "reachesTroop": false, "why": "party, campaign map" },
+        { "method": "RecruitSupply", "file": "RBMCampaign/Economy/RecruitSupply.cs:304", "reachesTroop": false, "why": "buyer Hero, campaign map" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "PolearmDrills",
+      "skill": "Polearm",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing: governor (veteran militia) and party-leader (daily XP) perk.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultSettlementMilitiaModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementMilitiaModel.cs:61", "reachesTroop": false, "why": "governor" },
+        { "method": "DefaultPartyTrainingModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyTrainingModel.cs:47", "reachesTroop": false, "why": "MobileParty.HasPerk" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "PolearmSureFooted",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "-40% damage taken from horse charges.",
+      "conditions": "Victim of a horse charge (IsHorseCharge collision). Land only. Code does not check that the victim is on foot.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:428", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the victim's CharacterObject, primary (Personal)" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:432", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "RBM replaces the charge magnitude (ComputeBlowMagnitudeFromHorseCharge, physics only) and ComputeBlowDamage, but charge hits still go through Mission.GetAttackCollisionResults -> CalculateDamage (Mission.cs:6107, :6542), so the reduction applies."
+    },
+    {
+      "id": "PolearmUnstoppableForce",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "medium",
+      "summary": "Couched/braced polearm hits that land on a shield get x4 base magnitude (description says triple); RBM's couched-lance caps keep the full x4 only for slow hits, and shrink it to about x1.9 at full gallop.",
+      "conditions": "Passive (couched or braced) polearm hit blocked by a shield, attacker or victim mounted (vanilla zeroes passive magnitude otherwise). Land only. Not gated on the attacker being mounted, so a braced spear hitting a rider's shield also counts.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.CalculatePassiveAttackDamage", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:738", "reachesTroop": true, "why": "AddPerkBonusForCharacter on attacker CharacterObject, primary (Personal); called from MissionCombatMechanicsHelper.ComputeBlowMagnitudeMelee (MissionCombatMechanicsHelper.cs:671), not patched" },
+        { "method": "DamageRework.RBMComputeBlowDamageOnShield / CalculateCouchedLanceMagnitude", "file": "RealisticBattleCombatModule/CombatModule/Damage/DamageRework.Core.cs:51", "reachesTroop": true, "why": "RBM's shield damage uses the perk-boosted magnitude but snaps couched magnitude to 230 or the ballistic value and caps it at 430 (x ThrustMagnitudeModifier)" },
+        { "method": "SandboxStrikeMagnitudeModel / MagnitudeChanges.ApplyMeleeSpeedPerks", "file": "RealisticBattleCombatModule/CombatModule/Magnitude/MagnitudeChanges.Perks.cs:56", "reachesTroop": false, "why": "captain half (speed bonus to cavalry)" }
+      ],
+      "rbm": "Perk still applies, but RBM's couched-lance clamp (DamageRework.Core.cs:51-84: couched value snapped to 230, or the ballistic value when that is >= 230, capped at 430, x ThrustMagnitudeModifier) makes the gain x4 for low magnitudes, about x2 mid-range and 430/230 = x1.87 for fast charges, before RBM's nonlinear shield-armor damage (estimate from the clamp math, not tested in game)."
+    },
+    {
+      "id": "PolearmCounterweight",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+15% handling with polearms that can swing, and under RBM posture, about 13% less posture lost when blocking with them.",
+      "conditions": "Wielded polearm with a swing damage type (SwingDamageType != Invalid). Handling halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:985", "reachesTroop": true, "why": "AddPerkBonusForCharacter on agent CharacterObject -> HandlingMultiplier" },
+        { "method": "MeleeBlowPatch.ComputeDefenderBlockPerkFactors", "file": "RealisticBattleAiModule/AiModule/Stance/MeleeBlowPatch.Math.cs:384", "reachesTroop": true, "why": "RBM posture: divides block posture cost by the handling bonus (postureEnabled, rbmAi)" },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveSkill", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:236", "reachesTroop": false, "why": "captain half (+20 polearm skill)" }
+      ],
+      "rbm": "HandlingMultiplier only scaled multiplicatively by stamina (AgentStats.cs:310). RBM adds a posture benefit; that factor is cached per Stance (recomputed on captain/weapon change)."
+    },
+    {
+      "id": "PolearmSharpenTheTip",
+      "skill": "Polearm",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+5% damage on melee polearm thrusts (halved at sea).",
+      "conditions": "Melee polearm hit with StrikeType thrust.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:118", "reachesTroop": true, "why": "AddPerkBonusForCharacter on attacker CharacterObject, primary (Personal)" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:157", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "None (damage pipeline intact)."
+    },
+    {
+      "id": "PolearmWayOfTheSpear",
+      "skill": "Polearm",
+      "personalHalf": "both",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "Per Polearm skill point above 250: +0.2% swing/thrust speed and +0.5% polearm melee damage; most troops are below 250, so they get nothing.",
+      "conditions": "Troop's own raw Polearm skill (GetSkillValue, not effective skill) above 250. Vanilla troops top out at 260 (+2% speed, +5% damage). Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:981", "reachesTroop": true, "why": "AddEpicPerkBonusForCharacter (primary) -> SwingSpeedMultiplier" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:982", "reachesTroop": true, "why": "AddEpicPerkBonusForCharacter (primary) -> ThrustOrRangedReadySpeedMultiplier" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:133", "reachesTroop": true, "why": "AddEpicPerkBonusForCharacter (secondary, also Personal) -> melee polearm damage" }
+      ],
+      "rbm": "None; both stat fields only scaled multiplicatively by RBM stamina."
+    }
+  ]
+}

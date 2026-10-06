@@ -1,0 +1,580 @@
+{
+  "group": "Riding and Athletics",
+  "skills": ["Riding", "Athletics"],
+  "auditedAt": "2026-10-06",
+  "perks": [
+    {
+      "id": "RidingFullSpeed",
+      "skill": "Riding",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop's horse deals +20% charge (trample) damage.",
+      "conditions": "Mounted, horse charge (bump) hits only; land only (no effect at sea).",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:263", "reachesTroop": true, "why": "IsHorseCharge branch; character is the rider (AttackerRiderAgentCharacter) when the attacker is the mount" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:264", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "RBM skips ComputeBlowMagnitudeFromHorseCharge and ComputeBlowDamage, but Mission.ChargeDamageCallback -> GetAttackCollisionResults still runs AgentApplyDamageModel.CalculateDamage on RBM's damage, so the multiplier applies."
+    },
+    {
+      "id": "RidingNimbleStead",
+      "skill": "Riding",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop's horse gets +10% maneuvering (turning).",
+      "conditions": "Mounted; land only.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.UpdateHorseStats", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:884", "reachesTroop": true, "why": "rider CharacterObject, MountManeuver" },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveSkill", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:209", "reachesTroop": false, "why": "captain half (+30 Riding)" }
+      ],
+      "rbm": "RBM's UpdateHorseStats postfix rewrites MountSpeed / MountChargeDamage but never MountManeuver."
+    },
+    {
+      "id": "RidingWellStraped",
+      "skill": "Riding",
+      "personalHalf": "primary",
+      "verdict": "hero-only",
+      "confidence": "high",
+      "summary": "Nothing for troops: only the main hero's own horse death/lame roll checks it, via Hero.MainHero.",
+      "conditions": "",
+      "sites": [
+        { "method": "MountAgentLogic.OnAgentRemoved", "file": "decompiled/SandBox/SandBox.Missions.MissionLogics/MountAgentLogic.cs:37", "reachesTroop": false, "why": "Hero.MainHero.GetPerkValue, main hero's mount only" },
+        { "method": "DefaultSettlementLoyaltyModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementLoyaltyModel.cs:144", "reachesTroop": false, "why": "governor half" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "RidingVeterinary",
+      "skill": "Riding",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "medium",
+      "summary": "The troop's horse spawns with +20% hit points.",
+      "conditions": "Mounted (the horse the troop spawns on); land only. Computed once at spawn.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveMaxHealth", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:573", "reachesTroop": true, "why": "mount branch, rider CharacterObject; rider linked via SetMountAgentBeforeBuild before the mount is built (Mission.cs:4331)" },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveMaxHealth", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:574", "reachesTroop": false, "why": "party-leader half" }
+      ],
+      "rbm": "RBM does not touch mount HealthLimit."
+    },
+    {
+      "id": "RidingNomadicTraditions",
+      "skill": "Riding",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for troops: party-leader (party speed) and captain (formation melee speed bonus) only.",
+      "conditions": "",
+      "sites": [
+        { "method": "MagnitudeChanges.ApplyMeleeSpeedPerks", "file": "RealisticBattleCombatModule/CombatModule/Magnitude/MagnitudeChanges.Perks.cs:38", "reachesTroop": false, "why": "captain only" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "RidingDeeperSacks",
+      "skill": "Riding",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for troops: both halves are party-leader campaign effects.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultInventoryCapacityModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultInventoryCapacityModel.cs:86", "reachesTroop": false, "why": "party" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "RidingSagittarius",
+      "skill": "Riding",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "While mounted with a ranged weapon in hand, the troop's movement and unsteadiness accuracy penalties drop by 15%.",
+      "conditions": "Mounted and wielding a bow, crossbow or throwing weapon; land only.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1013", "reachesTroop": true, "why": "direct one-arg GetPerkValue gate, then AddPerkBonusForCharacter on WeaponMaxMovement/UnsteadyAccuracyPenalty (:1015-1016)" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1018", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "RBMAI SetAiRelatedProperties postfix scales these two fields with *= (AgentStats.cs:205-206, 223-224, 241-242, stamina :324-325), so the perk's 15% survives."
+    },
+    {
+      "id": "RidingSweepingWind",
+      "skill": "Riding",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop's horse gets +5% top speed.",
+      "conditions": "Mounted; land only.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.UpdateHorseStats", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:885", "reachesTroop": true, "why": "rider CharacterObject; result overwritten by RBM" },
+        { "method": "HorseChanges.SandboxAgentStatCalculateModelUpdateHorseStatsPatch.Postfix", "file": "RealisticBattleCombatModule/CombatModule/Horse/HorseChanges.MountStats.cs:83", "reachesTroop": true, "why": "RBM re-applies the perk to its own MountSpeed" }
+      ],
+      "rbm": "RBM rewrites MountSpeed and re-adds SweepingWind. Speed above RBM's base cap (10, or 8 for horses over 500 weight) is lerped by a rider+horse weight factor (MountStats.cs:97-99), so the +5% can be partly compressed for fast horses."
+    },
+    {
+      "id": "RidingReliefForce",
+      "skill": "Riding",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for troops: party-leader starting morale and governor security only.",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxBattleMoraleModel", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:267", "reachesTroop": false, "why": "AddPerkBonusForParty" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "RidingMountedWarrior",
+      "skill": "Riding",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop deals +5% melee damage while mounted.",
+      "conditions": "Mounted, melee weapon hits; land only.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:148", "reachesTroop": true, "why": "attacker CharacterObject, mounted melee branch" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:149", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "Damage-model perks run on RBM's damage (Mission.GetAttackCollisionResults -> CalculateDamage); posture crush-through re-runs it too."
+    },
+    {
+      "id": "RidingHorseArcher",
+      "skill": "Riding",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop deals +10% ranged damage while mounted (arrows, bolts, javelins, slings).",
+      "conditions": "Mounted, missile hits; land only.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:248", "reachesTroop": true, "why": "consumable branch, mounted; not limited to bows despite the BowUser usage flag" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:249", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "Missile magnitude is RBM's, but CalculateDamage still runs on the result."
+    },
+    {
+      "id": "RidingShepherd",
+      "skill": "Riding",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for troops: party herding speed and governor horse breeding only.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultPartySpeedCalculatingModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartySpeedCalculatingModel.cs:179", "reachesTroop": false, "why": "party" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "RidingBreeder",
+      "skill": "Riding",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for troops: party animal breeding and governor village production only.",
+      "conditions": "",
+      "sites": [
+        { "method": "FoodConsumptionBehavior", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.CampaignBehaviors/FoodConsumptionBehavior.cs:259", "reachesTroop": false, "why": "party.HasPerk" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "RidingThunderousCharge",
+      "skill": "Riding",
+      "personalHalf": "primary",
+      "verdict": "partial",
+      "confidence": "high",
+      "summary": "Mounted melee kills by the troop cause +20% morale loss to the victim's side, except when the victim is a siege defender (RBM removes that morale shock).",
+      "conditions": "Troop mounted when it kills/knocks out an enemy with a one-handed, two-handed or polearm weapon (horse-charge kills do not count); land only. Field battles and kills of siege attackers only.",
+      "sites": [
+        { "method": "SandboxBattleMoraleModel.CalculateMaxMoraleChangeDueToAgentIncapacitatedExplained", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:163", "reachesTroop": true, "why": "affector (killer) CharacterObject, mounted melee kill" },
+        { "method": "SandboxBattleMoraleModel.CalculateMaxMoraleChangeDueToAgentIncapacitatedExplained", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:164", "reachesTroop": false, "why": "captain half" },
+        { "method": "AgentMoraleInteractionLogicPatch.PrefixAfterStart", "file": "RealisticBattleAiModule/AiModule/Siege/SiegePatches.cs:427", "reachesTroop": false, "why": "RBMAI skips the whole morale shock when a siege defender falls" }
+      ],
+      "rbm": "Bypass map #17: with rbmAiEnabled, ApplyMoraleEffectOnAgentIncapacitated is skipped for siege defenders (except the keep-battle low-power case)."
+    },
+    {
+      "id": "RidingAnnoyingBuzz",
+      "skill": "Riding",
+      "personalHalf": "primary",
+      "verdict": "partial",
+      "confidence": "high",
+      "summary": "Mounted ranged kills by the troop cause +20% morale loss to the victim's side, except when the victim is a siege defender (RBM removes that morale shock).",
+      "conditions": "Troop mounted when it kills/knocks out an enemy with a bow, crossbow or throwing weapon; land only. Field battles and kills of siege attackers only.",
+      "sites": [
+        { "method": "SandboxBattleMoraleModel.CalculateMaxMoraleChangeDueToAgentIncapacitatedExplained", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:175", "reachesTroop": true, "why": "affector (killer) CharacterObject, mounted ranged kill" },
+        { "method": "SandboxBattleMoraleModel.CalculateMaxMoraleChangeDueToAgentIncapacitatedExplained", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:176", "reachesTroop": false, "why": "captain half" },
+        { "method": "AgentMoraleInteractionLogicPatch.PrefixAfterStart", "file": "RealisticBattleAiModule/AiModule/Siege/SiegePatches.cs:427", "reachesTroop": false, "why": "RBMAI skips the morale shock for siege defenders" }
+      ],
+      "rbm": "Bypass map #17 (siege defenders)."
+    },
+    {
+      "id": "RidingMountedPatrols",
+      "skill": "Riding",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for troops: prisoner escape chance for party and governed settlement only.",
+      "conditions": "",
+      "sites": [
+        { "method": "PrisonerReleaseCampaignBehavior", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.CampaignBehaviors/PrisonerReleaseCampaignBehavior.cs:236", "reachesTroop": false, "why": "party" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "RidingCavalryTactics",
+      "skill": "Riding",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for troops: clan-leader volunteer rate and governor garrison wages only.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultVolunteerModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultVolunteerModel.cs:106", "reachesTroop": false, "why": "town" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "RidingDauntlessSteed",
+      "skill": "Riding",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "While mounted, the troop needs 50% more damage before a hit staggers (interrupts) it.",
+      "conditions": "Mounted; land only. Affects vanilla's hit stagger (shrug-off threshold) only, not RBM posture-break staggers/knockdowns.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.CalculateStaggerThresholdDamage", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:691", "reachesTroop": true, "why": "defender CharacterObject, HasMount; used by DecideAgentShrugOffBlow" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1150", "reachesTroop": false, "why": "captain half (+5 armor)" }
+      ],
+      "rbm": "Shrug-off decision is unpatched. RBM's extra posture/knockdown blows (CreateMeleeBlow postfixes) do not consult stagger resistance."
+    },
+    {
+      "id": "RidingToughSteed",
+      "skill": "Riding",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop's horse gets +20% armor.",
+      "conditions": "Mounted on an armored (barded) horse: it multiplies existing horse armor, so an unarmored horse gains nothing; land only.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.UpdateHorseStats", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:888", "reachesTroop": true, "why": "rider CharacterObject, horse ArmorTorso" },
+        { "method": "SandboxAgentStatCalculateModel.UpdateHorseStats", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:887", "reachesTroop": false, "why": "captain half" },
+        { "method": "ArmorRework.ApplyDrivenArmorBonus", "file": "RealisticBattleCombatModule/CombatModule/Armor/ArmorRework.Dispatch.cs:154", "reachesTroop": true, "why": "RBM carries driven ArmorTorso / equipment-sum ratio onto its per-part horse armor" }
+      ],
+      "rbm": "RBM replaces GetBaseArmorEffectivenessForBodyPart but re-applies the ratio (bypass map #6)."
+    },
+    {
+      "id": "RidingTheWayOfTheSaddle",
+      "skill": "Riding",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "Only for troops with effective Riding above 250: +0.3 horse maneuvering and +0.3% charge damage per point above 250.",
+      "conditions": "Mounted; effective Riding skill (troop skill plus captain bonuses) > 250, which almost no regular troop has; land only.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.UpdateHorseStats", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:889", "reachesTroop": true, "why": "epic bonus on MountManeuver, needs effective Riding > 250" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:266", "reachesTroop": true, "why": "epic bonus on horse charge damage, needs effective Riding > 250" }
+      ],
+      "rbm": "Neither field is reassigned by RBM (MountManeuver untouched; charge damage amplification runs on RBM's damage)."
+    },
+    {
+      "id": "AthleticsMorningExercise",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+3% movement speed on foot, but only while the troop has no shield in its off hand.",
+      "conditions": "No shield wielded (code sits in the no-shield branch). It raises MaxSpeedMultiplier (general movement speed), not CombatMaxSpeedMultiplier as the description says. Half strength at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1118", "reachesTroop": true, "why": "agent CharacterObject, else-branch of 'shield in off hand'" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1130", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "RBMAI scales MaxSpeedMultiplier by stamina with *= (AgentStats.cs:314); perk preserved."
+    },
+    {
+      "id": "AthleticsWellBuilt",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop has +5 max hit points.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultCharacterStatsModel.MaxHitpoints", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultCharacterStatsModel.cs:34", "reachesTroop": true, "why": "CharacterObject.MaxHitPoints() is read by Agent.Character's setter (Agent.cs:1438) at spawn, inside the mission" },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveMaxHealth", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:554", "reachesTroop": false, "why": "party-leader half" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "AthleticsFury",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "On foot with a melee weapon: +10% weapon handling, and under RBM posture about 9% less posture lost on blocks and parries.",
+      "conditions": "On foot, melee weapon wielded. Half strength at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:953", "reachesTroop": true, "why": "HandlingMultiplier, on foot, melee" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:956", "reachesTroop": false, "why": "captain half" },
+        { "method": "MeleeBlowPatch.ComputeDefenderBlockPerkFactors", "file": "RealisticBattleAiModule/AiModule/Stance/MeleeBlowPatch.Math.cs:368", "reachesTroop": true, "why": "RBM posture: handling perks divide block posture cost (postureEnabled)" }
+      ],
+      "rbm": "RBMAI scales HandlingMultiplier by stamina with *= (AgentStats.cs:310). RBM posture adds its own block-cost reduction (cached per Stance)."
+    },
+    {
+      "id": "AthleticsFormFittingArmor",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "medium",
+      "summary": "The troop's armor counts 15% lighter for vanilla encumbrance, so it moves a little faster; RBM's own weight-based systems still use the full armor weight.",
+      "conditions": "Half strength at sea. Only vanilla's encumbrance (movement speed / acceleration) sees it.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveArmorEncumbrance", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:525", "reachesTroop": true, "why": "agent CharacterObject; feeds ArmorEncumbrance and the speed math in UpdateHumanStats" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1137", "reachesTroop": false, "why": "captain half (also :1196)" },
+        { "method": "ItemMenuVM / SPInventoryVM", "file": "decompiled/TaleWorlds.CampaignSystem.ViewModelCollection/TaleWorlds.CampaignSystem.ViewModelCollection.Inventory/SPInventoryVM.cs:4464", "reachesTroop": false, "why": "inventory UI, campaign" }
+      ],
+      "rbm": "Not bypassed. But RBM stamina cost (MeleeBlowPatch.cs:248), max posture (Stance.cs:140) and horse speed / charge weight (HorseChanges.MountStats.cs:58, :109) read raw SpawnEquipment.GetTotalWeightOfArmor and ignore the perk."
+    },
+    {
+      "id": "AthleticsImposingStature",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "campaign-only",
+      "confidence": "high",
+      "summary": "Nothing in battle: the personal half is the main hero's persuasion chance.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultPersuasionModel.GetBonusSuccessChance", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPersuasionModel.cs:82", "reachesTroop": false, "why": "Hero.MainHero, conversation" },
+        { "method": "DefaultPartySizeLimitModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartySizeLimitModel.cs:291", "reachesTroop": false, "why": "party-leader half" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "AthleticsStamina",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "campaign-only",
+      "confidence": "high",
+      "summary": "Nothing in battle: the personal half is crafting stamina recovery for heroes (unrelated to RBM's combat stamina).",
+      "conditions": "",
+      "sites": [
+        { "method": "CraftingCampaignBehavior.GetStaminaHourlyRecoveryRate", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.CampaignBehaviors/CraftingCampaignBehavior.cs:623", "reachesTroop": false, "why": "hero.GetPerkValue, smithing" },
+        { "method": "DefaultPartySizeLimitModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartySizeLimitModel.cs:211", "reachesTroop": false, "why": "party-leader half (prisoner limit)" }
+      ],
+      "rbm": "RBM's posture/stamina system does not read this perk."
+    },
+    {
+      "id": "AthleticsSprint",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "+5% movement speed while the troop has no shield and no ranged weapon in hand.",
+      "conditions": "Checks the WIELDED items, not the inventory: no shield in off hand and the wielded weapon is not ranged (a bowman holding his sword with no shield gets it). Raises MaxSpeedMultiplier. Half strength at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1122", "reachesTroop": true, "why": "agent CharacterObject, !(shield || ranged wielded)" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1141", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "MaxSpeedMultiplier only scaled with *= by RBMAI stamina; perk preserved."
+    },
+    {
+      "id": "AthleticsPowerful",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop deals +4% melee damage.",
+      "conditions": "Melee weapon hits (mounted or on foot). Half strength at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:139", "reachesTroop": true, "why": "attacker CharacterObject, melee branch" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:140", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "CalculateDamage runs on RBM's damage (bypass map note 8)."
+    },
+    {
+      "id": "AthleticsSurgingBlow",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "On foot, the troop's melee blows get 30% more of the bonus from moving into the target.",
+      "conditions": "On foot, melee swing/thrust or braced (passive) hit with positive closing speed. Half strength at sea.",
+      "sites": [
+        { "method": "MagnitudeChanges.ApplyMeleeSpeedPerks", "file": "RealisticBattleCombatModule/CombatModule/Magnitude/MagnitudeChanges.Perks.cs:47", "reachesTroop": true, "why": "RBM re-implementation for swing and thrust (vanilla CalculateStrikeMagnitudeForSwing/Thrust skipped)" },
+        { "method": "SandboxStrikeMagnitudeModel.CalculateBaseBlowMagnitudeForPassiveUsage", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:58", "reachesTroop": true, "why": "braced-weapon hits, unpatched" },
+        { "method": "SandboxStrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:97", "reachesTroop": false, "why": "skipped by RBM (bypass #3), re-implemented above" }
+      ],
+      "rbm": "Bypass map #3: re-implemented with the same conditions."
+    },
+    {
+      "id": "AthleticsBraced",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop takes 40% less damage from horse charges.",
+      "conditions": "Horse charge (trample) hits on the troop; land only. Code has no on-foot check (a mounted troop's horse also benefits when it is the one charged).",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:429", "reachesTroop": true, "why": "victim CharacterObject, IsHorseCharge" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:433", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "Charge damage still passes CalculateDamage."
+    },
+    {
+      "id": "AthleticsWalkItOff",
+      "skill": "Athletics",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for troops: party healing and travel XP only.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultPartyHealingModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyHealingModel.cs:173", "reachesTroop": false, "why": "party" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "AthleticsAGoodDaysRest",
+      "skill": "Athletics",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for troops: party healing and settlement-rest XP only.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultPartyHealingModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyHealingModel.cs:192", "reachesTroop": false, "why": "party" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "AthleticsDurable",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "hero-only",
+      "confidence": "high",
+      "summary": "Nothing for troops: +1 Endurance is added to a hero's attributes when the perk is unlocked; no battle code checks the perk.",
+      "conditions": "",
+      "sites": [
+        { "method": "PerkActivationHandlerCampaignBehavior.OnPerkOpened", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.CampaignBehaviors/PerkActivationHandlerCampaignBehavior.cs:53", "reachesTroop": false, "why": "HeroDeveloper.AddAttribute on perk unlock" },
+        { "method": "DefaultSettlementLoyaltyModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementLoyaltyModel.cs:142", "reachesTroop": false, "why": "governor half" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "AthleticsEnergetic",
+      "skill": "Athletics",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for troops: party overburden penalty and governor hearth growth only.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultPartySpeedCalculatingModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartySpeedCalculatingModel.cs:253", "reachesTroop": false, "why": "party" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "AthleticsSteady",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "hero-only",
+      "confidence": "high",
+      "summary": "Nothing for troops: +1 Control is added to a hero's attributes when the perk is unlocked; no battle code checks the perk.",
+      "conditions": "",
+      "sites": [
+        { "method": "PerkActivationHandlerCampaignBehavior.OnPerkOpened", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.CampaignBehaviors/PerkActivationHandlerCampaignBehavior.cs:58", "reachesTroop": false, "why": "HeroDeveloper.AddAttribute on perk unlock" },
+        { "method": "DefaultVillageProductionCalculatorModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultVillageProductionCalculatorModel.cs:47", "reachesTroop": false, "why": "governor half" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "AthleticsStrong",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "hero-only",
+      "confidence": "high",
+      "summary": "Nothing for troops: +1 Vigor is added to a hero's attributes when the perk is unlocked; no battle code checks the perk.",
+      "conditions": "",
+      "sites": [
+        { "method": "PerkActivationHandlerCampaignBehavior.OnPerkOpened", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.CampaignBehaviors/PerkActivationHandlerCampaignBehavior.cs:63", "reachesTroop": false, "why": "HeroDeveloper.AddAttribute on perk unlock" },
+        { "method": "DefaultPartySpeedCalculatingModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartySpeedCalculatingModel.cs:433", "reachesTroop": false, "why": "party-leader half" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "AthleticsStrongLegs",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "The troop takes 50% less fall damage, and its kicks deal double damage, but troops only kick when RBM's AI kick/bash option is on.",
+      "conditions": "Fall damage: whenever the troop falls (rare outside sieges); -25% at sea. Kick bonus: unarmed kick (not shield/weapon bash), so only with aiKickBashEnabled (native AI never kicks); environment-independent (one-argument check).",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:438", "reachesTroop": true, "why": "victim CharacterObject, IsFallDamage (FallDamageCallback -> GetAttackCollisionResults -> CalculateDamage)" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:303", "reachesTroop": true, "why": "one-arg GetPerkValue on attacker; alternative attack with no weapon = kick" },
+        { "method": "DamageRework.OverrideDamageCalc.Prefix (isKickOrBash)", "file": "RealisticBattleCombatModule/CombatModule/Damage/DamageRework.Core.cs:398", "reachesTroop": true, "why": "RBM's kick damage (punch model) is the InflictedDamage the ×2 then applies to" },
+        { "method": "DefaultMobilePartyFoodConsumptionModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultMobilePartyFoodConsumptionModel.cs:67", "reachesTroop": false, "why": "governor half" }
+      ],
+      "rbm": "Kicks by AI troops exist only through RBMAI AiKickBash. Because the victim's posture loss scales with kick damage, the doubled kick damage also doubles posture loss and raises the chance of a posture-break knockdown."
+    },
+    {
+      "id": "AthleticsStrongArms",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The troop deals +5% damage with throwing weapons (javelins, axes, knives, stones and slings).",
+      "conditions": "Missile hits from Throwing-skill weapons. Half strength at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:211", "reachesTroop": true, "why": "attacker CharacterObject, consumable Throwing branch (slings are Throwing skill too)" },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveSkill", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:193", "reachesTroop": false, "why": "captain half (+20 Throwing)" }
+      ],
+      "rbm": "CalculateDamage runs on RBM's missile damage."
+    },
+    {
+      "id": "AthleticsSpartan",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "On foot, the troop needs 50% more damage before a hit staggers (interrupts) it.",
+      "conditions": "On foot. Half strength at sea. Affects vanilla's hit stagger (shrug-off threshold) only, not RBM posture-break staggers/knockdowns.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.CalculateStaggerThresholdDamage", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:695", "reachesTroop": true, "why": "defender CharacterObject, !HasMount; used by DecideAgentShrugOffBlow" },
+        { "method": "DefaultMobilePartyFoodConsumptionModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultMobilePartyFoodConsumptionModel.cs:54", "reachesTroop": false, "why": "party-leader half" }
+      ],
+      "rbm": "Shrug-off decision unpatched."
+    },
+    {
+      "id": "AthleticsIgnorePain",
+      "skill": "Athletics",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "On foot, the troop's armor is 10% stronger on every body part.",
+      "conditions": "On foot. +5% at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1166", "reachesTroop": true, "why": "environment overload; RBM postfix supplies effectValue = primary bonus" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1155", "reachesTroop": false, "why": "captain half (+5 armor)" },
+        { "method": "ArmorRework.ApplyDrivenArmorBonus", "file": "RealisticBattleCombatModule/CombatModule/Armor/ArmorRework.Dispatch.cs:154", "reachesTroop": true, "why": "RBM carries the ArmorHead/Torso/Arms/Legs ratio onto its per-part armor (also face and under-shoulder hits)" }
+      ],
+      "rbm": "Bypass map #6: re-implemented as a ratio. Only multiplies existing armor (a bare body part gets nothing)."
+    },
+    {
+      "id": "AthleticsMightyBlow",
+      "skill": "Athletics",
+      "personalHalf": "both",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "Harmful unless the troop has Athletics above 250: max HP changes by (Athletics - 250), so e.g. Athletics 100 gives -150 HP; the stun half lengthens the troop's OWN recoil when its attack is blocked.",
+      "conditions": "HP half: troop Athletics skill > 250 to gain anything; below 250 it subtracts HP with no floor (can make the troop spawn with zero or negative health). Stun half: on the troop's attacks that are blocked or parried; per the code it multiplies attackerStunPeriod (the attacker's own stun) by 1.05, the opposite of the description. Stun half at sea: +2.5%.",
+      "sites": [
+        { "method": "DefaultCharacterStatsModel.MaxHitpoints", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultCharacterStatsModel.cs:41", "reachesTroop": true, "why": "one-arg GetPerkValue, adds GetSkillValue(Athletics) - 250 with no >0 guard; read at spawn via Agent.Character setter" },
+        { "method": "SandboxAgentApplyDamageModel.CalculateDefendedBlowStunMultipliers", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:551", "reachesTroop": true, "why": "attacker CharacterObject, Blocked/Parried; bonus applied to attackerStunPeriod" }
+      ],
+      "rbm": "Neither path is patched. RBM posture code copies AttackerStunPeriod/DefenderStunPeriod from the collision data, so the vanilla stun result stands."
+    }
+  ]
+}

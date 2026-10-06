@@ -365,5 +365,9 @@ FodyWeavers.xsd
 # Regenerate with tools\Decompile-Bannerlord.ps1; the SHA256 lock file IS committed.
 /decompiled/
 
+# Troop-perk editor data (generated from the game install, contains TaleWorlds text).
+# Regenerate with tools\TroopPerkEditor\Build-TroopPerkData.ps1.
+/tools/TroopPerkEditor/troop-perk-data.js
+
 # MkDocs build output for the player manual (built and published by .github/workflows/manual.yml)
 /manual/site/

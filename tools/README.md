@@ -1,5 +1,12 @@
 # tools/
 
+## TroopPerkEditor/
+
+A local page (`index.html`) for editing `RBMXML/rbm_troop_perks.xml`: every troop and perk, the perks'
+personal effects, export/import of the XML. Generate its data first with
+`powershell -ExecutionPolicy Bypass -File tools\TroopPerkEditor\Build-TroopPerkData.ps1` (reads
+`decompiled/` and the game's module XML; the output is gitignored). See `TroopPerkEditor/README.md`.
+
 ## check_crafting_coverage.py
 
 Finds smithing piece combinations that no weapon description covers — the cause

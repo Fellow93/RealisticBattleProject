@@ -1,0 +1,315 @@
+{
+  "group": "OneHanded",
+  "skills": ["OneHanded"],
+  "auditedAt": "2026-10-06",
+  "perks": [
+    {
+      "id": "OneHandedWrappedHandles",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+20% handling while wielding a one-handed melee weapon; with RBM posture on, it also cuts the posture the troop loses when blocking or parrying (about 17% less).",
+      "conditions": "Main-hand weapon is a one-handed melee weapon. The posture reduction needs rbmAiEnabled + postureEnabled. Halved at sea (NavalReduced).",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:968", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the agent's own CharacterObject -> HandlingMultiplier; not patched by RBM" },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveSkill", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:227", "reachesTroop": false, "why": "captain half (+30 one-handed skill to the formation); the captain is a hero" },
+        { "method": "MeleeBlowPatch.ComputeDefenderBlockPerkFactors", "file": "RealisticBattleAiModule/AiModule/Stance/MeleeBlowPatch.Math.cs:376", "reachesTroop": true, "why": "RBM posture: divides block/parry posture cost by the perk-adjusted handling, any CharacterObject" },
+        { "method": "SimulationPerks (auto-resolve)", "file": "RBMCampaign/Simulation/SimulationPerks.cs:266", "reachesTroop": false, "why": "auto-resolve captain path, no Mission.Current" }
+      ],
+      "rbm": "RBMAI multiplies HandlingMultiplier by stamina (AgentStats.cs:310), which keeps the perk. RBMAI posture adds its own WrappedHandles read."
+    },
+    {
+      "id": "OneHandedBasher",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "partial",
+      "confidence": "medium",
+      "summary": "Shield bashes stun 50% longer; the +50% bash damage never applies, in vanilla either, because that check sits behind an IsMeleeWeapon test that shields never pass.",
+      "conditions": "A shield in the off hand (stun multiplier is only set while a shield is wielded). Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1113", "reachesTroop": true, "why": "own CharacterObject -> ShieldBashStunDurationMultiplier (engine-read driven property), shield wielded; RBM does not touch it" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:137", "reachesTroop": false, "why": "dead branch: `else if (currentUsageItem.IsShield)` is nested inside `if (currentUsageItem.IsMeleeWeapon)`, and shield items carry no MeleeWeapon flag (vanilla and RBMCombat_shields.xml), so the bash damage bonus is unreachable" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:405", "reachesTroop": false, "why": "captain half (shield-wall damage reduction); hero captain only" }
+      ],
+      "rbm": "RBM's kick/bash damage (DamageRework.Core.cs:398-429) replaces vanilla's flat bash magnitude, but the amplification branch was already dead. Stun multiplier untouched."
+    },
+    {
+      "id": "OneHandedToBeBlunt",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+5% damage with one-handed axes and maces (also on hits against shields).",
+      "conditions": "Attacking with a one-handed melee weapon of class Mace or OneHandedAxe. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:66", "reachesTroop": true, "why": "attacker's own CharacterObject; CalculateDamage still runs on RBM's InflictedDamage (Mission.cs:6542)" },
+        { "method": "DefaultSettlementSecurityModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementSecurityModel.cs:288", "reachesTroop": false, "why": "governor half" }
+      ],
+      "rbm": "None; damage-model perks apply on top of RBM's damage."
+    },
+    {
+      "id": "OneHandedSwiftStrike",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+2% swing speed with one-handed melee weapons.",
+      "conditions": "Main-hand weapon is a one-handed melee weapon. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:965", "reachesTroop": true, "why": "own CharacterObject -> SwingSpeedMultiplier" },
+        { "method": "DefaultSettlementMilitiaModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementMilitiaModel.cs:154", "reachesTroop": false, "why": "governor half" },
+        { "method": "MilitiaUpkeep (campaign)", "file": "RBMCampaign/Settlements/MilitiaUpkeep.cs:901", "reachesTroop": false, "why": "governor half, campaign layer" }
+      ],
+      "rbm": "RBMAI's SetWeaponSkillEffectsOnAgent replacement runs before the perk step; the later stamina scaling (AgentStats.cs:317) is multiplicative. Perk kept."
+    },
+    {
+      "id": "OneHandedCavalry",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+5% damage with one-handed melee weapons while mounted, on land only.",
+      "conditions": "Mounted, attacking with a one-handed melee weapon. LandOnly: nothing in naval battles.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:58", "reachesTroop": true, "why": "attacker's (rider's) own CharacterObject, gated on having a mount" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:150", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "None."
+    },
+    {
+      "id": "OneHandedShieldBearer",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "The wielded shield's weight stops counting toward weapon encumbrance (vanilla adds 1.5x its weight), which slightly raises movement speed, combat speed and acceleration.",
+      "conditions": "A shield (CanBlockRanged) wielded in the off hand. Gain is small and can be swallowed by the speed clamps for light, high-Athletics troops.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.UpdateHumanStats", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:674", "reachesTroop": true, "why": "characterObject.GetPerkValue(perk, env, true, out _) on the agent's own character; feeds WeaponsEncumbrance -> MaxSpeedMultiplier, CombatMaxSpeedMultiplier, TopSpeedReachDuration" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1131", "reachesTroop": false, "why": "captain half (+3% speed to formation)" }
+      ],
+      "rbm": "RBM's UpdateHumanStats postfix only resets the shield missile size; speed fields are only multiplied by stamina (AgentStats.cs:314). Perk kept."
+    },
+    {
+      "id": "OneHandedTrainer",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+2 hit points.",
+      "conditions": "Applied when the agent spawns (BaseHealthLimit from MaxHitPoints() while Mission.Current is set).",
+      "sites": [
+        { "method": "DefaultCharacterStatsModel.MaxHitpoints", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultCharacterStatsModel.cs:30", "reachesTroop": true, "why": "AddPerkBonusForCharacter(BattleEnvironment.Any) on the troop; Agent.Character setter sets BaseHealthLimit = MaxHitPoints() (Agent.cs:1438), and InitializeAgentStats' non-hero branch builds HealthLimit from it (SandboxAgentStatCalculateModel.cs:53)" },
+        { "method": "DefaultCombatXpModel.GetBattleXpBonusFromPerks", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultCombatXpModel.cs:89", "reachesTroop": false, "why": "party-leader XP half" },
+        { "method": "PerkActivationHandlerCampaignBehavior", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.CampaignBehaviors/PerkActivationHandlerCampaignBehavior.cs:20", "reachesTroop": false, "why": "hero HP refresh on perk unlock" }
+      ],
+      "rbm": "None; RBM does not patch max health."
+    },
+    {
+      "id": "OneHandedDuelist",
+      "skill": "OneHanded",
+      "personalHalf": "both",
+      "verdict": "partial",
+      "confidence": "high",
+      "summary": "+20% damage with one-handed melee weapons while the off hand is empty; the other half (double tournament renown) is hero-only.",
+      "conditions": "One-handed melee attack with nothing in the off hand. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:62", "reachesTroop": true, "why": "attacker's own CharacterObject, OffHandItem.IsEmpty" },
+        { "method": "DefaultTournamentModel.GetRenownReward", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultTournamentModel.cs:62", "reachesTroop": false, "why": "Hero winner only" },
+        { "method": "RBMTournament prizes", "file": "RBMTournament/Tournament/RBMTournament.Prizes.cs:126", "reachesTroop": false, "why": "Hero winner only" }
+      ],
+      "rbm": "None for the damage half."
+    },
+    {
+      "id": "OneHandedShieldWall",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "-20% damage to the troop's shield when it blocks from the wrong side; with RBM posture on, the same block also costs 20% less posture.",
+      "conditions": "Shield block on the incorrect side. Posture part needs rbmAiEnabled + postureEnabled. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:423", "reachesTroop": true, "why": "victim's own CharacterObject; a block's InflictedDamage is the shield damage and still passes CalculateDamage" },
+        { "method": "MeleeBlowPatch.ComputeDefenderBlockPerkFactors", "file": "RealisticBattleAiModule/AiModule/Stance/MeleeBlowPatch.Math.cs:412", "reachesTroop": true, "why": "RBM posture on incorrect shield blocks" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1106", "reachesTroop": false, "why": "captain half (missile catch area); also overwritten by RBM" }
+      ],
+      "rbm": "RBM's shield-damage rewrite (OverrideDamageCalcShield) still feeds Mission.GetAttackCollisionResults -> CalculateDamage, so the reduction applies. RBM adds a posture equivalent."
+    },
+    {
+      "id": "OneHandedArrowCatcher",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "rbm-bypassed",
+      "confidence": "high",
+      "summary": "Nothing under RBM: the bigger shield catch area against missiles is overwritten, because RBM sets the catch size to a fixed 0.01 for everyone.",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1110", "reachesTroop": true, "why": "own CharacterObject -> AttributeShieldMissileCollisionBodySizeAdder (+0.01) while a shield is wielded" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1108", "reachesTroop": false, "why": "captain half" },
+        { "method": "DamageRework.SandboxAgentUpdateHumanStats.Postfix", "file": "RealisticBattleCombatModule/CombatModule/Damage/DamageRework.HitReaction.cs:26", "reachesTroop": false, "why": "RBM assigns AttributeShieldMissileCollisionBodySizeAdder = 0.01f after the whole stat build" }
+      ],
+      "rbm": "Bypass map #10: overwritten by design (rbmCombatEnabled). With RBM Combat off, vanilla would work."
+    },
+    {
+      "id": "OneHandedMilitaryTradition",
+      "skill": "OneHanded",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for a troop: party-leader daily infantry XP and governor garrison-wage halves only.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultPartyTrainingModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyTrainingModel.cs:52", "reachesTroop": false, "why": "MobileParty.HasPerk (hero), campaign map" },
+        { "method": "DefaultPartyWageModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyWageModel.cs:137", "reachesTroop": false, "why": "governor" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "OneHandedCorpsACorps",
+      "skill": "OneHanded",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for a troop: party-leader post-battle infantry XP and governor garrison-limit halves only.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultCombatXpModel.GetBattleXpBonusFromPerks", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultCombatXpModel.cs:98", "reachesTroop": false, "why": "party perk (hero)" },
+        { "method": "DefaultPartySizeLimitModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartySizeLimitModel.cs:220", "reachesTroop": false, "why": "governor" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "OneHandedStandUnited",
+      "skill": "OneHanded",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for a troop: party-leader starting-morale (when outnumbered) and governor security halves only.",
+      "conditions": "",
+      "sites": [
+        { "method": "SandboxBattleMoraleModel.GetEffectiveInitialMorale", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:274", "reachesTroop": false, "why": "AddPerkBonusForParty (party leader hero)" },
+        { "method": "DefaultSettlementSecurityModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultSettlementSecurityModel.cs:205", "reachesTroop": false, "why": "governor" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "OneHandedLeadByExample",
+      "skill": "OneHanded",
+      "personalHalf": null,
+      "verdict": "no-personal-effect",
+      "confidence": "high",
+      "summary": "Nothing for a troop: both halves (post-battle XP, starting morale) are party-leader effects.",
+      "conditions": "",
+      "sites": [
+        { "method": "DefaultCombatXpModel.GetBattleXpBonusFromPerks", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultCombatXpModel.cs:100", "reachesTroop": false, "why": "party perk (hero)" },
+        { "method": "SandboxBattleMoraleModel.GetEffectiveInitialMorale", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxBattleMoraleModel.cs:294", "reachesTroop": false, "why": "AddPerkBonusForParty (hero)" }
+      ],
+      "rbm": ""
+    },
+    {
+      "id": "OneHandedSteelCoreShields",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "-10% damage to the troop's shield; with RBM posture on, shield blocks also cost 10% less posture.",
+      "conditions": "Hits blocked by the shield (RBM turns hits on a back-slung shield into blocks too). Posture part needs rbmAiEnabled + postureEnabled. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:416", "reachesTroop": true, "why": "victim's own CharacterObject on shield blocks / back-shield hits" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:419", "reachesTroop": false, "why": "captain half" },
+        { "method": "MeleeBlowPatch.ComputeDefenderBlockPerkFactors", "file": "RealisticBattleAiModule/AiModule/Stance/MeleeBlowPatch.Math.cs:406", "reachesTroop": true, "why": "RBM posture on shield blocks" }
+      ],
+      "rbm": "Shield damage is RBM's (OverrideDamageCalcShield) but still passes CalculateDamage, so the reduction applies; RBM adds a posture equivalent."
+    },
+    {
+      "id": "OneHandedFleetOfFoot",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+4% combat movement speed (the speed cap while in combat, weapon out), with any weapon.",
+      "conditions": "Halved at sea (NavalReduced).",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:940", "reachesTroop": true, "why": "own CharacterObject -> CombatMaxSpeedMultiplier (assigned at :1207), unconditional" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1132", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "RBM never reassigns CombatMaxSpeedMultiplier."
+    },
+    {
+      "id": "OneHandedDeadlyPurpose",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+5% damage with one-handed melee weapons.",
+      "conditions": "One-handed melee attack. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:55", "reachesTroop": true, "why": "attacker's own CharacterObject" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:154", "reachesTroop": false, "why": "captain half" }
+      ],
+      "rbm": "None."
+    },
+    {
+      "id": "OneHandedUnwaveringDefense",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+5 hit points.",
+      "conditions": "Applied at agent spawn.",
+      "sites": [
+        { "method": "DefaultCharacterStatsModel.MaxHitpoints", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultCharacterStatsModel.cs:35", "reachesTroop": true, "why": "AddPerkBonusForCharacter(BattleEnvironment.Any) on the troop -> BaseHealthLimit at spawn" },
+        { "method": "SandboxAgentStatCalculateModel.GetEffectiveMaxHealth", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:558", "reachesTroop": false, "why": "party-leader half (+10 HP to infantry), AddPerkBonusForParty" },
+        { "method": "SimulationTroopHitPoints (auto-resolve)", "file": "RBMCampaign/Simulation/SimulationTroopHitPoints.cs:315", "reachesTroop": false, "why": "party half, auto-resolve" }
+      ],
+      "rbm": "None."
+    },
+    {
+      "id": "OneHandedPrestige",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "+50% damage to shields when hitting a shield with a one-handed melee weapon.",
+      "conditions": "One-handed melee hit that is blocked by a shield or lands on a back-slung shield. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:70", "reachesTroop": true, "why": "attacker's own CharacterObject when AttackBlockedWithShield || CollidedWithShieldOnBack; scales the shield damage" },
+        { "method": "DefaultPartySizeLimitModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartySizeLimitModel.cs:289", "reachesTroop": false, "why": "party-leader half (+15 party size)" },
+        { "method": "PerkActivationHandlerCampaignBehavior", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.CampaignBehaviors/PerkActivationHandlerCampaignBehavior.cs:68", "reachesTroop": false, "why": "main-hero party refresh" }
+      ],
+      "rbm": "RBM's shield damage still passes CalculateDamage, so the bonus applies."
+    },
+    {
+      "id": "OneHandedChinkInTheArmor",
+      "skill": "OneHanded",
+      "personalHalf": "primary",
+      "verdict": "works",
+      "confidence": "high",
+      "summary": "Ignores 10% of the target's armor on hits with one-handed weapons (and shield bashes); not with two-handed weapons or polearms, though the description says melee attacks.",
+      "conditions": "Weapon's relevant skill is One Handed (one-handed swords/axes/maces/daggers and shields); target has armor > 0. Halved at sea.",
+      "sites": [
+        { "method": "SandboxStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxStrikeMagnitudeModel.cs:256", "reachesTroop": true, "why": "attacker's own CharacterObject; armor - 10%" },
+        { "method": "NavalStrikeMagnitudeModel.CalculateAdjustedArmorForBlow", "file": "decompiled/NavalDLC/NavalDLC.GameComponents/NavalStrikeMagnitudeModel.cs:91", "reachesTroop": true, "why": "War Sails wrapper recomputes the same reduction from baseArmor (not doubled)" },
+        { "method": "DamageRework.OverrideDamageCalc.Prefix", "file": "RealisticBattleCombatModule/CombatModule/Damage/DamageRework.Core.cs:205", "reachesTroop": true, "why": "RBM calls CalculateAdjustedArmorForBlow and keeps the ratio for face / under-shoulder armor (:311, :333)" },
+        { "method": "DefaultPartyWageModel", "file": "decompiled/TaleWorlds.CampaignSystem/TaleWorlds.CampaignSystem.GameComponents/DefaultPartyWageModel.cs:261", "reachesTroop": false, "why": "party-leader half (infantry recruit cost)" },
+        { "method": "RecruitSupply (campaign)", "file": "RBMCampaign/Economy/RecruitSupply.cs:296", "reachesTroop": false, "why": "hero buyer, campaign" }
+      ],
+      "rbm": "Bypass map #1: kept and re-applied to RBM's rebuilt face/under-shoulder armor."
+    },
+    {
+      "id": "OneHandedWayOfTheSword",
+      "skill": "OneHanded",
+      "personalHalf": "both",
+      "verdict": "conditional",
+      "confidence": "high",
+      "summary": "Per One Handed point above 250: +0.2% one-handed attack speed and +0.5% one-handed damage. No vanilla troop has more than 240 One Handed, so it does nothing unless the troop's skill is raised above 250.",
+      "conditions": "Troop's own One Handed skill (raw GetSkillValue, no captain/party bonus) above 250; one-handed melee weapon. Halved at sea.",
+      "sites": [
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:966", "reachesTroop": true, "why": "AddEpicPerkBonusForCharacter on own character -> SwingSpeedMultiplier (and :967 ThrustOrRangedReadySpeedMultiplier), skill > 250" },
+        { "method": "SandboxAgentApplyDamageModel.ApplyDamageAmplifications", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:73", "reachesTroop": true, "why": "secondary (Personal) half: damage per point above 250" }
+      ],
+      "rbm": "None; stamina scaling is multiplicative."
+    }
+  ]
+}
