@@ -463,6 +463,528 @@
 		</Production>
 
 		<Production
+			conversion_speed="0.12">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="12"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.08">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="12"/>
+				<Input
+					input_item="wool" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>		
+		<Production
+			conversion_speed="0.12">
+			<Inputs>
+				<Input
+					input_item="ironIngot3"
+					input_count="14"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.08">
+			<Inputs>
+				<Input
+					input_item="ironIngot3"
+					input_count="14"/>
+				<Input
+					input_item="wool" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.12">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="9"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.08">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="9"/>
+				<Input
+					input_item="wool" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>		
+		<Production
+			conversion_speed="0.12">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="12"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.08">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="12"/>
+				<Input
+					input_item="wool" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>		
+		<Production
+			conversion_speed="0.12">
+			<Inputs>
+				<Input
+					input_item="ironIngot3"
+					input_count="14"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.08">
+			<Inputs>
+				<Input
+					input_item="ironIngot3"
+					input_count="14"/>
+				<Input
+					input_item="wool" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.12">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="9"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.08">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="9"/>
+				<Input
+					input_item="wool" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.heavy_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>
+		
+	<!--< mail and plate tier 5-6 >-->			
+		<Production
+			conversion_speed="0.06">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="20"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ultra_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.04">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="20"/>
+				<Input
+					input_item="wool" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ultra_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.06">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="20"/>
+				<Input
+					input_item="felt" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ultra_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.04">
+			<Inputs>
+				<Input
+					input_item="ironIngot4"
+					input_count="20"/>
+				<Input
+					input_item="wool" 
+					input_count="1"/>
+				<Input
+					input_item="leather" 
+					input_count="1"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.ultra_armor" 
+					output_count="4"/>
+			</Outputs>
+		</Production>
+
+	<!--< Mail and Scale frontal horse armour (T4?) >-->			
+		<Production
+			conversion_speed="0.2">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="felt" 
+					input_count ="1"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count ="15"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_4" 
+					output_count="2"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.13">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="wool" 
+					input_count ="1"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count ="15"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_4" 
+					output_count="2"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.2">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="felt" 
+					input_count ="1"/>
+				<Input
+					input_item="ironIngot4" 
+					input_count ="7"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_4" 
+					output_count="2"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.13">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="wool" 
+					input_count ="1"/>
+				<Input
+					input_item="ironIngot4" 
+					input_count ="7"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_4" 
+					output_count="2"/>
+			</Outputs>
+		</Production>
+	<!--< Full Mail and Scale horse armour (T5-6?) >-->			
+		<Production
+			conversion_speed="0.1">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="felt" 
+					input_count ="1"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count ="40"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.066">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="wool" 
+					input_count ="1"/>
+				<Input
+					input_item="ironIngot3" 
+					input_count ="40"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="1">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="felt" 
+					input_count ="1"/>
+				<Input
+					input_item="ironIngot4" 
+					input_count ="19"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
+			</Outputs>
+		</Production>
+		<Production
+			conversion_speed="0.066">
+			<Inputs>
+				<Input
+					input_item="planks" 
+					input_count ="1"/>
+				<Input
+					input_item="leather" 
+					input_count ="1"/>
+				<Input
+					input_item="hides" 
+					input_count ="1"/>
+				<Input
+					input_item="linen" 
+					input_count ="1"/>
+				<Input
+					input_item="wool" 
+					input_count ="1"/>
+				<Input
+					input_item="ironIngot4" 
+					input_count ="19"/>
+			</Inputs>
+			<Outputs>
+				<Output
+					output="ItemCategory.horse_equipment_5" 
+					output_count="2"/>
+			</Outputs>
+		</Production>
+
+		<Production
 			conversion_speed="1">
 			<Inputs>
 				<Input
