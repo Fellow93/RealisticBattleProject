@@ -1,0 +1,1801 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RBM Crafting Editor</title>
+<style>
+:root {
+  --bg: #f6f6f4;
+  --panel: #ffffff;
+  --panel-2: #f0f0ec;
+  --border: #d9d9d2;
+  --text: #1d1d1b;
+  --muted: #6b6b64;
+  --faint: #9a9a92;
+  --accent: #2f6f9f;
+  --accent-bg: #e3eef7;
+  --ok: #2d7a3e;
+  --ok-bg: #e2f2e5;
+  --warn: #9a5b00;
+  --warn-bg: #fbefd9;
+  --bad: #a3322b;
+  --bad-bg: #f8e1df;
+  --sel: #dbe9f5;
+  --chg: #fff3c4;
+  --shadow: 0 1px 2px rgba(0,0,0,.06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17181a;
+    --panel: #202225;
+    --panel-2: #292b2f;
+    --border: #3a3d42;
+    --text: #e6e6e3;
+    --muted: #a3a39c;
+    --faint: #75756f;
+    --accent: #79b4e3;
+    --accent-bg: #1f3446;
+    --ok: #7fcf8e;
+    --ok-bg: #1d3524;
+    --warn: #e8b260;
+    --warn-bg: #3d2f17;
+    --bad: #ef8a83;
+    --bad-bg: #44211f;
+    --sel: #263c50;
+    --chg: #4a3f17;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 13px/1.4 "Segoe UI", system-ui, -apple-system, sans-serif;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button {
+  background: var(--panel-2); border: 1px solid var(--border); border-radius: 5px;
+  padding: 4px 10px; cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button:disabled { opacity: .5; cursor: default; border-color: var(--border); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) { button.primary { color: #10202c; } }
+button.small { padding: 1px 7px; font-size: 12px; }
+button.link { background: none; border: none; padding: 0; color: var(--accent); cursor: pointer; }
+button.link:hover { text-decoration: underline; }
+input[type=search], input[type=text], input[type=number], select, textarea {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 4px 7px;
+}
+textarea { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12px; width: 100%; }
+code, .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12px; }
+header {
+  display: flex; align-items: center; gap: 12px; padding: 8px 14px;
+  background: var(--panel); border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+header h1 { font-size: 15px; margin: 0; font-weight: 600; }
+header .meta { color: var(--muted); font-size: 12px; }
+header .spacer { flex: 1; }
+header label { display: inline-flex; gap: 4px; align-items: center; font-size: 12px; color: var(--muted); }
+header input[type=number] { width: 64px; padding: 2px 5px; }
+#modified { font-size: 12px; padding: 2px 8px; border-radius: 10px; }
+#modified.on { background: var(--warn-bg); color: var(--warn); }
+#modified.off { background: var(--ok-bg); color: var(--ok); }
+main {
+  flex: 1; min-height: 0; display: grid; gap: 10px; padding: 10px;
+  grid-template-columns: minmax(280px, .75fr) minmax(430px, 1.2fr) minmax(470px, 1.55fr);
+}
+@media (max-width: 1250px) {
+  main { grid-template-columns: 1fr; overflow-y: auto; }
+  main > .pane { height: 80vh; }
+}
+.pane {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  display: flex; flex-direction: column; min-height: 0; min-width: 0; box-shadow: var(--shadow);
+}
+.pane > .head { padding: 8px 10px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+.pane > .head h2 { font-size: 13px; margin: 0; font-weight: 600; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pane > .head h2 .sp { flex: 1; }
+.pane > .body { overflow-y: auto; flex: 1; min-height: 0; }
+.filters { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.filters select { max-width: 150px; }
+.filters label { display: inline-flex; align-items: center; gap: 3px; color: var(--muted); font-size: 12px; }
+.count { color: var(--muted); font-weight: 400; font-size: 12px; }
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.seg button { border: none; border-radius: 0; padding: 3px 10px; }
+.seg button.on { background: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) { .seg button.on { color: #10202c; } }
+.item-row {
+  display: grid; grid-template-columns: 18px 1fr auto; gap: 6px; align-items: center;
+  padding: 5px 10px; border-bottom: 1px solid var(--panel-2); cursor: pointer; user-select: none;
+}
+.item-row:hover { background: var(--panel-2); }
+.item-row.sel { background: var(--sel); }
+.item-row.ticked { box-shadow: inset 3px 0 0 var(--accent); }
+.item-row .nm { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item-row .sub { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item-row .st { color: var(--muted); font-size: 11px; text-align: right; white-space: nowrap; }
+.badge {
+  display: inline-block; font-size: 11px; padding: 0 6px; border-radius: 9px; line-height: 17px;
+  background: var(--panel-2); color: var(--muted); border: 1px solid var(--border); white-space: nowrap;
+}
+.badge.acc { background: var(--accent-bg); color: var(--accent); border-color: transparent; font-weight: 600; }
+.badge.zero { opacity: .45; }
+.badge.bad { background: var(--bad-bg); color: var(--bad); border-color: transparent; }
+.badge.warn { background: var(--warn-bg); color: var(--warn); border-color: transparent; }
+.badge.ok { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+button.badge { cursor: pointer; font: inherit; font-size: 11px; }
+.details { padding: 10px 12px; }
+.details h3 { margin: 0 0 2px; font-size: 16px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.details h4 { margin: 14px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted);
+  display: flex; gap: 8px; align-items: center; }
+.details h4 .sp { flex: 1; }
+.details h4 .lc { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 12px; }
+.kv .k { color: var(--muted); }
+.note { font-size: 12px; padding: 5px 8px; border-radius: 6px; margin: 6px 0 0; }
+.note.warn { background: var(--warn-bg); color: var(--warn); }
+.note.bad { background: var(--bad-bg); color: var(--bad); }
+.note.info { background: var(--accent-bg); color: var(--accent); }
+.empty { color: var(--muted); padding: 14px 12px; }
+.hint { color: var(--muted); font-size: 12px; }
+.bulk { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12px; }
+.bulk input[type=text] { width: 80px; }
+.bulk select { max-width: 170px; }
+#problems { display: none; padding: 6px 14px; background: var(--bad-bg); color: var(--bad); font-size: 12px; border-bottom: 1px solid var(--border);
+  max-height: 30vh; overflow-y: auto; }
+#problems.show { display: block; }
+#problems .row { padding: 1px 0; }
+#problems .row.warn { color: var(--warn); }
+#warnings { display: none; padding: 6px 14px; background: var(--warn-bg); color: var(--warn); font-size: 12px; border-bottom: 1px solid var(--border);
+  max-height: 40vh; overflow-y: auto; }
+#warnings.show { display: block; }
+#warnings .sec { font-weight: 600; margin: 4px 0 2px; }
+#warnings .sec:first-child { margin-top: 0; }
+#warnings .row { padding: 1px 0; }
+#banner { display: none; padding: 6px 14px; background: var(--warn-bg); color: var(--warn); font-size: 12px; border-bottom: 1px solid var(--border); }
+#banner.show { display: flex; gap: 10px; align-items: center; }
+/* fields */
+.fields { display: grid; grid-template-columns: minmax(110px, 190px) 1fr; gap: 3px 10px; align-items: center; font-size: 12px; }
+.fields .lbl { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fields .lbl.chg { color: var(--text); background: var(--chg); border-radius: 4px; padding: 0 4px; }
+.fields .ctl { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; min-width: 0; }
+.fields input[type=text] { padding: 1px 5px; width: 100%; max-width: 360px; min-width: 60px; }
+.fields input.num { width: 90px; text-align: right; }
+.fields select { padding: 1px 4px; max-width: 220px; }
+.fields .chg input, .fields .chg select, input.chg, select.chg { background: var(--chg); }
+.van { color: var(--faint); font-size: 11px; white-space: nowrap; }
+.van.diff { color: var(--warn); }
+.chk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr)); gap: 1px 8px; font-size: 12px; }
+.chk-grid label { display: flex; gap: 4px; align-items: center; padding: 1px 3px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chk-grid label.chg { background: var(--chg); }
+.chk-grid label.off { color: var(--faint); }
+.chk-grid .vh { color: var(--warn); font-size: 10px; }
+.box { border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-top: 8px; }
+.box.absent { border-style: dashed; }
+.box > .bh { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; font-weight: 600; font-size: 12px; flex-wrap: wrap; }
+.box > .bh .sp { flex: 1; }
+.box .sub { border-left: 2px solid var(--panel-2); padding-left: 8px; margin-top: 6px; }
+details.all { margin-top: 6px; font-size: 12px; }
+details.all summary { cursor: pointer; color: var(--muted); }
+.addrow { display: flex; gap: 6px; align-items: center; margin-top: 4px; flex-wrap: wrap; font-size: 12px; }
+.addrow select { max-width: 200px; padding: 1px 4px; }
+.addrow input { width: 140px; padding: 1px 5px; }
+table.lst { border-collapse: collapse; font-size: 12px; margin-top: 2px; }
+table.lst td, table.lst th { padding: 1px 6px 1px 0; text-align: left; white-space: nowrap; }
+table.lst th { color: var(--muted); font-weight: 500; }
+table.lst tr.chg td { background: var(--chg); }
+table.lst input { padding: 0 4px; width: 90px; }
+table.lst select { padding: 0 3px; }
+.chips { display: flex; flex-wrap: wrap; gap: 3px; margin: 2px 0 4px; }
+.chip { display: inline-flex; gap: 3px; align-items: center; font-size: 11px; padding: 0 3px 0 6px; border-radius: 9px; border: 1px solid var(--border);
+  background: var(--panel-2); white-space: nowrap; }
+.chip.chg { background: var(--chg); }
+.chip.add { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+.chip.inh { color: var(--faint); border-style: dashed; padding-right: 6px; }
+.chip button { border: none; background: none; padding: 0 2px; color: var(--muted); cursor: pointer; font-size: 11px; }
+.chip .mono { font-size: 11px; }
+pre.xml { margin: 0; padding: 8px; background: var(--panel-2); border-radius: 6px; font-size: 11px; overflow: auto; max-height: 360px; white-space: pre; }
+pre.xml .chg { background: var(--chg); display: inline-block; min-width: 100%; }
+/* tables (compare, calculator) */
+.cmp-table { overflow: auto; flex: 1; min-height: 0; }
+.cmp-table table, table.calc { border-collapse: collapse; width: 100%; font-size: 12px; }
+.cmp-table th, table.calc th { position: sticky; top: 0; background: var(--panel-2); text-align: left; padding: 4px 6px; cursor: pointer; white-space: nowrap; font-weight: 600; z-index: 1; }
+.cmp-table th.num, .cmp-table td.num, table.calc th.num, table.calc td.num { text-align: right; }
+.cmp-table td, table.calc td { padding: 3px 6px; border-bottom: 1px solid var(--panel-2); white-space: nowrap; vertical-align: top; }
+.cmp-table tr.it, table.calc tr.it { cursor: pointer; }
+.cmp-table tr.it:hover, table.calc tr.it:hover { background: var(--sel); }
+.cmp-table tr.cur, table.calc tr.cur { background: var(--accent-bg); }
+.cmp-table td.chg, table.calc td.chg { background: var(--chg); }
+.cmp-table td.ed { cursor: text; }
+.cmp-table td input { width: 70px; padding: 0 3px; text-align: right; }
+.cmp-table td .id, table.calc td .id { color: var(--faint); }
+.cmp-table td .was { color: var(--faint); font-size: 10px; margin-left: 3px; }
+table.calc td .f { color: var(--faint); font-size: 10px; display: block; line-height: 1.15; }
+table.calc td .v { color: var(--faint); font-size: 10px; display: block; line-height: 1.15; }
+table.calc td .v.diff { color: var(--warn); }
+table.calc td.bad { color: var(--bad); white-space: normal; }
+table.calc.wide td, table.calc.wide th { position: static; }
+.calc-detail { border-top: 1px solid var(--border); padding: 8px 10px; max-height: 50%; overflow: auto; flex: 0 0 auto; }
+.calc-detail h5 { margin: 6px 0 4px; font-size: 12px; }
+.dmg { display: grid; grid-template-columns: repeat(12, auto); gap: 0 8px; font-size: 11px; font-variant-numeric: tabular-nums; justify-content: start; }
+.dmg span.h { color: var(--muted); }
+.dmg span.chg { background: var(--chg); }
+.approx { color: var(--warn); cursor: help; }
+.right-tools { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12px; }
+.right-tools label { display: inline-flex; gap: 4px; align-items: center; color: var(--muted); }
+.right-tools input[type=number] { width: 60px; padding: 1px 4px; }
+.sandbox { padding: 8px 10px; overflow: auto; flex: 1; min-height: 0; }
+.sandbox .fields { margin-bottom: 8px; }
+/* modals */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 10; }
+.modal-bg.show { display: flex; }
+.modal {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px; width: min(1000px, 96vw);
+  max-height: 92vh; display: flex; flex-direction: column; padding: 14px; gap: 10px;
+}
+.modal h2 { margin: 0; font-size: 15px; }
+.modal textarea { flex: 1; min-height: 260px; resize: vertical; }
+.modal .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.msgs { font-size: 12px; max-height: 200px; overflow-y: auto; }
+.msgs div { padding: 1px 0; }
+.msgs .bad { color: var(--bad); }
+.msgs .warn { color: var(--warn); }
+.msgs .ok { color: var(--ok); }
+.msgs ul { margin: 2px 0 4px; padding-left: 18px; color: var(--muted); }
+#nodata { max-width: 720px; margin: 60px auto; padding: 24px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; }
+#nodata pre { background: var(--panel-2); padding: 10px; border-radius: 6px; overflow-x: auto; }
+.toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg);
+  padding: 6px 14px; border-radius: 6px; font-size: 12px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; }
+.toast.show { opacity: .92; }
+</style>
+</head>
+<body>
+<script src="crafting-data.js"></script>
+<script src="../TroopLoadoutEditor/troop-loadout-core.js"></script>
+<script src="crafting-editor-core.js"></script>
+
+<div id="nodata" style="display:none">
+  <h2>No data file</h2>
+  <p><code>crafting-data.js</code> was not found next to this page. It is generated from your game install and the
+  decompiled sources (it is not committed). From the repository root run:</p>
+  <pre>powershell -ExecutionPolicy Bypass -File tools\CraftingEditor\Build-CraftingData.ps1</pre>
+  <p>then reload this page. The page also needs <code>../TroopLoadoutEditor/troop-loadout-core.js</code> (shared XML
+  text helpers), which is in the repository.</p>
+  <p id="nodataWhat" class="hint"></p>
+</div>
+
+<header id="hdr" style="display:none">
+  <h1>RBM Crafting Editor</h1>
+  <span class="meta" id="meta"></span>
+  <span id="modified" class="off">nothing edited</span>
+  <button id="btnWarnings" class="badge warn" style="display:none" title="Warnings about the data as a whole. Click to list them."></button>
+  <span class="spacer"></span>
+  <label title="Weapon skill of the character RBM's tooltip numbers (speeds in m/s, sweet spot, damage vs armor) are computed for">Skill <input type="number" id="optSkill" min="0" max="400" step="10" value="100"></label>
+  <label title="Damage at this armor value in the crafted-item tables (RBM's tooltip table, armor 0..100)">Armor <input type="number" id="optArmor" min="0" max="100" step="10" value="30"></label>
+  <label title="Off: the vanilla column is the plain game (vanilla pieces, templates, weapon descriptions and formulas). On: vanilla data with RBM's formulas (thrust magnitude, tier, price, tooltip numbers), to see only what RBM's crafting files change."><input type="checkbox" id="optVanRbm">vanilla with RBM formulas</label>
+  <button id="btnReset" title="Discard the work in progress and go back to the files as they were when the data file was generated">Reset to file</button>
+  <button id="btnProblems" class="badge bad" style="display:none" title="Problems in the edited and new entries. Click to list them."></button>
+  <button id="btnExport" class="primary">Export…</button>
+</header>
+<div id="warnings"></div>
+<div id="problems"></div>
+<div id="banner"></div>
+
+<main id="app" style="display:none">
+  <section class="pane" id="listPane">
+    <div class="head">
+      <h2><span class="seg"><button id="kindPieces" class="on">Pieces</button><button id="kindTemplates">Templates</button></span>
+        <span class="count" id="listCount"></span></h2>
+      <input type="search" id="fSearch" placeholder="Search name or id…">
+      <div class="filters" id="pieceFilters">
+        <select id="fType"><option value="">All piece types</option></select>
+        <select id="fTemplate" title="Usable by this template (with your edits)"><option value="">Any template</option></select>
+        <select id="fCulture"><option value="">All cultures</option></select>
+        <select id="fTier"><option value="">All tiers</option></select>
+        <select id="fModule" title="The module that first defines the piece"><option value="">All modules</option></select>
+      </div>
+      <div class="filters">
+        <select id="fSource"><option value="">RBM file or not</option><option value="rbm">In an RBM file</option><option value="native">Not in an RBM file</option><option value="multi">In 2+ RBM definitions</option><option value="new">New entries</option></select>
+        <select id="fEdited"><option value="">Edited or not</option><option value="y">Edited</option><option value="n">Not edited</option></select>
+        <select id="fProb"><option value="">Problems or not</option><option value="any">Has problems</option><option value="bad">Has serious problems</option></select>
+        <label title="Pieces only defined in files not loaded in campaigns (multiplayer pieces)"><input type="checkbox" id="fNc">not in campaign</label>
+      </div>
+      <div class="bulk" id="bulkBar"></div>
+      <div id="bulkTools"></div>
+    </div>
+    <div class="body" id="list"></div>
+  </section>
+
+  <section class="pane" id="detailPane">
+    <div class="head"><h2>Selected <span class="sp"></span><span class="hint" id="detailHint"></span></h2></div>
+    <div class="body" id="details"><div class="empty">Select a piece or a template on the left.</div></div>
+  </section>
+
+  <section class="pane" id="rightPane">
+    <div class="head">
+      <h2><span class="seg"><button data-tab="compare" class="on">Compare</button><button data-tab="items">Crafted items</button><button data-tab="sandbox">Design sandbox</button></span>
+        <span class="count" id="rightCount"></span><span class="sp"></span>
+        <select id="cmpMode" title="Which entries the table lists">
+          <option value="type">Same type as the selected entry</option>
+          <option value="list">The filtered list</option>
+          <option value="ticked">Ticked entries</option>
+        </select>
+        <select id="itemScope" style="display:none" title="Which crafted items the table lists">
+          <option value="sel">Using the selected piece / template</option>
+          <option value="edited">Affected by any edit</option>
+          <option value="all">Every campaign crafted item</option>
+        </select>
+      </h2>
+      <div class="hint" id="rightHint"></div>
+    </div>
+    <div class="cmp-table" id="rightBody"></div>
+    <div class="calc-detail" id="calcDetail" style="display:none"></div>
+  </section>
+</main>
+
+<div class="modal-bg" id="exportModal">
+  <div class="modal">
+    <h2>Export</h2>
+    <div class="hint">Each file below is the full RBM crafting file with only the edited pieces and templates changed (or appended). Replace
+      the file in the repository with it (Download, Save, or Copy), then build: the build copies it into the RBM module (never copy it there
+      by hand). Re-run <code>Build-CraftingData.ps1</code> afterwards so the page starts from the new files.</div>
+    <div class="row" id="exportFiles"></div>
+    <div class="msgs" id="exportMsgs"></div>
+    <textarea id="exportText" readonly spellcheck="false"></textarea>
+    <div class="row">
+      <span id="exportButtons" style="display:flex;gap:8px">
+        <button id="btnDownload" class="primary">Download</button>
+        <button id="btnSave" title="Write the file straight to disk (pick the file in the repository)">Save to file…</button>
+        <button id="btnCopy">Copy to clipboard</button>
+      </span>
+      <span style="flex:1"></span>
+      <button data-close>Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="datalists" style="display:none"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+  var DATA = window.CRAFTING_EDITOR_DATA, C = window.CraftingEditorCore;
+  if (!DATA || !C || !window.TroopLoadoutCore) {
+    document.getElementById('nodata').style.display = 'block';
+    document.getElementById('nodataWhat').textContent = !DATA ? 'Missing: crafting-data.js.' :
+      'Missing: ../TroopLoadoutEditor/troop-loadout-core.js or crafting-editor-core.js.';
+    return;
+  }
+  document.getElementById('hdr').style.display = 'flex';
+  document.getElementById('app').style.display = 'grid';
+
+  var STORE_KEY = 'rbm-crafting-editor.v1';
+  var $ = function (id) { return document.getElementById(id); };
+  var PIECE = 'CraftingPiece', TPL = 'CraftingTemplate';
+
+  // ------------------------------------------------------------------ keys and models
+  // Key of an existing entry: "CraftingPiece|<id>" or "CraftingTemplate|<id>"; a new one (duplicate): "new:N".
+  var models = {}, targets = {}, news = [], newSeq = 1;
+  var selectedKey = null, checked = {}, lastClicked = null, listKind = PIECE;
+  function isNewKey(k) { return k.indexOf('new:') === 0; }
+  function newOf(k) { for (var i = 0; i < news.length; i++) if (news[i].key === k) return news[i]; return null; }
+  function kindOf(k) { return isNewKey(k) ? newOf(k).kind : k.slice(0, k.indexOf('|')); }
+  function idOf(k) { return isNewKey(k) ? newOf(k).model.attrs.id : k.slice(k.indexOf('|') + 1); }
+  function keyOf(kind, id) { return kind + '|' + id; }
+  function exists(k) {
+    if (isNewKey(k)) return !!newOf(k);
+    var kind = kindOf(k), id = idOf(k);
+    return kind === PIECE ? !!DATA.pieces[id] : !!DATA.templates[id];
+  }
+  var entCache = {};
+  function ent(k) { return entCache[k] || (entCache[k] = C.entityOf(DATA, kindOf(k), idOf(k))); }
+  // The existing entry a key edits, or for a new one its source.
+  function srcKey(k) { return isNewKey(k) ? keyOf(newOf(k).kind, newOf(k).from) : k; }
+  var origCache = {}, vanCache = {};
+  function orig(k) { return origCache[k] || (origCache[k] = C.parseModel(C.baseText(ent(k)).text)); }
+  function base(k) { return orig(srcKey(k)); }
+  // The vanilla definition (the last non-RBM one; for a template, after the vanilla XSLTs), null when there is none.
+  function van(k) {
+    if (isNewKey(k)) return null;
+    if (k in vanCache) return vanCache[k];
+    var e = ent(k), defs = kindOf(k) === PIECE ? e.defs.filter(function (d) { return !d.rbm; }) : (e.rec.vdefs || []);
+    vanCache[k] = defs.length ? C.modelOfDef(defs[defs.length - 1]) : null;
+    return vanCache[k];
+  }
+  function cur(k) { return isNewKey(k) ? newOf(k).model : (models[k] || orig(k)); }
+  function edit(k) {
+    touch(k);
+    if (isNewKey(k)) return newOf(k).model;
+    if (!models[k]) models[k] = C.cloneModel(orig(k));
+    return models[k];
+  }
+  function isEdited(k) { return isNewKey(k) || (!!models[k] && !C.sameModel(models[k], orig(k))); }
+  function editedKeys() { return Object.keys(models).filter(isEdited).concat(news.map(function (n) { return n.key; })); }
+  function targetOf(k) { return isNewKey(k) ? newOf(k).target : targets[k]; }
+  function inRbm(k) { return !isNewKey(k) && ent(k).rbmPaths.length > 0; }
+  function effTargets(k) {
+    if (inRbm(k)) return ent(k).rbmPaths.slice();
+    var t = targetOf(k);
+    if (t && t.length) return t;
+    if (isNewKey(k)) { var s = ent(srcKey(k)); if (s.rbmPaths.length) return [s.rbmPaths[s.rbmPaths.length - 1]]; }
+    return C.defaultTarget(DATA, kindOf(k), idOf(srcKey(k)), cur(k));
+  }
+  function displayName(m, k) {
+    var n = (m.attrs.name || '').replace(/^\{=[^}]*\}/, '');
+    if (m.kind === TPL) return m.attrs.id || idOf(k);
+    return n || m.attrs.id || k;
+  }
+
+  // ------------------------------------------------------------------ states and the calculator
+  var skill = 100, armorAt = 30, vanRbm = false;
+  var stFile, stVan, stCur, calcCache, cache = {};
+  function workOf() {
+    var ms = {};
+    Object.keys(models).forEach(function (k) { if (isEdited(k)) ms[k] = models[k]; });
+    return { models: ms, news: news.map(function (n) { return { kind: n.kind, id: n.model.attrs.id, model: n.model }; }) };
+  }
+  function rebuildStatic() {
+    stFile = C.createState(DATA, 'file', {}, { skill: skill });
+    stVan = C.createState(DATA, 'van', {}, { rbm: vanRbm, heal: false, skill: vanRbm ? skill : null });
+    calcCache = { file: {}, van: {}, cur: {} };
+    rebuildCur();
+  }
+  function rebuildCur() { stCur = C.createState(DATA, 'cur', workOf(), { skill: skill }); calcCache.cur = {}; }
+  function stateOf(name) { return name === 'cur' ? stCur : name === 'file' ? stFile : stVan; }
+  function calcItem(name, it) {
+    var c = calcCache[name];
+    if (!(it.id in c)) c[it.id] = stateOf(name).calcItem(it);
+    return c[it.id];
+  }
+  function touch(k) { delete cache[k]; }
+
+  // Crafted items: index by piece and template (the design as written and before RBM replaced the item).
+  var ITEMS = DATA.items, itemById = {}, itemsByPiece = {}, itemsByTpl = {};
+  ITEMS.forEach(function (it, i) {
+    itemById[it.id] = it;
+    [it.text, it.vanText].forEach(function (t) {
+      if (!t) return;
+      var d = C.parseCrafted(t);
+      Object.keys(d.pieces).forEach(function (pt) { var p = d.pieces[pt].id; var l = itemsByPiece[p] || (itemsByPiece[p] = []); if (l.indexOf(i) < 0) l.push(i); });
+      var l2 = itemsByTpl[d.template] || (itemsByTpl[d.template] = []); if (l2.indexOf(i) < 0) l2.push(i);
+    });
+  });
+  function itemsUsing(k) {
+    var id = idOf(k), list = kindOf(k) === PIECE ? (itemsByPiece[id] || []) : (itemsByTpl[id] || []);
+    return list.map(function (i) { return ITEMS[i]; });
+  }
+
+  // ------------------------------------------------------------------ work in progress (local storage)
+  (function restore() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return;
+      var s = JSON.parse(raw);
+      if (!s || typeof s !== 'object') return;
+      var n = 0, missed = 0, gone = 0;
+      Object.keys(s.edits || {}).forEach(function (k) {
+        if (!exists(k)) { gone++; return; }
+        var m = C.cloneModel(orig(k));
+        missed += C.applyOps(m, s.edits[k]);
+        models[k] = m;
+        if (isEdited(k)) n++; else delete models[k];
+      });
+      Object.keys(s.targets || {}).forEach(function (k) { if (exists(k) && Array.isArray(s.targets[k])) targets[k] = s.targets[k]; });
+      (s.news || []).forEach(function (x) {
+        if (!x || !exists(keyOf(x.kind, x.from))) { gone++; return; }
+        var m = C.cloneModel(orig(keyOf(x.kind, x.from)));
+        missed += C.applyOps(m, x.ops);
+        news.push({ key: x.key, kind: x.kind, from: x.from, model: m, target: Array.isArray(x.target) ? x.target : null });
+        n++;
+      });
+      newSeq = Math.max(+s.newSeq || 1, news.length + 1);
+      if (typeof s.skill === 'number') skill = s.skill;
+      if (typeof s.armor === 'number') armorAt = s.armor;
+      if (typeof s.vanRbm === 'boolean') vanRbm = s.vanRbm;
+      if (n || gone) {
+        var msg = 'Restored your unsaved work in progress (' + n + ' entr' + (n === 1 ? 'y' : 'ies') + ') from ' + (s.savedAt || 'an earlier session') + '.';
+        if (s.generated && s.generated !== DATA.generated) msg += ' The data file was regenerated since (' + s.generated + ' → ' + DATA.generated + '): your changes were re-applied to the new files.';
+        if (missed) msg += ' ' + missed + ' change(s) no longer fit (an element or entry is gone) and were dropped.';
+        if (gone) msg += ' ' + gone + ' entr' + (gone === 1 ? 'y no longer exists' : 'ies no longer exist') + ' and ' + (gone === 1 ? 'was' : 'were') + ' dropped.';
+        msg += ' Use “Reset to file” to start from the files again.';
+        showBanner(msg);
+      }
+    } catch (e) { /* storage unavailable: start from the files */ }
+  })();
+  function save() {
+    Object.keys(models).forEach(function (k) { if (!isEdited(k)) delete models[k]; });
+    Object.keys(targets).forEach(function (k) { if (!targets[k] || !targets[k].length) delete targets[k]; });
+    try {
+      var edits = {};
+      Object.keys(models).forEach(function (k) { edits[k] = C.diff(orig(k), models[k]); });
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        edits: edits, targets: targets, newSeq: newSeq, savedAt: new Date().toLocaleString(), generated: DATA.generated,
+        skill: skill, armor: armorAt, vanRbm: vanRbm,
+        news: news.map(function (x) { return { key: x.key, kind: x.kind, from: x.from, ops: C.diff(orig(keyOf(x.kind, x.from)), x.model), target: x.target }; })
+      }));
+    } catch (e) { /* ignore */ }
+    updateModified();
+  }
+  function changed() { rebuildCur(); cache = {}; save(); renderList(); renderDetailsKeepFocus(); renderRight(); }
+
+  // ------------------------------------------------------------------ helpers
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast._h); toast._h = setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+  function showBanner(text) {
+    var b = $('banner');
+    b.innerHTML = '<span>' + esc(text) + '</span><button class="small" id="bannerClose">Dismiss</button>';
+    b.classList.add('show');
+    $('bannerClose').onclick = function () { b.classList.remove('show'); };
+  }
+  function updateModified() {
+    var n = editedKeys().length, m = $('modified');
+    if (!n) { m.textContent = 'nothing edited'; m.className = 'off'; }
+    else { m.textContent = n + ' entr' + (n === 1 ? 'y' : 'ies') + ' edited or new (not exported)'; m.className = 'on'; }
+    updateProblems();
+  }
+  function kv(k, v) { return '<span class="k">' + esc(k) + '</span><span>' + esc(v) + '</span>'; }
+  function kvHtml(k, html) { return '<span class="k">' + esc(k) + '</span><span>' + html + '</span>'; }
+  function cssEsc(s) { return String(s).replace(/["\\]/g, '\\$&'); }
+  function fmt(n, d) { if (n == null || n === '' || typeof n !== 'number' || isNaN(n)) return n == null ? '' : String(n); var p = Math.pow(10, d == null ? 2 : d); return (Math.round(n * p) / p).toString(); }
+  function isNumStr(s) { return s != null && /^\s*[+-]?(\d+\.?\d*|\.\d+)\s*$/.test(s); }
+  function fileName(p) { return p.split('/').pop(); }
+  function pathStr(p) { return p.el + (p.s != null ? ':' + p.s : '') + (p.l != null ? ':' + p.l : '') + (p.k != null ? '\u0001' + p.k : ''); }
+  function parsePath(s) {
+    var i = s.indexOf(':'), el = i < 0 ? s : s.slice(0, i), rest = i < 0 ? '' : s.slice(i + 1);
+    if (el === 'sub') return { el: 'sub', s: rest };
+    if (el === 'list') return { el: 'list', l: rest };
+    if (el === 'item') { var j = rest.indexOf('\u0001'); return { el: 'item', l: rest.slice(0, j), k: rest.slice(j + 1) }; }
+    return { el: 'root' };
+  }
+  var CULTURE_NAMES = Object.keys(DATA.cultures || {}).sort(function (a, b) { return DATA.cultures[a].name < DATA.cultures[b].name ? -1 : 1; });
+  var MATS = C.cleanEnum(DATA.enums.CraftingMaterials || []).concat(['Charcoal']).filter(function (x, i, a) { return a.indexOf(x) === i; });
+
+  // ------------------------------------------------------------------ derived values (cached per key)
+  function effOf(k) {
+    if (kindOf(k) !== PIECE) return stCur.template(idOf(k));
+    var p = stCur.piece(idOf(k));
+    // A multiplayer-only piece does not exist in a campaign state: read its own definitions for the list and details.
+    if (!p && !isNewKey(k) && DATA.pieces[idOf(k)]) { p = C.effPiece(DATA.pieces[idOf(k)].defs.map(C.modelOfDef), DATA); p.id = idOf(k); }
+    return p;
+  }
+  function info(k) {
+    var c = cache[k];
+    if (c) return c;
+    c = cache[k] = { eff: effOf(k) };
+    return c;
+  }
+  function newIdCounts() {
+    var o = {};
+    news.forEach(function (n) { var x = keyOf(n.kind, n.model.attrs.id); o[x] = (o[x] || 0) + 1; });
+    return o;
+  }
+  var ALL_IDS = {};
+  Object.keys(DATA.pieces).forEach(function (id) { ALL_IDS[keyOf(PIECE, id)] = true; });
+  Object.keys(DATA.templates).forEach(function (id) { ALL_IDS[keyOf(TPL, id)] = true; });
+  function probsOf(k) {
+    var c = info(k);
+    if (c.probs) return c.probs;
+    var kind = kindOf(k), e = isNewKey(k) ? null : ent(k);
+    var vanTpl = kind === TPL && !isNewKey(k) ? stVanUsable(idOf(k)) : null;
+    var baseUsable = kind === TPL && base(k).lists.UsablePieces ? base(k).lists.UsablePieces.items.map(function (i) { return i.attrs.piece_id; }) : [];
+    c.probs = C.problems(DATA, cur(k), {
+      ent: e, isNew: isNewKey(k), edited: isEdited(k), targets: effTargets(k), allIds: ALL_IDS, newIds: newIdCounts(),
+      vanModel: van(k), eff: c.eff, pieceType: function (p) { var x = stCur.piece(p); return x && x.type; }, vanUsable: vanTpl, baseUsable: baseUsable
+    });
+    return c.probs;
+  }
+  var stVanPlain = null;
+  function stVanUsable(tid) { stVanPlain = stVanPlain || C.createState(DATA, 'van'); var t = stVanPlain.template(tid); return t ? t.usable : []; }
+  function seriousProbs(k) { return probsOf(k).filter(function (p) { return p.cls !== 'info'; }); }
+
+  // ------------------------------------------------------------------ datalists
+  (function buildDatalists() {
+    var h = [];
+    var dl = function (id, vals, label) {
+      h.push('<datalist id="' + id + '">' + vals.map(function (v) {
+        return '<option value="' + esc(v) + '"' + (label ? ' label="' + esc(label(v)) + '"' : '') + '></option>';
+      }).join('') + '</datalist>');
+    };
+    dl('dl-modgroup', DATA.modifierGroups || []);
+    dl('dl-desc', Object.keys(DATA.descriptions || {}));
+    dl('dl-holster', Object.keys(DATA.holsters || {}));
+    C.PIECE_TYPES.forEach(function (t) {
+      dl('dl-piece-' + t, Object.keys(DATA.pieces).filter(function (id) { return !DATA.pieces[id].nc && pieceTypeInFile(id) === t; }).sort(),
+        function (id) { var p = stFileSafe(id); return (p ? (p.name || '').replace(/^\{=[^}]*\}/, '') + ' · ' + (p.culture || '-') + ' · ' + fmt(p.length * 100, 1) + ' cm' : ''); });
+    });
+    $('datalists').innerHTML = h.join('');
+  })();
+  function pieceTypeInFile(id) { var p = stFileSafe(id); return p ? p.type : null; }
+  function stFileSafe(id) { if (!stFile) rebuildStatic(); return stFile.piece(id); }
+
+  // ------------------------------------------------------------------ list filters
+  function fillSelect(sel, values, label) {
+    values.forEach(function (v) { var o = document.createElement('option'); o.value = v; o.textContent = label ? label(v) : v; sel.appendChild(o); });
+  }
+  if (!stFile) rebuildStatic();
+  fillSelect($('fType'), C.PIECE_TYPES);
+  fillSelect($('fTemplate'), Object.keys(DATA.templates));
+  (function () {
+    var cs = {}, mods = {};
+    Object.keys(DATA.pieces).forEach(function (id) { var p = stFile.piece(id); if (p && p.culture) cs[p.culture] = 1; mods[DATA.pieces[id].defs[0].module] = 1; });
+    fillSelect($('fCulture'), Object.keys(cs).sort());
+    fillSelect($('fModule'), Object.keys(mods));
+  })();
+  fillSelect($('fTier'), ['1', '2', '3', '4', '5', '6'], function (v) { return 'Tier ' + v; });
+
+  function allKeys() {
+    var ids = listKind === PIECE ? Object.keys(DATA.pieces) : Object.keys(DATA.templates);
+    return ids.map(function (id) { return keyOf(listKind, id); }).concat(news.filter(function (n) { return n.kind === listKind; }).map(function (n) { return n.key; }));
+  }
+  var TYPE_ORDER = { Blade: 0, Guard: 1, Handle: 2, Pommel: 3 };
+  var sortCache = {};
+  function sortedKeys() {
+    var keys = allKeys(), sc = sortCache[listKind];
+    if (sc && sc.n === keys.length) return sc.keys;
+    var sk = {};
+    keys.forEach(function (k) {
+      if (listKind === TPL) { sk[k] = idOf(k).toLowerCase(); return; }
+      var p = info(k).eff;
+      sk[k] = (p ? TYPE_ORDER[p.type] : 9) + '|' + ((p && p.culture) || '~') + '|' + displayName(cur(k), k).toLowerCase();
+    });
+    keys.sort(function (a, b) { return sk[a] < sk[b] ? -1 : sk[a] > sk[b] ? 1 : 0; });
+    sortCache[listKind] = { n: keys.length, keys: keys };
+    return keys;
+  }
+  function filteredKeys() {
+    var q = $('fSearch').value.trim().toLowerCase();
+    var ft = $('fType').value, ftp = $('fTemplate').value, fc = $('fCulture').value, fti = $('fTier').value, fm = $('fModule').value;
+    var fs = $('fSource').value, fe = $('fEdited').value, fp = $('fProb').value, nc = $('fNc').checked;
+    var tplUsable = ftp && listKind === PIECE ? (stCur.template(ftp) || { usable: [] }).usable : null;
+    return sortedKeys().filter(function (k) {
+      if (!exists(k)) return false;
+      var isNew = isNewKey(k), m = cur(k), ed = isEdited(k), e = isNew ? null : ent(k);
+      if (listKind === PIECE && !nc && !isNew && DATA.pieces[idOf(k)].nc && !ed) return false;
+      if (q) {
+        var id = (m.attrs.id || '').toLowerCase(), nm = displayName(m, k).toLowerCase();
+        if (id.indexOf(q) < 0 && nm.indexOf(q) < 0) return false;
+      }
+      if (listKind === PIECE) {
+        var p = info(k).eff;
+        if (ft && (!p || p.type !== ft)) return false;
+        if (tplUsable && tplUsable.indexOf(idOf(k)) < 0) return false;
+        if (fc && (!p || p.culture !== fc)) return false;
+        if (fti && (!p || String(p.tier) !== fti)) return false;
+        if (fm && (isNew || e.defs[0].module !== fm)) return false;
+      }
+      if (fs === 'rbm' && !inRbm(k)) return false;
+      if (fs === 'native' && (inRbm(k) || isNew)) return false;
+      if (fs === 'multi' && !(e && e.rbmDefs.length > 1)) return false;
+      if (fs === 'new' && !isNew) return false;
+      if (fe === 'y' && !ed) return false;
+      if (fe === 'n' && ed) return false;
+      if (fp) {
+        var ps = seriousProbs(k);
+        if (fp === 'any' && !ps.length) return false;
+        if (fp === 'bad' && !ps.some(function (x) { return x.cls === 'bad'; })) return false;
+      }
+      return true;
+    });
+  }
+  function shortStat(k) {
+    var e = info(k).eff;
+    if (!e) return '';
+    if (kindOf(k) === TPL) return e.usable.length + ' pieces · ' + e.descs.length + ' usage' + (e.descs.length === 1 ? '' : 's');
+    var s = fmt(e.length * 100, 1) + ' cm · ' + fmt(e.weight, 3) + ' kg';
+    if (e.blade) s += ' · ' + (e.blade.swingType !== 'Invalid' ? 'sw ' + fmt(e.blade.swingFactor) : '') + (e.blade.thrustType !== 'Invalid' ? ' th ' + fmt(e.blade.thrustFactor) : '');
+    return s;
+  }
+  var MAX_ROWS = 2500;
+  function renderList() {
+    var keys = filteredKeys(), total = allKeys().length;
+    $('listCount').textContent = keys.length + ' / ' + total;
+    var html = [];
+    keys.slice(0, MAX_ROWS).forEach(function (k) {
+      var m = cur(k), ed = isEdited(k), isNew = isNewKey(k), e = isNew ? null : ent(k), p = info(k).eff;
+      var probs = ed ? seriousProbs(k) : [];
+      var sub = listKind === PIECE ? [m.attrs.id, p ? p.type : '?', (p && p.culture) || 'no culture'].join(' · ') : [m.attrs.item_type || '', (p && p.modifierGroup) || ''].join(' · ');
+      var probBadge = probs.length ? ' <span class="badge ' + (probs.some(function (x) { return x.cls === 'bad'; }) ? 'bad' : 'warn') +
+        '" title="' + esc(probs.map(function (x) { return x.text; }).join('\n')) + '">' + probs.length + '</span>' : '';
+      html.push('<div class="item-row' + (k === selectedKey ? ' sel' : '') + (checked[k] ? ' ticked' : '') + '" data-key="' + esc(k) + '">' +
+        '<input type="checkbox" class="chk" title="Tick for bulk changes"' + (checked[k] ? ' checked' : '') + '>' +
+        '<div style="min-width:0"><div class="nm">' + esc(displayName(m, k)) +
+        (isNew ? ' <span class="badge ok">new</span>' : ed ? ' <span class="badge warn">edited</span>' : '') +
+        (e && e.rbmPaths.length ? ' <span class="badge acc" title="' + esc(e.rbmPaths.join('\n')) + '">RBM' + (e.rbmDefs.length > 1 ? ' ×' + e.rbmDefs.length : '') + '</span>' : '') +
+        (listKind === PIECE && !isNew && DATA.pieces[idOf(k)].nc ? ' <span class="badge">not in campaign</span>' : '') + probBadge +
+        '</div><div class="sub">' + esc(sub) + '</div></div>' +
+        '<div class="st">' + (listKind === PIECE && p ? '<span class="badge">T' + esc(p.tier) + '</span><br>' : '') + esc(shortStat(k)) + '</div></div>');
+    });
+    if (keys.length > MAX_ROWS) html.push('<div class="empty">… ' + (keys.length - MAX_ROWS) + ' more: refine the search or filters.</div>');
+    $('list').innerHTML = html.join('') || '<div class="empty">Nothing matches.</div>';
+    renderBulk();
+  }
+  $('list').addEventListener('click', function (e) {
+    var row = e.target.closest('.item-row'); if (!row) return;
+    var k = row.getAttribute('data-key');
+    if (e.target.classList.contains('chk') || e.ctrlKey || e.metaKey || e.shiftKey) {
+      if (e.shiftKey && lastClicked) {
+        var keys = filteredKeys(), a = keys.indexOf(lastClicked), b = keys.indexOf(k);
+        if (a >= 0 && b >= 0) keys.slice(Math.min(a, b), Math.max(a, b) + 1).forEach(function (x) { checked[x] = true; });
+      } else if (e.target.classList.contains('chk')) {
+        if (e.target.checked) checked[k] = true; else delete checked[k];
+      } else { if (checked[k]) delete checked[k]; else checked[k] = true; }
+      lastClicked = k;
+      renderList(); if (tab === 'compare' && $('cmpMode').value === 'ticked') renderRight();
+      return;
+    }
+    lastClicked = k;
+    select(k);
+  });
+  function select(k, scroll) {
+    selectedKey = k;
+    if (k && kindOf(k) !== listKind) setKind(kindOf(k), true);
+    renderList(); renderDetails(); renderRight();
+    if (scroll) {
+      var row = $('list').querySelector('.item-row[data-key="' + cssEsc(k) + '"]');
+      if (row) row.scrollIntoView({ block: 'center' });
+    }
+  }
+  function setKind(kind, quiet) {
+    listKind = kind;
+    $('kindPieces').classList.toggle('on', kind === PIECE);
+    $('kindTemplates').classList.toggle('on', kind === TPL);
+    $('pieceFilters').style.display = kind === PIECE ? '' : 'none';
+    $('fNc').parentNode.style.display = kind === PIECE ? '' : 'none';
+    checked = {};
+    if (!quiet) { renderList(); renderRight(); }
+  }
+  $('kindPieces').onclick = function () { setKind(PIECE); };
+  $('kindTemplates').onclick = function () { setKind(TPL); };
+  ['fSearch', 'fType', 'fTemplate', 'fCulture', 'fTier', 'fModule', 'fSource', 'fEdited', 'fProb', 'fNc'].forEach(function (id) {
+    $(id).addEventListener(id === 'fSearch' ? 'input' : 'change', function () { renderList(); if (tab === 'compare' && $('cmpMode').value === 'list') renderRight(); });
+  });
+
+  // ------------------------------------------------------------------ bulk
+  function checkedKeys() { return Object.keys(checked).filter(exists); }
+  var BULK_PATHS = {
+    CraftingPiece: [['root', 'CraftingPiece'], ['sub:BladeData', 'BladeData'], ['sub:BladeData/Swing', 'BladeData / Swing'], ['sub:BladeData/Thrust', 'BladeData / Thrust'],
+      ['sub:BuildData', 'BuildData'], ['sub:StatContributions', 'StatContributions']],
+    CraftingTemplate: [['root', 'CraftingTemplate']]
+  };
+  function renderBulk() {
+    var ks = checkedKeys(), bar = $('bulkBar'), tools = $('bulkTools');
+    if (!ks.length) {
+      bar.innerHTML = '<span class="hint">Tick entries (or Ctrl/Shift+click) for bulk changes.</span> <button class="small link" id="bulkAll">Tick all shown</button>';
+      $('bulkAll').onclick = function () { filteredKeys().forEach(function (k) { checked[k] = true; }); renderList(); if (tab === 'compare' && $('cmpMode').value === 'ticked') renderRight(); };
+      tools.innerHTML = ''; tools.removeAttribute('data-kind');
+      return;
+    }
+    bar.innerHTML = '<span class="badge acc">' + ks.length + ' ticked</span>' +
+      '<button class="small" id="bulkRevert" title="Revert every ticked entry to the file (new entries are removed)">Revert ticked</button>' +
+      '<button class="small" id="bulkNone">Untick all</button>';
+    $('bulkNone').onclick = function () { checked = {}; renderList(); if (tab === 'compare' && $('cmpMode').value === 'ticked') renderRight(); };
+    $('bulkRevert').onclick = function () {
+      var n = ks.filter(isEdited).length;
+      if (n && !confirm('Revert ' + n + ' edited/new entr' + (n === 1 ? 'y' : 'ies') + '?')) return;
+      ks.forEach(function (k) { touch(k); if (isNewKey(k)) { news = news.filter(function (x) { return x.key !== k; }); delete checked[k]; } else { delete models[k]; delete targets[k]; } });
+      sortCache = {};
+      if (selectedKey && !exists(selectedKey)) selectedKey = null;
+      changed();
+    };
+    if (tools.getAttribute('data-kind') === listKind && tools.innerHTML) { $('bkCount').textContent = ks.length; return; }
+    tools.innerHTML =
+      '<div class="bulk"><b>Bulk</b> on <span id="bkCount">' + ks.length + '</span>: ' +
+      '<select id="bkEl">' + BULK_PATHS[listKind].map(function (e) { return '<option value="' + e[0] + '">' + esc(e[1]) + '</option>'; }).join('') + '</select>' +
+      '<select id="bkAttr"></select>' +
+      '<select id="bkOp"><option value="set">set to</option><option value="pct">change by %</option><option value="add">add</option><option value="del">remove</option></select>' +
+      '<input type="text" id="bkVal" placeholder="value">' +
+      '<button class="small" id="bkApply">Apply</button></div>' +
+      (listKind === PIECE ? '<div class="bulk"><select id="bkCulture"><option value="">— culture —</option>' + CULTURE_NAMES.map(function (c) { return '<option value="' + esc(c) + '">' + esc(DATA.cultures[c].name + ' (' + c + ')') + '</option>'; }).join('') +
+        '<option value="-">(no culture)</option></select><button class="small" id="bkCultureSet">Set culture</button></div>' : '');
+    tools.setAttribute('data-kind', listKind);
+    var fillAttrs = function () {
+      var p = parsePath($('bkEl').value), vp = C.vocabPath(listKind, p), names = Object.keys((DATA.vocab || {})[vp] || {});
+      var kindOfAttr = function (n) { return C.attrKind(vp + '@' + n, (DATA.vocab[vp] || {})[n]); };
+      var numFirst = names.filter(function (n) { var k = kindOfAttr(n); return k === 'int' || k === 'dec'; });
+      var rest = names.filter(function (n) { return numFirst.indexOf(n) < 0; });
+      $('bkAttr').innerHTML = numFirst.sort().concat(rest.sort()).map(function (n) { return '<option>' + esc(n) + '</option>'; }).join('');
+    };
+    fillAttrs();
+    $('bkEl').onchange = fillAttrs;
+    $('bkApply').onclick = function () {
+      var path = parsePath($('bkEl').value), n = $('bkAttr').value, op = $('bkOp').value, val = $('bkVal').value.trim();
+      if (op !== 'del' && val === '') { toast('Enter a value'); return; }
+      if ((op === 'pct' || op === 'add') && !isNumStr(val)) { toast('Enter a number'); return; }
+      var vp = C.vocabPath(listKind, path), kind = C.attrKind(vp + '@' + n, (DATA.vocab[vp] || {})[n]);
+      var done = 0, skipped = 0;
+      checkedKeys().forEach(function (k) {
+        var m0 = cur(k), old = C.getAt(m0, path, n), nv;
+        if (op === 'del') { if (old == null) { skipped++; return; } nv = null; }
+        else if (op === 'set') nv = val;
+        else {
+          if (!isNumStr(old)) { skipped++; return; }
+          var x = op === 'pct' ? +old * (1 + +val / 100) : +old + +val;
+          nv = kind === 'int' ? String(Math.round(x)) : String(Math.round(x * 1000) / 1000);
+        }
+        if (path.el === 'sub' && !C.mapAt(m0, path) && nv != null && op === 'set' && !confirm('Some ticked pieces have no <' + path.s + '>: create it (the game then stops reading vanilla\'s)?')) { skipped++; return; }
+        if (C.setAt(edit(k), path, n, nv)) done++; else skipped++;
+      });
+      toast(n + ': changed on ' + done + ' entr' + (done === 1 ? 'y' : 'ies') + (skipped ? ', ' + skipped + ' skipped (no such element or no number to change)' : ''));
+      changed();
+    };
+    if ($('bkCultureSet')) $('bkCultureSet').onclick = function () {
+      var c = $('bkCulture').value;
+      if (!c) { toast('Pick a culture'); return; }
+      checkedKeys().forEach(function (k) { C.setAt(edit(k), { el: 'root' }, 'culture', c === '-' ? null : 'Culture.' + c); });
+      toast('Culture set on ' + checkedKeys().length + ' entr' + (checkedKeys().length === 1 ? 'y' : 'ies'));
+      changed();
+    };
+  }
+
+  // ------------------------------------------------------------------ details (middle)
+  var PIECE_GENERAL = ['name', 'piece_type', 'culture', 'tier', 'length', 'distance_to_next_piece', 'distance_to_previous_piece', 'weight', 'center_of_mass',
+    'CraftingCost', 'is_hidden', 'is_default', 'full_scale', 'excluded_item_usage_features', 'item_holster_pos_shift', 'mesh'];
+  var TPL_GENERAL = ['item_type', 'modifier_group', 'item_holsters', 'default_item_holster_position_offset', 'piece_type_to_scale_holster_with',
+    'hidden_piece_types_on_holster', 'use_weapon_as_holster_mesh', 'always_show_holster_with_weapon', 'rotate_weapon_in_holster'];
+  var SINGLE_KEYS = {
+    BladeData: ['stack_amount', 'blade_length', 'blade_width', 'physics_material', 'body_name', 'holster_mesh', 'holster_body_name', 'holster_mesh_length'],
+    'BladeData/Swing': ['damage_type', 'damage_factor'], 'BladeData/Thrust': ['damage_type', 'damage_factor'],
+    BuildData: ['piece_offset', 'previous_piece_offset', 'next_piece_offset'],
+    StatContributions: ['armor_bonus', 'handling_bonus', 'swing_damage_bonus', 'swing_speed_bonus', 'thrust_damage_bonus', 'thrust_speed_bonus', 'accuracy_bonus']
+  };
+  var LABELS = {
+    length: 'length (cm)', weight: 'weight (kg)', distance_to_next_piece: 'distance to next (cm)', distance_to_previous_piece: 'distance to previous (cm)',
+    center_of_mass: 'center of mass (0..1)', blade_length: 'blade length (cm)', blade_width: 'blade width (cm)', piece_offset: 'piece offset (cm)',
+    previous_piece_offset: 'previous piece offset (cm)', next_piece_offset: 'next piece offset (cm)', holster_mesh_length: 'holster mesh length (cm)'
+  };
+  function control(k, path, n, val) {
+    var kind = kindOf(k), vp = C.vocabPath(kind, path), key = vp + '@' + n, es = C.ATTR_ENUMS[key], inf = (DATA.vocab[vp] || {})[n], ak = C.attrKind(key, inf), rs = C.ATTR_REFS[key];
+    var dp = ' data-p="' + esc(pathStr(path)) + '" data-n="' + esc(n) + '" data-focus="' + esc(pathStr(path) + '|' + n) + '"';
+    var opts = function (list) {
+      var h = '<option value="">—</option>', seen = {};
+      list.forEach(function (v) { seen[v] = 1; h += '<option' + (v === val ? ' selected' : '') + '>' + esc(v) + '</option>'; });
+      if (val != null && !seen[val]) h += '<option selected>' + esc(val) + '</option>';
+      return h;
+    };
+    if (es && !es.sep) return '<select' + dp + '>' + opts(es.list0 || C.cleanEnum(DATA.enums[es.e] || [])) + '</select>';
+    if (ak === 'bool' || n === 'full_scale') return '<select' + dp + '>' + opts(['true', 'false']) + '</select>';
+    if (rs && rs.ref === 'culture') {
+      var ch = '<option value="">—</option>', known = false;
+      CULTURE_NAMES.forEach(function (c) {
+        var cv = 'Culture.' + c, cu = DATA.cultures[c];
+        if (cv === val) known = true;
+        ch += '<option value="' + esc(cv) + '"' + (cv === val ? ' selected' : '') + '>' + esc(cu.name + ' (' + c + ')' + (cu.campaign ? '' : ', not in campaign')) + '</option>';
+      });
+      if (val != null && val !== '' && !known) ch += '<option value="' + esc(val) + '" selected>' + esc(val) + ' (unknown)</option>';
+      return '<select' + dp + '>' + ch + '</select>';
+    }
+    var list = rs && rs.ref === 'modgroup' ? ' list="dl-modgroup"' : rs && rs.ref === 'desc' ? ' list="dl-desc"' : '';
+    var cls = ak === 'int' || ak === 'dec' ? ' class="num" inputmode="decimal"' : '';
+    return '<input type="text"' + dp + list + cls + ' value="' + esc(val == null ? '' : val) + '" placeholder="(not set)" spellcheck="false">';
+  }
+  // A field row: label, control, file value when edited, vanilla value when different, reset.
+  function fieldRow(k, path, n, label) {
+    var m = cur(k), b = base(k), v0 = van(k);
+    var val = C.getAt(m, path, n), bv = C.getAt(b, path, n), vv = v0 ? C.getAt(v0, path, n) : null;
+    var ch = val !== bv, hints = '';
+    if (ch) hints += '<span class="van" title="Value in the file">file: ' + esc(bv == null ? '(not set)' : bv) + '</span>' +
+      '<button class="small link" data-act="reset" data-p="' + esc(pathStr(path)) + '" data-n="' + esc(n) + '" title="Back to the file\'s value">↺</button>';
+    if (v0 && vv !== val && (vv != null || val != null)) hints += '<span class="van diff" title="The vanilla definition (before RBM\'s crafting files)">vanilla: ' + esc(vv == null ? '(not set)' : vv) + '</span>';
+    var vp = C.vocabPath(kindOf(k), path), inf = (DATA.vocab[vp] || {})[n];
+    return '<span class="lbl' + (ch ? ' chg' : '') + '" title="' + esc(n + (inf ? ' (' + inf.type + (inf.use === 'required' ? ', required' : '') + ')' : ' (not in the XSD)')) + '">' + esc(label || LABELS[n] || n) + '</span>' +
+      '<span class="ctl' + (ch ? ' chg' : '') + '">' + control(k, path, n, val) + hints + '</span>';
+  }
+  var openAll = {};
+  function allAttrsBlock(k, path, shown, title) {
+    var m = cur(k), b = base(k), v0 = van(k);
+    var map = C.mapAt(m, path) || {}, bmap = C.mapAt(b, path) || {}, vmap = v0 ? (C.mapAt(v0, path) || {}) : {};
+    var names = [];
+    [map, bmap, vmap].forEach(function (o) { Object.keys(o).forEach(function (n) { if (names.indexOf(n) < 0 && shown.indexOf(n) < 0 && n !== 'id') names.push(n); }); });
+    var present = Object.keys(map), vp = C.vocabPath(kindOf(k), path);
+    var addable = Object.keys(DATA.vocab[vp] || {}).filter(function (n) { return present.indexOf(n) < 0; }).sort();
+    var rm = present.filter(function (n) { return n !== 'id'; });
+    return '<details class="all"' + (openAll[pathStr(path)] ? ' open' : '') + ' data-all="' + esc(pathStr(path)) + '"><summary>' + esc(title || 'All attributes') +
+      ' (' + present.length + ' set' + (names.length ? ', ' + names.length + ' more below' : '') + ')</summary>' +
+      (names.length ? '<div class="fields" style="margin-top:4px">' + names.map(function (n) { return fieldRow(k, path, n); }).join('') + '</div>' : '') +
+      '<div class="addrow"><select data-add-sel="' + esc(pathStr(path)) + '"><option value="">add attribute…</option>' +
+      addable.map(function (n) { return '<option>' + esc(n) + '</option>'; }).join('') + '<option value="*">other (not in the XSD)…</option></select>' +
+      '<input type="text" data-add-val="' + esc(pathStr(path)) + '" placeholder="value">' +
+      '<button class="small" data-act="add-attr" data-p="' + esc(pathStr(path)) + '">Add</button>' +
+      (rm.length ? '<select data-rm-sel="' + esc(pathStr(path)) + '"><option value="">remove attribute…</option>' + rm.map(function (n) { return '<option>' + esc(n) + '</option>'; }).join('') + '</select>' +
+        '<button class="small" data-act="rm-attr" data-p="' + esc(pathStr(path)) + '">Remove</button>' : '') +
+      '</div></details>';
+  }
+  function targetSelect(k) {
+    var kind = kindOf(k), opts = [['', 'default (' + (C.defaultTarget(DATA, kind, idOf(srcKey(k)), cur(k))[0] || 'none') + ')']].concat(DATA.rbmFiles.filter(function (f) { return f.kind === kind; }).map(function (f) { return [f.path, f.path]; }));
+    var t = targetOf(k), v = t && t.length ? t[0] : '';
+    return '<select id="targetSel">' + opts.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (o[0] === v ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>';
+  }
+
+  // The piece as the game reads it: edited | file | vanilla.
+  function effTable(k) {
+    var id = idOf(k), a = info(k).eff, b = isNewKey(k) ? null : stFile.piece(id), v = isNewKey(k) ? null : stVan.piece(id);
+    var rows = [
+      ['Length', function (p) { return fmt(p.length * 100, 2) + ' cm'; }],
+      ['Next / previous', function (p) { return fmt(p.dNext * 100, 2) + ' / ' + fmt(p.dPrev * 100, 2) + ' cm'; }],
+      ['Weight', function (p) { return fmt(p.weight, 3) + ' kg'; }],
+      ['Center of mass', function (p) { return fmt(p.com * 100, 2) + ' cm'; }],
+      ['Inertia', function (p) { return fmt(p.inertia, 5); }],
+      ['Tier', function (p) { return p.tier; }],
+      ['Offsets', function (p) { return fmt(p.pieceOffset * 100, 2) + ' / ' + fmt(p.prevOffset * 100, 2) + ' / ' + fmt(p.nextOffset * 100, 2) + ' cm'; }],
+      ['Blade', function (p) { return p.blade ? fmt(p.blade.length * 100, 2) + ' × ' + fmt(p.blade.width * 100, 2) + ' cm, stack ' + p.blade.stack : '—'; }],
+      ['Swing', function (p) { return p.blade && p.blade.swingType !== 'Invalid' ? p.blade.swingType + ' × ' + fmt(p.blade.swingFactor) : '—'; }],
+      ['Thrust', function (p) { return p.blade && p.blade.thrustType !== 'Invalid' ? p.blade.thrustType + ' × ' + fmt(p.blade.thrustFactor) : '—'; }],
+      ['Materials', function (p) { return p.materials.map(function (x) { return x.count + ' ' + x.mat; }).join(', ') || '—'; }],
+      ['Flags', function (p) { return p.weaponFlags.concat(p.itemFlags).join(', ') || '—'; }],
+      ['Excluded usage features', function (p) { return p.excluded || '—'; }],
+      ['Bonuses', function (p) { var s = []; if (p.armorBonus) s.push('armor ' + p.armorBonus); if (p.handlingBonus) s.push('handling ' + p.handlingBonus); return s.join(', ') || '—'; }],
+      ['Full scale (weight ∝ scale³)', function (p) { return p.fullScale ? 'yes' : 'no'; }]
+    ];
+    var h = '<table class="lst"><tr><th></th><th>edited</th><th>file</th><th>vanilla</th></tr>';
+    rows.forEach(function (r) {
+      var x = a ? String(r[1](a)) : '—', y = b ? String(r[1](b)) : '—', z = v ? String(r[1](v)) : '—';
+      h += '<tr' + (b && x !== y ? ' class="chg"' : '') + '><th>' + esc(r[0]) + '</th><td>' + esc(x) + '</td><td>' + esc(y) + '</td><td' + (z !== y ? ' style="color:var(--warn)"' : '') + '>' + esc(z) + '</td></tr>';
+    });
+    return h + '</table><div class="hint">What the game makes of every definition of this id, read in load order (start-tag attributes reset each time, child elements only when present).</div>';
+  }
+
+  function singleBox(k, s, title, note) {
+    var m = cur(k), b = base(k), v0 = van(k), has = !!m.els[s], bhas = !!b.els[s], vhas = v0 && v0.els[s];
+    var ch = has !== bhas;
+    var h = '<div class="box' + (has ? '' : ' absent') + '"><div class="bh">' + esc(title) + (ch ? ' <span class="badge warn">' + (has ? 'added' : 'removed') + '</span>' : '') +
+      '<span class="sp"></span>' + (has ? '<button class="small" data-act="el-off" data-s="' + esc(s) + '" title="Remove the element">Remove</button>' :
+        '<button class="small" data-act="el-on" data-s="' + esc(s) + '">Add &lt;' + esc(s.split('/').pop()) + '&gt;</button>') + '</div>';
+    if (!has) {
+      h += '<div class="hint">' + esc(note || ('Not in this definition' + (vhas ? ': vanilla\'s is kept (the game only re-reads child elements that are present).' : '.'))) + '</div></div>';
+      return h;
+    }
+    var keys = SINGLE_KEYS[s] || [];
+    h += '<div class="fields">' + keys.map(function (n) { return fieldRow(k, { el: 'sub', s: s }, n); }).join('') + '</div>';
+    if (s === 'BladeData') h += '<div class="sub">' + singleBox(k, 'BladeData/Swing', 'Swing') + singleBox(k, 'BladeData/Thrust', 'Thrust') + '</div>';
+    h += allAttrsBlock(k, { el: 'sub', s: s }, keys, 'All ' + s.split('/').pop() + ' attributes') + '</div>';
+    return h;
+  }
+  function listRows(k, l, cols) {
+    var m = cur(k), b = base(k), lst = m.lists[l], bl = b.lists[l];
+    if (!lst) return '';
+    var spec = C.listSpec(kindOf(k), l);
+    var h = '<table class="lst"><tr>' + cols.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') + '<th></th></tr>';
+    lst.items.forEach(function (it) {
+      var bi = bl ? bl.items.filter(function (x) { return x.k === it.k; })[0] : null;
+      var ch = !bi || cols.some(function (c) { return (bi.attrs[c] || null) !== (it.attrs[c] || null); });
+      h += '<tr' + (ch ? ' class="chg"' : '') + '>' + cols.map(function (c) {
+        return '<td>' + control(k, { el: 'item', l: l, k: it.k }, c, it.attrs[c] == null ? null : it.attrs[c]) + '</td>';
+      }).join('') + '<td><button class="small link" data-act="item-rm" data-l="' + esc(l) + '" data-k="' + esc(it.k) + '" title="Remove">✕</button></td></tr>';
+    });
+    return h + '</table>' + '<div class="addrow"><button class="small" data-act="item-add" data-l="' + esc(l) + '">Add ' + esc(spec.item) + '</button></div>';
+  }
+  function listBox(k, l, title, cols, note) {
+    var m = cur(k), b = base(k), v0 = van(k), has = !!m.lists[l], ch = has !== !!b.lists[l];
+    var h = '<div class="box' + (has ? '' : ' absent') + '"><div class="bh">' + esc(title) + (ch ? ' <span class="badge warn">' + (has ? 'added' : 'removed') + '</span>' : '') +
+      '<span class="sp"></span>' + (has ? '<button class="small" data-act="list-off" data-l="' + esc(l) + '">Remove &lt;' + esc(l.split('|')[0]) + '&gt;</button>' :
+        '<button class="small" data-act="list-on" data-l="' + esc(l) + '">Add &lt;' + esc(l.split('|')[0]) + '&gt;</button>') + '</div>';
+    if (!has) return h + '<div class="hint">' + esc(note || ('Not in this definition' + (v0 && v0.lists[l] ? ': vanilla\'s is kept.' : '.'))) + '</div></div>';
+    return h + listRows(k, l, cols) + '</div>';
+  }
+  function flagsBox(k) {
+    var m = cur(k), b = base(k), v0 = van(k), lst = m.lists.Flags, bl = b.lists.Flags;
+    var has = !!lst, h = '<div class="box' + (has ? '' : ' absent') + '"><div class="bh">Flags' + (has !== !!bl ? ' <span class="badge warn">' + (has ? 'added' : 'removed') + '</span>' : '') + '<span class="sp"></span>' +
+      (has ? '<button class="small" data-act="list-off" data-l="Flags">Remove &lt;Flags&gt;</button>' : '<button class="small" data-act="list-on" data-l="Flags">Add &lt;Flags&gt;</button>') + '</div>';
+    if (!has) return h + '<div class="hint">No &lt;Flags&gt;' + (v0 && v0.lists.Flags ? ': vanilla\'s are kept.' : '.') + '</div></div>';
+    var on = function (l, n, item) { return !!(l && l.items.some(function (i) { return i.attrs.name === n && ((i.attrs.type === 'ItemFlags') === item); })); };
+    var grid = function (names, item) {
+      return '<div class="chk-grid">' + names.map(function (n) {
+        var a = on(lst, n, item), bo = on(bl, n, item), vo = v0 ? on(v0.lists.Flags, n, item) : null;
+        return '<label class="' + (a !== bo ? 'chg' : '') + (a ? '' : ' off') + '"><input type="checkbox" data-flag="' + esc(n) + '" data-item="' + (item ? '1' : '') + '"' + (a ? ' checked' : '') + '>' + esc(n) +
+          (vo != null && vo !== a ? '<span class="vh" title="vanilla: ' + (vo ? 'set' : 'not set') + '">' + (vo ? 'v+' : 'v−') + '</span>' : '') + '</label>';
+      }).join('') + '</div>';
+    };
+    return h + '<div class="hint">WeaponFlags (added to every usage of the weapon)</div>' + grid(C.cleanEnum(DATA.enums.WeaponFlags), false) +
+      '<div class="hint" style="margin-top:4px">ItemFlags (type="ItemFlags"; the item takes the Blade piece\'s)</div>' + grid(C.cleanEnum(DATA.enums.ItemFlags), true) + '</div>';
+  }
+  function usablePiecesBox(k) {
+    var m = cur(k), b = base(k), t = info(k).eff, lst = m.lists.UsablePieces, bl = b.lists.UsablePieces;
+    var mine = lst ? lst.items.map(function (i) { return i.attrs.piece_id; }) : [], bmine = bl ? bl.items.map(function (i) { return i.attrs.piece_id; }) : [];
+    var types = t ? t.buildOrders.map(function (x) { return x.type; }) : C.PIECE_TYPES;
+    var groups = {};
+    var typeOf = function (pid) { var p = stCur.piece(pid); return p ? p.type : '?'; };
+    mine.forEach(function (pid) { (groups[typeOf(pid)] = groups[typeOf(pid)] || []).push({ id: pid, own: true }); });
+    if (t) t.usable.forEach(function (pid) { if (mine.indexOf(pid) < 0) (groups[typeOf(pid)] = groups[typeOf(pid)] || []).push({ id: pid, own: false, from: t.usableFrom[pid] }); });
+    bmine.forEach(function (pid) { if (mine.indexOf(pid) < 0 && !(t && t.usable.indexOf(pid) >= 0)) (groups[typeOf(pid)] = groups[typeOf(pid)] || []).push({ id: pid, removed: true }); });
+    var h = '<div class="box"><div class="bh">Usable pieces <span class="hint" style="font-weight:400">' + (t ? t.usable.length + ' in game' : '') + ', ' + mine.length + ' in this definition</span><span class="sp"></span>' +
+      (lst ? '' : '<button class="small" data-act="list-on" data-l="UsablePieces">Add &lt;UsablePieces&gt;</button>') + '</div>' +
+      '<div class="hint">Usable pieces accumulate over every definition of the template (and the War Sails XSLTs add more): dashed ones come from another definition and stay usable whatever this list says.</div>';
+    C.PIECE_TYPES.concat(['?']).forEach(function (ty) {
+      var g = groups[ty];
+      if (!g || !g.length) return;
+      h += '<div style="margin-top:4px"><b style="font-size:12px">' + esc(ty) + '</b> <span class="hint">(' + g.filter(function (x) { return !x.removed; }).length + ')' + (types.indexOf(ty) < 0 ? ' — the template does not build this type' : '') + '</span></div><div class="chips">';
+      g.forEach(function (x) {
+        var p = stCur.piece(x.id), nm = p ? (p.name || '').replace(/^\{=[^}]*\}/, '') : 'unknown piece';
+        if (x.removed) { h += '<span class="chip chg" title="Removed (in the file)"><s class="mono">' + esc(x.id) + '</s><button data-act="up-add" data-id="' + esc(x.id) + '" title="Put it back">↺</button></span>'; return; }
+        if (!x.own) { h += '<span class="chip inh" title="' + esc(nm + ' — from ' + (x.from || 'another definition')) + '"><span class="mono">' + esc(x.id) + '</span></span>'; return; }
+        h += '<span class="chip' + (bmine.indexOf(x.id) < 0 ? ' add' : '') + '" title="' + esc(nm + (p ? ' · ' + (p.culture || '-') + ' · T' + p.tier : '')) + '"><span class="mono">' + esc(x.id) + '</span>' +
+          '<button data-act="up-rm" data-id="' + esc(x.id) + '" title="Remove from this definition">✕</button></span>';
+      });
+      h += '</div>';
+    });
+    if (lst) h += '<div class="addrow">Add <select id="upType">' + types.map(function (ty) { return '<option>' + esc(ty) + '</option>'; }).join('') + '</select>' +
+      '<input type="text" id="upId" list="dl-piece-' + esc(types[0] || 'Blade') + '" placeholder="piece id" style="width:220px"><button class="small" data-act="up-add-input">Add</button></div>';
+    return h + '</div>';
+  }
+  function statsDataBoxes(k) {
+    var m = cur(k), ls = Object.keys(m.lists).filter(function (l) { return l.indexOf('StatsData|') === 0; });
+    var h = '';
+    ls.forEach(function (l) {
+      var wd = l.slice(10);
+      h += '<div class="box"><div class="bh">StatsData ' + (wd ? 'for ' + esc(wd) : '(every usage)') + '<span class="sp"></span><button class="small" data-act="list-off" data-l="' + esc(l) + '">Remove</button></div>' +
+        '<div class="hint">The smithy\'s bar maximum per stat (not used by the item\'s stats).</div>' + listRows(k, l, ['stat_type', 'max_value']) + '</div>';
+    });
+    h += '<div class="addrow"><input type="text" id="sdNew" list="dl-desc" placeholder="weapon description (empty: every usage)"><button class="small" data-act="sd-add">Add StatsData</button></div>';
+    return h;
+  }
+
+  // Crafted items using the entry, with the key numbers edited | file | vanilla.
+  function usesBlock(k) {
+    var items = itemsUsing(k).filter(function (it) { return !it.nc; });
+    var h = '';
+    if (kindOf(k) === PIECE) {
+      var tpls = stCur.templateOrder().filter(function (tid) { var t = stCur.template(tid); return t && t.usable.indexOf(idOf(k)) >= 0; });
+      h += '<div class="kv">' + kvHtml('Usable in templates', tpls.length ? tpls.map(function (t) { return '<button class="link" data-goto="' + esc(keyOf(TPL, t)) + '">' + esc(t) + '</button>'; }).join(', ') : '<span class="hint">none: no template lists it</span>') + '</div>';
+      var healed = stCur.healInfo().healed.filter(function (x) { return x.piece === idOf(k); });
+      if (healed.length) h += '<div class="note info">No weapon description lists it for ' + healed.map(function (x) { return x.template; }).join(', ') + ': RBM/CraftingCoveragePatches.cs adds it to ' + healed.map(function (x) { return x.desc; }).join(', ') + ' at load (combat on).</div>';
+    }
+    if (!items.length) return h + '<div class="hint">No campaign crafted item uses it.</div>';
+    return h + '<div class="hint" style="margin:4px 0">' + items.length + ' campaign crafted item' + (items.length === 1 ? '' : 's') + ' use' + (items.length === 1 ? 's' : '') + ' it' +
+      ' (primary usage; edited, then <span style="color:var(--faint)">file</span> and <span style="color:var(--warn)">vanilla</span> when they differ). Click one for every usage and RBM\'s damage table.</div>' +
+      itemTable(items, true);
+  }
+
+  function renderDetails() {
+    var box = $('details');
+    if (!selectedKey || !exists(selectedKey)) { box.innerHTML = '<div class="empty">Select a piece or a template on the left.</div>'; $('detailHint').textContent = ''; return; }
+    var k = selectedKey, m = cur(k), isNew = isNewKey(k), ed = isEdited(k), kind = kindOf(k), e = isNew ? ent(srcKey(k)) : ent(k), h = [];
+    $('detailHint').textContent = van(k) ? 'Orange "vanilla" = the definition before RBM\'s crafting files' : (isNew ? 'New entry' : 'Only RBM defines it');
+    h.push('<div class="details"><h3>' + esc(displayName(m, k)) + (isNew ? ' <span class="badge ok">new</span>' : ed ? ' <span class="badge warn">edited</span>' : '') +
+      (ed && !isNew ? ' <button class="small" data-act="revert" title="Discard this entry\'s changes">Revert</button>' : '') +
+      (isNew ? ' <button class="small" data-act="delete-new">Delete new ' + (kind === PIECE ? 'piece' : 'template') + '</button>' : '') +
+      ' <button class="small" data-act="duplicate" title="Copy it (with its current changes) under a new id">Duplicate as new ' + (kind === PIECE ? 'piece' : 'template') + '</button></h3>' +
+      '<div class="mono" style="color:var(--muted)">' + esc(m.attrs.id || '') + '</div>');
+    h.push('<h4>' + (kind === PIECE ? 'Piece' : 'Template') + '</h4><div class="kv">' +
+      (isNew ? kv('Duplicated from', idOf(srcKey(k)) + ' (' + C.baseText(e).src + ')') : kv('Definitions (load order)', e.defs.map(function (d) { return d.src + (d.xslt ? ' + ' + d.xslt.join(' + ') : '') + (d.nc ? ' (not in campaign)' : ''); }).join(' → '))) +
+      (!isNew && e.rbmPaths.length ? kvHtml('RBM files', e.rbmPaths.map(function (p) { return '<code>' + esc(p) + '</code>'; }).join('<br>')) : '') + '</div>');
+    if (inRbm(k)) {
+      h.push('<div class="note info">The export patches the changed attributes in ' + (e.rbmDefs.length > 1 ? 'each of the ' + e.rbmDefs.length + ' RBM definitions' : '<code>' + esc(e.rbmPaths[0]) + '</code>') +
+        ' in place. The game reads this definition after vanilla\'s (RBM\'s crafting files are appended, not merged): every start-tag attribute is set again, child elements only replace vanilla\'s when present' +
+        (kind === TPL ? ', and usable pieces add up.' : '.') + '</div>');
+    } else {
+      var tg = effTargets(k);
+      var where = tg.length ? tg.map(function (p) { return '<code>' + esc(p) + '</code>'; }).join(' and ') : '<b>no file: pick one</b>';
+      h.push('<div class="note ' + (tg.length ? 'info' : 'bad') + '">' +
+        (isNew ? 'A new ' + (kind === PIECE ? 'piece' : 'template') + ': the export appends it (a copy of ' + esc(idOf(srcKey(k))) + ' with your changes) to ' + where + '.' +
+          (kind === PIECE ? ' To be usable, add it to a template\'s usable pieces (RBM/CraftingCoveragePatches.cs then puts it in a weapon description at load).' : '') :
+          'Not in an RBM file. Editing it makes the export append a full copy of its definition (from ' + esc(C.baseText(e).src) + ') to ' + where + ', which the game reads after vanilla\'s.') +
+        ' Target: ' + targetSelect(k) + '</div>');
+    }
+    var probs = probsOf(k);
+    if (probs.length) h.push('<h4>Problems and notes</h4>' + probs.map(function (p) { return '<div class="note ' + (p.cls === 'info' ? 'info' : p.cls) + '">' + esc(p.text) + '</div>'; }).join(''));
+    if (kind === PIECE) {
+      h.push('<h4>As the game reads it</h4>' + effTable(k));
+      h.push('<h4>Attributes</h4><div class="fields">' + (isNew ? fieldRow(k, { el: 'root' }, 'id') : '') + PIECE_GENERAL.map(function (n) { return fieldRow(k, { el: 'root' }, n); }).join('') + '</div>' +
+        allAttrsBlock(k, { el: 'root' }, PIECE_GENERAL, 'All CraftingPiece attributes'));
+      h.push(singleBox(k, 'BladeData', 'BladeData (damage, blade size, stack)'));
+      h.push(singleBox(k, 'BuildData', 'BuildData (offsets)'));
+      h.push(singleBox(k, 'StatContributions', 'StatContributions'));
+      h.push(listBox(k, 'Materials', 'Materials (smithing cost; the tier formula counts Iron1..6)', ['id', 'count']));
+      h.push(flagsBox(k));
+    } else {
+      h.push('<h4>Attributes</h4><div class="fields">' + (isNew ? fieldRow(k, { el: 'root' }, 'id') : '') + TPL_GENERAL.map(function (n) { return fieldRow(k, { el: 'root' }, n); }).join('') + '</div>' +
+        allAttrsBlock(k, { el: 'root' }, TPL_GENERAL, 'All CraftingTemplate attributes'));
+      h.push(listBox(k, 'PieceDatas', 'PieceDatas (build order: 0 the grip piece, positive pieces up, negative down; the order in the list matters)', ['piece_type', 'build_order', 'enforced_piece_shift_amount']));
+      h.push(listBox(k, 'WeaponDescriptions', 'WeaponDescriptions (usages; a design gets each usage whose description lists all its pieces)', ['id']));
+      h.push(usablePiecesBox(k));
+      h.push('<h4>Stats data</h4>' + statsDataBoxes(k));
+    }
+    h.push('<h4>Used by</h4>' + usesBlock(k));
+    h.push('<h4>XML as exported</h4>' + previewBlock(k));
+    h.push('</div>');
+    box.innerHTML = h.join('');
+    var ts = $('targetSel');
+    if (ts) ts.onchange = function () {
+      var v = ts.value, list = v ? [v] : null;
+      if (isNew) newOf(k).target = list; else { if (list) targets[k] = list; else delete targets[k]; edit(k); }
+      touch(k); changed();
+    };
+    var ut = $('upType');
+    if (ut) ut.onchange = function () { $('upId').setAttribute('list', 'dl-piece-' + ut.value); };
+  }
+  function previewBlock(k) {
+    var isNew = isNewKey(k), e = isNew ? ent(srcKey(k)) : ent(k), pv;
+    try { pv = C.previewElement(DATA, e, cur(k), effTargets(k), isNew); } catch (err) { return '<div class="note bad">Preview failed: ' + esc(err.message) + '</div>'; }
+    if (!pv) return '<div class="hint">No RBM file to write it to: pick a target file.</div>';
+    var text = pv.text.replace(/\r\n/g, '\n'), origLines = {};
+    if (pv.original) pv.original.replace(/\r\n/g, '\n').split('\n').forEach(function (l) { origLines[l] = 1; });
+    var lines = text.split('\n').map(function (l) { return pv.mode === 'patch' && !origLines[l] ? '<span class="chg">' + esc(l) + '</span>' : esc(l); });
+    return '<div class="hint" style="margin-bottom:4px">' + (pv.mode === 'patch' ? 'Patched in place in' : 'Appended to') + ' <code>' + esc(pv.path) + '</code>' +
+      (pv.mode === 'patch' ? ' (changed lines highlighted)' : '') + '</div>' +
+      (pv.notes || []).map(function (n) { return '<div class="note ' + n[0] + '">' + esc(n[1]) + '</div>'; }).join('') +
+      '<pre class="xml">' + lines.join('\n') + '</pre>';
+  }
+  function renderDetailsKeepFocus() {
+    setTimeout(function () {
+      var a = document.activeElement, fk = a && a.getAttribute && a.getAttribute('data-focus'), sel = null;
+      if (fk && a.selectionStart != null) sel = [a.selectionStart, a.selectionEnd];
+      var scroll = $('details').scrollTop;
+      renderDetails();
+      $('details').scrollTop = scroll;
+      if (fk) {
+        var el = $('details').querySelector('[data-focus="' + cssEsc(fk) + '"]');
+        if (el) { el.focus(); if (sel && el.setSelectionRange) try { el.setSelectionRange(sel[0], sel[1]); } catch (e) { /* select */ } }
+      }
+    }, 0);
+  }
+
+  function applyValue(k, path, n, v) {
+    var b = base(k), bv = C.getAt(b, path, n);
+    if (v === '') v = null;
+    // An unchanged number typed differently ("4.0" for "4") keeps the file's text.
+    if (v != null && bv != null && v !== bv && isNumStr(v) && isNumStr(bv) && +v === +bv) v = bv;
+    C.setAt(edit(k), path, n, v);
+  }
+  $('details').addEventListener('change', function (e) {
+    var t = e.target, k = selectedKey;
+    if (!k) return;
+    if (t.hasAttribute('data-flag')) {
+      var n = t.getAttribute('data-flag'), item = t.getAttribute('data-item') === '1', m = edit(k), lst = m.lists.Flags;
+      if (!lst) return;
+      var idx = -1;
+      lst.items.forEach(function (it, i) { if (it.attrs.name === n && ((it.attrs.type === 'ItemFlags') === item)) idx = i; });
+      if (t.checked && idx < 0) {
+        // Back to the file's own entry (its key and text) when there is one.
+        var bl = base(k).lists.Flags, bi = bl ? bl.items.filter(function (x) { return x.attrs.name === n && ((x.attrs.type === 'ItemFlags') === item); })[0] : null;
+        var key = bi ? bi.k : n, used = lst.items.some(function (x) { return x.k === key; });
+        if (used) key = n + '#' + (lst.items.length + 2);
+        lst.items.push({ k: key, attrs: bi ? Object.assign({}, bi.attrs) : (item ? { name: n, type: 'ItemFlags' } : { name: n }) });
+      }
+      if (!t.checked && idx >= 0) lst.items.splice(idx, 1);
+      changed();
+      return;
+    }
+    if (t.hasAttribute('data-p') && t.hasAttribute('data-n')) {
+      applyValue(k, parsePath(t.getAttribute('data-p')), t.getAttribute('data-n'), t.value.trim());
+      changed();
+    }
+  });
+  $('details').addEventListener('toggle', function (e) {
+    var d = e.target; if (d.getAttribute && d.getAttribute('data-all')) openAll[d.getAttribute('data-all')] = d.open;
+  }, true);
+  function newItemKey(lst, key) {
+    var n = 1, k2 = key;
+    while (lst.items.some(function (x) { return x.k === k2; })) { n++; k2 = key + '#' + n; }
+    return k2;
+  }
+  $('details').addEventListener('click', function (e) {
+    var g = e.target.closest('[data-goto]');
+    if (g) { select(g.getAttribute('data-goto'), true); return; }
+    var it = e.target.closest('tr[data-item]');
+    if (it && !e.target.closest('[data-act]')) { showItem(it.getAttribute('data-item')); return; }
+    var b = e.target.closest('[data-act]'); if (!b) return;
+    var k = selectedKey, act = b.getAttribute('data-act'), m;
+    if (act === 'reset') {
+      var path = parsePath(b.getAttribute('data-p')), n = b.getAttribute('data-n');
+      C.setAt(edit(k), path, n, C.getAt(base(k), path, n)); changed(); return;
+    }
+    if (act === 'revert') { touch(k); delete models[k]; delete targets[k]; changed(); toast('Reverted ' + idOf(k)); return; }
+    if (act === 'delete-new') {
+      if (!confirm('Remove the new entry ' + cur(k).attrs.id + '?')) return;
+      touch(k); news = news.filter(function (x) { return x.key !== k; }); delete checked[k]; selectedKey = null; sortCache = {}; changed(); return;
+    }
+    if (act === 'duplicate') {
+      var src = srcKey(k), mm = cur(k);
+      var id = prompt('Id of the new ' + (kindOf(k) === PIECE ? 'piece' : 'template') + ' (a copy of ' + mm.attrs.id + ' with its current changes):', mm.attrs.id + '_copy');
+      if (!id) return;
+      id = id.trim();
+      if (ALL_IDS[keyOf(kindOf(k), id)] || news.some(function (x) { return x.kind === kindOf(k) && x.model.attrs.id === id; })) { alert('The id "' + id + '" already exists.'); return; }
+      var nm = C.cloneModel(mm); nm.attrs.id = id;
+      var key = 'new:' + (newSeq++);
+      news.push({ key: key, kind: kindOf(k), from: idOf(src), model: nm, target: targetOf(k) && targetOf(k).length ? targetOf(k).slice() : null });
+      sortCache = {};
+      changed(); select(key, true); toast('Created ' + id);
+      return;
+    }
+    if (act === 'add-attr') {
+      var ps = b.getAttribute('data-p'), path2 = parsePath(ps);
+      var sel = $('details').querySelector('[data-add-sel="' + cssEsc(ps) + '"]'), inp = $('details').querySelector('[data-add-val="' + cssEsc(ps) + '"]');
+      var name = sel.value;
+      if (name === '*') { name = (prompt('Attribute name:') || '').trim(); if (!/^[A-Za-z_][\w.:-]*$/.test(name)) { if (name) alert('Not a valid attribute name'); return; } }
+      if (!name) { toast('Pick an attribute'); return; }
+      if (inp.value === '') { toast('Enter a value first'); return; }
+      openAll[ps] = true;
+      C.setAt(edit(k), path2, name, inp.value); changed(); return;
+    }
+    if (act === 'rm-attr') {
+      var ps2 = b.getAttribute('data-p'), sel2 = $('details').querySelector('[data-rm-sel="' + cssEsc(ps2) + '"]');
+      if (!sel2.value) { toast('Pick an attribute'); return; }
+      openAll[ps2] = true;
+      C.setAt(edit(k), parsePath(ps2), sel2.value, null); changed(); return;
+    }
+    if (act === 'el-on') {
+      var s = b.getAttribute('data-s'); m = edit(k);
+      var parts = s.split('/');
+      // Starts from the file's element when it had one, else vanilla's (so adding it back changes nothing in game).
+      for (var i = 1; i <= parts.length; i++) {
+        var sp = parts.slice(0, i).join('/');
+        if (m.els[sp]) continue;
+        var from = base(k).els[sp] || (van(k) && van(k).els[sp]) || {};
+        m.els[sp] = Object.assign({}, from);
+      }
+      changed(); return;
+    }
+    if (act === 'el-off') {
+      var s2 = b.getAttribute('data-s'); m = edit(k);
+      Object.keys(m.els).forEach(function (x) { if (x === s2 || x.indexOf(s2 + '/') === 0) delete m.els[x]; });
+      changed(); return;
+    }
+    if (act === 'list-on') {
+      var l = b.getAttribute('data-l'); m = edit(k);
+      var src2 = base(k).lists[l] || (van(k) && van(k).lists[l]);
+      m.lists[l] = src2 ? { attrs: Object.assign({}, src2.attrs), items: src2.items.map(function (x) { return { k: x.k, attrs: Object.assign({}, x.attrs) }; }) } : { attrs: {}, items: [] };
+      changed(); return;
+    }
+    if (act === 'list-off') { var l2 = b.getAttribute('data-l'); m = edit(k); delete m.lists[l2]; changed(); return; }
+    if (act === 'item-rm') {
+      var l3 = b.getAttribute('data-l'), ik = b.getAttribute('data-k'); m = edit(k);
+      if (m.lists[l3]) m.lists[l3].items = m.lists[l3].items.filter(function (x) { return x.k !== ik; });
+      changed(); return;
+    }
+    if (act === 'item-add') {
+      var l4 = b.getAttribute('data-l'); m = edit(k);
+      var spec = C.listSpec(kindOf(k), l4), lst = m.lists[l4];
+      var dflt = { Materials: { id: 'Iron1', count: '1' }, PieceDatas: { piece_type: 'Pommel', build_order: '-1' }, WeaponDescriptions: { id: '' } }[spec.name] ||
+        (spec.name === 'StatsData' ? { stat_type: 'Weight', max_value: '1' } : {});
+      var kv0 = dflt[spec.key] || '';
+      lst.items.push({ k: newItemKey(lst, kv0), attrs: Object.assign({}, dflt) });
+      changed(); return;
+    }
+    if (act === 'up-rm' || act === 'up-add' || act === 'up-add-input') {
+      m = edit(k);
+      var pid = act === 'up-add-input' ? $('upId').value.trim() : b.getAttribute('data-id');
+      if (!m.lists.UsablePieces) m.lists.UsablePieces = { attrs: {}, items: [] };
+      var ul = m.lists.UsablePieces;
+      if (act === 'up-rm') { ul.items = ul.items.filter(function (x) { return x.attrs.piece_id !== pid; }); changed(); return; }
+      if (!pid) { toast('Type a piece id'); return; }
+      if (!stCur.piece(pid)) { toast('No crafting piece "' + pid + '"'); return; }
+      if (ul.items.some(function (x) { return x.attrs.piece_id === pid; })) { toast(pid + ' is already in the list'); return; }
+      var bi = (base(k).lists.UsablePieces || { items: [] }).items.filter(function (x) { return x.attrs.piece_id === pid; })[0];
+      ul.items.push(bi ? { k: bi.k, attrs: Object.assign({}, bi.attrs) } : { k: newItemKey(ul, pid), attrs: { piece_id: pid } });
+      changed(); return;
+    }
+    if (act === 'sd-add') {
+      var wd = $('sdNew').value.trim(), lk = 'StatsData|' + wd; m = edit(k);
+      if (m.lists[lk]) { toast('There is already a StatsData for ' + (wd || 'every usage')); return; }
+      m.lists[lk] = { attrs: wd ? { weapon_description: wd } : {}, items: ['Weight', 'WeaponReach', 'ThrustSpeed', 'SwingSpeed', 'ThrustDamage', 'SwingDamage', 'Handling'].map(function (st) { return { k: st, attrs: { stat_type: st, max_value: st === 'Weight' ? '7.0' : st === 'WeaponReach' ? '300' : st.indexOf('Damage') >= 0 ? '500' : '200' } }; }) };
+      changed(); return;
+    }
+  });
+
+  // ------------------------------------------------------------------ crafted-item tables
+  // A stat of a calculation: { get(result, usage) -> number|string, f: decimals }.
+  var STATS = [
+    { key: 'len', label: 'Len', title: 'weapon_length (cm): the crafted length', get: function (r, u) { return u.length; } },
+    { key: 'wt', label: 'Wt', title: 'weight (kg): Σ piece weights (scaled), rounded to 0.01', get: function (r) { return r.weight; }, f: 2 },
+    { key: 'sws', label: 'Sw spd', title: 'speed_rating: CraftingStats.CalculateSwingSpeed × 4.545', get: function (r, u) { return u.swingSpeed; } },
+    { key: 'swd', label: 'Sw dmg', title: 'swing_damage (and type): base swing magnitude × the blade\'s swing damage_factor', get: function (r, u) { return u.swingDamage ? u.swingDamage + ' ' + u.swingType.charAt(0) : 0; } },
+    { key: 'ths', label: 'Th spd', title: 'thrust_speed: CraftingStats.CalculateThrustSpeed × 11.76', get: function (r, u) { return u.thrustSpeed; } },
+    { key: 'thd', label: 'Th dmg', title: 'thrust (or missile) damage and type; RBM: 0.5 × 8 × clamp(speed, 4, 6)² × 0.05 × damage_factor (MagnitudeChanges.Thrust.cs)', get: function (r, u) { return u.thrustDamage ? u.thrustDamage + ' ' + u.thrustType.charAt(0) : 0; } },
+    { key: 'hd', label: 'Hand', title: 'handling', get: function (r, u) { return u.handling; } },
+    { key: 'tier', label: 'Tier', title: 'Tierf: 0.6 × melee tier + 0.4 × piece tier (RBM: ItemValuesTiers.Tiers.cs)', get: function (r) { return r.tierf; }, f: 2 },
+    { key: 'price', label: 'Price', title: 'The value attribute, else the price formula (*)', get: function (r) { return r.price + (r.priceSrc === 'computed' ? '*' : ''); } },
+    { key: 'rsw', label: 'RBM sw', title: 'RBM tooltip: swing damage at the armor value in the header, for the skill in the header', get: function (r, u) { return rbmAt(u, 'swing'); } },
+    { key: 'rth', label: 'RBM th', title: 'RBM tooltip: thrust damage at the armor value in the header, for the skill in the header', get: function (r, u) { return rbmAt(u, 'thrust'); } }
+  ];
+  function rbmAt(u, which) {
+    var s = u.rbmStats && u.rbmStats[which];
+    if (!s) return '';
+    var row = s.rows.filter(function (x) { return x.a === armorAt; })[0] || s.rows[0];
+    return row.d;
+  }
+  function cell(st, a, b, v) {
+    var g = function (x) { if (!x || !x.ok) return null; var val = st.get(x, x.usages[0]); return typeof val === 'number' && st.f ? fmt(val, st.f) : val; };
+    var x = g(a), y = g(b), z = g(v);
+    var ch = b && String(x) !== String(y);
+    return '<td class="num' + (ch ? ' chg' : '') + '">' + esc(x == null ? '—' : x) +
+      (ch ? '<span class="f">file ' + esc(y == null ? '—' : y) + '</span>' : '') +
+      (v && String(z) !== String(y) ? '<span class="v diff">van ' + esc(z == null ? '—' : z) + '</span>' : '') + '</td>';
+  }
+  function triple(it) { return { a: calcItem('cur', it), b: calcItem('file', it), v: calcItem('van', it) }; }
+  var itemSort = { key: 'name', dir: 1 };
+  function itemTable(items, compact) {
+    var rows = items.map(function (it) { return { it: it, r: triple(it) }; });
+    var stats = compact ? STATS.filter(function (s) { return ['len', 'wt', 'sws', 'swd', 'ths', 'thd', 'tier', 'rsw', 'rth'].indexOf(s.key) >= 0; }) : STATS;
+    if (!compact && itemSort.key !== 'name') {
+      var st = STATS.filter(function (s) { return s.key === itemSort.key; })[0];
+      var val = function (x) { if (!x.r.a.ok) return -Infinity; var v = st.get(x.r.a, x.r.a.usages[0]); return typeof v === 'number' ? v : parseFloat(v) || 0; };
+      rows.sort(function (p, q) { return (val(p) - val(q)) * itemSort.dir; });
+    } else rows.sort(function (p, q) { return (p.it.name < q.it.name ? -1 : 1) * (compact ? 1 : itemSort.dir); });
+    var h = '<table class="calc' + (compact ? ' wide' : '') + '"><thead><tr><th data-isort="name">Item</th>' + (compact ? '' : '<th>Template · usage</th>') +
+      stats.map(function (s) { return '<th class="num" data-isort="' + s.key + '" title="' + esc(s.title) + '">' + esc(s.label) + (s.key === 'rsw' || s.key === 'rth' ? ' @' + armorAt : '') + (!compact && itemSort.key === s.key ? (itemSort.dir > 0 ? ' ▲' : ' ▼') : '') + '</th>'; }).join('') + '</tr></thead><tbody>';
+    rows.forEach(function (x) {
+      var it = x.it, r = x.r, u = r.a.ok ? r.a.usages[0] : null;
+      h += '<tr class="it' + (it.id === selItem ? ' cur' : '') + '" data-item="' + esc(it.id) + '"><td>' + esc(it.name) + '<br><span class="id mono">' + esc(it.id) + '</span></td>' +
+        (compact ? '' : '<td>' + esc(((it._design || C.parseCrafted(it.text)).template || '?') + (u ? ' · ' + u.desc + (r.a.usages.length > 1 ? ' +' + (r.a.usages.length - 1) : '') : '')) + '</td>');
+      if (!r.a.ok) { h += '<td class="bad" colspan="' + stats.length + '">' + esc(r.a.errors.filter(function (e) { return e.cls === 'bad'; }).map(function (e) { return e.text; }).join('; ')) + '</td></tr>'; return; }
+      stats.forEach(function (s) { h += cell(s, r.a, r.b, r.v); });
+      h += '</tr>';
+    });
+    return h + '</tbody></table>';
+  }
+  // Every usage of a crafted item (or a sandbox design), edited | file | vanilla, with RBM's damage tables.
+  var USAGE_ROWS = [
+    ['Usage (weapon class)', function (u) { return u.desc + ' (' + u.cls + ')'; }],
+    ['Item usage', function (u) { return u.itemUsage; }],
+    ['Length (cm)', function (u) { return u.length; }],
+    ['Swing speed', function (u) { return u.swingSpeed; }],
+    ['Swing damage', function (u) { return u.swingDamage + ' ' + u.swingType; }],
+    ['Swing factor', function (u) { return fmt(u.swingFactor); }],
+    ['Thrust speed', function (u) { return u.thrustSpeed; }],
+    ['Thrust / missile damage', function (u) { return u.thrustDamage + ' ' + u.thrustType; }],
+    ['Thrust factor', function (u) { return fmt(u.thrustFactor); }],
+    ['Handling', function (u) { return u.handling; }],
+    ['Balance', function (u) { return fmt(u.balance); }],
+    ['Sweet spot (vanilla)', function (u) { return fmt(u.sweetSpot); }],
+    ['Center of mass (cm)', function (u) { return fmt(u.com * 100, 2); }],
+    ['Inertia', function (u) { return fmt(u.inertia, 4); }],
+    ['Missile speed ≈', function (u) { return u.thrown ? u.missileSpeed : ''; }, 'The item\'s stored missile_speed (crafting formula). RBM replaces the real launch speed at throw time (RBMConfig/Shared/MissileBallistics, skill and armor dependent), which the editor does not compute.'],
+    ['Stack / accuracy', function (u) { return u.thrown ? u.stack + ' / ' + u.accuracy : ''; }],
+    ['Hand armor bonus', function (u) { return u.armorBonus || ''; }],
+    ['Flags', function (u) { return u.flags.join(' '); }],
+    ['RBM swing m/s', function (u) { return u.rbmStats && u.rbmStats.swingMs != null ? fmt(u.rbmStats.swingMs, 2) : ''; }],
+    ['RBM thrust m/s', function (u) { return u.rbmStats && u.rbmStats.thrustMs != null ? fmt(u.rbmStats.thrustMs, 2) : ''; }],
+    ['RBM sweet spot %', function (u) { return u.rbmStats && u.rbmStats.swing ? Math.floor(u.rbmStats.swing.sweetSpot * 100) : ''; }]
+  ];
+  function resultsHtml(a, b, v, labels) {
+    labels = labels || ['edited', 'file', 'vanilla' + (vanRbm ? ' (RBM formulas)' : '')];
+    var rs = [a, b, v], h = '';
+    var err = function (r) { return r && !r.ok ? r.errors.filter(function (e) { return e.cls === 'bad'; }).map(function (e) { return e.text; }).join('; ') : ''; };
+    h += '<table class="lst"><tr><th></th>' + labels.map(function (l) { return '<th>' + esc(l) + '</th>'; }).join('') + '</tr>';
+    var top = [['Weight (kg)', function (r) { return fmt(r.weight, 2); }], ['Tier (Tierf)', function (r) { return 'T' + r.tier + ' (' + fmt(r.tierf, 3) + ' = 0.6 × ' + fmt(r.meleeTier, 3) + ' + 0.4 × ' + fmt(r.pieceTier, 3) + ')'; }],
+      ['Price', function (r) { return r.price + (r.priceSrc === 'value' ? ' (value attribute; formula ' + r.computedPrice + ')' : ' (' + r.priceText + ')'); }]];
+    top.forEach(function (t) {
+      var vals = rs.map(function (r) { return r && r.ok ? String(t[1](r)) : err(r) || '—'; });
+      h += '<tr' + (vals[0] !== vals[1] ? ' class="chg"' : '') + '><th>' + esc(t[0]) + '</th>' + vals.map(function (x, i) { return '<td' + (i === 2 && x !== vals[1] ? ' style="color:var(--warn)"' : '') + '>' + esc(x) + '</td>'; }).join('') + '</tr>';
+    });
+    var n = Math.max.apply(null, rs.map(function (r) { return r && r.ok ? r.usages.length : 0; }));
+    for (var i = 0; i < n; i++) {
+      h += '<tr><th colspan="4" style="padding-top:6px">Usage ' + (i + 1) + '</th></tr>';
+      USAGE_ROWS.forEach(function (row) {
+        var vals = rs.map(function (r) { var u = r && r.ok ? r.usages[i] : null; return u ? String(row[1](u)) : '—'; });
+        if (vals.every(function (x) { return x === '' || x === '—'; })) return;
+        h += '<tr' + (vals[0] !== vals[1] ? ' class="chg"' : '') + '><th' + (row[2] ? ' class="approx" title="' + esc(row[2]) + '"' : '') + '>' + esc(row[0]) + '</th>' +
+          vals.map(function (x, j) { return '<td' + (j === 2 && x !== vals[1] ? ' style="color:var(--warn)"' : '') + '>' + esc(x) + '</td>'; }).join('') + '</tr>';
+      });
+    }
+    h += '</table>';
+    // RBM damage tables (edited vs file)
+    for (var j = 0; j < n; j++) {
+      ['swing', 'thrust'].forEach(function (w) {
+        var ua = a && a.ok && a.usages[j] && a.usages[j].rbmStats && a.usages[j].rbmStats[w], ub = b && b.ok && b.usages[j] && b.usages[j].rbmStats && b.usages[j].rbmStats[w];
+        if (!ua && !ub) return;
+        h += '<h5>Usage ' + (j + 1) + ' · RBM ' + w + ' damage vs armor (skill ' + skill + ')' + (ua ? ' · magnitude ' + fmt(ua.magnitude, 2) + ' → skill-based ' + fmt(ua.skillDamage, 1) + ', factor √' + fmt(ua.factor * ua.factor) : '') + '</h5>';
+        h += '<div class="dmg"><span class="h">Armor</span>' + (ua || ub).rows.map(function (r) { return '<span class="h">' + r.a + '</span>'; }).join('');
+        [['D edited', ua, 'd'], ['D file', ub, 'd'], ['Pen.', ua, 'p'], ['Blunt', ua, 'b']].forEach(function (row) {
+          if (!row[1]) return;
+          h += '<span class="h">' + row[0] + '</span>' + row[1].rows.map(function (r, x) {
+            var other = row[0] === 'D edited' && ub ? ub.rows[x].d : null;
+            return '<span' + (other != null && other !== r[row[2]] ? ' class="chg"' : '') + '>' + r[row[2]] + '</span>';
+          }).join('');
+        });
+        h += '</div>';
+      });
+    }
+    return h;
+  }
+
+  // ------------------------------------------------------------------ right pane: compare, crafted items, sandbox
+  var tab = 'compare', selItem = null;
+  document.querySelectorAll('[data-tab]').forEach(function (b) {
+    b.onclick = function () {
+      tab = b.getAttribute('data-tab');
+      document.querySelectorAll('[data-tab]').forEach(function (x) { x.classList.toggle('on', x === b); });
+      renderRight();
+    };
+  });
+  function showItem(id) {
+    selItem = id;
+    if (tab !== 'items') { tab = 'items'; document.querySelectorAll('[data-tab]').forEach(function (x) { x.classList.toggle('on', x.getAttribute('data-tab') === 'items'); }); }
+    renderRight();
+  }
+  function renderRight() {
+    $('cmpMode').style.display = tab === 'compare' ? '' : 'none';
+    $('itemScope').style.display = tab === 'items' ? '' : 'none';
+    $('calcDetail').style.display = 'none';
+    if (tab === 'compare') return renderCompare();
+    if (tab === 'items') return renderItems();
+    return renderSandbox();
+  }
+  // Compare: pieces of the selected piece's type (or the filtered list / ticked).
+  function P(path, n) { return { path: path, n: n }; }
+  var ROOT = { el: 'root' };
+  var PCOLS = {
+    name: { label: 'Name' },
+    culture: { label: 'Culture', get: function (k, p) { return p.culture || ''; } },
+    tier: { label: 'Tier', num: true, attr: P(ROOT, 'tier'), get: function (k, p) { return p.tier; } },
+    len: { label: 'Length', num: true, attr: P(ROOT, 'length'), get: function (k, p) { return +fmt(p.length * 100, 2); }, title: 'cm (length, or the two distances)' },
+    wt: { label: 'Weight', num: true, attr: P(ROOT, 'weight'), get: function (k, p) { return +fmt(p.weight, 3); } },
+    com: { label: 'CoM %', num: true, attr: P(ROOT, 'center_of_mass'), get: function (k, p) { return p.length ? Math.round(p.com / p.length * 100) : null; } },
+    off: { label: 'Offset', num: true, attr: P({ el: 'sub', s: 'BuildData' }, 'piece_offset'), get: function (k, p) { return +fmt(p.pieceOffset * 100, 2); } },
+    swf: { label: 'Swing ×', num: true, attr: P({ el: 'sub', s: 'BladeData/Swing' }, 'damage_factor'), get: function (k, p) { return p.blade && p.blade.swingType !== 'Invalid' ? p.blade.swingFactor : null; } },
+    swt: { label: 'Type', get: function (k, p) { return p.blade && p.blade.swingType !== 'Invalid' ? p.blade.swingType : ''; } },
+    thf: { label: 'Thrust ×', num: true, attr: P({ el: 'sub', s: 'BladeData/Thrust' }, 'damage_factor'), get: function (k, p) { return p.blade && p.blade.thrustType !== 'Invalid' ? p.blade.thrustFactor : null; } },
+    tht: { label: 'Type', get: function (k, p) { return p.blade && p.blade.thrustType !== 'Invalid' ? p.blade.thrustType : ''; } },
+    stack: { label: 'Stack', num: true, attr: P({ el: 'sub', s: 'BladeData' }, 'stack_amount'), get: function (k, p) { return p.blade ? p.blade.stack : null; } },
+    mat: { label: 'Materials', get: function (k, p) { return p.materials.map(function (x) { return x.count + x.mat.replace('Iron', 'I').replace('Wood', 'W'); }).join(' '); } },
+    items: { label: 'Items', num: true, get: function (k) { return isNewKey(k) ? 0 : itemsUsing(k).filter(function (it) { return !it.nc; }).length; }, title: 'Campaign crafted items using it' }
+  };
+  var PCOLSETS = { Blade: ['name', 'culture', 'tier', 'len', 'wt', 'com', 'swf', 'swt', 'thf', 'tht', 'stack', 'off', 'mat', 'items'],
+    other: ['name', 'culture', 'tier', 'len', 'wt', 'com', 'off', 'mat', 'items'] };
+  var cmpSort = { key: 'name', dir: 1 };
+  function renderCompare() {
+    var mode = $('cmpMode').value, keys;
+    $('rightHint').textContent = 'Click a row to select it, click a column to sort. Double-click a number with a dotted underline to edit it. Changed cells are highlighted; the small number is the file\'s value.';
+    if (listKind === TPL) {
+      var tk = (mode === 'ticked' ? checkedKeys() : mode === 'list' ? filteredKeys() : allKeys()).filter(exists);
+      $('rightCount').textContent = tk.length + ' template(s)';
+      var h0 = '<table><thead><tr><th>Template</th><th>Item type</th><th class="num">Usable pieces</th><th>Usages</th><th>Build order</th><th class="num">Items</th></tr></thead><tbody>';
+      tk.forEach(function (k) {
+        var t = info(k).eff;
+        h0 += '<tr class="it' + (k === selectedKey ? ' cur' : '') + '" data-key="' + esc(k) + '"><td>' + esc(idOf(k)) + (isEdited(k) ? ' <span class="badge warn">edited</span>' : '') + '</td><td>' + esc(t ? t.itemType : '') + '</td><td class="num">' + (t ? t.usable.length : '') +
+          '</td><td>' + esc(t ? t.descs.join(', ') : '') + '</td><td>' + esc(t ? t.buildOrders.map(function (b) { return b.type + ' ' + b.order; }).join(', ') : '') + '</td><td class="num">' + itemsUsing(k).filter(function (it) { return !it.nc; }).length + '</td></tr>';
+      });
+      $('rightBody').innerHTML = h0 + '</tbody></table>';
+      return;
+    }
+    var selType = selectedKey && exists(selectedKey) && kindOf(selectedKey) === PIECE && info(selectedKey).eff ? info(selectedKey).eff.type : '';
+    if (mode === 'type') {
+      if (!selType) { $('rightBody').innerHTML = '<div class="empty">Select a piece: the table lists the pieces of its type.</div>'; $('rightCount').textContent = ''; return; }
+      var nc = $('fNc').checked;
+      keys = allKeys().filter(function (k) { var p = info(k).eff; return exists(k) && p && p.type === selType && (nc || isNewKey(k) || !DATA.pieces[idOf(k)].nc || k === selectedKey); });
+    } else if (mode === 'list') keys = filteredKeys();
+    else keys = checkedKeys();
+    keys = keys.filter(function (k) { return kindOf(k) === PIECE && info(k).eff; });
+    var cols = PCOLSETS[selType === 'Blade' || mode !== 'type' ? 'Blade' : 'other'];
+    if (cols.indexOf(cmpSort.key) < 0) cmpSort = { key: 'name', dir: 1 };
+    var col = PCOLS[cmpSort.key], dir = cmpSort.dir, vals = {};
+    keys.forEach(function (k) { vals[k] = cmpSort.key === 'name' ? displayName(cur(k), k).toLowerCase() : col.get(k, info(k).eff); });
+    keys = keys.slice().sort(function (a, b) {
+      var x = vals[a], y = vals[b];
+      if (x == null || x === '') return 1;
+      if (y == null || y === '') return -1;
+      if (col.num) return (x - y) * dir || (a < b ? -1 : 1);
+      return (x < y ? -1 : x > y ? 1 : 0) * dir;
+    });
+    var MAX = 600, shown = keys.slice(0, MAX);
+    $('rightCount').textContent = keys.length + ' piece(s)' + (keys.length > MAX ? ', first ' + MAX : '') + (mode === 'type' ? ' · ' + selType : '');
+    var h = ['<table><thead><tr>'];
+    cols.forEach(function (c) {
+      var C2 = PCOLS[c];
+      h.push('<th data-sort="' + c + '" class="' + (C2.num ? 'num' : '') + '"' + (C2.title ? ' title="' + esc(C2.title) + '"' : C2.attr ? ' title="' + esc(C2.attr.n) + '"' : '') + '>' + esc(C2.label) + (cmpSort.key === c ? (dir > 0 ? ' ▲' : ' ▼') : '') + '</th>');
+    });
+    h.push('</tr></thead><tbody>');
+    shown.forEach(function (k) {
+      var m = cur(k), b = base(k), p = info(k).eff, fp = isNewKey(k) ? null : stFile.piece(idOf(k));
+      h.push('<tr class="it' + (k === selectedKey ? ' cur' : '') + '" data-key="' + esc(k) + '">');
+      cols.forEach(function (c) {
+        var C2 = PCOLS[c];
+        if (c === 'name') {
+          h.push('<td>' + esc(displayName(m, k)) + (isNewKey(k) ? ' <span class="badge ok">new</span>' : isEdited(k) ? ' <span class="badge warn">edited</span>' : '') + '<br><span class="id mono">' + esc(m.attrs.id) + '</span></td>');
+          return;
+        }
+        var v = C2.get(k, p), fv = fp ? C2.get(k, fp) : null, ch = fp && String(v) !== String(fv);
+        var editable = C2.attr && C2.num && (C.mapAt(m, C2.attr.path) || C2.attr.path.el === 'root');
+        h.push('<td class="' + (C2.num ? 'num' : '') + (ch ? ' chg' : '') + (editable ? ' ed' : '') + '"' + (editable ? ' data-col="' + c + '" title="Double-click to edit ' + esc(C2.attr.n) + '" style="text-decoration:underline dotted var(--faint)"' : '') + '>' +
+          esc(v == null ? '' : typeof v === 'number' ? fmt(v, 3) : v) + (ch ? '<span class="was">' + esc(fv == null ? '—' : typeof fv === 'number' ? fmt(fv, 3) : fv) + '</span>' : '') + '</td>');
+      });
+      h.push('</tr>');
+    });
+    h.push('</tbody></table>');
+    $('rightBody').innerHTML = keys.length ? h.join('') : '<div class="empty">' + (mode === 'ticked' ? 'Nothing ticked.' : 'No piece.') + '</div>';
+  }
+  $('cmpMode').onchange = renderRight;
+  $('itemScope').onchange = renderRight;
+  $('rightBody').addEventListener('click', function (e) {
+    var th = e.target.closest('th[data-sort]');
+    if (th) { var c = th.getAttribute('data-sort'); if (cmpSort.key === c) cmpSort.dir = -cmpSort.dir; else cmpSort = { key: c, dir: PCOLS[c].num ? -1 : 1 }; renderRight(); return; }
+    var ith = e.target.closest('th[data-isort]');
+    if (ith) { var c2 = ith.getAttribute('data-isort'); if (itemSort.key === c2) itemSort.dir = -itemSort.dir; else itemSort = { key: c2, dir: c2 === 'name' ? 1 : -1 }; renderRight(); return; }
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'BUTTON') return;
+    var tr = e.target.closest('tr[data-key]');
+    if (tr && tr.getAttribute('data-key') !== selectedKey) { select(tr.getAttribute('data-key'), true); return; }
+    var ti = e.target.closest('tr[data-item]');
+    if (ti) showItem(ti.getAttribute('data-item'));
+  });
+  $('rightBody').addEventListener('dblclick', function (e) {
+    var td = e.target.closest('td[data-col]'); if (!td) return;
+    var k = td.parentNode.getAttribute('data-key'), col = PCOLS[td.getAttribute('data-col')], cp = col.attr;
+    var old = C.getAt(cur(k), cp.path, cp.n);
+    td.innerHTML = '<input type="text" value="' + esc(old == null ? '' : old) + '">';
+    var inp = td.firstChild, done = false;
+    inp.focus(); inp.select();
+    var commit = function (ok) {
+      if (done) return; done = true;
+      if (ok && inp.value !== (old == null ? '' : old)) { applyValue(k, cp.path, cp.n, inp.value.trim()); changed(); }
+      else renderRight();
+    };
+    inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') commit(true); else if (ev.key === 'Escape') { ev.stopPropagation(); commit(false); } });
+    inp.addEventListener('blur', function () { commit(true); });
+  });
+
+  function affectedItems() {
+    var set = {};
+    editedKeys().forEach(function (k) {
+      if (isNewKey(k)) return;
+      itemsUsing(k).forEach(function (it) { set[it.id] = it; });
+    });
+    return Object.keys(set).map(function (id) { return set[id]; });
+  }
+  function renderItems() {
+    var scope = $('itemScope').value, items;
+    if (scope === 'sel') items = selectedKey && exists(selectedKey) && !isNewKey(selectedKey) ? itemsUsing(selectedKey) : [];
+    else if (scope === 'edited') items = affectedItems();
+    else items = ITEMS;
+    items = items.filter(function (it) { return !it.nc; });
+    $('rightHint').innerHTML = 'Calculated as the game builds each crafted weapon (primary usage). Bold: with your edits; small: <span style="color:var(--faint)">the files</span> and <span style="color:var(--warn)">vanilla</span> when they differ. ' +
+      'Click a column to sort by the edited value, a row for every usage and RBM\'s damage table.';
+    $('rightCount').textContent = items.length + ' crafted item(s)';
+    var MAX = 400;
+    $('rightBody').innerHTML = items.length ? itemTable(items.slice(0, MAX), false) + (items.length > MAX ? '<div class="empty">… ' + (items.length - MAX) + ' more</div>' : '') :
+      '<div class="empty">' + (scope === 'sel' ? 'Select a piece or template used by crafted items.' : 'No crafted item.') + '</div>';
+    if (selItem && itemById[selItem]) {
+      var it = itemById[selItem], r = triple(it), d = $('calcDetail');
+      d.style.display = '';
+      d.innerHTML = '<div style="display:flex;gap:8px;align-items:baseline"><b>' + esc(it.name) + '</b> <span class="mono hint">' + esc(it.id) + '</span><span style="flex:1"></span>' +
+        '<button class="small" id="toSandbox">Open in the sandbox</button><button class="small" id="closeDetail">Close</button></div>' +
+        '<div class="hint">' + esc(it.src) + (it.vanFrom ? ' · before RBM: ' + it.vanFrom : '') + ' · pieces: ' + esc(Object.keys((it._design || C.parseCrafted(it.text)).pieces).map(function (t) { var p = (it._design || C.parseCrafted(it.text)).pieces[t]; return t + ' ' + p.id + (p.scale !== 100 ? ' ×' + p.scale + '%' : ''); }).join(', ')) + '</div>' +
+        resultsHtml(r.a, r.b, r.v);
+      $('closeDetail').onclick = function () { selItem = null; renderRight(); };
+      $('toSandbox').onclick = function () { sandbox = designCopy(C.parseCrafted(it.text)); tab = 'sandbox'; document.querySelectorAll('[data-tab]').forEach(function (x) { x.classList.toggle('on', x.getAttribute('data-tab') === 'sandbox'); }); renderRight(); };
+    }
+  }
+
+  // Design sandbox: a template and one piece per slot, calculated with the edited, file and vanilla data.
+  var sandbox = null;
+  function designCopy(d) { var c = { template: d.template, pieces: {} }; Object.keys(d.pieces).forEach(function (t) { c.pieces[t] = { id: d.pieces[t].id, scale: d.pieces[t].scale }; }); return c; }
+  function sandboxDefault(tid) {
+    var t = stCur.template(tid), d = { template: tid, pieces: {} };
+    if (!t) return d;
+    t.buildOrders.forEach(function (b) {
+      var first = t.usable.filter(function (pid) { var p = stCur.piece(pid); return p && p.type === b.type && !p.isHidden; })[0];
+      if (first) d.pieces[b.type] = { id: first, scale: 100 };
+    });
+    return d;
+  }
+  function renderSandbox() {
+    $('rightHint').textContent = 'Pick a template and one piece per slot (the template\'s usable pieces with your edits). The design is calculated with your edits, the files and vanilla, like a crafted item.';
+    $('rightCount').textContent = '';
+    if (!sandbox) sandbox = sandboxDefault(Object.keys(DATA.templates)[0]);
+    var t = stCur.template(sandbox.template);
+    var h = '<div class="sandbox"><div class="fields"><span class="lbl">Template</span><span class="ctl"><select id="sbTpl">' +
+      stCur.templateOrder().map(function (id) { return '<option' + (id === sandbox.template ? ' selected' : '') + '>' + esc(id) + '</option>'; }).join('') + '</select>' +
+      '<select id="sbLoad"><option value="">load a crafted item…</option>' + (itemsByTpl[sandbox.template] || []).map(function (i) { return ITEMS[i]; }).filter(function (it) { return !it.nc; }).map(function (it) { return '<option value="' + esc(it.id) + '">' + esc(it.name + ' (' + it.id + ')') + '</option>'; }).join('') + '</select></span>';
+    (t ? t.buildOrders : []).forEach(function (b) {
+      var cur0 = sandbox.pieces[b.type] || { id: '', scale: 100 };
+      var opts = t.usable.filter(function (pid) { var p = stCur.piece(pid); return p && p.type === b.type; });
+      if (cur0.id && opts.indexOf(cur0.id) < 0) opts.unshift(cur0.id);
+      h += '<span class="lbl">' + esc(b.type) + ' <span class="hint">(order ' + b.order + ')</span></span><span class="ctl"><select data-sb="' + esc(b.type) + '"><option value="">(none)</option>' +
+        opts.map(function (pid) { var p = stCur.piece(pid); return '<option value="' + esc(pid) + '"' + (pid === cur0.id ? ' selected' : '') + '>' + esc(pid + (p ? ' — ' + (p.name || '').replace(/^\{=[^}]*\}/, '') + ' · ' + fmt(p.length * 100, 1) + ' cm · ' + fmt(p.weight, 2) + ' kg' : ' (not usable)')) + '</option>'; }).join('') +
+        '</select> scale <input type="text" class="num" style="width:60px" data-sbscale="' + esc(b.type) + '" value="' + esc(cur0.scale) + '"> %</span>';
+    });
+    h += '</div>';
+    var a = stCur.calc(sandbox), bb = stFile.calc(sandbox), v = stVan.calc(sandbox);
+    h += resultsHtml(a, bb, v) + '</div>';
+    $('rightBody').innerHTML = h;
+    $('sbTpl').onchange = function () { sandbox = sandboxDefault(this.value); renderRight(); };
+    $('sbLoad').onchange = function () { if (this.value) { sandbox = designCopy(C.parseCrafted(itemById[this.value].text)); renderRight(); } };
+    $('rightBody').querySelectorAll('[data-sb]').forEach(function (s) {
+      s.onchange = function () { var ty = s.getAttribute('data-sb'); if (s.value) sandbox.pieces[ty] = { id: s.value, scale: (sandbox.pieces[ty] || {}).scale || 100 }; else delete sandbox.pieces[ty]; renderRight(); };
+    });
+    $('rightBody').querySelectorAll('[data-sbscale]').forEach(function (s) {
+      s.onchange = function () { var ty = s.getAttribute('data-sbscale'), n = parseInt(s.value, 10); if (sandbox.pieces[ty] && n > 0) { sandbox.pieces[ty].scale = n; renderRight(); } };
+    });
+  }
+
+  // ------------------------------------------------------------------ problems and warnings
+  function allProblems() {
+    var out = [];
+    editedKeys().forEach(function (k) { seriousProbs(k).forEach(function (p) { out.push({ key: k, cls: p.cls, text: p.text }); }); });
+    out.sort(function (a, b) { return (a.cls === b.cls ? 0 : a.cls === 'bad' ? -1 : 1) || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0); });
+    return out;
+  }
+  // Data warnings over every RBM entry, not only the edited ones: the generator's warnings, vanilla start-tag attributes
+  // RBM's definitions leave out (reset to the default), crafted items that fail to build.
+  var dataWarnCache = null;
+  function dataWarnings() {
+    if (dataWarnCache) return dataWarnCache;
+    var out = [];
+    [PIECE, TPL].forEach(function (kind) {
+      Object.keys(kind === PIECE ? DATA.pieces : DATA.templates).forEach(function (id) {
+        var k = keyOf(kind, id);
+        if (!inRbm(k)) return;
+        C.replayNotes(orig(k), van(k)).forEach(function (n) { if (n.cls === 'warn') out.push({ key: k, text: n.text }); });
+      });
+    });
+    var bad = [];
+    ITEMS.forEach(function (it) { if (it.nc) return; var r = calcItem('file', it); if (!r.ok) bad.push({ item: it.id, text: r.errors.filter(function (e) { return e.cls === 'bad'; }).map(function (e) { return e.text; }).join('; ') }); });
+    dataWarnCache = { lost: out, items: bad };
+    return dataWarnCache;
+  }
+  function updateWarnings() {
+    var gen = DATA.warnings || [], dw = dataWarnings(), btn = $('btnWarnings'), box = $('warnings');
+    var n = gen.length + dw.lost.length + dw.items.length;
+    if (!n) { btn.style.display = 'none'; box.classList.remove('show'); box.innerHTML = ''; return; }
+    btn.style.display = '';
+    btn.textContent = n + ' data warning' + (n === 1 ? '' : 's');
+    var h = [];
+    if (gen.length) { h.push('<div class="sec">Generator warnings (' + gen.length + ')</div>'); gen.forEach(function (w) { h.push('<div class="row">' + esc(w) + '</div>'); }); }
+    if (dw.lost.length) {
+      h.push('<div class="sec">Vanilla start-tag attributes RBM\'s definitions leave out (' + dw.lost.length + '): the game resets them</div>');
+      dw.lost.forEach(function (x) { h.push('<div class="row"><button class="link" data-link="' + esc(x.key) + '">' + esc(idOf(x.key)) + '</button>: ' + esc(x.text) + '</div>'); });
+    }
+    if (dw.items.length) {
+      h.push('<div class="sec">Campaign crafted items that do not build from the files (' + dw.items.length + ')</div>');
+      dw.items.forEach(function (x) { h.push('<div class="row"><button class="link" data-item-link="' + esc(x.item) + '">' + esc(x.item) + '</button>: ' + esc(x.text) + '</div>'); });
+    }
+    box.innerHTML = h.join('');
+  }
+  $('btnWarnings').onclick = function () { $('warnings').classList.toggle('show'); };
+  $('warnings').addEventListener('click', function (e) {
+    var k = e.target.getAttribute && e.target.getAttribute('data-link');
+    if (k) { select(k, true); return; }
+    var it = e.target.getAttribute && e.target.getAttribute('data-item-link');
+    if (it) showItem(it);
+  });
+  function updateProblems() {
+    updateWarnings();
+    var list = allProblems(), btn = $('btnProblems'), box = $('problems');
+    if (!list.length) { btn.style.display = 'none'; box.classList.remove('show'); box.innerHTML = ''; return; }
+    var bad = list.filter(function (x) { return x.cls === 'bad'; }).length;
+    btn.style.display = '';
+    btn.className = 'badge ' + (bad ? 'bad' : 'warn');
+    btn.textContent = list.length + ' problem' + (list.length === 1 ? '' : 's') + ' in edited entries' + (bad ? ' (' + bad + ' serious)' : '');
+    box.innerHTML = list.map(function (x) {
+      return '<div class="row ' + x.cls + '"><button class="link" data-link="' + esc(x.key) + '">' + esc(displayName(cur(x.key), x.key)) + '</button> ' +
+        '<span class="mono">' + esc(idOf(x.key)) + '</span>: ' + esc(x.text) + '</div>';
+    }).join('');
+  }
+  $('btnProblems').onclick = function () { $('problems').classList.toggle('show'); };
+  $('problems').addEventListener('click', function (e) {
+    var k = e.target.getAttribute && e.target.getAttribute('data-link'); if (!k) return;
+    select(k, true);
+  });
+
+  // ------------------------------------------------------------------ export
+  var lastExport = null, exportIdx = 0;
+  function renderMsgs(box, msgs) {
+    box.innerHTML = msgs.map(function (m) { return '<div class="' + m[0] + '">' + (m[2] ? m[1] : esc(m[1])) + '</div>'; }).join('');
+  }
+  function keyOfExport(x) {
+    if (models[x.key]) return x.key;
+    for (var i = 0; i < news.length; i++) if (news[i].kind === x.kind && news[i].model.attrs.id === x.id) return news[i].key;
+    return exists(x.key) ? x.key : null;
+  }
+  function showExportFile(i) {
+    exportIdx = i;
+    var f = lastExport.files[i];
+    document.querySelectorAll('#exportFiles button').forEach(function (b, k) { b.className = k === i ? 'small primary' : 'small'; });
+    var count = function (mode) { return f.items.filter(function (x) { return x.mode === mode; }).length; };
+    var msgs = [['ok', '<b>' + esc(f.path) + '</b>: ' + f.items.length + ' entr' + (f.items.length === 1 ? 'y' : 'ies') + ' — ' + count('patch') + ' patched in place, ' + count('append') + ' appended, ' + count('new') + ' new', true]];
+    f.items.forEach(function (x) {
+      var k = keyOfExport(x);
+      var how = x.mode === 'patch' ? 'patched in place' : x.mode === 'append' ? 'appended (a full copy)' : 'new';
+      msgs.push(['', '<b>' + esc(x.id) + '</b> <span class="mono">' + esc(x.kind) + '</span> · ' + how + '<ul>' + x.summary.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>', true]);
+      (x.notes || []).forEach(function (n) { msgs.push([n[0], '⚠ ' + x.id + ': ' + n[1]]); });
+      if (k) seriousProbs(k).forEach(function (p) { msgs.push([p.cls, '⚠ ' + x.id + ': ' + p.text]); });
+    });
+    var ta = $('exportText');
+    ta.value = f.text;
+    var a = 0;
+    while (a < f.original.length && f.original.charCodeAt(a) === f.text.charCodeAt(a)) a++;
+    var before = f.text.slice(0, a), line = before.split('\n').length - 1;
+    var idx = a - (before.match(/\r/g) || []).length;
+    msgs.splice(1, 0, ['', 'First change at line ' + (line + 1) + '.']);
+    renderMsgs($('exportMsgs'), lastExport.messages.concat(msgs));
+    setTimeout(function () {
+      var lh = parseFloat(getComputedStyle(ta).lineHeight) || 16;
+      ta.setSelectionRange(idx, idx);
+      ta.scrollTop = Math.max(0, (line - 3) * lh);
+    }, 0);
+    $('btnDownload').textContent = 'Download ' + fileName(f.path);
+  }
+  $('btnExport').onclick = function () {
+    var edits = {}, newList = [];
+    Object.keys(models).forEach(function (k) { if (isEdited(k)) edits[k] = { model: models[k], target: targets[k] }; });
+    news.forEach(function (n) { newList.push({ kind: n.kind, id: n.model.attrs.id, from: n.from, model: n.model, target: n.target }); });
+    try {
+      lastExport = C.buildExport(DATA, edits, newList);
+    } catch (err) {
+      lastExport = null;
+      $('exportFiles').innerHTML = ''; $('exportText').style.display = 'none'; $('exportButtons').style.display = 'none';
+      renderMsgs($('exportMsgs'), [['bad', 'Export failed: ' + err.message]]);
+      $('exportModal').classList.add('show');
+      return;
+    }
+    var has = lastExport.files.length > 0;
+    $('exportText').style.display = has ? '' : 'none';
+    $('exportButtons').style.display = has ? '' : 'none';
+    $('exportFiles').innerHTML = lastExport.files.map(function (f, i) { return '<button class="small" data-file="' + i + '">' + esc(f.path) + ' (' + f.items.length + ')</button>'; }).join('');
+    $('exportFiles').querySelectorAll('[data-file]').forEach(function (b) { b.onclick = function () { showExportFile(+b.getAttribute('data-file')); }; });
+    if (has) showExportFile(0);
+    else renderMsgs($('exportMsgs'), lastExport.messages.concat([['ok', 'Nothing to export: nothing differs from the files.']]));
+    $('btnSave').style.display = window.showSaveFilePicker ? '' : 'none';
+    $('exportModal').classList.add('show');
+  };
+  function exportBlob(f) { return new Blob([(f.bom ? '\ufeff' : '') + f.text], { type: 'application/xml' }); }
+  $('btnCopy').onclick = function () {
+    // From the export, not the textarea: a textarea's value turns CRLF into LF.
+    var text = lastExport.files[exportIdx].text;
+    var done = function () { toast('Copied to clipboard'); };
+    var fallback = function () {
+      var ta = $('exportText'); ta.removeAttribute('readonly'); ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { toast('Copy failed: select the text and press Ctrl+C'); }
+      ta.setAttribute('readonly', '');
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  };
+  $('btnDownload').onclick = function () {
+    var f = lastExport.files[exportIdx];
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(exportBlob(f)); a.download = fileName(f.path);
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  };
+  $('btnSave').onclick = function () {
+    var f = lastExport.files[exportIdx];
+    window.showSaveFilePicker({ suggestedName: fileName(f.path), types: [{ description: 'XML', accept: { 'application/xml': ['.xml'] } }] })
+      .then(function (h) { return h.createWritable().then(function (w) { return w.write(exportBlob(f)).then(function () { return w.close(); }); }); })
+      .then(function () { toast('Saved ' + fileName(f.path)); }, function (e) { if (e && e.name !== 'AbortError') toast('Save failed: ' + e.message); });
+  };
+
+  // ------------------------------------------------------------------ options, reset, init
+  $('optSkill').value = skill; $('optArmor').value = armorAt; $('optVanRbm').checked = vanRbm;
+  $('optSkill').onchange = function () { var n = parseInt(this.value, 10); if (!(n >= 0)) n = 0; skill = n; rebuildStatic(); save(); renderDetails(); renderRight(); };
+  $('optArmor').onchange = function () { var n = Math.round((parseInt(this.value, 10) || 0) / 10) * 10; armorAt = Math.max(0, Math.min(100, n)); this.value = armorAt; save(); renderDetails(); renderRight(); };
+  $('optVanRbm').onchange = function () { vanRbm = this.checked; rebuildStatic(); save(); renderDetails(); renderRight(); };
+  $('btnReset').onclick = function () {
+    var n = editedKeys().length;
+    if (n && !confirm('Discard your changes to ' + n + ' entr' + (n === 1 ? 'y' : 'ies') + ' (new ones included) and go back to the files?')) return;
+    models = {}; targets = {}; news = []; checked = {}; cache = {}; sortCache = {};
+    if (selectedKey && isNewKey(selectedKey)) selectedKey = null;
+    try { localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
+    $('banner').classList.remove('show');
+    changed();
+    toast('Reset to the files');
+  };
+  document.querySelectorAll('[data-close]').forEach(function (b) { b.onclick = function () { b.closest('.modal-bg').classList.remove('show'); }; });
+  document.querySelectorAll('.modal-bg').forEach(function (m) { m.addEventListener('mousedown', function (e) { if (e.target === m) m.classList.remove('show'); }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') document.querySelectorAll('.modal-bg.show').forEach(function (m) { m.classList.remove('show'); }); });
+
+  var nRbmP = Object.keys(DATA.pieces).filter(function (id) { return DATA.pieces[id].defs.some(function (d) { return d.rbm; }); }).length;
+  $('meta').textContent = (DATA.gameVersion ? 'Bannerlord ' + DATA.gameVersion : '') + (DATA.navalDlc ? ' + War Sails' : '') +
+    ' · ' + Object.keys(DATA.pieces).length + ' pieces (' + nRbmP + ' in RBM files) · ' + Object.keys(DATA.templates).length + ' templates · ' + ITEMS.length + ' crafted items · data ' + DATA.generated;
+  $('meta').title = 'Assumed: ' + (DATA.assumptions || '');
+
+  rebuildStatic();
+  updateModified();
+  var first = editedKeys()[0];
+  if (first) select(first, true); else { renderList(); renderDetails(); renderRight(); }
+})();
+</script>
+</body>
+</html>

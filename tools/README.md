@@ -28,6 +28,17 @@ Generate its data first with `powershell -ExecutionPolicy Bypass -File tools\Ite
 output is gitignored). It shares `TroopLoadoutEditor/troop-loadout-core.js`'s XML text helpers. See
 `ItemEditor/README.md`, which also explains how RBM replaces items and where the tier and price formulas live.
 
+## CraftingEditor/
+
+A local page (`index.html`) for editing crafting pieces and crafting templates in RBM's crafting files
+(`RBMXML/RBMCombat_*_pieces.xml`, `RBMCombat_sword_blades.xml`, `RBMCombat_couched_lances.xml`,
+`RBMCombat_no_bastard_axes.xml`, `RBM_WS_XML/RBMCombat_WS_crafting_pieces.xml`): every piece and template the game loads,
+each value next to the vanilla one, a weapon-stat calculator (the game's crafting math with RBM's patches) for every
+crafted item using a piece or template, a design sandbox, problem checks and a diff-based export. Generate its data first
+with `powershell -ExecutionPolicy Bypass -File tools\CraftingEditor\Build-CraftingData.ps1` (the output is gitignored).
+It shares `TroopLoadoutEditor/troop-loadout-core.js`'s XML text helpers. See `CraftingEditor/README.md`, which explains
+how RBM's crafting files are applied and documents the calculator's formulas and approximations.
+
 ## check_crafting_coverage.py
 
 Finds smithing piece combinations that no weapon description covers — the cause
