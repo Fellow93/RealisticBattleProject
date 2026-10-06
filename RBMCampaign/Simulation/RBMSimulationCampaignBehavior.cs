@@ -325,7 +325,7 @@ namespace RBMCampaign
                 }
                 captains.Append(names[bucket]).Append(": ").Append(captain.Name);
 
-                List<string> perks = SimulationPerks.PerkNamesOf(captain);
+                List<string> perks = SimulationPerks.PerkNamesOf(captain, command.Environment);
                 captains.Append((perks.Count > 0) ? (" (" + string.Join(", ", perks.ToArray()) + ")") : " (no captain perks)");
             }
             if (captains.Length > 0)

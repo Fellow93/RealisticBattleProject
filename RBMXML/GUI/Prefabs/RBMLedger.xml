@@ -27,6 +27,9 @@
 		<Constant Name="RBMT.W.Rate" Value="120" />
 		<Constant Name="RBMT.G.Name" Value="180" />
 		<Constant Name="RBMT.G.Num" Value="96" />
+		<!-- Clan gold tab column widths. -->
+		<Constant Name="RBMCG.Total" Value="170" />
+		<Constant Name="RBMCG.Days" Value="110" />
 	</Constants>
 	<Window>
 		<Widget Id="LedgerRoot" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
@@ -615,6 +618,62 @@
 												<Standard.VerticalScrollbar Id="TownsScrollbar" HorizontalAlignment="Right" HeightSizePolicy="StretchToParent" WidthSizePolicy="CoverChildren" VerticalAlignment="Top" />
 											</Children>
 										</Widget>
+									</Children>
+								</Widget>
+
+								<!-- Clan gold panel: one-off gold over the ledger window, one row per kind plus a Net row.
+									 A row is a ButtonWidget with no click, so it highlights on hover and is the hover
+									 target for its HintWidget (the per-day breakdown); it must not set DoNotPassEventsToChildren. -->
+								<Widget IsVisible="@ShowClanGold" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
+									<Children>
+										<ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" StackLayout.LayoutMethod="VerticalTopToBottom">
+											<Children>
+												<RichTextWidget Text="@ClanGoldIntro" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" MarginLeft="12" MarginRight="12" MarginBottom="20" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" />
+												<ListPanel IsVisible="@HasClanGold" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+													<Children>
+														<!-- Column header row. -->
+														<ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="34" MarginLeft="12" MarginRight="12" StackLayout.LayoutMethod="HorizontalLeftToRight">
+															<Children>
+																<TextWidget Text="@ClanGoldKindHeader" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																<TextWidget Text="@ClanGoldTotalHeader" WidthSizePolicy="Fixed" SuggestedWidth="!RBMCG.Total" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																<TextWidget Text="@ClanGoldDaysHeader" WidthSizePolicy="Fixed" SuggestedWidth="!RBMCG.Days" HeightSizePolicy="StretchToParent" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+															</Children>
+														</ListPanel>
+														<!-- One row per kind of one-off gold. -->
+														<ListPanel DataSource="{ClanGoldRows}" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+															<ItemTemplate>
+																<ButtonWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" MarginBottom="4" Brush="RBMLedger.Row" UpdateChildrenStates="true">
+																	<Children>
+																		<ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" MarginLeft="12" MarginRight="12" StackLayout.LayoutMethod="HorizontalLeftToRight">
+																			<Children>
+																				<TextWidget Text="@KindName" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																				<TextWidget Text="@Total" WidthSizePolicy="Fixed" SuggestedWidth="!RBMCG.Total" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																				<TextWidget Text="@Days" WidthSizePolicy="Fixed" SuggestedWidth="!RBMCG.Days" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="Popup.Button.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																			</Children>
+																		</ListPanel>
+																		<HintWidget DataSource="{Hint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+																	</Children>
+																</ButtonWidget>
+															</ItemTemplate>
+														</ListPanel>
+														<!-- Divider, then the Net row (same shape, bound to the net row view model). -->
+														<Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="2" MarginTop="4" MarginBottom="6" MarginLeft="12" MarginRight="12" Sprite="BlankWhiteSquare_9" Color="#C8B48C66" />
+														<ButtonWidget DataSource="{ClanGoldNet}" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="42" Brush="RBMLedger.Row" UpdateChildrenStates="true">
+															<Children>
+																<ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" MarginLeft="12" MarginRight="12" StackLayout.LayoutMethod="HorizontalLeftToRight">
+																	<Children>
+																		<TextWidget Text="@KindName" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" />
+																		<TextWidget Text="@Total" WidthSizePolicy="Fixed" SuggestedWidth="!RBMCG.Total" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																		<TextWidget Text="@Days" WidthSizePolicy="Fixed" SuggestedWidth="!RBMCG.Days" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" Brush="SPOptions.OptionName.Text" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" />
+																	</Children>
+																</ListPanel>
+																<HintWidget DataSource="{Hint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false" />
+															</Children>
+														</ButtonWidget>
+													</Children>
+												</ListPanel>
+											</Children>
+										</ListPanel>
 									</Children>
 								</Widget>
 

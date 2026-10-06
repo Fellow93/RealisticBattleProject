@@ -383,7 +383,10 @@ namespace RBMCampaign
             {
                 PerkHelper.AddPerkBonusForParty(DefaultPerks.Medicine.Sledges, mobileParty, false, ref stat);
             }
-            PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Riding.Veterinary, BattleEnvironment.Land, rider, true, ref stat);
+            // The rider's own environment, read the way the two party calls beside it read theirs (the party's
+            // CurrentBattleEnvironment, sea or land) -- and Land with no mobile party, as PartyBase reports for itself.
+            BattleEnvironment environment = (mobileParty != null) ? mobileParty.CurrentBattleEnvironment : BattleEnvironment.Land;
+            PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Riding.Veterinary, environment, rider, true, ref stat);
             if (mobileParty != null)
             {
                 PerkHelper.AddPerkBonusForParty(DefaultPerks.Riding.Veterinary, mobileParty, false, ref stat);

@@ -295,15 +295,23 @@ namespace RBMCampaign
             // not depend on today's ground after all -- see SimulationPerks.IsCavalryTemplate. Nothing else in the kit
             // ever varied by it. The kit is terrain-blind again, entirely, and the cache is half the size for it.
 
-            public KitKey(CharacterObject troop, int captainSignature)
+            // LAND OR SEA, though, does ride here. A captain's perks are asked about the battle's environment (see
+            // SimulationPerks.SkillOf), and one signature can mean two kits -- a naval-reduced perk pays half at sea.
+            // Pinned to Land when the signature is 0, where nothing is taught and the environment cannot matter, so
+            // the uncaptained kit stays one shared entry.
+            public readonly BattleEnvironment Environment;
+
+            public KitKey(CharacterObject troop, int captainSignature, BattleEnvironment environment)
             {
                 Troop = troop;
                 CaptainSignature = captainSignature;
+                Environment = (captainSignature != 0) ? environment : BattleEnvironment.Land;
             }
 
             public bool Equals(KitKey other)
             {
-                return Troop == other.Troop && CaptainSignature == other.CaptainSignature;
+                return Troop == other.Troop && CaptainSignature == other.CaptainSignature
+                    && Environment == other.Environment;
             }
 
             public override bool Equals(object obj)
@@ -314,7 +322,7 @@ namespace RBMCampaign
             public override int GetHashCode()
             {
                 int troopHash = (Troop != null) ? Troop.GetHashCode() : 0;
-                return (troopHash * 397) ^ CaptainSignature;
+                return (((troopHash * 397) ^ CaptainSignature) * 397) ^ (int)Environment;
             }
         }
 
@@ -1338,8 +1346,12 @@ namespace RBMCampaign
             // kit is built with, and rides in the kit's cache key. Everything below re-reads it for the horse itself.
             bool dismounted = state != null && state.Dismounted;
 
-            TroopKit striker = GetKit(strikerTroop, strikerCaptain, strikerSignature);
-            TroopKit struck = GetKit(struckTroop, struckCaptain, struckSignature);
+            // And whether it is fought at sea, which decides which of a captain's perks work at all. Land with no
+            // battle to ask -- and then there is no captain either, so it changes nothing.
+            BattleEnvironment environment = (state != null) ? state.Environment : BattleEnvironment.Land;
+
+            TroopKit striker = GetKit(strikerTroop, strikerCaptain, strikerSignature, environment);
+            TroopKit struck = GetKit(struckTroop, struckCaptain, struckSignature, environment);
             if (!striker.IsValid || !struck.IsValid)
             {
                 return false;
@@ -3137,7 +3149,7 @@ namespace RBMCampaign
         /// </summary>
         private static TroopKit GetKit(CharacterObject troop)
         {
-            return GetKit(troop, null, 0);
+            return GetKit(troop, null, 0, BattleEnvironment.Land);
         }
 
         /// <summary>
@@ -3148,8 +3160,10 @@ namespace RBMCampaign
         /// which is the case for every reference table, every baseline, and every blow struck in a battle whose
         /// chain of command has not been built. <paramref name="captainSignature"/> is that captain's perk mask,
         /// passed in rather than recomputed because this is called twice per blow and a battle has thousands.
+        /// <paramref name="environment"/> is the battle's land or sea, the one the signature was taken in.
         /// </summary>
-        private static TroopKit GetKit(CharacterObject troop, CharacterObject captain, int captainSignature)
+        private static TroopKit GetKit(CharacterObject troop, CharacterObject captain, int captainSignature,
+            BattleEnvironment environment)
         {
             // A troop template's kit and training are fixed, so it is cached for good. A hero's are not -- he buys
             // gear and trains skills as the campaign runs -- but they do not change in the MIDDLE of a battle, and
@@ -3159,7 +3173,7 @@ namespace RBMCampaign
             //
             // The captain rides in the key rather than the value, so the same template under two different captains
             // is two entries and neither can be handed the other's training. See KitKey.
-            KitKey key = new KitKey(troop, captainSignature);
+            KitKey key = new KitKey(troop, captainSignature, environment);
             TroopKit cached;
             if (_kitCache.TryGetValue(key, out cached))
             {
@@ -3202,7 +3216,8 @@ namespace RBMCampaign
                 if (IsRangedTroop(troop))
                 {
                     float setShotCount;
-                    List<SimulationWeaponModel.WeaponProfile> setShots = CollectShotProfiles(troop, set, rbmCombat, captain, out setShotCount);
+                    List<SimulationWeaponModel.WeaponProfile> setShots = CollectShotProfiles(troop, set, rbmCombat, captain,
+                        environment, out setShotCount);
                     shotPerMan += setShotCount;
                     if (setShots.Count > 0)
                     {
@@ -3225,7 +3240,8 @@ namespace RBMCampaign
                 // And what he hurls, whether shooting is his trade or not: half the infantry in Calradia carry a
                 // brace of javelins or throwing axes, and they are for the closing, not for the line.
                 float setThrownPerMan;
-                SimulationWeaponModel.WeaponProfile setThrown = GetThrownProfile(troop, set, rbmCombat, captain, out setThrownPerMan);
+                SimulationWeaponModel.WeaponProfile setThrown = GetThrownProfile(troop, set, rbmCombat, captain, environment,
+                    out setThrownPerMan);
 
                 // The COUNT is averaged over all his sets, because that dilution is real: a man who carries javelins
                 // in two sets of four is half a skirmisher, and half his stack throws nothing.
@@ -3248,7 +3264,8 @@ namespace RBMCampaign
                 // And every weapon on his belt, each as likely as the next to be the one in his hand. Every man
                 // holds one weapon at a time, so the weapons WITHIN a set share that set's share of the stack --
                 // otherwise a soldier issued three blades would out-fight the same soldier issued one.
-                List<SimulationWeaponModel.WeaponProfile> setMelee = CollectMeleeProfiles(troop, set, rbmCombat, captain);
+                List<SimulationWeaponModel.WeaponProfile> setMelee = CollectMeleeProfiles(troop, set, rbmCombat, captain,
+                    environment);
                 if (setMelee.Count > 0)
                 {
                     float share = 1f / setMelee.Count;
@@ -3367,14 +3384,14 @@ namespace RBMCampaign
 
                 // His fighting hand, for the defence roll: the best of his melee trainings. A troop template's skills
                 // are fixed and a hero's do not move mid-battle, so this rides in the cache with the rest of the kit.
-                kit.MeleeSkill = MeleeSkillOf(troop, captain);
+                kit.MeleeSkill = MeleeSkillOf(troop, captain, environment);
 
                 // And his shooting hand, for the miss roll. Taken off the shot profile's OWN skill object rather than
                 // by asking which launcher he seems to carry: the profile already resolved that (it is the launcher's
                 // RelevantSkill, since no one is trained in arrows), so a crossbowman is read on Crossbow and a bowman
                 // on Bow with nothing inferred. Rides in the cache with the rest -- a template's skills do not move.
                 kit.RangedSkill = (kit.Shot.IsValid && kit.Shot.Skill != null)
-                    ? SimulationPerks.SkillOf(troop, kit.Shot.Skill, captain)
+                    ? SimulationPerks.SkillOf(troop, kit.Shot.Skill, captain, environment)
                     : 0f;
 
                 // A man is worth pricing if he can hit anything at all -- with a bow, or with what is on his belt.
@@ -3953,7 +3970,7 @@ namespace RBMCampaign
         /// Each arrow is priced on its own terms and the average is taken afterwards, in ShotDamage.
         /// </summary>
         private static List<SimulationWeaponModel.WeaponProfile> CollectShotProfiles(CharacterObject troop, Equipment set,
-            bool rbmCombat, CharacterObject captain, out float shotCount)
+            bool rbmCombat, CharacterObject captain, BattleEnvironment environment, out float shotCount)
         {
             // The COUNT of shafts he carries in this set, summed across his quivers -- a man with two quivers of
             // thirty carries sixty and shoots twice as long as the same man with one, which is exactly how the
@@ -3993,7 +4010,7 @@ namespace RBMCampaign
                         continue;
                     }
 
-                    int skill = SimulationPerks.SkillOf(troop, launcher.RelevantSkill, captain);
+                    int skill = SimulationPerks.SkillOf(troop, launcher.RelevantSkill, captain, environment);
 
                     // The shot follows the combat model, exactly as the blow does. This branch used to run RBM's
                     // bow physics unconditionally, so with RBM Combat OFF every archer in Calradia was priced on
@@ -4029,7 +4046,7 @@ namespace RBMCampaign
         /// terrifying for twenty seconds and then he is a man with a knife.
         /// </summary>
         private static SimulationWeaponModel.WeaponProfile GetThrownProfile(CharacterObject troop, Equipment set,
-            bool rbmCombat, CharacterObject captain, out float perMan)
+            bool rbmCombat, CharacterObject captain, BattleEnvironment environment, out float perMan)
         {
             SimulationWeaponModel.WeaponProfile best = default(SimulationWeaponModel.WeaponProfile);
             perMan = 0f;
@@ -4047,7 +4064,7 @@ namespace RBMCampaign
                     continue;
                 }
 
-                int skill = SimulationPerks.SkillOf(troop, weapon.RelevantSkill, captain);
+                int skill = SimulationPerks.SkillOf(troop, weapon.RelevantSkill, captain, environment);
 
                 SimulationWeaponModel.WeaponProfile profile;
                 bool got = rbmCombat
@@ -4103,7 +4120,7 @@ namespace RBMCampaign
         /// damage type straight into the armour equation.
         /// </summary>
         private static List<SimulationWeaponModel.WeaponProfile> CollectMeleeProfiles(CharacterObject troop, Equipment set,
-            bool rbmCombat, CharacterObject captain)
+            bool rbmCombat, CharacterObject captain, BattleEnvironment environment)
         {
             List<SimulationWeaponModel.WeaponProfile> profiles = new List<SimulationWeaponModel.WeaponProfile>();
 
@@ -4124,7 +4141,7 @@ namespace RBMCampaign
                     continue;
                 }
 
-                int skill = SimulationPerks.SkillOf(troop, weapon.RelevantSkill, captain);
+                int skill = SimulationPerks.SkillOf(troop, weapon.RelevantSkill, captain, environment);
 
                 SimulationWeaponModel.WeaponProfile profile;
                 bool got = rbmCombat
@@ -4303,15 +4320,15 @@ namespace RBMCampaign
         /// this) -- so a captain whose training reaches his men's blades reaches their guard with it, which is what a
         /// perk that adds a melee skill actually means.
         /// </summary>
-        private static float MeleeSkillOf(CharacterObject troop, CharacterObject captain)
+        private static float MeleeSkillOf(CharacterObject troop, CharacterObject captain, BattleEnvironment environment)
         {
             if (troop == null)
             {
                 return 0f;
             }
-            int oneHanded = SimulationPerks.SkillOf(troop, DefaultSkills.OneHanded, captain);
-            int twoHanded = SimulationPerks.SkillOf(troop, DefaultSkills.TwoHanded, captain);
-            int polearm = SimulationPerks.SkillOf(troop, DefaultSkills.Polearm, captain);
+            int oneHanded = SimulationPerks.SkillOf(troop, DefaultSkills.OneHanded, captain, environment);
+            int twoHanded = SimulationPerks.SkillOf(troop, DefaultSkills.TwoHanded, captain, environment);
+            int polearm = SimulationPerks.SkillOf(troop, DefaultSkills.Polearm, captain, environment);
             int best = oneHanded;
             if (twoHanded > best) { best = twoHanded; }
             if (polearm > best) { best = polearm; }

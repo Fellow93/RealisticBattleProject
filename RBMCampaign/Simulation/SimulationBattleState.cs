@@ -656,6 +656,12 @@ namespace RBMCampaign
             public bool Dismounted;
 
             /// <summary>
+            /// Land or sea -- the environment every perk in this battle is asked about, so a land-only perk does
+            /// nothing in a War Sails fight and a naval one does nothing ashore. See <see cref="EnvironmentOf"/>.
+            /// </summary>
+            public BattleEnvironment Environment = BattleEnvironment.Land;
+
+            /// <summary>
             /// A WALL BEING STORMED, which is a different battle from the one the three acts above describe -- and
             /// when this is set, those acts do not run at all. The volley/skirmish/contact clock is replaced end to
             /// end by the two-phase siege model: an approach in which nobody is in reach of anybody, and an assault
@@ -928,6 +934,7 @@ namespace RBMCampaign
                 state.KitingRoom = GetKitingRoom(mapEvent);
                 state.ChargeChance = GetChargeChance(mapEvent);
                 state.Dismounted = IsDismounted(mapEvent);
+                state.Environment = EnvironmentOf(mapEvent);
                 state.AttackerCounts = Muster(mapEvent.AttackerSide);
                 state.DefenderCounts = Muster(mapEvent.DefenderSide);
                 state.AttackerRangedShare = RangedShare(state.AttackerCounts);
@@ -1682,6 +1689,18 @@ namespace RBMCampaign
         internal static bool IsMountedIn(CharacterObject troop, bool dismountedBattle)
         {
             return troop != null && troop.IsMounted && !dismountedBattle;
+        }
+
+        /// <summary>
+        /// Whether this battle is fought at sea, as the perks see it. A War Sails mission hands every agent
+        /// BattleEnvironment.Naval (Agent.CurrentBattleEnvironment, off Mission.IsNavalBattle) and the campaign marks
+        /// that battle as one whose position is off the land (MapEvent.IsNavalMapEvent); a naval raid is fought
+        /// ashore and stays Land, as its mission does. Battle-wide rather than vanilla auto-resolve's per-blow read
+        /// of the striker's party, because the captain perks this feeds are a port of the mission's.
+        /// </summary>
+        internal static BattleEnvironment EnvironmentOf(MapEvent mapEvent)
+        {
+            return (mapEvent != null && mapEvent.IsNavalMapEvent) ? BattleEnvironment.Naval : BattleEnvironment.Land;
         }
 
         /// <summary>Whether this battle is one nobody fights mounted, off the battle's own cached state. For the

@@ -86,6 +86,12 @@ namespace RBMCampaign
             public readonly int[] Signatures = new int[BucketCount];
 
             /// <summary>
+            /// Land or sea: the environment the <see cref="Signatures"/> were taken in, kept so the log names the
+            /// same perks the battle used. See SimulationBattleState.EnvironmentOf.
+            /// </summary>
+            public BattleEnvironment Environment = BattleEnvironment.Land;
+
+            /// <summary>
             /// The captain over the men this troop stands with -- and null when the troop IS that captain, because a
             /// captain does not receive his own captain perks. Native applies that exclusion at the top of every
             /// model that reads a captain; it is applied here instead, once, at the only place the answer is
@@ -230,9 +236,11 @@ namespace RBMCampaign
                 }
             }
 
+            // Signed in the battle's own environment, so a perk that does nothing at sea signs nothing at sea.
+            command.Environment = SimulationBattleState.EnvironmentOf(battle);
             for (int i = 0; i < BucketCount; i++)
             {
-                command.Signatures[i] = SimulationPerks.SignatureOf(command.Captains[i]);
+                command.Signatures[i] = SimulationPerks.SignatureOf(command.Captains[i], command.Environment);
                 command.Appointed[i] = command.Captains[i];
             }
             return command;

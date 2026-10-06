@@ -26,24 +26,26 @@ namespace RBMCampaign
     /// per day. The leader's cut of spoils, the companions' share, a mint's cut and a clan party's gold-paid
     /// promotions all move through <c>GiveGoldAction</c> the moment they happen, which the finance model
     /// never sees; so do two one-off vanilla v1.5 flows RBM only notes, blood money paid to end a feud and
-    /// the scrap value of a disbanded clan party's ships. <see cref="DailyAverage"/> reads a
-    /// <see cref="WindowDays"/>-day daily average of each kind.
+    /// the scrap value of a disbanded clan party's ships. Kept for the last <see cref="HistoryDays"/> days.
     ///
     /// NOT shown on any finance breakdown, and it must not be: those breakdowns are projections of what the
     /// clan's daily apply pass will do, and this gold is never on that pass -- it was paid when the event
     /// fired. Folding its averages into the denar tooltip and the Finances tab's Expected Gold made both
-    /// promise a daily change the day never paid. Nothing reads the record at present; it is kept recording
-    /// (and its save keys kept) for a reader that reports it as what it is -- past event income -- rather
-    /// than ripped out of existing saves. Player clan only, so the store stays tiny.
+    /// promise a daily change the day never paid. Its one reader is the RBM Ledger's Clan gold tab
+    /// (<see cref="RBMLedgerClanGold"/>), which reports it as what it is: past event gold, day by day.
+    /// Player clan only, so the store stays tiny.
     /// </summary>
     public static class ClanEventGoldLedger
     {
-        /// <summary>The averaging window, in campaign days.</summary>
-        public const int WindowDays = 14;
+        /// <summary>
+        /// How many campaign days are kept (today included), and the window the ledger tab shows. The same
+        /// 30 days as the ledger's town and village histories (<see cref="RBMTownLedger.HistoryDays"/>).
+        /// </summary>
+        public const int HistoryDays = 30;
 
         // "kind#day" -> gold that kind paid (or took) that campaign day. Only the player's clan is recorded.
         private static Dictionary<string, int> _byDay = new Dictionary<string, int>();
-        // The first campaign day anything was recorded, so a window younger than WindowDays is averaged
+        // The first campaign day anything was recorded, so a window younger than HistoryDays is averaged
         // over the days actually tracked rather than diluted by days that never happened.
         private static int _firstDay = -1;
         private static int _lastPruneDay = int.MinValue;
@@ -75,7 +77,7 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The daily average of <paramref name="kind"/> over the last <see cref="WindowDays"/> days (or over
+        /// The daily average of <paramref name="kind"/> over the last <see cref="HistoryDays"/> days (or over
         /// the days tracked so far, when the record is younger than the window). Zero before anything was
         /// ever recorded.
         /// </summary>
@@ -88,7 +90,7 @@ namespace RBMCampaign
             int today = Today();
             PruneIfNeeded(today);
             long sum = 0L;
-            for (int day = today - WindowDays + 1; day <= today; day++)
+            for (int day = today - HistoryDays + 1; day <= today; day++)
             {
                 int gold;
                 if (_byDay.TryGetValue(Key(kind, day), out gold))
@@ -96,12 +98,35 @@ namespace RBMCampaign
                     sum += gold;
                 }
             }
-            int days = Math.Min(WindowDays, today - _firstDay + 1);
+            int days = Math.Min(HistoryDays, today - _firstDay + 1);
             if (days < 1)
             {
                 days = 1;
             }
             return (int)Math.Round((double)sum / days);
+        }
+
+        /// <summary>The current campaign day, as the record keys its days. Zero outside a campaign.</summary>
+        public static int CurrentDay
+        {
+            get { return Campaign.Current != null ? Today() : 0; }
+        }
+
+        /// <summary>
+        /// The gold of <paramref name="kind"/> recorded on campaign <paramref name="day"/>, as an unsigned
+        /// amount (see <see cref="IsDrain"/> for its direction). Zero for a day with none, or one older than
+        /// the window.
+        /// </summary>
+        public static int GetDay(EventGoldKind kind, int day)
+        {
+            int gold;
+            return _byDay.TryGetValue(Key(kind, day), out gold) ? gold : 0;
+        }
+
+        /// <summary>True for the kinds that take gold from the clan rather than pay it.</summary>
+        public static bool IsDrain(EventGoldKind kind)
+        {
+            return kind == EventGoldKind.UpgradeGold || kind == EventGoldKind.BloodMoney;
         }
 
         private static int Today()
@@ -122,7 +147,7 @@ namespace RBMCampaign
                 return;
             }
             _lastPruneDay = today;
-            int oldest = today - WindowDays + 1;
+            int oldest = today - HistoryDays + 1;
             List<string> stale = null;
             foreach (string key in _byDay.Keys)
             {

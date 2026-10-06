@@ -95,8 +95,12 @@ the player. The goods go through `InventoryScreenHelper.OpenScreenAsLoot`, scale
 `BattleWreckageCampaignBehavior._lootedGoldAmount` just before vanilla's gold branch pays it and granted
 through `SpoilsPool.OnBattleSiteGold` (same split). The site's goods target
 (`GetTradeGoodTargetValueAndRogueryXp`) is scaled by the same taken fraction, since sites only form on
-battles the player was not in and RBM's loot pass already stripped those dead. Recovered troops get no
-recruit seed (nobody paid for them).
+battles the player was not in and RBM's loot pass already stripped those dead. Recovered troops DO get
+the recruit maintenance seed, unlike prisoners recruited in a town or village: `BattleSiteTroopUpkeep`
+prefixes `PartyScreenHelper.OpenScreenAsReceiveTroops` while `BattleSiteSpoils.InResults` is set,
+clones the offered roster and wraps the screen's closing delegate, so on Done each stack is seeded
+(`SpoilsPool.SeedRecruitMaintenance`) for the men actually taken (offered minus what was left on the
+left side). Cancel seeds nothing.
 
 ### 3. Siege drain and town/castle sacking (`SpoilsPool.OnBesiegedFortificationDailyTick`, `SpoilsPool.OnSiegeAftermathApplied`)
 
@@ -304,7 +308,7 @@ Serialized via `SyncData`:
 - `RBM_troopLuxuryCooldown` — when each stack may indulge again (`TroopUpkeep`).
 - `RBM_townTroopTrade` — what troops have spent in each town (`TroopMarketFeedback`).
 - `RBM_partyUpgradeCapGold`, `RBM_partyUpgradeCapEnabled` — per-party daily upgrade-gold caps (`PartyUpgradeBudget`).
-- `RBM_clanEventGoldByDay`, `RBM_clanEventGoldFirstDay` — the 14-day event-gold record (`ClanEventGoldLedger`; currently unread).
+- `RBM_clanEventGoldByDay`, `RBM_clanEventGoldFirstDay` — the 30-day event-gold record (`ClanEventGoldLedger`; read by the RBM Ledger's Clan gold tab).
 - `RBM_settlementWealth` — the town/castle treasury pot (`SettlementWealth`; citizen wealth rides on vanilla's `Gold`, as does a village's single purse).
 - `RBM_settlementRecruitPool` — each settlement's manpower pool (`RecruitPool`); a settlement with no entry starts full.
 - `RBM_constructionToolDebt`, `RBM_pendingWealthTaxIncome`, `RBM_campaignSeeded` — construction, wealth tax and the one-time seeding flag.
@@ -373,7 +377,7 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Spoils/SpoilsPool.Plunder.cs` | The raid pot, the daily siege drain and besieger snapshot, the wealth leg of the sack, the capture/aftermath handshake, and the multi-party split. |
 | `Spoils/RaidGoodsDestruction.cs` | Scales a raid's goods haul by the taken fraction (base 0.5, Roguery and Nord lift it). |
 | `Spoils/VillageCoercion.cs` | Forcing supplies: the coin is drawn from the village purse into spoils, the goods scaled by the taken fraction. |
-| `Spoils/BattleSiteSpoils.cs` | Battle-site coin into spoils instead of player gold; the site's goods target scaled by the taken fraction. |
+| `Spoils/BattleSiteSpoils.cs` | Battle-site coin into spoils instead of player gold; recovered troops seeded with a few days' maintenance for the men taken; the site's goods target scaled by the taken fraction. |
 | `Spoils/SpoilsPool.Ransom.cs` | Ransomed (and quest-delivered) prisoners' kit into spoils, with its three hooks; an executed captive's kit to his captors' spoils or the dungeon's treasury. |
 | `Spoils/SpoilsPool.PrisonerStrip.cs` | Prisoners left on the loot screen stripped for half their kit. |
 | `Spoils/RansomMenuTooltip.cs` / `RansomScreenSpoilsLabel.cs` | The spoils half of a ransom on the tavern option and the ransom screen (display only). |
@@ -390,7 +394,7 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Spoils/MaintenancePartyWageLine.cs` / `MaintenanceTroopTooltipLine.cs` | Maintenance in the party-wage tooltip and, per man, in the troop tooltip (display only). |
 | `Spoils/SpoilsTransferOnPartyScreen.cs` | Purse follows men moved on the party screen. |
 | `Spoils/SpoilsTransferOnSpecialScreens.cs` | Purse follows men on the two screens with no left owner party: garrison donation and creating a companion's clan party. |
-| `Finance/ClanEventGoldLedger.cs` | 14-day record of the gold paid to the player's clan per event (leader's cut, companions' share, mint cuts, gold-paid promotions, blood money, ship scrap). Not on any finance breakdown (that gold is never on the apply pass); currently unread. |
+| `Finance/ClanEventGoldLedger.cs` | 30-day record of the gold paid to the player's clan per event (leader's cut, companions' share, mint cuts, gold-paid promotions, blood money, ship scrap), pruned to the window. Not on any finance breakdown (that gold is never on the apply pass); shown only on the RBM Ledger's Clan gold tab (`UI/Ledger/RBMLedgerClanGoldVM.cs`). |
 | `Finance/BloodMoney.cs` | Blood money paid to a ransom broker to end a feud is credited to that town's citizen wealth (vanilla paid it to nobody), and recorded in the event-gold ledger. |
 | `Finance/ShipScrapGold.cs` | Records the scrap gold a disbanded clan party's leftover ships pay the player in the event-gold ledger. |
 | `Finance/SettlementAccrualPool.cs` | Per-clan pool of money fief ticks book for the clan's next finance apply pass, plus which fiefs have booked their day, so the display can project exactly what the next apply settles. Used by the wealth tax and the garrison maintenance subsidy. |
@@ -427,7 +431,7 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Simulation/` | The equipment-aware auto-resolve: weapon model, hit points, arm targeting, perks and command structure, morale, rout, wounded capture, player participation, the battle state and snapshot, the two-phase wall assault (`SimulationSiege.cs`) and siege artillery (`SimulationSiegeEngines.cs`). See `AUTO_RESOLVE.md`. |
 | `Power/` | `StrategicTroopPower` and its tooltip — the campaign-side power figure; `SiegeDecisionGate` (the strength an AI lord needs before he besieges) and `StrategicPowerLog`. |
 | `Spectate/` | Watching an AI-vs-AI battle as a no-agent spectator. |
-| `UI/` | The party-screen spoils bar, maintenance label and map party tooltip, the clan-screen upgrade-budget control, the inventory weight column, settlement nameplate bubbles (`RBMMapNotifications`), the smithy refine-row layout, building-effect tooltips and the Projects grid (below), each with its prefab injection; `UI/Ledger/` (the RBM Ledger screen, Ctrl+Shift+K or the Escape menu, with its 30-day town/village histories) and `UI/SimulationPanel/` (a live auto-resolve panel on the map battle-simulation view). |
+| `UI/` | The party-screen spoils bar, maintenance label and map party tooltip, the clan-screen upgrade-budget control, the inventory weight column, settlement nameplate bubbles (`RBMMapNotifications`), the smithy refine-row layout, building-effect tooltips and the Projects grid (below), each with its prefab injection; `UI/Ledger/` (the RBM Ledger screen, Ctrl+Shift+K or the Escape menu, with its 30-day town/village histories and the Clan gold tab of one-off clan gold from `ClanEventGoldLedger`) and `UI/SimulationPanel/` (a live auto-resolve panel on the map battle-simulation view). |
 | `SwitchLord/` | `LordSwitcher` — debug tool to take over another lord's party. |
 | `Diagnostics/` | `SpoilsLog`, `EconomyLog`, `SimulationLog`, `CaravanLog`, `GarrisonRefillLog`, `LogRetention`. |
 | `RBMCampaignPatcher.cs` | Entry point (`DoPatching`), at the project root. |

@@ -130,8 +130,13 @@ namespace RBMCampaign
         ///
         /// A captain with NONE of these perks signs as 0, which is the same as no captain at all -- also by
         /// construction, and also correct: he changes no skill, so the kit really is the uncaptained one.
+        ///
+        /// Only the perks that work in <paramref name="environment"/> are counted, by the same test SkillOf's
+        /// PerkHelper call applies -- so a perk that does nothing at sea signs nothing at sea, and the rule above
+        /// (signature 0, no skill changed) holds on a deck as well as on a field. Every captain slot in the table
+        /// is land-only today, so at sea every captain signs 0 and his men fight out of the uncaptained kit.
         /// </summary>
-        internal static int SignatureOf(CharacterObject captain)
+        internal static int SignatureOf(CharacterObject captain, BattleEnvironment environment)
         {
             if (captain == null || !captain.IsHero || captain.HeroObject == null || !Enabled)
             {
@@ -142,12 +147,21 @@ namespace RBMCampaign
             int signature = 0;
             for (int i = 0; i < table.Length; i++)
             {
-                if (table[i] != null && captain.GetPerkValue(table[i]))
+                if (table[i] != null && captain.GetPerkValue(table[i]) && AppliesAsCaptain(table[i], environment))
                 {
                     signature |= (1 << i);
                 }
             }
             return signature;
+        }
+
+        /// <summary>
+        /// Whether a perk's CAPTAIN slot works in this environment -- PerkHelper.AddPerkBonusFromCaptain's own test,
+        /// asked of the primary slot when Captain is the perk's primary role and of the secondary otherwise.
+        /// </summary>
+        private static bool AppliesAsCaptain(PerkObject perk, BattleEnvironment environment)
+        {
+            return perk.ApplicableInEnvironment(environment, perk.PrimaryRole == PartyRole.Captain);
         }
 
         /// <summary>
@@ -193,8 +207,13 @@ namespace RBMCampaign
         /// asked once, upstream, where a captain is APPOINTED (SignatureOf returns 0 and Build returns an empty
         /// command when it is off), and a captain who reaches this method is a captain who counts. Signature X means
         /// exactly one kit, for the life of the session.
+        ///
+        /// <paramref name="environment"/> is the battle's -- land or sea -- and goes to PerkHelper exactly as native's
+        /// GetEffectiveSkill hands it the agent's, so a land-only perk teaches nobody on a deck and a reduced one is
+        /// halved there. It must be the same environment the captain was signed in (see SignatureOf).
         /// </summary>
-        internal static int SkillOf(CharacterObject troop, SkillObject skill, CharacterObject captain)
+        internal static int SkillOf(CharacterObject troop, SkillObject skill, CharacterObject captain,
+            BattleEnvironment environment)
         {
             bool mounted = IsCavalryTemplate(troop);
             int baseSkill = (troop != null && skill != null) ? troop.GetSkillValue(skill) : 0;
@@ -213,25 +232,25 @@ namespace RBMCampaign
             bool meleeSkill = (skill == DefaultSkills.OneHanded || skill == DefaultSkills.TwoHanded || skill == DefaultSkills.Polearm);
             if ((troop.IsInfantry && rangedSkill) || (troop.IsRanged && meleeSkill))
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.FlexibleFighter, BattleEnvironment.Land, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.FlexibleFighter, environment, captain, ref bonuses);
             }
 
             if (skill == DefaultSkills.Bow)
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.DeadAim, BattleEnvironment.Land, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.DeadAim, environment, captain, ref bonuses);
                 if (mounted)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.HorseMaster, BattleEnvironment.Land, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.HorseMaster, environment, captain, ref bonuses);
                 }
             }
             else if (skill == DefaultSkills.Throwing)
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Athletics.StrongArms, BattleEnvironment.Land, captain, ref bonuses);
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.RunningThrow, BattleEnvironment.Land, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Athletics.StrongArms, environment, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.RunningThrow, environment, captain, ref bonuses);
             }
             else if (skill == DefaultSkills.Crossbow)
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Crossbow.DonkeysSwiftness, BattleEnvironment.Land, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Crossbow.DonkeysSwiftness, environment, captain, ref bonuses);
             }
 
             // AND THE MELEE PERKS REACH A FOOT TROOP ONLY. This is not a simplification -- it is where native puts
@@ -244,16 +263,16 @@ namespace RBMCampaign
             {
                 if (skill == DefaultSkills.OneHanded)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.OneHanded.WrappedHandles, BattleEnvironment.Land, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.OneHanded.WrappedHandles, environment, captain, ref bonuses);
                 }
                 else if (skill == DefaultSkills.TwoHanded)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.TwoHanded.StrongGrip, BattleEnvironment.Land, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.TwoHanded.StrongGrip, environment, captain, ref bonuses);
                 }
                 else if (skill == DefaultSkills.Polearm)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.CleanThrust, BattleEnvironment.Land, captain, ref bonuses);
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.CounterWeight, BattleEnvironment.Land, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.CleanThrust, environment, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.CounterWeight, environment, captain, ref bonuses);
                 }
             }
 
@@ -263,9 +282,10 @@ namespace RBMCampaign
         /// <summary>
         /// Which of the table's perks this captain actually brought, by name -- for the log alone, so a battle's
         /// write-up can say what his presence was worth rather than merely that he was there. Empty for a captain
-        /// with nothing relevant, which is most of them.
+        /// with nothing relevant, which is most of them. Filtered by <paramref name="environment"/> exactly as
+        /// SignatureOf is, so a land-only perk is not credited to a battle fought at sea.
         /// </summary>
-        internal static List<string> PerkNamesOf(CharacterObject captain)
+        internal static List<string> PerkNamesOf(CharacterObject captain, BattleEnvironment environment)
         {
             List<string> names = new List<string>();
             if (captain == null || !captain.IsHero || captain.HeroObject == null)
@@ -276,7 +296,7 @@ namespace RBMCampaign
             PerkObject[] table = Table;
             for (int i = 0; i < table.Length; i++)
             {
-                if (table[i] != null && captain.GetPerkValue(table[i]))
+                if (table[i] != null && captain.GetPerkValue(table[i]) && AppliesAsCaptain(table[i], environment))
                 {
                     names.Add(table[i].Name.ToString());
                 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using HarmonyLib;
+using Helpers;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
@@ -23,16 +24,26 @@ namespace RBMCampaign
     /// would pay, it grants the lump and zeroes <c>_lootedGoldAmount</c>, so vanilla neither mints nor
     /// prints its "you received N gold" line for a figure the player did not receive.
     ///
-    /// Wounded men recovered from the site get no recruit maintenance seed: like prisoners pressed into
-    /// service, nobody paid for them, so a seed would be spoils out of thin air
-    /// (<see cref="SpoilsPool.OnUnitRecruited"/>).
+    /// Wounded men recovered from the site DO get the recruit maintenance seed, unlike prisoners pressed
+    /// into service (<see cref="SpoilsPool.OnUnitRecruited"/>): they are soldiers who were already kitted
+    /// and in someone's pay, and arrive with a few days' upkeep put by like any recruit. Only the men the
+    /// player actually takes are seeded (<see cref="BattleSiteTroopUpkeep"/>).
     /// </remarks>
     [HarmonyPatch(typeof(BattleWreckageCampaignBehavior), "ApplyWreckageInvestigationResults")]
     public static class BattleSiteSpoils
     {
+        /// <summary>True while the results are being handed out, for <see cref="BattleSiteTroopUpkeep"/>.</summary>
+        internal static bool InResults;
+
+        private static void Finalizer()
+        {
+            InResults = false;
+        }
+
         private static void Prefix(TroopRoster ____lootedTroops, ItemRoster ____lootedItems,
             List<TextObject> ____consequenceExplanations, ref int ____lootedGoldAmount)
         {
+            InResults = RBMConfig.RBMConfig.rbmCampaignEnabled;
             if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !SpoilsPool.IsEnabled || ____lootedGoldAmount <= 0)
             {
                 return;
@@ -47,6 +58,58 @@ namespace RBMCampaign
             int amount = ____lootedGoldAmount;
             ____lootedGoldAmount = 0;
             SpoilsPool.OnBattleSiteGold(PartyBase.MainParty, amount);
+        }
+    }
+
+    /// <summary>
+    /// Wounded men recovered from a battle site arrive with the same few days' maintenance in their
+    /// purse a recruited stack gets. Vanilla hands them over through the receive-troops party screen,
+    /// which raises neither recruit event RBM seeds from, so they would otherwise start with nothing.
+    /// The screen's closing delegate is wrapped so only the men the player actually took are seeded:
+    /// what he left on the left side is subtracted from the roster the screen opened with.
+    /// </summary>
+    /// <remarks>
+    /// The screen edits the roster it is given in place (<c>PartyScreenLogic.Initialize</c> binds
+    /// <c>MemberRosters[0]</c> to it and passes that same roster to the closing delegate), so the
+    /// offered men are cloned up front. Gated on <see cref="BattleSiteSpoils.InResults"/> so the other
+    /// callers of this helper (the kingdom-joining reward troops) are left alone; the seed itself
+    /// applies <see cref="SpoilsPool.SeedRecruitMaintenance"/>'s usual guards and is zero when the
+    /// recruit maintenance days are.
+    /// </remarks>
+    [HarmonyPatch(typeof(PartyScreenHelper), "OpenScreenAsReceiveTroops")]
+    public static class BattleSiteTroopUpkeep
+    {
+        private static void Prefix(TroopRoster leftMemberParty, ref PartyScreenClosedDelegate partyScreenClosedDelegate)
+        {
+            if (!BattleSiteSpoils.InResults || !RBMConfig.RBMConfig.rbmCampaignEnabled || !SpoilsPool.IsEnabled
+                || leftMemberParty == null)
+            {
+                return;
+            }
+            TroopRoster offered = leftMemberParty.CloneRosterData();
+            PartyScreenClosedDelegate original = partyScreenClosedDelegate;
+            partyScreenClosedDelegate = delegate (PartyBase leftOwnerParty, TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster,
+                PartyBase rightOwnerParty, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, bool fromCancel)
+            {
+                if (!fromCancel)
+                {
+                    for (int i = 0; i < offered.Count; i++)
+                    {
+                        TroopRosterElement element = offered.GetElementCopyAtIndex(i);
+                        if (element.Character == null || element.Character.IsHero)
+                        {
+                            continue;
+                        }
+                        int left = (leftMemberRoster != null) ? leftMemberRoster.GetTroopCount(element.Character) : 0;
+                        int taken = element.Number - left;
+                        if (taken > 0)
+                        {
+                            SpoilsPool.SeedRecruitMaintenance(PartyBase.MainParty, element.Character, taken);
+                        }
+                    }
+                }
+                original?.Invoke(leftOwnerParty, leftMemberRoster, leftPrisonRoster, rightOwnerParty, rightMemberRoster, rightPrisonRoster, fromCancel);
+            };
         }
     }
 

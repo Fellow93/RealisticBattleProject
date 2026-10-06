@@ -352,6 +352,7 @@
     <Compile Include="UI\SimulationPanel\SimulationBattlePanelPatch.cs" />
     <Compile Include="UI\Ledger\RBMLedgerHeaders.cs" />
     <Compile Include="UI\Ledger\RBMLedgerTabVM.cs" />
+    <Compile Include="UI\Ledger\RBMLedgerClanGoldVM.cs" />
     <Compile Include="UI\Ledger\RBMLedgerViewModel.cs" />
     <Compile Include="UI\Ledger\RBMLedgerScreen.cs" />
     <Compile Include="UI\Ledger\RBMLedgerMapTickGuard.cs" />

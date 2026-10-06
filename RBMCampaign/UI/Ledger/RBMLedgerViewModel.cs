@@ -15,21 +15,27 @@ namespace RBMCampaign
 {
     // Backing view model for the RBM Ledger screen (RBMLedger.xml). Extensible shell: a data-bound
     // tab strip on the left and a content area on the right that shows EITHER a plain text pane
-    // (placeholder tabs) OR the villages panel, toggled by the selected tab's id.
+    // (placeholder tabs) OR the villages, towns or clan gold panel, toggled by the selected tab's id.
     public class RBMLedgerViewModel : ViewModel
     {
         private const string TabVillages = "villages";
         private const string TabTowns = "towns";
+        private const string TabClanGold = "clangold";
 
         private MBBindingList<RBMLedgerTabVM> _tabs;
         private MBBindingList<RBMLedgerTownGroupVM> _townGroups;
         private MBBindingList<RBMLedgerFactionGroupVM> _factionGroups;
+        private MBBindingList<RBMLedgerClanGoldRowVM> _clanGoldRows;
+        private RBMLedgerClanGoldRowVM _clanGoldNet;
+        private string _clanGoldIntro;
+        private bool _hasClanGold;
         private string _titleText;
         private string _closeText;
         private string _currentTitle;
         private string _currentContent;
         private bool _showVillages;
         private bool _showTowns;
+        private bool _showClanGold;
         private bool _showText;
 
         public RBMLedgerViewModel()
@@ -37,10 +43,12 @@ namespace RBMCampaign
             _tabs = new MBBindingList<RBMLedgerTabVM>();
             _townGroups = new MBBindingList<RBMLedgerTownGroupVM>();
             _factionGroups = new MBBindingList<RBMLedgerFactionGroupVM>();
+            _clanGoldRows = new MBBindingList<RBMLedgerClanGoldRowVM>();
             TitleText = new TextObject("{=RBM_LEDGER_TITLE}RBM Ledger").ToString();
             CloseText = new TextObject("{=RBM_LEDGER_CLOSE}Close").ToString();
             BuildVillages();
             BuildTowns();
+            BuildClanGold();
             BuildTabs();
         }
 
@@ -57,6 +65,10 @@ namespace RBMCampaign
             AddTab(TabTowns,
                 new TextObject("{=RBM_LEDGER_TAB_TOWNS}Towns").ToString(),
                 new TextObject("{=RBM_LEDGER_TAB_TOWNS}Towns").ToString(),
+                string.Empty);
+            AddTab(TabClanGold,
+                new TextObject("{=RBM_LEDGER_TAB_CLAN_GOLD}Clan gold").ToString(),
+                new TextObject("{=RBM_LEDGER_TAB_CLAN_GOLD}Clan gold").ToString(),
                 string.Empty);
 
             if (Tabs.Count > 0)
@@ -84,7 +96,31 @@ namespace RBMCampaign
             CurrentContent = tab.Content;
             ShowVillages = tab.TabId == TabVillages;
             ShowTowns = tab.TabId == TabTowns;
-            ShowText = !ShowVillages && !ShowTowns;
+            ShowClanGold = tab.TabId == TabClanGold;
+            ShowText = !ShowVillages && !ShowTowns && !ShowClanGold;
+        }
+
+        // --- Clan gold projection --------------------------------------------
+
+        // One-off gold the player's clan gained or paid over the ledger window (RBMLedgerClanGold), read
+        // live from ClanEventGoldLedger. The intro says plainly that none of it is in the daily projection.
+        private void BuildClanGold()
+        {
+            if (Campaign.Current == null)
+            {
+                return;
+            }
+            ClanGoldRows = RBMLedgerClanGold.BuildRows(out RBMLedgerClanGoldRowVM net);
+            ClanGoldNet = net;
+            HasClanGold = ClanGoldRows.Count > 0;
+            var intro = new System.Text.StringBuilder();
+            intro.Append(new TextObject("{=RBM_LEDGER_CG_INTRO}Gold your clan gained or paid as it happened over the last {DAYS} days: spoils, mint cuts, promotions and other one-off payments. It is not part of the daily gold change or Expected Gold.")
+                .SetTextVariable("DAYS", ClanEventGoldLedger.HistoryDays).ToString());
+            if (!HasClanGold)
+            {
+                intro.Append("\n\n").Append(new TextObject("{=RBM_LEDGER_CG_EMPTY}Nothing recorded yet.").ToString());
+            }
+            ClanGoldIntro = intro.ToString();
         }
 
         // --- Villages projection --------------------------------------------
@@ -1074,6 +1110,44 @@ namespace RBMCampaign
         [DataSourceProperty] public string TreasuryHeader => RBMLedgerHeaders.Treasury;
         [DataSourceProperty] public string FoodHeader => RBMLedgerHeaders.Food;
         [DataSourceProperty] public string GarrisonHeader => RBMLedgerHeaders.Garrison;
+        [DataSourceProperty] public string ClanGoldKindHeader => RBMLedgerHeaders.ClanGoldKind;
+        [DataSourceProperty] public string ClanGoldTotalHeader => RBMLedgerHeaders.ClanGoldTotal;
+        [DataSourceProperty] public string ClanGoldDaysHeader => RBMLedgerHeaders.ClanGoldDays;
+
+        [DataSourceProperty]
+        public MBBindingList<RBMLedgerClanGoldRowVM> ClanGoldRows
+        {
+            get => _clanGoldRows;
+            set { if (value != _clanGoldRows) { _clanGoldRows = value; OnPropertyChangedWithValue(value, "ClanGoldRows"); } }
+        }
+
+        [DataSourceProperty]
+        public RBMLedgerClanGoldRowVM ClanGoldNet
+        {
+            get => _clanGoldNet;
+            set { if (value != _clanGoldNet) { _clanGoldNet = value; OnPropertyChangedWithValue(value, "ClanGoldNet"); } }
+        }
+
+        [DataSourceProperty]
+        public string ClanGoldIntro
+        {
+            get => _clanGoldIntro;
+            set { if (value != _clanGoldIntro) { _clanGoldIntro = value; OnPropertyChangedWithValue(value, "ClanGoldIntro"); } }
+        }
+
+        [DataSourceProperty]
+        public bool HasClanGold
+        {
+            get => _hasClanGold;
+            set { if (value != _hasClanGold) { _hasClanGold = value; OnPropertyChangedWithValue(value, "HasClanGold"); } }
+        }
+
+        [DataSourceProperty]
+        public bool ShowClanGold
+        {
+            get => _showClanGold;
+            set { if (value != _showClanGold) { _showClanGold = value; OnPropertyChangedWithValue(value, "ShowClanGold"); } }
+        }
 
         [DataSourceProperty]
         public MBBindingList<RBMLedgerTabVM> Tabs

@@ -63,5 +63,10 @@ namespace RBMCampaign
         public static string Days => new TextObject("{=RBM_LEDGER_H_DAYS}Days").ToString();
         public static string Equipment => new TextObject("{=RBM_LEDGER_H_EQUIPMENT}Equipment & materials").ToString();
         public static string Value => new TextObject("{=RBM_LEDGER_H_VALUE}Value").ToString();
+
+        // Clan gold tab.
+        public static string ClanGoldKind => new TextObject("{=RBM_LEDGER_H_CG_KIND}Source").ToString();
+        public static string ClanGoldTotal => new TextObject("{=RBM_LEDGER_H_CG_TOTAL}Total").ToString();
+        public static string ClanGoldDays => new TextObject("{=RBM_LEDGER_H_CG_DAYS}Days").ToString();
     }
 }
