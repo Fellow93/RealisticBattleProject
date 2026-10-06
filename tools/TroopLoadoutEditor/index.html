@@ -1,0 +1,1331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RBM Troop Loadout Editor</title>
+<style>
+:root {
+  --bg: #f6f6f4;
+  --panel: #ffffff;
+  --panel-2: #f0f0ec;
+  --border: #d9d9d2;
+  --text: #1d1d1b;
+  --muted: #6b6b64;
+  --faint: #9a9a92;
+  --accent: #2f6f9f;
+  --accent-bg: #e3eef7;
+  --ok: #2d7a3e;
+  --ok-bg: #e2f2e5;
+  --warn: #9a5b00;
+  --warn-bg: #fbefd9;
+  --bad: #a3322b;
+  --bad-bg: #f8e1df;
+  --sel: #dbe9f5;
+  --chg: #fff3c4;
+  --shadow: 0 1px 2px rgba(0,0,0,.06);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17181a;
+    --panel: #202225;
+    --panel-2: #292b2f;
+    --border: #3a3d42;
+    --text: #e6e6e3;
+    --muted: #a3a39c;
+    --faint: #75756f;
+    --accent: #79b4e3;
+    --accent-bg: #1f3446;
+    --ok: #7fcf8e;
+    --ok-bg: #1d3524;
+    --warn: #e8b260;
+    --warn-bg: #3d2f17;
+    --bad: #ef8a83;
+    --bad-bg: #44211f;
+    --sel: #263c50;
+    --chg: #4a3f17;
+    --shadow: none;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 13px/1.4 "Segoe UI", system-ui, -apple-system, sans-serif;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button {
+  background: var(--panel-2); border: 1px solid var(--border); border-radius: 5px;
+  padding: 4px 10px; cursor: pointer;
+}
+button:hover { border-color: var(--accent); }
+button:disabled { opacity: .5; cursor: default; border-color: var(--border); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) { button.primary { color: #10202c; } }
+button.small { padding: 1px 7px; font-size: 12px; }
+button.link { background: none; border: none; padding: 0; color: var(--accent); cursor: pointer; }
+button.link:hover { text-decoration: underline; }
+input[type=search], input[type=text], input[type=number], select, textarea {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 5px; padding: 4px 7px;
+}
+textarea { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12px; width: 100%; }
+code, .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: 12px; }
+header {
+  display: flex; align-items: center; gap: 12px; padding: 8px 14px;
+  background: var(--panel); border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+header h1 { font-size: 15px; margin: 0; font-weight: 600; }
+header .meta { color: var(--muted); font-size: 12px; }
+header .spacer { flex: 1; }
+#modified { font-size: 12px; padding: 2px 8px; border-radius: 10px; }
+#modified.on { background: var(--warn-bg); color: var(--warn); }
+#modified.off { background: var(--ok-bg); color: var(--ok); }
+main {
+  flex: 1; min-height: 0; display: grid; gap: 10px; padding: 10px;
+  grid-template-columns: minmax(300px, .9fr) minmax(360px, 1.1fr) minmax(460px, 1.6fr);
+}
+@media (max-width: 1150px) {
+  main { grid-template-columns: 1fr; overflow-y: auto; }
+  main > .pane { height: 80vh; }
+}
+.pane {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  display: flex; flex-direction: column; min-height: 0; min-width: 0; box-shadow: var(--shadow);
+}
+.pane > .head { padding: 8px 10px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+.pane > .head h2 { font-size: 13px; margin: 0; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.pane > .body { overflow-y: auto; flex: 1; min-height: 0; }
+.filters { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.filters select { max-width: 150px; }
+.filters label { display: inline-flex; align-items: center; gap: 3px; color: var(--muted); font-size: 12px; }
+.count { color: var(--muted); font-weight: 400; font-size: 12px; }
+.troop-row {
+  display: grid; grid-template-columns: 18px 1fr auto; gap: 6px; align-items: center;
+  padding: 5px 10px; border-bottom: 1px solid var(--panel-2); cursor: pointer;
+}
+.troop-row:hover { background: var(--panel-2); }
+.troop-row.sel { background: var(--sel); }
+.troop-row .nm { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.troop-row .sub { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badge {
+  display: inline-block; font-size: 11px; padding: 0 6px; border-radius: 9px; line-height: 17px;
+  background: var(--panel-2); color: var(--muted); border: 1px solid var(--border); white-space: nowrap;
+}
+.badge.acc { background: var(--accent-bg); color: var(--accent); border-color: transparent; font-weight: 600; }
+.badge.zero { opacity: .45; }
+.badge.bad { background: var(--bad-bg); color: var(--bad); border-color: transparent; }
+.badge.warn { background: var(--warn-bg); color: var(--warn); border-color: transparent; }
+.badge.ok { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+.badge.outline { background: transparent; border: 1px dashed var(--muted); color: var(--muted); }
+button.badge { cursor: pointer; font: inherit; font-size: 11px; }
+.details { padding: 10px 12px; }
+.details h3 { margin: 0 0 2px; font-size: 16px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.details h4 { margin: 14px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted);
+  display: flex; gap: 8px; align-items: center; }
+.details h4 .sp { flex: 1; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 12px; }
+.kv .k { color: var(--muted); }
+.note { font-size: 12px; padding: 5px 8px; border-radius: 6px; margin: 6px 0 0; }
+.note.warn { background: var(--warn-bg); color: var(--warn); }
+.note.bad { background: var(--bad-bg); color: var(--bad); }
+.note.info { background: var(--accent-bg); color: var(--accent); }
+.skills { display: grid; grid-template-columns: 92px 1fr 62px 74px 22px; gap: 3px 8px; align-items: center; font-size: 12px; }
+.skills .hdr { color: var(--faint); font-size: 11px; }
+.skills input[type=number] { width: 62px; padding: 1px 4px; }
+.skills .chg { background: var(--chg); border-radius: 4px; }
+.skills .src { color: var(--faint); font-size: 11px; white-space: nowrap; }
+.bar { height: 7px; background: var(--panel-2); border-radius: 4px; overflow: hidden; position: relative; }
+.bar > i { display: block; height: 100%; background: var(--accent); opacity: .7; }
+.bar > b { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--warn); }
+.hints { display: flex; flex-direction: column; gap: 4px; }
+.empty { color: var(--muted); padding: 14px 12px; }
+.hint { color: var(--muted); font-size: 12px; }
+.bulk { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12px; }
+.bulk input[type=number] { width: 70px; }
+#problems { display: none; padding: 6px 14px; background: var(--bad-bg); color: var(--bad); font-size: 12px; border-bottom: 1px solid var(--border);
+  max-height: 30vh; overflow-y: auto; }
+#problems.show { display: block; }
+#problems .row { padding: 1px 0; }
+#problems .row.warn { color: var(--warn); }
+#banner { display: none; padding: 6px 14px; background: var(--warn-bg); color: var(--warn); font-size: 12px; border-bottom: 1px solid var(--border); }
+#banner.show { display: flex; gap: 10px; align-items: center; }
+/* loadouts */
+.cards { padding: 8px 10px; display: flex; flex-direction: column; gap: 10px; }
+.card { border: 1px solid var(--border); border-radius: 8px; background: var(--panel); }
+.card.ro { background: var(--panel-2); }
+.card.changed { border-color: var(--warn); }
+.card > .ch { display: flex; gap: 6px; align-items: center; padding: 6px 8px; border-bottom: 1px solid var(--panel-2); flex-wrap: wrap; }
+.card > .ch .t { font-weight: 600; }
+.card > .ch .sp { flex: 1; }
+.card > .ch select { padding: 1px 4px; font-size: 12px; }
+.slot { display: grid; grid-template-columns: 74px 1fr auto; gap: 6px; align-items: center; padding: 3px 8px; border-bottom: 1px solid var(--panel-2); }
+.slot:last-child { border-bottom: none; }
+.slot.click { cursor: pointer; }
+.slot.click:hover { background: var(--panel-2); }
+.slot .sn { color: var(--muted); font-size: 11px; }
+.slot .in { min-width: 0; }
+.slot .in .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.slot .in .st { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.slot .in .wn { font-size: 11px; color: var(--warn); }
+.slot .in .wb { font-size: 11px; color: var(--bad); }
+.slot.chg { background: var(--chg); }
+.slot.empty .nm { color: var(--faint); }
+.slot.over .nm { text-decoration: line-through; color: var(--faint); }
+.totals { padding: 5px 8px; font-size: 11px; color: var(--muted); border-top: 1px solid var(--panel-2); display: flex; gap: 12px; flex-wrap: wrap; }
+.totals b { color: var(--text); font-weight: 600; }
+details.ro-sets summary { cursor: pointer; padding: 6px 8px; }
+/* modals */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 10; }
+.modal-bg.show { display: flex; }
+.modal {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px; width: min(1000px, 96vw);
+  max-height: 92vh; display: flex; flex-direction: column; padding: 14px; gap: 10px;
+}
+.modal h2 { margin: 0; font-size: 15px; }
+.modal textarea { flex: 1; min-height: 260px; resize: vertical; }
+.modal .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.msgs { font-size: 12px; max-height: 200px; overflow-y: auto; }
+.msgs div { padding: 1px 0; }
+.msgs .bad { color: var(--bad); }
+.msgs .warn { color: var(--warn); }
+.msgs .ok { color: var(--ok); }
+.msgs ul { margin: 2px 0 4px; padding-left: 18px; color: var(--muted); }
+.picker-table { overflow: auto; flex: 1; min-height: 200px; border: 1px solid var(--border); border-radius: 6px; }
+.picker-table table { border-collapse: collapse; width: 100%; font-size: 12px; }
+.picker-table th { position: sticky; top: 0; background: var(--panel-2); text-align: left; padding: 4px 6px; cursor: pointer; white-space: nowrap; font-weight: 600; }
+.picker-table th.num, .picker-table td.num { text-align: right; }
+.picker-table td { padding: 3px 6px; border-bottom: 1px solid var(--panel-2); white-space: nowrap; }
+.picker-table tr.it { cursor: pointer; }
+.picker-table tr.it:hover { background: var(--sel); }
+.picker-table tr.cur { background: var(--accent-bg); }
+.picker-table td .id { color: var(--faint); }
+#nodata { max-width: 720px; margin: 60px auto; padding: 24px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; }
+#nodata pre { background: var(--panel-2); padding: 10px; border-radius: 6px; overflow-x: auto; }
+.toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg);
+  padding: 6px 14px; border-radius: 6px; font-size: 12px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; }
+.toast.show { opacity: .92; }
+</style>
+</head>
+<body>
+<script src="troop-loadout-data.js"></script>
+<script src="troop-loadout-core.js"></script>
+
+<div id="nodata" style="display:none">
+  <h2>No data file</h2>
+  <p><code>troop-loadout-data.js</code> was not found next to this page. It is generated from your game install and the
+  decompiled sources (it is not committed). From the repository root run:</p>
+  <pre>powershell -ExecutionPolicy Bypass -File tools\TroopLoadoutEditor\Build-TroopLoadoutData.ps1</pre>
+  <p>then reload this page.</p>
+</div>
+
+<header id="hdr" style="display:none">
+  <h1>RBM Troop Loadout Editor</h1>
+  <span class="meta" id="meta"></span>
+  <span id="modified" class="off">no troop edited</span>
+  <span class="spacer"></span>
+  <button id="btnReset" title="Discard the work in progress and go back to the troops as they were when the data file was generated">Reset to file</button>
+  <button id="btnProblems" class="badge bad" style="display:none" title="Problems in the edited troops. Click to list them."></button>
+  <button id="btnExport" class="primary">Export…</button>
+</header>
+<div id="problems"></div>
+<div id="banner"></div>
+
+<main id="app" style="display:none">
+  <section class="pane" id="troopPane">
+    <div class="head">
+      <h2>Troops <span class="count" id="troopCount"></span></h2>
+      <input type="search" id="tSearch" placeholder="Search name or id…">
+      <div class="filters">
+        <select id="fCulture"><option value="">All cultures</option></select>
+        <select id="fTier"><option value="">All tiers</option></select>
+        <select id="fGroup"><option value="">All formations</option></select>
+        <select id="fOcc"><option value="">All occupations</option></select>
+        <select id="fModule"><option value="">All modules</option></select>
+        <select id="fEdited"><option value="">Edited or not</option><option value="y">Edited</option><option value="n">Not edited</option></select>
+        <select id="fRbm"><option value="">In an RBM file or not</option><option value="y">In an RBM troop file</option><option value="n">Not in an RBM file</option></select>
+        <label title="Templates (is_template) and obsolete characters are not real troops"><input type="checkbox" id="fHideTpl" checked>Hide templates/obsolete</label>
+      </div>
+      <div class="bulk" id="bulkBar"></div>
+    </div>
+    <div class="body" id="troopList"></div>
+  </section>
+
+  <section class="pane" id="detailPane">
+    <div class="head"><h2>Selected troop</h2></div>
+    <div class="body" id="details"><div class="empty">Select a troop on the left.</div></div>
+  </section>
+
+  <section class="pane" id="loadoutPane">
+    <div class="head">
+      <h2>Loadouts <span class="count" id="loadoutCount"></span></h2>
+      <div class="bulk" id="loadoutBulk"></div>
+    </div>
+    <div class="body" id="loadouts"><div class="empty">Select a troop on the left.</div></div>
+  </section>
+</main>
+
+<div class="modal-bg" id="exportModal">
+  <div class="modal">
+    <h2>Export</h2>
+    <div class="hint">Each file below is the full RBM troop file with only the edited troops changed. Replace the file in the repository
+      with it (Download, Save, or Copy), then build: the build copies it into the RBM module (never copy it there by hand). Re-run
+      <code>Build-TroopLoadoutData.ps1</code> afterwards so the page starts from the new file.</div>
+    <div class="row" id="exportFiles"></div>
+    <div class="msgs" id="exportMsgs"></div>
+    <textarea id="exportText" readonly spellcheck="false"></textarea>
+    <div class="row">
+      <span id="exportButtons" style="display:flex;gap:8px">
+        <button id="btnDownload" class="primary">Download</button>
+        <button id="btnSave" title="Write the file straight to disk (pick the file in the repository)">Save to file…</button>
+        <button id="btnCopy">Copy to clipboard</button>
+      </span>
+      <span style="flex:1"></span>
+      <button data-close>Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="pickModal">
+  <div class="modal" style="height:88vh">
+    <h2 id="pickTitle">Pick an item</h2>
+    <div class="row">
+      <input type="search" id="kSearch" placeholder="Search name or id…" style="flex:1;min-width:200px">
+      <select id="kType"><option value="">All types</option></select>
+      <select id="kCulture"><option value="">All cultures</option></select>
+      <select id="kTier"><option value="">All tiers</option></select>
+      <label class="hint" title="Items only defined in files not loaded in campaigns (multiplayer items, custom battle only)"><input type="checkbox" id="kNc">not-in-campaign items</label>
+      <span class="count" id="kCount"></span>
+    </div>
+    <div class="hint" id="pickHint"></div>
+    <div class="picker-table" id="kTable"></div>
+    <div class="row">
+      <button id="kClear">Clear slot</button>
+      <span style="flex:1"></span>
+      <button data-close>Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+  var DATA = window.TROOP_LOADOUT_DATA, C = window.TroopLoadoutCore;
+  if (!DATA || !C) {
+    document.getElementById('nodata').style.display = 'block';
+    return;
+  }
+  document.getElementById('hdr').style.display = 'flex';
+  document.getElementById('app').style.display = 'grid';
+
+  var STORE_KEY = 'rbm-troop-loadout-editor.v1';
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ------------------------------------------------------------------ data
+  var troopById = {};
+  DATA.troops.forEach(function (t) { troopById[t.id] = t; });
+  var itemById = {};
+  DATA.items.forEach(function (it) { itemById[it.id] = it; });
+  var parents = {};   // troop id -> troops that upgrade into it
+  DATA.troops.forEach(function (t) {
+    (t.upgrades || []).forEach(function (u) { (parents[u] = parents[u] || []).push(t.id); });
+  });
+  var skillName = function (id) { return (DATA.skills && DATA.skills[id]) || id; };
+  var COMBAT_SKILLS = ['OneHanded', 'TwoHanded', 'Polearm', 'Bow', 'Crossbow', 'Throwing', 'Riding', 'Athletics'];
+  var SKILL_ORDER = COMBAT_SKILLS.concat((DATA.skillOrder || []).filter(function (s) { return COMBAT_SKILLS.indexOf(s) < 0; }));
+  var SLOT_LABEL = { Item0: 'Weapon 1', Item1: 'Weapon 2', Item2: 'Weapon 3', Item3: 'Weapon 4', Item4: 'Banner/extra',
+    Head: 'Head', Body: 'Body', Leg: 'Legs', Gloves: 'Gloves', Cape: 'Cape/shoulders', Horse: 'Horse', HorseHarness: 'Harness' };
+
+  // ------------------------------------------------------------------ state
+  // models: troop id -> current model, only for troops the user touched (see troop-loadout-core.js origModel).
+  var origCache = {};
+  function orig(id) { return origCache[id] || (origCache[id] = C.origModel(troopById[id])); }
+  var models = {};
+  function cur(id) { return models[id] || orig(id); }
+  function edit(id) { if (!models[id]) models[id] = C.cloneModel(orig(id)); return models[id]; }
+  function isEdited(id) { return !!models[id] && !C.sameModel(models[id], orig(id)); }
+  function editedIds() { return Object.keys(models).filter(isEdited); }
+  var selectedId = null;
+  var checked = {};   // multi-select: troop id -> true
+
+  (function restore() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return;
+      var s = JSON.parse(raw);
+      if (!s || typeof s.models !== 'object') return;
+      var n = 0;
+      Object.keys(s.models).forEach(function (id) {
+        if (!troopById[id]) return;
+        var m = s.models[id], o = orig(id);
+        if (!m || typeof m !== 'object' || !Array.isArray(m.rosters)) return;
+        var clean = { level: +m.level || o.level, skills: m.skills || {}, loose: m.loose || {},
+          rosters: m.rosters.map(function (r) {
+            return { type: r.type || 'Battle', slots: r.slots || {}, o: r.o != null && r.o < o.rosters.length ? r.o : null };
+          }) };
+        models[id] = clean;
+        if (isEdited(id)) n++; else delete models[id];
+      });
+      if (n) showBanner('Restored your unsaved work in progress (' + n + ' troop' + (n === 1 ? '' : 's') + ') from ' +
+        (s.savedAt || 'an earlier session') + '. Use “Reset to file” to start from the files again.');
+    } catch (e) { /* storage unavailable: start from the file */ }
+  })();
+
+  function save() {
+    Object.keys(models).forEach(function (id) { if (!isEdited(id)) delete models[id]; });
+    try {
+      if (!Object.keys(models).length) localStorage.removeItem(STORE_KEY);
+      else localStorage.setItem(STORE_KEY, JSON.stringify({ models: models, savedAt: new Date().toLocaleString(), generated: DATA.generated }));
+    } catch (e) { /* ignore */ }
+    updateModified();
+  }
+  function changed() { save(); renderTroops(); renderDetails(); renderLoadouts(); }
+
+  // ------------------------------------------------------------------ helpers
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toast._h); toast._h = setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+  function showBanner(text) {
+    var b = $('banner');
+    b.innerHTML = '<span>' + esc(text) + '</span><button class="small" id="bannerClose">Dismiss</button>';
+    b.classList.add('show');
+    $('bannerClose').onclick = function () { b.classList.remove('show'); };
+  }
+  function updateModified() {
+    var n = editedIds().length, m = $('modified');
+    if (!n) { m.textContent = 'no troop edited'; m.className = 'off'; }
+    else { m.textContent = n + ' troop' + (n === 1 ? '' : 's') + ' edited (not exported)'; m.className = 'on'; }
+    updateProblems();
+  }
+  function kv(k, v) { return '<span class="k">' + esc(k) + '</span><span>' + esc(v) + '</span>'; }
+  function kvHtml(k, html) { return '<span class="k">' + esc(k) + '</span><span>' + html + '</span>'; }
+  function cssEsc(s) { return String(s).replace(/["\\]/g, '\\$&'); }
+  function fmt(n) { return n == null ? '' : (Math.round(n * 100) / 100).toString(); }
+  function upgradeTree(id) {
+    var out = [], seen = {}; seen[id] = true;
+    (function walk(x) {
+      ((troopById[x] || {}).upgrades || []).forEach(function (u) {
+        if (seen[u]) return; seen[u] = true; out.push(u); walk(u);
+      });
+    })(id);
+    return out;
+  }
+  function link(id) {
+    var t = troopById[id];
+    return '<button class="link" data-link="' + esc(id) + '" title="' + esc(id) + '">' + esc(t ? t.name : id) + '</button>' +
+      (isEdited(id) ? ' <span class="badge warn">edited</span>' : '');
+  }
+
+  // ------------------------------------------------------------------ items
+  function itemOf(id) {
+    if (!id) return null;
+    return itemById[id] || null;
+  }
+  // The item the game loads for an id in a troop's roster: an RBM troop that replaces a vanilla troop gets shoulder
+  // shields rewritten to the base shield (MergeTwoXmlsPatch, passiveShoulderShields off).
+  function resolveItem(id) {
+    var it = itemOf(id), base = C.shoulderBase(id);
+    return { item: it, base: base, baseItem: base ? itemOf(base) : null };
+  }
+  var DT = { Cut: 'c', Pierce: 'p', Blunt: 'b' };
+  function statLine(it) {
+    if (!it) return '';
+    var p = [];
+    if (it.crafted) p.push('crafted ' + it.crafted.template + ' (stats not computed)');
+    var w = it.weapons && it.weapons[0];
+    if (w) {
+      if (it.type === 'Shield') { if (w.arm != null) p.push('armor ' + fmt(w.arm)); if (w.hp != null) p.push('HP ' + fmt(w.hp)); if (w.spd) p.push('spd ' + fmt(w.spd)); if (w.len) p.push('len ' + fmt(w.len)); }
+      else if (['Arrows', 'Bolts', 'SlingStones', 'Bullets'].indexOf(it.type) >= 0) { if (w.th) p.push('dmg +' + fmt(w.th) + (DT[w.tht] || '')); if (w.stack) p.push('×' + fmt(w.stack)); }
+      else if (['Bow', 'Crossbow', 'Sling', 'Pistol', 'Musket'].indexOf(it.type) >= 0) { if (w.th) p.push('dmg ' + fmt(w.th) + (DT[w.tht] || '')); if (w.ms) p.push('ms ' + fmt(w.ms)); if (w.acc) p.push('acc ' + fmt(w.acc)); if (w.spd) p.push('spd ' + fmt(w.spd)); }
+      else if (it.type === 'Thrown') { if (w.th) p.push('dmg ' + fmt(w.th) + (DT[w.tht] || '')); if (w.stack) p.push('×' + fmt(w.stack)); if (w.ms) p.push('ms ' + fmt(w.ms)); }
+      else {
+        if (w.sw) p.push('sw ' + fmt(w.sw) + (DT[w.swt] || ''));
+        if (w.th) p.push('th ' + fmt(w.th) + (DT[w.tht] || ''));
+        if (w.spd) p.push('spd ' + fmt(w.spd));
+        if (w.len) p.push('len ' + fmt(w.len));
+      }
+      if (it.weapons.length > 1) p.push(it.weapons.length + ' usages');
+    }
+    if (it.armor) {
+      var a = it.armor;
+      [['head', 'head'], ['body', 'body'], ['arm', 'arm'], ['leg', 'leg']].forEach(function (x) { if (a[x[0]]) p.push(x[1] + ' ' + fmt(a[x[0]])); });
+      if (a.mat) p.push(a.mat.toLowerCase());
+    }
+    if (it.horse) {
+      var h = it.horse;
+      if (h.spd != null) p.push('spd ' + fmt(h.spd)); if (h.man != null) p.push('man ' + fmt(h.man));
+      if (h.chg != null) p.push('chg ' + fmt(h.chg)); if (h.hp != null) p.push('HP ' + fmt(h.hp));
+    }
+    if (it.weight != null) p.push(fmt(it.weight) + ' kg');
+    if (it.tier != null) p.push('T' + it.tier + (it.tierFromId ? '?' : ''));
+    return p.join(' · ');
+  }
+
+  // Skill a weapon trains (WeaponComponentData.GetRelevantSkillFromWeaponClass, by item type).
+  var TYPE_SKILL = { Bow: 'Bow', Crossbow: 'Crossbow', Sling: 'Throwing', Thrown: 'Throwing', Polearm: 'Polearm',
+    TwoHandedWeapon: 'TwoHanded', OneHandedWeapon: 'OneHanded', Horse: 'Riding' };
+  var TYPE_WORD = { Bow: 'a bow', Crossbow: 'a crossbow', Sling: 'a sling', Thrown: 'throwing weapons', Polearm: 'a polearm',
+    TwoHandedWeapon: 'a two-handed weapon', OneHandedWeapon: 'a one-handed weapon', Horse: 'a horse' };
+  // skill -> {rosters: [index], words: {}} for the skills the troop's battle loadouts call for.
+  function skillNeeds(model) {
+    var out = {};
+    var add = function (id, where) {
+      var it = itemOf(id) || itemOf(C.shoulderBase(id));
+      if (!it || !TYPE_SKILL[it.type]) return;
+      var s = TYPE_SKILL[it.type];
+      var o = out[s] || (out[s] = { where: [], words: {} });
+      if (o.where.indexOf(where) < 0) o.where.push(where);
+      o.words[TYPE_WORD[it.type]] = true;
+    };
+    model.rosters.forEach(function (r, i) {
+      if (r.type !== 'Battle') return;
+      Object.keys(r.slots).forEach(function (s) { add(r.slots[s], 'roster ' + (i + 1)); });
+    });
+    Object.keys(model.loose).forEach(function (s) { add(model.loose[s], 'shared slots'); });
+    return out;
+  }
+
+  // ------------------------------------------------------------------ troop filters
+  function fillSelect(sel, values, label) {
+    values.forEach(function (v) {
+      var o = document.createElement('option'); o.value = v; o.textContent = label ? label(v) : v; sel.appendChild(o);
+    });
+  }
+  function uniq(fn) {
+    var s = {}; DATA.troops.forEach(function (t) { var v = fn(t); if (v !== '' && v != null) s[v] = true; });
+    return Object.keys(s).sort();
+  }
+  fillSelect($('fCulture'), uniq(function (t) { return t.culture; }));
+  fillSelect($('fTier'), ['0', '1', '2', '3', '4', '5', '6'], function (v) { return 'Tier ' + v; });
+  fillSelect($('fGroup'), uniq(function (t) { return t.group; }));
+  fillSelect($('fOcc'), uniq(function (t) { return t.occupation; }));
+  fillSelect($('fModule'), uniq(function (t) { return t.module; }));
+
+  function troopSortKey(t) { return (t.culture || '~') + '|' + C.tierOf(cur(t.id).level) + '|' + t.name.toLowerCase(); }
+  function filteredTroops() {
+    var q = $('tSearch').value.trim().toLowerCase();
+    var fc = $('fCulture').value, ft = $('fTier').value, fg = $('fGroup').value, fmod = $('fModule').value, fo = $('fOcc').value;
+    var fe = $('fEdited').value, fr = $('fRbm').value, hideTpl = $('fHideTpl').checked;
+    var list = DATA.troops.slice();
+    list.sort(function (a, b) { var x = troopSortKey(a), y = troopSortKey(b); return x < y ? -1 : x > y ? 1 : 0; });
+    return list.filter(function (t) {
+      var ed = isEdited(t.id);
+      if (q && t.name.toLowerCase().indexOf(q) < 0 && t.id.toLowerCase().indexOf(q) < 0) return false;
+      if (fc && t.culture !== fc) return false;
+      if (ft && String(C.tierOf(cur(t.id).level)) !== ft) return false;
+      if (fg && t.group !== fg) return false;
+      if (fo && t.occupation !== fo) return false;
+      if (fmod && t.module !== fmod) return false;
+      if (fe === 'y' && !ed) return false;
+      if (fe === 'n' && ed) return false;
+      if (fr === 'y' && !t.rbmFile) return false;
+      if (fr === 'n' && t.rbmFile) return false;
+      if (hideTpl && (t.template || t.obsolete) && !ed) return false;
+      return true;
+    });
+  }
+
+  function renderTroops() {
+    var list = filteredTroops();
+    $('troopCount').textContent = list.length + ' / ' + DATA.troops.length;
+    var html = [];
+    list.forEach(function (t) {
+      var m = cur(t.id), ed = isEdited(t.id);
+      var probs = ed ? troopProblems(t.id) : [];
+      var sub = [t.id, t.culture || 'no culture', 'T' + C.tierOf(m.level), t.group].filter(Boolean).join(' · ');
+      var probBadge = probs.length ? ' <span class="badge ' + (probs.some(function (x) { return x.cls === 'bad'; }) ? 'bad' : 'warn') +
+        '" title="' + esc(probs.map(function (x) { return x.text; }).join('\n')) + '">' + probs.length + ' problem' + (probs.length === 1 ? '' : 's') + '</span>' : '';
+      html.push('<div class="troop-row' + (t.id === selectedId ? ' sel' : '') + '" data-id="' + esc(t.id) + '">' +
+        '<input type="checkbox" class="chk" title="Tick for bulk actions"' + (checked[t.id] ? ' checked' : '') + '>' +
+        '<div><div class="nm">' + esc(t.name) + (ed ? ' <span class="badge warn">edited</span>' : '') +
+        (t.rbmFile ? ' <span class="badge acc" title="Defined in ' + esc(t.rbmFile) + '">RBM</span>' : '') +
+        (t.template ? ' <span class="badge">template</span>' : '') + (t.obsolete ? ' <span class="badge">obsolete</span>' : '') + probBadge +
+        '</div><div class="sub">' + esc(sub) + '</div></div>' +
+        '<span class="badge' + (m.rosters.length ? '' : ' zero') + '" title="equipment rosters">' + m.rosters.length + '</span></div>');
+    });
+    $('troopList').innerHTML = html.join('') || '<div class="empty">No troop matches.</div>';
+    renderBulk();
+  }
+
+  $('troopList').addEventListener('click', function (e) {
+    var row = e.target.closest('.troop-row'); if (!row) return;
+    var id = row.getAttribute('data-id');
+    if (e.target.classList.contains('chk')) {
+      if (e.target.checked) checked[id] = true; else delete checked[id];
+      renderBulk(); renderDetails(); renderLoadoutBulk();
+      return;
+    }
+    if (e.ctrlKey || e.metaKey) {
+      if (checked[id]) delete checked[id]; else checked[id] = true;
+      renderTroops(); renderDetails(); renderLoadoutBulk();
+      return;
+    }
+    select(id);
+  });
+  function select(id, scroll) {
+    selectedId = id;
+    renderTroops(); renderDetails(); renderLoadouts();
+    if (scroll) {
+      var row = $('troopList').querySelector('.troop-row[data-id="' + cssEsc(id) + '"]');
+      if (row) row.scrollIntoView({ block: 'center' });
+    }
+  }
+  ['tSearch', 'fCulture', 'fTier', 'fGroup', 'fOcc', 'fModule', 'fEdited', 'fRbm', 'fHideTpl'].forEach(function (id) {
+    $(id).addEventListener(id === 'tSearch' ? 'input' : 'change', renderTroops);
+  });
+
+  function checkedIds() { return Object.keys(checked); }
+  function renderBulk() {
+    var ids = checkedIds(), bar = $('bulkBar');
+    if (!ids.length) {
+      bar.innerHTML = '<span class="hint">Tick troops (or Ctrl+click) for bulk skill and loadout changes.</span>' +
+        ' <button class="small link" id="bulkAll">Tick all shown</button>';
+      $('bulkAll').onclick = function () {
+        filteredTroops().forEach(function (t) { checked[t.id] = true; }); renderTroops(); renderDetails(); renderLoadoutBulk();
+      };
+      return;
+    }
+    bar.innerHTML = '<span class="badge acc">' + ids.length + ' ticked</span>' +
+      '<button class="small" id="bulkRevert" title="Revert every ticked troop to the file">Revert ticked</button>' +
+      '<button class="small" id="bulkNone">Untick all</button>';
+    $('bulkNone').onclick = function () { checked = {}; renderTroops(); renderDetails(); renderLoadoutBulk(); };
+    $('bulkRevert').onclick = function () {
+      var n = ids.filter(isEdited).length;
+      if (n && !confirm('Revert ' + n + ' edited troop(s) to the file?')) return;
+      ids.forEach(function (id) { delete models[id]; });
+      changed();
+    };
+  }
+
+  // ------------------------------------------------------------------ skill hints
+  function peerKey(t) { return t.culture + '|' + C.tierOf(cur(t.id).level) + '|' + t.group + '|' + t.occupation; }
+  function whereText(list) {
+    var nums = [], other = [];
+    list.forEach(function (w) { var m = /^roster (\d+)$/.exec(w); if (m) nums.push(m[1]); else other.push(w); });
+    if (nums.length) other.unshift((nums.length === 1 ? 'roster ' : 'rosters ') + nums.join(', '));
+    return other.join(', ');
+  }
+  function hintsFor(id) {
+    var t = troopById[id], m = cur(id), needs = skillNeeds(m), out = [];
+    var keys = Object.keys(needs);
+    if (!keys.length) return out;
+    var key = peerKey(t);
+    keys.forEach(function (s) {
+      var v = m.skills[s] || 0, words = Object.keys(needs[s].words).join(' / ');
+      var peers = DATA.troops.filter(function (p) {
+        if (p.id === id || p.template || p.obsolete || peerKey(p) !== key) return false;
+        return !!skillNeeds(cur(p.id))[s];
+      });
+      var avg = null;
+      if (peers.length >= 2) avg = peers.reduce(function (a, p) { return a + (cur(p.id).skills[s] || 0); }, 0) / peers.length;
+      var tier = C.tierOf(m.level);
+      var low = avg != null ? v < avg * 0.75 : v < 10 + 15 * tier;
+      if (!low) return;
+      out.push({
+        skill: s, avg: avg,
+        text: skillName(s) + ' is ' + v + ' but the loadout has ' + words + ' (' + whereText(needs[s].where) + '); ' +
+          (avg != null ? 'troops of the same culture, tier, formation and occupation with ' + words + ' average ' + Math.round(avg) + ' (' + peers.length + ')'
+            : 'low for tier ' + tier + ' (no comparable troops; rule of thumb ' + (10 + 15 * tier) + ')') + '.'
+      });
+    });
+    return out;
+  }
+
+  // ------------------------------------------------------------------ details (middle)
+  var showAllSkills = false;
+  function renderDetails() {
+    var box = $('details');
+    if (!selectedId) { box.innerHTML = '<div class="empty">Select a troop on the left.</div>'; return; }
+    var t = troopById[selectedId], m = cur(t.id), o = orig(t.id), ed = isEdited(t.id);
+    var h = [];
+    h.push('<div class="details"><h3>' + esc(t.name) + (ed ? ' <span class="badge warn">edited</span>' : '') +
+      (ed ? ' <button class="small" id="revertTroop" title="Discard this troop\'s changes">Revert troop</button>' : '') + '</h3>' +
+      '<div class="mono" style="color:var(--muted)">' + esc(t.id) + '</div>');
+    var target = C.targetFile(t, DATA);
+    h.push('<h4>Troop</h4><div class="kv">' +
+      kv('Culture', t.culture || '—') +
+      kvHtml('Level', '<input type="number" id="lvl" min="1" max="63" value="' + m.level + '" style="width:64px;padding:1px 4px"> ' +
+        '<span class="hint">tier ' + C.tierOf(m.level) + (m.level !== o.level ? ' · file: level ' + o.level + ' (tier ' + C.tierOf(o.level) + ')' : '') + '</span>') +
+      kv('Formation', (t.group || '—') + (t.mounted ? ' · mounted class' : '')) +
+      kv('Occupation', t.occupation || '—') +
+      kv('Defined in', (t.sources || []).join(' → ')) +
+      (t.alsoIn ? kv('Also in', t.alsoIn.join(', ') + ' (not used in campaigns)') : '') +
+      kv('Skill template', t.skillTemplate || '—') +
+      kv('Flags', [t.template ? 'template' : '', t.obsolete ? 'obsolete' : '', t.hidden ? 'hidden in encyclopedia' : '',
+        t.basic ? 'basic troop' : ''].filter(Boolean).join(', ') || '—') +
+      '</div>');
+    if (t.rbmFile) h.push('<div class="note info">In <code>' + esc(t.rbmFile) + '</code>: the export rewrites this troop\'s element in place.</div>');
+    else h.push('<div class="note info">Not in an RBM troop file. Editing it makes the export append a full copy of its definition (from ' +
+      esc(t.module + '/' + t.file) + ') to <code>' + esc(target || '?') + '</code>' +
+      (t.rosters.length ? ', which replaces the original in game (both have an EquipmentRoster).' : '. It has no EquipmentRoster, so the copy would not replace the original: give it one.') + '</div>');
+    (t.notes || []).forEach(function (n) { h.push('<div class="note warn">' + esc(n) + '</div>'); });
+
+    var ups = (t.upgrades || []), from = parents[t.id] || [];
+    h.push('<h4>Upgrade tree</h4><div class="kv">' +
+      kvHtml('Upgrades to', ups.length ? ups.map(link).join(', ') : '—') +
+      kvHtml('Upgrades from', from.length ? from.map(link).join(', ') : '—') + '</div>');
+
+    // skills
+    var tpl = t.templateSkills || {}, ex = t.explicitSkills || {};
+    var shown = SKILL_ORDER.filter(function (s) {
+      return showAllSkills || COMBAT_SKILLS.indexOf(s) >= 0 || m.skills[s] || o.skills[s] || s in ex || s in tpl;
+    });
+    var changedSkills = SKILL_ORDER.filter(function (s) { return (m.skills[s] || 0) !== (o.skills[s] || 0); });
+    h.push('<h4>Skills <span class="sp"></span>' +
+      '<label class="hint" style="text-transform:none;letter-spacing:0"><input type="checkbox" id="allSkills"' + (showAllSkills ? ' checked' : '') + '> all skills</label>' +
+      '<button class="small" id="resetSkills"' + (changedSkills.length ? '' : ' disabled') + '>Reset skills</button></h4>');
+    h.push('<div class="skills"><span class="hdr">Skill</span><span class="hdr">bar: value (tick = file)</span><span class="hdr">value</span><span class="hdr">file / source</span><span></span>');
+    shown.forEach(function (s) {
+      var v = m.skills[s] || 0, ov = o.skills[s] || 0, ch = v !== ov;
+      var src = s in ex ? 'explicit' : s in tpl ? 'template' : '—';
+      var srcTitle = s in ex ? 'An explicit <skill> entry' + (s in tpl ? ' (overrides the template\'s ' + tpl[s] + ')' : '') :
+        s in tpl ? 'From skill_template ' + t.skillTemplate : 'Not set: 0';
+      h.push('<span class="' + (ch ? 'chg' : '') + '">' + esc(skillName(s)) + '</span>' +
+        '<div class="bar"><i style="width:' + Math.min(100, v / 3) + '%"></i>' + (ch ? '<b style="left:' + Math.min(100, ov / 3) + '%"></b>' : '') + '</div>' +
+        '<input type="number" min="0" max="999" data-skill="' + esc(s) + '" value="' + v + '"' + (ch ? ' class="chg"' : '') + '>' +
+        '<span class="src" title="' + esc(srcTitle) + '">' + ov + ' · ' + src + (s in tpl && s in ex ? ' (tpl ' + tpl[s] + ')' : '') + '</span>' +
+        (ch ? '<button class="small link" data-reset-skill="' + esc(s) + '" title="Back to ' + ov + '">↺</button>' : '<span></span>'));
+    });
+    h.push('</div>');
+    if (t.skillTemplate) h.push('<div class="hint" style="margin-top:4px">Skills come from <code>' + esc(t.skillTemplate) + '</code>; ' +
+      'explicit &lt;skill&gt; entries override single skills (BasicCharacterObject.Deserialize copies the template, then applies the entries). ' +
+      'An edited skill is exported as an explicit entry.</div>');
+
+    var hints = hintsFor(t.id);
+    if (hints.length) {
+      h.push('<h4>Skill hints</h4><div class="hints">');
+      hints.forEach(function (x) { h.push('<div class="note warn">' + esc(x.text) + '</div>'); });
+      h.push('</div>');
+    }
+
+    // bulk
+    var ids = checkedIds().filter(function (x) { return x !== t.id; });
+    var tree = upgradeTree(t.id);
+    h.push('<h4>Bulk</h4><div class="bulk">' +
+      '<button class="small" id="tickTree"' + (tree.length ? '' : ' disabled') + '>Tick this troop + its upgrade tree (' + tree.length + ')</button></div>');
+    if (checkedIds().length) {
+      var opts = SKILL_ORDER.map(function (s) { return '<option value="' + esc(s) + '">' + esc(skillName(s)) + '</option>'; }).join('');
+      h.push('<div class="bulk" style="margin-top:6px"><span class="badge acc">' + checkedIds().length + ' ticked</span>' +
+        '<select id="bSkill">' + opts + '</select><input type="number" id="bVal" value="10">' +
+        '<button class="small" id="bAdd" title="Add the number (negative to subtract) to the skill of every ticked troop">Add to ticked</button>' +
+        '<button class="small" id="bSet" title="Set the skill of every ticked troop to the number">Set on ticked</button></div>' +
+        '<div class="bulk" style="margin-top:6px"><button class="small" id="bCopy"' + (ids.length ? '' : ' disabled') +
+        ' title="Every ticked troop gets this troop\'s skill values">Copy these skills to the other ticked troops (' + ids.length + ')</button></div>');
+    }
+    h.push('</div>');
+    box.innerHTML = h.join('');
+
+    var lv = $('lvl');
+    lv.onchange = function () {
+      var n = parseInt(lv.value, 10);
+      if (!(n >= 1)) { lv.value = m.level; return; }
+      edit(t.id).level = n; changed();
+    };
+    box.querySelectorAll('input[data-skill]').forEach(function (inp) {
+      inp.onchange = function () {
+        var n = parseInt(inp.value, 10);
+        if (!(n >= 0)) n = 0;
+        edit(t.id).skills[inp.getAttribute('data-skill')] = n; changed();
+      };
+    });
+    box.querySelectorAll('[data-reset-skill]').forEach(function (b) {
+      b.onclick = function () { var s = b.getAttribute('data-reset-skill'); var mm = edit(t.id); if (s in o.skills) mm.skills[s] = o.skills[s]; else delete mm.skills[s]; changed(); };
+    });
+    box.querySelectorAll('[data-link]').forEach(function (a) { a.onclick = function () { select(a.getAttribute('data-link'), true); }; });
+    $('allSkills').onchange = function () { showAllSkills = this.checked; renderDetails(); };
+    $('resetSkills').onclick = function () { edit(t.id).skills = Object.assign({}, o.skills); changed(); };
+    var rv = $('revertTroop');
+    if (rv) rv.onclick = function () { delete models[t.id]; changed(); toast('Reverted ' + t.name); };
+    $('tickTree').onclick = function () {
+      checked[t.id] = true; upgradeTree(t.id).forEach(function (u) { checked[u] = true; });
+      renderTroops(); renderDetails(); renderLoadoutBulk();
+    };
+    var bulkSkill = function (fn) {
+      var s = $('bSkill').value, n = parseInt($('bVal').value, 10);
+      if (isNaN(n)) return;
+      checkedIds().forEach(function (id) { var mm = edit(id); mm.skills[s] = Math.max(0, fn(mm.skills[s] || 0, n)); });
+      toast(skillName(s) + ' changed on ' + checkedIds().length + ' troop(s)');
+      changed();
+    };
+    if ($('bAdd')) {
+      $('bAdd').onclick = function () { bulkSkill(function (v, n) { return v + n; }); };
+      $('bSet').onclick = function () { bulkSkill(function (v, n) { return n; }); };
+      $('bCopy').onclick = function () {
+        ids.forEach(function (id) { edit(id).skills = Object.assign({}, m.skills); });
+        toast('Copied skills to ' + ids.length + ' troop(s)');
+        changed();
+      };
+    }
+  }
+
+  // ------------------------------------------------------------------ loadouts (right)
+  var TYPES = ['Battle', 'Civilian', 'Stealth'];
+  var showLoose = {};   // troop id -> show the (empty) shared-slots card
+  // Does RBM's shoulder-shield rewrite apply to this troop's rosters? Only for an RBM definition that replaces an
+  // earlier one (MergeTwoXmlsPatch rewrites inside the matched node's EquipmentRosters).
+  function shoulderRewrite(t) {
+    if (t.rbmFile) return (t.sources || []).length > 1 && !t.dupFrom;
+    return (t.rosters || []).length > 0;   // an appended copy replaces the original when both have a roster
+  }
+  function slotNotes(t, model, slot, id, inRoster) {
+    var out = [];
+    if (!id) return out;
+    var r = resolveItem(id);
+    if (!r.item) {
+      if (r.baseItem) out.push({ cls: 'wn', text: 'No item with this id; RBM\'s shoulder-shield rewrite turns it into ' + r.base + (inRoster && shoulderRewrite(t) ? '' : ', but the rewrite does not apply here, so the game skips it') });
+      else out.push({ cls: 'wb', text: 'Unknown item id: the game skips it' });
+    } else if (!C.fits(slot, r.item)) {
+      out.push({ cls: 'wb', text: r.item.type + ' does not fit ' + slot + ((r.item.flags || []).indexOf('DropOnWeaponChange') >= 0 ? ' (dropped on weapon change: Item4 only)' : '') + ': the game skips it' });
+    }
+    if (r.base && r.item) {
+      out.push({ cls: 'wn', text: inRoster && shoulderRewrite(t) ? 'Shoulder shield: with "passive shoulder shields" off (the default) RBM loads ' + r.base + ' instead'
+        : 'Shoulder shield: RBM\'s rewrite to ' + r.base + ' does not apply here (' + (inRoster ? 'the troop does not replace an earlier definition' : 'shared slot') + ')' });
+    }
+    if (inRoster && model.loose[slot]) out.push({ cls: 'wn', text: 'Overridden by the shared ' + slot + ' slot: this item never loads' });
+    if (r.item && r.item.nc) out.push({ cls: 'wn', text: 'Only defined in ' + r.item.module + '/' + r.item.file + ', which is not loaded in campaigns' });
+    return out;
+  }
+  // The item whose stats apply (the shoulder base when the rewrite applies).
+  function statItem(t, id, inRoster) {
+    var r = resolveItem(id);
+    if (r.base && r.baseItem && (!r.item || (inRoster && shoulderRewrite(t)))) return r.baseItem;
+    return r.item;
+  }
+  function totalsHtml(t, slots) {
+    var a = { head: 0, body: 0, arm: 0, leg: 0 }, wt = 0, noWt = 0, val = 0, withVal = 0, noVal = 0, horseArmor = 0;
+    C.SLOTS.forEach(function (s) {
+      var id = slots[s]; if (!id) return;
+      var it = statItem(t, id, true); if (!it) return;
+      if (s === 'HorseHarness') { if (it.armor && it.armor.body) horseArmor += it.armor.body; }
+      else if (it.armor) { ['head', 'body', 'arm', 'leg'].forEach(function (k) { a[k] += it.armor[k] || 0; }); }
+      if (s !== 'Horse' && s !== 'HorseHarness') { if (it.weight != null) wt += it.weight; else noWt++; }
+      if (it.value != null) { val += it.value; withVal++; } else noVal++;
+    });
+    return '<div class="totals" title="Armor per body part is the sum over the armor slots, as Equipment.Get*ArmorSum does. Shared slots are included. ' +
+      'Items without a weight or value attribute (crafted weapons, most vanilla items\' value) get them computed in game and are not counted.">' +
+      'armor head <b>' + fmt(a.head) + '</b> · body <b>' + fmt(a.body) + '</b> · arm <b>' + fmt(a.arm) + '</b> · leg <b>' + fmt(a.leg) + '</b>' +
+      (horseArmor ? '<span>horse armor <b>' + fmt(horseArmor) + '</b></span>' : '') +
+      '<span>gear weight <b>' + fmt(wt) + '</b> kg' + (noWt ? ' + ' + noWt + ' crafted' : '') + '</span>' +
+      (withVal ? '<span>listed value <b>' + Math.round(val) + '</b>' + (noVal ? ' (' + noVal + ' item(s) computed in game)' : '') + '</span>' : '') + '</div>';
+  }
+  function slotRowHtml(t, model, slot, id, opts) {
+    var it = statItem(t, id, opts.inRoster), raw = itemOf(id);
+    var notes = slotNotes(t, model, slot, id, opts.inRoster);
+    var cls = 'slot' + (opts.click ? ' click' : '') + (id ? '' : ' empty') + (opts.chg ? ' chg' : '') +
+      (opts.inRoster && id && model.loose[slot] ? ' over' : '');
+    return '<div class="' + cls + '"' + (opts.click ? ' data-r="' + opts.r + '" data-slot="' + slot + '"' : '') +
+      (opts.chg ? ' title="File: ' + esc(opts.was || '(empty)') + '"' : '') + '>' +
+      '<span class="sn">' + esc(SLOT_LABEL[slot]) + '<br><span class="mono">' + slot + '</span></span>' +
+      '<div class="in"><div class="nm">' + (id ? esc(raw ? raw.name : it ? it.name : id) + ' <span class="mono" style="color:var(--faint)">' + esc(id) + '</span>' : '—') + '</div>' +
+      (it ? '<div class="st">' + esc((it !== raw ? it.id + ': ' : '') + statLine(it)) + '</div>' : '') +
+      notes.map(function (n) { return '<div class="' + n.cls + '">' + esc(n.text) + '</div>'; }).join('') + '</div>' +
+      (opts.click && id ? '<button class="small link" data-clear="' + opts.r + '|' + slot + '" title="Clear the slot">✕</button>' : '<span></span>') + '</div>';
+  }
+  function compactSlots(t, slots) {
+    return C.SLOTS.filter(function (s) { return slots[s]; }).map(function (s) {
+      var it = itemOf(slots[s]);
+      return '<div class="slot"><span class="sn">' + esc(SLOT_LABEL[s]) + '</span><div class="in"><div class="nm">' +
+        esc(it ? it.name : slots[s]) + ' <span class="mono" style="color:var(--faint)">' + esc(slots[s]) + '</span></div>' +
+        (it ? '<div class="st">' + esc(statLine(it)) + '</div>' : '<div class="wb">Unknown item id</div>') + '</div><span></span></div>';
+    }).join('');
+  }
+  function pairs(list) { var m = {}; (list || []).forEach(function (p) { if (p[1]) m[p[0]] = p[1]; }); return m; }
+
+  function renderLoadouts() {
+    var box = $('loadouts');
+    renderLoadoutBulk();
+    if (!selectedId) { box.innerHTML = '<div class="empty">Select a troop on the left.</div>'; $('loadoutCount').textContent = ''; return; }
+    var t = troopById[selectedId], m = cur(t.id), o = orig(t.id);
+    $('loadoutCount').textContent = m.rosters.length + ' roster' + (m.rosters.length === 1 ? '' : 's') +
+      (t.sets.length ? ' · ' + t.sets.length + ' equipment set ref' + (t.sets.length === 1 ? '' : 's') : '') + ' · ' + t.name;
+    var nTick = checkedIds().filter(function (x) { return x !== t.id; }).length;
+    var h = ['<div class="cards">'];
+    var hasLoose = Object.keys(m.loose).length || Object.keys(o.loose).length || showLoose[t.id];
+    h.push('<div class="bulk"><button class="small" id="addRoster">+ New roster</button>' +
+      (hasLoose ? '' : '<button class="small" id="addLoose" title="&lt;equipment&gt; directly under &lt;Equipments&gt;: overrides that slot in every roster and equipment set (RBM uses it for horses)">+ Shared slots</button>') +
+      (m.rosters.length ? '' : '<span class="badge bad">No EquipmentRoster: an RBM definition without one does not replace the original</span>') + '</div>');
+    if (hasLoose) {
+      var lch = !C.sameMap(m.loose, o.loose);
+      h.push('<div class="card' + (lch ? ' changed' : '') + '"><div class="ch"><span class="t">Shared slots</span>' +
+        '<span class="hint">&lt;equipment&gt; directly under &lt;Equipments&gt;: overrides the slot in every roster and equipment set (battle and civilian)</span></div>');
+      C.SLOTS.forEach(function (s) {
+        h.push(slotRowHtml(t, m, s, m.loose[s], { click: true, r: 'L', inRoster: false, chg: (m.loose[s] || '') !== (o.loose[s] || ''), was: o.loose[s] }));
+      });
+      h.push('</div>');
+    }
+    m.rosters.forEach(function (r, i) {
+      var or = r.o != null ? o.rosters[r.o] : null;
+      var ch = !or || !C.sameRoster(r, or) || r.o !== i;
+      h.push('<div class="card' + (ch ? ' changed' : '') + '"><div class="ch"><span class="t">Roster ' + (i + 1) + '</span>' +
+        '<select data-rtype="' + i + '" title="Equipment type (equipmentType / civilian attribute)">' +
+        TYPES.map(function (x) { return '<option' + (x === r.type ? ' selected' : '') + '>' + x + '</option>'; }).join('') + '</select>' +
+        '<span class="hint">' + (or ? (r.o !== i ? 'file roster ' + (r.o + 1) : 'from file') + (C.sameRoster(r, or) ? '' : ', changed') : 'new') + '</span><span class="sp"></span>' +
+        '<button class="small" data-rmove="' + i + '|-1"' + (i ? '' : ' disabled') + ' title="Move up">↑</button>' +
+        '<button class="small" data-rmove="' + i + '|1"' + (i < m.rosters.length - 1 ? '' : ' disabled') + ' title="Move down">↓</button>' +
+        '<button class="small" data-rdup="' + i + '">Duplicate</button>' +
+        '<button class="small" data-rcopy="' + i + '"' + (nTick ? '' : ' disabled') + ' title="Append a copy of this roster to every ticked troop">Copy to ticked (' + nTick + ')</button>' +
+        (or && !C.sameRoster(r, or) ? '<button class="small" data-rrevert="' + i + '" title="Back to the file\'s roster ' + (r.o + 1) + '">Revert</button>' : '') +
+        '<button class="small" data-rdel="' + i + '">Delete</button></div>');
+      C.SLOTS.forEach(function (s) {
+        var was = or ? or.slots[s] : undefined;
+        h.push(slotRowHtml(t, m, s, r.slots[s], { click: true, r: i, inRoster: true, chg: or ? (r.slots[s] || '') !== (was || '') : false, was: was }));
+      });
+      h.push(totalsHtml(t, Object.assign({}, r.slots, m.loose)) + '</div>');
+    });
+    // Equipment sets (read-only)
+    t.sets.forEach(function (sr, si) {
+      var es = DATA.equipmentSets[sr.id];
+      h.push('<div class="card ro"><div class="ch"><span class="t">EquipmentSet ' + esc(sr.id) + '</span><span class="badge">' + esc(sr.type) + '</span>' +
+        '<span class="hint">read-only' + (es ? ' · ' + esc(es.module + '/' + es.file) + (es.culture ? ' · ' + esc(es.culture) : '') : '') + '</span></div>');
+      if (!es) h.push('<div class="note bad" style="margin:6px 8px">Unknown equipment set id: the game finds nothing.</div>');
+      else {
+        var list = es.sets.filter(function (x) { return x.type === sr.type; });
+        h.push('<div class="hint" style="padding:4px 8px">' + list.length + ' of its ' + es.sets.length + ' equipment(s) are ' + esc(sr.type) +
+          ' and get added (MBEquipmentRoster.AddEquipmentRoster filters by type).</div>');
+        list.forEach(function (x, k) {
+          h.push('<details class="ro-sets"><summary>' + esc(sr.type) + ' equipment ' + (k + 1) + ' (' + x.slots.length + ' items) ' +
+            '<button class="small" data-setcopy="' + si + '|' + es.sets.indexOf(x) + '">Copy into an editable roster</button></summary>' +
+            compactSlots(t, pairs(x.slots)) + '</details>');
+        });
+      }
+      h.push('</div>');
+    });
+    if (t.dupFrom) {
+      h.push('<div class="card ro"><div class="ch"><span class="t">Also loaded from ' + esc(t.dupFrom.file) + '</span><span class="hint">read-only, not replaced (see the note in the middle)</span></div>');
+      (t.dupFrom.rosters || []).forEach(function (r, k) {
+        h.push('<details class="ro-sets"><summary>' + esc(r.type) + ' roster ' + (k + 1) + '</summary>' + compactSlots(t, pairs(r.slots)) + '</details>');
+      });
+      (t.dupFrom.sets || []).forEach(function (s) { h.push('<div class="hint" style="padding:4px 8px">EquipmentSet ' + esc(s.id) + ' (' + esc(s.type) + ')</div>'); });
+      h.push('</div>');
+    }
+    h.push('</div>');
+    box.innerHTML = h.join('');
+  }
+
+  $('loadouts').addEventListener('click', function (e) {
+    if (!selectedId) return;
+    var t = troopById[selectedId], el = e.target;
+    var attr = function (n) { var x = el.closest('[' + n + ']'); return x ? x.getAttribute(n) : null; };
+    var v;
+    if (el.id === 'addRoster') {
+      edit(t.id).rosters.push({ type: 'Battle', slots: {}, o: null }); changed(); return;
+    }
+    if (el.id === 'addLoose') { showLoose[t.id] = true; renderLoadouts(); return; }
+    if ((v = attr('data-clear')) != null) {
+      e.stopPropagation();
+      var p = v.split('|'), mm = edit(t.id);
+      if (p[0] === 'L') delete mm.loose[p[1]]; else delete mm.rosters[+p[0]].slots[p[1]];
+      changed(); return;
+    }
+    if ((v = attr('data-rmove')) != null) {
+      var q = v.split('|'), i = +q[0], d = +q[1], rs = edit(t.id).rosters, x = rs[i];
+      rs[i] = rs[i + d]; rs[i + d] = x; changed(); return;
+    }
+    if ((v = attr('data-rdup')) != null) {
+      var rs2 = edit(t.id).rosters, src = rs2[+v];
+      rs2.splice(+v + 1, 0, { type: src.type, slots: Object.assign({}, src.slots), o: null }); changed(); return;
+    }
+    if ((v = attr('data-rdel')) != null) {
+      edit(t.id).rosters.splice(+v, 1); changed(); return;
+    }
+    if ((v = attr('data-rrevert')) != null) {
+      var rr = edit(t.id).rosters[+v], or = orig(t.id).rosters[rr.o];
+      rr.type = or.type; rr.slots = Object.assign({}, or.slots); changed(); return;
+    }
+    if ((v = attr('data-rcopy')) != null) {
+      var srcR = cur(t.id).rosters[+v], targets = checkedIds().filter(function (x) { return x !== t.id; });
+      targets.forEach(function (id) { edit(id).rosters.push({ type: srcR.type, slots: Object.assign({}, srcR.slots), o: null }); });
+      toast('Appended a copy of roster ' + (+v + 1) + ' to ' + targets.length + ' troop(s)');
+      changed(); return;
+    }
+    if ((v = attr('data-setcopy')) != null) {
+      e.preventDefault();
+      var z = v.split('|'), sr = t.sets[+z[0]], es = DATA.equipmentSets[sr.id], set = es.sets[+z[1]];
+      edit(t.id).rosters.push({ type: set.type, slots: pairs(set.slots), o: null });
+      toast('Added an editable copy as roster ' + edit(t.id).rosters.length);
+      changed(); return;
+    }
+    var row = el.closest('.slot.click');
+    if (row) {
+      var r = row.getAttribute('data-r'), slot = row.getAttribute('data-slot');
+      var m = cur(t.id), curId = r === 'L' ? m.loose[slot] : m.rosters[+r].slots[slot];
+      openPicker({
+        title: (r === 'L' ? 'Shared slot' : 'Roster ' + (+r + 1)) + ' · ' + SLOT_LABEL[slot] + ' (' + slot + ') · ' + t.name,
+        slot: slot, current: curId,
+        onPick: function (id) {
+          var mm = edit(t.id);
+          if (r === 'L') mm.loose[slot] = id; else mm.rosters[+r].slots[slot] = id;
+          changed();
+        },
+        onClear: curId ? function () {
+          var mm = edit(t.id);
+          if (r === 'L') delete mm.loose[slot]; else delete mm.rosters[+r].slots[slot];
+          changed();
+        } : null
+      });
+    }
+  });
+  $('loadouts').addEventListener('change', function (e) {
+    var v = e.target.getAttribute && e.target.getAttribute('data-rtype');
+    if (v == null || !selectedId) return;
+    edit(selectedId).rosters[+v].type = e.target.value; changed();
+  });
+
+  // bulk: replace an item across the ticked troops
+  var bulkX = null, bulkY = null;
+  function renderLoadoutBulk() {
+    var bar = $('loadoutBulk'), ids = checkedIds();
+    if (!ids.length) { bar.innerHTML = '<span class="hint">Click a slot to change it. Tick troops on the left to copy rosters or replace an item across them.</span>'; return; }
+    var nm = function (id) { var it = itemOf(id); return id ? esc(it ? it.name : id) + ' <span class="mono" style="color:var(--faint)">' + esc(id) + '</span>' : 'pick…'; };
+    bar.innerHTML = '<span class="badge acc">' + ids.length + ' ticked</span><span>Replace</span>' +
+      '<button class="small" id="bxPick">' + nm(bulkX) + '</button><span>with</span>' +
+      '<button class="small" id="byPick">' + nm(bulkY) + '</button>' +
+      '<button class="small primary" id="bxApply"' + (bulkX && bulkY ? '' : ' disabled') + '>Apply to ticked</button>';
+    $('bxPick').onclick = function () { openPicker({ title: 'Item to replace', slot: null, current: bulkX, includeNc: true, onPick: function (id) { bulkX = id; renderLoadoutBulk(); } }); };
+    $('byPick').onclick = function () { openPicker({ title: 'Replacement item', slot: null, current: bulkY, typeOf: bulkX, onPick: function (id) { bulkY = id; renderLoadoutBulk(); } }); };
+    $('bxApply').onclick = function () {
+      var y = itemOf(bulkY), n = 0, skipped = 0, troops = 0;
+      ids.forEach(function (id) {
+        var m = cur(id), hit = false;
+        var visit = function (slots, apply) {
+          Object.keys(slots).forEach(function (s) {
+            if (slots[s] !== bulkX) return;
+            if (y && !C.fits(s, y)) { skipped++; return; }
+            apply(s); n++; hit = true;
+          });
+        };
+        m.rosters.forEach(function (r, i) { visit(r.slots, function (s) { edit(id).rosters[i].slots[s] = bulkY; }); });
+        visit(m.loose, function (s) { edit(id).loose[s] = bulkY; });
+        if (hit) troops++;
+      });
+      toast('Replaced ' + n + ' slot(s) in ' + troops + ' troop(s)' + (skipped ? '; ' + skipped + ' skipped (does not fit the slot)' : ''));
+      changed();
+    };
+  }
+
+  // ------------------------------------------------------------------ item picker
+  function w0(it) { return (it.weapons && it.weapons[0]) || {}; }
+  function ar(it) { return it.armor || {}; }
+  function hs(it) { return it.horse || {}; }
+  var COLS = {
+    name: { label: 'Name', get: function (it) { return it.name; } },
+    type: { label: 'Type', get: function (it) { return it.type; } },
+    cls: { label: 'Class', get: function (it) { return w0(it).cls || (it.crafted ? it.crafted.template : ''); } },
+    tier: { label: 'Tier', num: true, get: function (it) { return it.tier; }, show: function (it) { return it.tier == null ? '' : it.tier + (it.tierFromId ? '?' : ''); } },
+    culture: { label: 'Culture', get: function (it) { return it.culture; } },
+    sw: { label: 'Swing', num: true, get: function (it) { return w0(it).sw; }, show: function (it) { var w = w0(it); return w.sw ? fmt(w.sw) + (DT[w.swt] || '') : ''; } },
+    th: { label: 'Thrust/dmg', num: true, get: function (it) { return w0(it).th; }, show: function (it) { var w = w0(it); return w.th ? fmt(w.th) + (DT[w.tht] || '') : ''; } },
+    spd: { label: 'Speed', num: true, get: function (it) { return w0(it).spd; } },
+    len: { label: 'Length', num: true, get: function (it) { return w0(it).len; } },
+    ms: { label: 'Missile', num: true, get: function (it) { return w0(it).ms; } },
+    stack: { label: 'Stack', num: true, get: function (it) { return w0(it).stack; } },
+    sarm: { label: 'Sh. armor', num: true, get: function (it) { return it.type === 'Shield' ? w0(it).arm : null; } },
+    shp: { label: 'Sh. HP', num: true, get: function (it) { return it.type === 'Shield' ? w0(it).hp : null; } },
+    head: { label: 'Head', num: true, get: function (it) { return ar(it).head; } },
+    body: { label: 'Body', num: true, get: function (it) { return ar(it).body; } },
+    arm: { label: 'Arm', num: true, get: function (it) { return ar(it).arm; } },
+    leg: { label: 'Leg', num: true, get: function (it) { return ar(it).leg; } },
+    mat: { label: 'Material', get: function (it) { return ar(it).mat; } },
+    hspd: { label: 'Speed', num: true, get: function (it) { return hs(it).spd; } },
+    man: { label: 'Maneuver', num: true, get: function (it) { return hs(it).man; } },
+    chg: { label: 'Charge', num: true, get: function (it) { return hs(it).chg; } },
+    hhp: { label: 'HP', num: true, get: function (it) { return hs(it).hp; } },
+    weight: { label: 'Weight', num: true, get: function (it) { return it.weight; } },
+    value: { label: 'Value', num: true, get: function (it) { return it.value; } },
+    stats: { label: 'Stats', get: function (it) { return statLine(it); } }
+  };
+  var COLSETS = {
+    weapon: ['name', 'type', 'cls', 'tier', 'culture', 'sw', 'th', 'spd', 'len', 'ms', 'stack', 'sarm', 'shp', 'weight', 'value'],
+    armor: ['name', 'tier', 'culture', 'head', 'body', 'arm', 'leg', 'mat', 'weight', 'value'],
+    horse: ['name', 'type', 'tier', 'culture', 'hspd', 'man', 'chg', 'hhp', 'value'],
+    harness: ['name', 'tier', 'culture', 'body', 'mat', 'weight', 'value'],
+    any: ['name', 'type', 'tier', 'culture', 'weight', 'value', 'stats']
+  };
+  var picker = null;
+  function openPicker(opts) {
+    var slot = opts.slot;
+    var kind = !slot ? 'any' : C.WEAPON_SLOTS.indexOf(slot) >= 0 || slot === 'Item4' ? 'weapon' : slot === 'Horse' ? 'horse' : slot === 'HorseHarness' ? 'harness' : 'armor';
+    var base = DATA.items.filter(function (it) { return !slot || C.fits(slot, it); });
+    var typeHint = opts.typeOf && itemOf(opts.typeOf) ? itemOf(opts.typeOf).type : '';
+    picker = { opts: opts, kind: kind, base: base, sort: 'name', dir: 1 };
+    $('pickTitle').textContent = opts.title || 'Pick an item';
+    $('pickHint').textContent = slot ? 'Only items that fit ' + slot + ' (Equipment.IsItemFitsToSlot). Click a row to pick it.' +
+      (kind === 'weapon' ? ' Damage: c cut, p pierce, b blunt. Crafted weapons show no stats (computed in game from their pieces).' : '') +
+      ' A "?" tier comes from the id, not the item.' : 'Any item. Click a row to pick it.';
+    var types = {}, cultures = {};
+    base.forEach(function (it) { if (it.type) types[it.type] = true; if (it.culture) cultures[it.culture] = true; });
+    $('kType').innerHTML = '<option value="">All types</option>' + Object.keys(types).sort().map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('');
+    $('kCulture').innerHTML = '<option value="">All cultures</option>' + Object.keys(cultures).sort().map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('');
+    $('kTier').innerHTML = '<option value="">All tiers</option>' + [0, 1, 2, 3, 4, 5, 6].map(function (x) { return '<option value="' + x + '">Tier ' + x + '</option>'; }).join('');
+    $('kType').value = typeHint && types[typeHint] ? typeHint : '';
+    $('kSearch').value = '';
+    $('kNc').checked = !!opts.includeNc;
+    $('kClear').style.display = opts.onClear ? '' : 'none';
+    $('pickModal').classList.add('show');
+    renderPicker();
+    setTimeout(function () { $('kSearch').focus(); }, 30);
+  }
+  function renderPicker() {
+    if (!picker) return;
+    var q = $('kSearch').value.trim().toLowerCase(), ft = $('kType').value, fc = $('kCulture').value, fti = $('kTier').value, nc = $('kNc').checked;
+    var cols = COLSETS[picker.kind];
+    var list = picker.base.filter(function (it) {
+      if (!nc && it.nc && it.id !== picker.opts.current) return false;
+      if (ft && it.type !== ft) return false;
+      if (fc && it.culture !== fc) return false;
+      if (fti && String(it.tier) !== fti) return false;
+      if (q && it.name.toLowerCase().indexOf(q) < 0 && it.id.toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+    var col = COLS[picker.sort], dir = picker.dir;
+    list.sort(function (a, b) {
+      var x = col.get(a), y = col.get(b);
+      if (x == null || x === '') return 1;
+      if (y == null || y === '') return -1;
+      if (col.num) return (x - y) * dir || (a.name < b.name ? -1 : 1);
+      x = String(x).toLowerCase(); y = String(y).toLowerCase();
+      return (x < y ? -1 : x > y ? 1 : 0) * dir;
+    });
+    var cur0 = picker.opts.current;
+    var curIdx = list.findIndex(function (it) { return it.id === cur0; });
+    if (curIdx > 0) { var ci = list.splice(curIdx, 1)[0]; list.unshift(ci); }
+    var MAX = 400, shown = list.slice(0, MAX);
+    $('kCount').textContent = list.length + ' item(s)' + (list.length > MAX ? ', showing ' + MAX + ': refine the search' : '');
+    var h = ['<table><thead><tr>'];
+    cols.forEach(function (c) {
+      h.push('<th data-sort="' + c + '" class="' + (COLS[c].num ? 'num' : '') + '">' + esc(COLS[c].label) + (picker.sort === c ? (dir > 0 ? ' ▲' : ' ▼') : '') + '</th>');
+    });
+    h.push('</tr></thead><tbody>');
+    shown.forEach(function (it) {
+      h.push('<tr class="it' + (it.id === cur0 ? ' cur' : '') + '" data-item="' + esc(it.id) + '" title="' + esc(it.module + '/' + it.file + (it.crafted ? '\nCrafted: ' + it.crafted.template + ' · ' + it.crafted.pieces.map(function (p) { return p.type + ' ' + p.id; }).join(', ') : '') + (it.flags ? '\nFlags: ' + it.flags.join(', ') : '')) + '">');
+      cols.forEach(function (c) {
+        var C2 = COLS[c], v = C2.show ? C2.show(it) : C2.get(it);
+        if (c === 'name') { h.push('<td>' + esc(it.name) + (it.id === cur0 ? ' <span class="badge acc">current</span>' : '') + (it.nc ? ' <span class="badge warn">not in campaign</span>' : '') + '<br><span class="id mono">' + esc(it.id) + '</span></td>'); return; }
+        h.push('<td class="' + (C2.num ? 'num' : '') + '">' + esc(v == null ? '' : C2.num && !C2.show ? fmt(v) : v) + '</td>');
+      });
+      h.push('</tr>');
+    });
+    h.push('</tbody></table>');
+    $('kTable').innerHTML = h.join('');
+  }
+  ['kSearch', 'kType', 'kCulture', 'kTier', 'kNc'].forEach(function (id) { $(id).addEventListener(id === 'kSearch' ? 'input' : 'change', renderPicker); });
+  $('kTable').addEventListener('click', function (e) {
+    var th = e.target.closest('th[data-sort]');
+    if (th) {
+      var c = th.getAttribute('data-sort');
+      if (picker.sort === c) picker.dir = -picker.dir; else { picker.sort = c; picker.dir = COLS[c].num ? -1 : 1; }
+      renderPicker(); return;
+    }
+    var tr = e.target.closest('tr[data-item]');
+    if (!tr) return;
+    var p = picker; picker = null;
+    $('pickModal').classList.remove('show');
+    p.opts.onPick(tr.getAttribute('data-item'));
+  });
+  $('kClear').onclick = function () {
+    var p = picker; picker = null;
+    $('pickModal').classList.remove('show');
+    if (p && p.opts.onClear) p.opts.onClear();
+  };
+
+  // ------------------------------------------------------------------ problems
+  var AMMO_FOR = { Bow: ['Arrows'], Crossbow: ['Bolts'], Sling: ['SlingStones'], Pistol: ['Bullets'], Musket: ['Bullets'] };
+  // Problems of a troop's current state: [{troop, cls: 'bad'|'warn', text}].
+  function troopProblems(id) {
+    var t = troopById[id], m = cur(id), out = [];
+    var add = function (cls, text) { out.push({ troop: id, cls: cls, text: text }); };
+    if (!(m.level >= 1)) add('bad', 'Level ' + m.level + ' is not valid');
+    if (!m.rosters.length) {
+      add('bad', 'No EquipmentRoster: ' + (t.rbmFile ? 'RBM\'s definition does not replace the earlier one' : 'the exported copy does not replace the original') +
+        ' (RBM/XmlLoadingPatches only replaces a troop when both definitions have one), so both load');
+    } else if (!t.rbmFile && !t.rosters.length) {
+      add('warn', 'The original definition (' + t.module + '/' + t.file + ') has no EquipmentRoster, so RBM does not remove it: both load and its equipment sets are added to the exported copy\'s');
+    }
+    (t.notes || []).forEach(function (n) { add('warn', n); });
+    var checkSlots = function (slots, where, inRoster) {
+      Object.keys(slots).forEach(function (s) {
+        var iid = slots[s]; if (!iid) return;
+        if (C.SLOTS.indexOf(s) < 0) { add('bad', where + ': unknown slot ' + s); return; }
+        var it = itemOf(iid);
+        if (!it) {
+          var b = C.shoulderBase(iid);
+          if (b && itemOf(b) && inRoster && shoulderRewrite(t)) return;
+          add('bad', where + ' ' + s + ': unknown item id "' + iid + '"'); return;
+        }
+        if (!C.fits(s, it)) add('bad', where + ' ' + s + ': ' + iid + ' (' + it.type + ') does not fit the slot');
+        if (it.nc) add('warn', where + ' ' + s + ': ' + iid + ' is only in ' + it.module + '/' + it.file + ' (not loaded in campaigns)');
+        if (inRoster && m.loose[s]) add('warn', where + ' ' + s + ': overridden by the shared ' + s + ' slot (' + m.loose[s] + ')');
+      });
+    };
+    m.rosters.forEach(function (r, i) {
+      var where = 'Roster ' + (i + 1);
+      checkSlots(r.slots, where, true);
+      if (r.type !== 'Battle') return;
+      var eff = Object.assign({}, r.slots, m.loose);
+      if (!C.WEAPON_SLOTS.some(function (s) { return eff[s]; })) add('bad', where + ': a battle roster with no weapon in Item0-Item3');
+      var types = C.WEAPON_SLOTS.map(function (s) { var it = statItem(t, eff[s], true); return it ? it.type : ''; });
+      Object.keys(AMMO_FOR).forEach(function (w) {
+        if (types.indexOf(w) >= 0 && !AMMO_FOR[w].some(function (a) { return types.indexOf(a) >= 0; })) add('warn', where + ': ' + w.toLowerCase() + ' without ' + AMMO_FOR[w].join('/').toLowerCase());
+      });
+    });
+    checkSlots(m.loose, 'Shared slots', false);
+    if (!m.rosters.some(function (r) { return r.type === 'Battle'; }) && !t.sets.some(function (s) { return s.type === 'Battle'; }) && !(t.dupFrom))
+      add('warn', 'No battle equipment at all (no battle roster or battle equipment set)');
+    t.sets.forEach(function (s) { if (!DATA.equipmentSets[s.id]) add('warn', 'EquipmentSet "' + s.id + '" is not defined anywhere'); });
+    return out;
+  }
+  function allProblems() {
+    var out = [];
+    editedIds().forEach(function (id) { out = out.concat(troopProblems(id)); });
+    out.sort(function (a, b) { return (a.cls === b.cls ? 0 : a.cls === 'bad' ? -1 : 1) || (a.troop < b.troop ? -1 : a.troop > b.troop ? 1 : 0); });
+    return out;
+  }
+  function updateProblems() {
+    var list = allProblems(), btn = $('btnProblems'), box = $('problems');
+    if (!list.length) { btn.style.display = 'none'; box.classList.remove('show'); box.innerHTML = ''; return; }
+    var bad = list.filter(function (x) { return x.cls === 'bad'; }).length;
+    btn.style.display = '';
+    btn.className = 'badge ' + (bad ? 'bad' : 'warn');
+    btn.textContent = list.length + ' problem' + (list.length === 1 ? '' : 's') + ' in edited troops' + (bad ? ' (' + bad + ' serious)' : '');
+    box.innerHTML = list.map(function (x) {
+      var t = troopById[x.troop];
+      return '<div class="row ' + x.cls + '"><button class="link" data-link="' + esc(x.troop) + '">' + esc(t ? t.name : x.troop) + '</button> ' +
+        '<span class="mono">' + esc(x.troop) + '</span>: ' + esc(x.text) + '</div>';
+    }).join('');
+  }
+  $('btnProblems').onclick = function () { $('problems').classList.toggle('show'); };
+  $('problems').addEventListener('click', function (e) {
+    var id = e.target.getAttribute && e.target.getAttribute('data-link'); if (!id) return;
+    select(id, true);
+  });
+
+  // ------------------------------------------------------------------ export
+  var lastExport = null, exportIdx = 0;
+  function renderMsgs(box, msgs) {
+    box.innerHTML = msgs.map(function (m) { return '<div class="' + m[0] + '">' + (m[2] ? m[1] : esc(m[1])) + '</div>'; }).join('');
+  }
+  function fileName(p) { return p.split('/').pop(); }
+  function showExportFile(i) {
+    exportIdx = i;
+    var f = lastExport.files[i];
+    document.querySelectorAll('#exportFiles button').forEach(function (b, k) { b.className = k === i ? 'small primary' : 'small'; });
+    var msgs = [['ok', '<b>' + esc(f.path) + '</b>: ' + f.troops.length + ' troop(s) — ' +
+      f.troops.filter(function (x) { return x.mode === 'replace'; }).length + ' rewritten in place, ' +
+      f.troops.filter(function (x) { return x.mode === 'append'; }).length + ' appended', true]];
+    f.troops.forEach(function (x) {
+      var t = troopById[x.id];
+      msgs.push(['', '<b>' + esc(t.name) + '</b> <span class="mono">' + esc(x.id) + '</span> · ' +
+        (x.mode === 'replace' ? 'rewritten in place' : 'appended (copied from ' + esc(t.module + '/' + t.file) + ')') +
+        '<ul>' + x.summary.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>', true]);
+      troopProblems(x.id).forEach(function (p) { msgs.push([p.cls, '⚠ ' + x.id + ': ' + p.text]); });
+    });
+    // Show the first change. The textarea holds LF line ends (it drops the CRs), so map the index.
+    var ta = $('exportText');
+    ta.value = f.text;
+    var a = 0;
+    while (a < f.original.length && f.original.charCodeAt(a) === f.text.charCodeAt(a)) a++;
+    var before = f.text.slice(0, a), line = before.split('\n').length - 1;
+    var idx = a - (before.match(/\r/g) || []).length;
+    msgs.splice(1, 0, ['', 'First change at line ' + (line + 1) + '.']);
+    renderMsgs($('exportMsgs'), lastExport.messages.concat(msgs));
+    setTimeout(function () {
+      var lh = parseFloat(getComputedStyle(ta).lineHeight) || 16;
+      ta.setSelectionRange(idx, idx);
+      ta.scrollTop = Math.max(0, (line - 3) * lh);
+    }, 0);
+    $('btnDownload').textContent = 'Download ' + fileName(f.path);
+  }
+  $('btnExport').onclick = function () {
+    var ms = {};
+    editedIds().forEach(function (id) { ms[id] = models[id]; });
+    try {
+      lastExport = C.buildExport(DATA, ms, troopById);
+    } catch (err) {
+      lastExport = null;
+      $('exportFiles').innerHTML = ''; $('exportText').style.display = 'none'; $('exportButtons').style.display = 'none';
+      renderMsgs($('exportMsgs'), [['bad', 'Export failed: ' + err.message]]);
+      $('exportModal').classList.add('show');
+      return;
+    }
+    var has = lastExport.files.length > 0;
+    $('exportText').style.display = has ? '' : 'none';
+    $('exportButtons').style.display = has ? '' : 'none';
+    $('exportFiles').innerHTML = lastExport.files.map(function (f, i) {
+      return '<button class="small" data-file="' + i + '">' + esc(f.path) + ' (' + f.troops.length + ')</button>';
+    }).join('');
+    $('exportFiles').querySelectorAll('[data-file]').forEach(function (b) { b.onclick = function () { showExportFile(+b.getAttribute('data-file')); }; });
+    if (has) showExportFile(0);
+    else renderMsgs($('exportMsgs'), lastExport.messages.concat([['ok', 'Nothing to export: no troop differs from the files.']]));
+    $('btnSave').style.display = window.showSaveFilePicker ? '' : 'none';
+    $('exportModal').classList.add('show');
+  };
+  function exportBlob(f) { return new Blob([(f.bom ? '﻿' : '') + f.text], { type: 'application/xml' }); }
+  $('btnCopy').onclick = function () {
+    // From the export, not the textarea: a textarea's value turns CRLF into LF.
+    var text = lastExport.files[exportIdx].text;
+    var done = function () { toast('Copied to clipboard'); };
+    var fallback = function () {
+      var ta = $('exportText'); ta.removeAttribute('readonly'); ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { toast('Copy failed: select the text and press Ctrl+C'); }
+      ta.setAttribute('readonly', '');
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+    else fallback();
+  };
+  $('btnDownload').onclick = function () {
+    var f = lastExport.files[exportIdx];
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(exportBlob(f)); a.download = fileName(f.path);
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  };
+  $('btnSave').onclick = function () {
+    var f = lastExport.files[exportIdx];
+    window.showSaveFilePicker({ suggestedName: fileName(f.path), types: [{ description: 'XML', accept: { 'application/xml': ['.xml'] } }] })
+      .then(function (h) { return h.createWritable().then(function (w) { return w.write(exportBlob(f)).then(function () { return w.close(); }); }); })
+      .then(function () { toast('Saved ' + fileName(f.path)); }, function (e) { if (e && e.name !== 'AbortError') toast('Save failed: ' + e.message); });
+  };
+
+  // ------------------------------------------------------------------ reset, init
+  $('btnReset').onclick = function () {
+    var n = editedIds().length;
+    if (n && !confirm('Discard your changes to ' + n + ' troop(s) and go back to the files?')) return;
+    models = {}; checked = {};
+    try { localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
+    $('banner').classList.remove('show');
+    changed();
+    toast('Reset to the files');
+  };
+
+  document.querySelectorAll('[data-close]').forEach(function (b) {
+    b.onclick = function () { b.closest('.modal-bg').classList.remove('show'); picker = null; };
+  });
+  document.querySelectorAll('.modal-bg').forEach(function (m) {
+    m.addEventListener('mousedown', function (e) { if (e.target === m) { m.classList.remove('show'); picker = null; } });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { document.querySelectorAll('.modal-bg.show').forEach(function (m) { m.classList.remove('show'); }); picker = null; }
+  });
+
+  $('meta').textContent = (DATA.gameVersion ? 'Bannerlord ' + DATA.gameVersion : '') + (DATA.navalDlc ? ' + War Sails' : '') +
+    ' · ' + DATA.troops.length + ' troops · ' + DATA.items.length + ' items · data ' + DATA.generated +
+    (DATA.warnings && DATA.warnings.length ? ' · ' + DATA.warnings.length + ' generator warning(s)' : '');
+  $('meta').title = 'Assumed: ' + (DATA.assumptions || '') + (DATA.warnings && DATA.warnings.length ? '\n\nGenerator warnings:\n' + DATA.warnings.join('\n') : '');
+
+  updateModified();
+  var first = editedIds()[0];
+  if (first) select(first, true); else { renderTroops(); renderDetails(); renderLoadouts(); }
+})();
+</script>
+</body>
+</html>

@@ -369,5 +369,9 @@ FodyWeavers.xsd
 # Regenerate with tools\TroopPerkEditor\Build-TroopPerkData.ps1.
 /tools/TroopPerkEditor/troop-perk-data.js
 
+# Troop skills / loadout editor data (generated from the game install, contains TaleWorlds text).
+# Regenerate with tools\TroopLoadoutEditor\Build-TroopLoadoutData.ps1.
+/tools/TroopLoadoutEditor/troop-loadout-data.js
+
 # MkDocs build output for the player manual (built and published by .github/workflows/manual.yml)
 /manual/site/

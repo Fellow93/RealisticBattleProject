@@ -7,6 +7,16 @@ personal effects, export/import of the XML. Generate its data first with
 `powershell -ExecutionPolicy Bypass -File tools\TroopPerkEditor\Build-TroopPerkData.ps1` (reads
 `decompiled/` and the game's module XML; the output is gitignored). See `TroopPerkEditor/README.md`.
 
+## TroopLoadoutEditor/
+
+A local page (`index.html`) for editing troops' level, skills and equipment rosters in RBM's troop overhaul files
+(`RBMXML/RBMCombat_unit_overhaul.xml`, `RBM_WS_XML/RBMCombat_WS_unit_overhaul.xml`): every troop the game loads
+(merged across modules as the game does), an item picker with stats, skill hints, bulk edits, and an export that
+splices only the edited troops into the file (a troop not yet in an RBM file is appended as a full copy). Generate
+its data first with `powershell -ExecutionPolicy Bypass -File tools\TroopLoadoutEditor\Build-TroopLoadoutData.ps1`
+(the output is gitignored). See `TroopLoadoutEditor/README.md`, which also explains how
+`RBM/XmlLoadingPatches.cs` applies these files.
+
 ## check_crafting_coverage.py
 
 Finds smithing piece combinations that no weapon description covers — the cause

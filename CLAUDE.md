@@ -101,6 +101,8 @@ Settings are static fields on `RBMConfig.RBMConfig`, persisted to user XML at `U
 
 `RBM_WS_XML/` contains compatibility files for the War Sails (Naval) DLC.
 
+Troop skills/levels/equipment rosters in `RBMCombat_unit_overhaul.xml` (+ the WS one) can be edited with the local page in `tools/TroopLoadoutEditor/` (run its `Build-TroopLoadoutData.ps1` first; its README explains how `XmlLoadingPatches` applies those files).
+
 ### Large Utility Files
 
 RBMAI, RBMCombat and RBMConfig each have their own `Utilities` (partial static files in RBMAI/RBMCombat, see above) with helpers for combat math, physics and config management.
