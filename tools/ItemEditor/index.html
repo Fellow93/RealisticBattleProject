@@ -550,7 +550,30 @@ pre.xml .chg { background: var(--chg); display: inline-block; min-width: 100%; }
     var s = {}; DATA.items.forEach(function (it) { var v = fn(it); if (v !== '' && v != null) s[v] = true; });
     return Object.keys(s).sort();
   }
-  fillSelect($('fType'), uniq(function (it) { return it.type; }));
+  // Type filter, grouped by category; "g:<category>" picks every type of a category.
+  var TYPE_CATS = [
+    ['armor', 'Armor', ['HeadArmor', 'BodyArmor', 'HandArmor', 'LegArmor', 'Cape']],
+    ['melee', 'Melee weapons', ['OneHandedWeapon', 'TwoHandedWeapon', 'Polearm']],
+    ['ranged', 'Ranged weapons', ['Bow', 'Crossbow', 'Sling', 'Thrown', 'Pistol', 'Musket']],
+    ['ammo', 'Ammo', ['Arrows', 'Bolts', 'SlingStones', 'Bullets']],
+    ['shield', 'Shields', ['Shield']],
+    ['mount', 'Mounts', ['Horse', 'HorseHarness', 'Animal']]
+  ];
+  var CAT_OF_TYPE = {};
+  TYPE_CATS.forEach(function (c) { c[2].forEach(function (t) { CAT_OF_TYPE[t] = c[0]; }); });
+  (function () {
+    var present = uniq(function (it) { return typeOfKey(it.id); }), sel = $('fType');
+    var group = function (key, label, types) {
+      if (!types.length) return;
+      var g = document.createElement('optgroup'); g.label = label;
+      if (key && types.length > 1) { var a = document.createElement('option'); a.value = 'g:' + key; a.textContent = 'All ' + label.toLowerCase(); g.appendChild(a); }
+      types.forEach(function (t) { var o = document.createElement('option'); o.value = t; o.textContent = t; g.appendChild(o); });
+      sel.appendChild(g);
+    };
+    TYPE_CATS.forEach(function (c) { group(c[0], c[1], c[2].filter(function (t) { return present.indexOf(t) >= 0; })); });
+    group('', 'Other', present.filter(function (t) { return !CAT_OF_TYPE[t]; }));
+  })();
+  function matchesType(t, f) { return f.indexOf('g:') === 0 ? CAT_OF_TYPE[t] === f.slice(2) : t === f; }
   fillSelect($('fCulture'), uniq(function (it) { return it.culture; }));
   fillSelect($('fTier'), ['0', '1', '2', '3', '4', '5', '6', '?'], function (v) { return v === '?' ? 'Tier not previewed' : 'Tier ' + v; });
   fillSelect($('fModule'), uniq(function (it) { return it.module; }));
@@ -604,7 +627,7 @@ pre.xml .chg { background: var(--chg); display: inline-block; min-width: 100%; }
         var id = (m.attrs.id || '').toLowerCase(), nm = displayName(m, k).toLowerCase();
         if (id.indexOf(q) < 0 && nm.indexOf(q) < 0) return false;
       }
-      if (ft && typeOfKey(k) !== ft) return false;
+      if (ft && !matchesType(typeOfKey(k), ft)) return false;
       if (fw && !matchesWClass(m, fw)) return false;
       if (fc && (m.attrs.culture || '').replace(/^Culture\./, '') !== fc) return false;
       if (fti) { var t = info(k).tier.tier; if (fti === '?' ? t != null : String(t) !== fti) return false; }

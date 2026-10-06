@@ -50,7 +50,8 @@ Open `index.html` in a browser (double-click it; no server needed). It loads `it
 `../TroopLoadoutEditor/troop-loadout-core.js`, whose XML text helpers (tokenizer, attribute get/set/remove,
 re-indent) both editors share.
 
-- **Left**: items, with search (name or id) and filters: type, weapon class (the `weapon_class` of
+- **Left**: items, with search (name or id) and filters: type (grouped into armor, melee and
+  ranged weapons, ammo, shields, mounts and other, each group with an "All ..." choice), weapon class (the `weapon_class` of
   any Weapon usage; crafted weapons have no Weapon element, so they are listed by crafting template), culture, RBM
   tier, module, source (in an RBM file, not in
   one, in two or more RBM files, new), edited, problems, and "not in campaign" (multiplayer items, hidden by default).
