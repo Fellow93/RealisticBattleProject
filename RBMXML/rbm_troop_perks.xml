@@ -51,9 +51,4 @@
     </Troop>
 -->
 <TroopPerks>
-  <!-- TEST entry: remove before release -->
-  <Troop id="vlandian_sharpshooter">
-    <Perk id="CrossbowSteady"/>
-    <Perk id="CrossbowWindWinder"/>
-  </Troop>
 </TroopPerks>
