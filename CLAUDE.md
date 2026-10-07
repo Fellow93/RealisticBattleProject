@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Realistic Battle Mod (RBM) for Mount & Blade II: Bannerlord. A comprehensive combat overhaul mod that rewrites damage calculations, armor mechanics, AI behavior, and adds a stamina/posture system. Built on Harmony 2.4.2 for non-invasive runtime patching of game methods.
 
-Current version: v4.6.0 (`RBMXML/SubModule.xml`). Targets Bannerlord v1.5.4+ (per the
+Current version: v4.6.1 (`RBMXML/SubModule.xml`). Targets Bannerlord v1.5.4+ (per the
 `DependedModules` entries there); currently developed against v1.5.4.
 
 ## Build
@@ -75,7 +75,7 @@ No test suite exists — testing is manual via in-game verification.
 - `Economy/` — market prices and liquidity, caravan capital, recruit supply, trade-good values.
 - `Simulation/` + `Power/` — the equipment-aware auto-resolve and `StrategicTroopPower`. `Spectate/` — no-agent AI-vs-AI spectator battle.
 - `UI/` — `RBMTroopSpoilsBarWidget` (a `FillBarVerticalWidget`) and the inventory weight column, both injected into native prefabs. `SpoilsBarPrefabPatch` also injects `RBMTroopHoverTooltipWidget` (party-screen troop-row hover → troop tooltip, gated on `rbmCampaignEnabled` + `troopPerksEnabled`) into `PartyTroopTuple.xml` and `PartyTroopTupleLeft.xml`; the PartyScreen codegen skip runs when either the spoils bar or the hover is on.
-- `Diagnostics/` — `SpoilsLog` (`logs/campaign/`), `EconomyLog` (`logs/economy/`), `SimulationLog` (`logs/simulation/`), `LogRetention`; each gated by its own config toggle.
+- `Diagnostics/` — `SpoilsLog` (`logs/campaign/`), `EconomyLog` (`logs/economy/`), `SimulationLog` (`logs/simulation/`), `LogRetention`; each gated by its own config toggle. Every campaign log writes through `BufferedLogWriter` (one open buffered handle per file, flushed hourly/before save, closed on game end) — never add a per-line `File.AppendAllText` or a `Debug.Print` copy of log lines.
 
 ### Dependency Graph
 ```
