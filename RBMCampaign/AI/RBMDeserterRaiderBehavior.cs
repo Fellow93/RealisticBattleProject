@@ -78,11 +78,37 @@ namespace RBMCampaign
         // instead of one every think while it's still en route. Not saved.
         private readonly Dictionary<MobileParty, IMapPoint> _lastTarget = new Dictionary<MobileParty, IMapPoint>();
 
+        // How often the expensive part -- the locatable sweep with a navigation-distance query per viable
+        // villager party, caravan and village -- may run per band. Vanilla thinks a party every 6 hours, but
+        // HOURLY while it is raiding (and on forced rethinks), and every one of those thinks re-ran the full
+        // sweep. Between scans we only re-validate and re-score the cached best target (cheap: no navmesh),
+        // which keeps re-feeding the raid score every hour as the resolver requires. Just under vanilla's
+        // 6-hour period so a normal-cadence think always rescans (no float-edge miss at exactly 6.0); only
+        // the hourly re-thinks reuse the cache. A cached target that stops being valid rescans at once.
+        private const float RescanIntervalHours = 5f;
+
+        // Per-session cache of the last full scan's winner per band: the target plus the nav data and the
+        // distance weighting needed to re-add its score without another navigation query, and the campaign
+        // hour at which the sweep may run again. Target == null means the last scan found nothing worth
+        // hitting; that result is kept until the next scheduled scan. Not saved -- the behavior instance is
+        // created fresh on every new game / load (RBM/SubModule.OnGameStart), so this starts empty and each
+        // band just rescans on its first think.
+        private struct CachedTarget
+        {
+            public IMapPoint Target;
+            public MobileParty.NavigationType NavType;
+            public bool IsFromPort;
+            public float DistanceFactor;
+            public float Radius;
+            public double NextScanHour;
+        }
+        private readonly Dictionary<MobileParty, CachedTarget> _cache = new Dictionary<MobileParty, CachedTarget>();
+
         public override void RegisterEvents()
         {
             CampaignEvents.AiHourlyTickEvent.AddNonSerializedListener(this, AiHourlyTick);
-            // Drop a party's log-dedup entry the moment it dies, so a long session doesn't pin a dead
-            // MobileParty (and its object graph) in the map for the life of the session.
+            // Drop a party's log-dedup and target-cache entries the moment it dies, so a long session doesn't
+            // pin a dead MobileParty (and its object graph) in the maps for the life of the session.
             CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, OnMobilePartyDestroyed);
         }
 
@@ -95,6 +121,7 @@ namespace RBMCampaign
             if (mobileParty != null)
             {
                 _lastTarget.Remove(mobileParty);
+                _cache.Remove(mobileParty);
             }
         }
 
@@ -129,14 +156,48 @@ namespace RBMCampaign
                 return;
             }
 
-            // Best candidate this think, tracked only so the log records the target the band will actually
-            // commit to (the single highest score wins in AiPartyThinkBehavior).
             IMapPoint bestTarget = null;
             float bestScore = 0f;
-            string bestKind = null;
 
-            ScoreHuntTargets(mobileParty, myStrength, p, ref bestTarget, ref bestScore, ref bestKind);
-            ScoreRaidTargets(mobileParty, myStrength, p, ref bestTarget, ref bestScore, ref bestKind);
+            // Between scans: re-validate and re-score only the cached winner. Only the single highest score
+            // wins in AiPartyThinkBehavior, so feeding just the scan's winner makes the same choice the full
+            // sweep made. A cached target that has gone invalid (prey gone/sheltered/in a fight/now too
+            // strong, village no longer raidable) falls through to an immediate rescan.
+            double nowHours = CampaignTime.Now.ToHours;
+            bool rescan = true;
+            if (_cache.TryGetValue(mobileParty, out CachedTarget cached) && nowHours < cached.NextScanHour)
+            {
+                if (cached.Target == null)
+                {
+                    // Last scan found nothing worth hitting; keep falling back to vanilla's patrol until the
+                    // next scheduled scan instead of re-sweeping every hourly think.
+                    _lastTarget.Remove(mobileParty);
+                    return;
+                }
+                float cachedScore = RescoreCachedTarget(mobileParty, myStrength, cached);
+                if (cachedScore > 0f)
+                {
+                    AIBehaviorData behaviorData = new AIBehaviorData(cached.Target,
+                        cached.Target is Settlement ? AiBehavior.RaidSettlement : AiBehavior.GoAroundParty,
+                        cached.NavType, willGatherArmy: false, cached.IsFromPort, isTargetingPort: false);
+                    p.AddBehaviorScore((behaviorData, cachedScore));
+                    bestTarget = cached.Target;
+                    bestScore = cachedScore;
+                    rescan = false;
+                }
+            }
+
+            if (rescan)
+            {
+                // Best candidate this think: the target the band will actually commit to (the single highest
+                // score wins in AiPartyThinkBehavior), cached with its nav data for the hourly re-thinks.
+                CachedTarget best = default(CachedTarget);
+                ScoreHuntTargets(mobileParty, myStrength, p, ref best, ref bestScore);
+                ScoreRaidTargets(mobileParty, myStrength, p, ref best, ref bestScore);
+                best.NextScanHour = nowHours + RescanIntervalHours;
+                _cache[mobileParty] = best;
+                bestTarget = best.Target;
+            }
 
             if (bestTarget == null)
             {
@@ -150,9 +211,129 @@ namespace RBMCampaign
                 _lastTarget[mobileParty] = bestTarget;
                 SpoilsLog.Log("DESERTER", mobileParty.Party,
                     PartyName(mobileParty) + " (" + mobileParty.Party.NumberOfAllMembers + " men, str "
-                    + myStrength.ToString("0") + ") -> " + bestKind + " " + TargetName(bestTarget)
+                    + myStrength.ToString("0") + ") -> " + KindOf(bestTarget) + " " + TargetName(bestTarget)
                     + "  ·  score " + bestScore.ToString("0.0"));
             }
+        }
+
+        /// <summary>
+        /// Cheap re-check of a cached target between full scans: the same eligibility and strength gates the
+        /// sweep applies, and the same score formula, but reusing the scan's distance weighting instead of a
+        /// fresh navigation query. Returns 0 when the target is no longer valid, which triggers a rescan.
+        /// </summary>
+        private static float RescoreCachedTarget(MobileParty mobileParty, float myStrength, CachedTarget cached)
+        {
+            if (cached.Target is MobileParty prey)
+            {
+                if (!IsHuntablePrey(mobileParty, prey, myStrength))
+                {
+                    return 0f;
+                }
+                // Leash: straight-line distance never exceeds the navigation distance the sweep gates on, so
+                // prey that has run beyond the search radius as the crow flies is certainly out of range.
+                if (!(mobileParty.Position.Distance(prey.Position) < cached.Radius))
+                {
+                    return 0f;
+                }
+                return HuntScore(mobileParty, prey, cached.DistanceFactor);
+            }
+
+            if (cached.Target is Settlement settlement)
+            {
+                if (!IsRaidableVillage(mobileParty, settlement, out bool alreadyRaidingThis))
+                {
+                    return 0f;
+                }
+                float defence = EstimateVillageDefence(settlement);
+                if (myStrength < defence * RaidStrengthRatio)
+                {
+                    return 0f;
+                }
+                // A band actually sacking this village sits on it (navigation distance ~0), whatever the
+                // distance was when the scan picked it -- keep the raid at full weight so it isn't finalized.
+                float distanceFactor = cached.DistanceFactor;
+                if (alreadyRaidingThis && mobileParty.MapEvent != null && mobileParty.MapEvent.IsRaid
+                    && mobileParty.MapEvent.MapEventSettlement == settlement)
+                {
+                    distanceFactor = 1f;
+                }
+                return RaidScore(myStrength, defence, distanceFactor, alreadyRaidingThis);
+            }
+
+            return 0f;
+        }
+
+        /// <summary>
+        /// Soft civilian prey the band is strong enough to run down: never other bandits/deserters, never a
+        /// party in a settlement, never one already committed to a battle (our own encounter will pull it in
+        /// when we arrive), never one on the other side of the shoreline.
+        /// </summary>
+        private static bool IsHuntablePrey(MobileParty mobileParty, MobileParty prey, float myStrength)
+        {
+            if (prey == null || prey == mobileParty || !prey.IsActive)
+            {
+                return false;
+            }
+            if (!(prey.IsVillager || prey.IsCaravan) || prey.IsBandit)
+            {
+                return false;
+            }
+            if (prey.CurrentSettlement != null || prey.MapEvent != null
+                || prey.IsCurrentlyAtSea != mobileParty.IsCurrentlyAtSea)
+            {
+                return false;
+            }
+            return myStrength >= prey.Party.EstimatedStrength * PartyStrengthRatio;
+        }
+
+        private static float HuntScore(MobileParty mobileParty, MobileParty prey, float distanceFactor)
+        {
+            float baseScore = prey.IsCaravan ? CaravanHuntBaseScore : VillagerHuntBaseScore;
+            float score = baseScore * distanceFactor;
+            if (mobileParty.DefaultBehavior == AiBehavior.GoAroundParty && mobileParty.TargetParty == prey)
+            {
+                score *= CommitmentBonus;
+            }
+            return score;
+        }
+
+        /// <summary>
+        /// Only a settled, un-contested village is a fresh raid target. The one exception is the village the
+        /// band is already sacking -- keep scoring it so the raid isn't finalized out from under it while it
+        /// runs (its state is BeingRaided, not Normal).
+        /// </summary>
+        private static bool IsRaidableVillage(MobileParty mobileParty, Settlement settlement, out bool alreadyRaidingThis)
+        {
+            alreadyRaidingThis = false;
+            if (settlement == null || !settlement.IsVillage || settlement.Village == null)
+            {
+                return false;
+            }
+            alreadyRaidingThis = mobileParty.DefaultBehavior == AiBehavior.RaidSettlement
+                && mobileParty.TargetSettlement == settlement;
+            if (!alreadyRaidingThis)
+            {
+                if (settlement.Village.VillageState != Village.VillageStates.Normal)
+                {
+                    return false;
+                }
+                if (settlement.Party.MapEvent != null || settlement.SiegeEvent != null)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static float RaidScore(float myStrength, float defence, float distanceFactor, bool alreadyRaidingThis)
+        {
+            float confidence = MBMath.ClampFloat(myStrength / (defence + 1f), 1f, MaxRaidConfidence);
+            float score = RaidBaseScore * distanceFactor * confidence;
+            if (alreadyRaidingThis)
+            {
+                score *= CommitmentBonus;
+            }
+            return score;
         }
 
         /// <summary>
@@ -161,7 +342,7 @@ namespace RBMCampaign
         /// eligible; anything sheltering in a settlement or already in a fight is left alone.
         /// </summary>
         private void ScoreHuntTargets(MobileParty mobileParty, float myStrength, PartyThinkParams p,
-            ref IMapPoint bestTarget, ref float bestScore, ref string bestKind)
+            ref CachedTarget best, ref float bestScore)
         {
             float radius = Campaign.Current.Models.EncounterModel.NeededMaximumLandDistanceForEncounteringMobileParty
                 * PartySearchEncounterMultiple;
@@ -175,24 +356,7 @@ namespace RBMCampaign
             for (MobileParty prey = MobileParty.FindNextLocatable(ref data); prey != null;
                 prey = MobileParty.FindNextLocatable(ref data))
             {
-                if (prey == mobileParty || !prey.IsActive)
-                {
-                    continue;
-                }
-                // Only soft civilian prey; never other bandits/deserters, never a party in a settlement, and
-                // never one already committed to a battle (our own encounter will pull it in when we arrive).
-                if (!(prey.IsVillager || prey.IsCaravan) || prey.IsBandit)
-                {
-                    continue;
-                }
-                if (prey.CurrentSettlement != null || prey.MapEvent != null
-                    || prey.IsCurrentlyAtSea != mobileParty.IsCurrentlyAtSea)
-                {
-                    continue;
-                }
-
-                float preyStrength = prey.Party.EstimatedStrength;
-                if (myStrength < preyStrength * PartyStrengthRatio)
+                if (!IsHuntablePrey(mobileParty, prey, myStrength))
                 {
                     continue;
                 }
@@ -205,12 +369,7 @@ namespace RBMCampaign
                 }
 
                 float distanceFactor = 1f - distance / radius;
-                float baseScore = prey.IsCaravan ? CaravanHuntBaseScore : VillagerHuntBaseScore;
-                float score = baseScore * distanceFactor;
-                if (mobileParty.DefaultBehavior == AiBehavior.GoAroundParty && mobileParty.TargetParty == prey)
-                {
-                    score *= CommitmentBonus;
-                }
+                float score = HuntScore(mobileParty, prey, distanceFactor);
                 if (!(score > 0f))
                 {
                     continue;
@@ -223,8 +382,11 @@ namespace RBMCampaign
                 if (score > bestScore)
                 {
                     bestScore = score;
-                    bestTarget = prey;
-                    bestKind = prey.IsCaravan ? "caravan" : "villagers";
+                    best.Target = prey;
+                    best.NavType = navType;
+                    best.IsFromPort = false;
+                    best.DistanceFactor = distanceFactor;
+                    best.Radius = radius;
                 }
             }
         }
@@ -236,7 +398,7 @@ namespace RBMCampaign
         /// <c>AiPartyThinkBehavior</c> never swaps the raid out for the fallback patrol.
         /// </summary>
         private void ScoreRaidTargets(MobileParty mobileParty, float myStrength, PartyThinkParams p,
-            ref IMapPoint bestTarget, ref float bestScore, ref string bestKind)
+            ref CachedTarget best, ref float bestScore)
         {
             float radius = Campaign.Current.GetAverageDistanceBetweenClosestTwoTownsWithNavigationType(
                 mobileParty.NavigationCapability) * VillageSearchTownGapMultiple;
@@ -250,25 +412,9 @@ namespace RBMCampaign
             for (Settlement settlement = Settlement.FindNextLocatable(ref data); settlement != null;
                 settlement = Settlement.FindNextLocatable(ref data))
             {
-                if (settlement == null || !settlement.IsVillage || settlement.Village == null)
+                if (!IsRaidableVillage(mobileParty, settlement, out bool alreadyRaidingThis))
                 {
                     continue;
-                }
-                bool alreadyRaidingThis = mobileParty.DefaultBehavior == AiBehavior.RaidSettlement
-                    && mobileParty.TargetSettlement == settlement;
-                // Only a settled, un-contested village is a fresh raid target. The one exception is the
-                // village we're already sacking -- keep scoring it so the raid isn't finalized out from
-                // under us while it runs (its state is BeingRaided, not Normal).
-                if (!alreadyRaidingThis)
-                {
-                    if (settlement.Village.VillageState != Village.VillageStates.Normal)
-                    {
-                        continue;
-                    }
-                    if (settlement.Party.MapEvent != null || settlement.SiegeEvent != null)
-                    {
-                        continue;
-                    }
                 }
 
                 float defence = EstimateVillageDefence(settlement);
@@ -286,12 +432,7 @@ namespace RBMCampaign
                 }
 
                 float distanceFactor = 1f - distance / radius;
-                float confidence = MBMath.ClampFloat(myStrength / (defence + 1f), 1f, MaxRaidConfidence);
-                float score = RaidBaseScore * distanceFactor * confidence;
-                if (alreadyRaidingThis)
-                {
-                    score *= CommitmentBonus;
-                }
+                float score = RaidScore(myStrength, defence, distanceFactor, alreadyRaidingThis);
                 if (!(score > 0f))
                 {
                     continue;
@@ -304,8 +445,11 @@ namespace RBMCampaign
                 if (score > bestScore)
                 {
                     bestScore = score;
-                    bestTarget = settlement;
-                    bestKind = "raid";
+                    best.Target = settlement;
+                    best.NavType = navType;
+                    best.IsFromPort = isFromPort;
+                    best.DistanceFactor = distanceFactor;
+                    best.Radius = radius;
                 }
             }
         }
@@ -341,6 +485,15 @@ namespace RBMCampaign
                 return "?";
             }
             return mobileParty.Name != null ? mobileParty.Name.ToString() : mobileParty.StringId;
+        }
+
+        private static string KindOf(IMapPoint target)
+        {
+            if (target is MobileParty prey)
+            {
+                return prey.IsCaravan ? "caravan" : "villagers";
+            }
+            return "raid";
         }
 
         private static string TargetName(IMapPoint target)
