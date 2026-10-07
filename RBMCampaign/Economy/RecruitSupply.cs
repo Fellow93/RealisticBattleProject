@@ -9,6 +9,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
 namespace RBMCampaign
@@ -19,8 +20,9 @@ namespace RBMCampaign
     ///
     ///   GEAR, when the man first offers himself. A volunteer appearing in a notable's roster is a
     ///   villager being armed, so his kit comes off the market that supplies the place -- a town's own,
-    ///   a village's from the town it trades with. NO MONEY CHANGES HANDS. The community arms its own
-    ///   sons; the stock simply goes.
+    ///   a village's from the town it trades with. The community arms its own sons: a town's
+    ///   citizens front the kit's worth, a village pays its market town for it, and what the shelves lack
+    ///   is found off-screen (see <see cref="DrawKitFromMarket"/>). No lord pays here.
     ///
     ///   MONEY, when a party takes him. What the recruiting lord pays goes into that same town's OWN
     ///   TREASURY -- raising soldiers is the fief's business as a body, not its shopkeepers' -- and so it
@@ -44,7 +46,7 @@ namespace RBMCampaign
     /// RBMConfig.recruitDrawsFromSettlementStock = 0; remove it outright by deleting this file, its
     /// csproj entry, and those tagged lines.
     /// </summary>
-    public static class RecruitSupply
+    public static partial class RecruitSupply
     {
         /// <summary>On only when the spoils economy is on and the feature is switched on in config.</summary>
         public static bool IsEnabled
@@ -137,6 +139,37 @@ namespace RBMCampaign
         public static int KitValue(CharacterObject character)
         {
             return (character == null || character.IsHero) ? 0 : SpoilsPool.GetEquipmentValue(character);
+        }
+
+        /// <summary>
+        /// What one man's kit is worth to a market draw (<see cref="DrawKitFromMarket"/>). He is armed slot
+        /// by slot in his representative (first) battle set, so his kit is worth that set -- not the average
+        /// over all his sets that <see cref="KitValue"/> gives. With the average, a first set dearer than it
+        /// ran the budget dry before its last slots, which were then billed to the citizens as missing
+        /// though the shelves had them. Militia arming prices its men through this too, so its
+        /// affordability gate, refunds and log agree with what the draw charges.
+        /// </summary>
+        internal static int DrawnKitValue(CharacterObject character, bool includeMount)
+        {
+            if (character == null || character.IsHero)
+            {
+                return 0;
+            }
+            return DrawnKitValue(character, includeMount, SpoilsPool.GetKitSlots(character, includeMount));
+        }
+
+        private static int DrawnKitValue(CharacterObject character, bool includeMount, List<SpoilsPool.SlotPurchase> slots)
+        {
+            if (slots.Count == 0)
+            {
+                return includeMount ? SpoilsPool.GetEquipmentValueWithMount(character) : KitValue(character);
+            }
+            int value = 0;
+            foreach (SpoilsPool.SlotPurchase slot in slots)
+            {
+                value += slot.Value;
+            }
+            return value;
         }
 
         /// <summary>
@@ -400,8 +433,8 @@ namespace RBMCampaign
         ///
         /// A promoted volunteer reads as one troop leaving and a better one arriving, so he draws his new
         /// kit whole rather than the difference. That over-draws slightly on the ~1%-a-day promotion
-        /// roll, which is tolerable precisely because this leg moves no money: it costs a little extra
-        /// stock and cannot put the ledger out.
+        /// roll: a little extra stock, or, where the shelves are short, a little extra coin the citizens
+        /// spend buying it in. Small enough to leave.
         /// </remarks>
         [HarmonyPatch(typeof(RecruitmentCampaignBehavior))]
         [HarmonyPatch("UpdateVolunteersOfNotablesInSettlement")]
@@ -431,6 +464,9 @@ namespace RBMCampaign
                 _volunteersAfter.Clear();
                 CountVolunteers(settlement, _volunteersAfter);
 
+                // One priced view of the market shared by every troop type raised here today, so the stall
+                // is priced once for the settlement rather than once per type. Built on first need.
+                UpgradeSupply.KitStock kitStock = null;
                 foreach (KeyValuePair<CharacterObject, int> after in _volunteersAfter)
                 {
                     int before;
@@ -438,7 +474,12 @@ namespace RBMCampaign
                     int raised = after.Value - before;
                     if (raised > 0)
                     {
-                        DrawKitFromMarket(market, settlement, after.Key, raised, includeMount: true);
+                        if (kitStock == null)
+                        {
+                            kitStock = new UpgradeSupply.KitStock();
+                        }
+                        DrawKitFromMarket(market, settlement, after.Key, raised, includeMount: true,
+                            kitStock: kitStock);
                     }
                 }
             }
@@ -477,22 +518,28 @@ namespace RBMCampaign
         /// slot the troop's gear fills, one item of that class and tier per man, up to the full worth of
         /// what he wears.
         ///
+        /// Each slot is drawn against its own NEED (the slot's worth times <paramref name="valueShare"/>):
+        /// the piece priced nearest it, within half to double, at the market's own price. A piece dearer
+        /// than the need counts only the need against the kit, and the rest of its price is paid back to
+        /// the market's citizens (<see cref="SettlementWealth.Source.ArmsSurplus"/>), so an over-tier piece
+        /// neither starves the man's later slots nor takes its extra worth off the map. A slot nothing in
+        /// stock can fill is skipped, not the end of the draw.
+        ///
         /// A TOWN arming its own sons pays nothing -- the stock simply goes, as the class summary sets
         /// out. A VILLAGE draws its kit from a different settlement's market, so it PAYS that town's
         /// merchants for what it takes: the village purse is debited and the town market credited by the
         /// worth of the gear drawn, money moving village → town exactly as the goods move town → village.
-        /// A village can arm only what its purse covers, so the budget is capped at what it holds and a
-        /// broke village turns its recruits out in whatever they had.
+        /// A village can pay only what its purse holds, so what it draws is capped there.
         ///
         /// Soft on stock: it takes what the market has and never holds anything up for want of it, since
         /// a picked-clean market would otherwise stop a countryside arming itself at all. What it cannot
-        /// supply is simply not drawn, and the man is turned out in whatever he had.
+        /// supply is found off-screen, unpaid, and reported as the draw's shortfall.
         /// </summary>
         /// <param name="valueShare">
         /// Fraction of each man's full kit value to actually draw and pay for. One for a recruit, who is
         /// armed properly; a quarter for a village's militia levy, who is not (see
-        /// <see cref="MilitiaUpkeep.MilitiaVillageGearShare"/>). Scales the kit budget, so the man draws
-        /// the cheap end of his kit up to that share and the village pays only for what it drew.
+        /// <see cref="MilitiaUpkeep.MilitiaVillageGearShare"/>). Scales every slot's need, so the man is
+        /// armed in every slot with gear of that fraction of his troop's worth, and the kit budget with it.
         /// </param>
         /// <param name="includeMount">
         /// Whether a mounted man's horse is drawn as a real riding horse off the market and paid for as
@@ -505,20 +552,31 @@ namespace RBMCampaign
         /// <param name="chargeOwnTown">
         /// Whether a town drawing off its own market has its citizens front the value of the kit that left
         /// (the volunteer leg, recovered as recruit pay). False for a town's militia, armed by its citizens
-        /// straight off their own shelves: the gear leaving is the whole cost and no coin moves.
+        /// straight off their own shelves: the gear leaving is the cost of what the shelves had, and no
+        /// coin moves for it.
         /// </param>
-        public static void DrawKitFromMarket(Settlement market, Settlement raisedAt, CharacterObject character, int count,
-            float valueShare = 1f, bool includeMount = false, bool chargeOwnTown = true)
+        /// <param name="kitStock">
+        /// The priced view of the market's stall the slot searches run against (see
+        /// <see cref="UpgradeSupply.KitStock"/>). A caller drawing several times off the same market in one
+        /// go -- every troop type a settlement raised today, every man of a militia batch, every stack of a
+        /// spawned lord's party -- passes one view to all of them, so the stall is priced once for the lot
+        /// rather than once per call. Null builds a view for this call alone. Either way the picks and
+        /// prices are the ones a fresh walk of the market would give.
+        /// </param>
+        internal static KitDraw DrawKitFromMarket(Settlement market, Settlement raisedAt, CharacterObject character, int count,
+            float valueShare = 1f, bool includeMount = false, bool chargeOwnTown = true,
+            UpgradeSupply.KitStock kitStock = null)
         {
             if (!IsEnabled || market == null || market.ItemRoster == null
                 || character == null || character.IsHero || count <= 0)
             {
-                return;
+                return default(KitDraw);
             }
-            int perManValue = includeMount ? SpoilsPool.GetEquipmentValueWithMount(character) : KitValue(character);
+            List<SpoilsPool.SlotPurchase> slots = SpoilsPool.GetKitSlots(character, includeMount);
+            int perManValue = DrawnKitValue(character, includeMount, slots);
             if (perManValue <= 0)
             {
-                return;
+                return default(KitDraw);
             }
 
             // A settlement that draws its gear off ANOTHER settlement's market pays that town's merchants
@@ -536,52 +594,62 @@ namespace RBMCampaign
             int budget = (int)(perManValue * count * valueShare);
             if (budget <= 0)
             {
-                return;
+                return default(KitDraw);
             }
+            // The whole kit's worth, before a broke buyer's purse caps what it can draw.
+            int fullBudget = budget;
             if (remoteBuyerPays)
             {
                 int purse = SettlementWealth.GetSettlementWealth(raisedAt);
                 if (purse < budget)
                 {
-                    budget = purse;
+                    budget = MathF.Max(0, purse);
                 }
+                // A broke buyer draws nothing; its men are armed off-screen.
                 if (budget <= 0)
                 {
-                    return;
+                    return default(KitDraw);
                 }
             }
+            // drawn: the worth counted against the kit, each piece at most its slot's need. surplus: the
+            // price of the pieces above their need, paid back to the market's citizens below. missing: the
+            // need of every slot nothing in stock (or in a broke buyer's budget) could fill, found
+            // off-screen. A slot filled with a cheaper in-band piece is armed, so the gap between that
+            // piece and its need is not missing.
             int drawn = 0;
+            int surplus = 0;
+            int missing = 0;
             int taken = 0;
             int wanted = 0;
-            List<SpoilsPool.SlotPurchase> slots = SpoilsPool.GetKitSlots(character, includeMount);
+            // The stall as the slot searches see it, priced once and kept in step with every piece taken,
+            // instead of walked and re-priced whole for every slot of every man. Priced at the market's own
+            // price, as DrawFromStock counts it. See UpgradeSupply.KitStock.
+            if (kitStock == null)
+            {
+                kitStock = new UpgradeSupply.KitStock();
+            }
+            kitStock.Bind(stock, market);
             if (slots.Count > 0)
             {
                 wanted = slots.Count * count;
                 foreach (SpoilsPool.SlotPurchase slot in slots)
                 {
-                    bool exhausted = false;
+                    int need = MathF.Max(1, (int)(slot.Value * valueShare));
                     for (int man = 0; man < count; man++)
                     {
                         // The exact class first, then any gear of the same role, then a value-matched
                         // fallback that stays in category: a picked-over market still arms the man in kind
-                        // from what it has. See UpgradeSupply.FindKitOrAnyWarGear.
-                        int index = UpgradeSupply.FindKitOrAnyWarGear(stock, slot.ItemType, slot.Value);
+                        // from what it has. See UpgradeSupply.FindKitOrAnyWarGear. A miss holds for the
+                        // later men too (stock and budget only shrink), so the slot is left to the next.
+                        int index = kitStock.FindKitOrAnyWarGear(slot.ItemType, need,
+                            AffordablePrice(need, budget - drawn));
                         if (index < 0)
                         {
-                            break; // no war gear in band at all; the rest of the kit is found off-screen
-                        }
-                        if (!TryDrawFromStock(market, stock, index, budget - drawn, ref drawn))
-                        {
-                            exhausted = true;
+                            missing += need * (count - man);
                             break;
                         }
+                        DrawFromStock(market, kitStock, index, need, ref drawn, ref surplus);
                         taken++;
-                    }
-                    // His kit's worth is spent; the remaining slots are not walked at all rather than
-                    // scavenged for whatever cheap piece might still fit inside the rounding.
-                    if (exhausted)
-                    {
-                        break;
                     }
                 }
             }
@@ -590,15 +658,26 @@ namespace RBMCampaign
                 // The troop declares no battle equipment to walk, so there is no class to match: fall
                 // back to one generic in-band item per man, as the upgrade draw does in the same spot.
                 wanted = count;
+                int need = MathF.Max(1, (int)(perManValue * valueShare));
                 for (int man = 0; man < count; man++)
                 {
-                    int index = UpgradeSupply.FindKitInStock(stock, perManValue);
-                    if (index < 0 || !TryDrawFromStock(market, stock, index, budget - drawn, ref drawn))
+                    int index = kitStock.FindKitInStock(need, AffordablePrice(need, budget - drawn));
+                    if (index < 0)
                     {
+                        missing += need * (count - man);
                         break;
                     }
+                    DrawFromStock(market, kitStock, index, need, ref drawn, ref surplus);
                     taken++;
                 }
+            }
+
+            // The part of the pieces' price above their need goes back to the citizens whose shelves they
+            // came off, as coin, instead of vanishing with the piece.
+            int returned = 0;
+            if (surplus > 0 && SettlementWealth.HasCitizenPurse(market))
+            {
+                returned = SettlementWealth.CreditCitizens(market, surplus, SettlementWealth.Source.ArmsSurplus);
             }
 
             // The buying fief pays the town's merchants the FULL kit value it set out to spend, whatever the
@@ -626,13 +705,44 @@ namespace RBMCampaign
                 SettlementWealth.DebitCitizens(market, drawn, SettlementWealth.Source.TownArms);
             }
 
+            // The slots the shelves could not fill are found off-screen, unpaid. Counted slot by slot (see
+            // missing above) and reported, not charged.
+            int shortfall = missing;
+
             if (SpoilsLog.IsEnabled && taken > 0)
             {
                 SpoilsLog.Log("RECRUIT", (raisedAt != null ? raisedAt.Name.ToString() : "?") + " raised "
                     + count + "x " + SpoilsLog.Describe(character) + "; armed from " + market.Name
-                    + " with " + taken + "/" + wanted + " item(s) worth " + drawn + "d of " + budget
+                    + " with " + taken + "/" + wanted + " item(s) worth " + drawn + "d of " + fullBudget
                     + "d kit" + (remoteBuyerPays ? ", paid " + paid + "d" : "")
-                    + (taken < wanted ? " — market short " + (wanted - taken) : ""));
+                    + (taken < wanted ? " — market short " + (wanted - taken) : "")
+                    + (returned > 0 ? "; " + returned + "d over need paid back to its citizens" : "")
+                    + (shortfall > 0 ? "; " + shortfall + "d missing found off-screen" : ""));
+            }
+            return new KitDraw(fullBudget, drawn, paid, shortfall, returned);
+        }
+
+        /// <summary>What one <see cref="DrawKitFromMarket"/> call moved, for callers that report it.</summary>
+        public struct KitDraw
+        {
+            /// <summary>The whole kit's worth for the men raised.</summary>
+            public readonly int KitValue;
+            /// <summary>The worth of the gear taken off the market's shelves, each piece counted up to its slot's need.</summary>
+            public readonly int Drawn;
+            /// <summary>Coin a village or castle paid the market town for it.</summary>
+            public readonly int Paid;
+            /// <summary>The part of the kit the shelves could not supply, found off-screen unpaid.</summary>
+            public readonly int Shortfall;
+            /// <summary>The price of pieces above their slot's need, paid back to the market's citizens.</summary>
+            public readonly int Returned;
+
+            public KitDraw(int kitValue, int drawn, int paid, int shortfall, int returned)
+            {
+                KitValue = kitValue;
+                Drawn = drawn;
+                Paid = paid;
+                Shortfall = shortfall;
+                Returned = returned;
             }
         }
 
@@ -675,35 +785,45 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Takes one piece off the stall, so long as <paramref name="remaining"/> of the man's kit
-        /// allowance covers it. False when it does not, leaving the stock where it is -- the caller reads
-        /// that as the kit being complete.
+        /// The dearest piece a slot needing <paramref name="need"/> can take with <paramref name="remaining"/>
+        /// of the kit budget left. A piece dearer than the need counts only the need, so with a whole need
+        /// left any piece up to the band's top (double the need) fits; with less, only a piece the rest
+        /// covers in full.
+        /// </summary>
+        private static int AffordablePrice(int need, int remaining)
+        {
+            return remaining >= need ? need * 2 : MathF.Max(0, remaining);
+        }
+
+        /// <summary>
+        /// Takes one piece off the stall for a slot needing <paramref name="need"/>: up to the need is
+        /// counted into <paramref name="drawn"/>, anything above it into <paramref name="surplus"/>. The
+        /// caller has already checked the budget covers it (<see cref="AffordablePrice"/>).
         /// </summary>
         /// <remarks>
         /// Valued through <see cref="TroopMarketFeedback.UnitPrice"/> rather than off the item's base
-        /// value, so a town stripped of mail values what it has left the way it would sell it. NO MONEY
-        /// MOVES: the figure only meters how much gear the man has taken and drives the demand signal.
+        /// value, so a town stripped of mail values what it has left the way it would sell it -- the same
+        /// price the search ranked it by. No money moves here: the figures meter how much gear the man has
+        /// taken and drive the demand signal; the caller settles the coin.
         /// </remarks>
-        private static bool TryDrawFromStock(Settlement market, ItemRoster stock, int index, int remaining, ref int drawn)
+        private static void DrawFromStock(Settlement market, UpgradeSupply.KitStock stock, int index, int need,
+            ref int drawn, ref int surplus)
         {
-            ItemObject item = stock.GetItemAtIndex(index);
+            // Priced (at the market's price, as the search ranked it) and removed from the stall in one step.
+            int value;
+            ItemObject item = stock.TakeOne(index, out value);
             if (item == null)
             {
-                return false;
+                return;
             }
-            int value = TroopMarketFeedback.UnitPrice(market, item, stock, index);
-            if (value > remaining)
-            {
-                return false;
-            }
-            stock.AddToCounts(stock.GetElementCopyAtIndex(index).EquipmentElement, -1);
             // A price signal, not a payment: the town restocks what its recruits keep walking off with.
             if (market.Town != null && item.ItemCategory != null)
             {
                 RBMTownFoodSupply.RegisterPurchaseDemand(market.Town.MarketData, item.ItemCategory, value);
             }
-            drawn += value;
-            return true;
+            int counted = MathF.Min(value, need);
+            drawn += counted;
+            surplus += value - counted;
         }
 
         // ------------------------------------------------------------------ leg two: money, at recruitment

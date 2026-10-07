@@ -262,6 +262,13 @@ namespace RBMCampaign
             /// <see cref="GarrisonRecruitCost"/>.
             /// </summary>
             public const string GarrisonRecruit = "garrison-recruit";
+
+            /// <summary>
+            /// A respawned lord from another clan paying a fief for the garrison men he levies as his
+            /// starting troops, at the going recruit price, into the fief's own purse. A lord at his own
+            /// clan's fief, or a king anywhere, takes them free. See <see cref="LordRespawn"/>.
+            /// </summary>
+            public const string GarrisonLevy = "garrison-levy";
             public const string Militia = "militia";
             public const string Admin = "admin";
 
@@ -429,6 +436,14 @@ namespace RBMCampaign
             /// See <see cref="RecruitSupply.DrawKitFromMarket"/>.
             /// </summary>
             public const string TownArms = "town-arms";
+
+            /// <summary>
+            /// The part of a kit piece's worth above what the man drawing it needed for that slot, paid back
+            /// to the citizens of the market it came off: he takes the dearer piece, but only his need is
+            /// counted against his kit, so the rest of the piece's value returns as coin rather than vanishing
+            /// with it. See <see cref="RecruitSupply.DrawKitFromMarket"/>.
+            /// </summary>
+            public const string ArmsSurplus = "arms-surplus";
 
             /// <summary>
             /// A village purse stripped by a raid. The whole draw leaves the settlement; part is carried

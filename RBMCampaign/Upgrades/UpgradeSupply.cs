@@ -338,12 +338,18 @@ namespace RBMCampaign
             ItemRoster market = (town != null) ? town.Settlement.ItemRoster : null;
             int bought = 0;
             int wanted = 0;
+            // drawnValue: the kit's worth taken, each piece counted up to its slot's need. surplus: the
+            // price of pieces above their need, paid back to the town's citizens below.
             int drawnValue = 0;
+            int surplus = 0;
             // The DRAW is the gated half: switch the supply-town feature off and a promotion takes nothing
             // off anyone's shelves, as it did before the feature existed. The payment below runs either
             // way -- see PaymentEnabled for why the two are not one switch.
             if (market != null && perManValue > 0 && goldBuyers > 0 && IsEnabled)
             {
+                // One priced view of the stall for the whole draw: every slot of every man searches it
+                // instead of walking and re-pricing the market afresh. See KitStock.
+                KitStock stock = new KitStock(market, town.Settlement);
                 List<SpoilsPool.SlotPurchase> slots = SpoilsPool.GetUpgradedSlots(character, upgradeTarget);
                 if (slots.Count > 0)
                 {
@@ -356,13 +362,14 @@ namespace RBMCampaign
                         {
                             // The exact class first, then any gear of the same role, then a value-matched
                             // fallback that stays in category: a town short of the exact piece still arms
-                            // the man in kind from what it has. See FindKitOrAnyWarGear.
-                            int index = FindKitOrAnyWarGear(market, slot.ItemType, slot.Value);
+                            // the man in kind from what it has. See FindKitOrAnyWarGear. Priced at the
+                            // town's own price, the one TakeFromStock counts.
+                            int index = stock.FindKitOrAnyWarGear(slot.ItemType, slot.Value);
                             if (index < 0)
                             {
                                 break; // soft sink: no war gear in band at all, the rest are outfitted off-screen
                             }
-                            if (!TakeFromStock(town, market, index, ref drawnValue))
+                            if (!TakeFromStock(town, stock, index, slot.Value, ref drawnValue, ref surplus))
                             {
                                 break;
                             }
@@ -377,18 +384,27 @@ namespace RBMCampaign
                     wanted = goldBuyers;
                     for (int man = 0; man < goldBuyers; man++)
                     {
-                        int index = FindKitInStock(market, perManValue);
+                        int index = stock.FindKitInStock(perManValue);
                         if (index < 0)
                         {
                             break;
                         }
-                        if (!TakeFromStock(town, market, index, ref drawnValue))
+                        if (!TakeFromStock(town, stock, index, perManValue, ref drawnValue, ref surplus))
                         {
                             break;
                         }
                         bought++;
                     }
                 }
+            }
+
+            // The part of the pieces' price above what the promotion needed goes back to the citizens whose
+            // shelves they came off, as coin, instead of vanishing with the piece. Not levied: it is the
+            // town's own goods turned back into its own money, not a trade.
+            int returned = 0;
+            if (surplus > 0 && SettlementWealth.HasCitizenPurse(town.Settlement))
+            {
+                returned = SettlementWealth.CreditCitizens(town.Settlement, surplus, SettlementWealth.Source.ArmsSurplus);
             }
 
             // The gold leg of the promotion, into the town's market purse -- the spoils leg never reaches
@@ -425,6 +441,7 @@ namespace RBMCampaign
                     + SpoilsLog.Describe(upgradeTarget) + " kit (gold-buyers) from " + marketName
                     + " (~" + perManValue + " each man); paid " + goldPaid + "d"
                     + (untaxed > 0 && town != null ? " (fee also charged on " + untaxed + "d of kit beyond the coin)" : "")
+                    + (returned > 0 ? "; " + returned + "d over need paid back to its citizens" : "")
                     + (bought < wanted ? " — market short " + (wanted - bought) : ""));
             }
         }
@@ -493,8 +510,9 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Takes one piece off the stall and reports what it was worth, adding it to
-        /// <paramref name="drawnValue"/>. False only when the slot held nothing to take.
+        /// Takes one piece off the stall for a slot needing <paramref name="need"/>: its price up to the
+        /// need is added to <paramref name="drawnValue"/>, anything above it to <paramref name="surplus"/>
+        /// (paid back to the citizens by the caller). False only when the slot held nothing to take.
         /// </summary>
         /// <remarks>
         /// Priced through <see cref="TroopMarketFeedback.UnitPrice"/> rather than off the item's base
@@ -505,16 +523,19 @@ namespace RBMCampaign
         /// it. It is what teaches a garrison town's market to restock the arms its promotions keep
         /// walking off with, which the old unpaid draw never did.
         /// </remarks>
-        private static bool TakeFromStock(Town town, ItemRoster market, int index, ref int drawnValue)
+        private static bool TakeFromStock(Town town, KitStock stock, int index, int need,
+            ref int drawnValue, ref int surplus)
         {
-            ItemObject item = market.GetItemAtIndex(index);
+            // Priced (at the town's price, as the search ranked it) and removed from the market in one step.
+            int price;
+            ItemObject item = stock.TakeOne(index, out price);
             if (item == null)
             {
                 return false;
             }
-            int price = TroopMarketFeedback.UnitPrice(town.Settlement, item, market, index);
-            market.AddToCounts(market.GetElementCopyAtIndex(index).EquipmentElement, -1);
-            drawnValue += price;
+            int counted = MathF.Min(price, need);
+            drawnValue += counted;
+            surplus += price - counted;
             if (item.ItemCategory != null)
             {
                 RBMTownFoodSupply.RegisterPurchaseDemand(town.MarketData, item.ItemCategory, price);
@@ -561,80 +582,24 @@ namespace RBMCampaign
         ///
         /// One O(n) pass over the stall tracks the best candidate for each tier at once and returns the
         /// highest tier that found anything, so the broadening costs no extra scans over the old two-stage
-        /// search it replaces. The half-to-double value band of <see cref="FindKitInStock(ItemRoster,int)"/>
+        /// search it replaces. The half-to-double value band of <see cref="FindKitInStock"/>
         /// is applied at every tier, so no tier ever spends the slot's coin on something wildly off tier.
         /// </remarks>
-        internal static int FindKitOrAnyWarGear(ItemRoster market, ItemObject.ItemTypeEnum itemType, int targetValue)
+        /// <param name="pricedAt">
+        /// When set, each candidate is valued at what this settlement's market charges for it
+        /// (<see cref="TroopMarketFeedback.UnitPrice"/>) instead of its base value -- the figure the
+        /// caller will be charged, so the band bounds what is actually spent. Null keeps base value.
+        /// </param>
+        /// <param name="maxValue">A further cap on the candidate's value, under the band's own top.</param>
+        /// <remarks>
+        /// A one-off search. A draw that searches the same market slot after slot holds a
+        /// <see cref="KitStock"/> instead and calls its <see cref="KitStock.FindKitOrAnyWarGear"/>, which
+        /// is this search, so the stall is walked and priced once rather than once per slot.
+        /// </remarks>
+        internal static int FindKitOrAnyWarGear(ItemRoster market, ItemObject.ItemTypeEnum itemType, int targetValue,
+            Settlement pricedAt = null, int maxValue = int.MaxValue)
         {
-            int low = targetValue / 2;
-            int high = targetValue * 2;
-
-            int bestExact = -1, bestExactDelta = int.MaxValue;
-            int bestGroup = -1, bestGroupDelta = int.MaxValue;
-            int bestFallback = -1, bestFallbackDelta = int.MaxValue;
-
-            for (int i = 0; i < market.Count; i++)
-            {
-                if (market.GetElementNumber(i) <= 0)
-                {
-                    continue;
-                }
-                ItemObject item = market.GetItemAtIndex(i);
-                if (item == null)
-                {
-                    continue;
-                }
-                if (IsCargoAnimal(item))
-                {
-                    continue;
-                }
-                ItemObject.ItemTypeEnum candidate = item.ItemType;
-
-                // What this candidate could serve as. The fallback tier is bounded to the slot's broad
-                // category -- a weapon slot to any weapon, an armour slot to any armour, a mount to any
-                // mount, barding to any barding -- so a candidate outside the category (a trade good, or a
-                // cuirass for a sword slot) cannot arm the slot at all and is passed over. Same-group is a
-                // strict subset of same-category, so category eligibility gates the whole candidate.
-                bool fallbackEligible = SameKitCategory(candidate, itemType);
-                if (!fallbackEligible)
-                {
-                    continue;
-                }
-                bool sameGroup = SameKitGroup(candidate, itemType);
-
-                int value = item.Value;
-                if (value < low || value > high)
-                {
-                    continue;
-                }
-                int delta = MathF.Abs(value - targetValue);
-
-                if (candidate == itemType && delta < bestExactDelta)
-                {
-                    bestExactDelta = delta;
-                    bestExact = i;
-                }
-                if (sameGroup && delta < bestGroupDelta)
-                {
-                    bestGroupDelta = delta;
-                    bestGroup = i;
-                }
-                if (fallbackEligible && delta < bestFallbackDelta)
-                {
-                    bestFallbackDelta = delta;
-                    bestFallback = i;
-                }
-            }
-
-            if (bestExact >= 0)
-            {
-                return bestExact;
-            }
-            if (bestGroup >= 0)
-            {
-                return bestGroup;
-            }
-            return bestFallback;
+            return new KitStock(market, pricedAt).FindKitOrAnyWarGear(itemType, targetValue, maxValue);
         }
 
         /// <summary>
@@ -815,37 +780,341 @@ namespace RBMCampaign
         /// falls back to when its own class is out of stock, and the fallback for when the slot diff comes
         /// back empty and there is no specific class to match.
         /// </summary>
-        /// <remarks>Shared with <see cref="RecruitSupply"/>, which falls back the same way.</remarks>
-        internal static int FindKitInStock(ItemRoster market, int targetValue)
+        /// <remarks>
+        /// Shared with <see cref="RecruitSupply"/>, which falls back the same way and passes
+        /// <paramref name="pricedAt"/> and <paramref name="maxValue"/> as for <see cref="FindKitOrAnyWarGear"/>.
+        /// </remarks>
+        internal static int FindKitInStock(ItemRoster market, int targetValue,
+            Settlement pricedAt = null, int maxValue = int.MaxValue)
         {
-            int best = -1;
-            int bestDelta = int.MaxValue;
-            int low = targetValue / 2;
-            int high = targetValue * 2;
-            for (int i = 0; i < market.Count; i++)
+            return new KitStock(market, pricedAt).FindKitInStock(targetValue, maxValue);
+        }
+
+        /// <summary>
+        /// One market's stall as the kit searches see it, held for the length of a draw: every slot of
+        /// every man searches this rather than walking the roster and re-pricing each candidate afresh.
+        /// The searches (<see cref="FindKitOrAnyWarGear(ItemObject.ItemTypeEnum, int, int)"/>,
+        /// <see cref="FindKitInStock(int, int)"/>) are the ones documented on the static wrappers above,
+        /// and return the same roster index those return against the market as it stands.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// WHY THIS IS SAFE. The draws used to call <see cref="TroopMarketFeedback.UnitPrice"/> -- a full
+        /// vanilla <c>GetPrice</c> plus RBM's scarcity postfix -- on every war-gear candidate for every slot
+        /// of every man, hundreds of thousands of calls a day. Each unit price is a function of the element
+        /// itself and of the market state of its own vanilla <see cref="ItemCategory"/> only: vanilla prices
+        /// off the category's InStoreValue / Supply / Demand, and RBM's postfix off days of supply, which is
+        /// counted across that same category (workshop inputs) or on the item itself (citizen goods), both
+        /// against a per-day demand table. Taking one unit changes exactly two of those inputs, both for the
+        /// taken item's category: the roster's update event lowers its InStoreValue, and the caller's demand
+        /// signal raises its Demand. So after a take only that category's cached prices are dropped, and
+        /// they are re-priced lazily -- after the caller has registered its demand -- the next time a
+        /// search reaches them. Every other price is unchanged by construction, and the search sees the
+        /// same numbers the old per-slot re-pricing produced.
+        /// </para>
+        /// <para>
+        /// ORDER. The searches break ties by roster order (first strictly-better candidate wins), and a
+        /// take that empties an element moves the roster's LAST element into its slot. The view mirrors
+        /// that swap exactly, then checks itself against the roster after every take; any disagreement --
+        /// or any change to the roster it did not make itself, caught by the roster's version number at the
+        /// start of every search -- drops the view and rebuilds it from the roster with nothing cached. A
+        /// stale view can therefore cost a re-price, never a different pick.
+        /// </para>
+        /// <para>
+        /// Pricing is lazy: an element is priced only when a search reaches it past the same filters the old
+        /// loops applied before pricing, so exactly the elements the old code priced are ever priced.
+        /// </para>
+        /// <para>
+        /// Held only for the length of one synchronous draw (or a caller's loop of draws off one market),
+        /// never across ticks: nothing else runs in between that moves a price input, and the roster
+        /// version check catches any stock movement regardless.
+        /// </para>
+        /// </remarks>
+        internal sealed class KitStock
+        {
+            private struct Entry
             {
-                if (market.GetElementNumber(i) <= 0)
+                public ItemObject Item;
+                public ItemModifier Modifier;
+                public ItemCategory Category;
+                public ItemObject.ItemTypeEnum ItemType;
+                public KitCategory KitCategory;
+                public KitGroup KitGroup;
+                public bool IsCargo;
+                public bool IsWarGear;
+                public int Amount;
+                public bool Priced;
+                public int Price;
+            }
+
+            private ItemRoster _market;
+            private Settlement _pricedAt;
+            private Entry[] _entries = new Entry[0];
+            private int _count;
+            private int _version;
+            private bool _loaded;
+
+            /// <summary>An unbound view; <see cref="Bind"/> it to a market before searching.</summary>
+            internal KitStock()
+            {
+            }
+
+            /// <summary>
+            /// A view of <paramref name="market"/>, priced at <paramref name="pricedAt"/>'s market (null:
+            /// base value), as the static searches take them.
+            /// </summary>
+            internal KitStock(ItemRoster market, Settlement pricedAt)
+            {
+                Bind(market, pricedAt);
+            }
+
+            /// <summary>
+            /// Points the view at <paramref name="market"/> priced at <paramref name="pricedAt"/>. A no-op
+            /// when it already is, so a caller drawing several times off one market keeps what has been
+            /// priced; anything else drops the view, to be rebuilt by the next search.
+            /// </summary>
+            internal void Bind(ItemRoster market, Settlement pricedAt)
+            {
+                if (!ReferenceEquals(market, _market) || !ReferenceEquals(pricedAt, _pricedAt))
                 {
-                    continue;
-                }
-                ItemObject item = market.GetItemAtIndex(i);
-                if (!IsWarGear(item))
-                {
-                    continue;
-                }
-                int value = item.Value;
-                if (value < low || value > high)
-                {
-                    continue;
-                }
-                int delta = MathF.Abs(value - targetValue);
-                if (delta < bestDelta)
-                {
-                    bestDelta = delta;
-                    best = i;
+                    _market = market;
+                    _pricedAt = pricedAt;
+                    _loaded = false;
                 }
             }
-            return best;
+
+            /// <summary>Rebuilds the view when it is not loaded or the roster has moved since.</summary>
+            private void EnsureCurrent()
+            {
+                if (_loaded && _market.VersionNo == _version)
+                {
+                    return;
+                }
+                int n = _market.Count;
+                if (_entries.Length < n)
+                {
+                    _entries = new Entry[n];
+                }
+                for (int i = 0; i < n; i++)
+                {
+                    ItemRosterElement element = _market.GetElementCopyAtIndex(i);
+                    ItemObject item = element.EquipmentElement.Item;
+                    Entry entry = default(Entry);
+                    entry.Item = item;
+                    entry.Modifier = element.EquipmentElement.ItemModifier;
+                    entry.Amount = element.Amount;
+                    if (item != null)
+                    {
+                        entry.Category = item.ItemCategory;
+                        entry.ItemType = item.ItemType;
+                        entry.KitCategory = KitCategoryOf(item.ItemType);
+                        entry.KitGroup = KitGroupOf(item.ItemType);
+                        entry.IsCargo = IsCargoAnimal(item);
+                        entry.IsWarGear = IsWarGear(item);
+                    }
+                    _entries[i] = entry;
+                }
+                // Drop the references a previous, longer roster left behind.
+                for (int i = n; i < _count; i++)
+                {
+                    _entries[i] = default(Entry);
+                }
+                _count = n;
+                _version = _market.VersionNo;
+                _loaded = true;
+            }
+
+            /// <summary>
+            /// The unit price of element <paramref name="i"/>, priced on first use and cached until a take
+            /// moves its category. Only valid while the view mirrors the roster (index for index), which
+            /// every caller guarantees by searching first.
+            /// </summary>
+            private int PriceAt(int i)
+            {
+                if (!_entries[i].Priced)
+                {
+                    _entries[i].Price = (_pricedAt != null)
+                        ? TroopMarketFeedback.UnitPrice(_pricedAt, _entries[i].Item, _market, i)
+                        : _entries[i].Item.Value;
+                    _entries[i].Priced = true;
+                }
+                return _entries[i].Price;
+            }
+
+            /// <summary>
+            /// The static <see cref="UpgradeSupply.FindKitOrAnyWarGear(ItemRoster, ItemObject.ItemTypeEnum, int, Settlement, int)"/>
+            /// against this view: same filters, same order, same tie-breaks, same result.
+            /// </summary>
+            internal int FindKitOrAnyWarGear(ItemObject.ItemTypeEnum itemType, int targetValue, int maxValue = int.MaxValue)
+            {
+                EnsureCurrent();
+                int low = targetValue / 2;
+                int high = MathF.Min(targetValue * 2, maxValue);
+                KitCategory slotCategory = KitCategoryOf(itemType);
+                KitGroup slotGroup = KitGroupOf(itemType);
+
+                int bestExact = -1, bestExactDelta = int.MaxValue;
+                int bestGroup = -1, bestGroupDelta = int.MaxValue;
+                int bestFallback = -1, bestFallbackDelta = int.MaxValue;
+
+                // A slot of no category can be armed by nothing (SameKitCategory is false for every
+                // candidate), so the walk would find nothing -- and price nothing -- either way.
+                if (slotCategory == KitCategory.None)
+                {
+                    return -1;
+                }
+
+                for (int i = 0; i < _count; i++)
+                {
+                    if (_entries[i].Amount <= 0 || _entries[i].Item == null || _entries[i].IsCargo)
+                    {
+                        continue;
+                    }
+                    // Category eligibility gates the whole candidate (SameKitCategory); same-group is a
+                    // strict subset of it (SameKitGroup). Both read off the precomputed class.
+                    if (_entries[i].KitCategory != slotCategory)
+                    {
+                        continue;
+                    }
+                    bool sameGroup = slotGroup != KitGroup.None && _entries[i].KitGroup == slotGroup;
+
+                    int value = PriceAt(i);
+                    if (value < low || value > high)
+                    {
+                        continue;
+                    }
+                    int delta = MathF.Abs(value - targetValue);
+
+                    if (_entries[i].ItemType == itemType && delta < bestExactDelta)
+                    {
+                        bestExactDelta = delta;
+                        bestExact = i;
+                    }
+                    if (sameGroup && delta < bestGroupDelta)
+                    {
+                        bestGroupDelta = delta;
+                        bestGroup = i;
+                    }
+                    if (delta < bestFallbackDelta)
+                    {
+                        bestFallbackDelta = delta;
+                        bestFallback = i;
+                    }
+                }
+
+                if (bestExact >= 0)
+                {
+                    return bestExact;
+                }
+                if (bestGroup >= 0)
+                {
+                    return bestGroup;
+                }
+                return bestFallback;
+            }
+
+            /// <summary>
+            /// The static <see cref="UpgradeSupply.FindKitInStock(ItemRoster, int, Settlement, int)"/> against
+            /// this view: same filters, same order, same tie-breaks, same result.
+            /// </summary>
+            internal int FindKitInStock(int targetValue, int maxValue = int.MaxValue)
+            {
+                EnsureCurrent();
+                int best = -1;
+                int bestDelta = int.MaxValue;
+                int low = targetValue / 2;
+                int high = MathF.Min(targetValue * 2, maxValue);
+                for (int i = 0; i < _count; i++)
+                {
+                    if (_entries[i].Amount <= 0 || !_entries[i].IsWarGear)
+                    {
+                        continue;
+                    }
+                    int value = PriceAt(i);
+                    if (value < low || value > high)
+                    {
+                        continue;
+                    }
+                    int delta = MathF.Abs(value - targetValue);
+                    if (delta < bestDelta)
+                    {
+                        bestDelta = delta;
+                        best = i;
+                    }
+                }
+                return best;
+            }
+
+            /// <summary>
+            /// Takes one unit of the element at <paramref name="index"/> -- an index a search on this view
+            /// just returned -- off the market, and hands back its item and the price it went at (priced
+            /// before it left, the figure the search ranked it by). Null, with nothing taken, for an index
+            /// the view does not hold.
+            /// </summary>
+            /// <remarks>
+            /// The removal is the same <c>AddToCounts(element, -1)</c> the draws always made. The view then
+            /// mirrors what the roster did (one fewer; an emptied element replaced by the roster's last),
+            /// forgets the cached prices of the taken item's category -- the only prices a take moves, see
+            /// the class remarks -- and verifies itself against the roster, dropping itself on any mismatch.
+            /// The caller registers its demand signal after this returns; the forgotten prices are only
+            /// recomputed on the next search, so they see that demand, as the old re-pricing did.
+            /// </remarks>
+            internal ItemObject TakeOne(int index, out int price)
+            {
+                price = 0;
+                if (!_loaded || index < 0 || index >= _count || _entries[index].Item == null
+                    || _market.VersionNo != _version)
+                {
+                    return null;
+                }
+                price = PriceAt(index);
+                ItemObject item = _entries[index].Item;
+                ItemCategory category = _entries[index].Category;
+
+                _market.AddToCounts(_market.GetElementCopyAtIndex(index).EquipmentElement, -1);
+                _version++; // AddToCounts bumps the roster's version exactly once
+
+                _entries[index].Amount--;
+                if (_entries[index].Amount <= 0)
+                {
+                    int last = _count - 1;
+                    _entries[index] = _entries[last];
+                    _entries[last] = default(Entry);
+                    _count = last;
+                }
+                for (int i = 0; i < _count; i++)
+                {
+                    if (ReferenceEquals(_entries[i].Category, category))
+                    {
+                        _entries[i].Priced = false;
+                    }
+                }
+                if (!MirrorsMarket())
+                {
+                    _loaded = false;
+                }
+                return item;
+            }
+
+            /// <summary>Whether the view still matches the roster element for element.</summary>
+            private bool MirrorsMarket()
+            {
+                if (_market.VersionNo != _version || _market.Count != _count)
+                {
+                    return false;
+                }
+                for (int i = 0; i < _count; i++)
+                {
+                    ItemRosterElement element = _market.GetElementCopyAtIndex(i);
+                    if (element.Amount != _entries[i].Amount
+                        || !ReferenceEquals(element.EquipmentElement.Item, _entries[i].Item)
+                        || !ReferenceEquals(element.EquipmentElement.ItemModifier, _entries[i].Modifier))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
         }
     }
 }

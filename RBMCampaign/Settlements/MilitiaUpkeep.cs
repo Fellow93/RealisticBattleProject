@@ -300,7 +300,7 @@ namespace RBMCampaign
         }
 
         /// <summary>The maintenance factor for a militiaman of this settlement -- see the maint-factor table.</summary>
-        private static float MilitiaMaintFactor(Settlement settlement)
+        internal static float MilitiaMaintFactor(Settlement settlement)
         {
             return (settlement != null && settlement.IsVillage)
                 ? MilitiaMaintFactorVillage
@@ -1348,10 +1348,23 @@ namespace RBMCampaign
             }
             // Barracks discount included, so the gate that decides whether a man can be raised is priced
             // exactly as the charge that raises him (see ArmOneMilitiaman).
-            float full = SpoilsPool.GetEquipmentValue(troop) * BuildingEffects.SpawnCostFactor(settlement != null ? settlement.Town : null);
+            float full = MilitiaKitValue(troop) * BuildingEffects.SpawnCostFactor(settlement != null ? settlement.Town : null);
             return (settlement != null && settlement.IsVillage)
                 ? (int)(full * MilitiaVillageGearShare)
                 : (int)full;
+        }
+
+        /// <summary>
+        /// One militiaman's kit worth, before the barracks discount and the village share. With the market
+        /// draw on, men are armed off a market and his kit is worth what the draw values it at -- and so is
+        /// the abstract charge of a castle with no town in reach, so every path agrees with the gate.
+        /// With the draw off, every path is the abstract charge at the averaged kit value.
+        /// </summary>
+        private static int MilitiaKitValue(CharacterObject troop)
+        {
+            return RecruitSupply.IsEnabled
+                ? RecruitSupply.DrawnKitValue(troop, false)
+                : SpoilsPool.GetEquipmentValue(troop);
         }
 
         /// <summary>
@@ -1483,10 +1496,21 @@ namespace RBMCampaign
                 return;
             }
 
+            // Resolved once for the batch rather than once per man: it is a distance sweep over every town
+            // on the map, and arming a man neither moves the castle nor changes who its faction is at war
+            // with, so every man of the batch got the same answer anyway. Asked under exactly the condition
+            // ArmOneMilitiaman asked it per man -- a castle, with the draw feature on.
+            Settlement castleMarket = (settlement.IsCastle && RecruitSupply.IsEnabled)
+                ? ResolveCastleSupplyMarket(settlement)
+                : null;
+            // One priced view of the arming market shared by every man of the batch, so its stall is priced
+            // once rather than once per man. See UpgradeSupply.KitStock.
+            UpgradeSupply.KitStock kitStock = new UpgradeSupply.KitStock();
+
             int armed = 0;
             while (acc >= 1f)
             {
-                ArmOneMilitiaman(settlement, troop);
+                ArmOneMilitiaman(settlement, troop, castleMarket, kitStock);
                 acc -= 1f;
                 armed++;
             }
@@ -1557,7 +1581,13 @@ namespace RBMCampaign
         }
 
         /// <summary>Arms one militiaman out of the settlement's funding pot, routed by kind of place.</summary>
-        private static void ArmOneMilitiaman(Settlement settlement, CharacterObject troop)
+        /// <param name="castleMarket">
+        /// For a castle with the draw feature on, the town it buys from (<see cref="ResolveCastleSupplyMarket"/>),
+        /// resolved once by the caller for the whole batch; null otherwise. Unused for towns and villages.
+        /// </param>
+        /// <param name="kitStock">The priced market view shared across the batch (see <see cref="RecruitSupply.DrawKitFromMarket"/>).</param>
+        private static void ArmOneMilitiaman(Settlement settlement, CharacterObject troop, Settlement castleMarket,
+            UpgradeSupply.KitStock kitStock)
         {
             if (settlement.IsVillage)
             {
@@ -1565,7 +1595,7 @@ namespace RBMCampaign
                 // the recruit gear leg, which already does exactly this (debit village, credit town) --
                 // but only MilitiaVillageGearShare of a full kit's worth, the cheap arming of a levy.
                 RecruitSupply.DrawKitFromMarket(RecruitSupply.GetSupplyMarket(settlement), settlement, troop, 1,
-                    MilitiaVillageGearShare);
+                    MilitiaVillageGearShare, kitStock: kitStock);
                 return;
             }
             // A castle keeps no market of its own, so it buys a full kit off its nearest friendly town,
@@ -1578,10 +1608,12 @@ namespace RBMCampaign
             float armingShare = BuildingEffects.SpawnCostFactor(settlement.Town);
             if (settlement.IsCastle)
             {
-                Settlement castleMarket = RecruitSupply.IsEnabled ? ResolveCastleSupplyMarket(settlement) : null;
+                // castleMarket is the caller's once-per-batch ResolveCastleSupplyMarket (null with the draw
+                // feature off), the same town this used to look up for every man.
                 if (castleMarket != null)
                 {
-                    RecruitSupply.DrawKitFromMarket(castleMarket, settlement, troop, 1, armingShare);
+                    RecruitSupply.DrawKitFromMarket(castleMarket, settlement, troop, 1, armingShare,
+                        kitStock: kitStock);
                     return;
                 }
             }
@@ -1589,10 +1621,11 @@ namespace RBMCampaign
             // leaving is the whole cost: they are both buyer and seller, so no coin moves.
             if (settlement.IsTown && RecruitSupply.IsEnabled)
             {
-                RecruitSupply.DrawKitFromMarket(settlement, settlement, troop, 1, armingShare, chargeOwnTown: false);
+                RecruitSupply.DrawKitFromMarket(settlement, settlement, troop, 1, armingShare, chargeOwnTown: false,
+                    kitStock: kitStock);
                 return;
             }
-            int cost = (int)(SpoilsPool.GetEquipmentValue(troop) * armingShare);
+            int cost = (int)(MilitiaKitValue(troop) * armingShare);
             if (cost <= 0)
             {
                 return;
