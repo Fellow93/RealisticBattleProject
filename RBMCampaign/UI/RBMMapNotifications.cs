@@ -44,6 +44,52 @@ namespace RBMCampaign
         private const int MinDrunkGoldToNotify = 3;
 
         /// <summary>
+        /// At most this many carousing bubbles rise above one settlement per campaign day, whoever's
+        /// men are drinking. Carousing is hourly and a busy town has many parties in it, so without a
+        /// cap the town's name sits under a near-constant stream of them.
+        /// </summary>
+        private const int MaxDrunkBubblesPerDay = 2;
+
+        /// <summary>
+        /// Chance, rolled once per settlement per hour of carousing, that the hour gets a bubble. Low
+        /// enough that the day's <see cref="MaxDrunkBubblesPerDay"/> are spread over it (about one every
+        /// ten hours watched) instead of both going in the first hour.
+        /// </summary>
+        private const float DrunkBubbleChancePerHour = 0.1f;
+
+        /// <summary>
+        /// Per settlement: the campaign day last counted, the carousing bubbles shown on it, and the
+        /// last hour rolled for (one roll per hour, however many parties carouse in it).
+        /// </summary>
+        private static readonly Dictionary<Settlement, (int Day, int Count, int Hour)> DrunkBubblesShown =
+            new Dictionary<Settlement, (int Day, int Count, int Hour)>();
+
+        /// <summary>
+        /// Claims a carousing bubble for the settlement: at most one an hour, on a
+        /// <see cref="DrunkBubbleChancePerHour"/> roll, and none once the day's are used up. Only called
+        /// for a bubble that would otherwise be shown, so a town nobody was watching still has its quota
+        /// when the player comes into range.
+        /// </summary>
+        internal static bool TryTakeDrunkBubble(Settlement settlement)
+        {
+            int hour = (int)CampaignTime.Now.ToHours;
+            int today = (int)CampaignTime.Now.ToDays;
+            bool known = DrunkBubblesShown.TryGetValue(settlement, out var seen);
+            if (known && seen.Hour == hour)
+            {
+                return false;
+            }
+            int shown = (known && seen.Day == today) ? seen.Count : 0;
+            if (shown >= MaxDrunkBubblesPerDay)
+            {
+                return false;
+            }
+            bool won = MBRandom.RandomFloat < DrunkBubbleChancePerHour;
+            DrunkBubblesShown[settlement] = (today, won ? shown + 1 : shown, hour);
+            return won;
+        }
+
+        /// <summary>
         /// Drops every listener by recreating the events. The subscribers are nameplate view-models,
         /// which a static event would otherwise pin in memory across a save reload. RBMCampaignPatcher
         /// calls this on each patch pass (game start / save load), before any new nameplate subscribes,
@@ -54,6 +100,7 @@ namespace RBMCampaign
             SpoilsDrunk = new MbEvent<Settlement, MobileParty, int>();
             TroopsBoughtFood = new MbEvent<Settlement, MobileParty, List<(ItemObject Item, int Count)>, int>();
             SoldiersBoughtLuxury = new MbEvent<Settlement, MobileParty, List<(ItemObject Item, int Count)>, int>();
+            DrunkBubblesShown.Clear();
         }
 
         public static void RaiseSpoilsDrunk(Settlement settlement, MobileParty party, int goldSpent)
@@ -381,7 +428,7 @@ namespace RBMCampaign
 
         private static void OnSpoilsDrunk(SettlementNameplateNotificationsVM vm, Settlement settlement, MobileParty party, int amount)
         {
-            if (!TargetsThisNameplate(vm, settlement) || !CanAdd(vm, party))
+            if (!TargetsThisNameplate(vm, settlement) || !CanAdd(vm, party) || !RBMMapNotifications.TryTakeDrunkBubble(settlement))
             {
                 return;
             }
