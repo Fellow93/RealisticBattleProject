@@ -179,6 +179,160 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// The share of a field troop's maintenance this party's men are charged, so their seed is the same
+        /// number of days of THEIR upkeep: a garrison's and a militia's kit is billed at a reduced factor
+        /// (<see cref="GarrisonUpkeep.GarrisonMaintFactor"/>, <see cref="MilitiaUpkeep.MilitiaMaintFactor"/>),
+        /// and a seed at the full field rate would hand a large town garrison a fortune to drink.
+        /// </summary>
+        private static float SeedUpkeepFactor(PartyBase party)
+        {
+            MobileParty mobileParty = party.MobileParty;
+            if (mobileParty == null)
+            {
+                return 1f;
+            }
+            if (mobileParty.IsGarrison)
+            {
+                return GarrisonUpkeep.GarrisonMaintFactor;
+            }
+            if (mobileParty.IsMilitia)
+            {
+                return MilitiaUpkeep.MilitiaMaintFactor(mobileParty.CurrentSettlement ?? mobileParty.HomeSettlement);
+            }
+            return 1f;
+        }
+
+        /// <summary>
+        /// Seeds <paramref name="added"/> men just put into a stack of a garrison, militia, caravan or a
+        /// starting army with the recruit seed, as a top-up: the stack's purse is filled toward the seed of
+        /// its whole size, never past it, and by no more than the newcomers' own share. These parties lose
+        /// men without their purse share (a militia drifting home or lent as an escort, a garrison stood
+        /// down), so a plain per-man seed would ratchet a purse up every time the same stack regrew; the
+        /// cap at the stack's own seed stops that, and makes a second pass over the same men a no-op. Call
+        /// AFTER the men are on the roster. Returns the spoils added. No gold changes hands.
+        /// </summary>
+        public static int SeedNewMen(PartyBase party, CharacterObject character, int added)
+        {
+            if (!IsEnabled || party == null || character == null || character.IsHero || added <= 0 || IsExemptParty(party))
+            {
+                return 0;
+            }
+            // A bandit party keeps no war-chest; it is charged no maintenance, so it is seeded none.
+            if (party.MobileParty != null && party.MobileParty.IsBandit)
+            {
+                return 0;
+            }
+            int stack = GetStackSize(party, character);
+            if (stack <= 0)
+            {
+                return 0;
+            }
+            float factor = SeedUpkeepFactor(party);
+            int target = MathF.Round(RecruitSeedValue(character, stack) * factor);
+            int cap = MathF.Round(RecruitSeedValue(character, MathF.Min(added, stack)) * factor);
+            int seed = MathF.Min(cap, target - GetSpoils(party, character));
+            if (seed <= 0)
+            {
+                return 0;
+            }
+            AddSpoils(party, character, seed);
+            return seed;
+        }
+
+        /// <summary>The party's non-hero stacks and their sizes, for <see cref="SeedGrowthSince"/>.</summary>
+        public static Dictionary<CharacterObject, int> SnapshotStacks(PartyBase party)
+        {
+            Dictionary<CharacterObject, int> counts = new Dictionary<CharacterObject, int>();
+            TroopRoster roster = party?.MemberRoster;
+            if (roster == null)
+            {
+                return counts;
+            }
+            for (int i = 0; i < roster.Count; i++)
+            {
+                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+                if (!element.Character.IsHero && element.Number > 0)
+                {
+                    counts[element.Character] = element.Number;
+                }
+            }
+            return counts;
+        }
+
+        /// <summary>
+        /// Seeds every man the party gained since <paramref name="before"/> was taken (a null snapshot
+        /// counts every man as new), through <see cref="SeedNewMen"/>'s top-up. For code that adds men to a
+        /// roster without saying who -- vanilla's militia spawn and naval convoy refill, the defence muster.
+        /// </summary>
+        public static int SeedGrowthSince(PartyBase party, Dictionary<CharacterObject, int> before)
+        {
+            if (!IsEnabled || party?.MemberRoster == null)
+            {
+                return 0;
+            }
+            int total = 0;
+            TroopRoster roster = party.MemberRoster;
+            for (int i = 0; i < roster.Count; i++)
+            {
+                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+                if (element.Character.IsHero)
+                {
+                    continue;
+                }
+                int had = 0;
+                if (before != null)
+                {
+                    before.TryGetValue(element.Character, out had);
+                }
+                if (element.Number > had)
+                {
+                    total += SeedNewMen(party, element.Character, element.Number - had);
+                }
+            }
+            return total;
+        }
+
+        /// <summary>
+        /// Gives every army a new campaign opens with the purse its men would have brought had they been
+        /// recruited in play: the lords' parties, the garrisons, the militias and the caravans are all
+        /// filled straight from templates, and a v1.5 advanced start (ruler, vassal, mercenary, fleet
+        /// admiral...) hands the player a ready-made party the same way -- none of it raises a recruit
+        /// event, so without this every one of those stacks would start penniless. Run once, after
+        /// character creation, when the advanced start has already filled the main party. A top-up, so the
+        /// militia, caravans and lords' template men already seeded as they were created are not paid twice.
+        /// </summary>
+        public static void SeedStartingArmies()
+        {
+            if (!IsEnabled)
+            {
+                return;
+            }
+            int parties = 0;
+            int total = 0;
+            foreach (MobileParty mobileParty in MobileParty.All)
+            {
+                if (mobileParty == null || !mobileParty.IsActive || mobileParty.IsBandit
+                    || !(mobileParty.IsLordParty || mobileParty.IsGarrison || mobileParty.IsMilitia || mobileParty.IsCaravan))
+                {
+                    continue;
+                }
+                PartyBase party = mobileParty.Party;
+                int seeded = SeedGrowthSince(party, null);
+                if (seeded > 0)
+                {
+                    parties++;
+                    total += seeded;
+                    if (SpoilsLog.IsEnabled && party == PartyBase.MainParty)
+                    {
+                        SpoilsLog.Log("RECRUIT", party, SpoilsLog.Describe(party) + " starts the campaign with "
+                            + seeded + " spoils (" + RBMConfig.RBMConfig.recruitMaintenanceDays + " days' maintenance per stack)");
+                    }
+                }
+            }
+            SpoilsLog.Log("POOL", "seeded " + total + " spoils across " + parties + " starting parties");
+        }
+
+        /// <summary>
         /// A lord's party mustering from a village or town: the AI recruit path, which alone carries the
         /// settlement and the recruiter. Prisoners pressed into service and volunteers picked up on the
         /// road carry a null settlement and bring nothing -- only a proper muster from a settlement is
@@ -243,8 +397,9 @@ namespace RBMCampaign
         /// upkeep in full would otherwise vanish from the tooltip, hiding the maintenance the player wanted
         /// to see. <paramref name="expenseSign"/> is -1 where the number counts expenses as negative (the
         /// clan finance change) and +1 where it counts costs as positive (the party wage), so the same
-        /// tally reads correctly on either. Freshly built each call: an ExplainedNumber keeps the reference,
-        /// so a shared TextObject would have its number overwritten by the next party.
+        /// tally reads correctly on either. The labels are shared: they carry no variable, and an
+        /// ExplainedNumber turns a description into its string the moment a line is added rather than
+        /// keeping the TextObject, so nothing a later party adds can rewrite an earlier line.
         /// </summary>
         public static void AddMaintenanceBreakdown(ref ExplainedNumber breakdown, MaintenanceResult maintenance, float expenseSign)
         {
@@ -252,12 +407,16 @@ namespace RBMCampaign
             {
                 return;
             }
-            breakdown.Add(expenseSign * maintenance.Total, new TextObject("{=RBM_SPOILS_017}Troop maintenance"));
+            breakdown.Add(expenseSign * maintenance.Total, _maintenanceLabel);
             if (maintenance.Covered > 0)
             {
-                breakdown.Add(-expenseSign * maintenance.Covered, new TextObject("{=RBM_SPOILS_020}Maintenance paid from troop spoils"));
+                breakdown.Add(-expenseSign * maintenance.Covered, _maintenanceFromSpoilsLabel);
             }
         }
+
+        private static readonly TextObject _maintenanceLabel = new TextObject("{=RBM_SPOILS_017}Troop maintenance");
+
+        private static readonly TextObject _maintenanceFromSpoilsLabel = new TextObject("{=RBM_SPOILS_020}Maintenance paid from troop spoils");
 
         private static MaintenanceResult ComputeMaintenance(PartyBase party, bool apply)
         {

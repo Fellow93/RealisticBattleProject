@@ -302,6 +302,8 @@ namespace RBMCampaign
                 return;
             }
             garrison.MemberRoster.AddToCounts(troop, 1);
+            // He arrives with the recruit seed in his purse, as a lord's recruit does.
+            SpoilsPool.SeedNewMen(garrison.Party, troop, 1);
 
             int paid = SettlementWealth.Debit(settlement, cost, SettlementWealth.Source.GarrisonRecruit);
             // In a town the coin reaches the armourers who kitted him; a castle sources the gear from

@@ -281,6 +281,7 @@
     <Compile Include="Diagnostics\CaravanLog.cs" />
     <Compile Include="Diagnostics\GarrisonRefillLog.cs" />
     <Compile Include="Diagnostics\LogRetention.cs" />
+    <Compile Include="Diagnostics\BufferedLogWriter.cs" />
     <Compile Include="Caravans\RBMCaravanRegister.cs" />
     <Compile Include="Caravans\RBMCaravanDispatch.cs" />
     <Compile Include="Caravans\RBMCaravanArrival.cs" />
@@ -292,6 +293,7 @@
     <Compile Include="AI\LordEquipmentUpgrade.cs" />
     <Compile Include="AI\LordPackTrain.cs" />
     <Compile Include="AI\RBMLordSpawnSettlementBehavior.cs" />
+    <Compile Include="AI\LordRespawn.cs" />
     <Compile Include="Spoils\SpoilsPool.cs" />
     <Compile Include="Spoils\SpoilsPool.Equipment.cs" />
     <Compile Include="Spoils\SpoilsPool.UpgradeMath.cs" />
@@ -309,6 +311,7 @@
     <Compile Include="Spoils\BattleSiteSpoils.cs" />
     <Compile Include="Spoils\SpoilsPool.Wages.cs" />
     <Compile Include="Spoils\SpoilsPool.Maintenance.cs" />
+    <Compile Include="Spoils\SpoilsSeedPatches.cs" />
     <Compile Include="Spoils\MaintenanceFinanceLine.cs" />
     <Compile Include="Spoils\MaintenancePartyWageLine.cs" />
     <Compile Include="Spoils\MaintenanceTroopTooltipLine.cs" />
@@ -317,6 +320,7 @@
     <Compile Include="Spoils\SpoilsPool.Transfers.cs" />
     <Compile Include="Spoils\SpoilsTransferOnPartyScreen.cs" />
     <Compile Include="Spoils\SpoilsTransferOnSpecialScreens.cs" />
+    <Compile Include="Spoils\SpoilsTransferOnGarrisonManagement.cs" />
     <Compile Include="Spoils\RBMSpoilsCampaignBehavior.cs" />
     <Compile Include="Upkeep\TroopMarketFeedback.cs" />
     <Compile Include="Upkeep\TroopUpkeep.cs" />
@@ -431,6 +435,7 @@
     <Compile Include="Economy\CaravanCapital.cs" />
     <Compile Include="Economy\RecruitCostHint.cs" />
     <Compile Include="Economy\RecruitSupply.cs" />
+    <Compile Include="Economy\RecruitSupply.LordRespawn.cs" />
     <Compile Include="Economy\RecruitCapacity.cs" />
     <Compile Include="Settlements\FiefStarvation.cs" />
     <Compile Include="Settlements\NativeTradeConservation.cs" />

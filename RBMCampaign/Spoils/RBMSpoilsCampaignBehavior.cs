@@ -1,4 +1,5 @@
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 
 namespace RBMCampaign
@@ -46,6 +47,38 @@ namespace RBMCampaign
             // An executed captive (player execution or a v1.5 blood feud) is stripped of his kit like a
             // ransomed one; must run BEFORE the kill, while his captor party is still known.
             CampaignEvents.BeforeHeroKilledEvent.AddNonSerializedListener(this, SpoilsPool.OnBeforeHeroKilled);
+            // A new campaign's armies -- lords', garrisons, militias, caravans and, with an advanced start,
+            // the player's -- were raised without a recruit event; give them the recruit seed once character
+            // creation is done.
+            CampaignEvents.OnCharacterCreationIsOverEvent.AddNonSerializedListener(this, OnCharacterCreationIsOver);
+            // A caravan's guards are hired as it is formed, whoever forms it, and a rebellion's lord parties
+            // (and a minor faction's respawn) are handed their template's men; the roster is full by now. A
+            // major-clan lord respawned in play opens with no men -- he levies them from a garrison afterwards,
+            // purse and all (LordRespawn) -- and a player-clan party with only its leader, so those seed
+            // nothing. A new game's lord parties get more men after this; SeedStartingArmies tops those up.
+            CampaignEvents.MobilePartyCreated.AddNonSerializedListener(this, OnMobilePartyCreated);
+        }
+
+        private void OnMobilePartyCreated(MobileParty mobileParty)
+        {
+            if (mobileParty != null && (mobileParty.IsCaravan || mobileParty.IsLordParty))
+            {
+                SpoilsPool.SeedGrowthSince(mobileParty.Party, null);
+            }
+        }
+
+        /// <summary>
+        /// Raised ten times (index 0..9) from v1.5. The advanced start fills the main party at index 8, so
+        /// the seed waits for the last pass, which also keeps it to one run per new game. A loaded save never
+        /// comes through here.
+        /// </summary>
+        private void OnCharacterCreationIsOver(int index)
+        {
+            if (index != 9)
+            {
+                return;
+            }
+            SpoilsPool.SeedStartingArmies();
         }
 
         private void OnSessionLaunched(CampaignGameStarter starter)

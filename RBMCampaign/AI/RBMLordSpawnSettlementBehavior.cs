@@ -20,8 +20,9 @@ namespace RBMCampaign
     /// only among those still keeps the vanilla "nearest to where the lord was last seen" preference so
     /// a multi-fief clan puts him back near his old stomping grounds rather than at a random holding.
     ///
-    /// Pure location override -- the party creation, timing, slot/score gates and everything else stay
-    /// vanilla's. The method is also used for the player's own fallback spawn position and (via
+    /// Pure location override, and the first pick <see cref="LordRespawn"/> takes: it then makes sure a
+    /// clan with a fortification always lands at one of its own (even a threatened one) and nobody lands at
+    /// a village. The method is also used for the player's own fallback spawn position and (via
     /// MobilePartyHelper) other spawns, so we scope the override to non-player heroes only.
     /// </summary>
     [HarmonyPatch(typeof(SettlementHelper), "GetBestSettlementToSpawnAround")]

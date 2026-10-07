@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
@@ -52,6 +53,7 @@ namespace RBMCampaign
                 return;
             }
 
+            Dictionary<CharacterObject, int> before = SpoilsPool.SnapshotStacks(muster.Party);
             foreach (Hero notable in settlement.Notables)
             {
                 if (notable == null || !notable.IsAlive || notable.VolunteerTypes == null)
@@ -69,6 +71,8 @@ namespace RBMCampaign
                     }
                 }
             }
+            // The volunteers who took up arms bring the recruit seed, like any recruit.
+            SpoilsPool.SeedGrowthSince(muster.Party, before);
         }
 
         /// <summary>
