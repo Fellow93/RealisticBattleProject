@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -447,6 +448,7 @@ namespace RBMCampaign
             // Adopt the fallback as the new home: the homecoming handler pays its citizens the takings and
             // returns any unsold goods to its market. Re-provision for the (possibly longer) road to it.
             RBMCaravanRegister.SetSource(caravan.StringId, fallback.StringId);
+            InvalidateName(caravan); // the map name reads the source
             RBMCaravanDispatch.StockFood(caravan, fallback, order.Goods);
             SendTo(caravan, fallback);
             CaravanLog.Log("REROUTE", CaravanLog.Name(fallback),
@@ -573,6 +575,30 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// The built map name of each managed caravan, so <see cref="NamePatch"/> -- which the party
+        /// nameplates hit every frame for every visible caravan -- does not decode the manifest, look up
+        /// two settlements and render two names per call.
+        ///
+        /// The name reads only the order's source, destination and whether its manifest is empty. The
+        /// destination and manifest are written once, by <c>RBMCaravanRegister.BindPending</c> while the
+        /// party is being created (before it is managed, so before anything is cached here), and never
+        /// change. The source changes only through <c>RBMCaravanRegister.SetSource</c>, whose one caller,
+        /// <see cref="RerouteHome"/>, drops the entry. The state does not enter the name. Keyed weakly on
+        /// the party object, so a loaded save (fresh party objects) or a dissolved caravan leaves nothing
+        /// behind and needs no reset.
+        /// </summary>
+        private static readonly ConditionalWeakTable<MobileParty, TextObject> _nameCache = new ConditionalWeakTable<MobileParty, TextObject>();
+
+        /// <summary>Forgets a caravan's cached map name, so the next read rebuilds it from its order.</summary>
+        private static void InvalidateName(MobileParty caravan)
+        {
+            if (caravan != null)
+            {
+                _nameCache.Remove(caravan);
+            }
+        }
+
+        /// <summary>
         /// Names our caravans "⟨source⟩ → ⟨destination⟩ Supply Caravan" on the map, instead of the vanilla
         /// "⟨owner⟩'s Caravan", so they read as what they are and where they run. Managed caravans only;
         /// every other caravan keeps its native name.
@@ -587,14 +613,42 @@ namespace RBMCampaign
                 {
                     return;
                 }
-                if (!RBMCaravanRegister.TryGetOrder(party.StringId, out RBMCaravanRegister.Order order))
+                if (_nameCache.TryGetValue(party, out TextObject cached))
+                {
+                    __result = cached;
+                    return;
+                }
+                TextObject label = BuildName(party);
+                if (label == null)
                 {
                     return;
                 }
+                _nameCache.Remove(party);
+                try
+                {
+                    _nameCache.Add(party, label);
+                }
+                catch (ArgumentException)
+                {
+                    // Another reader cached it between the Remove and the Add; theirs is the same label.
+                }
+                __result = label;
+            }
+
+            private static TextObject BuildName(MobileParty party)
+            {
+                if (!RBMCaravanRegister.TryGetOrder(party.StringId, out RBMCaravanRegister.Order order))
+                {
+                    return null;
+                }
                 Settlement source = RBMCaravanRegister.FindSettlement(order.SourceId);
                 Settlement dest = RBMCaravanRegister.FindSettlement(order.DestId);
-                string from = (source != null && source.Name != null) ? source.Name.ToString() : null;
-                string to = (dest != null && dest.Name != null) ? dest.Name.ToString() : null;
+                // The settlement names go in as TextObjects rather than rendered strings, so the cached label
+                // still follows a language change; the strings only decide which template applies.
+                TextObject fromName = (source != null) ? source.Name : null;
+                TextObject toName = (dest != null) ? dest.Name : null;
+                bool hasFrom = fromName != null && !string.IsNullOrEmpty(fromName.ToString());
+                bool hasTo = toName != null && !string.IsNullOrEmpty(toName.ToString());
 
                 // A relief caravan (empty manifest) carries only investment capital, so it reads as one.
                 bool relief = (order.Goods == null || order.Goods.Count == 0);
@@ -602,20 +656,20 @@ namespace RBMCampaign
                 // Each form is a whole template rather than assembled from parts: a translator has to be
                 // able to move the settlement names and the connector, which concatenation does not allow.
                 TextObject label;
-                if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
+                if (hasFrom && hasTo)
                 {
                     label = new TextObject(relief
                         ? "{=RBM_CARAVAN_RELIEF_ROUTE}{FROM} → {TO} Relief Caravan"
                         : "{=RBM_CARAVAN_SUPPLY_ROUTE}{FROM} → {TO} Supply Caravan");
-                    label.SetTextVariable("FROM", from);
-                    label.SetTextVariable("TO", to);
+                    label.SetTextVariable("FROM", fromName);
+                    label.SetTextVariable("TO", toName);
                 }
-                else if (!string.IsNullOrEmpty(from))
+                else if (hasFrom)
                 {
                     label = new TextObject(relief
                         ? "{=RBM_CARAVAN_RELIEF_FROM}{FROM} Relief Caravan"
                         : "{=RBM_CARAVAN_SUPPLY_FROM}{FROM} Supply Caravan");
-                    label.SetTextVariable("FROM", from);
+                    label.SetTextVariable("FROM", fromName);
                 }
                 else
                 {
@@ -623,7 +677,7 @@ namespace RBMCampaign
                         ? "{=RBM_CARAVAN_RELIEF}Relief Caravan"
                         : "{=RBM_CARAVAN_SUPPLY}Supply Caravan");
                 }
-                __result = label;
+                return label;
             }
         }
 

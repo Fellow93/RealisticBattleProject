@@ -30,12 +30,12 @@ namespace RBMCampaign
     public static partial class TroopUpkeep
     {
         // Keyed the same way as the spoils pool, since it is the same granularity: one entry per
-        // stack. The hour the stack's men run out of the food they last bought.
-        private static Dictionary<string, int> _fedUntilHours = new Dictionary<string, int>();
+        // stack, saved flat as partyId#charId. The hour the stack's men run out of the food they last bought.
+        private static readonly SpoilsPool.StackStore _fedUntilHours = new SpoilsPool.StackStore();
 
         // Same key, same granularity: the hour before which a stack that has just splurged on a luxury
         // will not splurge again, so the indulgence stays an occasional treat rather than a daily habit.
-        private static Dictionary<string, int> _luxuryCooldownUntilHours = new Dictionary<string, int>();
+        private static readonly SpoilsPool.StackStore _luxuryCooldownUntilHours = new SpoilsPool.StackStore();
 
         /// <summary>
         /// Drops the previous campaign's rations and cooldowns. Called from
@@ -46,19 +46,17 @@ namespace RBMCampaign
         {
             _fedUntilHours.Clear();
             _luxuryCooldownUntilHours.Clear();
+            ResetUnfedProfiles();
         }
 
         public static void SyncData(IDataStore dataStore)
         {
-            dataStore.SyncData("RBM_troopFedUntilHours", ref _fedUntilHours);
-            if (_fedUntilHours == null)
+            _fedUntilHours.Sync(dataStore, "RBM_troopFedUntilHours");
+            _luxuryCooldownUntilHours.Sync(dataStore, "RBM_troopLuxuryCooldown");
+            if (!dataStore.IsSaving)
             {
-                _fedUntilHours = new Dictionary<string, int>();
-            }
-            dataStore.SyncData("RBM_troopLuxuryCooldown", ref _luxuryCooldownUntilHours);
-            if (_luxuryCooldownUntilHours == null)
-            {
-                _luxuryCooldownUntilHours = new Dictionary<string, int>();
+                // The rosters and the ration store were both just replaced; no profile built before can stand.
+                ResetUnfedProfiles();
             }
             SpoilsLog.Log("SAVE", (dataStore.IsSaving ? "saved " : "loaded ") + _fedUntilHours.Count + " fed-until entries");
         }
@@ -112,7 +110,7 @@ namespace RBMCampaign
         public static bool IsFed(PartyBase party, CharacterObject character)
         {
             int fedUntil;
-            return _fedUntilHours.TryGetValue(SpoilsPool.Key(party, character), out fedUntil)
+            return _fedUntilHours.TryGetValue(party, character, out fedUntil)
                 && fedUntil > (_forecastHours ?? NowHours);
         }
 
@@ -121,6 +119,13 @@ namespace RBMCampaign
         /// bought for themselves do not, so a party whose stacks are all provisioned consumes nothing.
         /// Heroes never buy their own rations and always count as unfed.
         /// </summary>
+        /// <remarks>
+        /// Asked on every read of a party's food change -- the AI's hourly planning for every party and
+        /// army member, the forecast below once per ration lapse, the map bar several times a second --
+        /// so the per-stack walk is done once into an <see cref="UnfedProfile"/> and reused until the
+        /// roster or the party's rations change. Judging it at an hour is then a sum over the provisioned
+        /// stacks alone, with the same integers the walk would have produced.
+        /// </remarks>
         public static float GetUnfedManFraction(MobileParty mobileParty)
         {
             PartyBase party = mobileParty?.Party;
@@ -128,19 +133,119 @@ namespace RBMCampaign
             {
                 return 1f;
             }
-            int total = 0;
-            int unfed = 0;
+            UnfedProfile profile = GetUnfedProfile(party);
+            int fedMen = 0;
+            if (profile.FedUntil.Length > 0)
+            {
+                // The clock IsFed would judge each stack by, read once: it cannot move within this call.
+                int hour = _forecastHours ?? NowHours;
+                for (int i = 0; i < profile.FedUntil.Length; i++)
+                {
+                    if (profile.FedUntil[i] > hour)
+                    {
+                        fedMen += profile.Men[i];
+                    }
+                }
+            }
+            int unfed = profile.Total - fedMen;
+            return profile.Total <= 0 ? 1f : (float)unfed / profile.Total;
+        }
+
+        /// <summary>
+        /// One party's stacks as the unfed fraction sees them, independent of the hour: every man on the
+        /// roster, and the non-hero stacks holding a ration entry with the hour it lapses and their size.
+        /// </summary>
+        /// <remarks>
+        /// Its inputs are exactly the roster's characters and counts (both change only through the
+        /// roster's own mutators, every one of which bumps <c>TroopRoster.VersionNo</c>), whether each
+        /// character is a hero (fixed for a CharacterObject), and the party's ration entries (every change
+        /// to which re-stamps the party's bucket, see <see cref="SpoilsPool.StackStore"/>). The roster
+        /// instance is held too, so a profile is never matched against a different roster that happens to
+        /// share a version number. Immutable once built, so a reader on any thread sees a whole one.
+        /// </remarks>
+        private sealed class UnfedProfile
+        {
+            internal static readonly int[] None = new int[0];
+
+            internal TroopRoster Roster;
+            internal int RosterVersion;
+            internal int FedStamp;
+            internal int Total;
+            internal int[] FedUntil = None;
+            internal int[] Men = None;
+        }
+
+        private sealed class UnfedProfileHolder
+        {
+            internal volatile UnfedProfile Current;
+        }
+
+        // Weakly keyed, so a destroyed party's profile goes with it; thread-safe, so a food-change read
+        // off the main thread cannot corrupt it. Replaced wholesale on reset and load.
+        private static System.Runtime.CompilerServices.ConditionalWeakTable<PartyBase, UnfedProfileHolder> _unfedProfiles =
+            new System.Runtime.CompilerServices.ConditionalWeakTable<PartyBase, UnfedProfileHolder>();
+
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<PartyBase, UnfedProfileHolder>.CreateValueCallback _newProfileHolder =
+            party => new UnfedProfileHolder();
+
+        private static void ResetUnfedProfiles()
+        {
+            _unfedProfiles = new System.Runtime.CompilerServices.ConditionalWeakTable<PartyBase, UnfedProfileHolder>();
+        }
+
+        private static UnfedProfile GetUnfedProfile(PartyBase party)
+        {
             TroopRoster roster = party.MemberRoster;
+            int version = roster.VersionNo;
+            int stamp = _fedUntilHours.GetStamp(party);
+            UnfedProfileHolder holder = _unfedProfiles.GetValue(party, _newProfileHolder);
+            UnfedProfile profile = holder.Current;
+            if (profile != null && profile.Roster == roster && profile.RosterVersion == version && profile.FedStamp == stamp)
+            {
+                return profile;
+            }
+            profile = BuildUnfedProfile(party, roster, version, stamp);
+            holder.Current = profile;
+            return profile;
+        }
+
+        private static UnfedProfile BuildUnfedProfile(PartyBase party, TroopRoster roster, int version, int stamp)
+        {
+            UnfedProfile profile = new UnfedProfile
+            {
+                Roster = roster,
+                RosterVersion = version,
+                FedStamp = stamp
+            };
+            SpoilsPool.StackStore.Bucket bucket = _fedUntilHours.GetBucket(party);
+            List<int> fedUntil = null;
+            List<int> men = null;
+            int total = 0;
             for (int i = 0; i < roster.Count; i++)
             {
                 TroopRosterElement element = roster.GetElementCopyAtIndex(i);
                 total += element.Number;
-                if (element.Character.IsHero || !IsFed(party, element.Character))
+                int until;
+                if (bucket == null || element.Character.IsHero
+                    || !SpoilsPool.StackStore.TryGetValue(bucket, element.Character, out until))
                 {
-                    unfed += element.Number;
+                    continue;
                 }
+                if (fedUntil == null)
+                {
+                    fedUntil = new List<int>();
+                    men = new List<int>();
+                }
+                fedUntil.Add(until);
+                men.Add(element.Number);
             }
-            return total <= 0 ? 1f : (float)unfed / total;
+            profile.Total = total;
+            if (fedUntil != null)
+            {
+                profile.FedUntil = fedUntil.ToArray();
+                profile.Men = men.ToArray();
+            }
+            return profile;
         }
 
         /// <summary>
@@ -256,7 +361,7 @@ namespace RBMCampaign
                 // away on top of the wage bite -- and the further over the cap they sit, the harder they
                 // spend: the surplus bite scales by how many times over its ceiling the purse stands, so
                 // a purse well over cap empties far faster than one only just above it.
-                int cap = SpoilsPool.GetSpoilsCap(party, element.Character);
+                int cap = SpoilsPool.GetSpoilsCap(party, element.Character, element.Number);
                 int surplus = purse - cap;
                 if (surplus > 0)
                 {
@@ -314,9 +419,8 @@ namespace RBMCampaign
         {
             if (party.MemberRoster.FindIndexOfTroop(character) < 0)
             {
-                string key = SpoilsPool.Key(party, character);
-                _fedUntilHours.Remove(key);
-                _luxuryCooldownUntilHours.Remove(key);
+                _fedUntilHours.Remove(party, character);
+                _luxuryCooldownUntilHours.Remove(party, character);
             }
         }
 
@@ -328,13 +432,13 @@ namespace RBMCampaign
         public static void TransferFedState(PartyBase from, PartyBase to, CharacterObject character)
         {
             int fedUntil;
-            if (_fedUntilHours.TryGetValue(SpoilsPool.Key(from, character), out fedUntil))
+            if (_fedUntilHours.TryGetValue(from, character, out fedUntil))
             {
                 int existing;
-                _fedUntilHours.TryGetValue(SpoilsPool.Key(to, character), out existing);
+                _fedUntilHours.TryGetValue(to, character, out existing);
                 if (fedUntil > existing)
                 {
-                    _fedUntilHours[SpoilsPool.Key(to, character)] = fedUntil;
+                    _fedUntilHours.Set(to, character, fedUntil);
                 }
             }
             ClearIfStackGone(from, character);
@@ -350,15 +454,16 @@ namespace RBMCampaign
             {
                 return;
             }
-            string prefix = party.Id + "#";
-            List<string> orphans = null;
-            foreach (string key in _fedUntilHours.Keys)
+            // Only this party's own entries, so walk its bucket rather than every ration on the map.
+            string partyId = SpoilsPool.StackStore.PartyId(party);
+            SpoilsPool.StackStore.Bucket bucket = _fedUntilHours.GetBucket(partyId);
+            if (bucket == null)
             {
-                if (!key.StartsWith(prefix))
-                {
-                    continue;
-                }
-                string charId = key.Substring(prefix.Length);
+                return;
+            }
+            List<string> orphans = null;
+            foreach (string charId in bucket.Values.Keys)
+            {
                 CharacterObject character = MBObjectManager.Instance.GetObject<CharacterObject>(charId);
                 if (character == null || party.MemberRoster.FindIndexOfTroop(character) < 0)
                 {
@@ -366,14 +471,14 @@ namespace RBMCampaign
                     {
                         orphans = new List<string>();
                     }
-                    orphans.Add(key);
+                    orphans.Add(charId);
                 }
             }
             if (orphans != null)
             {
-                foreach (string key in orphans)
+                foreach (string charId in orphans)
                 {
-                    _fedUntilHours.Remove(key);
+                    _fedUntilHours.Remove(partyId, charId);
                 }
             }
         }
@@ -385,8 +490,13 @@ namespace RBMCampaign
         /// </summary>
         public static void PruneExemptParties(HashSet<string> partyIds)
         {
-            int fed = SpoilsPool.RemoveEntriesForParties(_fedUntilHours, partyIds);
-            int luxury = SpoilsPool.RemoveEntriesForParties(_luxuryCooldownUntilHours, partyIds);
+            int fed = 0;
+            int luxury = 0;
+            foreach (string id in partyIds)
+            {
+                fed += _fedUntilHours.RemoveParty(id);
+                luxury += _luxuryCooldownUntilHours.RemoveParty(id);
+            }
             if (fed > 0 || luxury > 0)
             {
                 SpoilsLog.Log("POOL", "pruned " + fed + " ration and " + luxury
@@ -396,30 +506,10 @@ namespace RBMCampaign
 
         public static void OnMobilePartyDestroyed(MobileParty party, PartyBase destroyer)
         {
-            List<string> stale = new List<string>();
-            foreach (string key in _fedUntilHours.Keys)
-            {
-                if (SpoilsPool.KeyBelongsToParty(key, party.Party))
-                {
-                    stale.Add(key);
-                }
-            }
-            foreach (string key in stale)
-            {
-                _fedUntilHours.Remove(key);
-            }
-            stale.Clear();
-            foreach (string key in _luxuryCooldownUntilHours.Keys)
-            {
-                if (SpoilsPool.KeyBelongsToParty(key, party.Party))
-                {
-                    stale.Add(key);
-                }
-            }
-            foreach (string key in stale)
-            {
-                _luxuryCooldownUntilHours.Remove(key);
-            }
+            // The party's own buckets, dropped whole: no scan of anyone else's rations.
+            string partyId = SpoilsPool.StackStore.PartyId(party.Party);
+            _fedUntilHours.RemoveParty(partyId);
+            _luxuryCooldownUntilHours.RemoveParty(partyId);
         }
 
         /// <summary>

@@ -86,11 +86,28 @@ namespace RBMCampaign
         // AdvanceRound alongside SimulationEquipmentPower.ForgetHeroKits so selection and pricing never disagree.
         private static readonly Dictionary<CharacterObject, int> _armCache = new Dictionary<CharacterObject, int>();
 
-        // The striking side's archer share, cached for the round it was computed in (see ArcherShare). One slot is
-        // enough: a round's ticks alternate sides but the volley is short and a re-scan on a side flip is cheap.
-        private static MapEventSide _shareCachedSide;
-        private static int _shareCachedRound = -1;
-        private static float _shareCachedValue;
+        // The striking side's archer share, cached for the round it was computed in (see ArcherShare). The LAST
+        // call's side and round decide a plain hit, exactly as the old single slot did; behind it each side keeps
+        // its own slot, so a side flip (vanilla picks the striking side at random every tick, so about every other
+        // call) no longer has to re-scan the whole muster when that side's list provably has not changed since.
+        private sealed class ShareSlot
+        {
+            public MapEventSide Side;
+            public int Round = -1;
+            public int Generation = -1;
+            public int Count = -1;
+            public float Value;
+        }
+
+        private static readonly ShareSlot _shareSlotA = new ShareSlot();
+        private static readonly ShareSlot _shareSlotB = new ShareSlot();
+        private static ShareSlot _shareLastSlot;
+
+        // Bumped before every MapEvent.SimulateBattleSetup -- the one place a side's _simulationTroopList is rebuilt
+        // (MakeReadyForSimulation -> AllocateTroops, Clear then refill). Between two setups the list only ever
+        // SHRINKS (RemoveSelectedTroopFromSimulationList; EndSimulation clears it), so within one generation an
+        // unchanged count means an unchanged list, and an unchanged list means the same share.
+        private static int _setupGeneration;
 
         // The most redraws a rejected pick will make before it gives up and takes the last uniform draw. Small: the
         // common case (contact phase, no preference, weight 1.0) returns on the first draw, and even a thin
@@ -319,13 +336,34 @@ namespace RBMCampaign
         /// </summary>
         private static float ArcherShare(MapEventSide side, int round)
         {
-            if (side == _shareCachedSide && _shareCachedRound == round)
+            // The old single slot's hit: the previous call was this side, this round. Its value is this side's slot,
+            // since no other side has been asked in between.
+            ShareSlot last = _shareLastSlot;
+            if (last != null && last.Side == side && last.Round == round)
             {
-                return _shareCachedValue;
+                return last.Value;
             }
 
             List<UniqueTroopDescriptor> list = SimulationTroopList(side);
             int total = (list != null) ? list.Count : 0;
+
+            // The old slot's miss re-scanned the live list. This side's own slot already holds that scan's answer
+            // when nothing has touched the list since it was taken: same round, same setup generation (no rebuild),
+            // same count (no removal). Same list, same troops, same arms -- the same number, without the walk.
+            ShareSlot slot = (_shareSlotA.Side == side) ? _shareSlotA
+                : (_shareSlotB.Side == side) ? _shareSlotB
+                : null;
+            if (slot != null && slot.Round == round && slot.Generation == _setupGeneration && slot.Count == total)
+            {
+                _shareLastSlot = slot;
+                return slot.Value;
+            }
+            if (slot == null)
+            {
+                // A side neither slot knows: take the one the last call did not use.
+                slot = (_shareLastSlot == _shareSlotA) ? _shareSlotB : _shareSlotA;
+            }
+
             float share = 0f;
             if (total > 0)
             {
@@ -341,10 +379,38 @@ namespace RBMCampaign
                 share = (float)archers / total;
             }
 
-            _shareCachedSide = side;
-            _shareCachedRound = round;
-            _shareCachedValue = share;
+            slot.Side = side;
+            slot.Round = round;
+            slot.Generation = _setupGeneration;
+            slot.Count = total;
+            slot.Value = share;
+            _shareLastSlot = slot;
             return share;
+        }
+
+        /// <summary>A side's troop list is about to be rebuilt (MapEvent.SimulateBattleSetup): no archer share taken
+        /// before it may be reused after it. Called from the SimulateBattleSetup prefix (SimulationWoundCarryover).</summary>
+        internal static void OnSimulationSetup()
+        {
+            unchecked
+            {
+                _setupGeneration++;
+            }
+        }
+
+        private static void ClearShareSlots()
+        {
+            _shareSlotA.Side = null;
+            _shareSlotA.Round = -1;
+            _shareSlotA.Generation = -1;
+            _shareSlotA.Count = -1;
+            _shareSlotA.Value = 0f;
+            _shareSlotB.Side = null;
+            _shareSlotB.Round = -1;
+            _shareSlotB.Generation = -1;
+            _shareSlotB.Count = -1;
+            _shareSlotB.Value = 0f;
+            _shareLastSlot = null;
         }
 
         /// <summary>
@@ -544,9 +610,7 @@ namespace RBMCampaign
         internal static void ResetForNewSession()
         {
             _armCache.Clear();
-            _shareCachedSide = null;
-            _shareCachedRound = -1;
-            _shareCachedValue = 0f;
+            ClearShareSlots();
             _pendingEvent = null;
             _pendingStrikerSide = null;
             _pendingStruckSide = null;

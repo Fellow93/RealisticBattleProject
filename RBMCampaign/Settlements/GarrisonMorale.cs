@@ -20,19 +20,25 @@ namespace RBMCampaign
     /// consumer at once -- the getter reads <c>ResultNumber</c> off this same call, and the party-screen
     /// tooltip reads it with <c>includeDescription</c>. 50 sits above the desertion threshold and is the
     /// vanilla base value, so it reads as a neutral, steady defender.
+    ///
+    /// A prefix that skips vanilla for exactly those parties: the result is a bare 50 (no lines beyond
+    /// the base), so running vanilla's full computation -- starvation, wages, perks, traits, recent
+    /// events -- only to throw it away was pure cost, paid on every morale read of every garrison and
+    /// militia (the desertion model, AI, nameplates). Every other party runs vanilla untouched.
     /// </summary>
     [HarmonyPatch(typeof(DefaultPartyMoraleModel), nameof(DefaultPartyMoraleModel.GetEffectivePartyMorale))]
     internal static class GarrisonMorale
     {
-        private static void Postfix(MobileParty mobileParty, bool includeDescription, ref ExplainedNumber __result)
+        private static bool Prefix(MobileParty mobileParty, bool includeDescription, ref ExplainedNumber __result)
         {
             if (!RBMConfig.RBMConfig.rbmCampaignEnabled || mobileParty == null
                 || (!mobileParty.IsGarrison && !mobileParty.IsMilitia))
             {
-                return;
+                return true;
             }
 
             __result = new ExplainedNumber(50f, includeDescription);
+            return false;
         }
     }
 }

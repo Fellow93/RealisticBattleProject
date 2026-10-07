@@ -63,10 +63,14 @@ namespace RBMCampaign
             }
         }
 
+        // Built once: the breakdown is rebuilt several times a second by the map bar's denar tooltip, and a
+        // constant label (no variables) is safe to share -- it still localises on every ToString.
+        private static readonly TextObject LabelText = new TextObject("{=rbm_garr_maint_subsidy_line}Garrison maintenance subsidies");
+
         /// <summary>The breakdown label, shared with the Finances tab's expense total (<see cref="ClanFinanceTabLines"/>).</summary>
         internal static TextObject Label()
         {
-            return new TextObject("{=rbm_garr_maint_subsidy_line}Garrison maintenance subsidies");
+            return LabelText;
         }
     }
 }

@@ -253,6 +253,30 @@ namespace RBMCampaign
             typeof(MapEventSide), "ApplySimulationDamageToSelectedTroop",
             new Type[] { typeof(int), typeof(DamageTypes), typeof(PartyBase) });
 
+        /// <summary>
+        /// The same method as an open-instance delegate, so a casualty is a direct call rather than a reflective
+        /// Invoke with an argument array and three boxes. It calls the very same method body -- Harmony patches the
+        /// method itself, so RBM's wound-pool prefix runs through this exactly as through Invoke. Null only if the
+        /// method is missing or the delegate cannot be bound, in which case Apply falls back to Invoke.
+        /// </summary>
+        private static readonly Func<MapEventSide, int, DamageTypes, PartyBase, bool> ApplyDamageCall = BindApplyDamage();
+
+        private static Func<MapEventSide, int, DamageTypes, PartyBase, bool> BindApplyDamage()
+        {
+            if (ApplyDamage == null)
+            {
+                return null;
+            }
+            try
+            {
+                return AccessTools.MethodDelegate<Func<MapEventSide, int, DamageTypes, PartyBase, bool>>(ApplyDamage);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         // =========================================================================================================
         // The volley.
 
@@ -799,6 +823,10 @@ namespace RBMCampaign
             try
             {
                 PartyBase striker = (owner != null) ? owner.LeaderParty : null;
+                if (ApplyDamageCall != null)
+                {
+                    return ApplyDamageCall(target, damage, EngineDamageType, striker);
+                }
                 object result = ApplyDamage.Invoke(target, new object[] { damage, EngineDamageType, striker });
                 return result is bool && (bool)result;
             }
@@ -829,8 +857,9 @@ namespace RBMCampaign
         // The book.
 
         /// <summary>
-        /// Write a shot down. Gated on the hit log exactly as RecordHit is -- and returning null when it is off, so
-        /// every caller's "fill in what it did" is skipped with it and a battle nobody is watching costs nothing.
+        /// Write a shot down. Gated exactly as RecordHit is (SimulationBattleState.RecordsHits) -- and returning null
+        /// when it is off, so every caller's "fill in what it did" is skipped with it and a battle nobody is watching
+        /// costs nothing.
         ///
         /// A shot that MISSED is recorded too, and that is the point of recording at all: with only the hits in the
         /// book an engine's accuracy cannot be read back, and accuracy is most of what separates the wall's
@@ -839,7 +868,7 @@ namespace RBMCampaign
         private static ArtilleryRecord Record(SimulationBattleState.BattleState state,
             SiegeEvent.SiegeEngineConstructionProgress engine, bool firedByAttacker, string target, bool hit)
         {
-            if (state == null || !SimulationLog.IsEnabled || !RBMConfig.RBMConfig.simulationLogHits)
+            if (!SimulationBattleState.RecordsHits(state))
             {
                 return null;
             }

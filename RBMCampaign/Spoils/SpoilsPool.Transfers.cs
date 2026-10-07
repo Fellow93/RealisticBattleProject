@@ -76,28 +76,26 @@ namespace RBMCampaign
                 TroopUpkeep.PruneOrphans(party);
                 return;
             }
-            // Index-driven: only this party's own keys can be orphaned, so walk them, not the whole pool.
-            if (_partyKeys.TryGetValue(party.Id, out HashSet<string> keys) && keys.Count > 0)
+            // Only this party's own entries can be orphaned, so walk its bucket, not the whole pool.
+            string partyId = StackStore.PartyId(party);
+            StackStore.Bucket bucket = _spoils.GetBucket(partyId);
+            if (bucket != null)
             {
-                string prefix = party.Id + "#";
                 List<string> orphans = null;
-                foreach (string key in keys)
+                foreach (string charId in bucket.Values.Keys)
                 {
-                    // The key is party.Id + "#" + character.StringId, so the tail past the separator is the id.
-                    string charId = key.Substring(prefix.Length);
                     CharacterObject character = MBObjectManager.Instance.GetObject<CharacterObject>(charId);
                     if (character == null || party.MemberRoster.FindIndexOfTroop(character) < 0)
                     {
-                        (orphans ?? (orphans = new List<string>())).Add(key);
+                        (orphans ?? (orphans = new List<string>())).Add(charId);
                     }
                 }
                 if (orphans != null)
                 {
-                    // Remove after the walk above -- IndexRemove mutates the same set we were iterating.
-                    foreach (string key in orphans)
+                    // Remove after the walk above -- removing mutates the bucket being iterated.
+                    foreach (string charId in orphans)
                     {
-                        _spoils.Remove(key);
-                        IndexRemove(key);
+                        _spoils.Remove(partyId, charId);
                     }
                     SpoilsLog.Log("POOL", party, "pruned " + orphans.Count + " orphaned spoils entr"
                         + (orphans.Count == 1 ? "y" : "ies") + " from " + SpoilsLog.Describe(party));

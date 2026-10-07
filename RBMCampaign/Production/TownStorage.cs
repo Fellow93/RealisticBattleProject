@@ -78,6 +78,18 @@ namespace RBMCampaign
         /// </summary>
         public static int Capacity(Town town, ItemObject item)
         {
+            bool industrialGood;
+            return Capacity(town, item, out industrialGood);
+        }
+
+        /// <summary>
+        /// <see cref="Capacity(Town, ItemObject)"/>, also reporting whether the good was capped as a
+        /// workshop input (by its whole category) -- which is how <see cref="Headroom"/> must count it, and
+        /// would otherwise have to ask the workshop table a second time.
+        /// </summary>
+        private static int Capacity(Town town, ItemObject item, out bool industrialGood)
+        {
+            industrialGood = false;
             if (town == null || item == null || !town.IsTown)
             {
                 return Uncapped;
@@ -86,6 +98,7 @@ namespace RBMCampaign
             // A workshop input is stored by the category, for the same reason it is priced by it: the
             // forge takes any member of it, so ore and ingots share one shelf and one ceiling.
             float industrial = WorkshopDemand.DailyUnits(town, item.GetItemCategory());
+            industrialGood = industrial > 0f;
             if (industrial > 0f)
             {
                 return MathF.Max(1, MathF.Ceiling(industrial * StorageDays));
@@ -118,7 +131,8 @@ namespace RBMCampaign
         {
             // The granary bound is a town's; a castle or a null item falls through to Capacity's Uncapped.
             bool food = town != null && town.IsTown && IsFood(item);
-            int capacity = Capacity(town, item);
+            bool industrialGood;
+            int capacity = Capacity(town, item, out industrialGood);
             if (capacity == Uncapped && !food)
             {
                 return Uncapped;
@@ -127,16 +141,17 @@ namespace RBMCampaign
             int room = Uncapped;
             if (capacity != Uncapped)
             {
-                ItemCategory category = item.GetItemCategory();
+                // Counts come from WorkshopDemand's per-roster-version tally, so a run of sales into
+                // one town between two roster changes walks its market once rather than per item.
                 int held;
-                if (WorkshopDemand.DailyUnits(town, category) > 0f)
+                if (industrialGood)
                 {
-                    held = WorkshopDemand.UnitsInStore(town, category);
+                    held = WorkshopDemand.UnitsInStore(town, item.GetItemCategory());
                 }
                 else
                 {
                     held = IsGarment(item)
-                        ? CountGarments(town)
+                        ? WorkshopDemand.GarmentsInStore(town)
                         : ((town.Owner != null) ? town.Owner.ItemRoster.GetItemNumber(item) : 0);
                 }
                 room = capacity - held;
@@ -231,7 +246,9 @@ namespace RBMCampaign
             return (room > 0) ? room : 0;
         }
 
-        private static bool IsGarment(ItemObject item)
+        /// <summary>Civilian clothing: a civilian item in one of the five worn slots. Shared with
+        /// <see cref="WorkshopDemand.GarmentsInStore"/>, which counts the wardrobe this caps.</summary>
+        internal static bool IsGarment(ItemObject item)
         {
             if (item == null || !item.IsCivilian)
             {
@@ -243,25 +260,6 @@ namespace RBMCampaign
                 || type == ItemObject.ItemTypeEnum.LegArmor
                 || type == ItemObject.ItemTypeEnum.HandArmor
                 || type == ItemObject.ItemTypeEnum.Cape;
-        }
-
-        private static int CountGarments(Town town)
-        {
-            ItemRoster roster = (town != null && town.Owner != null) ? town.Owner.ItemRoster : null;
-            if (roster == null)
-            {
-                return 0;
-            }
-            int held = 0;
-            for (int i = roster.Count - 1; i >= 0; i--)
-            {
-                ItemRosterElement element = roster.GetElementCopyAtIndex(i);
-                if (IsGarment(element.EquipmentElement.Item))
-                {
-                    held += element.Amount;
-                }
-            }
-            return held;
         }
 
         private static void Record(Settlement settlement, ItemObject item, int units)

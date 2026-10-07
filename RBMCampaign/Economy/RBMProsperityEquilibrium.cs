@@ -416,15 +416,18 @@ namespace RBMCampaign
                     float castleTarget = CastleTargetProsperity(fortification.Settlement);
                     if (castleTarget > 0f)
                     {
+                        // The food tier is read once and shared by the growth gate and the hunger drain
+                        // (each used to re-derive it: days of food, ration shortfall, consumption).
+                        FiefStarvation.Tier castleTier = FiefStarvation.GetTier(fortification);
                         float drift = (castleTarget - fortification.Prosperity) * CastleConvergenceRate;
                         // Food gates a castle the same way it gates a town: under a week of supply it
                         // stops growing, and short of that it loses a share a day. See FiefStarvation.
-                        if (drift > 0f && FiefStarvation.BlocksGrowth(fortification))
+                        if (drift > 0f && BlocksGrowth(castleTier))
                         {
                             drift = 0f;
                         }
                         __result.Add(drift, CountrysideText);
-                        AddHungerDrain(fortification, ref __result);
+                        AddHungerDrain(fortification, castleTier, ref __result);
                     }
                     return false;
                 }
@@ -435,6 +438,8 @@ namespace RBMCampaign
                 }
 
                 float gap = TargetProsperity(fortification.Settlement) - fortification.Prosperity;
+                // Read once, shared by the growth gate and the hunger drain (see the castle branch).
+                FiefStarvation.Tier tier = FiefStarvation.GetTier(fortification);
 
                 float change;
                 if (gap >= 0f)
@@ -446,7 +451,7 @@ namespace RBMCampaign
                     // climbs faster than one that only just feeds itself.
                     // The gate has two parts: today's rations (were the people fed) and the reserve behind
                     // them (under a week of granary the town is rationing and adds nobody). See FiefStarvation.
-                    float foodGate = FiefStarvation.BlocksGrowth(fortification) ? 0f : RBMTownFoodSupply.RationSatisfaction(fortification);
+                    float foodGate = BlocksGrowth(tier) ? 0f : RBMTownFoodSupply.RationSatisfaction(fortification);
                     float demandModifier = CitizenDemand.BaseDemandSatisfaction(fortification)
                         * (1f + MediumDemandGrowthBonus * CitizenDemand.MediumDemandSatisfaction(fortification)
                               + LuxuryDemandGrowthBonus * CitizenDemand.LuxuryDemandSatisfaction(fortification));
@@ -460,8 +465,17 @@ namespace RBMCampaign
                 }
 
                 __result.Add(change, CountrysideText);
-                AddHungerDrain(fortification, ref __result);
+                AddHungerDrain(fortification, tier, ref __result);
                 return false;
+            }
+
+            /// <summary>
+            /// <see cref="FiefStarvation.BlocksGrowth"/> from an already-read tier. Exact inside this prefix,
+            /// which has already checked the module toggle and a non-null fief (the other two terms there).
+            /// </summary>
+            private static bool BlocksGrowth(FiefStarvation.Tier tier)
+            {
+                return tier != FiefStarvation.Tier.Fed;
             }
 
             /// <summary>
@@ -469,10 +483,12 @@ namespace RBMCampaign
             /// fires even below target -- a fief that cannot feed itself sheds people wherever it sits.
             /// Stepped on the granary: 1% a day under three days of food, 3% a day once rations go
             /// unmet. See FiefStarvation. (Supersedes the HungerPressure ramp, which is kept for the ledger.)
+            ///
+            /// The rate comes from the tier the caller already read, so the food position is derived once.
             /// </summary>
-            private static void AddHungerDrain(Town fortification, ref ExplainedNumber result)
+            private static void AddHungerDrain(Town fortification, FiefStarvation.Tier tier, ref ExplainedNumber result)
             {
-                float drain = FiefStarvation.ProsperityLossRate(fortification) * fortification.Prosperity;
+                float drain = FiefStarvation.ProsperityLossRate(tier) * fortification.Prosperity;
                 if (drain > 0f)
                 {
                     result.Add(-drain, HungerText);

@@ -317,33 +317,103 @@ namespace RBMCampaign
                 return 0f;
             }
 
+            // A good the basket never names gets nothing from either table.
+            GoodRates rates;
+            if (!RatesById().TryGetValue(itemId, out rates))
+            {
+                return 0f;
+            }
+
             float prosperity = town.Prosperity;
             float units = 0f;
 
             // The food mix is a share of the day's RATION -- a headcount figure, the same one
             // FeedPopulation works from -- while everything else is a rate per unit of prosperity.
-            float ration = prosperity / Campaign.Current.Models.SettlementFoodModel.NumberOfProsperityToEatOneFood;
-            foreach (Line line in FoodMix)
+            // Each term is added one line at a time in table order, exactly as the tables are walked,
+            // so the float sum is the same to the last bit.
+            if (rates.Food.Length > 0)
             {
-                if (line.ItemId == itemId)
+                float ration = prosperity / Campaign.Current.Models.SettlementFoodModel.NumberOfProsperityToEatOneFood;
+                foreach (float rate in rates.Food)
                 {
-                    units += ration * line.Rate;
+                    units += ration * rate;
                 }
             }
 
+            foreach (float rate in rates.PerProsperity)
+            {
+                units += prosperity * rate;
+            }
+
+            return units;
+        }
+
+        /// <summary>
+        /// One good's lines across the basket tables, in table order: its shares of the food mix, and its
+        /// per-Prosperity rates in the staple and luxury tiers.
+        /// </summary>
+        private sealed class GoodRates
+        {
+            public float[] Food;
+            public float[] PerProsperity;
+        }
+
+        // Item id -> its lines, built once from the static tables. DailyUnits sits under every price and
+        // storage check, and walking all five tables per call -- plus allocating the list of them -- was
+        // pure overhead for a lookup whose answer never changes.
+        private static Dictionary<string, GoodRates> _ratesById;
+
+        private static Dictionary<string, GoodRates> RatesById()
+        {
+            Dictionary<string, GoodRates> built = _ratesById;
+            if (built != null)
+            {
+                return built;
+            }
+
+            Dictionary<string, List<float>> food = new Dictionary<string, List<float>>();
+            Dictionary<string, List<float>> perProsperity = new Dictionary<string, List<float>>();
+            foreach (Line line in FoodMix)
+            {
+                AddRate(food, line);
+            }
             Line[][] byProsperity = { Staples, SmallLuxuries, MediumLuxuries, LargeLuxuries };
             foreach (Line[] table in byProsperity)
             {
                 foreach (Line line in table)
                 {
-                    if (line.ItemId == itemId)
-                    {
-                        units += prosperity * line.Rate;
-                    }
+                    AddRate(perProsperity, line);
                 }
             }
 
-            return units;
+            built = new Dictionary<string, GoodRates>();
+            foreach (string id in ModelledGoods)
+            {
+                List<float> foodRates;
+                List<float> prosperityRates;
+                food.TryGetValue(id, out foodRates);
+                perProsperity.TryGetValue(id, out prosperityRates);
+                built[id] = new GoodRates
+                {
+                    Food = (foodRates != null) ? foodRates.ToArray() : new float[0],
+                    PerProsperity = (prosperityRates != null) ? prosperityRates.ToArray() : new float[0],
+                };
+            }
+
+            // Published only once whole, so a reader can never see a half-built table.
+            _ratesById = built;
+            return built;
+        }
+
+        private static void AddRate(Dictionary<string, List<float>> into, Line line)
+        {
+            List<float> rates;
+            if (!into.TryGetValue(line.ItemId, out rates))
+            {
+                rates = new List<float>();
+                into[line.ItemId] = rates;
+            }
+            rates.Add(line.Rate);
         }
 
         /// <summary>Garments a town gets through in a day: staple replacement plus the comfortable tier.</summary>

@@ -92,6 +92,54 @@ namespace RBMCampaign
         private static readonly Dictionary<Town, KeyValuePair<int, int>> _foodCountCache = new Dictionary<Town, KeyValuePair<int, int>>();
         private static readonly object _foodCountCacheLock = new object();
 
+        // Per-town memo of the daily ration (GetFoodConsumption) and the granary cap built on it. The cap
+        // is read through FoodStocksUpperLimit -- and so through every get_FoodStocks, which clamps to it --
+        // by Settlement.IsStarving (the morale model, per militia party), AI target scoring, the healing
+        // model and the nameplates, thousands of times an hour; uncached each read ran three
+        // ExplainedNumbers, up to three perk lookups, the governor trait and a building scan.
+        //
+        // Keyed on the campaign hour PLUS every cheap input the ration reads, so the answer changes the
+        // moment any of them does: prosperity, garrison and militia head counts (a player dropping troops
+        // into the garrison), prisoners in the cells, the siege flag (Gourmet), the governor and whether he
+        // is in residence (Master of Warcraft, Gourmet, Generosity -- PerkHelper.AddPerkBonusForTown reads
+        // nothing else), and the owner clan (a capture can knock building levels down). Only what has no
+        // cheap version rides on the hour: the governor's own perks and traits, and Warehouse/Granary level,
+        // which only moves on Town.DailyTick's construction pass. Both are at most an hour stale.
+        // Guarded by _foodConsumptionCacheLock for the same reason as the food count: the save system's
+        // parallel collect reaches it through the FoodStocks getter.
+        private static readonly Dictionary<Town, FoodCacheEntry> _foodConsumptionCache = new Dictionary<Town, FoodCacheEntry>();
+        private static readonly object _foodConsumptionCacheLock = new object();
+
+        private struct FoodCacheEntry
+        {
+            /// <summary>Whole campaign hours; -1 when the campaign clock is not up yet, which is never cached.</summary>
+            public long Hour;
+            public float Prosperity;
+            public int GarrisonMen;
+            public float Militia;
+            public int Prisoners;
+            public bool UnderSiege;
+            public Hero Governor;
+            public bool GovernorResident;
+            public Clan OwnerClan;
+
+            public FoodConsumptionBreakdown Breakdown;
+            public int UpperLimit;
+
+            public bool SameInputs(FoodCacheEntry other)
+            {
+                return Hour == other.Hour
+                    && Prosperity == other.Prosperity
+                    && GarrisonMen == other.GarrisonMen
+                    && Militia == other.Militia
+                    && Prisoners == other.Prisoners
+                    && UnderSiege == other.UnderSiege
+                    && ReferenceEquals(Governor, other.Governor)
+                    && GovernorResident == other.GovernorResident
+                    && ReferenceEquals(OwnerClan, other.OwnerClan);
+            }
+        }
+
         internal static void ResetForNewSession()
         {
             _foodAtLastTick.Clear();
@@ -102,6 +150,10 @@ namespace RBMCampaign
             lock (_foodCountCacheLock)
             {
                 _foodCountCache.Clear();
+            }
+            lock (_foodConsumptionCacheLock)
+            {
+                _foodConsumptionCache.Clear();
             }
         }
 
@@ -233,15 +285,71 @@ namespace RBMCampaign
 
         public static FoodConsumptionBreakdown GetFoodConsumption(Town town)
         {
-            FoodConsumptionBreakdown breakdown = default(FoodConsumptionBreakdown);
             // Castles included: their food is vanilla's abstract figure rather than a real market, but the
             // mouths are real -- a keep's garrison and its watch eat exactly as a town's do -- and the
             // granary cap below is sized off this figure for both kinds of fief.
-            if (town == null || !(town.IsTown || town.IsCastle) || town.Owner == null || Campaign.Current == null)
+            if (!HasModelledFood(town))
             {
-                return breakdown;
+                return default(FoodConsumptionBreakdown);
+            }
+            return GetFoodEntry(town).Breakdown;
+        }
+
+        private static bool HasModelledFood(Town town)
+        {
+            return town != null && (town.IsTown || town.IsCastle) && town.Owner != null && Campaign.Current != null;
+        }
+
+        /// <summary>
+        /// The town's ration and granary cap, from <see cref="_foodConsumptionCache"/> when none of its
+        /// inputs moved this hour, else recomputed and stored. Callers have checked <see cref="HasModelledFood"/>.
+        /// </summary>
+        private static FoodCacheEntry GetFoodEntry(Town town)
+        {
+            Hero governor = town.Governor;
+            FoodCacheEntry entry = new FoodCacheEntry
+            {
+                // CampaignTime.Now throws until the campaign clock exists (early new-game setup reads the
+                // cap); such a read is computed but not cached.
+                Hour = SpoilsLog.CampaignClockReady() ? (long)CampaignTime.Now.ToHours : -1L,
+                Prosperity = town.Prosperity,
+                GarrisonMen = town.GarrisonParty?.Party.NumberOfAllMembers ?? 0,
+                Militia = town.Militia,
+                Prisoners = PrisonLabour.Count(town.Settlement),
+                UnderSiege = town.IsUnderSiege,
+                Governor = governor,
+                GovernorResident = governor != null && governor.CurrentSettlement != null && governor.CurrentSettlement == town.Settlement,
+                OwnerClan = town.OwnerClan,
+            };
+
+            if (entry.Hour >= 0)
+            {
+                lock (_foodConsumptionCacheLock)
+                {
+                    if (_foodConsumptionCache.TryGetValue(town, out FoodCacheEntry cached) && cached.SameInputs(entry))
+                    {
+                        return cached;
+                    }
+                }
             }
 
+            entry.Breakdown = ComputeFoodConsumption(town);
+            int limit = BuildingEffects.FoodStockDays(town) * entry.Breakdown.Total;
+            entry.UpperLimit = (limit > FoodStockFloor) ? limit : FoodStockFloor;
+
+            if (entry.Hour >= 0)
+            {
+                lock (_foodConsumptionCacheLock)
+                {
+                    _foodConsumptionCache[town] = entry;
+                }
+            }
+            return entry;
+        }
+
+        private static FoodConsumptionBreakdown ComputeFoodConsumption(Town town)
+        {
+            FoodConsumptionBreakdown breakdown = default(FoodConsumptionBreakdown);
             SettlementFoodModel foodModel = Campaign.Current.Models.SettlementFoodModel;
             ExplainedNumber households = new ExplainedNumber(town.Prosperity / foodModel.NumberOfProsperityToEatOneFood);
             ExplainedNumber garrison = new ExplainedNumber((town.GarrisonParty?.Party.NumberOfAllMembers ?? 0) / (float)foodModel.NumberOfMenOnGarrisonToEatOneFood);
@@ -319,22 +427,23 @@ namespace RBMCampaign
         /// This REPLACES the old flat x10 multiple on vanilla's figure (since removed), and it applies to
         /// castles too (their Granary is the same building by another name), where before they were left
         /// on vanilla's 300. The floor keeps a tiny or newly-taken fief from reporting a granary of nothing.
+        ///
+        /// A prefix that skips vanilla rather than a postfix over it: the figure replaces vanilla's outright,
+        /// so vanilla's own building scan was wasted work on one of the hottest reads in the campaign. The
+        /// value itself is memoised with the ration it is built from (see <see cref="GetFoodEntry"/>).
         /// </summary>
         [HarmonyPatch(typeof(Town), "FoodStocksUpperLimit")]
         private static class FoodStocksUpperLimitPatch
         {
-            private static void Postfix(Town __instance, ref int __result)
+            private static bool Prefix(Town __instance, ref int __result)
             {
-                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || __instance == null
-                    || !(__instance.IsTown || __instance.IsCastle) || __instance.Owner == null)
+                if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !HasModelledFood(__instance))
                 {
-                    return;
+                    return true;
                 }
 
-                int days = BuildingEffects.FoodStockDays(__instance);
-                int daily = GetFoodConsumption(__instance).Total;
-                int limit = days * daily;
-                __result = (limit > FoodStockFloor) ? limit : FoodStockFloor;
+                __result = GetFoodEntry(__instance).UpperLimit;
+                return false;
             }
         }
 

@@ -137,7 +137,8 @@ namespace RBMCampaign
             // The soft cap this stack is measured against: the days of keep it will hold before its
             // upkeep spends the surplus on food and drink. A behavioural threshold, not a hard ceiling --
             // a purse may sit above it -- so it is named plainly beside the stockpile the player reads it against.
-            int cap = SpoilsPool.GetSpoilsCap(party, character);
+            // Stack size already in hand, so the roster isn't searched a second time for it.
+            int cap = SpoilsPool.GetSpoilsCap(party, character, stackSize);
             if (cap > 0)
             {
                 properties.Add(new TooltipProperty(new TextObject("{=RBM_SPOILS_018}Spoils Reserve").ToString(),
@@ -268,13 +269,15 @@ namespace RBMCampaign
             PartyBase party = PartyBase.MainParty;
             int stockpile = SpoilsPool.GetAvailableSpoils(party, character);
             int spoilsCost = GetPrimarySpoilsCost(party, character);
+            // Roster search, so done at most once per refresh (this runs every frame per row).
+            int stackSize = -1;
 
             if (spoilsCost > 0)
             {
                 // Mirrors the xp bar: it fills toward the next man's upgrade and saturates once the
                 // whole stack is covered, rather than showing the stockpile against some arbitrary
                 // ceiling.
-                int stackSize = SpoilsPool.GetStackSize(party, character);
+                stackSize = SpoilsPool.GetStackSize(party, character);
                 MaxAmount = spoilsCost;
                 InitialAmount = (stockpile >= spoilsCost * stackSize) ? spoilsCost : (stockpile % spoilsCost);
             }
@@ -286,11 +289,20 @@ namespace RBMCampaign
                 InitialAmount = MathF.Min(stockpile, MaxAmount);
             }
 
-            SpoilsLog.TraceOnce("troop-" + character.StringId, string.Concat(
-                character.StringId, " (tier ", character.Tier.ToString(), ")",
-                " | equip ", SpoilsPool.GetEquipmentValue(character).ToString(),
-                " | stockpile ", stockpile.ToString(), " against ", MaxAmount.ToString(),
-                " | stack ", SpoilsPool.GetStackSize(party, character).ToString()));
+            // Gated here, not just inside TraceOnce: the key and message were otherwise built (and the
+            // roster searched again) every frame for every row even with the log off.
+            if (SpoilsLog.IsEnabled)
+            {
+                if (stackSize < 0)
+                {
+                    stackSize = SpoilsPool.GetStackSize(party, character);
+                }
+                SpoilsLog.TraceOnce("troop-" + character.StringId, string.Concat(
+                    character.StringId, " (tier ", character.Tier.ToString(), ")",
+                    " | equip ", SpoilsPool.GetEquipmentValue(character).ToString(),
+                    " | stockpile ", stockpile.ToString(), " against ", MaxAmount.ToString(),
+                    " | stack ", stackSize.ToString()));
+            }
         }
 
         /// <summary>

@@ -306,31 +306,83 @@ namespace RBMCampaign
         /// </remarks>
         public const float WholesaleFactor = 1.3f;
 
-        // Days-of-supply memo, keyed by town and item and stamped with the roster version, which the
-        // roster bumps on every change. GetPrice is called constantly -- every tooltip, every AI trade
-        // evaluation, every item in an open inventory -- and the uncached form walks the roster.
-        private static readonly Dictionary<string, KeyValuePair<int, float>> _daysCache =
-            new Dictionary<string, KeyValuePair<int, float>>();
+        // Days-of-supply memo, per town, stamped with the market roster and the version it was read at --
+        // the roster bumps its version on every change, and the whole town's memo is emptied the first
+        // time it is read at a new one. GetPrice is called constantly -- every tooltip, every AI trade
+        // evaluation, every kit draw, every item in an open inventory -- and so is GetPriceFactor, for
+        // every caravan scoring every reachable town's every cargo category.
+        //
+        // Keyed by object reference all the way down (Town, then ItemObject / ItemCategory): the lookup
+        // path builds no strings and hashes none. An entry is filled lazily on the first read of that
+        // good at that version, exactly as the per-key memo it replaces was, so a reading can still lag
+        // a prosperity change until the next trade -- see DaysOfSupply.
+        //
+        // Main-thread only, like the memo it replaces: prices and price factors are read from campaign
+        // ticks, the AI and the UI, never from the parallel party movement tick.
+        private sealed class TownReadings
+        {
+            public ItemRoster Roster;
+            public int Version;
+            public readonly Dictionary<ItemObject, float> Days = new Dictionary<ItemObject, float>();
+            public readonly Dictionary<ItemCategory, CatReading> Categories = new Dictionary<ItemCategory, CatReading>();
+        }
 
-        // The category reading feeds the AI price signal (GetPriceFactor), which is called for every
-        // caravan scoring every reachable town's every cargo category -- so it is memoised the same way
-        // the per-item days are, against the roster version, and carries the tier cap alongside the days
-        // because both come out of the same branch and recomputing the cap would mean redoing it.
-        private struct CatReading { public int Version; public float Days; public float Cap; }
-        private static readonly Dictionary<string, CatReading> _catDaysCache =
-            new Dictionary<string, CatReading>();
+        // The category reading feeds the AI price signal (GetPriceFactor), and carries the tier cap
+        // alongside the days because both come out of the same branch and recomputing the cap would mean
+        // redoing it.
+        private struct CatReading { public float Days; public float Cap; }
+
+        private static readonly Dictionary<Town, TownReadings> _readings = new Dictionary<Town, TownReadings>();
 
         // ItemCategory id -> the one modelled citizen good that stands for it, built once from
         // CitizenDemand.ModelledGoods. Only the non-workshop branch needs it; a raw material is read across
         // its whole category by WorkshopDemand instead. First good wins, which is immaterial since a food
-        // category maps to a single good.
+        // category maps to a single good. The by-reference map only remembers what the id map answered
+        // (null included), so the two can never disagree.
         private static Dictionary<string, ItemObject> _catToItem;
+        private static readonly Dictionary<ItemCategory, ItemObject> _catToItemByRef =
+            new Dictionary<ItemCategory, ItemObject>();
+
+        // Village -> the town nearest it, for a village with no trade-bound settlement. Villages and towns
+        // do not move, so the answer is fixed for the session; only a found town is remembered.
+        private static readonly Dictionary<Village, Town> _nearestTown = new Dictionary<Village, Town>();
 
         internal static void ResetForNewSession()
         {
-            _daysCache.Clear();
-            _catDaysCache.Clear();
+            _readings.Clear();
             _catToItem = null;
+            _catToItemByRef.Clear();
+            _nearestTown.Clear();
+        }
+
+        /// <summary>
+        /// The town's memo, emptied if its market roster has changed (or been replaced) since it was
+        /// filled.
+        /// </summary>
+        private static TownReadings ReadingsFor(Town town, ItemRoster roster)
+        {
+            TownReadings readings;
+            if (!_readings.TryGetValue(town, out readings))
+            {
+                readings = new TownReadings();
+                _readings[town] = readings;
+            }
+
+            int version = roster.VersionNo;
+            if (!ReferenceEquals(readings.Roster, roster) || readings.Version != version)
+            {
+                readings.Roster = roster;
+                readings.Version = version;
+                if (readings.Days.Count > 0)
+                {
+                    readings.Days.Clear();
+                }
+                if (readings.Categories.Count > 0)
+                {
+                    readings.Categories.Clear();
+                }
+            }
+            return readings;
         }
 
         /// <summary>
@@ -363,18 +415,15 @@ namespace RBMCampaign
                 return DaysCore(town, item, delta);
             }
 
-            ItemRoster roster = town.Owner.ItemRoster;
-            string key = town.Settlement.StringId + "#" + item.StringId;
-            int version = roster.VersionNo;
-
-            KeyValuePair<int, float> cached;
-            if (_daysCache.TryGetValue(key, out cached) && cached.Key == version)
+            TownReadings readings = ReadingsFor(town, town.Owner.ItemRoster);
+            float days;
+            if (readings.Days.TryGetValue(item, out days))
             {
-                return cached.Value;
+                return days;
             }
 
-            float days = DaysCore(town, item, 0);
-            _daysCache[key] = new KeyValuePair<int, float>(version, days);
+            days = DaysCore(town, item, 0);
+            readings.Days[item] = days;
             return days;
         }
 
@@ -429,11 +478,10 @@ namespace RBMCampaign
             }
 
             ItemRoster roster = town.Owner.ItemRoster;
-            string key = town.Settlement.StringId + "#" + category.StringId;
-            int version = roster.VersionNo;
+            TownReadings readings = ReadingsFor(town, roster);
 
             CatReading cached;
-            if (_catDaysCache.TryGetValue(key, out cached) && cached.Version == version)
+            if (readings.Categories.TryGetValue(category, out cached))
             {
                 cap = cached.Cap;
                 return cached.Days;
@@ -468,7 +516,7 @@ namespace RBMCampaign
                 }
             }
 
-            _catDaysCache[key] = new CatReading { Version = version, Days = days, Cap = cap };
+            readings.Categories[category] = new CatReading { Days = days, Cap = cap };
             return days;
         }
 
@@ -476,6 +524,18 @@ namespace RBMCampaign
         /// The one modelled citizen good that stands for a category, or null if the category has none.
         /// </summary>
         private static ItemObject RepresentativeItem(ItemCategory category)
+        {
+            ItemObject known;
+            if (_catToItemByRef.TryGetValue(category, out known))
+            {
+                return known;
+            }
+            known = RepresentativeItemById(category);
+            _catToItemByRef[category] = known;
+            return known;
+        }
+
+        private static ItemObject RepresentativeItemById(ItemCategory category)
         {
             if (_catToItem == null)
             {
@@ -513,9 +573,37 @@ namespace RBMCampaign
         public static float ScarcityFactor(float days, float maxFactor)
         {
             float effective = (days > FloorDays) ? days : FloorDays;
-            float exponent = (float)(Math.Log(maxFactor) / Math.Log(AbundantDays / CeilingDays));
+            float exponent = Exponent(maxFactor);
             float factor = (float)Math.Pow(AbundantDays / effective, exponent);
             return MathF.Clamp(factor, MinFactor, maxFactor);
+        }
+
+        // The curve exponent for each tier cap, computed once by the very expression Exponent falls back
+        // to, so a cached exponent is bit-for-bit the one a fresh computation gives.
+        private static readonly float BasicExponent = (float)(Math.Log(BasicCap) / Math.Log(AbundantDays / CeilingDays));
+        private static readonly float MediumExponent = (float)(Math.Log(MediumCap) / Math.Log(AbundantDays / CeilingDays));
+        private static readonly float LuxuryExponent = (float)(Math.Log(MaxFactor) / Math.Log(AbundantDays / CeilingDays));
+
+        /// <summary>
+        /// <c>ln(cap) / ln(AbundantDays / CeilingDays)</c> -- the exponent that makes the curve read 1.0x at
+        /// <see cref="AbundantDays"/> and the cap at <see cref="CeilingDays"/>. The three tier caps are
+        /// served precomputed: the price and signal paths ask for it on every call.
+        /// </summary>
+        private static float Exponent(float maxFactor)
+        {
+            if (maxFactor == BasicCap)
+            {
+                return BasicExponent;
+            }
+            if (maxFactor == MediumCap)
+            {
+                return MediumExponent;
+            }
+            if (maxFactor == MaxFactor)
+            {
+                return LuxuryExponent;
+            }
+            return (float)(Math.Log(maxFactor) / Math.Log(AbundantDays / CeilingDays));
         }
 
         /// <summary>
@@ -542,7 +630,7 @@ namespace RBMCampaign
         public static float SignalFactor(float days, float maxFactor)
         {
             float effective = (days > FloorDays) ? days : FloorDays;
-            float exponent = (float)(Math.Log(maxFactor) / Math.Log(AbundantDays / CeilingDays));
+            float exponent = Exponent(maxFactor);
             float factor = (float)Math.Pow(AbundantDays / effective, exponent);
             return MathF.Clamp(factor, SignalFloor, maxFactor);
         }
@@ -691,21 +779,40 @@ namespace RBMCampaign
         ///
         /// Only the four-argument overload is patched. The <c>ItemObject</c> overload forwards to it, so
         /// patching both would apply the adjustment twice.
+        ///
+        /// A PREFIX that skips vanilla for a good RBM prices, because RBM's price is a replacement, not
+        /// an adjustment: it never reads what vanilla returned, so running vanilla's model first -- its
+        /// supply/demand Pow, its own merchant-keyed trade penalty with the skill and perk lookups behind
+        /// it -- only to throw the number away doubled the cost of every price in the game. The result is
+        /// the same number the old postfix wrote. A good RBM does not model still runs vanilla, and the
+        /// postfix then applies the buy-side floor to vanilla's figure exactly as before; <c>__state</c>
+        /// carries that decision across.
         /// </remarks>
         [HarmonyPatch(typeof(TownMarketData), "GetPrice",
             new Type[] { typeof(EquipmentElement), typeof(MobileParty), typeof(bool), typeof(PartyBase) })]
         private static class ScarcityPricePatch
         {
-            private static void Postfix(TownMarketData __instance, Town ____town,
-                EquipmentElement itemRosterElement, MobileParty tradingParty, bool isSelling, ref int __result)
+            private static bool Prefix(TownMarketData __instance, Town ____town,
+                EquipmentElement itemRosterElement, MobileParty tradingParty, bool isSelling, ref int __result,
+                out bool __state)
             {
+                __state = false;
                 if (!RBMConfig.RBMConfig.rbmCampaignEnabled || ____town == null)
                 {
-                    return;
+                    return true;
                 }
 
-                ApplyDaysOfSupplyPrice(____town, __instance, itemRosterElement, tradingParty, isSelling,
-                    ref __result);
+                return !TryDaysOfSupplyPrice(____town, __instance, itemRosterElement, tradingParty, isSelling,
+                    ref __result, out __state);
+            }
+
+            private static void Postfix(EquipmentElement itemRosterElement, bool isSelling, ref int __result,
+                bool __state)
+            {
+                if (__state)
+                {
+                    FloorAskPrice(itemRosterElement, isSelling, ref __result);
+                }
             }
         }
 
@@ -724,7 +831,7 @@ namespace RBMCampaign
         /// x10-inflated base value -- roughly ten times too cheap, and only on the goods a village floods.
         ///
         /// This mirrors the retail patch onto the SAME bound town <see cref="VillageMarketData"/> itself
-        /// resolves (<c>TradeBound ?? nearest town</c>) and reuses <see cref="ApplyDaysOfSupplyPrice"/>, so
+        /// resolves (<c>TradeBound ?? nearest town</c>) and reuses <see cref="TryDaysOfSupplyPrice"/>, so
         /// a village and its town quote the identical price for the same good by construction. Only the
         /// four-argument <c>EquipmentElement</c> overload is patched; the <c>ItemObject</c> overload
         /// forwards to it, so patching both would apply the adjustment twice -- the same reasoning as the
@@ -733,31 +840,84 @@ namespace RBMCampaign
         /// A village bound to a CASTLE resolves to a non-town settlement, so <see cref="DaysOfSupply"/>'s
         /// <c>town.IsTown</c> guard returns negative and vanilla prices it -- the same boundary drawn
         /// everywhere else RBM does not model a market.
+        ///
+        /// A prefix that skips vanilla for a good RBM prices, for the reason given on
+        /// <see cref="ScarcityPricePatch"/>.
         /// </remarks>
         [HarmonyPatch(typeof(VillageMarketData), "GetPrice",
             new Type[] { typeof(EquipmentElement), typeof(MobileParty), typeof(bool), typeof(PartyBase) })]
         private static class VillageScarcityPricePatch
         {
-            private static void Postfix(Village ____village,
-                EquipmentElement itemRosterElement, MobileParty tradingParty, bool isSelling, ref int __result)
+            private static bool Prefix(Village ____village,
+                EquipmentElement itemRosterElement, MobileParty tradingParty, bool isSelling, ref int __result,
+                out bool __state)
             {
+                __state = false;
                 if (!RBMConfig.RBMConfig.rbmCampaignEnabled || ____village == null)
                 {
-                    return;
+                    return true;
                 }
 
                 // The town whose stock and category data the village trades against -- resolved exactly as
                 // VillageMarketData does: its explicit trade-bound settlement, else the nearest town.
-                Town town = ____village.TradeBound?.Town
-                    ?? SettlementHelper.FindNearestTownToSettlement(
-                        ____village.Settlement, MobileParty.NavigationType.All);
+                Town town = BoundTown(____village);
                 if (town == null)
                 {
-                    return;
+                    return true;
                 }
 
-                ApplyDaysOfSupplyPrice(town, town.MarketData, itemRosterElement, tradingParty, isSelling,
-                    ref __result);
+                return !TryDaysOfSupplyPrice(town, town.MarketData, itemRosterElement, tradingParty, isSelling,
+                    ref __result, out __state);
+            }
+
+            private static void Postfix(EquipmentElement itemRosterElement, bool isSelling, ref int __result,
+                bool __state)
+            {
+                if (__state)
+                {
+                    FloorAskPrice(itemRosterElement, isSelling, ref __result);
+                }
+            }
+        }
+
+        /// <summary>
+        /// The town a village trades against: its trade-bound settlement's town, else the nearest town.
+        /// The nearest-town search walks every town in the world, so its answer is remembered per village;
+        /// the trade bound can change and is read fresh every time.
+        /// </summary>
+        private static Town BoundTown(Village village)
+        {
+            Settlement bound = village.TradeBound;
+            Town town = (bound != null) ? bound.Town : null;
+            if (town != null)
+            {
+                return town;
+            }
+
+            if (_nearestTown.TryGetValue(village, out town))
+            {
+                return town;
+            }
+            town = SettlementHelper.FindNearestTownToSettlement(village.Settlement, MobileParty.NavigationType.All);
+            if (town != null)
+            {
+                _nearestTown[village] = town;
+            }
+            return town;
+        }
+
+        /// <summary>
+        /// The buy-side floor on a price vanilla set for a good RBM does not model (tools, war gear,
+        /// horses, and any trade good with no local citizen or workshop sink): a buyer never pays below the
+        /// good's Value (the historical floor price), even where vanilla's own model would discount a
+        /// glutted good to 0.1x of base. A seller keeps vanilla's price, so the trade spread can still put
+        /// a sale below base as before -- only the buy side is floored.
+        /// </summary>
+        private static void FloorAskPrice(EquipmentElement itemRosterElement, bool isSelling, ref int __result)
+        {
+            if (!isSelling && __result < itemRosterElement.ItemValue)
+            {
+                __result = itemRosterElement.ItemValue;
             }
         }
 
@@ -769,29 +929,29 @@ namespace RBMCampaign
         /// <paramref name="marketData"/> the category data the trade spread keys off (the village's bound
         /// town for both).
         /// </summary>
-        private static void ApplyDaysOfSupplyPrice(Town town, TownMarketData marketData,
-            EquipmentElement itemRosterElement, MobileParty tradingParty, bool isSelling, ref int __result)
+        /// <returns>
+        /// True when RBM priced the good and <paramref name="__result"/> holds the price, so vanilla need
+        /// not run. False when vanilla must price it; <paramref name="floorVanillaPrice"/> then says whether
+        /// the buy-side floor applies to vanilla's figure afterwards (a good RBM does not model), or the
+        /// price is left wholly to vanilla (no item at all).
+        /// </returns>
+        private static bool TryDaysOfSupplyPrice(Town town, TownMarketData marketData,
+            EquipmentElement itemRosterElement, MobileParty tradingParty, bool isSelling, ref int __result,
+            out bool floorVanillaPrice)
         {
+            floorVanillaPrice = false;
             ItemObject item = itemRosterElement.Item;
             if (item == null)
             {
-                return;
+                return false;
             }
 
             float days = DaysOfSupply(town, item);
             if (days < 0f)
             {
-                // Not a good RBM models (tools, war gear, horses, and any trade good with no local
-                // citizen or workshop sink) -- vanilla prices it. But the base value is still the
-                // floor for the market's ASK price: a buyer never pays below the good's Value (the
-                // historical floor price), even where vanilla's own model would discount a glutted
-                // good to 0.1x of base. A seller keeps vanilla's price, so the trade spread can still
-                // put a sale below base as before -- only the buy side is floored.
-                if (!isSelling && __result < itemRosterElement.ItemValue)
-                {
-                    __result = itemRosterElement.ItemValue;
-                }
-                return;
+                // Not a good RBM models -- vanilla prices it, then FloorAskPrice floors the ask.
+                floorVanillaPrice = true;
+                return false;
             }
 
             // Ours, and only ours: the good's base value is the historical floor price
@@ -824,6 +984,7 @@ namespace RBMCampaign
             float priced = itemRosterElement.ItemValue * factor * spread;
             int rounded = isSelling ? MathF.Floor(priced) : MathF.Ceiling(priced);
             __result = (rounded > 1) ? rounded : 1;
+            return true;
         }
 
         /// <summary>

@@ -38,9 +38,9 @@ namespace RBMCampaign
         [HarmonyPatch("UpgradeReadyTroops")]
         private class OverrideUpgradeReadyTroops
         {
-            // SupplyTown gate: the town outfitting the party currently being processed. Resolved once at
-            // the top of each Prefix pass and read back in ApplyEffects; the campaign tick is
-            // single-threaded so this scratch field is safe.
+            // SupplyTown gate: the town outfitting the party currently being processed. Resolved at most
+            // once per Prefix pass, on first need (EnsureSupplyResolved), and read back in ApplyEffects; the
+            // campaign tick is single-threaded so this scratch field is safe.
             private static Town _supplyTown;
 
             // Whether this party may buy the GOLD leg of its upgrades today: false when the SupplyTown gate
@@ -48,6 +48,12 @@ namespace RBMCampaign
             // own purse, off no town's shelves -- promote regardless, so the gate closes only the gold leg.
             // Resolved with _supplyTown at the top of each pass; single-threaded tick, so safe as scratch.
             private static bool _supplyGoldAllowed;
+
+            // The party _supplyTown/_supplyGoldAllowed currently describe, or null while still unresolved for
+            // this pass. Resolution is LAZY: the gate is a nearest-town distance sweep, and most parties on
+            // the map have nothing ready to promote on a given day, so it is only run once a stack actually
+            // reads the gate (see EnsureSupplyResolved). Single-threaded tick, as the scratch above.
+            private static PartyBase _supplyResolvedFor;
 
             // The gold this party may still spend on upgrades today, resolved once at the top of each Prefix
             // pass and drawn down in ApplyEffects as each stack is billed. int.MaxValue means the party's cap
@@ -78,19 +84,19 @@ namespace RBMCampaign
                 // party is NOT skipped: men the spoils stockpile makes free still promote, re-arming from the
                 // loot in their own purse rather than off a town's shelves, so distance never gates them. Only
                 // gold-bought promotions need a supplier. One call does the gate and the town.
+                //
+                // Resolved lazily, on the first stack that reads it (SupplyGoldAllowed / ApplyEffects), not
+                // here for every party: the answer depends only on where the party stands and who it is at
+                // war with, which nothing in this pass changes, so asking later gives the same answer --
+                // and a party with nothing ready to promote never pays for the town sweep at all. With the
+                // spoils log on it is still resolved up front, so the once-a-day "held off" line below is
+                // written exactly as before (it reads the roster before any stack is promoted).
                 _supplyTown = null;
                 _supplyGoldAllowed = true;
-                if (UpgradeSupply.IsEnabled && !UpgradeSupply.CanUpgradeNear(party.MobileParty, out _supplyTown))
+                _supplyResolvedFor = UpgradeSupply.IsEnabled ? null : party;
+                if (SpoilsLog.IsEnabled)
                 {
-                    _supplyGoldAllowed = false;
-                    // Once per party per day, and only when it actually has troops that could promote, so the
-                    // reason an AI army's GOLD upgrades are stalled is visible without flooding the log.
-                    if (SpoilsLog.IsEnabled && HasUpgradeableTroop(party.MemberRoster))
-                    {
-                        SpoilsLog.LogOnce("nosupply-" + party.Id + "-" + (int)(CampaignTime.Now.ToHours / 24),
-                            "UPGRADE", party, SpoilsLog.Describe(party) + " held off gold upgrades: no friendly town within "
-                            + RBMConfig.RBMConfig.troopUpgradeSupplyRadius + " units (spoils-covered promotions still allowed)");
-                    }
+                    EnsureSupplyResolved(party);
                 }
 
                 // How much gold this party is still allowed to spend on upgrades today. Drawn down per
@@ -126,6 +132,42 @@ namespace RBMCampaign
                         + " gold still in purse)");
                 }
                 return false;
+            }
+
+            /// <summary>
+            /// Runs the SupplyTown gate for <paramref name="party"/> if this pass has not yet: sets
+            /// <see cref="_supplyTown"/> and <see cref="_supplyGoldAllowed"/> exactly as the eager call at the
+            /// top of the Prefix used to. A no-op once resolved for this party (and always with the gate off,
+            /// where the Prefix's defaults -- no town, gold allowed -- are the answer).
+            /// </summary>
+            private static void EnsureSupplyResolved(PartyBase party)
+            {
+                if (ReferenceEquals(_supplyResolvedFor, party))
+                {
+                    return;
+                }
+                _supplyResolvedFor = party;
+                _supplyTown = null;
+                _supplyGoldAllowed = true;
+                if (UpgradeSupply.IsEnabled && !UpgradeSupply.CanUpgradeNear(party.MobileParty, out _supplyTown))
+                {
+                    _supplyGoldAllowed = false;
+                    // Once per party per day, and only when it actually has troops that could promote, so the
+                    // reason an AI army's GOLD upgrades are stalled is visible without flooding the log.
+                    if (SpoilsLog.IsEnabled && HasUpgradeableTroop(party.MemberRoster))
+                    {
+                        SpoilsLog.LogOnce("nosupply-" + party.Id + "-" + (int)(CampaignTime.Now.ToHours / 24),
+                            "UPGRADE", party, SpoilsLog.Describe(party) + " held off gold upgrades: no friendly town within "
+                            + RBMConfig.RBMConfig.troopUpgradeSupplyRadius + " units (spoils-covered promotions still allowed)");
+                    }
+                }
+            }
+
+            /// <summary>Whether this party may buy the gold leg of its upgrades today, resolving the gate on first use.</summary>
+            private static bool SupplyGoldAllowed(PartyBase party)
+            {
+                EnsureSupplyResolved(party);
+                return _supplyGoldAllowed;
             }
 
             // A cheap upper bound on "would this party like to upgrade": any non-hero stack that has an
@@ -193,7 +235,7 @@ namespace RBMCampaign
                     {
                         float coveredMen = SpoilsPool.GetCoveredMen(party, character, upgradeTarget);
                         int affordable;
-                        if (_supplyGoldAllowed)
+                        if (SupplyGoldAllowed(party))
                         {
                             // The gold leg is limited by the smaller of the purse and the party's remaining daily
                             // upgrade budget: the player's clan-screen cap on gold spent, spoils-covered men aside.
@@ -233,7 +275,7 @@ namespace RBMCampaign
                     {
                         float coveredMen = SpoilsPool.GetCoveredMen(party, character, upgradeTarget);
                         int affordable;
-                        if (!_supplyGoldAllowed)
+                        if (!SupplyGoldAllowed(party))
                         {
                             affordable = (int)coveredMen;
                         }
@@ -454,6 +496,8 @@ namespace RBMCampaign
                 // hands over nothing, but the call keeps the item draw and logging paths uniform.
                 if (UpgradeSupply.PaymentEnabled)
                 {
+                    // The gate's town, resolved now if no stack has read the gate yet this pass.
+                    EnsureSupplyResolved(party);
                     Town market = (_supplyTown != null) ? _supplyTown : UpgradeSupply.ResolveMarketTown(party.MobileParty);
                     UpgradeSupply.SupplyUpgradeFromTown(market, party, option.Target, option.UpgradeTarget,
                         option.Count, goldCharged);

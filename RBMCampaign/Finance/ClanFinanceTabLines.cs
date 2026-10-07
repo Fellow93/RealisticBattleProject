@@ -30,6 +30,10 @@ namespace RBMCampaign
     /// </remarks>
     public static class ClanFinanceTabLines
     {
+        // Constant label (no text variables), so one shared instance instead of a new TextObject on every
+        // Finances-tab refresh. Localized lazily at ToString time, so a language change still applies.
+        private static readonly TextObject WealthIncomeText = new TextObject("{=RBM_wealth_income}Settlement wealth tax");
+
         public static void ApplyDeferred(Harmony harmony)
         {
             if (Game.Current == null)
@@ -62,7 +66,7 @@ namespace RBMCampaign
             int wealthTax = WealthTax.ProjectNextOwnerPayment(clan);
             if (wealthTax > 0)
             {
-                __result.Add(wealthTax, new TextObject("{=RBM_wealth_income}Settlement wealth tax"));
+                __result.Add(wealthTax, WealthIncomeText);
             }
             MercenaryContractPay.AddDisplayLines(clan, ref __result, income: true, expense: false);
         }

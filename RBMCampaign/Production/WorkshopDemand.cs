@@ -54,12 +54,56 @@ namespace RBMCampaign
     {
         // Per town: the day it was built, and units-per-day for each category the town's shops take as
         // an input. Only input categories appear, so a hit IS the "RBM models this good" test.
-        private static readonly Dictionary<string, KeyValuePair<int, Dictionary<string, float>>> _cache =
-            new Dictionary<string, KeyValuePair<int, Dictionary<string, float>>>();
+        //
+        // Keyed by the Town object rather than its id string, and read through a per-table memo keyed by
+        // the ItemCategory object: DailyUnits sits under every price, price factor and storage check, and
+        // hashing two strings per call was a measurable share of the caravan AI's scoring pass. The memo
+        // only ever records what the id-keyed table answered, so the result is the same by construction.
+        private sealed class DemandTable
+        {
+            public int Day;
+            public Dictionary<string, float> ById;
+            public readonly Dictionary<ItemCategory, float> ByRef = new Dictionary<ItemCategory, float>();
+        }
+
+        private static readonly Dictionary<Town, DemandTable> _cache = new Dictionary<Town, DemandTable>();
+
+        // Per town: unit counts of its market roster, stamped with the roster and the VersionNo they were
+        // taken at (the roster bumps it on every change). See UnitsInStore / GarmentsInStore. Main-thread
+        // only, like every other cache in this file -- the price and storage paths that read it run from
+        // campaign ticks, AI and UI, none of which is the parallel party tick.
+        private sealed class StockCounts
+        {
+            public ItemRoster Roster;
+            public int Version;
+
+            // The first category asked for at this version, counted by a plain walk. A second, different
+            // category at the same version builds the whole table instead -- so a roster read once
+            // between every write (a town's own shopping) costs no more than the old single walk did,
+            // and one read many times over (caravan scoring every category of every town) walks once.
+            public bool HasFirst;
+            public ItemCategory FirstCategory;
+            public int FirstUnits;
+
+            public bool CategoriesBuilt;
+            public readonly Dictionary<ItemCategory, Counter> ByCategory = new Dictionary<ItemCategory, Counter>();
+
+            public bool GarmentsBuilt;
+            public int Garments;
+        }
+
+        // Mutable box so one lookup both finds and bumps a category's running count during a rebuild.
+        private sealed class Counter
+        {
+            public int Units;
+        }
+
+        private static readonly Dictionary<Town, StockCounts> _stock = new Dictionary<Town, StockCounts>();
 
         internal static void ResetForNewSession()
         {
             _cache.Clear();
+            _stock.Clear();
         }
 
         /// <summary>
@@ -73,8 +117,18 @@ namespace RBMCampaign
                 return 0f;
             }
 
+            DemandTable table = TableFor(town);
             float units;
-            return TableFor(town).TryGetValue(category.StringId, out units) ? units : 0f;
+            if (table.ByRef.TryGetValue(category, out units))
+            {
+                return units;
+            }
+            if (!table.ById.TryGetValue(category.StringId, out units))
+            {
+                units = 0f;
+            }
+            table.ByRef[category] = units;
+            return units;
         }
 
         /// <summary>Every category the town's workshops take as an input, for the log.</summary>
@@ -84,7 +138,7 @@ namespace RBMCampaign
             {
                 return new string[0];
             }
-            return TableFor(town).Keys;
+            return TableFor(town).ById.Keys;
         }
 
         /// <summary>
@@ -94,6 +148,10 @@ namespace RBMCampaign
         /// The whole point of counting here rather than per item: a shelf holding five thamaskene
         /// ingots and no ore is a shelf with five units of iron on it, and vanilla -- which measures the
         /// same shelf in gold -- reads it as thirteen hundred and calls the forge well supplied.
+        ///
+        /// Served from a count of the roster taken once per roster version (see <see cref="StockCounts"/>),
+        /// so the many readers between two trades -- price, price factor, storage headroom, recipe input
+        /// checks -- share one walk instead of each taking its own.
         /// </remarks>
         public static int UnitsInStore(Town town, ItemCategory category)
         {
@@ -103,6 +161,96 @@ namespace RBMCampaign
             }
 
             ItemRoster roster = town.Owner.ItemRoster;
+            if (roster == null)
+            {
+                return 0;
+            }
+
+            StockCounts counts = CountsFor(town, roster);
+            if (counts.CategoriesBuilt)
+            {
+                Counter counter;
+                return counts.ByCategory.TryGetValue(category, out counter) ? counter.Units : 0;
+            }
+
+            if (!counts.HasFirst)
+            {
+                counts.FirstCategory = category;
+                counts.FirstUnits = CountCategory(roster, category);
+                counts.HasFirst = true;
+                return counts.FirstUnits;
+            }
+            if (counts.FirstCategory == category)
+            {
+                return counts.FirstUnits;
+            }
+
+            BuildCategoryCounts(counts, roster);
+            Counter built;
+            return counts.ByCategory.TryGetValue(category, out built) ? built.Units : 0;
+        }
+
+        /// <summary>
+        /// Units of civilian clothing -- every civilian item in a worn slot, see
+        /// <see cref="TownStorage.IsGarment"/> -- held in the town's market, counted once per roster
+        /// version.
+        /// </summary>
+        internal static int GarmentsInStore(Town town)
+        {
+            ItemRoster roster = (town != null && town.Owner != null) ? town.Owner.ItemRoster : null;
+            if (roster == null)
+            {
+                return 0;
+            }
+
+            StockCounts counts = CountsFor(town, roster);
+            if (!counts.GarmentsBuilt)
+            {
+                int held = 0;
+                for (int i = roster.Count - 1; i >= 0; i--)
+                {
+                    ItemRosterElement element = roster.GetElementCopyAtIndex(i);
+                    if (TownStorage.IsGarment(element.EquipmentElement.Item))
+                    {
+                        held += element.Amount;
+                    }
+                }
+                counts.Garments = held;
+                counts.GarmentsBuilt = true;
+            }
+            return counts.Garments;
+        }
+
+        /// <summary>
+        /// The town's count entry, emptied if the roster has changed (or been replaced) since it was taken.
+        /// </summary>
+        private static StockCounts CountsFor(Town town, ItemRoster roster)
+        {
+            StockCounts counts;
+            if (!_stock.TryGetValue(town, out counts))
+            {
+                counts = new StockCounts();
+                _stock[town] = counts;
+            }
+
+            int version = roster.VersionNo;
+            if (!ReferenceEquals(counts.Roster, roster) || counts.Version != version)
+            {
+                counts.Roster = roster;
+                counts.Version = version;
+                counts.HasFirst = false;
+                counts.FirstCategory = null;
+                counts.FirstUnits = 0;
+                counts.CategoriesBuilt = false;
+                counts.GarmentsBuilt = false;
+                counts.Garments = 0;
+            }
+            return counts;
+        }
+
+        /// <summary>Units of one category in the roster, by a plain walk -- the original count.</summary>
+        private static int CountCategory(ItemRoster roster, ItemCategory category)
+        {
             int held = 0;
             for (int i = roster.Count - 1; i >= 0; i--)
             {
@@ -115,19 +263,57 @@ namespace RBMCampaign
             return held;
         }
 
-        private static Dictionary<string, float> TableFor(Town town)
+        /// <summary>
+        /// Counts every category in the roster in one walk. Counters are zeroed rather than dropped, so a
+        /// category that has left the shelf reads 0 -- what a walk for it would have found.
+        /// </summary>
+        private static void BuildCategoryCounts(StockCounts counts, ItemRoster roster)
         {
-            string key = town.Settlement.StringId;
-            int today = (int)CampaignTime.Now.ToDays;
-
-            KeyValuePair<int, Dictionary<string, float>> cached;
-            if (_cache.TryGetValue(key, out cached) && cached.Key == today)
+            foreach (Counter counter in counts.ByCategory.Values)
             {
-                return cached.Value;
+                counter.Units = 0;
             }
 
-            Dictionary<string, float> table = Build(town);
-            _cache[key] = new KeyValuePair<int, Dictionary<string, float>>(today, table);
+            // Neighbouring stacks are often the same category (a good in several qualities), so the
+            // last category's counter is reused without a lookup.
+            ItemCategory lastCategory = null;
+            Counter lastCounter = null;
+            for (int i = roster.Count - 1; i >= 0; i--)
+            {
+                ItemObject item = roster.GetItemAtIndex(i);
+                ItemCategory category = (item != null) ? item.GetItemCategory() : null;
+                if (category == null)
+                {
+                    continue;
+                }
+
+                if (category != lastCategory)
+                {
+                    if (!counts.ByCategory.TryGetValue(category, out lastCounter))
+                    {
+                        lastCounter = new Counter();
+                        counts.ByCategory[category] = lastCounter;
+                    }
+                    lastCategory = category;
+                }
+                lastCounter.Units += roster.GetElementNumber(i);
+            }
+
+            counts.CategoriesBuilt = true;
+        }
+
+        private static DemandTable TableFor(Town town)
+        {
+            int today = (int)CampaignTime.Now.ToDays;
+
+            DemandTable cached;
+            if (_cache.TryGetValue(town, out cached) && cached.Day == today)
+            {
+                return cached;
+            }
+
+            DemandTable table = new DemandTable { Day = today, ById = Build(town) };
+            _cache[town] = table;
             return table;
         }
 

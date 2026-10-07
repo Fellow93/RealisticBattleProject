@@ -58,23 +58,39 @@ namespace RBMCampaign
         private static Dictionary<string, int> _dayCaravan = new Dictionary<string, int>();
 
         // The goods behind the villager "Delivered" gold, so the history column can hover to what was
-        // actually sold into the town that day. In-progress units and gold per good, keyed "settId#itemId"
-        // (both save-syncable flat dicts), banked on the daily snapshot into one compact string column per
+        // actually sold into the town that day. In-progress units and gold per good, bucketed by town
+        // (settId -> itemId -> value), banked on the daily snapshot into one compact string column per
         // day per town: "itemId=units=gold;itemId=units=gold" (item ids carry no ',', ';' or '=', so the
         // encoding is safe; days with no delivery store "-"). Item names are resolved at read time.
-        private static Dictionary<string, int> _dayVillagerGoodsUnits = new Dictionary<string, int>();
-        private static Dictionary<string, int> _dayVillagerGoodsGold = new Dictionary<string, int>();
+        //
+        // The per-town buckets let each town's snapshot drain only its own entries (the old flat
+        // "settId#itemId" maps were scanned whole, with a prefix test, once per town: towns x entries at
+        // midnight). The SAVE format is still the flat "settId#key" Dictionary<string,int> under the same
+        // keys -- SyncData flattens on save and re-buckets on load -- so old and new saves read either way.
+        private static Dictionary<string, Dictionary<string, int>> _dayVillagerGoodsUnits = new Dictionary<string, Dictionary<string, int>>();
+        private static Dictionary<string, Dictionary<string, int>> _dayVillagerGoodsGold = new Dictionary<string, Dictionary<string, int>>();
         private static Dictionary<string, string> _villagerGoods = new Dictionary<string, string>();
 
         // Per-day income/expense breakdown for the two wealth pools. Both pools funnel every denar through
         // SettlementWealth.Apply/ApplyCitizens (see SettlementGoldFunnel), which feed these in-progress
-        // signed-by-source day maps keyed "settId#source". Banked on the daily snapshot into one compact
-        // "source=net;..." string column per day per town (net > 0 is income, net < 0 is expense; a day with
-        // no movement stores "-"). The VM splits each column into income/expense totals and category hints.
-        private static Dictionary<string, int> _daySettlementFlow = new Dictionary<string, int>();
-        private static Dictionary<string, int> _dayCitizenFlow = new Dictionary<string, int>();
+        // signed-by-source day maps, bucketed by town (settId -> source -> net; saved flat as "settId#source",
+        // see above). Banked on the daily snapshot into one compact "source=net;..." string column per day
+        // per town (net > 0 is income, net < 0 is expense; a day with no movement stores "-"). The VM splits
+        // each column into income/expense totals and category hints.
+        private static Dictionary<string, Dictionary<string, int>> _daySettlementFlow = new Dictionary<string, Dictionary<string, int>>();
+        private static Dictionary<string, Dictionary<string, int>> _dayCitizenFlow = new Dictionary<string, Dictionary<string, int>>();
         private static Dictionary<string, string> _settlementFlow = new Dictionary<string, string>();
         private static Dictionary<string, string> _citizenFlow = new Dictionary<string, string>();
+
+        // Snapshot scratch (main thread, daily tick only): reused across towns so the column builders add
+        // no per-town StringBuilder/List garbage.
+        private static readonly System.Text.StringBuilder _columnBuilder = new System.Text.StringBuilder();
+        private static readonly List<KeyValuePair<string, int>> _goodsScratch = new List<KeyValuePair<string, int>>();
+
+        // Per-town "settId#itemId" keys of the per-item demand/supply series, aligned with
+        // CitizenDemand.ModelledGoods, so the snapshot doesn't concatenate towns x goods key strings every
+        // day. Session cache only (the keys are pure functions of the ids); not saved.
+        private static readonly Dictionary<string, string[]> _itemKeysByTown = new Dictionary<string, string[]>();
 
         private static int _lastDay = -1;
         public static int LastDay => _lastDay;
@@ -96,11 +112,25 @@ namespace RBMCampaign
             {
                 return;
             }
-            string key = settlement.StringId + "#" + item.StringId;
-            _dayVillagerGoodsUnits.TryGetValue(key, out int u);
-            _dayVillagerGoodsUnits[key] = u + units;
-            _dayVillagerGoodsGold.TryGetValue(key, out int g);
-            _dayVillagerGoodsGold[key] = g + (gold > 0 ? gold : 0);
+            string itemId = item.StringId;
+            Dictionary<string, int> unitsBucket = TownBucket(_dayVillagerGoodsUnits, settlement.StringId);
+            unitsBucket.TryGetValue(itemId, out int u);
+            unitsBucket[itemId] = u + units;
+            Dictionary<string, int> goldBucket = TownBucket(_dayVillagerGoodsGold, settlement.StringId);
+            goldBucket.TryGetValue(itemId, out int g);
+            goldBucket[itemId] = g + (gold > 0 ? gold : 0);
+        }
+
+        // The in-progress bucket for one town, created on first use. Buckets are cleared (not removed) when
+        // a snapshot drains them, so a town's inner map is allocated once per session.
+        private static Dictionary<string, int> TownBucket(Dictionary<string, Dictionary<string, int>> day, string id)
+        {
+            if (!day.TryGetValue(id, out Dictionary<string, int> bucket))
+            {
+                bucket = new Dictionary<string, int>();
+                day[id] = bucket;
+            }
+            return bucket;
         }
 
         // Records a signed money movement into today's per-source flow map for a town's TREASURY pool.
@@ -109,15 +139,15 @@ namespace RBMCampaign
         // Records a signed money movement into today's per-source flow map for a town's CITIZEN-WEALTH pool.
         public static void AddCitizenFlow(Settlement settlement, string source, int delta) => AccumulateFlow(_dayCitizenFlow, settlement, source, delta);
 
-        private static void AccumulateFlow(Dictionary<string, int> day, Settlement settlement, string source, int delta)
+        private static void AccumulateFlow(Dictionary<string, Dictionary<string, int>> day, Settlement settlement, string source, int delta)
         {
             if (day == null || settlement == null || string.IsNullOrEmpty(source) || delta == 0 || !settlement.IsTown)
             {
                 return;
             }
-            string key = settlement.StringId + "#" + source;
-            day.TryGetValue(key, out int running);
-            day[key] = running + delta;
+            Dictionary<string, int> bucket = TownBucket(day, settlement.StringId);
+            bucket.TryGetValue(source, out int running);
+            bucket[source] = running + delta;
         }
 
         private static void Accumulate(Dictionary<string, int> day, Settlement settlement, int gold)
@@ -142,6 +172,14 @@ namespace RBMCampaign
             }
             int day = (int)CampaignTime.Now.ToDays;
             _lastDay = day;
+
+            // Resolve the modelled goods' items once per snapshot rather than once per town.
+            string[] goods = CitizenDemand.ModelledGoods;
+            ItemObject[] goodItems = new ItemObject[goods.Length];
+            for (int i = 0; i < goods.Length; i++)
+            {
+                goodItems[i] = MBObjectManager.Instance.GetObject<ItemObject>(goods[i]);
+            }
 
             foreach (Settlement settlement in Settlement.All)
             {
@@ -172,18 +210,34 @@ namespace RBMCampaign
 
                 // Per-item demand vs stock, one column per modelled good. Runs once a day (not per frame).
                 ItemRoster marketRoster = town.Owner != null ? town.Owner.ItemRoster : null;
-                foreach (string gid in CitizenDemand.ModelledGoods)
+                string[] itemKeys = ItemKeysForTown(id, goods);
+                for (int i = 0; i < goods.Length; i++)
                 {
-                    int dUnits = (int)MathF.Round(CitizenDemand.DailyUnits(town, gid));
-                    ItemObject item = MBObjectManager.Instance.GetObject<ItemObject>(gid);
+                    int dUnits = (int)MathF.Round(CitizenDemand.DailyUnits(town, goods[i]));
+                    ItemObject item = goodItems[i];
                     int stock = (item != null && marketRoster != null) ? marketRoster.GetItemNumber(item) : 0;
-                    string key = id + "#" + gid;
+                    string key = itemKeys[i];
                     AppendInt(_itemDemand, key, dUnits);
                     AppendInt(_itemSupply, key, stock);
                 }
             }
 
             PruneEvents(day - (HistoryDays - 1));
+        }
+
+        // The "settId#itemId" series keys for one town, aligned with goods; built once per town per session.
+        private static string[] ItemKeysForTown(string id, string[] goods)
+        {
+            if (!_itemKeysByTown.TryGetValue(id, out string[] keys) || keys.Length != goods.Length)
+            {
+                keys = new string[goods.Length];
+                for (int i = 0; i < goods.Length; i++)
+                {
+                    keys[i] = id + "#" + goods[i];
+                }
+                _itemKeysByTown[id] = keys;
+            }
+            return keys;
         }
 
         // Reads and zeroes the day accumulator for one town, so the next day starts fresh.
@@ -202,32 +256,27 @@ namespace RBMCampaign
         // non-empty so the CSV columns stay aligned with the numeric series).
         private static string TakeVillagerGoodsColumn(string id)
         {
-            string prefix = id + "#";
-            var goods = new List<KeyValuePair<string, int>>(); // itemId -> gold, for ordering
-            var units = new Dictionary<string, int>();
-            foreach (var kv in _dayVillagerGoodsUnits)
-            {
-                if (kv.Key.StartsWith(prefix, StringComparison.Ordinal))
-                {
-                    string itemId = kv.Key.Substring(prefix.Length);
-                    units[itemId] = kv.Value;
-                    _dayVillagerGoodsGold.TryGetValue(kv.Key, out int gold);
-                    goods.Add(new KeyValuePair<string, int>(itemId, gold));
-                }
-            }
-            if (goods.Count == 0)
+            // Only this town's own bucket is touched: O(its goods), not O(every town's entries).
+            if (!_dayVillagerGoodsUnits.TryGetValue(id, out Dictionary<string, int> units) || units.Count == 0)
             {
                 return "-";
             }
-            // Remove this town's harvested keys so the next day starts clean.
-            foreach (var g in goods)
+            _dayVillagerGoodsGold.TryGetValue(id, out Dictionary<string, int> golds);
+
+            List<KeyValuePair<string, int>> goods = _goodsScratch; // itemId -> gold, for ordering
+            goods.Clear();
+            foreach (var kv in units)
             {
-                string key = prefix + g.Key;
-                _dayVillagerGoodsUnits.Remove(key);
-                _dayVillagerGoodsGold.Remove(key);
+                int gold = 0;
+                if (golds != null)
+                {
+                    golds.TryGetValue(kv.Key, out gold);
+                }
+                goods.Add(new KeyValuePair<string, int>(kv.Key, gold));
             }
             goods.Sort((a, b) => b.Value.CompareTo(a.Value));
-            var sb = new System.Text.StringBuilder();
+            System.Text.StringBuilder sb = _columnBuilder;
+            sb.Clear();
             foreach (var g in goods)
             {
                 if (sb.Length > 0)
@@ -236,31 +285,30 @@ namespace RBMCampaign
                 }
                 sb.Append(g.Key).Append('=').Append(units[g.Key]).Append('=').Append(g.Value);
             }
+            goods.Clear();
+            // Drain this town's harvested entries so the next day starts clean (the bucket is kept for reuse).
+            units.Clear();
+            if (golds != null)
+            {
+                golds.Clear();
+            }
             return sb.ToString();
         }
 
         // Builds today's income/expense breakdown column for one pool of one town and clears its
         // in-progress entries. "source=net;..." (net signed, zero-net sources dropped) or "-" for a day with
         // no movement. Source tokens carry no ';' '=' or ',', so the encoding is unambiguous.
-        private static string TakeFlowColumn(Dictionary<string, int> day, string id)
+        private static string TakeFlowColumn(Dictionary<string, Dictionary<string, int>> day, string id)
         {
-            string prefix = id + "#";
-            var flows = new List<KeyValuePair<string, int>>();
-            foreach (var kv in day)
-            {
-                if (kv.Key.StartsWith(prefix, StringComparison.Ordinal))
-                {
-                    flows.Add(new KeyValuePair<string, int>(kv.Key, kv.Value));
-                }
-            }
-            if (flows.Count == 0)
+            // Only this town's own bucket is touched: O(its sources), not O(every town's entries).
+            if (!day.TryGetValue(id, out Dictionary<string, int> flows) || flows.Count == 0)
             {
                 return "-";
             }
-            var sb = new System.Text.StringBuilder();
+            System.Text.StringBuilder sb = _columnBuilder;
+            sb.Clear();
             foreach (var kv in flows)
             {
-                day.Remove(kv.Key);
                 if (kv.Value == 0)
                 {
                     continue;
@@ -269,9 +317,58 @@ namespace RBMCampaign
                 {
                     sb.Append(';');
                 }
-                sb.Append(kv.Key.Substring(prefix.Length)).Append('=').Append(kv.Value);
+                sb.Append(kv.Key).Append('=').Append(kv.Value);
             }
+            flows.Clear();
             return sb.Length > 0 ? sb.ToString() : "-";
+        }
+
+        // Save-format bridge for the bucketed day maps: the save holds them flat as "settId#key" -> value
+        // (the format every earlier RBM save already uses, under the same SyncData keys).
+        private static Dictionary<string, int> FlattenByTown(Dictionary<string, Dictionary<string, int>> buckets)
+        {
+            var flat = new Dictionary<string, int>();
+            if (buckets == null)
+            {
+                return flat;
+            }
+            foreach (var town in buckets)
+            {
+                if (town.Value == null)
+                {
+                    continue;
+                }
+                foreach (var kv in town.Value)
+                {
+                    flat[town.Key + "#" + kv.Key] = kv.Value;
+                }
+            }
+            return flat;
+        }
+
+        // Inverse of FlattenByTown: splits each "settId#key" at its first '#' (settlement ids carry no '#';
+        // the key part may, and keeps it -- same split the old prefix match made).
+        private static Dictionary<string, Dictionary<string, int>> BucketByTown(Dictionary<string, int> flat)
+        {
+            var buckets = new Dictionary<string, Dictionary<string, int>>();
+            if (flat == null)
+            {
+                return buckets;
+            }
+            foreach (var kv in flat)
+            {
+                if (kv.Key == null)
+                {
+                    continue;
+                }
+                int hash = kv.Key.IndexOf('#');
+                if (hash <= 0)
+                {
+                    continue;
+                }
+                TownBucket(buckets, kv.Key.Substring(0, hash))[kv.Key.Substring(hash + 1)] = kv.Value;
+            }
+            return buckets;
         }
 
         // String-valued counterpart of AppendInt: appends one CSV column, sharing the amortized trim. Also
@@ -528,15 +625,18 @@ namespace RBMCampaign
                 _dayVillager = null;
                 _dayParty = null;
                 _dayCaravan = null;
-                _dayVillagerGoodsUnits = null;
-                _dayVillagerGoodsGold = null;
                 _villagerGoods = null;
-                _daySettlementFlow = null;
-                _dayCitizenFlow = null;
                 _settlementFlow = null;
                 _citizenFlow = null;
                 _lastDay = -1;
             }
+
+            // The four bucketed day maps go to/from the save in their original flat "settId#key" form, so
+            // the save keys and container type are unchanged (old saves load, new saves load in old builds).
+            Dictionary<string, int> flatGoodsUnits = dataStore.IsLoading ? null : FlattenByTown(_dayVillagerGoodsUnits);
+            Dictionary<string, int> flatGoodsGold = dataStore.IsLoading ? null : FlattenByTown(_dayVillagerGoodsGold);
+            Dictionary<string, int> flatSettlementFlow = dataStore.IsLoading ? null : FlattenByTown(_daySettlementFlow);
+            Dictionary<string, int> flatCitizenFlow = dataStore.IsLoading ? null : FlattenByTown(_dayCitizenFlow);
 
             dataStore.SyncData("RBM_townProsperityHist", ref _prosperity);
             dataStore.SyncData("RBM_townCitizenHist", ref _citizen);
@@ -556,14 +656,22 @@ namespace RBMCampaign
             dataStore.SyncData("RBM_townDayVillager", ref _dayVillager);
             dataStore.SyncData("RBM_townDayParty", ref _dayParty);
             dataStore.SyncData("RBM_townDayCaravan", ref _dayCaravan);
-            dataStore.SyncData("RBM_townDayVillagerGoodsUnits", ref _dayVillagerGoodsUnits);
-            dataStore.SyncData("RBM_townDayVillagerGoodsGold", ref _dayVillagerGoodsGold);
+            dataStore.SyncData("RBM_townDayVillagerGoodsUnits", ref flatGoodsUnits);
+            dataStore.SyncData("RBM_townDayVillagerGoodsGold", ref flatGoodsGold);
             dataStore.SyncData("RBM_townVillagerGoodsHist", ref _villagerGoods);
-            dataStore.SyncData("RBM_townDaySettlementFlow", ref _daySettlementFlow);
-            dataStore.SyncData("RBM_townDayCitizenFlow", ref _dayCitizenFlow);
+            dataStore.SyncData("RBM_townDaySettlementFlow", ref flatSettlementFlow);
+            dataStore.SyncData("RBM_townDayCitizenFlow", ref flatCitizenFlow);
             dataStore.SyncData("RBM_townSettlementFlowHist", ref _settlementFlow);
             dataStore.SyncData("RBM_townCitizenFlowHist", ref _citizenFlow);
             dataStore.SyncData("RBM_townLedgerLastDay", ref _lastDay);
+
+            if (dataStore.IsLoading)
+            {
+                _dayVillagerGoodsUnits = BucketByTown(flatGoodsUnits);
+                _dayVillagerGoodsGold = BucketByTown(flatGoodsGold);
+                _daySettlementFlow = BucketByTown(flatSettlementFlow);
+                _dayCitizenFlow = BucketByTown(flatCitizenFlow);
+            }
 
             if (_prosperity == null) _prosperity = new Dictionary<string, string>();
             if (_citizen == null) _citizen = new Dictionary<string, string>();
@@ -583,11 +691,7 @@ namespace RBMCampaign
             if (_dayVillager == null) _dayVillager = new Dictionary<string, int>();
             if (_dayParty == null) _dayParty = new Dictionary<string, int>();
             if (_dayCaravan == null) _dayCaravan = new Dictionary<string, int>();
-            if (_dayVillagerGoodsUnits == null) _dayVillagerGoodsUnits = new Dictionary<string, int>();
-            if (_dayVillagerGoodsGold == null) _dayVillagerGoodsGold = new Dictionary<string, int>();
             if (_villagerGoods == null) _villagerGoods = new Dictionary<string, string>();
-            if (_daySettlementFlow == null) _daySettlementFlow = new Dictionary<string, int>();
-            if (_dayCitizenFlow == null) _dayCitizenFlow = new Dictionary<string, int>();
             if (_settlementFlow == null) _settlementFlow = new Dictionary<string, string>();
             if (_citizenFlow == null) _citizenFlow = new Dictionary<string, string>();
         }
@@ -613,13 +717,14 @@ namespace RBMCampaign
             _dayVillager = new Dictionary<string, int>();
             _dayParty = new Dictionary<string, int>();
             _dayCaravan = new Dictionary<string, int>();
-            _dayVillagerGoodsUnits = new Dictionary<string, int>();
-            _dayVillagerGoodsGold = new Dictionary<string, int>();
+            _dayVillagerGoodsUnits = new Dictionary<string, Dictionary<string, int>>();
+            _dayVillagerGoodsGold = new Dictionary<string, Dictionary<string, int>>();
             _villagerGoods = new Dictionary<string, string>();
-            _daySettlementFlow = new Dictionary<string, int>();
-            _dayCitizenFlow = new Dictionary<string, int>();
+            _daySettlementFlow = new Dictionary<string, Dictionary<string, int>>();
+            _dayCitizenFlow = new Dictionary<string, Dictionary<string, int>>();
             _settlementFlow = new Dictionary<string, string>();
             _citizenFlow = new Dictionary<string, string>();
+            _itemKeysByTown.Clear();
             _lastDay = -1;
         }
 

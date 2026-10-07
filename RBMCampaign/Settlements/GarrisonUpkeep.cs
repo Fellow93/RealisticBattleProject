@@ -68,6 +68,7 @@ namespace RBMCampaign
             // The daily finance pass is single-threaded and prefix and postfix bracket one call, so a pair
             // of scratch fields is safe and saves resolving the settlement twice.
             private static int _originalBudget;
+            private static int _widenedBudget;
             private static Settlement _fief;
 
             /// <summary>
@@ -101,6 +102,7 @@ namespace RBMCampaign
                     + SettlementWealth.GetSettlementWealth(settlement)
                     + GarrisonSubsidy.CitizenCapacity(settlement);
                 budget = (widened > int.MaxValue) ? int.MaxValue : (int)widened;
+                _widenedBudget = budget;
             }
 
             private static void Postfix(MobileParty mobileParty, bool applyWithdrawals, ref int __result)
@@ -113,9 +115,12 @@ namespace RBMCampaign
                     return;
                 }
 
-                // Read off the party, not off __result: the prefix widened the budget, but vanilla may
-                // still have trimmed the return, and the split below has to be against the whole bill.
-                int wage = mobileParty.TotalWage;
+                // The split has to be against the whole bill. Vanilla returns mobileParty.TotalWage as is on
+                // the display pass, and min(TotalWage, budget) on the apply pass, so __result IS the whole
+                // bill unless the widened budget trimmed it -- only then is the wage re-read off the party.
+                // Saves a second full wage-model run per garrison on every finance read (the map bar's
+                // denar tooltip refreshes several times a second).
+                int wage = (!applyWithdrawals || __result < _widenedBudget) ? __result : mobileParty.TotalWage;
                 if (wage <= 0)
                 {
                     return;

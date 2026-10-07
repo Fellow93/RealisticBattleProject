@@ -104,16 +104,19 @@ namespace RBMCampaign
             {
                 return null;
             }
+            // Read off the same cached profile the consumption patch uses: the non-hero stacks holding a
+            // ration entry, so a party carrying none is answered without walking its roster.
+            UnfedProfile profile = GetUnfedProfile(party);
+            if (profile.FedUntil.Length == 0)
+            {
+                return null;
+            }
             int now = NowHours;
             List<int> expiries = null;
-            TroopRoster roster = party.MemberRoster;
-            for (int i = 0; i < roster.Count; i++)
+            for (int i = 0; i < profile.FedUntil.Length; i++)
             {
-                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
-                int fedUntil;
-                if (element.Character.IsHero
-                    || !_fedUntilHours.TryGetValue(SpoilsPool.Key(party, element.Character), out fedUntil)
-                    || fedUntil <= now)
+                int fedUntil = profile.FedUntil[i];
+                if (fedUntil <= now)
                 {
                     continue;
                 }

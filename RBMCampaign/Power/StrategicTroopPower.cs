@@ -580,12 +580,30 @@ namespace RBMCampaign
             // Worked out before the men are, though it is not applied to the total until after them. It depends on
             // nothing the loop does, and a captured stack has to leave here carrying it: the whole point of the
             // capture is that stacks can be added up ACROSS parties, and a stack that still owed its own party's
-            // morale could not be.
+            // morale could not be. (One read of MobileParty.Morale per pricing, which is a full model call.)
             float morale = MoraleOf(party, estimated);
 
-            for (int i = 0; i < party.MemberRoster.Count; i++)
+            // Everything below that does not depend on the man is read ONCE per pricing, not once per stack: the
+            // clock (for the power cache and the commander cache), the siege test, and the leader's PowerModifier.
+            // The last is read lazily at the first priced stack, exactly when the old per-stack read first ran,
+            // because Hero.PowerModifier computes and caches itself on first touch.
+            TroopRoster roster = party.MemberRoster;
+            int count = roster.Count;
+            double today = CampaignTime.Now.ToDays;
+            long commandHour = SimulationTroopHitPoints.CommandCacheHour();
+            bool siege = context == MapEvent.PowerCalculationContext.Siege;
+            bool leaderModRead = false;
+            float leaderMod = 0f;
+
+            // Every stack's cached price, looked up under ONE lock instead of two per stack. A stack whose price is
+            // not cached comes back NaN and is measured in the loop, outside the lock, exactly as PowerOf would.
+            // (No try/finally for the buffer: one lost to a throw is simply re-allocated by the next pricing.)
+            float[] powers = RentStackPowers(count);
+            LookUpCachedPowers(roster, count, today, powers);
+
+            for (int i = 0; i < count; i++)
             {
-                TroopRosterElement element = party.MemberRoster.GetElementCopyAtIndex(i);
+                TroopRosterElement element = roster.GetElementCopyAtIndex(i);
                 CharacterObject troop = element.Character;
                 if (troop == null)
                 {
@@ -597,7 +615,11 @@ namespace RBMCampaign
                     continue;
                 }
 
-                float power = PowerOf(troop);
+                float power = powers[i];
+                if (float.IsNaN(power))
+                {
+                    power = MeasureAndStore(troop, today);
+                }
                 if (power <= 0f)
                 {
                     // Nothing measurable about him -- a villager with a stick, or an item this model could not read.
@@ -612,7 +634,7 @@ namespace RBMCampaign
                 }
 
                 // What his commander is worth to him: his staying power, and not a percentage. See HealthFactorOf.
-                power *= HealthFactorOf(troop, party);
+                power *= HealthFactorOf(troop, party, commandHour);
 
                 // FIELD TERRAIN IS NOT APPLIED; A SIEGE'S CONTEXT IS. Vanilla's GetContextModifier is a per-arm
                 // heuristic -- archers weak in a wood, cavalry weak in a wood, infantry strong there -- layered on top
@@ -622,13 +644,16 @@ namespace RBMCampaign
                 // though the youth is worth better than twice him. So field terrain is dropped. A SIEGE is a different
                 // fact: attacking or defending a wall genuinely changes what a man is worth to the party the AI is
                 // weighing, and that belongs in the strength it reads -- so the context is KEPT for a siege alone.
-                bool siege = context == MapEvent.PowerCalculationContext.Siege;
                 float contextMod = siege ? model.GetContextModifier(troop, side, context) : 0f;
 
                 // Vanilla's own leader term, left exactly as vanilla computes it. It is worth nearly nothing -- it
                 // counts only PrimaryRole == Captain perks, of which the game has two -- but fixing that is not this
-                // model's business, and the (1 + leader + context) shape is kept intact.
-                float leaderMod = (party.LeaderHero != null) ? party.LeaderHero.PowerModifier : 0f;
+                // model's business, and the (1 + leader + context) shape is kept intact. Party-wide, so read once.
+                if (!leaderModRead)
+                {
+                    leaderMod = (party.LeaderHero != null) ? party.LeaderHero.PowerModifier : 0f;
+                    leaderModRead = true;
+                }
 
                 float perMan = power * (1f + leaderMod + contextMod);
                 total += healthy * perMan;
@@ -642,6 +667,8 @@ namespace RBMCampaign
                     capture.Add(stack);
                 }
             }
+
+            ReturnStackPowers(powers);
 
             result = total * morale;
 
@@ -819,44 +846,73 @@ namespace RBMCampaign
             double today = (Campaign.Current != null) ? CampaignTime.Now.ToDays : 0.0;
             lock (_cacheLock)
             {
-                // Once a day, let go of the heroes nobody has asked about since yesterday. A stale hero entry is
-                // dead weight by definition -- a live hero's is re-measured on his next pricing anyway -- and it is
-                // how the cache would otherwise keep every lord who ever died holding his CharacterObject alive.
-                // Templates are never evicted: they are a fixed population, and their entries never go stale.
-                if (today - _lastSweepDay >= 1.0)
-                {
-                    _lastSweepDay = today;
-                    List<CharacterObject> stale = null;
-                    foreach (KeyValuePair<CharacterObject, PowerEntry> pair in _powerCache)
-                    {
-                        if (pair.Key.IsHero && (today - pair.Value.Day) >= 1.0)
-                        {
-                            (stale ?? (stale = new List<CharacterObject>())).Add(pair.Key);
-                        }
-                    }
-                    if (stale != null)
-                    {
-                        foreach (CharacterObject dead in stale)
-                        {
-                            _powerCache.Remove(dead);
-                        }
-                    }
-                }
+                SweepStaleHeroesLocked(today);
 
-                PowerEntry cached;
-                if (_powerCache.TryGetValue(troop, out cached))
+                float cachedPower;
+                if (TryGetCachedPowerLocked(troop, today, out cachedPower))
                 {
-                    // A template is fixed for good. A lord is not: he buys harness and trains skills, so his
-                    // measurement is only good for the day it was taken.
-                    if (!troop.IsHero || (today - cached.Day) < 1.0)
-                    {
-                        return cached.Power;
-                    }
+                    return cachedPower;
                 }
             }
 
-            // Measured outside the lock -- two threads may measure the same troop once each, and the second write
-            // simply lands on the first's answer. Cheaper than holding every other pricing up behind one kit walk.
+            return MeasureAndStore(troop, today);
+        }
+
+        /// <summary>
+        /// Once a day, let go of the heroes nobody has asked about since yesterday. A stale hero entry is dead weight
+        /// by definition -- a live hero's is re-measured on his next pricing anyway -- and it is how the cache would
+        /// otherwise keep every lord who ever died holding his CharacterObject alive. Templates are never evicted:
+        /// they are a fixed population, and their entries never go stale. Caller holds <see cref="_cacheLock"/>.
+        /// </summary>
+        private static void SweepStaleHeroesLocked(double today)
+        {
+            if (today - _lastSweepDay < 1.0)
+            {
+                return;
+            }
+            _lastSweepDay = today;
+            List<CharacterObject> stale = null;
+            foreach (KeyValuePair<CharacterObject, PowerEntry> pair in _powerCache)
+            {
+                if (pair.Key.IsHero && (today - pair.Value.Day) >= 1.0)
+                {
+                    (stale ?? (stale = new List<CharacterObject>())).Add(pair.Key);
+                }
+            }
+            if (stale != null)
+            {
+                foreach (CharacterObject dead in stale)
+                {
+                    _powerCache.Remove(dead);
+                }
+            }
+        }
+
+        /// <summary>The cached price of <paramref name="troop"/>, if there is one still good today. Caller holds
+        /// <see cref="_cacheLock"/>.</summary>
+        private static bool TryGetCachedPowerLocked(CharacterObject troop, double today, out float power)
+        {
+            PowerEntry cached;
+            if (_powerCache.TryGetValue(troop, out cached))
+            {
+                // A template is fixed for good. A lord is not: he buys harness and trains skills, so his
+                // measurement is only good for the day it was taken.
+                if (!troop.IsHero || (today - cached.Day) < 1.0)
+                {
+                    power = cached.Power;
+                    return true;
+                }
+            }
+            power = 0f;
+            return false;
+        }
+
+        /// <summary>
+        /// Measured outside the lock -- two threads may measure the same troop once each, and the second write simply
+        /// lands on the first's answer. Cheaper than holding every other pricing up behind one kit walk.
+        /// </summary>
+        private static float MeasureAndStore(CharacterObject troop, double today)
+        {
             PowerBreakdown detail;
             float power = Measure(troop, out detail);
             PowerEntry entry;
@@ -867,6 +923,57 @@ namespace RBMCampaign
                 _powerCache[troop] = entry;
             }
             return power;
+        }
+
+        // One price slot per roster stack, reused across pricings on the same thread (the AI prices from several).
+        // Taken by nulling the field, so a pricing that somehow re-entered on the same thread would get its own.
+        [ThreadStatic]
+        private static float[] _stackPowers;
+
+        private static float[] RentStackPowers(int count)
+        {
+            float[] buffer = _stackPowers;
+            _stackPowers = null;
+            if (buffer == null || buffer.Length < count)
+            {
+                buffer = new float[Math.Max(count, 32)];
+            }
+            return buffer;
+        }
+
+        private static void ReturnStackPowers(float[] buffer)
+        {
+            _stackPowers = buffer;
+        }
+
+        /// <summary>
+        /// <see cref="PowerOf"/>'s lookup for every stack of a roster, under a single take of the lock: each stack
+        /// that will be priced gets its cached price, or NaN when it must be measured (see MeasureAndStore). The
+        /// daily hero sweep runs at the first such stack, exactly where the first PowerOf call used to run it, so a
+        /// roster with nobody to price sweeps nothing, as before. Stacks that will not be priced are left untouched.
+        /// </summary>
+        private static void LookUpCachedPowers(TroopRoster roster, int count, double today, float[] powers)
+        {
+            bool swept = false;
+            lock (_cacheLock)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    TroopRosterElement element = roster.GetElementCopyAtIndex(i);
+                    CharacterObject troop = element.Character;
+                    if (troop == null || element.Number - element.WoundedNumber <= 0)
+                    {
+                        continue;
+                    }
+                    if (!swept)
+                    {
+                        SweepStaleHeroesLocked(today);
+                        swept = true;
+                    }
+                    float cachedPower;
+                    powers[i] = TryGetCachedPowerLocked(troop, today, out cachedPower) ? cachedPower : float.NaN;
+                }
+            }
         }
 
         /// <summary>
@@ -1590,7 +1697,13 @@ namespace RBMCampaign
         /// the pricing applied, rather than a second opinion that would stop the rows summing to the total.)</summary>
         internal static float HealthFactorOf(CharacterObject troop, PartyBase party)
         {
-            float health = SimulationTroopHitPoints.CommandedHealth(troop, party, dismounted: false);
+            return HealthFactorOf(troop, party, SimulationTroopHitPoints.CommandCacheHour());
+        }
+
+        /// <summary>The same, with the commander cache's hour read once by the caller for a whole roster.</summary>
+        private static float HealthFactorOf(CharacterObject troop, PartyBase party, long commandHour)
+        {
+            float health = SimulationTroopHitPoints.CommandedHealth(troop, party, false, commandHour);
             if (health <= 0f)
             {
                 return 1f;

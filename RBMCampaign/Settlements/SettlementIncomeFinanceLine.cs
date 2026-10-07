@@ -44,7 +44,7 @@ namespace RBMCampaign
                     int paid = WealthTax.ConsumePendingOwnerIncome(clan);
                     if (paid != 0)
                     {
-                        __result.Add(paid, new TextObject("{=RBM_wealth_income}Settlement wealth tax"));
+                        __result.Add(paid, LabelText);
                     }
                     return;
                 }
@@ -60,9 +60,13 @@ namespace RBMCampaign
                 int income = WealthTax.ProjectNextOwnerPayment(clan);
                 if (income > 0)
                 {
-                    __result.Add(income, new TextObject("{=RBM_wealth_income}Settlement wealth tax"));
+                    __result.Add(income, LabelText);
                 }
             }
         }
+
+        // Built once: the breakdown is rebuilt several times a second by the map bar's denar tooltip, and a
+        // constant label (no variables) is safe to share -- it still localises on every ToString.
+        private static readonly TextObject LabelText = new TextObject("{=RBM_wealth_income}Settlement wealth tax");
     }
 }

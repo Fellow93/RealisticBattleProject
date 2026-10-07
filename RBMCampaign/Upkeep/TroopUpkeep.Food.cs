@@ -56,10 +56,18 @@ namespace RBMCampaign
                 {
                     continue;
                 }
+                // An empty purse buys nothing whatever the stalls hold, so it is turned away before the
+                // stalls are laid out and priced: a party whose hungry stacks are all broke never prices
+                // the market at all.
+                int budget = SpoilsPool.GetSpoils(party, element.Character);
+                if (budget <= 0)
+                {
+                    continue;
+                }
                 // Snapshotted once and drawn down as the stacks buy, since taking the last of an item
                 // removes it from the roster and reindexes everything behind it.
                 stalls = stalls ?? SnapshotFoodStalls(settlement, market);
-                int spent = FeedStack(party, settlement, market, stalls, element, wanted, foodDays, playerPurchases);
+                int spent = FeedStack(party, settlement, market, stalls, element, wanted, foodDays, budget, playerPurchases);
                 if (spent > 0)
                 {
                     totalSpent += spent;
@@ -137,10 +145,12 @@ namespace RBMCampaign
             return MathF.Round(dailyWage * RBMConfig.RBMConfig.troopFoodWageFraction * MenPerFoodPerDay);
         }
 
-        /// <summary>Provisions one stack off the stalls; returns the spoils it spent, for the party tally.</summary>
-        private static int FeedStack(PartyBase party, Settlement settlement, ItemRoster market, List<FoodStall> stalls, TroopRosterElement element, int wanted, int foodDays, List<(ItemObject Item, int Count)> purchases = null)
+        /// <summary>
+        /// Provisions one stack off the stalls out of <paramref name="budget"/>, its purse as the caller
+        /// just read it; returns the spoils it spent, for the party tally.
+        /// </summary>
+        private static int FeedStack(PartyBase party, Settlement settlement, ItemRoster market, List<FoodStall> stalls, TroopRosterElement element, int wanted, int foodDays, int budget, List<(ItemObject Item, int Count)> purchases = null)
         {
-            int budget = SpoilsPool.GetSpoils(party, element.Character);
             int spent = 0;
             int bought = 0;
 
@@ -158,7 +168,7 @@ namespace RBMCampaign
             // Half the food buys half the days. A stack that could only part-provision itself comes
             // back to the market sooner rather than eating a full ration out of an empty sack.
             int fedHours = MathF.Max(1, foodDays * 24 * bought / wanted);
-            _fedUntilHours[SpoilsPool.Key(party, element.Character)] = NowHours + fedHours;
+            _fedUntilHours.Set(party, element.Character, NowHours + fedHours);
             SpoilsPool.AddSpoils(party, element.Character, -spent);
 
             if (SpoilsLog.Verbose)

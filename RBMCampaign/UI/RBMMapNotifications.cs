@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
 using HarmonyLib;
 using SandBox.ViewModelCollection;
@@ -103,9 +102,16 @@ namespace RBMCampaign
             DrunkBubblesShown.Clear();
         }
 
+        // Every raise below returns before invoking when the settlement is not inspected. That is exact,
+        // not a heuristic: each listener only ever shows a bubble for its own settlement while that
+        // settlement IsInspected (TargetsThisNameplate, the same test the game's own bubbles make), so
+        // for an uninspected settlement every in-range nameplate's listener would just bail -- skipping
+        // the invoke drops that walk without suppressing any bubble. The carousing rate-limit is only
+        // consumed after that test passes, so it is untouched too.
+
         public static void RaiseSpoilsDrunk(Settlement settlement, MobileParty party, int goldSpent)
         {
-            if (settlement != null && party != null && goldSpent >= MinDrunkGoldToNotify)
+            if (settlement != null && settlement.IsInspected && party != null && goldSpent >= MinDrunkGoldToNotify)
             {
                 SpoilsDrunk.Invoke(settlement, party, goldSpent);
             }
@@ -113,7 +119,7 @@ namespace RBMCampaign
 
         public static void RaiseTroopsBoughtFood(Settlement settlement, MobileParty party, List<(ItemObject Item, int Count)> items, int goldSpent)
         {
-            if (settlement != null && party != null && goldSpent > 0 && items != null && items.Count > 0)
+            if (settlement != null && settlement.IsInspected && party != null && goldSpent > 0 && items != null && items.Count > 0)
             {
                 TroopsBoughtFood.Invoke(settlement, party, items, goldSpent);
             }
@@ -121,7 +127,7 @@ namespace RBMCampaign
 
         public static void RaiseSoldiersBoughtLuxury(Settlement settlement, MobileParty party, List<(ItemObject Item, int Count)> items, int goldSpent)
         {
-            if (settlement != null && party != null && goldSpent > 0 && items != null && items.Count > 0)
+            if (settlement != null && settlement.IsInspected && party != null && goldSpent > 0 && items != null && items.Count > 0)
             {
                 SoldiersBoughtLuxury.Invoke(settlement, party, items, goldSpent);
             }
@@ -374,10 +380,12 @@ namespace RBMCampaign
     [HarmonyPatch(typeof(SettlementNameplateNotificationsVM), "RegisterEvents")]
     internal static class SettlementNameplateNotificationsRegisterPatch
     {
-        private static readonly FieldInfo SettlementField =
-            AccessTools.Field(typeof(SettlementNameplateNotificationsVM), "_settlement");
-        private static readonly FieldInfo TickField =
-            AccessTools.Field(typeof(SettlementNameplateNotificationsVM), "_tickSinceEnabled");
+        // Compiled field accessors (built once) for the VM's private fields, instead of a reflection
+        // FieldInfo.GetValue (plus an int box) on every listener call.
+        private static readonly AccessTools.FieldRef<SettlementNameplateNotificationsVM, Settlement> SettlementRef =
+            AccessTools.FieldRefAccess<SettlementNameplateNotificationsVM, Settlement>("_settlement");
+        private static readonly AccessTools.FieldRef<SettlementNameplateNotificationsVM, int> TickRef =
+            AccessTools.FieldRefAccess<SettlementNameplateNotificationsVM, int>("_tickSinceEnabled");
 
         private static void Postfix(SettlementNameplateNotificationsVM __instance)
         {
@@ -399,7 +407,7 @@ namespace RBMCampaign
 
         private static bool TargetsThisNameplate(SettlementNameplateNotificationsVM vm, Settlement settlement)
         {
-            Settlement mine = SettlementField.GetValue(vm) as Settlement;
+            Settlement mine = SettlementRef(vm);
             return mine != null && mine == settlement && mine.IsInspected;
         }
 
@@ -432,7 +440,7 @@ namespace RBMCampaign
             {
                 return;
             }
-            int tick = (int)TickField.GetValue(vm);
+            int tick = TickRef(vm);
             vm.Notifications.Add(new SpoilsDrunkNotificationItemVM(item => vm.Notifications.Remove(item), party, amount, tick));
         }
 
@@ -442,7 +450,7 @@ namespace RBMCampaign
             {
                 return;
             }
-            int tick = (int)TickField.GetValue(vm);
+            int tick = TickRef(vm);
             vm.Notifications.Add(new TroopFoodNotificationItemVM(item => vm.Notifications.Remove(item), party, items, amount, tick));
         }
 
@@ -452,7 +460,7 @@ namespace RBMCampaign
             {
                 return;
             }
-            int tick = (int)TickField.GetValue(vm);
+            int tick = TickRef(vm);
             vm.Notifications.Add(new TroopLuxuryNotificationItemVM(item => vm.Notifications.Remove(item), party, items, amount, tick));
         }
     }

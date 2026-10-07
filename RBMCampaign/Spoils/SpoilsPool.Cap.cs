@@ -19,7 +19,16 @@ namespace RBMCampaign
         /// </summary>
         public static int GetSpoilsCap(PartyBase party, CharacterObject character)
         {
-            int stackSize = GetStackSize(party, character);
+            return GetSpoilsCap(party, character, GetStackSize(party, character));
+        }
+
+        /// <summary>
+        /// <see cref="GetSpoilsCap(PartyBase, CharacterObject)"/> for a caller already holding the stack's
+        /// roster element, which passes its <c>Number</c> as <paramref name="stackSize"/> instead of having
+        /// the roster searched for it again -- a per-stack loop would otherwise walk the roster once per stack.
+        /// </summary>
+        public static int GetSpoilsCap(PartyBase party, CharacterObject character, int stackSize)
+        {
             if (stackSize <= 0)
             {
                 return 0;

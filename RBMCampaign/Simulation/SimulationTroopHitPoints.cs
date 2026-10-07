@@ -1,7 +1,9 @@
 using HarmonyLib;
 using Helpers;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.MapEvents;
@@ -250,7 +252,175 @@ namespace RBMCampaign
         /// </summary>
         internal static float CommandedHealth(CharacterObject troop, PartyBase party, bool dismounted)
         {
-            return BuildCommandedHealth(troop, party, dismounted, false).ResultNumber;
+            return BuildCommandedHealth(troop, party, dismounted, false, CommandCacheHour()).ResultNumber;
+        }
+
+        /// <summary>The same, for a caller that prices many stacks in one go and has already read the clock once
+        /// (see <see cref="CommandCacheHour"/>) -- StrategicTroopPower's per-party loop.</summary>
+        internal static float CommandedHealth(CharacterObject troop, PartyBase party, bool dismounted, long cacheHour)
+        {
+            return BuildCommandedHealth(troop, party, dismounted, false, cacheHour).ResultNumber;
+        }
+
+        // ---------------------------------------------------------------------------------------------------------
+        // THE COMMANDER'S PERKS, CACHED. CommandedHealth is asked on every simulated blow (the wound pool, the
+        // absolute blow cap, the arm targeting's wound pull per candidate) and on every stack of every party the AI
+        // prices -- and the six PartyLeader perks below were walked afresh each time. What they add depends on
+        // nothing but the leader (all six are PartyRole.PartyLeader, so MobileParty.HasPerk asks LeaderHero and no
+        // other role holder), whether the party is at sea (it picks the perks' environment and which apply at all),
+        // and the man's own frame and arm (his base hit points, ranged, infantry, mounted). Every one of those is
+        // read LIVE and rides in the key, so a new leader, an embarkation or a different troop can never be handed
+        // another's answer. The only thing the key cannot see is the leader LEARNING one of these perks: the cache is
+        // dropped every campaign hour, so a perk he picks up shows within the hour -- the one accepted staleness.
+        // Minister of Health is NOT cached (it reads his live Medicine skill) and is added after, in the same order
+        // as before, so the float sum is the very one the uncached code produced.
+        //
+        // Lock-free on read: GetPowerOfParty is asked from the campaign's parallel AI ticks, so the store is a
+        // ConcurrentDictionary, swapped whole for a fresh one when the hour turns.
+
+        private struct CommandKey : IEquatable<CommandKey>
+        {
+            public readonly MobileParty Party;
+
+            public readonly Hero Leader;
+
+            public readonly int BaseHitPoints;
+
+            public readonly int Flags;
+
+            public CommandKey(MobileParty party, Hero leader, int baseHitPoints, int flags)
+            {
+                Party = party;
+                Leader = leader;
+                BaseHitPoints = baseHitPoints;
+                Flags = flags;
+            }
+
+            public bool Equals(CommandKey other)
+            {
+                return ReferenceEquals(Party, other.Party) && ReferenceEquals(Leader, other.Leader)
+                    && BaseHitPoints == other.BaseHitPoints && Flags == other.Flags;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is CommandKey && Equals((CommandKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = RuntimeHelpers.GetHashCode(Party);
+                    hash = (hash * 397) ^ RuntimeHelpers.GetHashCode(Leader);
+                    hash = (hash * 397) ^ BaseHitPoints;
+                    hash = (hash * 397) ^ Flags;
+                    return hash;
+                }
+            }
+        }
+
+        private const int FlagAtSea = 1;
+        private const int FlagRanged = 2;
+        private const int FlagMounted = 4;
+        private const int FlagInfantry = 8;
+
+        private sealed class CommandCache
+        {
+            public readonly long Hour;
+
+            // The ExplainedNumber itself is stored (descriptions off, so it holds no shared list): copying it back
+            // out hands the caller the exact struct the perk walk produced, nothing re-derived.
+            public readonly ConcurrentDictionary<CommandKey, ExplainedNumber> Entries =
+                new ConcurrentDictionary<CommandKey, ExplainedNumber>();
+
+            public CommandCache(long hour)
+            {
+                Hour = hour;
+            }
+        }
+
+        private static volatile CommandCache _commandCache;
+
+        /// <summary>The campaign hour the commander cache is stamped with, or -1 with no campaign (no caching).</summary>
+        internal static long CommandCacheHour()
+        {
+            if (Campaign.Current == null)
+            {
+                return -1L;
+            }
+            return (long)Math.Floor(CampaignTime.Now.ToHours);
+        }
+
+        /// <summary>The six PartyLeader perks on top of <paramref name="baseHitPoints"/>, from the hour's cache when
+        /// it already holds this exact (party, leader, frame, arm, sea) -- see the note above.</summary>
+        private static ExplainedNumber PartyLeaderPerks(MobileParty mobileParty, Hero leader, int baseHitPoints,
+            bool atSea, bool ranged, bool mounted, bool infantry, long cacheHour)
+        {
+            if (cacheHour < 0L)
+            {
+                ExplainedNumber uncached = new ExplainedNumber(baseHitPoints, false);
+                AddPartyLeaderPerks(ref uncached, mobileParty, atSea, ranged, mounted, infantry);
+                return uncached;
+            }
+
+            CommandCache cache = _commandCache;
+            if (cache == null || cache.Hour != cacheHour)
+            {
+                cache = new CommandCache(cacheHour);
+                _commandCache = cache;
+            }
+
+            int flags = (atSea ? FlagAtSea : 0) | (ranged ? FlagRanged : 0) | (mounted ? FlagMounted : 0)
+                | (infantry ? FlagInfantry : 0);
+            CommandKey key = new CommandKey(mobileParty, leader, baseHitPoints, flags);
+            ExplainedNumber stat;
+            if (cache.Entries.TryGetValue(key, out stat))
+            {
+                return stat;
+            }
+
+            stat = new ExplainedNumber(baseHitPoints, false);
+            AddPartyLeaderPerks(ref stat, mobileParty, atSea, ranged, mounted, infantry);
+            cache.Entries.TryAdd(key, stat);
+            return stat;
+        }
+
+        /// <summary>
+        /// The six PartyLeader hit-point perks of SandboxAgentStatCalculateModel.GetEffectiveMaxHealth, in its order
+        /// and with its conditions. <paramref name="atSea"/> is the party's IsCurrentlyAtSea, read once by the caller.
+        /// </summary>
+        private static void AddPartyLeaderPerks(ref ExplainedNumber stat, MobileParty mobileParty, bool atSea,
+            bool ranged, bool mounted, bool infantry)
+        {
+            if (!atSea)
+            {
+                PerkHelper.AddPerkBonusForParty(DefaultPerks.TwoHanded.ThickHides, mobileParty, false, ref stat);
+                PerkHelper.AddPerkBonusForParty(DefaultPerks.Polearm.HardyFrontline, mobileParty, true, ref stat);
+            }
+
+            if (ranged)
+            {
+                PerkHelper.AddPerkBonusForParty(DefaultPerks.Crossbow.PickedShots, mobileParty, false, ref stat);
+            }
+
+            // A man on a horse gets none of these: they are for the men standing in the line. Which means a
+            // cavalryman in a SIEGE collects them, and should -- there are no horses on a wall, and in the mission
+            // this transcribes he spawns on foot and native's `!agent.HasMount` lets him have them.
+            if (!mounted)
+            {
+                if (!atSea)
+                {
+                    PerkHelper.AddPerkBonusForParty(DefaultPerks.Athletics.WellBuilt, mobileParty, false, ref stat);
+                }
+
+                PerkHelper.AddPerkBonusForParty(DefaultPerks.Polearm.HardKnock, mobileParty, false, ref stat);
+
+                if (!atSea && infantry)
+                {
+                    PerkHelper.AddPerkBonusForParty(DefaultPerks.OneHanded.UnwaveringDefense, mobileParty, false, ref stat);
+                }
+            }
         }
 
         /// <summary>
@@ -264,61 +434,49 @@ namespace RBMCampaign
         /// </summary>
         internal static ExplainedNumber ExplainCommandedHealth(CharacterObject troop, PartyBase party, bool dismounted)
         {
-            return BuildCommandedHealth(troop, party, dismounted, true);
+            return BuildCommandedHealth(troop, party, dismounted, true, -1L);
         }
 
         /// <summary>
         /// <paramref name="explain"/> makes ExplainedNumber record every perk that fires, by name and number. It is
         /// OFF on the battle path: this runs on every blow, and an explainer allocates a list per call.
+        /// With it off, the six PartyLeader perks come from the hour's cache (see PartyLeaderPerks); with it on they
+        /// are walked live, since the log needs each one's line. <paramref name="cacheHour"/> -1 bypasses the cache.
         /// </summary>
         private static ExplainedNumber BuildCommandedHealth(CharacterObject troop, PartyBase party, bool dismounted,
-            bool explain)
+            bool explain, long cacheHour)
         {
-            float baseHealth = (troop != null) ? troop.MaxHitPoints() : 100f;
-            ExplainedNumber stat = new ExplainedNumber(baseHealth, explain);
+            int baseHitPoints = (troop != null) ? troop.MaxHitPoints() : 100;
+            ExplainedNumber stat = new ExplainedNumber(baseHitPoints, explain);
             if (troop == null || !SimulationPerks.Enabled)
             {
                 return stat;
             }
 
             MobileParty mobileParty = (party != null) ? party.MobileParty : null;
-            if (mobileParty == null || mobileParty.LeaderHero == null)
+            Hero leaderHero = (mobileParty != null) ? mobileParty.LeaderHero : null;
+            if (leaderHero == null)
             {
                 return stat;
             }
 
-            if (!mobileParty.IsCurrentlyAtSea)
+            bool atSea = mobileParty.IsCurrentlyAtSea;
+            bool ranged = troop.IsRanged;
+            bool mounted = SimulationBattleState.IsMountedIn(troop, dismounted);
+            bool infantry = troop.IsInfantry;
+            if (explain)
             {
-                PerkHelper.AddPerkBonusForParty(DefaultPerks.TwoHanded.ThickHides, mobileParty, false, ref stat);
-                PerkHelper.AddPerkBonusForParty(DefaultPerks.Polearm.HardyFrontline, mobileParty, true, ref stat);
+                AddPartyLeaderPerks(ref stat, mobileParty, atSea, ranged, mounted, infantry);
             }
-
-            if (troop.IsRanged)
+            else
             {
-                PerkHelper.AddPerkBonusForParty(DefaultPerks.Crossbow.PickedShots, mobileParty, false, ref stat);
-            }
-
-            // A man on a horse gets none of these: they are for the men standing in the line. Which means a
-            // cavalryman in a SIEGE collects them, and should -- there are no horses on a wall, and in the mission
-            // this transcribes he spawns on foot and native's `!agent.HasMount` lets him have them.
-            if (!SimulationBattleState.IsMountedIn(troop, dismounted))
-            {
-                if (!mobileParty.IsCurrentlyAtSea)
-                {
-                    PerkHelper.AddPerkBonusForParty(DefaultPerks.Athletics.WellBuilt, mobileParty, false, ref stat);
-                }
-
-                PerkHelper.AddPerkBonusForParty(DefaultPerks.Polearm.HardKnock, mobileParty, false, ref stat);
-
-                if (!mobileParty.IsCurrentlyAtSea && troop.IsInfantry)
-                {
-                    PerkHelper.AddPerkBonusForParty(DefaultPerks.OneHanded.UnwaveringDefense, mobileParty, false, ref stat);
-                }
+                stat = PartyLeaderPerks(mobileParty, leaderHero, baseHitPoints, atSea, ranged, mounted, infantry,
+                    cacheHour);
             }
 
             // And the lord's own doctoring. Not a flat bonus at all -- it is his MEDICINE SKILL, every point of it
             // above the threshold at which epic perks begin to pay.
-            CharacterObject leader = mobileParty.LeaderHero.CharacterObject;
+            CharacterObject leader = leaderHero.CharacterObject;
             if (leader != null && leader.GetPerkValue(DefaultPerks.Medicine.MinisterOfHealth))
             {
                 int epicThreshold = Campaign.Current.Models.CharacterDevelopmentModel.MaxSkillRequiredForEpicPerkBonus;
@@ -635,6 +793,9 @@ namespace RBMCampaign
         {
             _wounds.Clear();
             _carried.Clear();
+            // Its parties and leaders belong to the torn-down campaign, and a loaded save may sit at an hour the
+            // cache already holds.
+            _commandCache = null;
         }
     }
 
@@ -655,6 +816,10 @@ namespace RBMCampaign
             // this is a no-op, and a mid-battle toggle must still fold what the ledgers already hold rather than
             // strand it.
             SimulationTroopHitPoints.FoldSessionWounds(__instance);
+
+            // The setup rebuilds every side's simulation troop list, so no archer share measured on the old list may
+            // be reused on the new one (see SimulationArmTargeting.ArcherShare). Ungated for the same reason.
+            SimulationArmTargeting.OnSimulationSetup();
         }
     }
 }

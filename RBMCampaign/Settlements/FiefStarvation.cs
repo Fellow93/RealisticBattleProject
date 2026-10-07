@@ -69,12 +69,19 @@ namespace RBMCampaign
             {
                 return float.MaxValue;
             }
-            if (IsStarving(town))
+            // IsStarving inlined so the stock is read once: its castle/empty-granary half is
+            // Settlement.IsStarving, which is exactly this town's FoodStocks <= 0.
+            if (town.Settlement != null && town.IsTown && RBMTownFoodSupply.UnmetRationsToday(town) > 0)
+            {
+                return -1f;
+            }
+            float stock = town.FoodStocks;
+            if (town.Settlement != null && stock <= 0f)
             {
                 return -1f;
             }
             int daily = RBMTownFoodSupply.GetFoodConsumption(town).Total;
-            return (daily > 0) ? town.FoodStocks / daily : float.MaxValue;
+            return (daily > 0) ? stock / daily : float.MaxValue;
         }
 
         /// <summary>
@@ -126,7 +133,13 @@ namespace RBMCampaign
             {
                 return 0f;
             }
-            switch (GetTier(town))
+            return ProsperityLossRate(GetTier(town));
+        }
+
+        /// <summary>The prosperity loss rate for a tier the caller has already read.</summary>
+        public static float ProsperityLossRate(Tier tier)
+        {
+            switch (tier)
             {
                 case Tier.Starving: return StarvingProsperityLoss;
                 case Tier.Critical: return CriticalProsperityLoss;
