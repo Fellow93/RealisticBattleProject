@@ -36,6 +36,11 @@ namespace RBMConfig
         // its arrival and sale, and any lost on the road. No effect unless kingdomCaravansEnabled is on.
         public static bool caravanLoggingEnabled = false;
 
+        // Writes the garrison-refill AI to its own logs/garrison folder -- depleted lords steered to their own
+        // surplus garrisons, the troops those garrisons release, and AI armies forming and dispersing. No effect
+        // unless rbmCampaignEnabled is on. Used to write whenever the campaign module was on.
+        public static bool garrisonRefillLoggingEnabled = false;
+
         // Writes every party out as it was priced -- the perks that reached it, then each stack with what one man of
         // it is worth and what he is made of -- to logs/powerCalculation. None of the model's constants are derived,
         // so this is how they get tuned. One block per party per in-game day; see StrategicPowerLog for why.

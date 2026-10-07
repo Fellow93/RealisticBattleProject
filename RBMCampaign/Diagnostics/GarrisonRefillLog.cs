@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Threading;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Settlements;
 using RC = RBMConfig.RBMConfig;
@@ -11,8 +10,8 @@ namespace RBMCampaign
     /// <summary>
     /// A lightweight verification log for the garrison-refill behavior, under logs/garrison next to the
     /// config. One file per process launch, opened lazily on the first line. Trimmed from
-    /// <see cref="CaravanLog"/> and gated only by <c>rbmCampaignEnabled</c> -- there is no separate
-    /// config toggle, since this is a debug aid and refill events are rare (only badly depleted lords).
+    /// <see cref="CaravanLog"/>. Gated by its own Debug &amp; Logging toggle,
+    /// <c>garrisonRefillLoggingEnabled</c> (off by default), on top of <c>rbmCampaignEnabled</c>.
     ///
     /// Categories:
     /// <list type="bullet">
@@ -26,6 +25,10 @@ namespace RBMCampaign
         private static readonly object _fileLock = new object();
         private static bool _fileLogFailed;
         private static bool _fileOpened;
+
+        // The process's open, buffered log file (see BufferedLogWriter). A game-end close only releases the
+        // handle; the next line reopens the same file in append mode.
+        private static BufferedLogWriter _writer;
         private static int _lastDayKey = -1;
         private static string _lastCategory;
 
@@ -36,7 +39,7 @@ namespace RBMCampaign
 
         public static bool IsEnabled
         {
-            get { return RC.rbmCampaignEnabled; }
+            get { return RC.rbmCampaignEnabled && RC.garrisonRefillLoggingEnabled; }
         }
 
         private static string LogFolderPath
@@ -79,7 +82,9 @@ namespace RBMCampaign
                     header.Append("  ARMY-END  an army dispersed: reason, age, leader behavior, siege targets still passing the gate").Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
 
-                    File.WriteAllText(LogFilePath, header.ToString());
+                    _writer = BufferedLogWriter.Open(LogFilePath);
+                    _writer.Write(header.ToString());
+                    _writer.Flush();
                     _fileOpened = true;
                 }
                 catch
@@ -174,22 +179,10 @@ namespace RBMCampaign
                 {
                     return;
                 }
-                for (int attempt = 0; attempt < 5; attempt++)
+                // Buffered (see BufferedLogWriter); a failed write drops the line and ends the log for the run.
+                if (_writer == null || !_writer.WriteLine(message))
                 {
-                    try
-                    {
-                        File.AppendAllText(LogFilePath, message + Environment.NewLine);
-                        return;
-                    }
-                    catch (IOException)
-                    {
-                        Thread.Sleep(2);
-                    }
-                    catch
-                    {
-                        _fileLogFailed = true;
-                        return;
-                    }
+                    _fileLogFailed = true;
                 }
             }
         }

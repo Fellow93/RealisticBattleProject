@@ -355,12 +355,20 @@ spoils shares are code constants in `Spoils/SpoilsPool.Plunder.cs` / `.MarketSac
 buying, carousing, save/load counts) to `<configFolder>/logs/campaign/rbm_spoils_<yyyy-MM-dd_HH-mm-ss>.log`
 — one timestamped file per play session (`SpoilsLog.StartCampaignLog` rolls it on session launch,
 with the config dumped at the top) so runs don't overwrite each other, with `LogRetention.PruneOldest`
-capping how many are kept. Lines also go to the engine's debug output (`Debug.Print`), never to the
+capping how many are kept (it skips a file a live log still holds open). Lines go to the file only —
+not to the engine's debug output (that copy was dropped with the buffering below) and never to the
 in-game message log.
 
 The other sinks: `EconomyLog` (`logs/economy/`), `SimulationLog` (`logs/simulation/`), `CaravanLog`
-(`logs/caravans/`) and `Power/StrategicPowerLog` (`logs/powerCalculation/`), each with its own toggle,
-and `GarrisonRefillLog` (`logs/garrison/`), which writes whenever the module is on.
+(`logs/caravans/`), `Power/StrategicPowerLog` (`logs/powerCalculation/`) and `GarrisonRefillLog`
+(`logs/garrison/`, `GarrisonRefillLoggingEnabled`), each with its own toggle.
+
+Every sink writes through `BufferedLogWriter`: one open 64 KB-buffered handle per file (shared
+`ReadWrite | Delete`, so it can be tailed), not a `File.AppendAllText` per line — the per-line open was
+the main map stutter with logging on. Buffers are flushed on `HourlyTickEvent` and `OnBeforeSaveEvent`
+(registered in `RBMSimulationCampaignBehavior`), closed on `RBM.SubModule.OnGameEnd` /
+`OnSubModuleUnloaded` (plus a `ProcessExit` fallback), and a log rolling to a new session file closes its
+old writer. A hard crash loses up to one in-game hour of lines.
 
 ## File map
 
@@ -434,7 +442,7 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Spectate/` | Watching an AI-vs-AI battle as a no-agent spectator. |
 | `UI/` | The party-screen spoils bar, maintenance label and map party tooltip, the clan-screen upgrade-budget control, the inventory weight column, settlement nameplate bubbles (`RBMMapNotifications`), the smithy refine-row layout, building-effect tooltips and the Projects grid (below), each with its prefab injection; `UI/Ledger/` (the RBM Ledger screen, Ctrl+Shift+K or the Escape menu, with its 30-day town/village histories and the Clan finances tab, below) and `UI/SimulationPanel/` (a live auto-resolve panel on the map battle-simulation view). |
 | `SwitchLord/` | `LordSwitcher` — debug tool to take over another lord's party. |
-| `Diagnostics/` | `SpoilsLog`, `EconomyLog`, `SimulationLog`, `CaravanLog`, `GarrisonRefillLog`, `LogRetention`. |
+| `Diagnostics/` | `SpoilsLog`, `EconomyLog`, `SimulationLog`, `CaravanLog`, `GarrisonRefillLog`, `LogRetention`, `BufferedLogWriter` (the shared buffered file handle every log writes through). |
 | `RBMCampaignPatcher.cs` | Entry point (`DoPatching`), at the project root. |
 
 #### Construction (`Settlements/Construction*.cs`)

@@ -25,6 +25,14 @@ namespace RBMCampaign
             CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunched);
             CampaignEvents.MapEventStarted.AddNonSerializedListener(this, OnMapEventStarted);
             CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
+
+            // Every campaign log writes into a buffered file handle (BufferedLogWriter) instead of reopening its
+            // file per line. Push the buffers to disk once an in-game hour and before every save, so the files
+            // can be read while playing and a crash loses at most an hour of lines. Hosted here, with the other
+            // session-wide log/cache housekeeping, rather than in a behavior of its own. Game end and module
+            // unload close the files (RBM.SubModule).
+            CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, BufferedLogWriter.FlushAll);
+            CampaignEvents.OnBeforeSaveEvent.AddNonSerializedListener(this, BufferedLogWriter.FlushAll);
         }
 
         public override void SyncData(IDataStore dataStore)

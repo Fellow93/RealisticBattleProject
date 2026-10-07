@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Threading;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
@@ -50,6 +49,9 @@ namespace RBMCampaign
 
         private static bool _fileOpened;
 
+        /// <summary>The session's open, buffered log file (see BufferedLogWriter). Closed when the log rolls over.</summary>
+        private static BufferedLogWriter _writer;
+
         private static string _launchStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
 
         /// <summary>The day each party was last written down. See the note above about why this exists.</summary>
@@ -78,6 +80,11 @@ namespace RBMCampaign
         {
             lock (_fileLock)
             {
+                if (_writer != null)
+                {
+                    _writer.Close();
+                    _writer = null;
+                }
                 _launchStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
                 _fileLogFailed = false;
                 _fileOpened = false;
@@ -417,22 +424,10 @@ namespace RBMCampaign
                 {
                     return;
                 }
-                for (int attempt = 0; attempt < 5; attempt++)
+                // Buffered (see BufferedLogWriter); a failed write drops the block and ends the log for the session.
+                if (_writer == null || !_writer.Write(block))
                 {
-                    try
-                    {
-                        File.AppendAllText(LogFilePath, block);
-                        return;
-                    }
-                    catch (IOException)
-                    {
-                        Thread.Sleep(2);
-                    }
-                    catch
-                    {
-                        _fileLogFailed = true;
-                        return;
-                    }
+                    _fileLogFailed = true;
                 }
             }
         }
@@ -514,7 +509,9 @@ namespace RBMCampaign
                     header.Append("     (not read by this model -- its armour term has no blunt-trauma part; it moves").Append(Environment.NewLine);
                     header.Append("      the live battle and auto-resolve only)").Append(Environment.NewLine);
 
-                    File.WriteAllText(LogFilePath, header.ToString());
+                    _writer = BufferedLogWriter.Open(LogFilePath);
+                    _writer.Write(header.ToString());
+                    _writer.Flush();
                     _fileOpened = true;
                 }
                 catch

@@ -56,6 +56,10 @@ namespace RBMConfig
         public TextViewModel CaravanLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> CaravanLoggingEnabled { get; }
 
+        // Garrison-refill AI logging (logs/garrison): on/off. Used to write whenever RBM Campaign was on.
+        public TextViewModel GarrisonRefillLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> GarrisonRefillLoggingEnabled { get; }
+
         // Section title. Own RBM_DBG_* id block, so the new strings cannot collide with the crowded RBM_CON_* ids.
         [DataSourceProperty]
         public string RBMDebugt
@@ -170,5 +174,14 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel CaravanLoggingEnabledHint { get; } = Hint("{=RBM_CFG_CARAVAN_LOG_HINT}Writes the supply-caravan system to logs/caravans next to the config: each caravan dispatched, its arrival and sale, capital injected and repaid, and any lost on the road. Needs Kingdom Supply Caravans on. Default off.");
+
+        [DataSourceProperty]
+        public string GarrisonRefillLoggingEnabledt
+        {
+            get { return new TextObject("{=RBM_DBG_014}Garrison Refill Logging").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel GarrisonRefillLoggingEnabledHint { get; } = Hint("{=RBM_DBG_015}Writes the garrison-refill AI to logs/garrison next to the config: depleted lords sent to their own surplus garrisons, the troops those garrisons hand over, and AI armies forming and dispersing. Needs RBM Campaign on. Default off.");
     }
 }

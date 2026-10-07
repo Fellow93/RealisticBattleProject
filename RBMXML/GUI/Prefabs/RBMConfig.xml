@@ -74,6 +74,24 @@
 										    <ListPanel Id="DebugOptions" DoNotAcceptEvents="true" IsVisible="false" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="VerticalBottomToTop">
 										      <Children>
 
+											<!-- Garrison Refill Logging (listed first = displayed last in the section) -->
+											<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
+											  <Children>
+												<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="!AT.Slider.Desc.Width" SuggestedHeight="!AT.Slider.Slider.Height" VerticalAlignment="Center">
+												  <Children>
+													<RichTextWidget DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="SPOptions.OptionName.Text" Text="@GarrisonRefillLoggingEnabledt"/>
+													<HintWidget DataSource="{GarrisonRefillLoggingEnabledHint}" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Command.HoverBegin="ExecuteBeginHint" Command.HoverEnd="ExecuteEndHint" IsEnabled="false"/>
+												  </Children>
+												</Widget>
+												<ListPanel LayoutImp.LayoutMethod="VerticalBottomToTop" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="0">
+												  <Children>
+													<RichTextWidget DataSource="{GarrisonRefillLoggingEnabledText}" Text="@Text" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" Brush="CustomBattle.Value.Text" />
+													<Standard.DropdownWithHorizontalControl HorizontalAlignment="Left" Parameter.SelectorDataSource="{GarrisonRefillLoggingEnabled}" />
+												  </Children>
+												</ListPanel>
+											  </Children>
+											</ListPanel>
+
 											<!-- Caravan Logging -->
 											<ListPanel Id="ListPanel" DoNotAcceptEvents="true" WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" LayoutImp.LayoutMethod="HorizontalLeftToRight">
 											  <Children>

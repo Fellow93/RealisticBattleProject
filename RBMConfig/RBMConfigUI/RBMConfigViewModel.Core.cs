@@ -462,6 +462,8 @@ namespace RBMConfig
             EconomyLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.economyLoggingEnabled ? 1 : 0, null);
             CaravanLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_CARAVAN_LOG}Caravan Logging"));
             CaravanLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.caravanLoggingEnabled ? 1 : 0, null);
+            GarrisonRefillLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_DBG_014}Garrison Refill Logging"));
+            GarrisonRefillLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.garrisonRefillLoggingEnabled ? 1 : 0, null);
 
             if (RBMConfig.rbmCombatEnabled)
             {
@@ -790,6 +792,7 @@ namespace RBMConfig
             RBMConfig.spoilsVerboseLoggingEnabled = SpoilsVerboseLoggingEnabled.SelectedIndex == 1;
             RBMConfig.economyLoggingEnabled = EconomyLoggingEnabled.SelectedIndex == 1;
             RBMConfig.caravanLoggingEnabled = CaravanLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.garrisonRefillLoggingEnabled = GarrisonRefillLoggingEnabled.SelectedIndex == 1;
 
             RBMConfig.saveXmlConfig();
             TaleWorlds.ScreenSystem.ScreenManager.PopScreen();
@@ -909,6 +912,7 @@ namespace RBMConfig
             SpoilsVerboseLoggingEnabled.SelectedIndex = 0;
             EconomyLoggingEnabled.SelectedIndex = 0;
             CaravanLoggingEnabled.SelectedIndex = 0;
+            GarrisonRefillLoggingEnabled.SelectedIndex = 0;
         }
 
         private void ExecuteCancel()

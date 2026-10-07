@@ -255,7 +255,18 @@ namespace RBM
         {
             // Drop the previous campaign's troop/perk objects so nothing stale survives into the next game.
             RBMConfig.TroopPerks.Clear();
+            // Flush and release every buffered campaign log file, so a finished session's logs are complete on
+            // disk before the next campaign starts or loads (and before the player quits from the main menu).
+            BufferedLogWriter.CloseAll();
             base.OnGameEnd(game);
+        }
+
+        protected override void OnSubModuleUnloaded()
+        {
+            // Normal exit: write out whatever the campaign logs still hold. BufferedLogWriter also hooks
+            // ProcessExit as a fallback for an exit that skips this.
+            BufferedLogWriter.CloseAll();
+            base.OnSubModuleUnloaded();
         }
 
         public override void OnBeforeMissionBehaviorInitialize(Mission mission)

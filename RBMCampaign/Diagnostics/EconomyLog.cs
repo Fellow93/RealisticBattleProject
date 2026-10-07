@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Threading;
 using TaleWorlds.CampaignSystem;
 using RC = RBMConfig.RBMConfig;
 
@@ -41,6 +40,9 @@ namespace RBMCampaign
         private static bool _fileLogFailed;
         private static bool _fileOpened;
 
+        // The session's open, buffered log file (see BufferedLogWriter). Closed when the log rolls over.
+        private static BufferedLogWriter _writer;
+
         // The campaign day is printed once as a divider when it rolls over, rather than on every line.
         private static int _lastDayKey = -1;
         private static string _lastCategory;
@@ -73,6 +75,11 @@ namespace RBMCampaign
         {
             lock (_fileLock)
             {
+                if (_writer != null)
+                {
+                    _writer.Close();
+                    _writer = null;
+                }
                 _launchStamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
                 _fileLogFailed = false;
                 _fileOpened = false;
@@ -124,7 +131,9 @@ namespace RBMCampaign
                     header.Append("  (castles: vanilla prosperity)").Append(Environment.NewLine);
                     header.Append(Environment.NewLine);
 
-                    File.WriteAllText(LogFilePath, header.ToString());
+                    _writer = BufferedLogWriter.Open(LogFilePath);
+                    _writer.Write(header.ToString());
+                    _writer.Flush();
                     _fileOpened = true;
                 }
                 catch
@@ -232,22 +241,10 @@ namespace RBMCampaign
                 {
                     return;
                 }
-                for (int attempt = 0; attempt < 5; attempt++)
+                // Buffered (see BufferedLogWriter); a failed write drops the line and ends the log for the session.
+                if (_writer == null || !_writer.WriteLine(message))
                 {
-                    try
-                    {
-                        File.AppendAllText(LogFilePath, message + Environment.NewLine);
-                        return;
-                    }
-                    catch (IOException)
-                    {
-                        Thread.Sleep(2);
-                    }
-                    catch
-                    {
-                        _fileLogFailed = true;
-                        return;
-                    }
+                    _fileLogFailed = true;
                 }
             }
         }

@@ -103,15 +103,13 @@ namespace RBMCampaign
 
         private void OnArmyCreated(Army army)
         {
-            if (army == null || army.LeaderParty == null)
+            // The creation hour only feeds the ARMY-END age figure, so nothing is tracked while the log is off
+            // (an army created before the log was switched on just reports its age as "?").
+            if (army == null || army.LeaderParty == null || !GarrisonRefillLog.IsEnabled)
             {
                 return;
             }
             _armyCreatedHour[army] = CampaignTime.Now.ToHours;
-            if (!GarrisonRefillLog.IsEnabled)
-            {
-                return;
-            }
             try
             {
                 GarrisonRefillLog.Log("ARMY-NEW", PartyName(army.LeaderParty), DescribeArmy(army));
@@ -471,14 +469,17 @@ namespace RBMCampaign
         [HarmonyPatch(typeof(GarrisonTroopsCampaignBehavior), "TakeTroopsFromGarrison")]
         private class LogTakeTroopsFromGarrison
         {
+            // -1 = the log was off when the transfer started, so there is nothing to compare against.
             private static void Prefix(Settlement settlement, out int __state)
             {
-                __state = settlement?.Town?.GarrisonParty?.Party.NumberOfRegularMembers ?? 0;
+                __state = GarrisonRefillLog.IsEnabled
+                    ? (settlement?.Town?.GarrisonParty?.Party.NumberOfRegularMembers ?? 0)
+                    : -1;
             }
 
             private static void Postfix(MobileParty mobileParty, Settlement settlement, int __state)
             {
-                if (!GarrisonRefillLog.IsEnabled || mobileParty == null || settlement == null)
+                if (__state < 0 || !GarrisonRefillLog.IsEnabled || mobileParty == null || settlement == null)
                 {
                     return;
                 }

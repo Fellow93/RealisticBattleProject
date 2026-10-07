@@ -57,6 +57,13 @@ namespace RBMCampaign
 
                 for (int i = 0; i < paths.Length - keep; i++)
                 {
+                    // A file a live log still holds open is never deleted: the logs share their handle with
+                    // FileShare.Delete (so the file can be tailed), which would let the delete go through as a
+                    // pending delete under the writer's feet.
+                    if (BufferedLogWriter.IsOpen(paths[i]))
+                    {
+                        continue;
+                    }
                     try
                     {
                         File.Delete(paths[i]);

@@ -4,10 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.Library;
 using RC = RBMConfig.RBMConfig;
 
 namespace RBMCampaign
@@ -27,12 +25,20 @@ namespace RBMCampaign
         private static readonly object _fileLock = new object();
         private static bool _fileLogFailed;
 
+        // The session's open, buffered log file (see BufferedLogWriter). Closed when the log rolls over.
+        private static BufferedLogWriter _writer;
+
         // The log file is not opened at module load. Lines emitted before a campaign starts (the
         // early hook-install traces) buffer here and are flushed into the campaign log when it is
         // opened, so a session yields a single file rather than a near-empty one from load time plus
-        // the real one. If no campaign is started this session they are only ever printed to Debug.
+        // the real one. If no campaign is started this session they are never written anywhere.
         private static bool _fileOpened;
         private static readonly StringBuilder _pending = new StringBuilder();
+
+        // The campaign whose clock CampaignClockReady last found ready. Once a campaign's clock is up it stays
+        // up, so the reflective MapTimeTracker read is skipped for every later line of that campaign. Weak, so
+        // a finished campaign is not kept alive by the log.
+        private static WeakReference<Campaign> _clockReadyCampaign;
 
         // The campaign day is printed once, as a divider, whenever it rolls over, rather than on every
         // line; this holds the last day written so a change can be spotted. -1 means "nothing yet".
@@ -95,6 +101,12 @@ namespace RBMCampaign
                 _fileOpened = false;
                 _lastDayKey = -1;
                 _lastCategory = null;
+                // The previous session's file is finished: flush it and let go of the handle.
+                if (_writer != null)
+                {
+                    _writer.Close();
+                    _writer = null;
+                }
                 if (!IsEnabled)
                 {
                     _pending.Length = 0;
@@ -104,7 +116,8 @@ namespace RBMCampaign
                 {
                     Directory.CreateDirectory(LogFolderPath);
                     LogRetention.PruneOldest(LogFolderPath, "rbm_spoils_*.log");
-                    File.WriteAllText(LogFilePath,
+                    _writer = BufferedLogWriter.Open(LogFilePath);
+                    _writer.Write(
                         "RBM spoils log — " + DateTime.Now + Environment.NewLine
                         + "Columns:  time  ·  category  ·  party  ·  message"
                         + "   (campaign day is shown in the ═══ dividers, not on every line)" + Environment.NewLine);
@@ -112,9 +125,10 @@ namespace RBMCampaign
                     // Drain anything logged before the campaign opened the file (the early traces).
                     if (_pending.Length > 0)
                     {
-                        File.AppendAllText(LogFilePath, _pending.ToString());
+                        _writer.Write(_pending.ToString());
                         _pending.Length = 0;
                     }
+                    _writer.Flush();
                 }
                 catch
                 {
@@ -214,7 +228,6 @@ namespace RBMCampaign
                     Field("weaponTypeFactorCount", RC.weaponTypesFactors.Count))));
 
             string block = ("----- RBM config -----" + "\n" + json).Replace("\n", Environment.NewLine);
-            Debug.Print("[RBM][Spoils] config:" + Environment.NewLine + block);
             WriteToFile(block);
         }
 
@@ -342,9 +355,9 @@ namespace RBMCampaign
                 _lastCategory = category;
                 WriteToFile(block.ToString());
             }
-            // Not echoed into the player's message feed even in developer mode: the lines come
-            // too fast to read there. The file log and the debug output are the places to look.
-            Debug.Print("[RBM][Spoils] " + line);
+            // Not echoed into the player's message feed even in developer mode (the lines come too fast to
+            // read there), nor copied into the engine's own log any more: that doubled the I/O of every line.
+            // The file is the one place to look.
         }
 
         /// <summary>
@@ -390,14 +403,27 @@ namespace RBMCampaign
         {
             // DaysInYear is zero until CampaignTime.Initialize has run the time model; GetYear divides
             // by the tick count derived from it, so a line written before then would divide by zero.
-            if (Campaign.Current == null || CampaignTime.DaysInYear <= 0)
+            Campaign current = Campaign.Current;
+            if (current == null || CampaignTime.DaysInYear <= 0)
             {
                 return false;
+            }
+            // Already found ready for this campaign: skip the reflective read below on every later line.
+            WeakReference<Campaign> cached = _clockReadyCampaign;
+            Campaign cachedCampaign;
+            if (cached != null && cached.TryGetTarget(out cachedCampaign) && ReferenceEquals(cachedCampaign, current))
+            {
+                return true;
             }
             // CampaignTime.Now dereferences Campaign.MapTimeTracker, which stays null on a new campaign
             // until OnInitialize creates it. The callers' catch would swallow the NRE, but a first-chance
             // exception on every early line stops an attached debugger, so check it up front.
-            return MapTimeTrackerProperty == null || MapTimeTrackerProperty.GetValue(Campaign.Current) != null;
+            bool ready = MapTimeTrackerProperty == null || MapTimeTrackerProperty.GetValue(current) != null;
+            if (ready)
+            {
+                _clockReadyCampaign = new WeakReference<Campaign>(current);
+            }
+            return ready;
         }
 
         private static string DayDividerIfChanged()
@@ -463,7 +489,10 @@ namespace RBMCampaign
 
         /// <summary>
         /// Prefabs load on a loading thread while the campaign starts on the main one, so these
-        /// writes genuinely race. A transient sharing violation must not silently end the log.
+        /// writes genuinely race; the file lock serialises them. The line goes into the session's
+        /// buffered writer (one open handle, flushed hourly), so there is no per-line open and no
+        /// sharing violation to retry. A write that fails drops the line and ends the log until the
+        /// next session rather than throwing into the game.
         /// </summary>
         private static void WriteToFile(string message)
         {
@@ -479,22 +508,9 @@ namespace RBMCampaign
                     _pending.Append(message).Append(Environment.NewLine);
                     return;
                 }
-                for (int attempt = 0; attempt < 5; attempt++)
+                if (_writer == null || !_writer.WriteLine(message))
                 {
-                    try
-                    {
-                        File.AppendAllText(LogFilePath, message + Environment.NewLine);
-                        return;
-                    }
-                    catch (IOException)
-                    {
-                        Thread.Sleep(2);
-                    }
-                    catch
-                    {
-                        _fileLogFailed = true;
-                        return;
-                    }
+                    _fileLogFailed = true;
                 }
             }
         }
