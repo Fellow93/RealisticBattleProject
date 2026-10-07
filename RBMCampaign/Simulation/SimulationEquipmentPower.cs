@@ -1041,7 +1041,7 @@ namespace RBMCampaign
             CharacterObject defenderTroop, CharacterObject attackerTroop, bool strikerIsAttacker, float riposteDamage,
             float hitPointsLeft)
         {
-            if (state == null || battle == null || !SimulationLog.IsEnabled || !RBMConfig.RBMConfig.simulationLogHits)
+            if (battle == null || !SimulationBattleState.RecordsHits(state))
             {
                 return;
             }
@@ -1096,7 +1096,7 @@ namespace RBMCampaign
             // THAT one -- turning somebody else's kill back into a miss.
             SimulationBattleState.LastHit = null;
 
-            if (state == null || battle == null || !SimulationLog.IsEnabled || !RBMConfig.RBMConfig.simulationLogHits)
+            if (battle == null || !SimulationBattleState.RecordsHits(state))
             {
                 return;
             }

@@ -451,7 +451,7 @@ namespace RBMCampaign
             // THE WIDTH HEARS THE VERDICT FIRST, and it must hear it whether or not anybody is writing the battle
             // down. Every melee kill at a siege opening moves the frontage -- the attackers' by widening it, the
             // defenders' by closing it -- and that is a fact about the fight, not about the log. The HitRecord
-            // below exists ONLY when the hit log is switched on, so the width cannot be hung off it; SimulationSiege
+            // below exists ONLY when the battle is being written down (RecordsHits), so the width cannot be hung off it; SimulationSiege
             // parks its own blow and claims it here. Ahead of the null check for exactly that reason.
             SimulationSiege.NoteVerdict(__result);
 
@@ -766,11 +766,15 @@ namespace RBMCampaign
 
             public readonly Dictionary<CharacterObject, TroopState> Defenders = new Dictionary<CharacterObject, TroopState>();
 
-            /// <summary>Every blow of this battle, as it was really struck. Empty unless the hit log is on.</summary>
+            /// <summary>The battle this state belongs to. Read by <see cref="RecordsHits"/> to tell the player's own
+            /// battle from everybody else's.</summary>
+            public MapEvent Event;
+
+            /// <summary>Every blow of this battle, as it was really struck. Empty unless <see cref="RecordsHits"/>.</summary>
             public readonly List<HitRecord> Trace = new List<HitRecord>();
 
-            /// <summary>Every shot the engines took. Empty unless the hit log is on, and for any battle without a
-            /// wall in it. See <see cref="ArtilleryRecord"/>.</summary>
+            /// <summary>Every shot the engines took. Empty unless <see cref="RecordsHits"/>, and for any battle
+            /// without a wall in it. See <see cref="ArtilleryRecord"/>.</summary>
             public readonly List<ArtilleryRecord> Artillery = new List<ArtilleryRecord>();
 
             /// <summary>The muster roll: how many of each troop stand on each side, over all its parties.</summary>
@@ -928,6 +932,7 @@ namespace RBMCampaign
             if (!_battles.TryGetValue(mapEvent, out state))
             {
                 state = new BattleState();
+                state.Event = mapEvent;
                 state.VolleyRounds = GetVolleyRounds(mapEvent);
                 state.DefenderOnlyRounds = GetDefenderOnlyRounds(mapEvent);
                 state.DefendersShootFromStores = mapEvent.IsSiegeAssault;
@@ -984,14 +989,32 @@ namespace RBMCampaign
             return roll;
         }
 
+        /// <summary>The per-hit log is on: every battle's blows go in the book and into the log.</summary>
+        private static bool HitLogOn => SimulationLog.IsEnabled && RBMConfig.RBMConfig.simulationLogHits;
+
+        /// <summary>
+        /// Whether this battle's blows and engine shots are written down. Always for the player's own battle,
+        /// because the battle panel reads its hits and shots from this same book, whatever the log toggles say.
+        /// Any other battle only with the per-hit log on, so a battle nobody is watching costs nothing.
+        /// </summary>
+        internal static bool RecordsHits(BattleState state)
+        {
+            if (state == null)
+            {
+                return false;
+            }
+            return HitLogOn || (state.Event != null && state.Event == MobileParty.MainParty?.MapEvent);
+        }
+
         /// <summary>
         /// The blows this battle was really decided by, handed over before the battle is forgotten. Null if nothing
         /// was recorded -- the hit log is off, or the battle never simulated a round because the player fought it.
+        /// The player's battle is recorded for the panel even with the hit log off; that book stays out of the log.
         /// </summary>
         internal static List<HitRecord> TakeTrace(MapEvent mapEvent)
         {
             BattleState state;
-            if (mapEvent == null || !_battles.TryGetValue(mapEvent, out state) || state.Trace.Count == 0)
+            if (!HitLogOn || mapEvent == null || !_battles.TryGetValue(mapEvent, out state) || state.Trace.Count == 0)
             {
                 return null;
             }
@@ -1005,7 +1028,7 @@ namespace RBMCampaign
         internal static List<ArtilleryRecord> TakeArtillery(MapEvent mapEvent)
         {
             BattleState state;
-            if (mapEvent == null || !_battles.TryGetValue(mapEvent, out state) || state.Artillery.Count == 0)
+            if (!HitLogOn || mapEvent == null || !_battles.TryGetValue(mapEvent, out state) || state.Artillery.Count == 0)
             {
                 return null;
             }

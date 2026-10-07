@@ -612,6 +612,8 @@
 	<string id="RBM_DBG_011" text="Writes every blow of a fought battle to logs/battles next to the config, one file per battle: attacker, target, weapon, body part, armor, damage and health left, plus the standings every 15 seconds and a summary at the end. Arenas and town visits are left out. Default off." />
 	<string id="RBM_DBG_012" text="Troop Perk Logging" />
 	<string id="RBM_DBG_013" text="For each battle or other mission, writes to logs/troopperks next to the config which perks from the troop perks file the game actually checked for the troops that fought: perks that took effect (how often, and which game code asked), perks checked where their effect does not apply, and perks never checked, which had no effect. For testing the troop perks file. Needs Troop Perks and RBM Combat on. Takes effect from the next battle. Default off." />
+	<string id="RBM_DBG_014" text="Garrison Refill Logging" />
+	<string id="RBM_DBG_015" text="Writes the garrison-refill AI to logs/garrison next to the config: depleted lords sent to their own surplus garrisons, the troops those garrisons hand over, and AI armies forming and dispersing. Needs RBM Campaign on. Default off." />
 	<!-- Spectate Strings -->
 	<string id="RBM_CON_099" text="Spectate AI Battles" />
 	<string id="RBM_CON_101" text="Spectate Minimum Troops Per Side" />
@@ -711,6 +713,7 @@
 	<string id="RBM_LEDGER_SRC_GARRISON_WAGE" text="Garrison wages" />
 	<string id="RBM_LEDGER_SRC_GARRISON_FOOD" text="Garrison food" />
 	<string id="RBM_LEDGER_SRC_GARRISON_RECRUIT" text="Garrison recruit kit" />
+	<string id="RBM_LEDGER_SRC_GARRISON_LEVY" text="Garrison men levied by lords" />
 	<string id="RBM_LEDGER_SRC_MILITIA" text="Militia upkeep" />
 	<string id="RBM_LEDGER_SRC_ADMIN" text="Administration" />
 	<string id="RBM_LEDGER_SRC_CONSTRUCTION" text="Construction" />
@@ -719,6 +722,7 @@
 	<string id="RBM_LEDGER_SRC_TOWN_ARMS" text="Volunteer kit" />
 	<string id="RBM_LEDGER_SRC_VILLAGE_ARMS" text="Village recruit kit" />
 	<string id="RBM_LEDGER_SRC_CASTLE_ARMS" text="Castle militia kit" />
+	<string id="RBM_LEDGER_SRC_ARMS_SURPLUS" text="Kit surplus returned" />
 	<string id="RBM_LEDGER_SRC_CARAVAN" text="Supply caravan" />
 	<string id="RBM_LEDGER_SRC_CARAVAN_INVEST" text="Caravan investment" />
 	<string id="RBM_LEDGER_SRC_CARAVAN_REPAY" text="Caravan repayment" />
@@ -825,6 +829,8 @@
 	<string id="RBM_SIM_PHASE_SKIRMISH" text="SKIRMISH" />
 	<string id="RBM_SIM_PHASE_MELEE" text="MELEE" />
 	<string id="RBM_SIM_PHASE_ROUT" text="ROUT" />
+	<string id="RBM_SIM_PHASE_REPULSED" text="REPULSED" />
+	<string id="RBM_SIM_PHASE_REPULSED_DESC" text="Nothing left to climb or break — the assault cannot go on" />
 	<string id="RBM_SIM_PHASE_EVENT" text="{PHASE} — {FLAVOR}" />
 	<string id="RBM_SIM_ROUND" text="Round {ROUND}" />
 	<string id="RBM_SIM_ROUND_DIVIDER" text="──── Round {ROUND} ────" />
@@ -922,6 +928,7 @@
 	<!-- RBM_SIM_ROUT_INLINE_xx are the RBM_SIM_ROUT_xx lines as they read inside RBM_SIM_ROUT_EVENT_* -->
 	<string id="RBM_SIM_ROUT_EVENT_ATK" text="The attackers {FLAVOR} ({COUNT} fled)" />
 	<string id="RBM_SIM_ROUT_EVENT_DEF" text="The defenders {FLAVOR} ({COUNT} fled)" />
+	<string id="RBM_SIM_REPULSE_EVENT" text="The assault is repulsed — with nothing left to climb, the attackers fall back ({COUNT} withdrew)" />
 	<string id="RBM_SIM_ROUT_INLINE_01" text="their courage breaks!" />
 	<string id="RBM_SIM_ROUT_INLINE_02" text="the line shatters and men flee!" />
 	<string id="RBM_SIM_ROUT_INLINE_03" text="panic spreads through the ranks!" />
