@@ -51,4 +51,64 @@
     </Troop>
 -->
 <TroopPerks>
+  <Troop id="aserai_recruit">
+    <Perk id="ThrowingQuickDraw"/>
+  </Troop>
+  <Troop id="aserai_mameluke_soldier">
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="aserai_tribesman">
+    <Perk id="ThrowingQuickDraw"/>
+  </Troop>
+  <Troop id="jawwal_tier_1">
+    <Perk id="ThrowingHunter"/>
+  </Troop>
+  <Troop id="aserai_footman">
+    <Perk id="ThrowingQuickDraw"/>
+    <Perk id="OneHandedWrappedHandles"/>
+  </Troop>
+  <Troop id="aserai_mameluke_axeman">
+    <Perk id="AthleticsFury"/>
+    <Perk id="TwoHandedHeadBasher"/>
+  </Troop>
+  <Troop id="aserai_mameluke_regular">
+    <Perk id="RidingNimbleStead"/>
+    <Perk id="ThrowingSaddlebags"/>
+  </Troop>
+  <Troop id="jawwal_tier_2">
+    <Perk id="ThrowingHunter"/>
+    <Perk id="ThrowingResourceful"/>
+  </Troop>
+  <Troop id="aserai_infantry">
+    <Perk id="OneHandedWrappedHandles"/>
+    <Perk id="ThrowingQuickDraw"/>
+  </Troop>
+  <Troop id="aserai_mameluke_cavalry">
+    <Perk id="RidingNimbleStead"/>
+    <Perk id="BowRapidFire"/>
+  </Troop>
+  <Troop id="aserai_mameluke_guard">
+    <Perk id="AthleticsFury"/>
+    <Perk id="TwoHandedHeadBasher"/>
+  </Troop>
+  <Troop id="aserai_mameluke_heavy_cavalry">
+    <Perk id="RidingNimbleStead"/>
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowSkirmishPhaseMaster"/>
+  </Troop>
+  <Troop id="mamluke_palace_guard">
+    <Perk id="AthleticsFury"/>
+    <Perk id="TwoHandedHeadBasher"/>
+    <Perk id="TwoHandedBeastSlayer"/>
+  </Troop>
+  <Troop id="aserai_veteran_infantry">
+    <Perk id="ThrowingQuickDraw"/>
+    <Perk id="OneHandedWrappedHandles"/>
+    <Perk id="AthleticsPowerful"/>
+  </Troop>
+  <Troop id="jawwal_tier_3">
+    <Perk id="ThrowingHunter"/>
+    <Perk id="ThrowingResourceful"/>
+    <Perk id="ThrowingWeakSpot"/>
+  </Troop>
 </TroopPerks>
