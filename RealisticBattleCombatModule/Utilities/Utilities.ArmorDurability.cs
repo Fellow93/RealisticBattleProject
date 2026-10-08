@@ -192,6 +192,10 @@ namespace RBMCombat
                         }
                     case DamageTypes.Blunt:
                         {
+                            if (rbmCombatConfigWeaponType != null)
+                            {
+                                armorThreshold = rbmCombatConfigWeaponType.ExtraArmorThresholdFactorBlunt;
+                            }
                             switch (armorMaterialType)
                             {
                                 case ArmorMaterialTypes.Cloth:

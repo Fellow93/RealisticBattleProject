@@ -93,6 +93,8 @@ namespace RBMCampaign
 
         private const float ThrownSpearEnergyCap = 300f;
 
+        private const float ThrownStoneEnergyCap = 450f;
+
         // A bow's draw, its powerstroke and its efficiency (Utilities.calculateMissileSpeed).
         private const float BowPowerstroke = 25f * 0.0254f;
 
@@ -461,8 +463,8 @@ namespace RBMCampaign
                     return BoltEnergyCap;
 
                 // A sling's ammunition is WeaponClass.SlingStone. WeaponClass.Stone is the rock a looter picks up
-                // and hurls by hand, which RBM does not cap at all -- so keying this on Stone meant no sling stone
-                // in the game ever met its own cap, and they all fell through to the arrow's.
+                // and hurls by hand, which is a thrown weapon priced in GetThrownMagnitude -- so keying this on Stone
+                // meant no sling stone in the game ever met its own cap, and they all fell through to the arrow's.
                 case WeaponClass.SlingStone:
                     return SlingStoneEnergyCap;
 
@@ -486,21 +488,36 @@ namespace RBMCampaign
                 return 0f;
             }
 
-            // Utilities.calculateThrowableSpeed: the arm's energy, clamped by the weight it is throwing.
-            float energy = MBMath.ClampFloat(weight * 70f, 60f, 250f) + (EffectiveSkill(skill) * 0.75f);
-            float speed = MathF.Max(MathF.Sqrt((2f * energy) / weight), 5f);
+            WeaponClass weaponClass = weapon.WeaponClass;
+
+            // Utilities.calculateThrowableSpeed: the arm's energy, clamped by the weight it is throwing. A rock is
+            // not: the live throw leaves at a flat MissileBallistics.StoneThrowSpeed whatever the skill.
+            float speed;
+            if (weaponClass == WeaponClass.Stone)
+            {
+                speed = MissileBallistics.StoneThrowSpeed;
+            }
+            else
+            {
+                float energy = MBMath.ClampFloat(weight * 70f, 60f, 250f) + (EffectiveSkill(skill) * 0.75f);
+                speed = MathF.Max(MathF.Sqrt((2f * energy) / weight), 5f);
+            }
 
             float physical = 0.5f * weight * speed * speed;
 
-            WeaponClass weaponClass = weapon.WeaponClass;
-
-            // Only a spear-shaped thing has its energy capped -- a javelin, or a one-handed polearm flung as one.
-            // A throwing axe and a throwing knife are uncapped in RBM, and must be here too.
+            // Only a spear-shaped thing and a hand-thrown rock have their energy capped -- a javelin, a one-handed
+            // polearm flung as one (300 J/kg), or a stone (450 J/kg, MagnitudeChanges.CalculateMissileMagnitude; above
+            // the flat throw, so it only binds on closing speed the auto-resolve does not model). A throwing axe and a
+            // throwing knife are uncapped in RBM, and must be here too.
             if (weaponClass == WeaponClass.Javelin
                 || weaponClass == WeaponClass.OneHandedPolearm
                 || weaponClass == WeaponClass.LowGripPolearm)
             {
                 physical = MathF.Min(physical, weight * ThrownSpearEnergyCap);
+            }
+            else if (weaponClass == WeaponClass.Stone)
+            {
+                physical = MathF.Min(physical, weight * ThrownStoneEnergyCap);
             }
 
             physical *= ThrownMomentumRemaining;
@@ -732,8 +749,10 @@ namespace RBMCampaign
             RBMCombatConfigWeaponType f = RBMConfig.RBMConfig.getWeaponTypeFactors(profile.WeaponType);
             float thresholdCut = (f != null) ? f.ExtraArmorThresholdFactorCut : 5f;
             float thresholdPierce = (f != null) ? f.ExtraArmorThresholdFactorPierce : 3f;
+            float thresholdBlunt = (f != null) ? f.ExtraArmorThresholdFactorBlunt : 5f;
             float carryCut = (f != null) ? f.ExtraBluntFactorCut : 0.25f;
             float carryPierce = (f != null) ? f.ExtraBluntFactorPierce : 0.35f;
+            float carryBluntFactor = (f != null) ? f.ExtraBluntFactorBlunt : 1f;
             float bluntBonus = RBMConfig.RBMConfig.bluntTraumaBonus;
             float bluntMultiplier = RBMConfig.RBMConfig.bluntTraumaMultiplier;
 
@@ -741,10 +760,11 @@ namespace RBMCampaign
             {
                 case DamageTypes.Blunt:
                     {
-                        // A blunt blow's threshold is a hardcoded five, and its carry a flat seven tenths.
-                        float penetrated = MathF.Max(0f, magnitude - (armorEffectiveness * 5f * thresholdModifier));
+                        // A blunt blow's threshold is the class's blunt threshold factor (default 5, sling stones 10), and
+                        // its carry seven tenths times the class's blunt factor (default 1, sling stones 0.714).
+                        float penetrated = MathF.Max(0f, magnitude - (armorEffectiveness * thresholdBlunt * thresholdModifier));
                         float stopped = (magnitude - penetrated) / magnitude;
-                        float trauma = magnitude * (0.7f * RBMConfig.RBMConfig.maceBluntModifier) * stopped * bluntMultiplier * armorReduction;
+                        float trauma = magnitude * (0.7f * RBMConfig.RBMConfig.maceBluntModifier * carryBluntFactor) * stopped * bluntMultiplier * armorReduction;
                         return penetrated + MathF.Max(0f, trauma);
                     }
 

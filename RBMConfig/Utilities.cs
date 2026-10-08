@@ -22,6 +22,8 @@ namespace RBMConfig
             return System.IO.Path.Combine(GetConfigFolderPath(), "CustomBattlePresets");
         }
 
+        // Blunt blows read ExtraArmorThresholdFactorBlunt (5 = the old hardcoded threshold) and ExtraBluntFactorBlunt
+        // (a multiplier on the fixed 0.7 trauma base, 1 = unchanged); see BlowDamage.WeaponTypeDamage.
         public static void createWeaponTypesFactors(ref List<RBMCombatConfigWeaponType> weaponTypesFactors)
         {
             weaponTypesFactors.Add(new RBMCombatConfigWeaponType(
@@ -31,6 +33,7 @@ namespace RBMConfig
                 ExtraBluntFactorBlunt: 1f,
                 ExtraArmorThresholdFactorPierce: 3f,
                 ExtraArmorThresholdFactorCut: 5f,
+                ExtraArmorThresholdFactorBlunt: 5f,
                 ExtraArmorSkillDamageAbsorb: 1f
                 )
             );
@@ -41,6 +44,7 @@ namespace RBMConfig
                 ExtraBluntFactorBlunt: 1f,
                 ExtraArmorThresholdFactorPierce: 3f,
                 ExtraArmorThresholdFactorCut: 5f,
+                ExtraArmorThresholdFactorBlunt: 5f,
                 ExtraArmorSkillDamageAbsorb: 1f
                 )
             );
@@ -51,6 +55,7 @@ namespace RBMConfig
                 ExtraBluntFactorBlunt: 1f,
                 ExtraArmorThresholdFactorPierce: 3.5f,
                 ExtraArmorThresholdFactorCut: 5,
+                ExtraArmorThresholdFactorBlunt: 5f,
                 ExtraArmorSkillDamageAbsorb: 1
                 )
             );
@@ -61,6 +66,7 @@ namespace RBMConfig
                 ExtraBluntFactorBlunt: 1f,
                 ExtraArmorThresholdFactorPierce: 3.5f,
                 ExtraArmorThresholdFactorCut: 5f,
+                ExtraArmorThresholdFactorBlunt: 5f,
                 ExtraArmorSkillDamageAbsorb: 1f
                 )
             );
@@ -71,6 +77,7 @@ namespace RBMConfig
                 ExtraBluntFactorBlunt: 1f,
                 ExtraArmorThresholdFactorPierce: 2.5f,
                 ExtraArmorThresholdFactorCut: 5f,
+                ExtraArmorThresholdFactorBlunt: 5f,
                 ExtraArmorSkillDamageAbsorb: 1f
                 )
             );
@@ -81,6 +88,7 @@ namespace RBMConfig
                ExtraBluntFactorBlunt: 1f,
                ExtraArmorThresholdFactorPierce: 2.5f,
                ExtraArmorThresholdFactorCut: 5f,
+               ExtraArmorThresholdFactorBlunt: 5f,
                ExtraArmorSkillDamageAbsorb: 1f
                )
            );
@@ -91,6 +99,7 @@ namespace RBMConfig
                 ExtraBluntFactorBlunt: 1f,
                 ExtraArmorThresholdFactorPierce: 2.5f,
                 ExtraArmorThresholdFactorCut: 5f,
+                ExtraArmorThresholdFactorBlunt: 5f,
                 ExtraArmorSkillDamageAbsorb: 1f
                 )
             );
@@ -101,6 +110,7 @@ namespace RBMConfig
                 ExtraBluntFactorBlunt: 1f,
                 ExtraArmorThresholdFactorPierce: 3f,
                 ExtraArmorThresholdFactorCut: 5f,
+                ExtraArmorThresholdFactorBlunt: 5f,
                 ExtraArmorSkillDamageAbsorb: 1f
                 )
             );
@@ -111,6 +121,7 @@ namespace RBMConfig
                 ExtraBluntFactorBlunt: 1f,
                 ExtraArmorThresholdFactorPierce: 3f,
                 ExtraArmorThresholdFactorCut: 5f,
+                ExtraArmorThresholdFactorBlunt: 5f,
                 ExtraArmorSkillDamageAbsorb: 1f
                 )
             );
@@ -121,6 +132,7 @@ namespace RBMConfig
                 ExtraBluntFactorBlunt: 1f,
                 ExtraArmorThresholdFactorPierce: 4f,
                 ExtraArmorThresholdFactorCut: 4f,
+                ExtraArmorThresholdFactorBlunt: 5f,
                 ExtraArmorSkillDamageAbsorb: 1f
                 )
             );
@@ -131,6 +143,7 @@ namespace RBMConfig
                 ExtraBluntFactorBlunt: 1f,
                 ExtraArmorThresholdFactorPierce: 4f,
                 ExtraArmorThresholdFactorCut: 4f,
+                ExtraArmorThresholdFactorBlunt: 5f,
                 ExtraArmorSkillDamageAbsorb: 1f
                 )
             );
@@ -141,6 +154,7 @@ namespace RBMConfig
                ExtraBluntFactorBlunt: 1f,
                ExtraArmorThresholdFactorPierce: 2f,
                ExtraArmorThresholdFactorCut: 2.6f,
+               ExtraArmorThresholdFactorBlunt: 5f,
                ExtraArmorSkillDamageAbsorb: 1f
                )
             );
@@ -151,6 +165,7 @@ namespace RBMConfig
                ExtraBluntFactorBlunt: 1f,
                ExtraArmorThresholdFactorPierce: 2f,
                ExtraArmorThresholdFactorCut: 2.6f,
+               ExtraArmorThresholdFactorBlunt: 5f,
                ExtraArmorSkillDamageAbsorb: 1f
                )
             );
@@ -161,6 +176,7 @@ namespace RBMConfig
                ExtraBluntFactorBlunt: 1f,
                ExtraArmorThresholdFactorPierce: 3f,
                ExtraArmorThresholdFactorCut: 3f,
+               ExtraArmorThresholdFactorBlunt: 5f,
                ExtraArmorSkillDamageAbsorb: 1f
                )
             );
@@ -171,20 +187,40 @@ namespace RBMConfig
                ExtraBluntFactorBlunt: 1f,
                ExtraArmorThresholdFactorPierce: 2.5f,
                ExtraArmorThresholdFactorCut: 4f,
+               ExtraArmorThresholdFactorBlunt: 5f,
                ExtraArmorSkillDamageAbsorb: 1f
                )
             );
+            // Stone and chiseled sling ammo is Blunt. Its blunt values reproduce what the old Cut workaround gave
+            // (threshold 10, trauma base 0.5): 0.7 x 0.7142857 = 0.5.
             weaponTypesFactors.Add(new RBMCombatConfigWeaponType(
                weaponType: "SlingStone",
                ExtraBluntFactorCut: 0.5f,
                ExtraBluntFactorPierce: 0.6f,
-               ExtraBluntFactorBlunt: 1f,
+               ExtraBluntFactorBlunt: SlingStoneBluntFactorBlunt,
                ExtraArmorThresholdFactorPierce: 6f,
                ExtraArmorThresholdFactorCut: 10f,
+               ExtraArmorThresholdFactorBlunt: 10f,
+               ExtraArmorSkillDamageAbsorb: 1f
+               )
+            );
+            // A rock thrown by hand (WeaponClass.Stone). Blunt values match the old hardcoded blunt rule; Cut and
+            // Pierce copied from Mace.
+            weaponTypesFactors.Add(new RBMCombatConfigWeaponType(
+               weaponType: "Stone",
+               ExtraBluntFactorCut: 0.1f,
+               ExtraBluntFactorPierce: 0.25f,
+               ExtraBluntFactorBlunt: 1f,
+               ExtraArmorThresholdFactorPierce: 4f,
+               ExtraArmorThresholdFactorCut: 4f,
+               ExtraArmorThresholdFactorBlunt: 5f,
                ExtraArmorSkillDamageAbsorb: 1f
                )
             );
         }
+
+        // 0.5 / 0.7: the sling stone's old Cut trauma base expressed as a multiplier on the blunt 0.7 base.
+        internal const float SlingStoneBluntFactorBlunt = 0.7142857f;
 
         public static string getPostureMultiplier(float playerPostureMultiplier)
         {
@@ -324,6 +360,9 @@ namespace RBMConfig
             // A fresh config already has the new mace defaults; mark it so the one-time bump in parseXmlConfig skips it.
             XmlElement MacePierceThresholdMigrated = xmlconfig.CreateElement(RBMConfig.MacePierceThresholdMigratedNode);
             MacePierceThresholdMigrated.InnerText = "1";
+            // Same for the one-time sling stone Cut -> Blunt factor carry-over.
+            XmlElement SlingStoneBluntMigrated = xmlconfig.CreateElement(RBMConfig.SlingStoneBluntMigratedNode);
+            SlingStoneBluntMigrated.InnerText = "1";
 
             Global.AppendChild(ArmorMultiplier);
             Global.AppendChild(ArmorPenetrationMessage);
@@ -347,6 +386,7 @@ namespace RBMConfig
             Global.AppendChild(RealisticArrowArc);
             Global.AppendChild(ThrustMagnitudeModifier);
             Global.AppendChild(MacePierceThresholdMigrated);
+            Global.AppendChild(SlingStoneBluntMigrated);
 
             //Weapon types
             XmlElement WeaponTypes = xmlconfig.CreateElement("WeaponTypes");
@@ -363,6 +403,8 @@ namespace RBMConfig
                 ExtraArmorThresholdFactorPierce.InnerText = weaponTypesFactor.ExtraArmorThresholdFactorPierce.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 XmlElement ExtraArmorThresholdFactorCut = xmlconfig.CreateElement("ExtraArmorThresholdFactorCut");
                 ExtraArmorThresholdFactorCut.InnerText = weaponTypesFactor.ExtraArmorThresholdFactorCut.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                XmlElement ExtraArmorThresholdFactorBlunt = xmlconfig.CreateElement("ExtraArmorThresholdFactorBlunt");
+                ExtraArmorThresholdFactorBlunt.InnerText = weaponTypesFactor.ExtraArmorThresholdFactorBlunt.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 XmlElement ExtraArmorSkillDamageAbsorb = xmlconfig.CreateElement("ExtraArmorSkillDamageAbsorb");
                 ExtraArmorSkillDamageAbsorb.InnerText = weaponTypesFactor.ExtraArmorSkillDamageAbsorb.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
@@ -371,6 +413,7 @@ namespace RBMConfig
                 WeaponType.AppendChild(ExtraBluntFactorBlunt);
                 WeaponType.AppendChild(ExtraArmorThresholdFactorPierce);
                 WeaponType.AppendChild(ExtraArmorThresholdFactorCut);
+                WeaponType.AppendChild(ExtraArmorThresholdFactorBlunt);
                 WeaponType.AppendChild(ExtraArmorSkillDamageAbsorb);
 
                 WeaponTypes.AppendChild(WeaponType);

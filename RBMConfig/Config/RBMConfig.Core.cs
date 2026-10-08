@@ -14,6 +14,10 @@ namespace RBMConfig
         // Marker leaf under RBMCombat/Global recording that the one-time mace pierce threshold bump has run.
         internal const string MacePierceThresholdMigratedNode = "MacePierceThresholdMigrated";
 
+        // Marker leaf under RBMCombat/Global recording that sling stone ammo's Cut factors were carried over to its
+        // Blunt factors (the ammo switched from Cut to Blunt).
+        internal const string SlingStoneBluntMigratedNode = "SlingStoneBluntMigrated";
+
         public static XmlDocument xmlConfig = new XmlDocument();
 
         //modules
@@ -312,6 +316,17 @@ namespace RBMConfig
                     wt.ExtraBluntFactorBlunt = ParseFloat(weaponTypeNode["ExtraBluntFactorBlunt"]?.InnerText ?? "1");
                     wt.ExtraArmorThresholdFactorPierce = ParseFloat(weaponTypeNode["ExtraArmorThresholdFactorPierce"]?.InnerText ?? "3");
                     wt.ExtraArmorThresholdFactorCut = ParseFloat(weaponTypeNode["ExtraArmorThresholdFactorCut"]?.InnerText ?? "5");
+                    // New field: a config saved before it existed keeps the built-in default for its row (10 for
+                    // SlingStone), and only a row with no default (a type not in createWeaponTypesFactors) gets 5.
+                    string bluntThreshold = weaponTypeNode["ExtraArmorThresholdFactorBlunt"]?.InnerText;
+                    if (bluntThreshold != null)
+                    {
+                        wt.ExtraArmorThresholdFactorBlunt = ParseFloat(bluntThreshold);
+                    }
+                    else if (wt.ExtraArmorThresholdFactorBlunt <= 0f)
+                    {
+                        wt.ExtraArmorThresholdFactorBlunt = 5f;
+                    }
                     wt.ExtraArmorSkillDamageAbsorb = ParseFloat(weaponTypeNode["ExtraArmorSkillDamageAbsorb"]?.InnerText ?? "1");
                 }
             }
@@ -329,6 +344,27 @@ namespace RBMConfig
                     }
                 }
                 ReadOrCreate("/Config/RBMCombat/Global", MacePierceThresholdMigratedNode, "1");
+            }
+
+            // One-time carry-over for stone/chiseled sling ammo switching from Cut to Blunt: a saved config holds the
+            // unused blunt factor 1 for SlingStone, which would raise its trauma from 0.5 to 0.7. Its Cut values become
+            // its Blunt ones (default 10 and 0.5 / 0.7), so a player's own Cut tuning still applies. The marker
+            // stops a later deliberate 1 being replaced again.
+            if (xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/" + SlingStoneBluntMigratedNode) == null)
+            {
+                RBMCombatConfigWeaponType sling = weaponTypesFactors.Find(x => x.weaponType == "SlingStone");
+                if (sling != null)
+                {
+                    if (sling.ExtraBluntFactorBlunt == 1f)
+                    {
+                        sling.ExtraBluntFactorBlunt = sling.ExtraBluntFactorCut / 0.7f;
+                    }
+                    if (xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes/SlingStone/ExtraArmorThresholdFactorBlunt") == null)
+                    {
+                        sling.ExtraArmorThresholdFactorBlunt = sling.ExtraArmorThresholdFactorCut;
+                    }
+                }
+                ReadOrCreate("/Config/RBMCombat/Global", SlingStoneBluntMigratedNode, "1");
             }
 
             // Price modifiers
@@ -501,6 +537,7 @@ namespace RBMConfig
                     XmlElement blunt = xmlConfig.CreateElement("ExtraBluntFactorBlunt"); blunt.InnerText = wt.ExtraBluntFactorBlunt.ToString(CultureInfo.InvariantCulture); wtNode.AppendChild(blunt);
                     XmlElement atPierce = xmlConfig.CreateElement("ExtraArmorThresholdFactorPierce"); atPierce.InnerText = wt.ExtraArmorThresholdFactorPierce.ToString(CultureInfo.InvariantCulture); wtNode.AppendChild(atPierce);
                     XmlElement atCut = xmlConfig.CreateElement("ExtraArmorThresholdFactorCut"); atCut.InnerText = wt.ExtraArmorThresholdFactorCut.ToString(CultureInfo.InvariantCulture); wtNode.AppendChild(atCut);
+                    XmlElement atBlunt = xmlConfig.CreateElement("ExtraArmorThresholdFactorBlunt"); atBlunt.InnerText = wt.ExtraArmorThresholdFactorBlunt.ToString(CultureInfo.InvariantCulture); wtNode.AppendChild(atBlunt);
                     XmlElement absorb = xmlConfig.CreateElement("ExtraArmorSkillDamageAbsorb"); absorb.InnerText = wt.ExtraArmorSkillDamageAbsorb.ToString(CultureInfo.InvariantCulture); wtNode.AppendChild(absorb);
                     weaponTypesNode.AppendChild(wtNode);
                 }

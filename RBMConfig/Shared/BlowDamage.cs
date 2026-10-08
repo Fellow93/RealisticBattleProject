@@ -142,10 +142,16 @@ namespace RBMConfig
                         damage = WeaponTypeDamage(RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
                     }
+                case "Stone":
+                    {
+                        damage = WeaponTypeDamage(RBMConfig.getWeaponTypeFactors(weaponType), magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
+                        break;
+                    }
                 default:
                     {
                         //InformationManager.DisplayMessage(new InformationMessage("POZOR DEFAULT !!!!"));
-                        RBMCombatConfigWeaponType defaultwct = new RBMCombatConfigWeaponType("default", 1f, 1f, 1f, 1f, 1f, 1f);
+                        // Blunt threshold 5 and blunt factor 1 keep punches, kicks and other unlisted blunt blows on the old fixed rule.
+                        RBMCombatConfigWeaponType defaultwct = new RBMCombatConfigWeaponType("default", 1f, 1f, 1f, 1f, 1f, 5f, 1f);
                         damage = WeaponTypeDamage(defaultwct, magnitude, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
                     }
@@ -160,14 +166,18 @@ namespace RBMConfig
 
             float extraArmorThresholdFactorCut = 1f;
             float extraArmorThresholdFactorPierce = 1f;
+            float extraArmorThresholdFactorBlunt = 5f;
             float extraBluntFactorCut = 1f;
             float extraBluntFactorPierce = 1f;
+            float extraBluntFactorBlunt = 1f;
             if (weaponTypeFactors != null)
             {
                 extraArmorThresholdFactorCut = weaponTypeFactors.ExtraArmorThresholdFactorCut;
                 extraArmorThresholdFactorPierce = weaponTypeFactors.ExtraArmorThresholdFactorPierce;
+                extraArmorThresholdFactorBlunt = weaponTypeFactors.ExtraArmorThresholdFactorBlunt;
                 extraBluntFactorCut = weaponTypeFactors.ExtraBluntFactorCut;
                 extraBluntFactorPierce = weaponTypeFactors.ExtraBluntFactorPierce;
+                extraBluntFactorBlunt = weaponTypeFactors.ExtraBluntFactorBlunt;
             }
 
             switch (damageType)
@@ -177,7 +187,8 @@ namespace RBMConfig
                         //float armorReductionBlunt = 100f / ((100f + armorEffectiveness) * RBMConfig.RBMConfig.dict["Global.ArmorMultiplier"]);
                         //damage += magnitude * armorReductionBlunt * RBMConfig.RBMConfig.dict["Global.MaceBluntModifier"];
 
-                        penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * 5f * armorThresholdModifier);
+                        // Per-class factors; threshold 5 and factor 1 are the old fixed rule (SlingStone: 10 and 0.714).
+                        penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * extraArmorThresholdFactorBlunt * armorThresholdModifier);
                         float bluntFraction = 0f;
                         if (magnitude > 0f)
                         {
@@ -185,7 +196,9 @@ namespace RBMConfig
                         }
                         damage += penetratedDamage;
 
-                        float bluntTrauma = magnitude * (0.7f * RBMConfig.maceBluntModifier) * bluntFraction * RBMConfig.bluntTraumaMultiplier;
+                        // ExtraBluntFactorBlunt multiplies the 0.7 base rather than replacing it, so saved configs
+                        // (which store 1 for every class) keep the old trauma.
+                        float bluntTrauma = magnitude * (0.7f * RBMConfig.maceBluntModifier * extraBluntFactorBlunt) * bluntFraction * RBMConfig.bluntTraumaMultiplier;
                         bluntTraumaAfterArmor = Math.Max(0f, bluntTrauma * armorReduction);
                         damage += bluntTraumaAfterArmor;
 

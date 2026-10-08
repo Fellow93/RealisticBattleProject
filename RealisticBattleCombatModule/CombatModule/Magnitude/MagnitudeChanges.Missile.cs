@@ -61,9 +61,20 @@ namespace RBMCombat
             switch (weaponClass)
             {
                 case WeaponClass.Boulder:
-                case WeaponClass.Stone:
                     {
                         physicalDamage = (missileSpeed * missileSpeed * (weaponWeight) * 0.5f);
+                        break;
+                    }
+                case WeaponClass.Stone:
+                    {
+                        // A hand-thrown rock leaves at a flat MissileBallistics.StoneThrowSpeed (25 m/s), and missileSpeed
+                        // here is the closing speed, so a target running into it is hit harder. 450 J/kg keeps that up to
+                        // ~30 m/s closing speed (vs 312.5 J/kg for the throw at rest) so a fast charge cannot double it.
+                        physicalDamage = (missileSpeed * missileSpeed * (weaponWeight) * 0.5f);
+                        if (physicalDamage > (weaponWeight) * 450f)
+                        {
+                            physicalDamage = (weaponWeight) * 450f;
+                        }
                         break;
                     }
                 case WeaponClass.ThrowingAxe:
