@@ -256,10 +256,30 @@ namespace RBMAI
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 15f, 0.065f, 30f, 0.065f);
                         return;
                     }
+                    // AI mounted skirmishers with something left to shoot: horse archers with ammo, and javelin riders
+                    // while their formation skirmishes (BehaviorMountedSkirmish; such a formation counts as cavalry and
+                    // used to fall through to vanilla DefaultMove, ChargeHorseback 100 within ~8 m). They keep the bow
+                    // and only defend themselves with the sword when an enemy is on top of them: Melee and
+                    // ChargeHorseback overtake RangedHorseback (~7.4 there) at about 3.5 m and 3 m. The block below
+                    // used to give every rider with no or medium-plus horse armor a ChargeHorseback rising 5 -> 30
+                    // over 0-20 m, which beat the bow everywhere from ~3.5 m to 20 m, so skirmishers rode down any
+                    // enemy that came within 20 m. Riders out of ammo or unhorsed still get the fighting weights below.
+                    if (___Agent.Formation.IsAIControlled && ___Agent.HasMount
+                        && ((___Agent.IsRangedCached && ___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
+                            || (___Agent.HasAnyRangedWeaponCached && ___Agent.Formation.AI.ActiveBehavior is BehaviorMountedSkirmish)))
+                    {
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 40f, 3f, 15f, 4f, 0.01f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 12f, 3f, 7.5f, 4f, 0.01f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 8f, 10f, 6f, 25f, 0.05f);
+                        __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0.5f, 10f, 1f, 30f, 30f);
+                        return;
+                    }
                     if (___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                     {
                         if (___Agent.Formation.IsAIControlled)
                         {
+                            // Reached only by riders out of ammo or unhorsed (see above): they fight.
                             // AI horse archers ride the formation's orbit (BehaviorMountedSkirmish) in their slots and
                             // shoot from it. RangedHorseback used to peak at 30 and only fall under GoToPos (3-5) about
                             // 100 m out, and ChargeHorseback about 23 m out, so within bow range of anything every rider

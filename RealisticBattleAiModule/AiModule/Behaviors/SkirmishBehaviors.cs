@@ -315,12 +315,346 @@ namespace RBMAI
 
         public class RotationChangeClass
         {
-            public int waitbeforeChangeCooldownMax = 100;
-            public int waitbeforeChangeCooldownCurrent = 0;
             public RotationDirection rotationDirection = RotationDirection.Left;
+
+            private float lastFlipTime = float.MinValue;
+
+            private float lastSwitchTime = float.MinValue;
+
+            // The last orbit decision written to the AI log, so only changes are written.
+            public string lastLoggedMode;
+
+            // The file count the square form order was last set to (0 = not set by this behavior).
+            public int squareFiles;
 
             public RotationChangeClass()
             { }
+
+            // Moves the orbit onto the formation that blocks it, at most once per FlipCooldownSeconds.
+            public bool TrySwitchTarget(float now)
+            {
+                if (now - lastSwitchTime < FlipCooldownSeconds)
+                {
+                    return false;
+                }
+                lastSwitchTime = now;
+                return true;
+            }
+
+            // Reverses the orbit, at most once per FlipCooldownSeconds so a formation boxed in on both sides does not
+            // turn back and forth every tick.
+            public bool TryFlip(float now)
+            {
+                if (now - lastFlipTime < FlipCooldownSeconds)
+                {
+                    return false;
+                }
+                rotationDirection = rotationDirection == RotationDirection.Left ? RotationDirection.Right : RotationDirection.Left;
+                lastFlipTime = now;
+                return true;
+            }
+        }
+
+        private const float FlipCooldownSeconds = 10f;
+
+        // An orbit point is dangerous when, by the time the horse archers get there, another enemy formation is
+        //  - nearer to it than the orbit's target and within the orbit radius: the orbit has carried them past their
+        //    target into a neighbour (the next step of an echeloned line). A formation supporting the target from
+        //    behind, or archers on its wing, is farther away than the target on the front of the orbit, so circling
+        //    in front of an ordinary enemy line is not blocked; or
+        //  - within the hard radius of its line, whatever the target: enemy cavalry or horse archers they have reason
+        //    to fear (see CavalryFear), or riding into anything.
+        // Distances are from the horse archers' centre to the edge of the other formation. A first version also
+        // subtracted half the horse archers' width and used 25-60 m radii regardless of the target: in a normal
+        // enemy army that blocked the orbit both ways almost everywhere, and the horse archers stood still.
+        private const float HardRadiusMeleeCavalry = 50f;
+        private const float HardRadiusHorseArchers = 40f;
+        private const float HardRadiusOther = 20f;
+        private const int DangerMinUnits = 5;
+
+        // Fear of an enemy cavalry or horse archer formation is its formation power over the horse archers' own,
+        // capped at CavalryFearMax: 1 against an equal, 2 against one twice as strong. It scales the hard radius kept
+        // from it and how early they run from its charge. Below CavalryFearIgnoreBelow it is not feared at all: it
+        // counts like any other formation and its charge is met with arrows (and, at the last moment, swords).
+        private const float CavalryFearMax = 2f;
+        private const float CavalryFearIgnoreBelow = 0.35f;
+
+        private static float CavalryFear(Formation formation, Formation enemy)
+        {
+            float ownPower = formation.QuerySystem.FormationPower;
+            if (ownPower <= 0f)
+            {
+                return CavalryFearMax;
+            }
+            return MBMath.ClampFloat(enemy.QuerySystem.FormationPower / ownPower, 0f, CavalryFearMax);
+        }
+
+        private static float HardRadius(Formation formation, Formation enemy)
+        {
+            bool meleeCavalry = enemy.QuerySystem.IsCavalryFormation;
+            if (!meleeCavalry && !enemy.QuerySystem.IsRangedCavalryFormation)
+            {
+                return HardRadiusOther;
+            }
+            float fear = CavalryFear(formation, enemy);
+            if (fear < CavalryFearIgnoreBelow)
+            {
+                return HardRadiusOther;
+            }
+            return MathF.Max(HardRadiusOther, (meleeCavalry ? HardRadiusMeleeCavalry : HardRadiusHorseArchers) * fear);
+        }
+
+        private const float OrbitStep = 25f;
+        private const float OrbitLookAhead = 60f;
+        private const float BackOffDistance = 40f;
+
+        // Enemy melee cavalry is a threat when it is riding at the horse archers at a charging pace and would reach
+        // them within CavalryEscapeSeconds times its CavalryFear (native's 4 s against an equal, but at its actual
+        // closing speed, not its top speed; 8 s against one twice as strong, never against a much weaker one).
+        // Cavalry standing, milling in a melee or riding across them is not: running from it back to their own army
+        // put them right next to the melee, standing still. Riders an enemy gets within ~15 m of evade on their own.
+        private const float CavalryEscapeSeconds = 4f;
+        private const float CavalryEscapeMinClosingSpeed = 3f;
+
+        // Enemy formations are checked where they will be when the horse archers get there. The velocity is the mean
+        // of the units' engine-smoothed AverageVelocity, cached per formation for VelocityCacheSeconds; the engine's
+        // formation CachedCurrentVelocity is a ~0.1 s difference of the unit average that jumps whenever a man dies
+        // or joins, which made cavalry fighting in a melee look like it was charging.
+        private const float PredictMaxSpeed = 15f;
+        private const float PredictMaxSeconds = 6f;
+        private const float TargetLeadMaxSeconds = 3f;
+        private const float MinOwnSpeed = 3f;
+        private const float VelocityCacheSeconds = 0.5f;
+
+        public struct CachedVelocity
+        {
+            public float Time;
+            public Vec2 Velocity;
+        }
+
+        public static Dictionary<Formation, CachedVelocity> velocityCache = new Dictionary<Formation, CachedVelocity>();
+
+        private static Vec2 FormationVelocity(Formation formation)
+        {
+            float now = Mission.Current.CurrentTime;
+            if (velocityCache.TryGetValue(formation, out CachedVelocity cached) && now - cached.Time < VelocityCacheSeconds)
+            {
+                return cached.Velocity;
+            }
+            Vec2 sum = Vec2.Zero;
+            int count = 0;
+            formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
+            {
+                Vec2 v = agent.AverageVelocity.AsVec2;
+                if (v.IsValid)
+                {
+                    sum += v;
+                    count++;
+                }
+            });
+            Vec2 velocity = count > 0 ? sum * (1f / count) : Vec2.Zero;
+            if (velocity.LengthSquared > PredictMaxSpeed * PredictMaxSpeed)
+            {
+                velocity = velocity.Normalized() * PredictMaxSpeed;
+            }
+            velocityCache[formation] = new CachedVelocity { Time = now, Velocity = velocity };
+            return velocity;
+        }
+
+        private static Vec2 PredictedCenter(Formation enemy, float seconds)
+        {
+            return RBMAI.Utilities.GetFormationCenter(enemy) + FormationVelocity(enemy) * MathF.Min(seconds, PredictMaxSeconds);
+        }
+
+        // Seconds the horse archers need to ride from one point to another at their formation's speed.
+        private static float SecondsToReach(Formation formation, Vec2 from, Vec2 to)
+        {
+            return from.Distance(to) / MathF.Max(formation.CachedMovementSpeed, MinOwnSpeed);
+        }
+
+        private static Vec2 ClosestPointOnFormationLine(Vec2 point, Formation enemy, Vec2 center)
+        {
+            Vec2 right = enemy.Direction.Normalized().RightVec();
+            float halfWidth = enemy.Width * 0.5f;
+            float along = MBMath.ClampFloat((point - center).DotProduct(right), -halfWidth, halfWidth);
+            return center + right * along;
+        }
+
+        // Distance from the point to the edge of the formation, at the formation's position after the given seconds.
+        private static float EdgeDistance(Vec2 point, Formation enemy, float seconds)
+        {
+            Vec2 center = PredictedCenter(enemy, seconds);
+            return point.Distance(ClosestPointOnFormationLine(point, enemy, center)) - enemy.Depth * 0.5f;
+        }
+
+        // The enemy formation, other than the orbit's target, that makes the point dangerous (see the rules above the
+        // constants) once every formation has moved on for the given number of seconds, or null. When several do,
+        // the nearest.
+        private static Formation FindDanger(Formation formation, Formation orbitTarget, Vec2 point, float seconds, float orbitRadius)
+        {
+            float targetDistance = orbitTarget != null ? EdgeDistance(point, orbitTarget, seconds) : float.MaxValue;
+            Formation worst = null;
+            float worstDistance = float.MaxValue;
+            foreach (Team team in Mission.Current.Teams)
+            {
+                if (!team.IsEnemyOf(formation.Team))
+                {
+                    continue;
+                }
+                foreach (Formation enemy in team.FormationsIncludingSpecialAndEmpty)
+                {
+                    if (enemy == orbitTarget || enemy.CountOfUnits < DangerMinUnits)
+                    {
+                        continue;
+                    }
+                    float distance = EdgeDistance(point, enemy, seconds);
+                    float hardRadius = HardRadius(formation, enemy);
+                    bool pastTarget = distance < targetDistance && distance < orbitRadius;
+                    if ((distance < hardRadius || pastTarget) && distance < worstDistance)
+                    {
+                        worstDistance = distance;
+                        worst = enemy;
+                    }
+                }
+            }
+            return worst;
+        }
+
+        // Checks the next orbit point, a point further along the orbit, and (when far off) the ride to it, each against
+        // where the other enemy formations will be by the time the horse archers get there. The ride itself is only
+        // checked against the hard radii: on the way in from afar, every formation is nearer than the target.
+        private static Formation FindOrbitDanger(Formation formation, Formation orbitTarget, Ellipse ellipse, float orbitRadius, Vec2 from, RotationDirection direction, out Vec2 orbitPoint)
+        {
+            orbitPoint = ellipse.GetTargetPos(from, OrbitStep, direction);
+            float stepSeconds = SecondsToReach(formation, from, orbitPoint);
+            float lookAheadSeconds = stepSeconds + (OrbitLookAhead - OrbitStep) / MathF.Max(formation.CachedMovementSpeed, MinOwnSpeed);
+            Formation danger = FindDanger(formation, orbitTarget, orbitPoint, stepSeconds, orbitRadius)
+                ?? FindDanger(formation, orbitTarget, ellipse.GetTargetPos(from, OrbitLookAhead, direction), lookAheadSeconds, orbitRadius);
+            if (danger == null && from.Distance(orbitPoint) > OrbitLookAhead)
+            {
+                danger = FindDanger(formation, orbitTarget, Vec2.Lerp(from, orbitPoint, 0.5f), stepSeconds * 0.5f, 0f);
+            }
+            return danger;
+        }
+
+        // Rings searched for a safe firing spot when the orbit is blocked both ways: the orbit itself, then further out
+        // (still within bow range), each sampled every 360/SafeRingSamples degrees.
+        private static readonly float[] SafeRingExtraRadii = { 0f, 20f, 40f };
+        private const int SafeRingSamples = 16;
+
+        // The spot nearest the horse archers, on the innermost ring around the target that has one, where nothing
+        // makes them unsafe (FindDanger) and the ride there passes no hard radius.
+        private static bool TryFindSafeFiringPoint(Formation formation, Formation target, Vec2 targetCenter, float orbitRadius, Vec2 from, out Vec2 best)
+        {
+            best = from;
+            Vec2 right = target.Direction.Normalized().RightVec();
+            float halfWidth = target.Width * 0.5f;
+            foreach (float extra in SafeRingExtraRadii)
+            {
+                float radius = orbitRadius + extra + target.Depth * 0.5f;
+                float bestDistance = float.MaxValue;
+                for (int i = 0; i < SafeRingSamples; i++)
+                {
+                    float angle = MathF.PI * 2f * i / SafeRingSamples;
+                    Vec2 direction = new Vec2(MathF.Cos(angle), MathF.Sin(angle));
+                    // Measured from the target's line rather than its centre, so a wide formation is ringed at the
+                    // same distance along its whole front.
+                    Vec2 point = targetCenter + right * (direction.DotProduct(right) * halfWidth) + direction * radius;
+                    float distance = from.Distance(point);
+                    if (distance >= bestDistance || !Mission.Current.IsPositionInsideBoundaries(point))
+                    {
+                        continue;
+                    }
+                    float seconds = SecondsToReach(formation, from, point);
+                    if (FindDanger(formation, target, point, seconds, orbitRadius) != null
+                        || FindDanger(formation, target, Vec2.Lerp(from, point, 0.5f), seconds * 0.5f, 0f) != null)
+                    {
+                        continue;
+                    }
+                    bestDistance = distance;
+                    best = point;
+                }
+                if (bestDistance < float.MaxValue)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // The orbit around a target, centred where the target will be when the riders reach their next orbit point,
+        // so they do not trail a marching formation or ride into one coming at them.
+        private static Ellipse OrbitAround(Formation target, float radius, float ownSpeed, out Vec2 targetCenter)
+        {
+            targetCenter = PredictedCenter(target, MathF.Min(OrbitStep / ownSpeed, TargetLeadMaxSeconds));
+            float halfLength = (target.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose) ? target.Width * 0.25f : target.Width * 0.5f;
+            return new Ellipse(targetCenter, radius, halfLength, target.Direction);
+        }
+
+        private static string LogName(Formation formation)
+        {
+            return formation == null ? "-" : formation.Team.Side + "#" + formation.Team.TeamIndex + "/" + formation.FormationIndex;
+        }
+
+        // Writes the horse archers' orbit decision to the AI behavior log (RBM Debug & Logging) when it changes.
+        private static void LogOrbitMode(Formation formation, RotationChangeClass state, string mode, Formation target, Formation danger)
+        {
+            if (!AiBehaviorLog.IsEnabled || state == null)
+            {
+                return;
+            }
+            string key = mode + "|" + LogName(target) + "|" + LogName(danger);
+            if (state.lastLoggedMode == key)
+            {
+                return;
+            }
+            state.lastLoggedMode = key;
+            AiBehaviorLog.Write("t=" + AiBehaviorLog.Fmt(Mission.Current.CurrentTime) + "\tCHANGE\tHA_ORBIT\t" + LogName(formation)
+                + "\t" + mode + "\ttarget=" + LogName(target) + "\tdanger=" + LogName(danger) + "\tdir=" + state.rotationDirection);
+        }
+
+        private static RotationChangeClass GetRotationState(Formation formation)
+        {
+            if (!rotationDirectionDictionary.TryGetValue(formation, out RotationChangeClass state))
+            {
+                state = new RotationChangeClass();
+                rotationDirectionDictionary.Add(formation, state);
+            }
+            return state;
+        }
+
+        // The enemy melee cavalry formation charging the horse archers, or null.
+        private static Formation FindEnemyCavalryClosing(Formation formation)
+        {
+            Vec2 center = RBMAI.Utilities.GetFormationCenter(formation);
+            foreach (Team team in Mission.Current.Teams)
+            {
+                if (!team.IsEnemyOf(formation.Team))
+                {
+                    continue;
+                }
+                foreach (Formation enemy in team.FormationsIncludingSpecialAndEmpty)
+                {
+                    if (enemy.CountOfUnits < DangerMinUnits || !enemy.QuerySystem.IsCavalryFormation)
+                    {
+                        continue;
+                    }
+                    float fear = CavalryFear(formation, enemy);
+                    if (fear < CavalryFearIgnoreBelow)
+                    {
+                        continue;
+                    }
+                    Vec2 toMe = center - RBMAI.Utilities.GetFormationCenter(enemy);
+                    float gap = toMe.Normalize() - (enemy.Depth + formation.Depth) * 0.5f;
+                    // Only the part of its velocity aimed at the horse archers counts.
+                    float closingSpeed = FormationVelocity(enemy).DotProduct(toMe);
+                    if (closingSpeed > CavalryEscapeMinClosingSpeed && gap < closingSpeed * CavalryEscapeSeconds * fear)
+                    {
+                        return enemy;
+                    }
+                }
+            }
+            return null;
         }
 
         public static Dictionary<Formation, RotationChangeClass> rotationDirectionDictionary = new Dictionary<Formation, RotationChangeClass> { };
@@ -475,9 +809,20 @@ namespace RBMAI
             else
             {
                 bool isEnemyClose = (__instance.Formation.QuerySystem.AverageAllyPosition - __instance.Formation.Team.QuerySystem.AverageEnemyPosition).LengthSquared <= 160000f;
-                ____engaging = (isEnemyClose || ((!____engaging) ? ((__instance.Formation.QuerySystem.Formation.CachedAveragePosition - __instance.Formation.QuerySystem.AverageAllyPosition).LengthSquared <= 160000f) : (!(__instance.Formation.QuerySystem.UnderRangedAttackRatio * 0.2f > __instance.Formation.QuerySystem.MakingRangedAttackRatio))));
+                // Horse archers fall back on their own army while enemy melee cavalry is about to reach them, as native
+                // does; the orbit would otherwise keep them circling into the charge.
+                Formation cavalryClosing = __instance.Formation.QuerySystem.IsRangedCavalryFormation ? FindEnemyCavalryClosing(__instance.Formation) : null;
+                if (cavalryClosing != null)
+                {
+                    LogOrbitMode(__instance.Formation, GetRotationState(__instance.Formation), "CAVALRY_ESCAPE", targetFormation, cavalryClosing);
+                }
+                ____engaging = cavalryClosing == null && (isEnemyClose || ((!____engaging) ? ((__instance.Formation.QuerySystem.Formation.CachedAveragePosition - __instance.Formation.QuerySystem.AverageAllyPosition).LengthSquared <= 160000f) : (!(__instance.Formation.QuerySystem.UnderRangedAttackRatio * 0.2f > __instance.Formation.QuerySystem.MakingRangedAttackRatio))));
                 if (!____engaging)
                 {
+                    if (cavalryClosing == null && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
+                    {
+                        LogOrbitMode(__instance.Formation, GetRotationState(__instance.Formation), "FALL_BACK", targetFormation, null);
+                    }
                     position = new WorldPosition(Mission.Current.Scene, new Vec3(__instance.Formation.QuerySystem.AverageAllyPosition.x, __instance.Formation.QuerySystem.AverageAllyPosition.y, __instance.Formation.Team.GetMedianPosition(__instance.Formation.Team.GetAveragePosition()).GetNavMeshZ() + 100f));
                 }
                 else
@@ -498,61 +843,96 @@ namespace RBMAI
 
                     if (enemyFormation != null && enemyFormation.QuerySystem != null)
                     {
-                        bool isEnemyCav = enemyFormation.QuerySystem.IsCavalryFormation || enemyFormation.QuerySystem.IsRangedCavalryFormation;
                         float distance = 60f;
                         if (!__instance.Formation.QuerySystem.IsRangedCavalryFormation)
                         {
                             distance = 30f;
                         }
 
-                        RotationChangeClass rotationDirection;
-                        if (!rotationDirectionDictionary.TryGetValue(__instance.Formation, out rotationDirection))
+                        RotationChangeClass rotationDirection = GetRotationState(__instance.Formation);
+
+                        float now = Mission.Current.CurrentTime;
+                        Vec2 myPosition = __instance.Formation.SmoothedAverageUnitPosition;
+
+                        // At the map edge the orbit turns back instead of pressing into the boundary.
+                        float distanceFromBoundary = Mission.Current.GetClosestBoundaryPosition(__instance.Formation.CurrentPosition).Distance(__instance.Formation.CurrentPosition);
+                        if (distanceFromBoundary <= __instance.Formation.Width / 2f)
                         {
-                            rotationDirection = new RotationChangeClass();
-                            rotationDirectionDictionary.Add(__instance.Formation, rotationDirection);
+                            rotationDirection.TryFlip(now);
                         }
 
                         if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
                         {
-                            Ellipse ellipse = new Ellipse(RBMAI.Utilities.GetFormationCenter(enemyFormation), distance, (enemyFormation.ArrangementOrder == ArrangementOrder.ArrangementOrderLoose) ? enemyFormation.Width * 0.25f : enemyFormation.Width * 0.5f, enemyFormation.Direction);
-                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.SmoothedAverageUnitPosition, 25f, rotationDirection.rotationDirection));
+                            if (__instance.Formation.IsAIControlled)
+                            {
+                                KeepSquare(__instance.Formation, rotationDirection);
+                            }
+                            float ownSpeed = MathF.Max(__instance.Formation.CachedMovementSpeed, MinOwnSpeed);
+                            Formation orbitTarget = enemyFormation;
+                            Ellipse ellipse = OrbitAround(orbitTarget, distance, ownSpeed, out Vec2 targetCenter);
+                            string mode = "ORBIT";
+
+                            // The orbit only knows its target. If it would carry the formation past it into another
+                            // enemy formation (the next step of an echeloned line), close to enemy cavalry, or off the
+                            // map, circle the other way. If both ways are blocked by a foot formation, circle that one
+                            // instead, as native circles the outermost formation of a line. Only when that fails too,
+                            // stand off the target and shoot, or back away when even that spot is too close.
+                            Formation danger = FindOrbitDanger(__instance.Formation, orbitTarget, ellipse, distance, myPosition, rotationDirection.rotationDirection, out Vec2 orbitPoint);
+                            bool blocked = danger != null || !Mission.Current.IsPositionInsideBoundaries(orbitPoint);
+                            if (blocked && rotationDirection.TryFlip(now))
+                            {
+                                mode = "FLIP";
+                                danger = FindOrbitDanger(__instance.Formation, orbitTarget, ellipse, distance, myPosition, rotationDirection.rotationDirection, out orbitPoint);
+                                blocked = danger != null || !Mission.Current.IsPositionInsideBoundaries(orbitPoint);
+                            }
+                            if (blocked && danger != null && !danger.QuerySystem.IsCavalryFormation && rotationDirection.TrySwitchTarget(now))
+                            {
+                                mode = "SWITCH";
+                                orbitTarget = danger;
+                                orbitTargetStorage[__instance.Formation] = orbitTarget;
+                                ellipse = OrbitAround(orbitTarget, distance, ownSpeed, out targetCenter);
+                                danger = FindOrbitDanger(__instance.Formation, orbitTarget, ellipse, distance, myPosition, rotationDirection.rotationDirection, out orbitPoint);
+                                blocked = danger != null || !Mission.Current.IsPositionInsideBoundaries(orbitPoint);
+                            }
+                            if (blocked)
+                            {
+                                // Ride to the nearest spot around the target that is safe and shoot from there. A
+                                // first version backed off 40 m from wherever they were whenever the spot straight in
+                                // front of the target was unsafe; that repeated every tick, so they rode all the way
+                                // back to where they spawned, came forward again when the orbit next opened, and so
+                                // on. Now they only back off when they themselves are in danger, and otherwise hold.
+                                if (TryFindSafeFiringPoint(__instance.Formation, orbitTarget, targetCenter, distance, myPosition, out Vec2 safePoint))
+                                {
+                                    mode = "SAFE_POINT";
+                                    orbitPoint = safePoint;
+                                }
+                                else
+                                {
+                                    Formation threat = FindDanger(__instance.Formation, orbitTarget, myPosition, 0f, 0f);
+                                    if (threat != null)
+                                    {
+                                        // Away from where the threat will be, so a formation moving across their path
+                                        // is not backed into.
+                                        mode = "BACK_OFF";
+                                        danger = threat;
+                                        Vec2 threatCenter = PredictedCenter(threat, BackOffDistance / ownSpeed);
+                                        Vec2 away = (myPosition - ClosestPointOnFormationLine(myPosition, threat, threatCenter)).Normalized();
+                                        orbitPoint = myPosition + away * BackOffDistance;
+                                    }
+                                    else
+                                    {
+                                        mode = "HOLD";
+                                        orbitPoint = myPosition;
+                                    }
+                                }
+                            }
+                            LogOrbitMode(__instance.Formation, rotationDirection, mode, orbitTarget, danger);
+                            position.SetVec2(orbitPoint);
                         }
                         else
                         {
                             Ellipse ellipse = new Ellipse(RBMAI.Utilities.GetFormationCenter(enemyFormation), distance, enemyFormation.Width * 0.5f, enemyFormation.Direction);
-                            position.SetVec2(ellipse.GetTargetPos(__instance.Formation.SmoothedAverageUnitPosition, 25f, rotationDirection.rotationDirection));
-                        }
-                        if (rotationDirection.waitbeforeChangeCooldownCurrent > 0)
-                        {
-                            if (rotationDirection.waitbeforeChangeCooldownCurrent > rotationDirection.waitbeforeChangeCooldownMax)
-                            {
-                                rotationDirection.waitbeforeChangeCooldownCurrent = 0;
-                                rotationDirectionDictionary[__instance.Formation] = rotationDirection;
-                            }
-                            else
-                            {
-                                rotationDirection.waitbeforeChangeCooldownCurrent++;
-                                rotationDirectionDictionary[__instance.Formation] = rotationDirection;
-                            }
-                            position.SetVec2(enemyFormation.CurrentPosition + enemyFormation.Direction.Normalized() * (__instance.Formation.Depth / 2f + enemyFormation.Depth / 2f + 50f));
-                            if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(position.AsVec2))
-                            {
-                                position.SetVec2(enemyFormation.CurrentPosition + enemyFormation.Direction.Normalized() * -(__instance.Formation.Depth / 2f + enemyFormation.Depth / 2f + 50f));
-                            }
-                        }
-                        float distanceFromBoundary = Mission.Current.GetClosestBoundaryPosition(__instance.Formation.CurrentPosition).Distance(__instance.Formation.CurrentPosition);
-                        if (distanceFromBoundary <= __instance.Formation.Width / 2f)
-                        {
-                            if (rotationDirection.waitbeforeChangeCooldownCurrent > rotationDirection.waitbeforeChangeCooldownMax)
-                            {
-                                rotationDirection.waitbeforeChangeCooldownCurrent = 0;
-                                rotationDirectionDictionary[__instance.Formation] = rotationDirection;
-                            }
-                            else
-                            {
-                                rotationDirection.waitbeforeChangeCooldownCurrent++;
-                                rotationDirectionDictionary[__instance.Formation] = rotationDirection;
-                            }
+                            position.SetVec2(ellipse.GetTargetPos(myPosition, OrbitStep, rotationDirection.rotationDirection));
                         }
                     }
                     else
@@ -563,12 +943,73 @@ namespace RBMAI
             }
             if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(position.AsVec2))
             {
+                if (__instance.Formation.QuerySystem.IsRangedCavalryFormation)
+                {
+                    LogOrbitMode(__instance.Formation, GetRotationState(__instance.Formation), "HOLD_NO_NAVMESH", targetFormation, null);
+                }
                 position = __instance.Formation.QuerySystem.Formation.CachedMedianPosition;
                 ____currentOrder = MovementOrder.MovementOrderMove(position);
             }
             else
             {
                 ____currentOrder = MovementOrder.MovementOrderMove(position);
+            }
+        }
+
+        // Native forms Line + Deep, a compact block. Since horse archers ride the orbit in their slots, that block
+        // re-laid itself every time its facing swung round the target and the riders packed together. Loose keeps
+        // them spread out, and a custom width makes the block about as deep as it is wide, so it turns round the
+        // target without a long flank swinging out. (FormOrderWider was tried first: for a line it means 64 files,
+        // a single rank for any normal horse archer formation.)
+        [HarmonyPostfix]
+        [HarmonyPatch("OnBehaviorActivatedAux")]
+        private static void PostfixOnBehaviorActivatedAux(BehaviorMountedSkirmish __instance)
+        {
+            if (__instance.Formation != null && __instance.Formation.IsAIControlled && __instance.Formation.QuerySystem.IsRangedCavalryFormation)
+            {
+                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose);
+                SetSquare(__instance.Formation, GetRotationState(__instance.Formation));
+            }
+        }
+
+        // Re-squares the block once losses have changed the square file count by more than this fraction (and at
+        // least one file); every re-form re-lays the whole formation, so it is not done for every man lost.
+        private const float SquareFilesTolerance = 0.2f;
+
+        // The file count at which a loose line of horse archers has as many metres of depth as of width: files and
+        // ranks in the ratio of the engine's rank step to its file step for loose cavalry.
+        private static int SquareFileCount(Formation formation)
+        {
+            int spacing = ArrangementOrder.GetUnitSpacingOf(ArrangementOrderEnum.Loose);
+            float diameter = Formation.GetDefaultUnitDiameter(true);
+            float fileStep = diameter + Formation.GetDefaultUnitInterval(true, spacing);
+            float rankStep = diameter + Formation.GetDefaultUnitDistance(true, spacing);
+            int count = Math.Max(formation.CountOfUnits, 1);
+            return Math.Max(1, MathF.Round(MathF.Sqrt(count * rankStep / fileStep)));
+        }
+
+        // The width is built from the formation's own unit diameter and interval, the same values the engine turns
+        // a custom width back into a file count with, so it gets exactly this many files.
+        private static void SetSquare(Formation formation, RotationChangeClass state)
+        {
+            int files = SquareFileCount(formation);
+            float width = (files - 1) * (formation.UnitDiameter + formation.Interval) + formation.UnitDiameter;
+            formation.SetFormOrder(FormOrder.FormOrderCustom(width));
+            state.squareFiles = files;
+        }
+
+        // Compares against the file count it set itself: the engine rewrites the custom width to the arrangement's
+        // actual width on every re-form, so reading that back would trigger a re-form every tick.
+        private static void KeepSquare(Formation formation, RotationChangeClass state)
+        {
+            if (state.squareFiles <= 0 || formation.ArrangementOrder != ArrangementOrder.ArrangementOrderLoose || formation.FormOrder.OrderEnum != FormOrder.FormOrderEnum.Custom)
+            {
+                return;
+            }
+            int files = SquareFileCount(formation);
+            if (Math.Abs(files - state.squareFiles) > Math.Max(1f, state.squareFiles * SquareFilesTolerance))
+            {
+                SetSquare(formation, state);
             }
         }
 
