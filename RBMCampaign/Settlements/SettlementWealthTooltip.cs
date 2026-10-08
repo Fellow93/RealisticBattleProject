@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.Information;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
@@ -48,10 +51,74 @@ namespace RBMCampaign
             Action<PropertyBasedTooltipVM, object[]> wrapper = delegate (PropertyBasedTooltipVM vm, object[] args)
             {
                 chained(vm, args);
+                int ourStart = vm.TooltipPropertyList.Count;
                 Append(vm, args);
+                MoveUnderInformation(vm.TooltipPropertyList, ourStart);
+                SettlementTroopTooltip.GroupTroopTypes(vm, args.Length > 0 ? args[0] as Settlement : null);
             };
             _installedWrapper = wrapper;
             InformationManager.RegisterTooltip<Settlement, PropertyBasedTooltipVM>(wrapper, registry.MovieName);
+        }
+
+        /// <summary>
+        /// Moves our lines (everything from <paramref name="ourStart"/> on) up to the end of the tooltip's
+        /// "Information" section, where prosperity, loyalty and the bound villages are.
+        /// </summary>
+        /// <remarks>
+        /// Appended at the very end they came after the troop roster that the extended (Alt) view lists,
+        /// which for a big garrison runs the tooltip off the bottom of the screen and took our lines with
+        /// it. They also landed below the "press Alt" and parley hints. Both refreshers -- vanilla's
+        /// TooltipRefresherCollection.RefreshSettlementTooltip and War Sails' -- open that section with a
+        /// spacer and a "str_information" header and end it at the next spacer (TextHeight -1), which opens
+        /// the troop roster, the parties list or the DEV shop list. When the section is missing (the
+        /// settlement's information is hidden from the player) the lines stay at the end as before.
+        /// </remarks>
+        private static void MoveUnderInformation(MBBindingList<TooltipProperty> list, int ourStart)
+        {
+            if (list.Count <= ourStart)
+            {
+                return;
+            }
+            string header = GameTexts.FindText("str_information").ToString();
+            int headerIndex = -1;
+            for (int i = 0; i < ourStart; i++)
+            {
+                if (list[i].DefinitionLabel == header)
+                {
+                    headerIndex = i;
+                    break;
+                }
+            }
+            if (headerIndex < 0)
+            {
+                return;
+            }
+            int target = ourStart;
+            for (int i = headerIndex + 1; i < ourStart; i++)
+            {
+                if (list[i].TextHeight == -1)
+                {
+                    target = i;
+                    break;
+                }
+            }
+            if (target == ourStart)
+            {
+                return;
+            }
+            var ours = new List<TooltipProperty>();
+            for (int i = ourStart; i < list.Count; i++)
+            {
+                ours.Add(list[i]);
+            }
+            for (int i = list.Count - 1; i >= ourStart; i--)
+            {
+                list.RemoveAt(i);
+            }
+            for (int i = 0; i < ours.Count; i++)
+            {
+                list.Insert(target + i, ours[i]);
+            }
         }
 
         private static void Append(PropertyBasedTooltipVM propertyBasedTooltipVM, object[] args)
@@ -68,10 +135,11 @@ namespace RBMCampaign
             // A castle holds a single pool -- its own wealth -- with no market and so no citizen purse;
             // a village likewise has one purse and no market. Only a town shows both a citizen-wealth
             // line and a settlement line. See SettlementWealth.HasMarket.
+            bool exact = propertyBasedTooltipVM.IsExtended;
             if (settlement.IsCastle)
             {
                 propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_wealth_castle}Castle wealth").ToString(),
-                    SettlementWealth.GetSettlementWealth(settlement).ToString(), 0);
+                    FormatWealth(SettlementWealth.GetSettlementWealth(settlement), exact), 0);
                 AppendConstruction(propertyBasedTooltipVM, settlement);
                 AppendRecruitPool(propertyBasedTooltipVM, settlement);
                 return;
@@ -79,15 +147,33 @@ namespace RBMCampaign
             if (settlement.IsTown)
             {
                 propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_wealth_citizen}Citizen wealth").ToString(),
-                    SettlementWealth.GetCitizenWealth(settlement).ToString(), 0);
+                    FormatWealth(SettlementWealth.GetCitizenWealth(settlement), exact), 0);
             }
             propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_wealth_settlement}Settlement wealth").ToString(),
-                SettlementWealth.GetSettlementWealth(settlement).ToString(), 0);
+                FormatWealth(SettlementWealth.GetSettlementWealth(settlement), exact), 0);
             if (settlement.IsTown)
             {
                 AppendConstruction(propertyBasedTooltipVM, settlement);
             }
             AppendRecruitPool(propertyBasedTooltipVM, settlement);
+        }
+
+        /// <summary>
+        /// A purse as the hover shows it. At a glance it is only a rough figure -- rounded to its leading
+        /// two digits, midpoints up: 47,312 reads "~47,000", 12,550 reads "~13,000" and 1,234,567 reads
+        /// "~1,200,000" -- and holding the extend key (vanilla's "more info" Alt, which re-runs the whole
+        /// refresher, see PropertyBasedTooltipVM.OnIsExtendedChanged) gives the exact sum.
+        /// </summary>
+        private static string FormatWealth(int amount, bool exact)
+        {
+            if (exact || amount == 0)
+            {
+                return amount.ToString("N0", CultureInfo.InvariantCulture);
+            }
+            // Under 100 the two leading digits are the whole number, so the magnitude bottoms out at 1.
+            long magnitude = (long)Math.Pow(10, Math.Max(0, Math.Floor(Math.Log10(Math.Abs((long)amount))) - 1));
+            long rounded = (long)Math.Round((double)Math.Abs((long)amount) / magnitude, MidpointRounding.AwayFromZero) * magnitude;
+            return "~" + (amount < 0 ? "-" : string.Empty) + rounded.ToString("N0", CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -132,9 +218,9 @@ namespace RBMCampaign
                 return;
             }
             propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_construction_spend}Construction spend (daily)").ToString(),
-                Construction.LastDailySpend(settlement).ToString(), 0);
+                Construction.LastDailySpend(settlement).ToString("N0", CultureInfo.InvariantCulture), 0);
             propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_construction_reserve}Construction reserve").ToString(),
-                settlement.Town.BoostBuildingProcess.ToString(), 0);
+                settlement.Town.BoostBuildingProcess.ToString("N0", CultureInfo.InvariantCulture), 0);
         }
     }
 }

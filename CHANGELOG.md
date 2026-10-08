@@ -34,6 +34,8 @@
 - The auto-resolve battle panel shows the hardest hits, heroes' blows and siege engine shots of your battle again with the auto-resolve logging settings off. Since those settings moved to RBM Debug & Logging and became off by default, the panel only showed them while Detailed Auto Resolve Logging and Auto Resolve Per-Hit Detail were both on.
 - When a siege assault in auto-resolve ends because the attackers have nothing left to climb or break, the battle panel now says the assault was repulsed and the attackers fell back. It used to say they fled, as if they had routed, even with Auto Resolve Routing off (that setting never covered sieges).
 - Deserter bands busy raiding a village look for new prey or villages at most every five in-game hours, instead of every hour while the raid lasts. They still drop a target the moment it is no longer valid and search again.
+- The campaign map tooltip of a town, castle or village now shows its wealth only roughly, rounded to the first two digits (47,312 shows as ~47,000, 12,550 as ~13,000, 1,234,567 as ~1,200,000). Hold Alt for the exact amount. The construction lines in the same tooltip now have thousands separators too. RBM's lines (wealth, construction and recruit pool) now come right after the settlement's information (prosperity, loyalty and the rest) instead of at the very bottom, so they stay on screen when Alt lists a large garrison.
+- Holding Alt over a town, castle or village on the campaign map now lists its troops and prisoners grouped by type and tier (such as "Infantry, tier 3: 45+3w") instead of one row for every troop type, so the tooltip of a large garrison no longer runs off the bottom of the screen. Heroes are still listed by name.
 
 ## v4.6.0 (changes since v4.5.4)
 
