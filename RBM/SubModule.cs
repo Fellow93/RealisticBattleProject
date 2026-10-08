@@ -294,6 +294,10 @@ namespace RBM
             }
             if (RBMConfig.RBMConfig.rbmCombatEnabled)
             {
+                // Prototype mordhau usage: hand moved up the blade + Blunt swing, before any agent is built (each agent
+                // hands the usage frame to the engine when it equips). Per mission so a sword crafted mid-campaign gets
+                // it too; idempotent. Also run at OnGameInitializationFinished for tooltips.
+                MordhauGrip.Apply();
                 if (RBMConfig.RBMConfig.armorStatusUIEnabled)
                 {
                     mission.AddMissionBehavior((MissionBehavior)(object)new PlayerArmorStatus());
@@ -405,6 +409,12 @@ namespace RBM
             else
             {
                 RBMConfig.TroopPerks.Clear();
+            }
+            // Prototype mordhau usage (RBMCombat MordhauGrip): every item exists by now, in a custom battle, a new
+            // campaign and a loaded save alike, so inventory tooltips already show the Blunt swing. Missions apply it again.
+            if (RBMConfig.RBMConfig.rbmCombatEnabled)
+            {
+                MordhauGrip.Apply();
             }
             if (Campaign.Current != null && Campaign.Current.Clans != null)
             {

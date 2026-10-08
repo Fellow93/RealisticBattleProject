@@ -52,6 +52,11 @@ namespace RBMAI
         public static bool HitWithWeaponBlade(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
         {
             WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;
+            // Prototype mordhau grip: the hilt is the striking head (same rule as RBMCombat's copy).
+            if (WeaponModes.IsMordhau(currentUsageItem))
+            {
+                return true;
+            }
             if (attackerWeapon.Item != null && currentUsageItem != null && attackerWeapon.Item.WeaponDesign != null &&
                 attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0)
             {
@@ -116,6 +121,14 @@ namespace RBMAI
                 {
                     return 0.3f;
                 }
+            }
+
+            // Prototype mordhau: scored as a two-handed mace, whose swings take the head-hit value below, and every
+            // contact of it is with its head (the hilt). Its CenterOfMass and real length describe the normal grip, so the
+            // centre-of-mass rule would misread it.
+            if (WeaponModes.IsMordhau(currentUsageItem))
+            {
+                return 1f;
             }
 
             // neutral when the weapon can't be measured; 0 here used to zero all block/parry posture damage

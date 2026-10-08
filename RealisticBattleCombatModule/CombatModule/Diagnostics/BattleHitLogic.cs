@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Text;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Core;
+using TaleWorlds.Engine;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 namespace RBMCombat
@@ -112,6 +114,23 @@ namespace RBMCombat
             header.Append("         FACE = counted as a face hit (swings need both, thrusts and missiles only head-on).").Append("\n");
             header.Append("         A posture crush-through can add a head row with nz 0; it is never a face hit.").Append("\n");
             header.Append("\n");
+            header.Append("  MORDHAU = prototype mordhau usage (MordhauGrip.cs), one line per melee collision of it, landed or blocked,").Append("\n");
+            header.Append("         before that blow's own row. Weapon-local z runs along the sword from the normal grip (0), + toward").Append("\n");
+            header.Append("         the tip; the mordhau hand sits at handZ on the blade, the hilt end is z <= ~0.2, the pommel end below 0.").Append("\n");
+            header.Append("         cdow = engine CollisionDistanceOnWeapon, realLen = GetRealWeaponLength (hand to tip), offZ = weapon offset z,").Append("\n");
+            header.Append("         lever = hand to pommel end, leverHit = |cdow| / lever, the hit point the swing magnitude used,").Append("\n");
+            header.Append("         dmgType/mag/dealt = the collision's damage type, base magnitude, inflicted damage,").Append("\n");
+            header.Append("         hand->hit / eye->hit = metres from the attacker's weapon hand bone / eyes to the contact point.").Append("\n");
+            header.Append("         Collision follows the reversed grip when hand->hit ~ cdow ~ handZ (the guard) to lever (pommel end).").Append("\n");
+            header.Append(MordhauGrip.LastApplySummary);
+            header.Append("\n");
+            header.Append("  weapon = the weapon class; a sword with the prototype modes shows its mode: 2HS/2H, 2HS/HalfSword, 2HS/Mordhau.").Append("\n");
+            header.Append("  USAGE = a sword with the prototype modes changed grip: who (AI / player), usage from -> to, mission time.").Append("\n");
+            header.Append("         AI agents are held in the normal grip (WeaponModesAiLock.cs), so an AI USAGE line is a bug.").Append("\n");
+            header.Append("  every melee row (landed or blocked) ends with the reach of the contact:").Append("\n");
+            header.Append("    cdow = engine CollisionDistanceOnWeapon (m from the hand along the weapon), offZ = the engine's current").Append("\n");
+            header.Append("    weapon offset along the weapon (the game's own impact share uses cdow / (real length + offZ)), mtd = mounted.").Append("\n");
+            header.Append("\n");
             header.Append("    striker            -> struck                what     weapon           part    armor      raw   absorb    dealt   hp").Append("\n");
 
             BattleHitLog.StartBattle(header.ToString().Replace("\n", System.Environment.NewLine));
@@ -131,6 +150,10 @@ namespace RBMCombat
         /// </summary>
         public override void OnMeleeHit(Agent attacker, Agent victim, bool isCanceled, AttackCollisionData collisionData)
         {
+            if (_logging && attacker != null && attacker.IsHuman)
+            {
+                LogMordhau(attacker, victim, in collisionData);
+            }
             if (!_logging || attacker == null || victim == null || !attacker.IsHuman || !victim.IsHuman
                 || !attacker.IsEnemyOf(victim))
             {
@@ -171,9 +194,102 @@ namespace RBMCombat
               .Append("-".PadLeft(9))
               .Append("-".PadLeft(9))
               .Append("   hp ").Append(BattleHitLog.Fmt(victim.Health).PadLeft(5))
-              .Append("/").Append(BattleHitLog.Fmt(victim.HealthLimit));
+              .Append("/").Append(BattleHitLog.Fmt(victim.HealthLimit))
+              .Append(Reach(attacker, in collisionData));
 
             BattleHitLog.Write(sb.ToString());
+        }
+
+        /// <summary>
+        /// Where on the weapon a melee contact was and the engine's current weapon offset, for every melee row, so the
+        /// normal grip's reach (mounted too) can be read against the prototype modes'.
+        /// </summary>
+        private static string Reach(Agent striker, in AttackCollisionData collisionData)
+        {
+            float offZ = 0f;
+            try
+            {
+                offZ = striker.GetCurWeaponOffset().z;
+            }
+            catch
+            {
+                // agent gone mid-callback: log 0
+            }
+            return "   cdow " + F3(collisionData.CollisionDistanceOnWeapon) + " offZ " + F3(offZ) + (striker.HasMount ? " mtd" : "");
+        }
+
+        /// <summary>
+        /// The prototype mordhau test (MordhauGrip.cs): where on the reversed sword a collision really was, to tell
+        /// whether the engine's melee collision follows the usage's hand frame. Only for that usage, so the few engine
+        /// queries here cost nothing in a normal battle.
+        /// </summary>
+        private static void LogMordhau(Agent attacker, Agent victim, in AttackCollisionData collisionData)
+        {
+            int slot = collisionData.AffectorWeaponSlotOrMissileIndex;
+            if (collisionData.IsMissile || slot < 0)
+            {
+                return;
+            }
+            MissionWeapon weapon = attacker.Equipment[slot];
+            WeaponComponentData usage = weapon.IsEmpty ? null : weapon.CurrentUsageItem;
+            if (!MordhauGrip.IsMordhau(usage))
+            {
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("    MORDHAU ").Append(Clip(Name(attacker), 19))
+              .Append(" -> ").Append(victim != null ? Clip(Name(victim), 21) : "(scene object)")
+              .Append("  ").Append(collisionData.CollisionResult)
+              .Append(" strike=").Append(collisionData.StrikeType == (int)StrikeType.Swing ? "swing" : "thrust")
+              .Append(" dir=").Append(collisionData.AttackDirection)
+              .Append(" usage=").Append(weapon.CurrentUsageIndex).Append(":").Append(usage.WeaponDescriptionId)
+              .Append(" cdow=").Append(F3(collisionData.CollisionDistanceOnWeapon))
+              .Append(" realLen=").Append(F3(usage.GetRealWeaponLength()))
+              .Append(" L=").Append(F3(usage.WeaponLength * 0.01f));
+            if (MordhauGrip.TryGetHandPosition(weapon.Item, usage, out float handZ, out float bladeLength))
+            {
+                sb.Append(" handZ=").Append(F3(handZ));
+            }
+            if (MordhauGrip.TryGetSwingLever(weapon.Item, usage, out float leverLength, out float leverCenterOfMass))
+            {
+                // What the swing magnitude used: hand-to-pommel-end lever and the contact's share of it.
+                sb.Append(" lever=").Append(F3(leverLength))
+                  .Append(" leverHit=").Append(F3(MordhauGrip.GetImpactPointOnLever(collisionData.CollisionDistanceOnWeapon, leverLength)));
+            }
+            sb.Append(" offZ=").Append(F3(attacker.GetCurWeaponOffset().z))
+              .Append(" dmgType=").Append((DamageTypes)collisionData.DamageType)
+              .Append(" mag=").Append(F3(collisionData.BaseMagnitude))
+              .Append(" dealt=").Append(collisionData.InflictedDamage)
+              .Append(" part=").Append(collisionData.VictimHitBodyPart);
+
+            Vec3 hit = collisionData.CollisionGlobalPosition;
+            try
+            {
+                sb.Append(" eye->hit=").Append(F3((hit - attacker.GetEyeGlobalPosition()).Length));
+                Vec3 handPos = Vec3.Invalid;
+                MBAgentVisuals visuals = attacker.AgentVisuals;
+                if (visuals != null && visuals.GetSkeleton() != null)
+                {
+                    MatrixFrame body = visuals.GetGlobalFrame();
+                    MatrixFrame handLocal = visuals.GetSkeleton().GetBoneEntitialFrameWithIndex(attacker.Monster.MainHandItemBoneIndex);
+                    handPos = body.TransformToParent(in handLocal).origin;
+                    sb.Append(" hand->hit=").Append(F3((hit - handPos).Length));
+                }
+                // No "visible weapon axis" columns: the weapon entity's global frame is not the in-hand weapon frame
+                // (it carries neither the usage frame nor a reliably current bone pose, and its local axes follow the
+                // mesh, not the blade), so measurements along it disagreed with hand->hit by a metre or more.
+            }
+            catch
+            {
+                sb.Append(" (geometry unavailable)");
+            }
+            BattleHitLog.Write(sb.ToString());
+        }
+
+        private static string F3(float value)
+        {
+            return value.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
         }
 
         public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon affectorWeapon,
@@ -250,7 +366,8 @@ namespace RBMCombat
               .Append("   hp ").Append(BattleHitLog.Fmt(affectedAgent.Health).PadLeft(5))
               .Append("/").Append(BattleHitLog.Fmt(affectedAgent.HealthLimit))
               .Append(attackCollisionData.AttackBlockedWithShield ? "   shield" : "")
-              .Append(downed ? "   DOWN" : "");
+              .Append(downed ? "   DOWN" : "")
+              .Append(what == "melee" && affectorAgent.IsHuman ? Reach(striker, in attackCollisionData) : "");
 
             BattleHitLog.Write(sb.ToString());
         }
@@ -341,9 +458,38 @@ namespace RBMCombat
             WeaponComponentData usage = weapon.CurrentUsageItem;
             if (usage != null)
             {
-                return usage.WeaponClass.ToString();
+                string mode = Mode(weapon);
+                return mode != null ? "2HS/" + mode : usage.WeaponClass.ToString();
             }
             return (weapon.Item != null && weapon.Item.Name != null) ? weapon.Item.Name.ToString() : "-";
+        }
+
+        /// <summary>
+        /// The prototype sword mode in use (RBMConfig.WeaponModes): HalfSword, Mordhau, or 2H for the normal grip of a
+        /// sword that has the modes. Null for every other weapon.
+        /// </summary>
+        private static string Mode(MissionWeapon weapon)
+        {
+            WeaponComponentData usage = weapon.CurrentUsageItem;
+            if (RBMConfig.WeaponModes.IsHalfSword(usage))
+            {
+                return "HalfSword";
+            }
+            if (RBMConfig.WeaponModes.IsMordhau(usage))
+            {
+                return "Mordhau";
+            }
+            if (weapon.Item != null && weapon.Item.Weapons != null)
+            {
+                foreach (WeaponComponentData other in weapon.Item.Weapons)
+                {
+                    if (RBMConfig.WeaponModes.HasOwnDamageType(other))
+                    {
+                        return "2H";
+                    }
+                }
+            }
+            return null;
         }
 
         /// <summary>The four zones the simulation models, so a real hit can be counted against its distribution.</summary>

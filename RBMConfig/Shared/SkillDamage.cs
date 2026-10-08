@@ -166,6 +166,7 @@ namespace RBMConfig
                         break;
                     }
                 case "TwoHandedSword":
+                case WeaponModes.HalfSwordDamageType:
                     {
                         if (damageType == DamageTypes.Cut)
                         {
@@ -260,6 +261,7 @@ namespace RBMConfig
                         break;
                     }
                 case "TwoHandedMace":
+                case WeaponModes.MordhauDamageType:
                     {
                         if (damageType == DamageTypes.Pierce)
                         {

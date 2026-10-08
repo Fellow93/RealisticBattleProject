@@ -83,7 +83,9 @@ namespace RBMCombat
                 WeaponClass weaponType = attackerWeapon.CurrentUsageItem.WeaponClass;
 
                 float weaponTypeScaling = 1f;
-                RBMCombatConfigWeaponType rbmCombatConfigWeaponType = RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType.ToString());
+                // Config row by damage type (HalfSword / Mordhau for the prototype sword modes); the per-class
+                // wear scaling below stays by class.
+                RBMCombatConfigWeaponType rbmCombatConfigWeaponType = RBMConfig.RBMConfig.getWeaponTypeFactors(RBMConfig.WeaponModes.GetDamageWeaponType(attackerWeapon.CurrentUsageItem));
                 float armorThreshold = 4f;
                 float armorValue = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBM(agent, attackCollisionData.VictimHitBodyPart);
 

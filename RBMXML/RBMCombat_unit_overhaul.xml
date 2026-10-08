@@ -26485,4 +26485,84 @@
 	</NPCCharacter>
 	<!-- #endregion -->
 
+	<!-- #region Custom Battle commanders -->
+	<!-- PROTOTYPE test kit: Arcor (Custom Battle commander_1) carries only the Broad Two Hander
+	     (western_2hsword_t4, Two-handed / Half-Sword / Mordhau) as his weapon - no sword, shield,
+	     javelins or banner - so the sword's modes can be tried as the player in Custom Battle. Armour,
+	     horse and everything else are a verbatim copy of CustomBattle/ModuleData/custombattlecharacters.xml
+	     (a roster replaces the whole node). -->
+	<NPCCharacter
+		id="commander_1"
+		name="{=O75XlydW}Arcor"
+		default_group="cavalry"
+		age="50"
+		voice="curt"
+		culture="Culture.empire"
+		occupation="Lord"
+		skill_template="SkillSet.custombattle_commander_1_template_skills"
+		is_hero="true">
+		<face>
+			<BodyProperties
+				version="4"
+				age="29.86"
+				weight="0.2904"
+				build="0.2993"
+				key="00005801400033428944379867347744234D77960961467CDA55555A80E8C0590004469304CA8D5500001105000030A30000001F000000000000000000F45000" />
+			<hair_tags>
+				<hair_tag
+					name="empire" />
+			</hair_tags>
+			<beard_tags>
+				<beard_tag
+					name="empire" />
+			</beard_tags>
+			<tattoo_tags>
+				<tattoo_tag
+					name="Cleanface" />
+			</tattoo_tags>
+		</face>
+		<Traits>
+			<Trait
+				id="Commander"
+				value="7" />
+			<Trait
+				id="Honor"
+				value="+1" />
+			<Trait
+				id="Mercy"
+				value="-1" />
+			<Trait
+				id="Generosity"
+				value="-1" />
+		</Traits>
+		<Equipments>
+			<EquipmentRoster>
+				<equipment
+					slot="Item0"
+					id="Item.western_2hsword_t4" />
+				<equipment
+					slot="Head"
+					id="Item.empire_jewelled_helmet" />
+				<equipment
+					slot="Body"
+					id="Item.imperial_lamellar_over_leather" />
+				<equipment
+					slot="Cape"
+					id="Item.studded_imperial_neckguard" />
+				<equipment
+					slot="Gloves"
+					id="Item.decorated_imperial_gauntlets" />
+				<equipment
+					slot="Leg"
+					id="Item.decorated_imperial_boots" />
+				<equipment
+					slot="Horse"
+					id="Item.t2_empire_horse" />
+				<equipment
+					slot="HorseHarness"
+					id="Item.imperial_scale_barding" />
+			</EquipmentRoster>
+		</Equipments>
+	</NPCCharacter>
+	<!-- #endregion -->
 </NPCCharacters>

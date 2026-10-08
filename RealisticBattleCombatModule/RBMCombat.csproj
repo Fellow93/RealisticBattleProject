@@ -234,6 +234,9 @@
     <!-- Items -->
     <Compile Include="CombatModule\Items\ItemValuesTiers.Pricing.cs" />
     <Compile Include="CombatModule\Items\ItemValuesTiers.Tiers.cs" />
+    <!-- Weapons (prototype weapon modes set up in code) -->
+    <Compile Include="CombatModule\Weapons\MordhauGrip.cs" />
+    <Compile Include="CombatModule\Weapons\WeaponModesAiLock.cs" />
     <!-- Troop perks (data: RBMConfig Shared/TroopPerks.cs) -->
     <Compile Include="CombatModule\TroopPerks\TroopPerkEffects.cs" />
     <Compile Include="CombatModule\TroopPerks\TroopPerkDisplay.cs" />

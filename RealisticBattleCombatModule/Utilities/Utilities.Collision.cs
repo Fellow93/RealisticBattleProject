@@ -44,6 +44,12 @@ namespace RBMCombat
         public static bool HitWithWeaponBlade(in AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
         {
             WeaponComponentData currentUsageItem = attackerWeapon.CurrentUsageItem;
+            // Prototype mordhau grip: the hilt IS the striking head, and the blade/handle split below measures from the
+            // normal grip (its real length is the stub behind the reversed hand), so it would call hilt blows handle hits.
+            if (MordhauGrip.IsMordhau(currentUsageItem))
+            {
+                return true;
+            }
             if (attackerWeapon.Item != null && currentUsageItem != null && attackerWeapon.Item.WeaponDesign != null &&
                 attackerWeapon.Item.WeaponDesign.UsedPieces != null && attackerWeapon.Item.WeaponDesign.UsedPieces.Length > 0)
             {

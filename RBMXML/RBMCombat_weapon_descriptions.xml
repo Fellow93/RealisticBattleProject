@@ -1413,6 +1413,63 @@
       <!-- AvailablePieces,TwoHandedSword -->
     </AvailablePieces>
   </WeaponDescription>
+  <!-- PROTOTYPE half-sword mode (left hand on the blade, thrusts only), reached with the alternative weapon mode key.
+       A crafted sword gets this usage only if ALL its pieces are listed below, so it is limited to the Broad Two
+       Hander (western_2hsword_t4, Vlandian: Broad Two Hander Blade, Western Crescent Guard, Tapered Horn Grip,
+       Western Great Pommel), which also gets TwoHandedSwordMordhau. That sword has no one-handed grips anyway: its
+       grip (vlandian_grip_7) is in neither OneHandedBastardSword list, so its usages are 0 TwoHandedSword,
+       1 TwoHandedSwordHalfSword, 2 TwoHandedSwordMordhau. Both prototypes sit last in the TwoHandedSword template
+       (RBMCombat_no_bastard_axes.xml) so every other sword keeps its usages and indexes; multiplayer caps a weapon at
+       4 usages.
+       - weapon_class stays TwoHandedSword so RBM's damage, skill and posture code treat it as the two-handed sword
+         (Two Handed skill); damage type and factors come from the blade piece, so the thrust is the sword's thrust.
+       - polearm_block_thrust_halfsword (RBMXML/RBM_item_usage_sets.xml; the features below join into that id): a copy
+         of Native's polearm_block_thrust, the quarterstaff thrust grip (right hand behind, left hand ahead on the
+         weapon), the overhead spear stab and staff blocks, on foot and on horseback, with a shorter hand reach than
+         the normal two-handed thrust. The trailing "halfsword" feature exists only to make that id.
+       - RBMCombat's MordhauGrip.Apply also slows its thrust (WeaponModes.HalfSwordThrustSpeedFactor).
+       - default hand frame: the right hand stays where it is in the two-handed mode (on the grip) and the left hand
+         lands where the staff animations put it, ahead of the right, i.e. on the blade. -->
+  <WeaponDescription id="TwoHandedSwordHalfSword"
+                     weapon_class="TwoHandedSword"
+                     item_usage_features="polearm:block:thrust:halfsword">
+    <WeaponFlags>
+      <WeaponFlag value="MeleeWeapon"/>
+      <WeaponFlag value="NotUsableWithOneHand"/>
+    </WeaponFlags>
+    <AvailablePieces>
+      <AvailablePiece id="vlandian_blade_2"/>
+      <AvailablePiece id="vlandian_guard_5"/>
+      <AvailablePiece id="vlandian_grip_7"/>
+      <AvailablePiece id="vlandian_pommel_7"/>
+    </AvailablePieces>
+  </WeaponDescription>
+  <!-- PROTOTYPE mordhau (murder-stroke) mode: the sword held reversed by the blade near its tip, swung so the guard and
+       pommel are the striking head. Reached with the alternative weapon mode key. Limited, like the half-sword above,
+       to the Broad Two Hander (western_2hsword_t4), where it is usage 2 of 3 (after TwoHandedSword and
+       TwoHandedSwordHalfSword). Kept last in the TwoHandedSword template.
+       - weapon_class stays TwoHandedSword (Two Handed skill, RBM's sword damage/posture code).
+       - twohanded_widegrip_axe_mordhau usage set (RBMXML/RBM_item_usage_sets.xml; the features below join into that
+         id): Native's twohanded_widegrip_axe (the two-handed axe and mace one: swings left/right/overhead, no thrust)
+         plus a switch animation, the dagger's flip back to a forward grip, played when leaving the mordhau. The
+         trailing "mordhau" feature exists only to make that id.
+       - rotated_in_hand flips the sword in the hand. RBMCombat's MordhauGrip.cs then moves the hand up the blade and
+         makes the swing Blunt (the blade piece would make it Cut); both are code, the XML has no attribute for them. -->
+  <WeaponDescription id="TwoHandedSwordMordhau"
+                     weapon_class="TwoHandedSword"
+                     item_usage_features="twohanded:widegrip:axe:mordhau"
+                     rotated_in_hand="true">
+    <WeaponFlags>
+      <WeaponFlag value="MeleeWeapon"/>
+      <WeaponFlag value="NotUsableWithOneHand"/>
+    </WeaponFlags>
+    <AvailablePieces>
+      <AvailablePiece id="vlandian_blade_2"/>
+      <AvailablePiece id="vlandian_guard_5"/>
+      <AvailablePiece id="vlandian_grip_7"/>
+      <AvailablePiece id="vlandian_pommel_7"/>
+    </AvailablePieces>
+  </WeaponDescription>
   <WeaponDescription id="Dagger"
                      weapon_class="Dagger"
                      item_usage_features="onehanded:block:shield:swing:thrust:dagger">

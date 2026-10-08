@@ -27,7 +27,7 @@ namespace RBMCombat
                 string weaponType = "otherDamage";
                 if (attackerWeapon.Item != null && attackerWeapon.CurrentUsageItem != null)
                 {
-                    weaponType = attackerWeapon.CurrentUsageItem.WeaponClass.ToString();
+                    weaponType = RBMConfig.WeaponModes.GetDamageWeaponType(attackerWeapon.CurrentUsageItem);
                 }
 
                 if ((attackerAgent.IsDoingPassiveAttack && collisionData.CollisionResult == CombatCollisionResult.StrikeAgent))
@@ -76,6 +76,7 @@ namespace RBMCombat
                         case "OneHandedAxe":
                         case "TwoHandedPolearm":
                         case "TwoHandedMace":
+                        case RBMConfig.WeaponModes.MordhauDamageType:
                             {
                                 bool hitWithBlade = Utilities.HitWithWeaponBlade(in collisionData, in attackerWeapon);
                                 if (attackerAgent.Team != victimAgent.Team && hitWithBlade)

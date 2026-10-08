@@ -1262,6 +1262,9 @@
 	<string id="RBM_CFG_CAMPAIGN_HINT" text="Master switch for RBM's campaign overhaul: the troop spoils economy, wages and upkeep, settlement wealth, village and town production, caravans, equipment-aware auto-resolve and troop power, and RBM's additions to the campaign screens. Off returns the campaign to the base game and every option in this section stops working. The screen additions only follow a change after a game restart. Default on." />
 	<string id="RBM_CFG_SIM_HIT_DETAIL_HINT" text="Adds every simulated blow to the auto-resolve log -- thousands of lines for a big battle. Needs Detailed Auto Resolve and Detailed Auto Resolve Logging on. Default off." />
 	<string id="RBM_CFG_POWER_LOG_HINT" text="Once a day, writes every party's troop power breakdown to logs/powerCalculation next to the config: its commander's perks and each troop stack's power per man. Needs Equipment Based Troop Power on. Default off." />
+	<!-- Weapon usage names (RBMAI_module_strings.xml, str_weapon_usage.*) -->
+	<string id="RBM_USAGE_HALF_SWORD" text="Half-Sword" />
+	<string id="RBM_USAGE_MORDHAU" text="Mordhau" />
 
   </strings>
 </base>

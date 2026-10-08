@@ -126,7 +126,7 @@ namespace RBMCombat
                         float sweetSpotMagnitudeCompared = CalculateSweetSpotSwingMagnitude(comparedWeapon, comparedWeaponUsageIndex, effectiveSkill, out float sweetSpotCompared);
 
                         WeaponComponentData targetWcd = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex);
-                        float skillBasedDamage = Utilities.GetSkillBasedDamage(sweetSpotMagnitude, false, targetWcd.WeaponClass.ToString(),
+                        float skillBasedDamage = Utilities.GetSkillBasedDamage(sweetSpotMagnitude, false, RBMConfig.WeaponModes.GetDamageWeaponType(targetWcd),
                             targetWcd.SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, targetWeapon.Item.Weight);
 
                         swingDamageFactor = (float)Math.Sqrt(Utilities.getSwingDamageFactor(targetWcd, targetWeapon.ItemModifier));
@@ -137,7 +137,7 @@ namespace RBMCombat
 
                         float targetFactor = swingDamageFactor;
                         swingCombinedStringOut = GenerateDamageTable((float armor, out float pen, out float blunt) =>
-                            Utilities.RBMComputeDamage(targetWcd.WeaponClass.ToString(), targetWcd.SwingDamageType, skillBasedDamage, armor, 1f, out pen, out blunt, targetFactor, null, false));
+                            Utilities.RBMComputeDamage(RBMConfig.WeaponModes.GetDamageWeaponType(targetWcd), targetWcd.SwingDamageType, skillBasedDamage, armor, 1f, out pen, out blunt, targetFactor, null, false));
 
                         if (!comparedWeapon.IsEmpty)
                         {
@@ -146,13 +146,13 @@ namespace RBMCombat
                         if (sweetSpotMagnitudeCompared > 0f)
                         {
                             WeaponComponentData comparedWcd = comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex);
-                            float skillBasedDamageCompared = Utilities.GetSkillBasedDamage(sweetSpotMagnitudeCompared, false, comparedWcd.WeaponClass.ToString(),
+                            float skillBasedDamageCompared = Utilities.GetSkillBasedDamage(sweetSpotMagnitudeCompared, false, RBMConfig.WeaponModes.GetDamageWeaponType(comparedWcd),
                                 comparedWcd.SwingDamageType, effectiveSkillDR, skillModifier, StrikeType.Swing, comparedWeapon.Item.Weight);
                             swingDamageFactorCompared = (float)Math.Sqrt(Utilities.getSwingDamageFactor(comparedWcd, comparedWeapon.ItemModifier));
 
                             float comparedFactor = swingDamageFactorCompared;
                             swingCombinedStringComparedOut = GenerateDamageTable((float armor, out float pen, out float blunt) =>
-                                Utilities.RBMComputeDamage(comparedWcd.WeaponClass.ToString(), comparedWcd.SwingDamageType, skillBasedDamageCompared, armor, 1f, out pen, out blunt, comparedFactor, null, false));
+                                Utilities.RBMComputeDamage(RBMConfig.WeaponModes.GetDamageWeaponType(comparedWcd), comparedWcd.SwingDamageType, skillBasedDamageCompared, armor, 1f, out pen, out blunt, comparedFactor, null, false));
                         }
                     }
 
@@ -162,7 +162,7 @@ namespace RBMCombat
                         float thrustMagnitudeCompared = CalculateThrustMagnitude(comparedWeapon, comparedWeaponUsageIndex, effectiveSkill);
 
                         WeaponComponentData targetWcd = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex);
-                        float skillBasedDamage = Utilities.GetSkillBasedDamage(thrustMagnitude, false, targetWcd.WeaponClass.ToString(),
+                        float skillBasedDamage = Utilities.GetSkillBasedDamage(thrustMagnitude, false, RBMConfig.WeaponModes.GetDamageWeaponType(targetWcd),
                             targetWcd.ThrustDamageType, effectiveSkillDR, skillModifier, StrikeType.Thrust, targetWeapon.Item.Weight);
 
                         thrustDamageFactor = (float)Math.Sqrt(Utilities.getThrustDamageFactor(targetWcd, targetWeapon.ItemModifier));
@@ -170,7 +170,7 @@ namespace RBMCombat
 
                         float targetFactor = thrustDamageFactor;
                         thrustCombinedStringOut = GenerateDamageTable((float armor, out float pen, out float blunt) =>
-                            Utilities.RBMComputeDamage(targetWcd.WeaponClass.ToString(), targetWcd.ThrustDamageType, skillBasedDamage, armor, 1f, out pen, out blunt, targetFactor, null, false));
+                            Utilities.RBMComputeDamage(RBMConfig.WeaponModes.GetDamageWeaponType(targetWcd), targetWcd.ThrustDamageType, skillBasedDamage, armor, 1f, out pen, out blunt, targetFactor, null, false));
 
                         if (!comparedWeapon.IsEmpty)
                         {
@@ -179,13 +179,13 @@ namespace RBMCombat
                         if (thrustMagnitudeCompared > 0f)
                         {
                             WeaponComponentData comparedWcd = comparedWeapon.Item.GetWeaponWithUsageIndex(comparedWeaponUsageIndex);
-                            float skillBasedDamageCompared = Utilities.GetSkillBasedDamage(thrustMagnitudeCompared, false, comparedWcd.WeaponClass.ToString(),
+                            float skillBasedDamageCompared = Utilities.GetSkillBasedDamage(thrustMagnitudeCompared, false, RBMConfig.WeaponModes.GetDamageWeaponType(comparedWcd),
                                 comparedWcd.ThrustDamageType, effectiveSkillDR, skillModifier, StrikeType.Thrust, comparedWeapon.Item.Weight);
                             thrustDamageFactorCompared = (float)Math.Sqrt(Utilities.getThrustDamageFactor(comparedWcd, comparedWeapon.ItemModifier));
 
                             float comparedFactor = thrustDamageFactorCompared;
                             thrustCombinedStringComparedOut = GenerateDamageTable((float armor, out float pen, out float blunt) =>
-                                Utilities.RBMComputeDamage(comparedWcd.WeaponClass.ToString(), comparedWcd.ThrustDamageType, skillBasedDamageCompared, armor, 1f, out pen, out blunt, comparedFactor, null, false));
+                                Utilities.RBMComputeDamage(RBMConfig.WeaponModes.GetDamageWeaponType(comparedWcd), comparedWcd.ThrustDamageType, skillBasedDamageCompared, armor, 1f, out pen, out blunt, comparedFactor, null, false));
                         }
                     }
                 }

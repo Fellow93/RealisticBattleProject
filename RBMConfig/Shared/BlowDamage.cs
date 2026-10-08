@@ -83,6 +83,7 @@ namespace RBMConfig
                         break;
                     }
                 case "TwoHandedSword":
+                case WeaponModes.HalfSwordDamageType:
                     {
                         damage = WeaponTypeDamage(RBMConfig.getWeaponTypeFactors(weaponType), mag_2h_sword_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;
@@ -113,6 +114,7 @@ namespace RBMConfig
                         break;
                     }
                 case "TwoHandedMace":
+                case WeaponModes.MordhauDamageType:
                     {
                         damage = WeaponTypeDamage(RBMConfig.getWeaponTypeFactors(weaponType), mag_2h_thrust, armorReduction, damageType, armorEffectiveness, player, isPlayerVictim, weaponDamageFactor, out penetratedDamage, out bluntTraumaAfterArmor);
                         break;

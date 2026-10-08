@@ -13,6 +13,12 @@ namespace RBMCombat
     {
         public static float getSwingDamageFactor(WeaponComponentData wcd, ItemModifier itemModifier)
         {
+            // Prototype mordhau: the guard and pommel strike, not the blade, so neither the blade's cutting factor nor
+            // its sharpness (item modifier) applies.
+            if (WeaponModes.IsMordhau(wcd))
+            {
+                return WeaponModes.MordhauSwingDamageFactor;
+            }
             if (itemModifier == null)
             {
                 return wcd.SwingDamageFactor;

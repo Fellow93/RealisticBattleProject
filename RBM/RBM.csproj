@@ -323,6 +323,7 @@ xcopy /d /y "$(SolutionDir)RBMXML\RBM_spear_combat_parameters.xml" "$(SolutionDi
 xcopy /d /y "$(SolutionDir)RBMXML\RBMCombat_item_holsters.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\project.mbproj" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBM_action_sets.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\RBM_item_usage_sets.xml" "$(SolutionDir)..\RBM\ModuleData\"
 xcopy /d /y "$(SolutionDir)RBMXML\GUI\Prefabs\" "$(SolutionDir)..\RBM\GUI\Prefabs\"
 xcopy /d /y "$(SolutionDir)RBMXML\GUI\Brushes\" "$(SolutionDir)..\RBM\GUI\Brushes\"
 xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\" "$(SolutionDir)..\RBM\ModuleData\Languages\"

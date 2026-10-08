@@ -110,7 +110,10 @@ namespace RBMCombat
             return magnitude * RBMConfig.RBMConfig.ThrustMagnitudeModifier;
         }
 
-        public static float CalculateThrustMagnitudeForTwoHandedWeapon(float weaponWeight, float effectiveSkill, float thrustSpeed, float exraLinearSpeed, Agent.UsageDirection attackDirection)
+        /// <param name="armStrengthFactor">Scales the arm strength, the effective mass the arms put behind the point
+        /// (RBMConfig.WeaponModes.HalfSwordThrustForceFactor for the half-sword, both hands pushing along the blade).
+        /// The 250 energy cap still applies.</param>
+        public static float CalculateThrustMagnitudeForTwoHandedWeapon(float weaponWeight, float effectiveSkill, float thrustSpeed, float exraLinearSpeed, Agent.UsageDirection attackDirection, float armStrengthFactor = 1f)
         {
             float magnitude = 0f;
 
@@ -126,6 +129,7 @@ namespace RBMCombat
             float spearKineticEnergy = 0.5f * weaponWeight * (combinedSpeed * combinedSpeed);
 
             float armStrength = isOverheadAttack ? twoHandedPolearmThrustStrength - 1f : twoHandedPolearmThrustStrength;
+            armStrength *= armStrengthFactor;
 
             float thrustStrength = armStrength * (1f + skillModifier);
             float thrustStrengthWithWeaponWeight = weaponWeight + (armStrength * (1f + skillModifier));

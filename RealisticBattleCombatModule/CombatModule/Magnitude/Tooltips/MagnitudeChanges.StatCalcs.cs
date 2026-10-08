@@ -65,13 +65,21 @@ namespace RBMCombat
                 float weaponWeight = weapon.Item.Weight;
                 float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia;
                 float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
+                float weaponLength = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).GetRealWeaponLength();
+                // Prototype mordhau: the reversed sword as a lever from the hand to the pommel end, as in the live swing.
+                if (MordhauGrip.IsMordhau(weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex))
+                    && MordhauGrip.TryGetSwingLever(weapon.Item, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex), out float leverLength, out float leverCenterOfMass))
+                {
+                    weaponLength = leverLength;
+                    weaponCOM = leverCenterOfMass;
+                }
                 for (float currentSpot = 1f; currentSpot > 0.35f; currentSpot -= 0.01f)
                 {
                     //float currentSpotMagnitude = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(currentSelectedChar, null, swingSpeed, currentSpot, weaponWeight,
                     //    weapon.Item, weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex),
                     //    weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).GetRealWeaponLength(), weaponInertia, weaponCOM, 0f, false);
                     float currentSpotMagnitude = CombatStatCalculator.CalculateStrikeMagnitudeForSwing(swingSpeed, currentSpot, weaponWeight,
-                            weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).GetRealWeaponLength(), weaponInertia, weaponCOM, 0f);
+                            weaponLength, weaponInertia, weaponCOM, 0f);
                     if (currentSpotMagnitude > sweetSpotMagnitude)
                     {
                         sweetSpotMagnitude = currentSpotMagnitude;
@@ -155,7 +163,9 @@ namespace RBMCombat
                     case WeaponClass.TwoHandedSword:
                     case WeaponClass.TwoHandedMace:
                         {
-                            thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
+                            // Same half-sword arm strength as the live thrust (MagnitudeChanges.Melee.cs).
+                            float armStrengthFactor = RBMConfig.WeaponModes.IsHalfSword(weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex)) ? RBMConfig.WeaponModes.HalfSwordThrustForceFactor : 1f;
+                            thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown, armStrengthFactor);
                             break;
                         }
                         //default:

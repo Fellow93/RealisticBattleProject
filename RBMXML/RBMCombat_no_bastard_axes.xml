@@ -1040,7 +1040,12 @@
                    mp_piece="true" />
     </UsablePieces>
   </CraftingTemplate>
-  
+
+  <!-- TwoHandedSwordHalfSword and TwoHandedSwordMordhau (last) are the prototype half-sword and mordhau modes; a sword
+       only gets one if all its pieces are in that description's AvailablePieces, which limits both to the Broad Two
+       Hander (western_2hsword_t4). Its grip is in neither OneHandedBastardSword description, so its usages are
+       TwoHandedSword, half-sword, mordhau. Keep them last, and no comments inside WeaponDescriptions:
+       the game reads an id attribute off every child node there. -->
   <CraftingTemplate id="TwoHandedSword"
                     item_type="TwoHandedWeapon"
                     modifier_group="sword"
@@ -1062,6 +1067,8 @@
       <WeaponDescription id="OneHandedBastardSword" />
       <WeaponDescription id="TwoHandedSword" />
       <WeaponDescription id="OneHandedBastardSwordAlternative" />
+      <WeaponDescription id="TwoHandedSwordHalfSword" />
+      <WeaponDescription id="TwoHandedSwordMordhau" />
     </WeaponDescriptions>
     <StatsData>
       <StatData stat_type="Weight"

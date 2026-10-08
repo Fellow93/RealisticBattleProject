@@ -17,4 +17,8 @@
 	<string id="str_team_ai_tactic_text.RBMTacticAttackSplitSkirmishers" text="{=RBM_STR_012}Our plan is to bait them with skirmishers then crush them with full force." />
 	<string id="str_team_ai_tactic_text.RBMTacticDefendSplitArchers" text="{=RBM_STR_013}Our plan is to form a defensive line with archers on flanks." />
 	<string id="str_team_ai_tactic_text.RBMTacticEmbolon" text="{=RBM_STR_014}Our plan is to charge head-on with our cavalry then crush disorganized formations." />
+	<!-- Weapon usage name (inventory/smithy) of RBMCombat's prototype TwoHandedSwordHalfSword weapon description -->
+	<string id="str_weapon_usage.TwoHandedSwordHalfSword" text="{=RBM_USAGE_HALF_SWORD}Half-Sword" />
+	<!-- Weapon usage name of RBMCombat's prototype TwoHandedSwordMordhau weapon description -->
+	<string id="str_weapon_usage.TwoHandedSwordMordhau" text="{=RBM_USAGE_MORDHAU}Mordhau" />
 </strings>

@@ -86,6 +86,21 @@ namespace RBMAI
         public const float TWOHANDEDSWORD_BLOCK_REFLECT = -5f;
         public const float TWOHANDEDSWORD_PARRY_REFLECT = +10f;
 
+        // HALF-SWORD (prototype mode of a two-handed sword, RBMConfig.WeaponModes): the two-handed sword's rows. The
+        // other prototype mode, the mordhau, has its own MORDHAU rows below the two-handed mace's.
+        public const float HALFSWORD_SWING_COST = TWOHANDEDSWORD_SWING_COST;
+
+        public const float HALFSWORD_THRUST_COST = TWOHANDEDSWORD_THRUST_COST;
+        public const float HALFSWORD_OVERHEAD_COST = TWOHANDEDSWORD_OVERHEAD_COST;
+        public const float HALFSWORD_SWING_DRAIN = TWOHANDEDSWORD_SWING_DRAIN;
+        public const float HALFSWORD_THRUST_DRAIN = TWOHANDEDSWORD_THRUST_DRAIN;
+        public const float HALFSWORD_OVERHEAD_DRAIN = TWOHANDEDSWORD_OVERHEAD_DRAIN;
+        public const float HALFSWORD_BLOCK_COST = TWOHANDEDSWORD_BLOCK_COST;
+        public const float HALFSWORD_PARRY_COST = TWOHANDEDSWORD_PARRY_COST;
+        public const float HALFSWORD_HIT_COST = TWOHANDEDSWORD_HIT_COST;
+        public const float HALFSWORD_BLOCK_REFLECT = TWOHANDEDSWORD_BLOCK_REFLECT;
+        public const float HALFSWORD_PARRY_REFLECT = TWOHANDEDSWORD_PARRY_REFLECT;
+
         // ONE-HANDED AXE
         public const float ONEHANDEDAXE_SWING_COST = -2f;
 
@@ -141,6 +156,26 @@ namespace RBMAI
         public const float TWOHANDEDMACE_HIT_COST = +22f;
         public const float TWOHANDEDMACE_BLOCK_REFLECT = -15f;
         public const float TWOHANDEDMACE_PARRY_REFLECT = -10f;
+
+        // MORDHAU (prototype mode of a two-handed sword held by the blade, RBMConfig.WeaponModes): the two-handed mace's
+        // rows, made unwieldy. Attacking costs the attacker ~25% more than the 2H mace (base cost 20 + row:
+        // swing 20 -> 25, overhead 22 -> 27.5, thrust 18 -> 22.5). Defending with it sits halfway between the 2H mace
+        // and the worst weapon values in this table (block cost -10 and reflect -20, parry cost -23 and reflect -15;
+        // UNARMED left out). The posture damage it deals (the DRAIN rows) sits about 6% above the two-handed sword's
+        // (swing 20 + 30 = 50 against 47, overhead 52 against 49), well below the 2H mace's 56: its hits are weak
+        // through armor, so they should not break guards like a mace.
+        public const float MORDHAU_SWING_COST = +5f;
+
+        public const float MORDHAU_THRUST_COST = +2.5f;
+        public const float MORDHAU_OVERHEAD_COST = +7.5f;
+        public const float MORDHAU_SWING_DRAIN = +30f;
+        public const float MORDHAU_THRUST_DRAIN = TWOHANDEDMACE_THRUST_DRAIN;
+        public const float MORDHAU_OVERHEAD_DRAIN = +32f;
+        public const float MORDHAU_BLOCK_COST = -13.5f;
+        public const float MORDHAU_PARRY_COST = -25.5f;
+        public const float MORDHAU_HIT_COST = TWOHANDEDMACE_HIT_COST;
+        public const float MORDHAU_BLOCK_REFLECT = -17.5f;
+        public const float MORDHAU_PARRY_REFLECT = -12.5f;
 
         // ONE-HANDED POLEARM
         public const float ONEHANDEDPOLEARM_SWING_COST = -2f;
@@ -242,9 +277,29 @@ namespace RBMAI
             return table;
         }
 
-        private static string getTableKey(WeaponClass wc)
+        // Rows by the usage's damage type (RBMConfig.WeaponModes): its weapon class, except the prototype sword modes,
+        // whose class stays TwoHandedSword: the half-sword reads HALFSWORD_*, the mordhau MORDHAU_* (its damage type is
+        // the two-handed mace, but it is clumsier to swing and to defend with).
+        private static string getTableKey(WeaponComponentData usage)
         {
-            return wc == WeaponClass.Undefined ? "UNARMED" : getWeaponClassString(wc);
+            if (usage == null || usage.WeaponClass == WeaponClass.Undefined)
+            {
+                return "UNARMED";
+            }
+            if (RBMConfig.WeaponModes.IsMordhau(usage))
+            {
+                return "MORDHAU";
+            }
+            if (RBMConfig.WeaponModes.HasOwnDamageType(usage))
+            {
+                return RBMConfig.WeaponModes.GetDamageWeaponType(usage).ToUpperInvariant();
+            }
+            return getWeaponClassString(usage.WeaponClass);
+        }
+
+        private static bool isShield(WeaponComponentData usage)
+        {
+            return usage != null && (usage.WeaponClass == WeaponClass.SmallShield || usage.WeaponClass == WeaponClass.LargeShield);
         }
 
         // Returns 0 (a no-op offset over the base value) when the row does not exist.
@@ -254,10 +309,10 @@ namespace RBMAI
             return _table.TryGetValue(key, out value) ? value : 0f;
         }
 
-        public static float getDefenseCost(WeaponClass wc, MeleeHitType hitType)
+        public static float getDefenseCost(WeaponComponentData usage, MeleeHitType hitType)
         {
             float retVal = BASE_DEFENSE_COST;
-            string weaponClassString = getTableKey(wc);
+            string weaponClassString = getTableKey(usage);
             switch (hitType)
             {
                 case MeleeHitType.WeaponBlock:
@@ -279,7 +334,7 @@ namespace RBMAI
                     }
                 case MeleeHitType.ShieldIncorrectBlock:
                     {
-                        if (wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
+                        if (isShield(usage))
                         {
                             retVal += lookup(weaponClassString + "_INCORRECT_BLOCK_COST");
                         }
@@ -303,10 +358,10 @@ namespace RBMAI
             return retVal;
         }
 
-        public static float getAttackDrain(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
+        public static float getAttackDrain(WeaponComponentData usage, Agent.UsageDirection attackDirection, StrikeType strikeType)
         {
             float retVal = BASE_DRAIN;
-            string weaponClassString = getTableKey(wc);
+            string weaponClassString = getTableKey(usage);
             if (strikeType == StrikeType.Swing)
             {
                 if (attackDirection == Agent.UsageDirection.AttackUp)
@@ -325,10 +380,10 @@ namespace RBMAI
             return retVal;
         }
 
-        public static float getAttackCost(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
+        public static float getAttackCost(WeaponComponentData usage, Agent.UsageDirection attackDirection, StrikeType strikeType)
         {
             float retVal = BASE_DEFENSE_COST;
-            string weaponClassString = getTableKey(wc);
+            string weaponClassString = getTableKey(usage);
             if (strikeType == StrikeType.Swing)
             {
                 if (attackDirection == Agent.UsageDirection.AttackUp)
@@ -347,10 +402,10 @@ namespace RBMAI
             return retVal;
         }
 
-        public static float getDefenseReflect(WeaponClass wc, MeleeHitType hitType)
+        public static float getDefenseReflect(WeaponComponentData usage, MeleeHitType hitType)
         {
             float retVal = BASE_REFLECT;
-            string weaponClassString = getTableKey(wc);
+            string weaponClassString = getTableKey(usage);
             switch (hitType)
             {
                 case MeleeHitType.WeaponBlock:
@@ -367,7 +422,7 @@ namespace RBMAI
                     }
                 case MeleeHitType.ShieldIncorrectBlock:
                     {
-                        if (wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
+                        if (isShield(usage))
                         {
                             retVal += lookup(weaponClassString + "_INCORRECT_BLOCK_REFLECT");
                         }
@@ -397,52 +452,48 @@ namespace RBMAI
             return retVal;
         }
 
-        public static WeaponClass getDefenderWeaponClass(Agent agent)
+        // The usage whose rows the defender's block reads (null = UNARMED): the shield when one is wielded, else the
+        // weapon in hand.
+        public static WeaponComponentData getDefenderWeapon(Agent agent)
         {
-            WeaponClass wc = WeaponClass.Undefined;
+            WeaponComponentData usage = null;
             if (!agent.WieldedOffhandWeapon.IsEmpty)
             {
                 if (agent.WieldedOffhandWeapon.IsShield())
                 {
-                    if (agent.WieldedOffhandWeapon.CurrentUsageItem != null)
-                        wc = agent.WieldedOffhandWeapon.CurrentUsageItem.WeaponClass;
+                    usage = agent.WieldedOffhandWeapon.CurrentUsageItem;
                 }
                 else
                 {
-                    if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem != null)
+                    if (!agent.WieldedWeapon.IsEmpty)
                     {
-                        wc = agent.WieldedWeapon.CurrentUsageItem.WeaponClass;
+                        usage = agent.WieldedWeapon.CurrentUsageItem;
                     }
                 }
             }
             else
             {
-                if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem != null)
+                if (!agent.WieldedWeapon.IsEmpty)
                 {
-                    wc = agent.WieldedWeapon.CurrentUsageItem.WeaponClass;
+                    usage = agent.WieldedWeapon.CurrentUsageItem;
                 }
             }
-            return wc;
+            return usage;
         }
 
-        public static WeaponClass getAttackerWeaponClass(Agent agent)
+        public static WeaponComponentData getAttackerWeapon(Agent agent)
         {
-            WeaponClass wc = WeaponClass.Undefined;
-            if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem != null)
-            {
-                wc = agent.WieldedWeapon.CurrentUsageItem.WeaponClass;
-            }
-            return wc;
+            return agent.WieldedWeapon.IsEmpty ? null : agent.WieldedWeapon.CurrentUsageItem;
         }
 
         // A kick, shield bash or pommel strike uses the UNARMED rows, not the wielded weapon's.
         public static float getDefenderPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType, bool isUnarmedAttack)
         {
-            WeaponClass defenderWC = getDefenderWeaponClass(defender);
-            WeaponClass attackerWC = isUnarmedAttack ? WeaponClass.Undefined : getAttackerWeaponClass(attacker);
+            WeaponComponentData defenderWeapon = getDefenderWeapon(defender);
+            WeaponComponentData attackerWeapon = isUnarmedAttack ? null : getAttackerWeapon(attacker);
 
-            float defenseCost = getDefenseCost(defenderWC, hitType);
-            float attackDrain = getAttackDrain(attackerWC, attackDirection, strikeType);
+            float defenseCost = getDefenseCost(defenderWeapon, hitType);
+            float attackDrain = getAttackDrain(attackerWeapon, attackDirection, strikeType);
 
             // Per-class costs are negative offsets from the base; a large-shield parry against a
             // zero-drain attack sums below zero, which would heal the defender past maxPosture.
@@ -451,11 +502,11 @@ namespace RBMAI
 
         public static float getAttackerPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType, bool isUnarmedAttack)
         {
-            WeaponClass defenderWC = getDefenderWeaponClass(defender);
-            WeaponClass attackerWC = isUnarmedAttack ? WeaponClass.Undefined : getAttackerWeaponClass(attacker);
+            WeaponComponentData defenderWeapon = getDefenderWeapon(defender);
+            WeaponComponentData attackerWeapon = isUnarmedAttack ? null : getAttackerWeapon(attacker);
 
-            float attackCost = getAttackCost(attackerWC, attackDirection, strikeType);
-            float defenseReflect = getDefenseReflect(defenderWC, hitType);
+            float attackCost = getAttackCost(attackerWeapon, attackDirection, strikeType);
+            float defenseReflect = getDefenseReflect(defenderWeapon, hitType);
 
             return Math.Max(0f, attackCost + defenseReflect);
         }

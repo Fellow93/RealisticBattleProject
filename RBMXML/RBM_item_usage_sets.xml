@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  RBM item usage sets, merged into Native's by the game (project.mbproj entry id "soln_item_usage_sets",
+  MBObjectManager.GetMergedXmlForNative). Only NEW ids here: never redefine a Native set (an old RBM override of the
+  two-handed axe sets went stale against the game and broke their blocks; see git 1d5ace35).
+
+  polearm_block_thrust_halfsword: the prototype Half-Sword mode of the Broad Two Hander (weapon description
+  TwoHandedSwordHalfSword, item_usage_features "polearm:block:thrust:halfsword"; crafting joins the features with "_"
+  into this id). A copy of Native's polearm_block_thrust (staff thrust, overhead spear stab, foot and horseback;
+  blocks come from base_set polearm_block, unchanged) with a SHORTER hand reach: end_hand_position forward (y) 0.82
+  instead of the staff's 1.3. Native's two-handed sword thrust (twohanded_block_swing_thrust) ends at 1.0, so the
+  half-sword thrust should reach about 18 cm less than the normal two-handed thrust (same weapon, same grip point,
+  so the difference is the hand's end position). begin_hand_position, rotations and actions are Native's.
+  These positions are read natively; whether the engine uses them only for the AI's attack distance or also for the
+  stroke itself is not visible from managed code, so check the reach in game.
+
+  Mode-switch animations (alternative weapon mode key, X; the sword's usages cycle 0 Two-handed -> 1 Half-Sword ->
+  2 Mordhau -> 0). An item_usage_set's switch_to_alternate_action (and its _left_stance twin) is the action played when
+  switching AWAY from that set, i.e. the FROM usage's set picks the animation. Evidence (Native data, the switch itself
+  is native code): the throwing axe's throwing_axe set has act_switch_alternate_axe and its one-handed axe usage's
+  onehanded_shield_axe has act_switch_back_alternate_axe; the dagger's forward set has act_switch_alternate_dagger and
+  its reverse-grip (HeldBackwards) set act_switch_back_alternate_dagger. Only "from" reading names both correctly. A
+  set with no switch action switches instantly. Each switch clip chains to a "_continue" action (named inside the clip
+  in animation_clips.tpac); the new usage, and with it the per-usage hand frame, is presumably applied at that hand-off
+  (Agent.OnWeaponUsageIndexChange is called back after OnWeaponSwitchingToAlternativeStart) - not visible in managed code.
+  - 0 -> 1: Native's twohanded_block_swing_thrust (shared by every two-handed sword, not touched) plays
+    act_switch_back_alternate_knife, the bastard sword's grip change.
+  - 1 -> 2: polearm_block_thrust_halfsword plays act_switch_alternate_dagger, the dagger's flip into a reverse grip
+    (without it the set would inherit polearm_block's spear act_switch_alternate_javelin).
+  - 2 -> 0: twohanded_widegrip_axe_mordhau plays act_switch_back_alternate_dagger, the flip back to a forward grip.
+    Native's twohanded_widegrip_axe has no switch action, so leaving the mordhau was an instant snap.
+-->
+<item_usage_sets>
+	<item_usage_set
+		id="polearm_block_thrust_halfsword"
+		base_set="polearm_block"
+		switch_to_alternate_action="act_switch_alternate_dagger"
+		switch_to_alternate_action_left_stance="act_switch_alternate_dagger_left_stance"
+		has_single_stance="true">
+		<flags>
+			<flag
+				name="requires_no_shield" />
+		</flags>
+		<usages>
+			<usage
+				style="attack_up"
+				ready_action="act_ready_overswing_spear"
+				quick_release_action="act_quick_release_overswing_spear"
+				release_action="act_release_overswing_spear"
+				quick_blocked_action="act_quick_blocked_overswing_spear"
+				blocked_action="act_blocked_overswing_spear"
+				quick_stuck_action="act_quick_stuck_upperthrust_staff"
+				stuck_action="act_stuck_upperthrust_staff"
+				is_mounted="False"
+				require_free_left_hand="True"
+				is_left_stance="False"
+				strike_type="thrust"
+				begin_hand_position="0,-0.6,0.5"
+				begin_hand_rotation="0,-90"
+				begin_arm_rotation="0,0"
+				begin_arm_length="0"
+				end_hand_position="0,0.82,0.5"
+				end_hand_rotation="0,-108"
+				end_arm_rotation="0,0"
+				end_arm_length="0" />
+			<usage
+				style="attack_up"
+				ready_action="act_ready_overswing_spear_horseback"
+				quick_release_action="act_quick_release_overswing_spear_horseback"
+				release_action="act_release_overswing_spear_horseback"
+				quick_blocked_action="act_quick_blocked_overswing_spear_horseback"
+				blocked_action="act_blocked_overswing_spear_horseback"
+				is_mounted="True"
+				quick_stuck_action="act_quick_stuck_upperthrust_staff"
+				stuck_action="act_stuck_upperthrust_staff"
+				require_free_left_hand="True"
+				is_left_stance="False"
+				strike_type="thrust"
+				begin_hand_position="0,-0.6,0.5"
+				begin_hand_rotation="0,-90"
+				begin_arm_rotation="0,0"
+				begin_arm_length="0"
+				end_hand_position="0,0.82,0.5"
+				end_hand_rotation="0,-108"
+				end_arm_rotation="0,0"
+				end_arm_length="0" />
+			<usage
+				style="attack_down"
+				ready_action="act_ready_thrust_staff_horseback"
+				quick_release_action="act_quick_release_thrust_staff_horseback"
+				release_action="act_release_thrust_staff_horseback"
+				quick_blocked_action="act_quick_blocked_thrust_staff_horseback"
+				blocked_action="act_blocked_thrust_staff_horseback"
+				quick_stuck_action="act_quick_stuck_thrust_staff"
+				stuck_action="act_stuck_thrust_staff"
+				is_mounted="True"
+				require_free_left_hand="True"
+				strike_type="thrust"
+				begin_hand_position="0,-0.6,-0.1"
+				begin_hand_rotation="0,-90"
+				begin_arm_rotation="0,0"
+				begin_arm_length="0"
+				end_hand_position="0,0.82,-0.1"
+				end_hand_rotation="0,-90"
+				end_arm_rotation="0,0"
+				end_arm_length="0" />
+			<usage
+				style="attack_down"
+				ready_action="act_ready_thrust_staff"
+				quick_release_action="act_quick_release_thrust_staff"
+				release_action="act_release_thrust_staff"
+				quick_blocked_action="act_quick_blocked_thrust_staff"
+				blocked_action="act_blocked_thrust_staff"
+				quick_stuck_action="act_quick_stuck_thrust_staff"
+				stuck_action="act_stuck_thrust_staff"
+				is_mounted="False"
+				require_free_left_hand="True"
+				strike_type="thrust"
+				begin_hand_position="0,-0.6,-0.1"
+				begin_hand_rotation="0,-90"
+				begin_arm_rotation="0,0"
+				begin_arm_length="0"
+				end_hand_position="0,0.82,-0.1"
+				end_hand_rotation="0,-90"
+				end_arm_rotation="0,0"
+				end_arm_length="0" />
+		</usages>
+	</item_usage_set>
+	<!--
+	  twohanded_widegrip_axe_mordhau: the prototype Mordhau mode of the Broad Two Hander (weapon description
+	  TwoHandedSwordMordhau, item_usage_features "twohanded:widegrip:axe:mordhau"; the trailing "mordhau" feature exists
+	  only to make this id). Native's twohanded_widegrip_axe (the two-handed axe and mace set: swings left, right and
+	  overhead, blocks, idles, movement and horseback usages) taken whole through base_set, the way Native's own
+	  onehanded_block_shield_swing_thrust_dagger adds only a switch action to its base. The one addition is the switch
+	  action (see the header). requires_no_shield is repeated as Native's derived sets (twohanded_axe) do.
+	  requires_no_mount makes it a foot-only mode, like Native's reverse-grip dagger set (onehanded_shield_dagger) and
+	  polearm_pike: mounted, the axe set swings one-handed (wrong for a sword held by the blade) and the engine's mounted
+	  weapon offset pushed contacts up to ~0.5 m past the pommel.
+	-->
+	<item_usage_set
+		id="twohanded_widegrip_axe_mordhau"
+		base_set="twohanded_widegrip_axe"
+		switch_to_alternate_action="act_switch_back_alternate_dagger"
+		switch_to_alternate_action_left_stance="act_switch_back_alternate_dagger_left_stance"
+		equip_sound="event:/mission/combat/equip/sword_equip"
+		unequip_sound="event:/mission/combat/equip/sword_unequip">
+		<flags>
+			<flag
+				name="requires_no_shield" />
+			<flag
+				name="requires_no_mount" />
+		</flags>
+	</item_usage_set>
+</item_usage_sets>

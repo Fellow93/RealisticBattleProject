@@ -70,6 +70,21 @@ namespace RBMConfig
                 ExtraArmorSkillDamageAbsorb: 1f
                 )
             );
+            // The half-sword mode of a two-handed sword (RBMConfig.WeaponModes): the two-handed sword's factors, except
+            // the pierce threshold 3.75 (free sword thrust 3.5), paired with WeaponModes.HalfSwordThrustForceFactor (see
+            // there for the numbers). A config saved before this row existed gets it from here (parseXmlConfig merges the file's rows
+            // into these defaults).
+            weaponTypesFactors.Add(new RBMCombatConfigWeaponType(
+                weaponType: WeaponModes.HalfSwordDamageType,
+                ExtraBluntFactorCut: 0.25f,
+                ExtraBluntFactorPierce: 0.35f,
+                ExtraBluntFactorBlunt: 1f,
+                ExtraArmorThresholdFactorPierce: 3.75f,
+                ExtraArmorThresholdFactorCut: 5f,
+                ExtraArmorThresholdFactorBlunt: 5f,
+                ExtraArmorSkillDamageAbsorb: 1f
+                )
+            );
             weaponTypesFactors.Add(new RBMCombatConfigWeaponType(
                 weaponType: "OneHandedBastardAxe",
                 ExtraBluntFactorCut: 0.3f,
@@ -141,6 +156,19 @@ namespace RBMConfig
                 ExtraBluntFactorCut: 0.1f,
                 ExtraBluntFactorPierce: 0.25f,
                 ExtraBluntFactorBlunt: 1f,
+                ExtraArmorThresholdFactorPierce: 4f,
+                ExtraArmorThresholdFactorCut: 4f,
+                ExtraArmorThresholdFactorBlunt: 5f,
+                ExtraArmorSkillDamageAbsorb: 1f
+                )
+            );
+            // The mordhau mode of a two-handed sword (RBMConfig.WeaponModes): the two-handed mace's factors with a weaker
+            // blunt trauma, as a guard and pommel are no mace head. New row: older configs get it from here.
+            weaponTypesFactors.Add(new RBMCombatConfigWeaponType(
+                weaponType: WeaponModes.MordhauDamageType,
+                ExtraBluntFactorCut: 0.1f,
+                ExtraBluntFactorPierce: 0.25f,
+                ExtraBluntFactorBlunt: WeaponModes.MordhauBluntTraumaFactor,
                 ExtraArmorThresholdFactorPierce: 4f,
                 ExtraArmorThresholdFactorCut: 4f,
                 ExtraArmorThresholdFactorBlunt: 5f,

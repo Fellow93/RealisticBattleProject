@@ -19,7 +19,7 @@ namespace RBMCombat
         [HarmonyPatch("CalculateBaseMeleeBlowMagnitude")]
         public class CalculateBaseMeleeBlowMagnitudePatch
         {
-            public static bool Prefix(ref float __result, in AttackInformation attackInformation, StrikeType strikeType, float progressEffect, float impactPointAsPercent, float exraLinearSpeed)
+            public static bool Prefix(ref float __result, in AttackInformation attackInformation, in AttackCollisionData collisionData, StrikeType strikeType, float progressEffect, float impactPointAsPercent, float exraLinearSpeed)
             {
                 MissionWeapon weapon = attackInformation.AttackerWeapon;
                 WeaponComponentData currentUsageItem = weapon.CurrentUsageItem;
@@ -146,7 +146,9 @@ namespace RBMCombat
                                 case WeaponClass.TwoHandedSword:
                                 case WeaponClass.TwoHandedMace:
                                     {
-                                        thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, thrustExtraSpeed, attacker.AttackDirection);
+                                        // Half-sword: both hands push along the blade, more arm strength behind the point.
+                                        float armStrengthFactor = RBMConfig.WeaponModes.IsHalfSword(currentUsageItem) ? RBMConfig.WeaponModes.HalfSwordThrustForceFactor : 1f;
+                                        thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, thrustExtraSpeed, attacker.AttackDirection, armStrengthFactor);
                                         break;
                                     }
                                     //default:
@@ -235,8 +237,18 @@ namespace RBMCombat
                 float impactPointAsPercent3 = num3 + (float)0 / 4f * (num4 - num3);
                 //newValue = Game.Current.BasicModels.StrikeMagnitudeModel.CalculateStrikeMagnitudeForSwing(attackerAgentCharacter, attackerCaptainCharacter, swingSpeed, impactPointAsPercent3, weapon.Item.Weight, weapon.Item, currentUsageItem, currentUsageItem.GetRealWeaponLength(), currentUsageItem.TotalInertia, currentUsageItem.CenterOfMass, exraLinearSpeed, doesAttackerHaveMount);
                 float swingExtraSpeed = ApplyMeleeSpeedPerks(in attackInformation, currentUsageItem, exraLinearSpeed);
-                newValue = CombatStatCalculator.CalculateStrikeMagnitudeForSwing(swingSpeed, impactPointAsPercent3, weapon.Item.Weight,
-                            currentUsageItem.GetRealWeaponLength(), currentUsageItem.TotalInertia, currentUsageItem.CenterOfMass, swingExtraSpeed);
+                if (MordhauGrip.IsMordhau(currentUsageItem) && MordhauGrip.TryGetSwingLever(weapon.Item, currentUsageItem, out float leverLength, out float leverCenterOfMass))
+                {
+                    // Prototype mordhau: the sword swung reversed, hand on the blade, hilt as the head. Same swing speed,
+                    // but the lever runs from the hand to the pommel end and the hit point is where on it the contact was.
+                    newValue = CombatStatCalculator.CalculateStrikeMagnitudeForSwing(swingSpeed, MordhauGrip.GetImpactPointOnLever(collisionData.CollisionDistanceOnWeapon, leverLength),
+                                weapon.Item.Weight, leverLength, currentUsageItem.TotalInertia, leverCenterOfMass, swingExtraSpeed);
+                }
+                else
+                {
+                    newValue = CombatStatCalculator.CalculateStrikeMagnitudeForSwing(swingSpeed, impactPointAsPercent3, weapon.Item.Weight,
+                                currentUsageItem.GetRealWeaponLength(), currentUsageItem.TotalInertia, currentUsageItem.CenterOfMass, swingExtraSpeed);
+                }
                 newValue = ApplyCraftedWeaponPerk(in attackInformation, weapon.Item, newValue, false);
                 __result = newValue;
                 return false;

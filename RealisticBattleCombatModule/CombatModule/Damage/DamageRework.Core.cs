@@ -376,10 +376,12 @@ namespace RBMCombat
                     }
                 }
 
+                // The damage type of the usage: its class, or HalfSword / Mordhau for the prototype sword modes.
+                // The skill stays the usage's RelevantSkill (Two Handed for both modes).
                 string weaponType = "otherDamage";
                 if (attackerWeapon != null)
                 {
-                    weaponType = attackerWeapon.WeaponClass.ToString();
+                    weaponType = RBMConfig.WeaponModes.GetDamageWeaponType(attackerWeapon);
                 }
                 else
                 {
@@ -601,7 +603,7 @@ namespace RBMCombat
                     string weaponType = "otherDamage";
                     if (attackerWeapon != null)
                     {
-                        weaponType = attackerWeapon.WeaponClass.ToString();
+                        weaponType = RBMConfig.WeaponModes.GetDamageWeaponType(attackerWeapon);
                     }
 
                     bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;
@@ -636,6 +638,7 @@ namespace RBMCombat
                                 break;
                             }
                         case "TwoHandedSword":
+                        case RBMConfig.WeaponModes.HalfSwordDamageType:
                             {
                                 if (blowMagnitude > 1f)
                                 {
@@ -683,6 +686,7 @@ namespace RBMCombat
                                 break;
                             }
                         case "TwoHandedMace":
+                        case RBMConfig.WeaponModes.MordhauDamageType:
                             {
                                 if (blowMagnitude > 1f)
                                 {
