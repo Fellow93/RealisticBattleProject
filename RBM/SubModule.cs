@@ -325,6 +325,11 @@ namespace RBM
                 }
                 mission.AddMissionBehavior((MissionBehavior)(object)new AgentPanicFix());
                 mission.AddMissionBehavior((MissionBehavior)(object)new RBMAIPatchLogic());
+                if (RBMConfig.RBMConfig.formationShoutsEnabled || RBMConfig.RBMConfig.orderReactionDelayEnabled)
+                {
+                    // Hosts both toggles; each feature also checks its own toggle at runtime.
+                    mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.FormationShoutsLogic());
+                }
                 if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
                 {
                     mission.AddMissionBehavior((MissionBehavior)(object)new StanceVisualLogic());

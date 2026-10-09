@@ -273,6 +273,10 @@ namespace RBMConfig
             StaminaEnabled.InnerText = RBMConfig.staminaEnabled ? "1" : "0";
             XmlElement AiKickBashEnabled = xmlconfig.CreateElement("AiKickBashEnabled");
             AiKickBashEnabled.InnerText = RBMConfig.aiKickBashEnabled ? "1" : "0";
+            XmlElement FormationShoutsEnabled = xmlconfig.CreateElement("FormationShoutsEnabled");
+            FormationShoutsEnabled.InnerText = RBMConfig.formationShoutsEnabled ? "1" : "0";
+            XmlElement OrderReactionDelayEnabled = xmlconfig.CreateElement("OrderReactionDelayEnabled");
+            OrderReactionDelayEnabled.InnerText = RBMConfig.orderReactionDelayEnabled ? "1" : "0";
             XmlElement PostureGUIEnabled = xmlconfig.CreateElement("PostureGUIEnabled");
             PostureGUIEnabled.InnerText = RBMConfig.postureGUIEnabled ? "1" : "0";
             XmlElement VanillaCombatAi = xmlconfig.CreateElement("VanillaCombatAi");
@@ -286,6 +290,8 @@ namespace RBMConfig
             RBMAI.AppendChild(PostureEnabled);
             RBMAI.AppendChild(StaminaEnabled);
             RBMAI.AppendChild(AiKickBashEnabled);
+            RBMAI.AppendChild(FormationShoutsEnabled);
+            RBMAI.AppendChild(OrderReactionDelayEnabled);
             RBMAI.AppendChild(PlayerPostureMultiplier);
             RBMAI.AppendChild(PostureGUIEnabled);
             RBMAI.AppendChild(VanillaCombatAi);

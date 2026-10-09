@@ -587,6 +587,11 @@
 	<string id="RBM_CON_152" text="Lets RBM troops keep the shoulder-strapped versions of their shields, which stay on the shoulder while they fight with another weapon. Off swaps them for the normal hand-held versions. Needs Troop Overhaul on. Default off." />
 	<string id="RBM_CON_153" text="How fast bows and crossbows are reloaded, scaling with skill. Realistic is slow, above all for unskilled shooters; Semi-realistic reloads much faster at low skill; both also slow the bow draw for everyone. Vanilla keeps the base game's speeds. The reload part applies to the player only unless 'Ranged reload applies to AI' is on. Default Semi-realistic." />
 	<string id="RBM_CON_154" text="Replaces the troop trees of the main cultures, plus mercenaries, minor-faction troops, militia and tournament fighters, with RBM's versions: new equipment, skills and upgrade paths. Inactive keeps the base game's troops, still using RBM's item changes. Default active." />
+	<!-- Formation Shouts / Staggered Order Reaction Strings -->
+	<string id="RBM_CON_155" text="Formation shouts" />
+	<string id="RBM_CON_156" text="Soldiers of every formation, on both sides, repeat the orders they are given and the AI's captains call out their own; a formation grunts as one when it answers an order, halts or closes a shield wall; the main infantry marches to its culture's call; a charge gives its war cry, the men yell and roar when the lines meet. Sound only; behaviour is unchanged. Needs RBM AI on. Default on." />
+	<string id="RBM_CON_157" text="Staggered order reaction (experimental)" />
+	<string id="RBM_CON_158" text="When a formation is given a new order, yours or the AI's, each soldier starts to carry it out after his own short delay, longer the further he stands from whoever gave it, instead of the whole formation moving at once. Charges and retreats are not held back. Experimental. Needs RBM AI on. Default on." />
 	<!-- Combat Toggle Restart Notice Strings -->
 	<string id="RBM_RESTART_001" text="Restart Required" />
 	<string id="RBM_RESTART_002" text="RBM Combat was changed. Everything else takes effect the next time you start or load a game, but RBM's spear and weapon animation parameters are only read when Bannerlord starts. Restart the game for them to match the new setting." />

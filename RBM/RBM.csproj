@@ -331,6 +331,9 @@ xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\TR\" "$(SolutionDir)..\RBM\Mo
 xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\CNs\" "$(SolutionDir)..\RBM\ModuleData\Languages\CNs\"
 xcopy /d /y "$(SolutionDir)LanguagesXmls\Languages\JP\" "$(SolutionDir)..\RBM\ModuleData\Languages\JP\"
 xcopy /d /y "$(SolutionDir)RBMXML\RBM_custom_battle_skill_sets.xml" "$(SolutionDir)..\RBM\ModuleData\"
+xcopy /d /y "$(SolutionDir)RBMXML\module_sounds.xml" "$(SolutionDir)..\RBM\ModuleData\"
+if exist "$(SolutionDir)RBMXML\ModuleSounds\*.ogg" xcopy /d /y /i "$(SolutionDir)RBMXML\ModuleSounds\*.ogg" "$(SolutionDir)..\RBM\ModuleSounds\"
+if exist "$(SolutionDir)RBMXML\ModuleSounds\*.wav" xcopy /d /y /i "$(SolutionDir)RBMXML\ModuleSounds\*.wav" "$(SolutionDir)..\RBM\ModuleSounds\"
 xcopy /d /y "$(SolutionDir)CHANGELOG.md" "$(SolutionDir)..\RBM\"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>

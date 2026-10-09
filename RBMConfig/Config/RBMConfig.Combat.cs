@@ -19,6 +19,12 @@ namespace RBMConfig
         // AI kick / shield bash / weapon bash (RBMAI AiModule/Agents/AiKickBash.cs). Gates the whole feature:
         // the AI attempts, their posture/stamina costs, the victim's loss and the knockdown rules. Off = vanilla.
         public static bool aiKickBashEnabled = true;
+        // Formation shouts (RBMAI AiModule/Voices/FormationShoutsLogic.cs): soldiers echo and answer orders, grunt
+        // when a halt or shield wall is done, yell on a charge and at contact. Sound only; off = vanilla voices.
+        public static bool formationShoutsEnabled = true;
+        // Staggered order reaction (same file): player orders reach each man after a random, distance-scaled delay
+        // through the engine's own decide time. Experimental; off = vanilla's near-instant reaction.
+        public static bool orderReactionDelayEnabled = true;
 
         public static float playerPostureMultiplier = 1f;
         public static bool postureGUIEnabled = true;

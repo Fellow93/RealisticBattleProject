@@ -89,6 +89,7 @@ namespace RBMAI
             StanceLogic.agentsToDropWeapon.Clear();
             StanceLogic.agentsToDropShield.Clear();
             AgentStances.values.Clear();
+            OrderReactionHold.Clear();
             // Normally cleared by its OnRemoveBehavior; a stale one would pin the last mission and lock its input.
             PlayerExhaustionLogic.Instance = null;
         }

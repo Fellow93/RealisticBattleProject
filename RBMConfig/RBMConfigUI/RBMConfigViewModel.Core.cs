@@ -270,6 +270,14 @@ namespace RBMConfig
             AiKickBashEnabledText = new TextViewModel(new TextObject("{=RBM_CON_120}AI Kick and Bash"));
             AiKickBashEnabled = new SelectorVM<SelectorItemVM>(aiKickBashOptions, 0, null);
 
+            List<string> formationShoutsOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            FormationShoutsEnabledText = new TextViewModel(new TextObject("{=RBM_CON_155}Formation shouts"));
+            FormationShoutsEnabled = new SelectorVM<SelectorItemVM>(formationShoutsOptions, 0, null);
+
+            List<string> orderReactionDelayOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            OrderReactionDelayEnabledText = new TextViewModel(new TextObject("{=RBM_CON_157}Staggered order reaction (experimental)"));
+            OrderReactionDelayEnabled = new SelectorVM<SelectorItemVM>(orderReactionDelayOptions, 0, null);
+
             List<string> playerPostureMultiplierOptions = new List<string> { "1x (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", "1.5x", "2x" };
             PlayerPostureMultiplierText = new TextViewModel(new TextObject("{=RBM_CON_013}Player Posture Multiplier"));
             PlayerPostureMultiplier = new SelectorVM<SelectorItemVM>(playerPostureMultiplierOptions, 0, null);
@@ -324,6 +332,8 @@ namespace RBMConfig
             StaminaSystemEnabled.SelectedIndex = RBMConfig.staminaEnabled ? 1 : 0;
 
             AiKickBashEnabled.SelectedIndex = RBMConfig.aiKickBashEnabled ? 1 : 0;
+            FormationShoutsEnabled.SelectedIndex = RBMConfig.formationShoutsEnabled ? 1 : 0;
+            OrderReactionDelayEnabled.SelectedIndex = RBMConfig.orderReactionDelayEnabled ? 1 : 0;
 
             if (RBMConfig.postureGUIEnabled)
             {
@@ -656,6 +666,8 @@ namespace RBMConfig
             RBMConfig.staminaEnabled = StaminaSystemEnabled.SelectedIndex == 1;
 
             RBMConfig.aiKickBashEnabled = AiKickBashEnabled.SelectedIndex == 1;
+            RBMConfig.formationShoutsEnabled = FormationShoutsEnabled.SelectedIndex == 1;
+            RBMConfig.orderReactionDelayEnabled = OrderReactionDelayEnabled.SelectedIndex == 1;
 
             if (PlayerPostureMultiplier.SelectedIndex == 0)
             {
@@ -846,6 +858,8 @@ namespace RBMConfig
             PostureSystemEnabled.SelectedIndex = 1;
             StaminaSystemEnabled.SelectedIndex = 1;
             AiKickBashEnabled.SelectedIndex = 1;
+            FormationShoutsEnabled.SelectedIndex = 1;
+            OrderReactionDelayEnabled.SelectedIndex = 1;
             HitStopEnabled.SelectedIndex = 1;
             RBMAIEnabled.SelectedIndex = 1;
             FrontlineEnabled.SelectedIndex = 1;

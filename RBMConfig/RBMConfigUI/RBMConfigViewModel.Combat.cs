@@ -33,6 +33,12 @@ namespace RBMConfig
         public TextViewModel AiKickBashEnabledText { get; }
         public SelectorVM<SelectorItemVM> AiKickBashEnabled { get; }
 
+        public TextViewModel FormationShoutsEnabledText { get; }
+        public SelectorVM<SelectorItemVM> FormationShoutsEnabled { get; }
+
+        public TextViewModel OrderReactionDelayEnabledText { get; }
+        public SelectorVM<SelectorItemVM> OrderReactionDelayEnabled { get; }
+
         public TextViewModel PlayerPostureMultiplierText { get; }
         public SelectorVM<SelectorItemVM> PlayerPostureMultiplier { get; }
 
@@ -479,6 +485,30 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel AiKickBashHint { get; } = Hint("{=RBM_CON_121}AI soldiers kick, shield bash and weapon bash. Kicks and bashes also deal real damage, cost posture and stamina, and can knock an enemy down. Applies to the player's kicks and bashes too. Default on.");
+
+        [DataSourceProperty]
+        public string FormationShoutst
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_155}Formation shouts").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel FormationShoutsHint { get; } = Hint("{=RBM_CON_156}Soldiers of every formation, on both sides, repeat the orders they are given and the AI's captains call out their own; a formation grunts as one when it answers an order, halts or closes a shield wall; the main infantry marches to its culture's call; a charge gives its war cry, the men yell and roar when the lines meet. Sound only; behaviour is unchanged. Needs RBM AI on. Default on.");
+
+        [DataSourceProperty]
+        public string OrderReactionDelayt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_157}Staggered order reaction (experimental)").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel OrderReactionDelayHint { get; } = Hint("{=RBM_CON_158}When a formation is given a new order, yours or the AI's, each soldier starts to carry it out after his own short delay, longer the further he stands from whoever gave it, instead of the whole formation moving at once. Charges and retreats are not held back. Experimental. Needs RBM AI on. Default on.");
 
         [DataSourceProperty]
         public bool IsStaminaSelectable => PostureSystemEnabled.SelectedIndex == 1;

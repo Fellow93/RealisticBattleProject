@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	type="module_sound">
+	<module_sounds>
+		<!--
+  RBM's own sounds. Audio files go in RBMXML/ModuleSounds/ (copied to RBM/ModuleSounds/ by the RBM post-build step);
+  `path` is the file name inside that folder. Format, categories and the playing code: see Native/ModuleData/module_sounds.xml.
+
+  Crowd grunt (FormationShoutsLogic): the only grunt soldiers give - every march beat, the settled halt, the closed
+  shield wall/square/circle and the formation's answer to an order. Looked up as rbm/march/<culture> (empire, vlandia,
+  sturgia, battania, aserai, khuzait, nord - the leader's culture) or rbm/march/generic for any other culture. No
+  fallback between them: a missing entry means silence.
+
+  march_crowd_*.ogg, all cut from "CRWDBatl_Crowd Grunting, Exerting, Metered, Rowing" by ShangusBurger / Shane Vincent,
+  GameSoundCon 2024 walla session, CC0 (see ModuleSounds/README.md):
+      1-8    the eight grunts, XY-AKG214 take (freesound.org/s/763822)
+      9-16   the same eight, spaced-omni take (freesound.org/s/764266) - same performance, wider room
+      17-22  two different grunts of 1-8 layered 15-40 ms apart, for a bigger crowd
+  One recording set, so the cultures differ by pitch: Sturgians and Nords deeper, Khuzaits and Aserai lighter,
+  Battanians loosest.
+  -->
+		<module_sound name="rbm/march/generic" sound_category="mission_voice_shout" min_pitch_multiplier="0.95" max_pitch_multiplier="1.05">
+			<variation path="march_crowd_1.ogg" weight="1.0" />
+			<variation path="march_crowd_2.ogg" weight="1.0" />
+			<variation path="march_crowd_3.ogg" weight="1.0" />
+			<variation path="march_crowd_4.ogg" weight="1.0" />
+			<variation path="march_crowd_5.ogg" weight="1.0" />
+			<variation path="march_crowd_6.ogg" weight="1.0" />
+			<variation path="march_crowd_7.ogg" weight="1.0" />
+			<variation path="march_crowd_8.ogg" weight="1.0" />
+			<variation path="march_crowd_9.ogg" weight="1.0" />
+			<variation path="march_crowd_10.ogg" weight="1.0" />
+			<variation path="march_crowd_11.ogg" weight="1.0" />
+			<variation path="march_crowd_12.ogg" weight="1.0" />
+			<variation path="march_crowd_13.ogg" weight="1.0" />
+			<variation path="march_crowd_14.ogg" weight="1.0" />
+			<variation path="march_crowd_15.ogg" weight="1.0" />
+			<variation path="march_crowd_16.ogg" weight="1.0" />
+			<variation path="march_crowd_17.ogg" weight="1.0" />
+			<variation path="march_crowd_18.ogg" weight="1.0" />
+			<variation path="march_crowd_19.ogg" weight="1.0" />
+			<variation path="march_crowd_20.ogg" weight="1.0" />
+			<variation path="march_crowd_21.ogg" weight="1.0" />
+			<variation path="march_crowd_22.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/march/empire" sound_category="mission_voice_shout" min_pitch_multiplier="0.98" max_pitch_multiplier="1.02">
+			<variation path="march_crowd_1.ogg" weight="1.0" />
+			<variation path="march_crowd_2.ogg" weight="1.0" />
+			<variation path="march_crowd_3.ogg" weight="1.0" />
+			<variation path="march_crowd_4.ogg" weight="1.0" />
+			<variation path="march_crowd_5.ogg" weight="1.0" />
+			<variation path="march_crowd_6.ogg" weight="1.0" />
+			<variation path="march_crowd_7.ogg" weight="1.0" />
+			<variation path="march_crowd_8.ogg" weight="1.0" />
+			<variation path="march_crowd_9.ogg" weight="1.0" />
+			<variation path="march_crowd_10.ogg" weight="1.0" />
+			<variation path="march_crowd_11.ogg" weight="1.0" />
+			<variation path="march_crowd_12.ogg" weight="1.0" />
+			<variation path="march_crowd_13.ogg" weight="1.0" />
+			<variation path="march_crowd_14.ogg" weight="1.0" />
+			<variation path="march_crowd_15.ogg" weight="1.0" />
+			<variation path="march_crowd_16.ogg" weight="1.0" />
+			<variation path="march_crowd_17.ogg" weight="1.0" />
+			<variation path="march_crowd_18.ogg" weight="1.0" />
+			<variation path="march_crowd_19.ogg" weight="1.0" />
+			<variation path="march_crowd_20.ogg" weight="1.0" />
+			<variation path="march_crowd_21.ogg" weight="1.0" />
+			<variation path="march_crowd_22.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/march/vlandia" sound_category="mission_voice_shout" min_pitch_multiplier="0.95" max_pitch_multiplier="1.0">
+			<variation path="march_crowd_1.ogg" weight="1.0" />
+			<variation path="march_crowd_2.ogg" weight="1.0" />
+			<variation path="march_crowd_3.ogg" weight="1.0" />
+			<variation path="march_crowd_4.ogg" weight="1.0" />
+			<variation path="march_crowd_5.ogg" weight="1.0" />
+			<variation path="march_crowd_6.ogg" weight="1.0" />
+			<variation path="march_crowd_7.ogg" weight="1.0" />
+			<variation path="march_crowd_8.ogg" weight="1.0" />
+			<variation path="march_crowd_9.ogg" weight="1.0" />
+			<variation path="march_crowd_10.ogg" weight="1.0" />
+			<variation path="march_crowd_11.ogg" weight="1.0" />
+			<variation path="march_crowd_12.ogg" weight="1.0" />
+			<variation path="march_crowd_13.ogg" weight="1.0" />
+			<variation path="march_crowd_14.ogg" weight="1.0" />
+			<variation path="march_crowd_15.ogg" weight="1.0" />
+			<variation path="march_crowd_16.ogg" weight="1.0" />
+			<variation path="march_crowd_17.ogg" weight="1.0" />
+			<variation path="march_crowd_18.ogg" weight="1.0" />
+			<variation path="march_crowd_19.ogg" weight="1.0" />
+			<variation path="march_crowd_20.ogg" weight="1.0" />
+			<variation path="march_crowd_21.ogg" weight="1.0" />
+			<variation path="march_crowd_22.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/march/sturgia" sound_category="mission_voice_shout" min_pitch_multiplier="0.86" max_pitch_multiplier="0.92">
+			<variation path="march_crowd_1.ogg" weight="1.0" />
+			<variation path="march_crowd_2.ogg" weight="1.0" />
+			<variation path="march_crowd_3.ogg" weight="1.0" />
+			<variation path="march_crowd_4.ogg" weight="1.0" />
+			<variation path="march_crowd_5.ogg" weight="1.0" />
+			<variation path="march_crowd_6.ogg" weight="1.0" />
+			<variation path="march_crowd_7.ogg" weight="1.0" />
+			<variation path="march_crowd_8.ogg" weight="1.0" />
+			<variation path="march_crowd_9.ogg" weight="1.0" />
+			<variation path="march_crowd_10.ogg" weight="1.0" />
+			<variation path="march_crowd_11.ogg" weight="1.0" />
+			<variation path="march_crowd_12.ogg" weight="1.0" />
+			<variation path="march_crowd_13.ogg" weight="1.0" />
+			<variation path="march_crowd_14.ogg" weight="1.0" />
+			<variation path="march_crowd_15.ogg" weight="1.0" />
+			<variation path="march_crowd_16.ogg" weight="1.0" />
+			<variation path="march_crowd_17.ogg" weight="1.0" />
+			<variation path="march_crowd_18.ogg" weight="1.0" />
+			<variation path="march_crowd_19.ogg" weight="1.0" />
+			<variation path="march_crowd_20.ogg" weight="1.0" />
+			<variation path="march_crowd_21.ogg" weight="1.0" />
+			<variation path="march_crowd_22.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/march/battania" sound_category="mission_voice_shout" min_pitch_multiplier="0.92" max_pitch_multiplier="1.08">
+			<variation path="march_crowd_1.ogg" weight="1.0" />
+			<variation path="march_crowd_2.ogg" weight="1.0" />
+			<variation path="march_crowd_3.ogg" weight="1.0" />
+			<variation path="march_crowd_4.ogg" weight="1.0" />
+			<variation path="march_crowd_5.ogg" weight="1.0" />
+			<variation path="march_crowd_6.ogg" weight="1.0" />
+			<variation path="march_crowd_7.ogg" weight="1.0" />
+			<variation path="march_crowd_8.ogg" weight="1.0" />
+			<variation path="march_crowd_9.ogg" weight="1.0" />
+			<variation path="march_crowd_10.ogg" weight="1.0" />
+			<variation path="march_crowd_11.ogg" weight="1.0" />
+			<variation path="march_crowd_12.ogg" weight="1.0" />
+			<variation path="march_crowd_13.ogg" weight="1.0" />
+			<variation path="march_crowd_14.ogg" weight="1.0" />
+			<variation path="march_crowd_15.ogg" weight="1.0" />
+			<variation path="march_crowd_16.ogg" weight="1.0" />
+			<variation path="march_crowd_17.ogg" weight="1.0" />
+			<variation path="march_crowd_18.ogg" weight="1.0" />
+			<variation path="march_crowd_19.ogg" weight="1.0" />
+			<variation path="march_crowd_20.ogg" weight="1.0" />
+			<variation path="march_crowd_21.ogg" weight="1.0" />
+			<variation path="march_crowd_22.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/march/aserai" sound_category="mission_voice_shout" min_pitch_multiplier="1.0" max_pitch_multiplier="1.06">
+			<variation path="march_crowd_1.ogg" weight="1.0" />
+			<variation path="march_crowd_2.ogg" weight="1.0" />
+			<variation path="march_crowd_3.ogg" weight="1.0" />
+			<variation path="march_crowd_4.ogg" weight="1.0" />
+			<variation path="march_crowd_5.ogg" weight="1.0" />
+			<variation path="march_crowd_6.ogg" weight="1.0" />
+			<variation path="march_crowd_7.ogg" weight="1.0" />
+			<variation path="march_crowd_8.ogg" weight="1.0" />
+			<variation path="march_crowd_9.ogg" weight="1.0" />
+			<variation path="march_crowd_10.ogg" weight="1.0" />
+			<variation path="march_crowd_11.ogg" weight="1.0" />
+			<variation path="march_crowd_12.ogg" weight="1.0" />
+			<variation path="march_crowd_13.ogg" weight="1.0" />
+			<variation path="march_crowd_14.ogg" weight="1.0" />
+			<variation path="march_crowd_15.ogg" weight="1.0" />
+			<variation path="march_crowd_16.ogg" weight="1.0" />
+			<variation path="march_crowd_17.ogg" weight="1.0" />
+			<variation path="march_crowd_18.ogg" weight="1.0" />
+			<variation path="march_crowd_19.ogg" weight="1.0" />
+			<variation path="march_crowd_20.ogg" weight="1.0" />
+			<variation path="march_crowd_21.ogg" weight="1.0" />
+			<variation path="march_crowd_22.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/march/khuzait" sound_category="mission_voice_shout" min_pitch_multiplier="1.03" max_pitch_multiplier="1.09">
+			<variation path="march_crowd_1.ogg" weight="1.0" />
+			<variation path="march_crowd_2.ogg" weight="1.0" />
+			<variation path="march_crowd_3.ogg" weight="1.0" />
+			<variation path="march_crowd_4.ogg" weight="1.0" />
+			<variation path="march_crowd_5.ogg" weight="1.0" />
+			<variation path="march_crowd_6.ogg" weight="1.0" />
+			<variation path="march_crowd_7.ogg" weight="1.0" />
+			<variation path="march_crowd_8.ogg" weight="1.0" />
+			<variation path="march_crowd_9.ogg" weight="1.0" />
+			<variation path="march_crowd_10.ogg" weight="1.0" />
+			<variation path="march_crowd_11.ogg" weight="1.0" />
+			<variation path="march_crowd_12.ogg" weight="1.0" />
+			<variation path="march_crowd_13.ogg" weight="1.0" />
+			<variation path="march_crowd_14.ogg" weight="1.0" />
+			<variation path="march_crowd_15.ogg" weight="1.0" />
+			<variation path="march_crowd_16.ogg" weight="1.0" />
+			<variation path="march_crowd_17.ogg" weight="1.0" />
+			<variation path="march_crowd_18.ogg" weight="1.0" />
+			<variation path="march_crowd_19.ogg" weight="1.0" />
+			<variation path="march_crowd_20.ogg" weight="1.0" />
+			<variation path="march_crowd_21.ogg" weight="1.0" />
+			<variation path="march_crowd_22.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/march/nord" sound_category="mission_voice_shout" min_pitch_multiplier="0.88" max_pitch_multiplier="0.95">
+			<variation path="march_crowd_1.ogg" weight="1.0" />
+			<variation path="march_crowd_2.ogg" weight="1.0" />
+			<variation path="march_crowd_3.ogg" weight="1.0" />
+			<variation path="march_crowd_4.ogg" weight="1.0" />
+			<variation path="march_crowd_5.ogg" weight="1.0" />
+			<variation path="march_crowd_6.ogg" weight="1.0" />
+			<variation path="march_crowd_7.ogg" weight="1.0" />
+			<variation path="march_crowd_8.ogg" weight="1.0" />
+			<variation path="march_crowd_9.ogg" weight="1.0" />
+			<variation path="march_crowd_10.ogg" weight="1.0" />
+			<variation path="march_crowd_11.ogg" weight="1.0" />
+			<variation path="march_crowd_12.ogg" weight="1.0" />
+			<variation path="march_crowd_13.ogg" weight="1.0" />
+			<variation path="march_crowd_14.ogg" weight="1.0" />
+			<variation path="march_crowd_15.ogg" weight="1.0" />
+			<variation path="march_crowd_16.ogg" weight="1.0" />
+			<variation path="march_crowd_17.ogg" weight="1.0" />
+			<variation path="march_crowd_18.ogg" weight="1.0" />
+			<variation path="march_crowd_19.ogg" weight="1.0" />
+			<variation path="march_crowd_20.ogg" weight="1.0" />
+			<variation path="march_crowd_21.ogg" weight="1.0" />
+			<variation path="march_crowd_22.ogg" weight="1.0" />
+		</module_sound>
+	</module_sounds>
+</base>
