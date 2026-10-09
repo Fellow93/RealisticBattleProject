@@ -294,8 +294,8 @@ namespace RBMCampaign
             {
                 return;
             }
-            // A battle already decided, or one whose storm was called off, has nothing left to bombard.
-            if (mapEvent.BattleState != BattleState.None || SimulationSiege.Repulsed(state))
+            // A battle already decided has nothing left to bombard.
+            if (mapEvent.BattleState != BattleState.None)
             {
                 return;
             }

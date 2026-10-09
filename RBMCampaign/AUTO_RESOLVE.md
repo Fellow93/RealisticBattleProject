@@ -513,7 +513,7 @@ The ladder row is the shape of the whole idea: one man can be at the top of it a
 
 So the lanes are assembled from the equipment: **the gate** is wherever the ram is, and **the two wall lanes** are the settlement's two wall sections (`WallSectionCount` is hardcoded to 2 for every fortification), each either a hole or whatever climbing engine is assigned to it. Engines count only if `IsActive` and `Hitpoints > 0`.
 
-**A breached section is a hole and nothing else** — men walk through a gap, they do not queue for a ladder beside it. **An empty lane is worth nothing**: no fallback, no floor. And with only two stretches of wall, a besieger who built three towers has one with nowhere to go — that surplus is *logged*, never silently dropped. (The one assumption made: a wall whose equipment cannot be read at all is taken as two ladders, 2 against 10.)
+**A breached section is a hole and nothing else** — men walk through a gap, they do not queue for a ladder beside it. **An empty wall section is a ladder**: the real mission spawns free ladders on every tower point left without a tower (`DeploymentPoint`: `TowerLadder` → `SiegeLadder` when nothing is deployed), so a besieger who built nothing still climbs. Only the gate can be empty (no ram, no gate lane). And with only two stretches of wall, a besieger who built three towers has one with nowhere to go — that surplus is *logged*, never silently dropped. (The one assumption made: a wall whose equipment cannot be read at all is taken as two ladders, 2 against 10.)
 
 The widths are frozen at the moment the approach ends, so a ram broken on the way in contributes nothing.
 
@@ -527,7 +527,7 @@ A consequence worth stating: the round's total blow count is **no longer preserv
 
 **Width moves.** Every man the attackers put down at an opening widens it by one for *both* sides — the press gives ground, the fight spills along the wall; every man the defenders put down narrows it by one for both. Melee kills only: an archer picking a man off the ground below does not close a breach. The floor is what the equipment bought at the start, and there is no ceiling — an assault that is going well goes better, which is what a collapse looks like from outside.
 
-**If nothing survives, there is no assault.** Every ladder burned, every tower broken, the ram destroyed and the wall still whole: the men who crossed the killing ground have arrived at a sheer face with empty hands. The besiegers are **repulsed** — after one last round fought as approach — through native's own `Route()` so the survivors leave as fugitives, carrying whatever the crossing cost them.
+**There is always an assault.** An earlier version repulsed the besiegers (native `Route()`, survivors as fugitives) when no engine survived the approach, and once routed 800 attackers off a castle held by one man. Since an empty wall section counts as a ladder, the attack width is never zero, and the repulse was removed.
 
 **How the round is divided.** The game hands each side one number — its tick count — and a siege has two ratios to honour at once. So the allocation solves for all four counts directly (the two sides' shots and the two sides' melee blows), from the rate of fire, the width, and the archers the two sides actually brought; the tick counts carry half the answer and the striker selection carries the other half (it spends a per-side shot quota). On the approach every action is a shot. The **shots** are a share of the round's natural total and never inflate it; the **melee** is capped by the width as above, so an assault round can only hold less fighting than its field equivalent, never more.
 
@@ -724,9 +724,9 @@ Casualty share reads the fight the right way round: the side bleeding out faster
 
 Two details that keep it honest: a side that *gained* men after the muster (reinforcements attaching mid-battle) would read a negative loss, so the fractions are clamped at zero; and a dead-even bleed breaks nobody.
 
-**The break runs through vanilla's own `Route()`**, not through a reimplementation — which is what makes the fugitives *survive*, and the pursuit, the prisoners and the rewards all behave as the game intends. Ending the battle means setting `MapEvent.BattleState`, whose setter is internal and is reached by reflection; that is deliberate, because it is the same act vanilla's own rout performs and it is what fires `OnBattleWon` and finalises the event. Every rout — this one, the siege repulse, or vanilla's when the overhaul is off — is marked for the log (`SimulationRoutMarker`), which then splits the fugitives from the dead.
+**The break runs through vanilla's own `Route()`**, not through a reimplementation — which is what makes the fugitives *survive*, and the pursuit, the prisoners and the rewards all behave as the game intends. Ending the battle means setting `MapEvent.BattleState`, whose setter is internal and is reached by reflection; that is deliberate, because it is the same act vanilla's own rout performs and it is what fires `OnBattleWon` and finalises the event. Every rout — this one, or vanilla's when the overhaul is off — is marked for the log (`SimulationRoutMarker`), which then splits the fugitives from the dead.
 
-**A wall assault never routs this way.** A storm is not a field a man can run off; the only break in one is the repulse when no way in survives the approach (§6). (And since vanilla's morale rout is off too, a storm is fought to the end.)
+**A wall assault never routs this way.** A storm is not a field a man can run off. (And since vanilla's morale rout is off too, a storm is fought to the end.)
 
 **The wounded are taken.** When the battle ends, every non-hero wounded man of each defeated NPC party goes into a winner's prison roster — even when his side retreated, which vanilla's `CaptureDefeatedPartyMembers` skips entirely — rather than being left to vanilla's chance-gated capture, which could strike a man off the roster and hand him to nobody (`SimulationWoundedCapture`, gated on the overhaul alone, not on this toggle). The captor is drawn weighted by contribution to the battle, among winners that took part; villagers, caravans, patrols and a village's own garrison or militia never hold prisoners. `CanTroopBeTakenPrisoner` is respected, heroes are left to vanilla, and the player's own main party is never stripped — a player who retreats keeps his wounded as vanilla allows.
 
@@ -843,7 +843,7 @@ day 1085-016  ·  FieldBattle  ·  PlainBattle  ·  PLAYER
   RESULT  winner attacker  ·  casualties  attacker 721, defender 933  ·  no side broke -- fought to a finish
 ```
 
-The header also prints each side's strategic power, the opening charge figure into each side's foot, the volley length (`approach` and the wall, engines and lanes for a siege), and a perks block per side; the result line says the round a side broke at and how many of its casualties were fugitives rather than dead, and flags a stalled battle or a repulsed storm. A siege adds an artillery block.
+The header also prints each side's strategic power, the opening charge figure into each side's foot, the volley length (`approach` and the wall, engines and lanes for a siege), and a perks block per side; the result line says the round a side broke at and how many of its casualties were fugitives rather than dead, and flags a stalled battle. A siege adds an artillery block.
 
 Then three things, and they answer three different questions.
 

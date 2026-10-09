@@ -247,14 +247,6 @@ namespace RBMCampaign
             {
                 sb.Append("   *** STALLED AT ROUND 0 -- round clock never advanced, phases frozen ***");
             }
-            // A STORM THAT NEVER STARTED reads, on every other line of this page, as an ordinary defender's win --
-            // and it is not one. The besiegers crossed the killing ground and found nothing to climb, and the
-            // casualties above are what the crossing alone cost them. Said plainly, because a repulse and a
-            // defeat at the wall want completely different answers from whoever is reading.
-            if (SimulationSiege.Repulsed(siege))
-            {
-                sb.Append("   *** ATTACKERS REPULSED -- no way in survived the approach; the assault never began ***");
-            }
             sb.Append("\n");
 
             // WHAT THE ENGINES DID, on the line beside the casualties they are part of. A siege whose artillery

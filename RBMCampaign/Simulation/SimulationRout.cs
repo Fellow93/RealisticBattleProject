@@ -42,9 +42,9 @@ namespace RBMCampaign
     /// This catches the break itself. A prefix, deliberately: it has to count the men BEFORE Route() puts them
     /// through, because afterwards there are none left to count.
     ///
-    /// It catches EVERY break, not just this file's own -- vanilla's morale rout in CalculateWinner, the
-    /// strength-ratio rout below, and the siege repulse (SimulationSiegeRepulse) all end by calling Route(), and
-    /// all three should be legible in the log as what they are.
+    /// It catches EVERY break, not just this file's own -- vanilla's morale rout in CalculateWinner and the
+    /// strength-ratio rout below both end by calling Route(), and both should be legible in the log as what
+    /// they are.
     /// </summary>
     [HarmonyPatch(typeof(MapEventSide), "Route")]
     internal static class SimulationRoutMarker

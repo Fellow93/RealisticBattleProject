@@ -335,17 +335,6 @@ namespace RBMCampaign
                 flavorPool = MeleeFlavor;
             }
 
-            // A repulsed storm also ends through Route(), but nobody broke: the attackers had nothing to climb. It
-            // happens whatever the Auto Resolve Routing toggle says, so it must not read as a rout.
-            // The chronicle line for it is written by CheckRout.
-            if (SimulationSiege.Repulsed(state))
-            {
-                _lastPhaseKey = "repulsed";
-                PhaseName = new TextObject("{=RBM_SIM_PHASE_REPULSED}REPULSED").ToString();
-                PhaseDescription = new TextObject("{=RBM_SIM_PHASE_REPULSED_DESC}Nothing left to climb or break — the assault cannot go on").ToString();
-                return;
-            }
-
             if (state.AttackerRouted > 0 || state.DefenderRouted > 0)
             {
                 phaseKey = "rout";
@@ -1189,14 +1178,7 @@ namespace RBMCampaign
             {
                 return;
             }
-            if (state.AttackerRouted > 0 && SimulationSiege.Repulsed(state))
-            {
-                _hadRout = true;
-                TextObject msg = new TextObject("{=RBM_SIM_REPULSE_EVENT}The assault is repulsed — with nothing left to climb, the attackers fall back ({COUNT} withdrew)");
-                msg.SetTextVariable("COUNT", state.AttackerRouted);
-                AddEvent(msg.ToString(), "rout");
-            }
-            else if (state.AttackerRouted > 0)
+            if (state.AttackerRouted > 0)
             {
                 _hadRout = true;
                 TextObject msg = new TextObject("{=RBM_SIM_ROUT_EVENT_ATK}The attackers {FLAVOR} ({COUNT} fled)");

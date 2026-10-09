@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
-using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -272,35 +270,19 @@ namespace RBMCampaign
         private const int PhaseApproach = 0;
         private const int PhaseAssault = 1;
 
-        /// <summary>The attackers had no way in at all when the ladders should have gone up, and the storm is over
-        /// before it began. See <see cref="Repulsed"/>.</summary>
-        private const int PhaseRepulsed = 2;
-
         /// <summary>
         /// Is this the crossing of the killing ground -- nobody in reach of anybody, and only the bows at work?
         /// False for every battle that is not a wall assault.
-        ///
-        /// A REPULSED assault counts as approach, and that is not a fudge. Repulsed means the men crossed the ground
-        /// and found nothing to climb: they are still out there in the open, still being shot at, and still unable
-        /// to touch anybody -- which is the approach exactly. The battle is ended at the close of that same round
-        /// (SimulationSiegeRepulse), and this keeps the one round in between fought as what it actually was rather
-        /// than as a melee that could not physically have happened.
         /// </summary>
         internal static bool IsApproach(SimulationBattleState.BattleState state)
         {
-            return state != null && state.SiegeAssaultBattle && state.SiegePhase != PhaseAssault;
+            return state != null && state.SiegeAssaultBattle && state.SiegePhase == PhaseApproach;
         }
 
         /// <summary>Is this the storm itself -- the ladders up, the fight at the openings?</summary>
         internal static bool IsAssault(SimulationBattleState.BattleState state)
         {
             return state != null && state.SiegeAssaultBattle && state.SiegePhase == PhaseAssault;
-        }
-
-        /// <summary>The storm never happened: nothing survived to climb or break, and the attackers are done.</summary>
-        internal static bool Repulsed(SimulationBattleState.BattleState state)
-        {
-            return state != null && state.SiegeAssaultBattle && state.SiegePhase == PhaseRepulsed;
         }
 
         // =========================================================================================================
@@ -334,8 +316,8 @@ namespace RBMCampaign
         ///
         /// The transition is the whole of the interesting part: the approach ends, and at that instant the siege
         /// equipment is read and the widths are frozen. A ram that was broken on the way in contributes nothing
-        /// (its lane goes to zero -- there is no ladder up a gate), and if NOTHING survived, there is no assault to
-        /// fight at all.
+        /// (its lane goes to zero -- there is no ladder up a gate), and a stretch of wall whose tower was broken
+        /// falls back to ladders.
         /// </summary>
         internal static void OnRound(MapEvent mapEvent, SimulationBattleState.BattleState state)
         {
@@ -368,26 +350,14 @@ namespace RBMCampaign
             {
                 // THE WALL COULD NOT BE READ AT ALL -- no settlement on the event, or no siege event on it. That
                 // should not happen for a battle the game itself calls a siege assault, but if it ever does, the
-                // answer must not be "the attackers lose". A width of nothing would repulse every storm in the
-                // campaign off a null reference, silently, and hand every siege in the world to the defender. So an
                 // unreadable wall is assumed to be the poorest assault there is -- ladders against both stretches
                 // of wall -- which is a fight the attackers can still lose honestly and one they can still win.
                 attackWidth = 2 * LadderAttacker;
                 defendWidth = 2 * LadderDefender;
                 Note("wall unreadable, assumed ladders");
             }
-            state.SiegeLanes = (_lanes.Length > 0) ? _lanes.ToString() : "nothing -- no way in";
+            state.SiegeLanes = _lanes.ToString();
             _lanes = null;
-
-            // NOTHING TO CLIMB AND NOTHING TO BREAK. Every ladder burned, every tower broken, the ram destroyed and
-            // the wall still whole -- so the men who crossed the killing ground have arrived at a sheer face with
-            // nothing in their hands. That is not a fight they can lose slowly; it is a fight they cannot start. The
-            // storm is over, and the casualties they took crossing are what the assault cost them.
-            if (attackWidth <= 0)
-            {
-                state.SiegePhase = PhaseRepulsed;
-                return;
-            }
 
             state.StartAttackWidth = attackWidth;
             state.StartDefendWidth = defendWidth;
@@ -574,8 +544,9 @@ namespace RBMCampaign
         /// That surplus is NOTED rather than silently dropped, because silently dropping equipment is the exact bug
         /// this rewrite exists to fix.
         ///
-        /// AN EMPTY LANE IS WORTH NOTHING. No fallback ladder, no floor -- if the attacker brought nothing to a
-        /// stretch of wall and did not break it, nobody fights there. That is what makes a repulse possible.
+        /// AN EMPTY WALL SECTION IS A LADDER, because the real mission gives the attacker free ladders on every
+        /// tower point he left empty. Only the GATE can be empty -- no ram, no gate lane. So both wall lanes always
+        /// exist and the attack width is never zero.
         ///
         /// Returns false if the wall could not be read at all -- no settlement, or no siege event on it. That is a
         /// different thing from reading it and finding nothing, and the caller must treat it differently: a wall
@@ -659,14 +630,17 @@ namespace RBMCampaign
                     continue;
                 }
 
-                if (nextClimber >= climbers.Count)
+                // A STRETCH OF WALL WITH NOTHING BUILT AGAINST IT STILL GETS LADDERS. That is the real mission's
+                // rule: a tower deployment point with no tower on it spawns the scene's free ladders instead
+                // (DeploymentPoint.GetDeploymentPointState, TowerLadder -> SiegeLadder). Treating it as "no way
+                // in" repulsed whole armies off a wall they could have climbed -- 800 men routed by a lone
+                // defender because nothing had been built.
+                SiegeEngineType climber = DefaultSiegeEngineTypes.Ladder;
+                if (nextClimber < climbers.Count)
                 {
-                    Note(name + ": empty");
-                    continue;
+                    climber = climbers[nextClimber];
+                    nextClimber++;
                 }
-
-                SiegeEngineType climber = climbers[nextClimber];
-                nextClimber++;
 
                 if (climber == DefaultSiegeEngineTypes.Ladder)
                 {
@@ -764,8 +738,6 @@ namespace RBMCampaign
                 return;
             }
 
-            // Anything that is not the storm itself is dealt out as the approach -- including the one round a
-            // repulsed assault is still nominally alive for. See IsApproach.
             bool approach = state.SiegePhase != PhaseAssault;
 
             // What share of the round's blows are SHOT, before any siege rule touches it: the two sides' archer
@@ -900,57 +872,6 @@ namespace RBMCampaign
             _pendingState = null;
             _pendingIsMelee = false;
             _pendingStrikerIsAttacker = false;
-        }
-    }
-
-    /// <summary>
-    /// THE STORM THAT NEVER STARTED. When the approach ends with nothing left to climb or break, the assault cannot
-    /// be fought -- and there is no point simulating rounds of a battle in which the attackers cannot reach anybody.
-    /// The besiegers are repulsed, carrying whatever the crossing cost them.
-    ///
-    /// This ends the battle the same way vanilla's own morale rout does, and the same way SimulationRout does: the
-    /// beaten side is put through native's <c>Route()</c> so its survivors leave as fugitives rather than corpses,
-    /// and then the event's BattleState is set, which fires OnBattleWon and finalises everything downstream. Nothing
-    /// here reimplements what the game already does; it only decides that the storm is over.
-    ///
-    /// Note this is the mirror image of SimulationRout's exclusion. That system refuses to touch sieges because a
-    /// besieged DEFENDER cannot flee a wall (native's <c>MapEventSide.OnTroopRouted</c> declines to rout him). Here
-    /// it is the ATTACKER who breaks off, and native is perfectly willing to rout him -- the guard is on the
-    /// defending side of a siege, not on sieges as such.
-    /// </summary>
-    [HarmonyPatch(typeof(MapEvent), "SimulateBattleRound")]
-    internal static class SimulationSiegeRepulse
-    {
-        private static readonly MethodInfo SetBattleState =
-            typeof(MapEvent).GetProperty("BattleState")?.GetSetMethod(nonPublic: true);
-
-        private static void Postfix(MapEvent __instance)
-        {
-            if (!SimulationEquipmentPower.SimulationEnabled || __instance == null || SetBattleState == null)
-            {
-                return;
-            }
-            if (__instance.BattleState != BattleState.None || !__instance.IsSiegeAssault)
-            {
-                return;
-            }
-            if (!SimulationSiege.Repulsed(SimulationBattleState.Get(__instance)))
-            {
-                return;
-            }
-            if (__instance.AttackerSide == null || __instance.DefenderSide == null)
-            {
-                return;
-            }
-            // If either side is already gone the game's own CalculateWinner has this battle; do not fight it for it.
-            if (__instance.AttackerSide.NumRemainingSimulationTroops <= 0
-                || __instance.DefenderSide.NumRemainingSimulationTroops <= 0)
-            {
-                return;
-            }
-
-            __instance.AttackerSide.Route();
-            SetBattleState.Invoke(__instance, new object[] { BattleState.DefenderVictory });
         }
     }
 }

@@ -829,8 +829,6 @@
 	<string id="RBM_SIM_PHASE_SKIRMISH" text="SKIRMISH" />
 	<string id="RBM_SIM_PHASE_MELEE" text="MELEE" />
 	<string id="RBM_SIM_PHASE_ROUT" text="ROUT" />
-	<string id="RBM_SIM_PHASE_REPULSED" text="REPULSED" />
-	<string id="RBM_SIM_PHASE_REPULSED_DESC" text="Nothing left to climb or break — the assault cannot go on" />
 	<string id="RBM_SIM_PHASE_EVENT" text="{PHASE} — {FLAVOR}" />
 	<string id="RBM_SIM_ROUND" text="Round {ROUND}" />
 	<string id="RBM_SIM_ROUND_DIVIDER" text="──── Round {ROUND} ────" />
@@ -928,7 +926,6 @@
 	<!-- RBM_SIM_ROUT_INLINE_xx are the RBM_SIM_ROUT_xx lines as they read inside RBM_SIM_ROUT_EVENT_* -->
 	<string id="RBM_SIM_ROUT_EVENT_ATK" text="The attackers {FLAVOR} ({COUNT} fled)" />
 	<string id="RBM_SIM_ROUT_EVENT_DEF" text="The defenders {FLAVOR} ({COUNT} fled)" />
-	<string id="RBM_SIM_REPULSE_EVENT" text="The assault is repulsed — with nothing left to climb, the attackers fall back ({COUNT} withdrew)" />
 	<string id="RBM_SIM_ROUT_INLINE_01" text="their courage breaks!" />
 	<string id="RBM_SIM_ROUT_INLINE_02" text="the line shatters and men flee!" />
 	<string id="RBM_SIM_ROUT_INLINE_03" text="panic spreads through the ranks!" />
