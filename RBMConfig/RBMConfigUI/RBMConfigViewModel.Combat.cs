@@ -39,6 +39,9 @@ namespace RBMConfig
         public TextViewModel OrderReactionDelayEnabledText { get; }
         public SelectorVM<SelectorItemVM> OrderReactionDelayEnabled { get; }
 
+        public TextViewModel ShieldWallShareText { get; }
+        public SelectorVM<SelectorItemVM> ShieldWallShare { get; }
+
         public TextViewModel PlayerPostureMultiplierText { get; }
         public SelectorVM<SelectorItemVM> PlayerPostureMultiplier { get; }
 
@@ -509,6 +512,36 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel OrderReactionDelayHint { get; } = Hint("{=RBM_CON_158}When a formation is given a new order, yours or the AI's, each soldier starts to carry it out after his own short delay, longer the further he stands from whoever gave it, instead of the whole formation moving at once. Charges and retreats are not held back. Experimental. Needs RBM AI on. Default on.");
+
+        [DataSourceProperty]
+        public string ShieldWallSharet
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_159}Shield wall share").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel ShieldWallShareHint { get; } = Hint("{=RBM_CON_160}How much of an AI infantry formation must be shield-wall soldiers (a large shield in hand, not holding a throwing weapon) before it forms a shield wall when the enemy is near. It opens again when the share drops 10% below this. Lower means more shield walls. Needs RBM AI on. Default 60%.");
+
+        // The ShieldWallShare selector's options, in order; index 2 (0.6) is the default.
+        private static readonly float[] shieldWallShareValues = { 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f };
+        private const int ShieldWallShareDefaultIndex = 2;
+
+        // Index of the option closest to a stored share, so a hand-edited value off the list still selects one.
+        private static int NearestShieldWallShareIndex(float share)
+        {
+            int best = 0;
+            for (int i = 1; i < shieldWallShareValues.Length; i++)
+            {
+                if (Math.Abs(shieldWallShareValues[i] - share) < Math.Abs(shieldWallShareValues[best] - share))
+                {
+                    best = i;
+                }
+            }
+            return best;
+        }
 
         [DataSourceProperty]
         public bool IsStaminaSelectable => PostureSystemEnabled.SelectedIndex == 1;

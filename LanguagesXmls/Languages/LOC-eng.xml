@@ -592,6 +592,9 @@
 	<string id="RBM_CON_156" text="Soldiers of every formation, on both sides, repeat the orders they are given and the AI's captains call out their own; a formation grunts as one when it answers an order, halts or closes a shield wall; the main infantry marches to its culture's call; a charge gives its war cry, the men yell and roar when the lines meet. Sound only; behaviour is unchanged. Needs RBM AI on. Default on." />
 	<string id="RBM_CON_157" text="Staggered order reaction (experimental)" />
 	<string id="RBM_CON_158" text="When a formation is given a new order, yours or the AI's, each soldier starts to carry it out after his own short delay, longer the further he stands from whoever gave it, instead of the whole formation moving at once. Charges and retreats are not held back. Experimental. Needs RBM AI on. Default on." />
+	<!-- Shield Wall Share Strings -->
+	<string id="RBM_CON_159" text="Shield wall share" />
+	<string id="RBM_CON_160" text="How much of an AI infantry formation must be shield-wall soldiers (a large shield in hand, not holding a throwing weapon) before it forms a shield wall when the enemy is near. It opens again when the share drops 10% below this. Lower means more shield walls. Needs RBM AI on. Default 60%." />
 	<!-- Combat Toggle Restart Notice Strings -->
 	<string id="RBM_RESTART_001" text="Restart Required" />
 	<string id="RBM_RESTART_002" text="RBM Combat was changed. Everything else takes effect the next time you start or load a game, but RBM's spear and weapon animation parameters are only read when Bannerlord starts. Restart the game for them to match the new setting." />

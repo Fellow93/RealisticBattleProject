@@ -171,20 +171,13 @@ namespace RBMAI
                 if (agent.IsActive())
                 {
                     countOfAgents++;
-                    if (!agent.WieldedOffhandWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem != null && agent.WieldedOffhandWeapon.CurrentUsageItem.WeaponClass == WeaponClass.LargeShield)
+                    // Judged by the weapon in hand, not the kit: a man with a large shield counts unless he is holding a
+                    // throwing weapon right now. Counting thrown weapons left in the kit kept every pila/javelin-carrying
+                    // formation out of the shield wall until it had thrown them all.
+                    if (!agent.WieldedOffhandWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem != null && agent.WieldedOffhandWeapon.CurrentUsageItem.WeaponClass == WeaponClass.LargeShield
+                        && !agent.WieldedWeapon.IsAnyConsumable())
                     {
-                        int ammoAmount = 0;
-                        for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                        {
-                            if (agent.Equipment != null && !agent.Equipment[equipmentIndex].IsEmpty && !agent.Equipment[equipmentIndex].IsShield())
-                            {
-                                ammoAmount += agent.Equipment[equipmentIndex].Amount;
-                            }
-                        }
-                        if (ammoAmount <= 1)
-                        {
-                            countOfAgentsWieldingLargeShield++;
-                        }
+                        countOfAgentsWieldingLargeShield++;
                     }
                 }
             });
@@ -197,9 +190,11 @@ namespace RBMAI
             // Hysteresis: a formation already in an arrangement keeps it until the ratio drops clearly below the bar
             // that put it there. A ratio hovering at the bar (weapon swaps, casualties) flipped the arrangement every
             // tick, and every flip re-shapes the line (an n^2 dispersal in the advance, see OverrideBehaviorAdvance).
+            // The shield wall is entered above the "Shield wall share" setting and held while above it minus 0.1.
             ArrangementOrder.ArrangementOrderEnum current = formation.ArrangementOrder.OrderEnum;
             bool isShock = FormationRatioWieldingShockWeapons(formation) > (current == ArrangementOrder.ArrangementOrderEnum.Loose ? 0.4f : 0.5f);
-            bool isShieldWallEligible = FormationRatioShieldWallEligible(formation) > (current == ArrangementOrder.ArrangementOrderEnum.ShieldWall ? 0.6f : 0.7f);
+            float shieldWallShare = RBMConfig.RBMConfig.shieldWallShare;
+            bool isShieldWallEligible = FormationRatioShieldWallEligible(formation) > (current == ArrangementOrder.ArrangementOrderEnum.ShieldWall ? shieldWallShare - 0.1f : shieldWallShare);
             if (isShieldWallEligible)
             {
                 formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);

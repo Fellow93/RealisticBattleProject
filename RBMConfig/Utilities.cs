@@ -277,6 +277,8 @@ namespace RBMConfig
             FormationShoutsEnabled.InnerText = RBMConfig.formationShoutsEnabled ? "1" : "0";
             XmlElement OrderReactionDelayEnabled = xmlconfig.CreateElement("OrderReactionDelayEnabled");
             OrderReactionDelayEnabled.InnerText = RBMConfig.orderReactionDelayEnabled ? "1" : "0";
+            XmlElement ShieldWallShare = xmlconfig.CreateElement("ShieldWallShare");
+            ShieldWallShare.InnerText = RBMConfig.shieldWallShare.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement PostureGUIEnabled = xmlconfig.CreateElement("PostureGUIEnabled");
             PostureGUIEnabled.InnerText = RBMConfig.postureGUIEnabled ? "1" : "0";
             XmlElement VanillaCombatAi = xmlconfig.CreateElement("VanillaCombatAi");
@@ -292,6 +294,7 @@ namespace RBMConfig
             RBMAI.AppendChild(AiKickBashEnabled);
             RBMAI.AppendChild(FormationShoutsEnabled);
             RBMAI.AppendChild(OrderReactionDelayEnabled);
+            RBMAI.AppendChild(ShieldWallShare);
             RBMAI.AppendChild(PlayerPostureMultiplier);
             RBMAI.AppendChild(PostureGUIEnabled);
             RBMAI.AppendChild(VanillaCombatAi);

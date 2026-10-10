@@ -25,6 +25,10 @@ namespace RBMConfig
         // Staggered order reaction (same file): player orders reach each man after a random, distance-scaled delay
         // through the engine's own decide time. Experimental; off = vanilla's near-instant reaction.
         public static bool orderReactionDelayEnabled = true;
+        // Shield wall share (RBMAI Utilities/Utilities.Formations.cs DecideArrangementOrderForFormation): the share of
+        // an AI formation that must be shield-wall soldiers (a large shield in hand, no throwing weapon) before it forms
+        // a shield wall; it is held until the share drops 0.1 below this. Settings screen offers 0.4-0.9.
+        public static float shieldWallShare = 0.6f;
 
         public static float playerPostureMultiplier = 1f;
         public static bool postureGUIEnabled = true;

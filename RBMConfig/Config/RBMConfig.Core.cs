@@ -254,6 +254,9 @@ namespace RBMConfig
             aiKickBashEnabled = ReadOrCreate("/Config/RBMAI", "AiKickBashEnabled", "1").Equals("1");
             formationShoutsEnabled = ReadOrCreate("/Config/RBMAI", "FormationShoutsEnabled", "1").Equals("1");
             orderReactionDelayEnabled = ReadOrCreate("/Config/RBMAI", "OrderReactionDelayEnabled", "1").Equals("1");
+            // A share of the formation (0-1). Clamped so a hand-edited value cannot switch the shield wall off (above 1)
+            // or put every formation in it (at or below the 0.1 hold margin).
+            shieldWallShare = Math.Max(0.15f, Math.Min(1f, ParseFloat(ReadOrCreate("/Config/RBMAI", "ShieldWallShare", "0.6"))));
             postureGUIEnabled = ReadOrCreate("/Config/RBMAI", "PostureGUIEnabled", "1").Equals("1");
             vanillaCombatAi = ReadOrCreate("/Config/RBMAI", "VanillaCombatAi", "0").Equals("1");
             keepBattleEnabled = ReadOrCreate("/Config/RBMAI", "KeepBattleEnabled", "0").Equals("1");
@@ -473,6 +476,7 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/AiKickBashEnabled"), aiKickBashEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/FormationShoutsEnabled"), formationShoutsEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/OrderReactionDelayEnabled"), orderReactionDelayEnabled);
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/ShieldWallShare"), shieldWallShare.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureGUIEnabled"), postureGUIEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/VanillaCombatAi"), vanillaCombatAi);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/KeepBattleEnabled"), keepBattleEnabled);

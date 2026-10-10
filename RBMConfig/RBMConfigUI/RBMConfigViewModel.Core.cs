@@ -278,6 +278,15 @@ namespace RBMConfig
             OrderReactionDelayEnabledText = new TextViewModel(new TextObject("{=RBM_CON_157}Staggered order reaction (experimental)"));
             OrderReactionDelayEnabled = new SelectorVM<SelectorItemVM>(orderReactionDelayOptions, 0, null);
 
+            List<string> shieldWallShareOptions = new List<string>();
+            for (int s = 0; s < shieldWallShareValues.Length; s++)
+            {
+                string option = (int)MathF.Round(shieldWallShareValues[s] * 100f) + "%";
+                shieldWallShareOptions.Add(s == ShieldWallShareDefaultIndex ? option + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" : option);
+            }
+            ShieldWallShareText = new TextViewModel(new TextObject("{=RBM_CON_159}Shield wall share"));
+            ShieldWallShare = new SelectorVM<SelectorItemVM>(shieldWallShareOptions, NearestShieldWallShareIndex(RBMConfig.shieldWallShare), null);
+
             List<string> playerPostureMultiplierOptions = new List<string> { "1x (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", "1.5x", "2x" };
             PlayerPostureMultiplierText = new TextViewModel(new TextObject("{=RBM_CON_013}Player Posture Multiplier"));
             PlayerPostureMultiplier = new SelectorVM<SelectorItemVM>(playerPostureMultiplierOptions, 0, null);
@@ -668,6 +677,10 @@ namespace RBMConfig
             RBMConfig.aiKickBashEnabled = AiKickBashEnabled.SelectedIndex == 1;
             RBMConfig.formationShoutsEnabled = FormationShoutsEnabled.SelectedIndex == 1;
             RBMConfig.orderReactionDelayEnabled = OrderReactionDelayEnabled.SelectedIndex == 1;
+            if (ShieldWallShare.SelectedIndex >= 0 && ShieldWallShare.SelectedIndex < shieldWallShareValues.Length)
+            {
+                RBMConfig.shieldWallShare = shieldWallShareValues[ShieldWallShare.SelectedIndex];
+            }
 
             if (PlayerPostureMultiplier.SelectedIndex == 0)
             {
@@ -860,6 +873,7 @@ namespace RBMConfig
             AiKickBashEnabled.SelectedIndex = 1;
             FormationShoutsEnabled.SelectedIndex = 1;
             OrderReactionDelayEnabled.SelectedIndex = 1;
+            ShieldWallShare.SelectedIndex = ShieldWallShareDefaultIndex;
             HitStopEnabled.SelectedIndex = 1;
             RBMAIEnabled.SelectedIndex = 1;
             FrontlineEnabled.SelectedIndex = 1;
