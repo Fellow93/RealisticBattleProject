@@ -13,8 +13,8 @@ namespace RBMCampaign
     /// modifier, while <c>AddToCounts(ItemObject, n)</c> removes from the UNMODIFIED slot only. Whenever
     /// a market holds the item in more than one stack the two disagree: the read can count a modified
     /// stack the remove never touches (a failed assert and a no-op, with the gold already moved), or
-    /// the remove can run the plain stack past zero, where the roster clamps it and the excess
-    /// quietly never leaves. Keying both sides by one element -- and paying on what
+    /// the remove can run the plain stack past zero, where <c>ItemRosterElement.Amount</c> throws
+    /// <c>MBUnderFlowException</c> mid-tick. Keying both sides by one element -- and paying on what
     /// <see cref="Take"/> reports -- closes that.
     /// </remarks>
     internal static class RosterStock

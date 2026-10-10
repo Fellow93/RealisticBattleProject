@@ -251,7 +251,7 @@ namespace RBMCampaign
             {
                 ItemRosterElement element = itemRoster.GetElementCopyAtIndex(i);
                 ItemObject item = element.EquipmentElement.Item;
-                if (item != null && item.ItemCategory.Properties == ItemCategory.Property.BonusToFoodStores)
+                if (TownStorage.IsFood(item))
                 {
                     units += element.Amount;
                 }
@@ -1048,7 +1048,7 @@ namespace RBMCampaign
             {
                 ItemRosterElement element = itemRoster.GetElementCopyAtIndex(i);
                 ItemObject item = element.EquipmentElement.Item;
-                if (item == null || item.ItemCategory.Properties != ItemCategory.Property.BonusToFoodStores || element.Amount <= 0)
+                if (!TownStorage.IsFood(item) || element.Amount <= 0)
                 {
                     continue;
                 }
@@ -1146,7 +1146,8 @@ namespace RBMCampaign
         /// </summary>
         internal static void RegisterPurchaseDemand(TownMarketData marketData, ItemCategory category, int purchaseValue)
         {
-            if (purchaseValue <= 0)
+            // A null category (a modded item) would throw as the market's dictionary key.
+            if (category == null || purchaseValue <= 0)
             {
                 return;
             }

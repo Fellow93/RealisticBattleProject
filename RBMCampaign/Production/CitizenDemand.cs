@@ -587,7 +587,7 @@ namespace RBMCampaign
             }
 
             ItemObject item = Game.Current.ObjectManager.GetObject<ItemObject>(itemId);
-            if (item == null)
+            if (item == null || item.ItemCategory == null)
             {
                 return 0;
             }
@@ -654,7 +654,7 @@ namespace RBMCampaign
             {
                 ItemRosterElement element = itemRoster.GetElementCopyAtIndex(i);
                 ItemObject item = element.EquipmentElement.Item;
-                if (item == null || element.Amount <= 0 || !item.IsCivilian || !IsWornSlot(item.ItemType))
+                if (item == null || item.ItemCategory == null || element.Amount <= 0 || !item.IsCivilian || !IsWornSlot(item.ItemType))
                 {
                     continue;
                 }

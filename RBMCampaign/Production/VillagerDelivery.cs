@@ -177,7 +177,9 @@ namespace RBMCampaign
             {
                 ItemRosterElement element = roster.GetElementCopyAtIndex(i);
                 ItemObject item = element.EquipmentElement.Item;
-                if (item == null)
+                // No category (a modded item): the town's market keys its stock by category, so such
+                // an item cannot go into the market roster. It stays on the cart.
+                if (item == null || item.ItemCategory == null)
                 {
                     continue;
                 }
@@ -197,7 +199,7 @@ namespace RBMCampaign
                     Element = element.EquipmentElement,
                     Amount = amount,
                     Price = town.GetItemPrice(element.EquipmentElement, villagerParty, isSelling: true),
-                    IsFood = item.ItemCategory.Properties == ItemCategory.Property.BonusToFoodStores,
+                    IsFood = TownStorage.IsFood(item),
                     RosterOrder = lots.Count
                 });
             }
@@ -424,7 +426,7 @@ namespace RBMCampaign
                 }
 
                 units += element.Amount;
-                if (item.ItemCategory.Properties == ItemCategory.Property.BonusToFoodStores)
+                if (TownStorage.IsFood(item))
                 {
                     food += element.Amount;
                 }
