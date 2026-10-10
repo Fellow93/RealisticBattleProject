@@ -406,6 +406,8 @@ namespace RBM
             if (game.GameType is Campaign)
             {
                 RBMConfig.TroopPerks.Load();
+                // Arrow Catcher's text, rewritten for what it does under RBM (RBMConfig.ArrowCatcher).
+                RBMConfig.ArrowCatcher.ApplyDescription();
             }
             else
             {

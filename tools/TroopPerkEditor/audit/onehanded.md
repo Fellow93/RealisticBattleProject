@@ -11,7 +11,7 @@
 | Trainer | works | +2 HP |
 | Duelist | partial | +20% 1H melee damage with an empty off hand; tournament-renown half is hero-only |
 | Shieldwall | works | -20% shield damage on wrong-side blocks; RBM posture: -20% posture cost on those blocks |
-| Arrow Catcher | rbm-bypassed | Nothing: RBM fixes the shield missile catch size at 0.01 for everyone |
+| Arrow Catcher | works | RBM's own effect: missiles blocked with the raised shield cost 25% less posture/stamina, do 20% less shield damage, and pila get 15% less through |
 | Military Tradition | no-personal-effect | Party leader / governor only |
 | Corps-a-corps | no-personal-effect | Party leader / governor only |
 | Stand United | no-personal-effect | Party leader / governor only |
@@ -24,7 +24,7 @@
 | Chink in the Armor | works | Ignores 10% of armor with 1H weapons and shield bashes (not 2H or polearms) |
 | Way of the Sword | conditional | Needs One Handed above 250; no vanilla troop has more than 240, so normally nothing |
 
-Verdicts: works 13, partial 2, conditional 1, rbm-bypassed 1, no-personal-effect 4.
+Verdicts: works 14, partial 2, conditional 1, no-personal-effect 4.
 
 "Halved at sea": every personal half here is `NavalReduced` (bonus x0.5 in naval battles) except Cavalry (`LandOnly`: nothing at sea) and the two HP perks (`BattleEnvironment.Any`, always full).
 
@@ -38,8 +38,14 @@ Verdicts: works 13, partial 2, conditional 1, rbm-bypassed 1, no-personal-effect
 - **Chink in the Armor does not match its description.** The description says "melee attacks", but the code only checks
   `weaponComponent.RelevantSkill == OneHanded`, which covers one-handed weapons plus shields (WeaponComponentData maps
   Small/LargeShield to OneHanded). So it also helps shield bashes, and it does nothing for two-handed weapons or polearms.
-- **Arrow Catcher** works in vanilla but RBM's `DamageRework.SandboxAgentUpdateHumanStats` postfix (HitReaction.cs:26)
-  overwrites `AttributeShieldMissileCollisionBodySizeAdder` after the stat build (bypass map #10). This is by design.
+- **Arrow Catcher**'s vanilla effect (a bigger shield catch box) is still overwritten by RBM's
+  `DamageRework.SandboxAgentUpdateHumanStats` postfix (HitReaction.cs:26, bypass map #10), by design. Since 2026-10-10 RBM
+  gives the perk its own effect instead (`RBMConfig/Shared/ArrowCatcher.cs`, tuning constants there): on a missile
+  blocked with the wielded shield, posture/stamina cost x0.75 (`StanceLogic.Core.cs` `OnAgentHit`, RBM posture on),
+  shield damage x0.8 (`DamageRework.Core.cs` `RBMComputeBlowDamageOnShield`) and the share of a pilum's throw that gets
+  through x0.85 (`RangedRework.ShieldPenetration.cs`). A formation captain with it gives half (land only); the personal
+  half is halved at sea. Both go through `GetPerkValue`, so troop perks feed it. With RBM Combat on, the perk's text is
+  rewritten to match (`ArrowCatcher.ApplyDescription`).
 - **The HP perks (Trainer, Unwavering Defense)** reach troops through `CharacterObject.MaxHitPoints()`. `Agent.Character`'s
   setter reads it into `BaseHealthLimit` at spawn, while `Mission.Current` is set, and `InitializeAgentStats`'
   non-hero branch builds HealthLimit from it.
@@ -52,4 +58,6 @@ Verdicts: works 13, partial 2, conditional 1, rbm-bypassed 1, no-personal-effect
   reduction from `baseArmor`, so Chink in the Armor is not doubled. The base model's bow/crossbow
   `ArmorPenetrationMultiplier` step is lost in the process (a vanilla quirk outside this group).
 - Every captain half (Wrapped Handles, Basher, Cavalry, Shield Bearer, Shieldwall, Arrow Catcher, Steel Core Shields,
-  Fleet of Foot, Deadly Purpose) needs a hero captain, so it never comes from a troop's own perk.
+  Fleet of Foot, Deadly Purpose) needs a hero captain, so it never comes from a troop's own perk. (RBM's Arrow Catcher
+  captain check asks the captain's CharacterObject, so it would also see a troop captain's perk; the game normally
+  only makes heroes captains.)

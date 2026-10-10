@@ -167,6 +167,27 @@ namespace RBMCombat
             }
         }
 
+        // Mission.GetAttackCollisionResults runs RBM's integer damage through the perk amplifications/reductions
+        // (CalculateDamage) and rounds the result back to an int. On the low damage RBM's armor leaves, that rounding
+        // ate small percentage perks whole (+5% on 10 is 10.5, rounded to 10). The fraction is rounded up by chance
+        // instead, so the later round is exact and a perk gives its full percentage on average. A whole result (any
+        // hit without such a modifier) is left as it is and draws no random number. Main thread: CalculateDamage is
+        // called only from Mission.GetAttackCollisionResults and RBMAI's crush-through damage.
+        [HarmonyPatch(typeof(TaleWorlds.MountAndBlade.ComponentInterfaces.AgentApplyDamageModel))]
+        [HarmonyPatch("CalculateDamage")]
+        private class CalculateDamageStochasticRoundingPatch
+        {
+            private static void Postfix(ref float __result)
+            {
+                float whole = MathF.Floor(__result);
+                float fraction = __result - whole;
+                if (fraction > 0f)
+                {
+                    __result = MathF.Max(0f, whole + (MBRandom.RandomFloat < fraction ? 1f : 0f));
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(MissionCombatMechanicsHelper))]
         [HarmonyPatch("ComputeBlowDamage")]
         public class OverrideDamageCalc
@@ -800,6 +821,12 @@ namespace RBMCombat
                                     localInflictedDamage *= 0.1f;
                                     break;
                                 }
+                        }
+                        // Arrow Catcher: the holder takes the missile on the shield so it does less harm
+                        // (RBMConfig.ArrowCatcher). Raised shield only, not one on the back.
+                        if (attackCollisionData.AttackBlockedWithShield && !attackCollisionData.CollidedWithShieldOnBack)
+                        {
+                            localInflictedDamage *= RBMConfig.ArrowCatcher.GetShieldDamageFactor(victim);
                         }
                     }
                     else if (!attackCollisionData.IsMissile)

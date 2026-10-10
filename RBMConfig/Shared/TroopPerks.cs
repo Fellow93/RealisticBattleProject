@@ -73,8 +73,8 @@ namespace RBMConfig
             // no-check-found: nothing reads it for an AI agent
             { "CrossbowLongShots", NoEffectReason.NoCheckFound },         // crossbow zoom, only the player's own camera
 
-            // rbm-bypassed: RBM removes the effect for everyone
-            { "OneHandedArrowCatcher", NoEffectReason.RbmBypassed },      // RBMCombat fixes AttributeShieldMissileCollisionBodySizeAdder at 0.01 (DamageRework.HitReaction.cs)
+            // rbm-bypassed: RBM removes the effect for everyone. None at present: OneHandedArrowCatcher was here until RBM
+            // gave it its own effect (RBMConfig.ArrowCatcher) in place of the shield catch size it overrides.
 
             // campaign-only, Smithing: smithing screen (refining, stamina, part unlocks, crafted quality) for the smith hero
             { "IronYield", NoEffectReason.CampaignOnly },

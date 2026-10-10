@@ -416,6 +416,14 @@ namespace RBMAI
                         //shield hit
                         else
                         {
+                            // Arrow Catcher: a skilled shield man takes missiles on a raised shield more cheaply
+                            // (RBMConfig.ArrowCatcher). Not for a shield on the back.
+                            if (!attackCollisionData.CollidedWithShieldOnBack)
+                            {
+                                float arrowCatcherFactor = RBMConfig.ArrowCatcher.GetPostureFactor(affectedAgent);
+                                arrowShieldPostureDamage *= arrowCatcherFactor;
+                                throwingShieldPostureDamage *= arrowCatcherFactor;
+                            }
                             switch (missileWeaponClass)
                             {
                                 case WeaponClass.Bow:

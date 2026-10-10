@@ -245,7 +245,7 @@ namespace RBMAI
             {
                 int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, DefaultSkills.Athletics);
                 float athlethicModifier = effectiveAthleticSkill / 20f;
-                float agentArmorWeight = Math.Max(0f, agent.SpawnEquipment.GetTotalWeightOfArmor(true) - athlethicModifier);
+                float agentArmorWeight = Math.Max(0f, Utilities.GetEffectiveArmorWeight(agent) - athlethicModifier);
                 stance.reduceStamina(staminaLoss * (1f + agentArmorWeight / 50f));
             }
 

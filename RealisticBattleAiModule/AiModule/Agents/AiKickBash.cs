@@ -672,7 +672,7 @@ namespace RBMAI
                     chance *= AiKickBash.KnockDownRecentKickMultiplier;
                 }
                 // A man in heavy armour is harder to tip over.
-                float armorWeight = victimAgent.SpawnEquipment.GetTotalWeightOfArmor(true);
+                float armorWeight = Utilities.GetEffectiveArmorWeight(victimAgent);
                 chance *= MBMath.Lerp(1f, AiKickBash.KnockDownHeavyArmorMultiplier,
                     MathF.Clamp((armorWeight - AiKickBash.LightArmorWeight) / (AiKickBash.HeavyArmorWeight - AiKickBash.LightArmorWeight), 0f, 1f));
                 // A tired man is easier to put down.

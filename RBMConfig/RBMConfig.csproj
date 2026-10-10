@@ -293,6 +293,7 @@
     <Compile Include="RBMCombatConfigPriceMultipliers.cs" />
     <Compile Include="RBMCombatConfigWeaponType.cs" />
     <!-- Damage math shared by RBMCombat and RBMAI -->
+    <Compile Include="Shared\ArrowCatcher.cs" />
     <Compile Include="Shared\BlowDamage.cs" />
     <Compile Include="Shared\MeleeBlockKind.cs" />
     <Compile Include="Shared\MissileBallistics.cs" />

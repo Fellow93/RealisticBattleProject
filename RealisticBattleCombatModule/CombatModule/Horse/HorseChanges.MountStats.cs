@@ -55,7 +55,8 @@ namespace RBMCombat
                         mountMastery = mountSkillDifficultyTreshold;
                     }
 
-                    float addedWeight = agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(true) + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfWeapons() + agent.RiderAgent.Monster.Weight;
+                    // The rider's armour through the model, so Athletics' Form Fitting Armor lightens his load too.
+                    float addedWeight = __instance.GetEffectiveArmorEncumbrance(agent.RiderAgent, agent.RiderAgent.SpawnEquipment) + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfWeapons() + agent.RiderAgent.Monster.Weight;
                     if (harness.Item != null)
                     {
                         addedWeight += harness.Weight;
@@ -106,7 +107,7 @@ namespace RBMCombat
                 {
                     MissionEquipment equipment = agent.RiderAgent.Equipment;
                     weightOfHorseAndRaider += (float)agent.RiderAgent.Monster.Weight;
-                    weightOfHorseAndRaider += agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: true);
+                    weightOfHorseAndRaider += __instance.GetEffectiveArmorEncumbrance(agent.RiderAgent, agent.RiderAgent.SpawnEquipment);
                     weightOfHorseAndRaider += equipment.GetTotalWeightOfWeapons();
                     weightOfHorseAndRaider += (float)agent.Monster.Weight;
                     weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
@@ -167,7 +168,7 @@ namespace RBMCombat
                         mountMastery = mountSkillDifficultyTreshold;
                     }
 
-                    float addedWeight = harness.Weight + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(true) + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfWeapons() + agent.RiderAgent.Monster.Weight;
+                    float addedWeight = harness.Weight + __instance.GetEffectiveArmorEncumbrance(agent.RiderAgent, agent.RiderAgent.SpawnEquipment) + agent.RiderAgent.SpawnEquipment.GetTotalWeightOfWeapons() + agent.RiderAgent.Monster.Weight;
 
                     float weightModifier = MathF.Pow(475f, 2) / MathF.Pow(mountElement.Weight + addedWeight, 2);
 
@@ -207,7 +208,7 @@ namespace RBMCombat
                 {
                     MissionEquipment equipment = agent.RiderAgent.Equipment;
                     weightOfHorseAndRaider += (float)agent.RiderAgent.Monster.Weight;
-                    weightOfHorseAndRaider += agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: true);
+                    weightOfHorseAndRaider += __instance.GetEffectiveArmorEncumbrance(agent.RiderAgent, agent.RiderAgent.SpawnEquipment);
                     weightOfHorseAndRaider += equipment.GetTotalWeightOfWeapons();
                     weightOfHorseAndRaider += (float)agent.Monster.Weight;
                     weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);

@@ -328,14 +328,14 @@
       "personalHalf": "primary",
       "verdict": "works",
       "confidence": "medium",
-      "summary": "The troop's armor counts 15% lighter for vanilla encumbrance, so it moves a little faster; RBM's own weight-based systems still use the full armor weight.",
-      "conditions": "Half strength at sea. Only vanilla's encumbrance (movement speed / acceleration) sees it.",
+      "summary": "The troop's armor counts 15% lighter: vanilla encumbrance (moves a little faster) and RBM's stamina cost, max posture, kick/bash knockdown resistance and the load on his horse.",
+      "conditions": "Half strength at sea. Lighter armor also means a little less max posture and knockdown resistance.",
       "sites": [
         { "method": "SandboxAgentStatCalculateModel.GetEffectiveArmorEncumbrance", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:525", "reachesTroop": true, "why": "agent CharacterObject; feeds ArmorEncumbrance and the speed math in UpdateHumanStats" },
         { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1137", "reachesTroop": false, "why": "captain half (also :1196)" },
         { "method": "ItemMenuVM / SPInventoryVM", "file": "decompiled/TaleWorlds.CampaignSystem.ViewModelCollection/TaleWorlds.CampaignSystem.ViewModelCollection.Inventory/SPInventoryVM.cs:4464", "reachesTroop": false, "why": "inventory UI, campaign" }
       ],
-      "rbm": "Not bypassed. But RBM stamina cost (MeleeBlowPatch.cs:248), max posture (Stance.cs:140) and horse speed / charge weight (HorseChanges.MountStats.cs:58, :109) read raw SpawnEquipment.GetTotalWeightOfArmor and ignore the perk."
+      "rbm": "Not bypassed. Fixed 2026-10-09: RBM stamina cost (MeleeBlowPatch.cs:248), max posture (Stance.cs:140), kick/bash knockdown resistance (AiKickBash.cs:675) and the rider's weight in horse speed / charge weight (HorseChanges.MountStats.cs:58, :109 and the custom battle twins) used to read raw SpawnEquipment.GetTotalWeightOfArmor; they now read the model's GetEffectiveArmorEncumbrance (RBMAI Utilities.GetEffectiveArmorWeight), so the perk counts."
     },
     {
       "id": "AthleticsImposingStature",

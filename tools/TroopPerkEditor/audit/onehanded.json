@@ -140,16 +140,19 @@
       "id": "OneHandedArrowCatcher",
       "skill": "OneHanded",
       "personalHalf": "primary",
-      "verdict": "rbm-bypassed",
+      "verdict": "works",
       "confidence": "high",
-      "summary": "Nothing under RBM: the bigger shield catch area against missiles is overwritten, because RBM sets the catch size to a fixed 0.01 for everyone.",
-      "conditions": "",
+      "summary": "RBM's own effect (the vanilla bigger shield catch area is overwritten by RBM): missiles blocked with the raised shield cost 25% less posture and stamina, do 20% less damage to the shield, and a pilum gets 15% less of its throw through the shield.",
+      "conditions": "Missile blocked with a wielded shield (not a shield on the back). Shield damage and pilum parts need rbmCombatEnabled; the posture/stamina part needs rbmAiEnabled + postureEnabled. Halved at sea (NavalReduced). A formation captain with the perk gives the other troops half of it (land only), capped at the full effect.",
       "sites": [
-        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1110", "reachesTroop": true, "why": "own CharacterObject -> AttributeShieldMissileCollisionBodySizeAdder (+0.01) while a shield is wielded" },
-        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1108", "reachesTroop": false, "why": "captain half" },
-        { "method": "DamageRework.SandboxAgentUpdateHumanStats.Postfix", "file": "RealisticBattleCombatModule/CombatModule/Damage/DamageRework.HitReaction.cs:26", "reachesTroop": false, "why": "RBM assigns AttributeShieldMissileCollisionBodySizeAdder = 0.01f after the whole stat build" }
+        { "method": "ArrowCatcher.GetStrength", "file": "RBMConfig/Shared/ArrowCatcher.cs", "reachesTroop": true, "why": "CharacterObject.GetPerkValue(perk, CurrentBattleEnvironment, true, out value) on the shield holder's own character; the captain half the same way with isPrimaryEffect false. Tuning constants there" },
+        { "method": "StanceLogic.OnAgentHit", "file": "RealisticBattleAiModule/AiModule/Stance/StanceLogic.Core.cs", "reachesTroop": true, "why": "RBM posture: missile shield-hit posture (and the stamina derived from it) x0.75" },
+        { "method": "DamageRework.RBMComputeBlowDamageOnShield", "file": "RealisticBattleCombatModule/CombatModule/Damage/DamageRework.Core.cs", "reachesTroop": true, "why": "missile damage to a raised shield x0.8 (before CalculateShieldDamage); also lowers the engine's CanPenetrateShield threshold test (Impale)" },
+        { "method": "RangedRework.PilumShieldPenetration.TryWoundBehindShield", "file": "RealisticBattleCombatModule/CombatModule/Ranged/RangedRework.ShieldPenetration.cs", "reachesTroop": true, "why": "share of a pilum's throw through the shield x0.85 (shallower shank, weaker wound)" },
+        { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:1110", "reachesTroop": true, "why": "vanilla: AttributeShieldMissileCollisionBodySizeAdder (+0.01) while a shield is wielded; overwritten by RBM" },
+        { "method": "DamageRework.SandboxAgentUpdateHumanStats.Postfix", "file": "RealisticBattleCombatModule/CombatModule/Damage/DamageRework.HitReaction.cs:26", "reachesTroop": false, "why": "RBM assigns AttributeShieldMissileCollisionBodySizeAdder = 0.01f after the whole stat build (kept on purpose)" }
       ],
-      "rbm": "Bypass map #10: overwritten by design (rbmCombatEnabled). With RBM Combat off, vanilla would work."
+      "rbm": "Bypass map #10: the vanilla catch-size effect is still overwritten by design; RBM replaced it with the three effects above (RBMConfig.ArrowCatcher). The in-game perk text is rewritten to match when RBM Combat is on."
     },
     {
       "id": "OneHandedMilitaryTradition",

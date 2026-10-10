@@ -28,7 +28,7 @@ Data: `riding-athletics.json`. Rule: a perk works for a regular troop only when 
 | AthleticsMorningExercise | conditional | +3% move speed, only with no shield in the off hand |
 | AthleticsWellBuilt | works | +5 max HP |
 | AthleticsFury | works | +10% handling on foot with a melee weapon, plus less posture lost on blocks (RBM posture) |
-| AthleticsFormFittingArmor | works | armor 15% lighter for vanilla encumbrance (speed); RBM stamina/posture/horse-speed weight ignore it |
+| AthleticsFormFittingArmor | works | armor 15% lighter for vanilla encumbrance (speed) and RBM stamina, posture, kick/bash knockdown and horse load |
 | AthleticsImposingStature | campaign-only | nothing in battle (persuasion) |
 | AthleticsStamina | campaign-only | nothing in battle (crafting stamina) |
 | AthleticsSprint | conditional | +5% move speed with no shield and no ranged weapon wielded |
@@ -66,9 +66,10 @@ Counts: works 18, conditional 5, partial 2, hero-only 4, campaign-only 2, no-per
    **Braced** has no on-foot check in code, so the rider's perk also covers its horse when the horse is charged.
 5. **Thunderous Charge / Annoying Buzz** lose their effect on kills of siege defenders (bypass map #17, RBMAI skips the
    morale shock). Horse-charge kills never count, because the killing blow's weapon class is not melee/ranged.
-6. **Form Fitting Armor** works in vanilla's encumbrance. RBM's own armor-weight terms use raw
-   `GetTotalWeightOfArmor`: stamina cost (`MeleeBlowPatch.cs:248`), max posture (`Stance.cs:140`), horse speed and
-   charge weight (`HorseChanges.MountStats.cs:58`, `:109`).
+6. **Form Fitting Armor** works in vanilla's encumbrance. RBM's own armor-weight terms used raw
+   `GetTotalWeightOfArmor`: stamina cost (`MeleeBlowPatch.cs:248`), max posture (`Stance.cs:140`), kick/bash
+   knockdown resistance (`AiKickBash.cs:675`), horse speed and charge weight (`HorseChanges.MountStats.cs:58`, `:109`).
+   FIXED 2026-10-09: they now read the model's `GetEffectiveArmorEncumbrance`, so the perk counts in all of them.
 7. **Strong Legs kicks.** The ×2 kick multiplier (one-argument check, no environment filter) applies to RBM's
    punch-model kick damage. Since posture loss follows damage, it also doubles kick posture loss and the
    posture-break knockdown chance.

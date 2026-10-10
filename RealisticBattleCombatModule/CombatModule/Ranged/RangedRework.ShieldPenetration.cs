@@ -19,7 +19,8 @@ namespace RBMCombat
         // shield block - the pilum sticks in the shield and the shield takes its damage - and the wound is dealt
         // on top of it:
         //  - the shield takes a base 10% of the throw's magnitude and 5% more for every point of its armor
-        //    (armor 4 lets 70% through, armor 18 and up stops it);
+        //    (armor 4 lets 70% through, armor 18 and up stops it); Arrow Catcher on the holder (or his captain)
+        //    scales what gets through down further (RBMConfig.ArrowCatcher);
         //  - the shank comes out the back along the line of flight, as deep as the energy left drives it;
         //  - only when that stretch of shank meets the man behind the shield is he wounded, by a normal missile
         //    blow to the body part it reaches first, carrying that share of the throw against that part's armor.
@@ -122,6 +123,8 @@ namespace RBMCombat
                 }
 
                 float penetration = MBMath.ClampFloat(1f - ShieldBaseLoss - ShieldLossPerArmorPoint * shield.GetGetModifiedArmorForCurrentUsage(), 0f, 1f);
+                // Arrow Catcher: the holder gives with the hit, so less of it comes through (RBMConfig.ArrowCatcher).
+                penetration *= RBMConfig.ArrowCatcher.GetPilumPenetrationFactor(victim);
                 if (penetration <= 0f || collisionData.BaseMagnitude <= 0f)
                 {
                     return;

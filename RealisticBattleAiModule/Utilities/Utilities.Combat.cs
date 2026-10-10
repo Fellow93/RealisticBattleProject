@@ -208,6 +208,21 @@ namespace RBMAI
             return tier;
         }
 
+        /// <summary>
+        /// The man's armour weight as the game's stat model sees it, so Athletics' Form Fitting Armor (applied only in
+        /// SandboxAgentStatCalculateModel.GetEffectiveArmorEncumbrance) lightens RBM's armour-weight terms too. Calls
+        /// into the model: main thread only. Raw weight if there is no model.
+        /// </summary>
+        public static float GetEffectiveArmorWeight(Agent agent)
+        {
+            AgentStatCalculateModel model = MissionGameModels.Current?.AgentStatCalculateModel;
+            if (model == null)
+            {
+                return agent.SpawnEquipment.GetTotalWeightOfArmor(true);
+            }
+            return model.GetEffectiveArmorEncumbrance(agent, agent.SpawnEquipment);
+        }
+
         public static float GetCombatAIDifficultyMultiplier()
         {
             MissionState missionState = Game.Current.GameStateManager.ActiveState as MissionState;

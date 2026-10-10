@@ -22,7 +22,7 @@ Verdict meanings are in `../README.md` ("The audit").
 
 | Group | works | conditional | partial | hero-only | campaign-only | no-check-found | rbm-bypassed | no-personal-effect | Total |
 |---|---|---|---|---|---|---|---|---|---|
-| One Handed (`onehanded`) | 13 | 1 | 2 | 0 | 0 | 0 | 1 | 4 | 21 |
+| One Handed (`onehanded`) | 14 | 1 | 2 | 0 | 0 | 0 | 0 | 4 | 21 |
 | Two Handed (`twohanded`) | 11 | 5 | 0 | 2 | 0 | 0 | 0 | 0 | 18 |
 | Polearm (`polearm`) | 3 | 14 | 0 | 0 | 0 | 0 | 0 | 4 | 21 |
 | Bow (`bow`) | 10 | 4 | 1 | 2 | 0 | 0 | 0 | 4 | 21 |
@@ -30,9 +30,9 @@ Verdict meanings are in `../README.md` ("The audit").
 | Throwing (`throwing`) | 4 | 14 | 1 | 2 | 0 | 0 | 0 | 0 | 21 |
 | Riding and Athletics (`riding-athletics`) | 18 | 5 | 2 | 4 | 2 | 0 | 0 | 10 | 41 |
 | Non-combat skills + War Sails (`noncombat-naval`) | 4 | 22 | 3 | 6 | 62 | 0 | 0 | 175 | 272 |
-| **Total** | **69** | **73** | **10** | **17** | **64** | **1** | **1** | **201** | **436** |
+| **Total** | **70** | **73** | **10** | **17** | **64** | **1** | **0** | **201** | **436** |
 
-No perk is `unclear`. 152 perks do something for a troop (works + conditional + partial); 83 have a personal
+No perk is `unclear`. 153 perks do something for a troop (works + conditional + partial); 82 have a personal
 half that still does nothing; 201 have no personal half at all.
 
 The groups did not grade "conditional" the same way: Polearm marks most situational damage bonuses
@@ -41,7 +41,7 @@ The groups did not grade "conditional" the same way: Polearm marks most situatio
 
 ## Perks that do nothing for a troop
 
-These 83 are `TroopPerks.NoTroopEffectPerkIds`. The loader still loads them (they show in the troop tooltip) and
+These 82 are `TroopPerks.NoTroopEffectPerkIds`. The loader still loads them (they show in the troop tooltip) and
 logs each one to `rgl_log`. The editor marks them red.
 
 **Hero only (17).** The personal half is checked for heroes, or only for the player's agent.
@@ -62,9 +62,12 @@ logs each one to `rgl_log`. The editor marks them red.
 It is the same mechanism as BowEagleEye and ThrowingFocus, which the other auditors called hero-only; the
 outcome is the same.
 
-**Removed by RBM, for everyone (1).** OneHandedArrowCatcher: RBMCombat sets
+**Removed by RBM, for everyone (0).** OneHandedArrowCatcher was the one: RBMCombat sets
 `AttributeShieldMissileCollisionBodySizeAdder = 0.01f` after the stat build
-(`RealisticBattleCombatModule/CombatModule/Damage/DamageRework.HitReaction.cs:26`), so heroes lose it too.
+(`RealisticBattleCombatModule/CombatModule/Damage/DamageRework.HitReaction.cs:26`), which removes its vanilla effect
+for heroes too. Since 2026-10-10 RBM gives it its own effect instead (`RBMConfig/Shared/ArrowCatcher.cs`: cheaper
+missile blocks for posture/stamina, less missile shield damage, less of a pilum through the shield), so it now
+`works`, for troops too.
 
 **Campaign only (64).** The personal half acts on the campaign map or on a hero's own actions; nothing in battle.
 
@@ -115,8 +118,10 @@ RBM:
   (`RealisticBattleAiModule/AiModule/Agents/AgentStats.cs:207` bow 0.015, `:225` crossbow 0.010, `:243` other 0.010),
   after the perks are applied: Bow QuickAdjustments and the turning half of Crossbow Steady are lost on horseback.
   Everyone (player too), only with RBM AI on.
-- RBMCombat forces the shield missile-catch size to 0.01 (`DamageRework.HitReaction.cs:26`): OneHanded ArrowCatcher
-  (personal and captain) and the captain half of OneHanded ShieldWall do nothing. Everyone; by design.
+- RBMCombat forces the shield missile-catch size to 0.01 (`DamageRework.HitReaction.cs:26`): OneHanded ArrowCatcher's
+  vanilla effect (personal and captain) and the captain half of OneHanded ShieldWall do nothing. Everyone; by design.
+  RESOLVED for ArrowCatcher 2026-10-10: RBM gives it its own missile-blocking effect (`RBMConfig/Shared/ArrowCatcher.cs`,
+  personal and captain halves) and rewrites its text. The ShieldWall captain half is still lost.
 - RBMAI skips the whole morale shock when a siege defender is killed, wounded or flees
   (`RealisticBattleAiModule/AiModule/Siege/SiegePatches.cs:427-471`, `AgentMoraleInteractionLogicPatch`): TwoHanded
   Terror/Hope, Riding ThunderousCharge/AnnoyingBuzz, Leadership MakeADifference, Crossbow Terror, Leadership
@@ -140,9 +145,17 @@ RBM:
   (`Damage/DamageRework.Blows.cs:33-61`), so Polearm Braced, HardKnock and KeepAtBay only matter for active thrusts and
   weak passive hits. Polearm UnstoppableForce (x4 against shields) is compressed by `CalculateCouchedLanceMagnitude`
   (`Damage/DamageRework.Core.cs:51-84`) to about x1.9 at full gallop (estimated, not tested). Everyone.
-- RBM's own armor-weight terms use raw `GetTotalWeightOfArmor`, so Athletics FormFittingArmor only lightens vanilla
+- RBM's own armor-weight terms used raw `GetTotalWeightOfArmor`, so Athletics FormFittingArmor only lightened vanilla
   encumbrance, not RBM stamina cost (`RealisticBattleAiModule/AiModule/Stance/MeleeBlowPatch.cs:248`), max posture
-  (`Stance/Stance.cs:140`) or horse speed/charge weight (`Horse/HorseChanges.MountStats.cs:58`, `:109`). Everyone.
+  (`Stance/Stance.cs:140`), kick/bash knockdown resistance (`Agents/AiKickBash.cs:675`) or horse speed/charge weight
+  (`Horse/HorseChanges.MountStats.cs:58`, `:109`). Everyone. FIXED 2026-10-09: all of them now read the model's
+  `GetEffectiveArmorEncumbrance`.
+- `Mission.GetAttackCollisionResults` rounds the damage back to an int (`MathF.Round`) after
+  `AgentApplyDamageModel.CalculateDamage` applies the post-armor percentage perks (and banner damage effects). On
+  RBM's small post-armor damage that rounding ate small percentages whole (+5% on 10 = 10.5 -> 10). Everyone. FIXED
+  2026-10-09: an RBMCombat postfix on `CalculateDamage` (`Damage/DamageRework.Core.cs`,
+  `CalculateDamageStochasticRoundingPatch`) rounds the fraction up by chance, so such perks give their full
+  percentage on average; whole results are unchanged.
 - RBM posture-break staggers and knockdowns ignore the stagger perks Riding DauntlessSteed and Athletics Spartan
   (they only raise vanilla's shrug-off threshold). Everyone.
 - RBMAI's posture block-perk factors (WrappedHandles, StrongGrip, CounterWeight, Fury, SteelCoreShields, ShieldWall,

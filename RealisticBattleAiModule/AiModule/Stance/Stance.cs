@@ -137,7 +137,7 @@ namespace RBMAI
                 }
 
                 //armor weight effect
-                float armorWeight = Math.Max(0f, agent.SpawnEquipment.GetTotalWeightOfArmor(true) - 5f);
+                float armorWeight = Math.Max(0f, Utilities.GetEffectiveArmorWeight(agent) - 5f);
                 stance.maxPosture += armorWeight;
 
                 stance.posture = stance.maxPosture * oldPosturePercentage;
