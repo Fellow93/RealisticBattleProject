@@ -159,6 +159,8 @@ namespace RBMCombat
                 {
                     return true;
                 }
+                // Vanilla's first line, skipped along with the original: listeners read the hit body part.
+                b.VictimBodyPart = collisionData.VictimHitBodyPart;
                 foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
                 {
                     missionBehaviour.OnRegisterBlow(attacker, victim, realHitEntity, b, ref collisionData, in attackerWeapon);

@@ -277,7 +277,8 @@ namespace RBMAI
         [HarmonyPatch("UpdateFormationOrders")]
         private static bool PrefixUpdateFormationOrders(ref Agent __instance)
         {
-            if (__instance.Formation != null && __instance.IsAIControlled && __instance.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
+            // Retreating agents fall through to vanilla, which enforces no shield usage on them.
+            if (__instance.Formation != null && __instance.IsAIControlled && !__instance.IsRetreating() && __instance.Formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget)
             {
                 if (__instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Square ||
                     __instance.Formation.ArrangementOrder.OrderEnum == ArrangementOrderEnum.Circle ||

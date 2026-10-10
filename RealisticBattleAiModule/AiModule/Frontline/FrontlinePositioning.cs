@@ -146,6 +146,15 @@ namespace RBMAI
                     unit.ClearTargetFrame();
                     pendingClear.AIMindset.shouldClearTargetFrame = false;
                 }
+                // Vanilla's own early returns: the unit a Follow order follows, detached units (siege engine crews,
+                // task forces) and units the navmesh can't reach. None of the branches below may override them.
+                MovementOrder movementOrder = __instance.GetReadonlyMovementOrderReference();
+                if ((movementOrder.OrderEnum == MovementOrder.MovementOrderEnum.Follow && movementOrder._targetAgent == unit)
+                    || unit.IsDetachedFromFormation
+                    || unit.GetAgentFlags().HasAnyFlag(AgentFlag.UnreachableViaNavMesh))
+                {
+                    return true;
+                }
                 // Every branch below feeds unit.Team into Mission.GetNearby*Agents, which dereferences it.
                 // A teamless agent (spawning, or just detached) would NRE on the worker thread.
                 if (unit.Team == null)
