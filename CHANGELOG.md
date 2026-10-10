@@ -65,6 +65,10 @@
 - Deserter bands busy raiding a village look for new prey or villages at most every five in-game hours, instead of every hour while the raid lasts. They still drop a target the moment it is no longer valid and search again.
 - The campaign map tooltip of a town, castle or village now shows its wealth only roughly, rounded to the first two digits (47,312 shows as ~47,000, 12,550 as ~13,000, 1,234,567 as ~1,200,000). Hold Alt for the exact amount. The construction lines in the same tooltip now have thousands separators too. RBM's lines (wealth, construction and recruit pool) now come right after the settlement's information (prosperity, loyalty and the rest) instead of at the very bottom, so they stay on screen when Alt lists a large garrison.
 - Holding Alt over a town, castle or village on the campaign map now lists its troops and prisoners grouped by type and tier (such as "Infantry, tier 3: 45+3w") instead of one row for every troop type, so the tooltip of a large garrison no longer runs off the bottom of the screen. Heroes are still listed by name.
+- **Parties led by your companions and family members can recruit better troops again, and so can AI lords who are not their clan's leader.** Under RBM's recruit prices a tier 3 recruit costs 5,000 or more away from your own fiefs, but the clan only ever topped these parties up to 5,000 gold, so they recruited almost nothing but tier 1 troops, a mercenary clan with no fiefs most of all. Now, for every clan, yours and the AI's:
+  - the clan tops such a party up to 20,000 gold each day instead of 5,000 (paid from clan gold as before, so expect a larger party expense for a few days);
+  - the clan takes back a tenth of the party's gold only above 40,000 instead of 10,000;
+  - when the party recruits, it can borrow from the clan leader's gold, up to 20,000 a day, spending its own gold first. Whatever it does not spend goes straight back, and the clan leader always keeps at least 20,000.
 
 ## v4.6.0 (changes since v4.5.4)
 
