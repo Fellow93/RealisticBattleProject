@@ -72,6 +72,7 @@
   - the clan tops such a party up to 20,000 gold each day instead of 5,000 (paid from clan gold as before, so expect a larger party expense for a few days);
   - the clan takes back a tenth of the party's gold only above 40,000 instead of 10,000;
   - when the party recruits, it can borrow from the clan leader's gold, up to 20,000 a day, spending its own gold first. Whatever it does not spend goes straight back, and the clan leader always keeps at least 20,000.
+- Doctor's Oath (Medicine) gives your surgeon Medicine experience for enemy casualties in battles you fight again, as in vanilla. RBM kept the perk's better survival chance for the enemy wounded but had dropped the experience, so only auto-resolved battles gave it. Reported by Sir Tanselot.
 
 ## v4.6.0 (changes since v4.5.4)
 

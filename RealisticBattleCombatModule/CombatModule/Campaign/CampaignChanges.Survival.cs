@@ -43,6 +43,8 @@ namespace RBMCombat
                     if (enemyParty?.MobileParty != null && enemyParty.MobileParty.HasPerk(DefaultPerks.Medicine.DoctorsOath, out _))
                     {
                         SkillHelper.AddSkillBonusForParty(DefaultSkillEffects.SurgeonSurvivalBonus, enemyParty.MobileParty, ref stat);
+                        // vanilla's Medicine XP for the perk holder's surgeon (lost when this override was written)
+                        SkillLevelingManager.OnSurgeryApplied(enemyParty.MobileParty, surgerySuccess: false, character.Tier);
                     }
                     stat.Add((float)character.Level * 0.02f);
                     if (!character.IsHero && party.MapEvent != null && character.Tier < 3)
