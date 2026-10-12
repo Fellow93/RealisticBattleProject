@@ -42,7 +42,8 @@ namespace RBMAI
         /// posture empty; otherwise a relative-skill roll, at full chance against a man holding his weapon ready or
         /// hit from behind and scaled by the skill lead against anything else. The roll is higher for a kick than a
         /// bash, from behind, against a man kicked/bashed within KickStaggerSeconds and against a tired man, lower
-        /// the heavier his armour.
+        /// the heavier his armour. The fall is RBM's own (a light fall on the spot, AiKickBash.FallBackward/FallForward),
+        /// not the engine's knockdown, which sent him flying.
         ///
         /// Blows that land show up as "kick"/"bash" in the battle hit log; in developer mode the outcome of AI
         /// attempts (which action the engine started) is counted and shown in the battle stats overlay.
@@ -172,6 +173,14 @@ namespace RBMAI
                 StanceLogic.TiredAnimation
             };
 
+            // The falls RBM plays for a kick/bash knockdown (AiKickBashKnockDownPatch): the light ones, which drop a man
+            // where he stands, not the engine's own knockdown fall, which sends him flying. Both end with him rising from
+            // his back; the first is the one the training field plays on a beaten fighter.
+            // TUNE in game: which of the two falls backward is an inference from the names (front kick -> fall back).
+            public static readonly ActionIndexCache FallBackward = ActionIndexCache.act_strike_fall_back_back_rise;
+
+            public static readonly ActionIndexCache FallForward = ActionIndexCache.Create("act_strike_fall_front_back_rise");
+
             // Down from a knockdown, falling or getting back up (every knockdown fall and rise is an actt_fall action).
             public static bool IsKnockedDown(Agent victim)
             {
@@ -293,9 +302,33 @@ namespace RBMAI
             private bool _hadShield;
             private Agent.ActionCodeType _seen = Agent.ActionCodeType.Other;
 
+            // A kick/bash knockdown waiting to be played on the next tick (main thread only).
+            private bool _fallPending;
+            private bool _fallForward;
+
             public AiKickBashComponent(Agent agent) : base(agent)
             {
                 _nextAttemptTime = agent.Mission.CurrentTime + MBRandom.RandomFloatRanged(AiKickBash.CooldownMin, AiKickBash.CooldownMax);
+            }
+
+            // Called from the hit callback (AiKickBashKnockDownPatch). The fall is played on the next tick, once the
+            // engine has applied the blow and its hit reaction, so that reaction does not replace it.
+            public void QueueFall(bool fromBehind)
+            {
+                _fallPending = true;
+                _fallForward = fromBehind;
+            }
+
+            private void PlayPendingFall()
+            {
+                _fallPending = false;
+                if (!StanceLogic.CanForceReaction(Agent) || Agent.MountAgent != null || AiKickBash.IsKnockedDown(Agent))
+                {
+                    return;
+                }
+                // A man going down drops whatever kick/bash of his own he had under way.
+                EndAttempt();
+                Agent.SetActionChannel(0, _fallForward ? AiKickBash.FallForward : AiKickBash.FallBackward, ignorePriority: true);
             }
 
             public override void OnAIInputSet(ref Agent.EventControlFlag eventFlag, ref Agent.MovementControlFlag movementFlag, ref Vec2 inputVector)
@@ -331,8 +364,13 @@ namespace RBMAI
             {
                 if (!RBMConfig.RBMConfig.aiKickBashEnabled)
                 {
+                    _fallPending = false;
                     EndAttempt();
                     return;
+                }
+                if (_fallPending)
+                {
+                    PlayPendingFall();
                 }
                 bool aiControlled = Agent.IsAIControlled;
                 // The effort of the kick/bash itself, charged once as the action starts, hit or miss, and its whole cost:
@@ -607,6 +645,21 @@ namespace RBMAI
                 return false;
             }
 
+            // The engine's own knockdown (BlowFlags.KnockDown) of a kick/bash plays a long fall that sends the man
+            // flying, with or without the knockback the engine adds to every kick/bash (DecideAgentKnockedBackByBlow,
+            // IsAlternativeAttack; clearing it changed nothing in game). So the blow carries neither, and RBM plays a
+            // fall on the spot itself, on the victim's next tick (AiKickBashComponent.QueueFall).
+            private static void KnockDown(ref Blow blow, AiKickBashComponent victimComponent, bool fromBehind)
+            {
+                if (victimComponent == null)
+                {
+                    blow.BlowFlag |= BlowFlags.KnockDown;
+                    return;
+                }
+                blow.BlowFlag &= ~(BlowFlags.KnockDown | BlowFlags.KnockBack);
+                victimComponent.QueueFall(fromBehind);
+            }
+
             [HarmonyPriority(Priority.Last)]
             private static void Postfix(ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData)
             {
@@ -629,10 +682,11 @@ namespace RBMAI
                 {
                     victimComponent.LastKickedTime = victimAgent.Mission.CurrentTime;
                 }
+                bool fromBehind = AiKickBash.IsBehind(attackerAgent, victimAgent);
                 // A man still reeling from a posture break or posture tiredness has no footing left: down.
                 if (AiKickBash.IsPostureBroken(victimAgent))
                 {
-                    __result.BlowFlag |= BlowFlags.KnockDown;
+                    KnockDown(ref __result, victimComponent, fromBehind);
                     return;
                 }
                 // The man hit has already lost posture and stamina to the posture patch, by the blow's damage.
@@ -642,7 +696,7 @@ namespace RBMAI
                     // Posture gone: he goes down, no roll, and gets posture back as after any posture break.
                     if (victimStance.posture <= 0f)
                     {
-                        __result.BlowFlag |= BlowFlags.KnockDown;
+                        KnockDown(ref __result, victimComponent, fromBehind);
                         StanceLogic.ResetPostureForAgent(ref victimStance, AiKickBash.PostureBreakReset);
                         return;
                     }
@@ -651,7 +705,6 @@ namespace RBMAI
                 float chance = AiKickBash.KnockDownEvenChance * AiKickBash.RelativeSkill(attackerAgent, victimAgent);
                 // The full chance against a man holding his weapon ready or hit from behind; against anything else it
                 // takes a better fighter, the more surely the bigger his skill lead.
-                bool fromBehind = AiKickBash.IsBehind(attackerAgent, victimAgent);
                 if (victimAgent.GetCurrentActionType(1) != Agent.ActionCodeType.ReadyMelee && !fromBehind)
                 {
                     chance *= AiKickBash.SkillLeadFactor(attackerAgent, victimAgent);
@@ -683,7 +736,7 @@ namespace RBMAI
                 }
                 if (MBRandom.RandomFloat < chance)
                 {
-                    __result.BlowFlag |= BlowFlags.KnockDown;
+                    KnockDown(ref __result, victimComponent, fromBehind);
                 }
             }
         }
