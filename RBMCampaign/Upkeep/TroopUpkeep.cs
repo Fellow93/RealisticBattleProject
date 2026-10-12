@@ -504,6 +504,24 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>A copy of the party's rations and luxury cooldowns, for <see cref="RestorePartyState"/>.</summary>
+        internal static void CopyPartyState(PartyBase party, out Dictionary<string, int> fedUntil,
+            out Dictionary<string, int> luxuryCooldown)
+        {
+            string partyId = SpoilsPool.StackStore.PartyId(party);
+            fedUntil = _fedUntilHours.CopyParty(partyId);
+            luxuryCooldown = _luxuryCooldownUntilHours.CopyParty(partyId);
+        }
+
+        /// <summary>Puts back what <see cref="CopyPartyState"/> took, dropping whatever the party holds now.</summary>
+        internal static void RestorePartyState(PartyBase party, Dictionary<string, int> fedUntil,
+            Dictionary<string, int> luxuryCooldown)
+        {
+            string partyId = SpoilsPool.StackStore.PartyId(party);
+            _fedUntilHours.ReplaceParty(partyId, fedUntil);
+            _luxuryCooldownUntilHours.ReplaceParty(partyId, luxuryCooldown);
+        }
+
         public static void OnMobilePartyDestroyed(MobileParty party, PartyBase destroyer)
         {
             // The party's own buckets, dropped whole: no scan of anyone else's rations.

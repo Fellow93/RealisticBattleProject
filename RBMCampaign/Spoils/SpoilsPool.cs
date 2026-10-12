@@ -197,6 +197,34 @@ namespace RBMCampaign
                 return bucket.Values.Count;
             }
 
+            /// <summary>
+            /// A copy of one party's entries, by character StringId, for a caller that puts them back
+            /// later with <see cref="ReplaceParty"/>. Null when the party holds none.
+            /// </summary>
+            internal Dictionary<string, int> CopyParty(string partyId)
+            {
+                Bucket bucket = GetBucket(partyId);
+                return bucket != null ? new Dictionary<string, int>(bucket.Values) : null;
+            }
+
+            /// <summary>Replaces one party's entries with <paramref name="values"/>; null leaves it with none.</summary>
+            internal void ReplaceParty(string partyId, Dictionary<string, int> values)
+            {
+                if (partyId == null)
+                {
+                    return;
+                }
+                RemoveParty(partyId);
+                if (values == null)
+                {
+                    return;
+                }
+                foreach (KeyValuePair<string, int> entry in values)
+                {
+                    Set(partyId, entry.Key, entry.Value);
+                }
+            }
+
             internal void Clear()
             {
                 _byParty.Clear();
@@ -468,6 +496,21 @@ namespace RBMCampaign
                 store.Remove(key);
             }
             return stale.Count;
+        }
+
+        /// <summary>A copy of the party's purses, for <see cref="RestorePartySpoils"/>. Null when it has none.</summary>
+        internal static Dictionary<string, int> CopyPartySpoils(PartyBase party)
+        {
+            return _spoils.CopyParty(StackStore.PartyId(party));
+        }
+
+        /// <summary>
+        /// Puts back purses taken with <see cref="CopyPartySpoils"/>, dropping whatever the party holds
+        /// now. Used by the test battle command, so a borrowed roster leaves no purse behind.
+        /// </summary>
+        internal static void RestorePartySpoils(PartyBase party, Dictionary<string, int> values)
+        {
+            _spoils.ReplaceParty(StackStore.PartyId(party), values);
         }
 
         public static void OnMobilePartyDestroyed(MobileParty party, PartyBase destroyer)

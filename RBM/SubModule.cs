@@ -138,6 +138,8 @@ namespace RBM
                 {
                     LordSwitcher.Tick();
                     RBMLedgerHotkey.CheckHotkey();
+                    // Puts the player's troops back once a campaign.rbm_test_battle encounter is over.
+                    TestBattleCommand.Tick();
                 }
                 return;
             }

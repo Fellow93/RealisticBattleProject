@@ -217,6 +217,39 @@ namespace RBMCampaign
             _lastPruneDay = int.MinValue;
         }
 
+        /// <summary>A copy of the whole record, for <see cref="RestoreSnapshot"/>.</summary>
+        internal sealed class Snapshot
+        {
+            internal Dictionary<string, int> ByDay;
+            internal Dictionary<string, int> ElsewhereByDay;
+            internal int FirstDay;
+        }
+
+        internal static Snapshot TakeSnapshot()
+        {
+            return new Snapshot
+            {
+                ByDay = new Dictionary<string, int>(_byDay),
+                ElsewhereByDay = new Dictionary<string, int>(_elsewhereByDay),
+                FirstDay = _firstDay,
+            };
+        }
+
+        /// <summary>
+        /// Puts the record back as <see cref="TakeSnapshot"/> found it. Used by the test battle command, whose
+        /// gold is handed back too, so its spoils payouts must not linger in the finances tab.
+        /// </summary>
+        internal static void RestoreSnapshot(Snapshot snapshot)
+        {
+            if (snapshot == null)
+            {
+                return;
+            }
+            _byDay = new Dictionary<string, int>(snapshot.ByDay);
+            _elsewhereByDay = new Dictionary<string, int>(snapshot.ElsewhereByDay);
+            _firstDay = snapshot.FirstDay;
+        }
+
         public static void SyncData(IDataStore dataStore)
         {
             dataStore.SyncData("RBM_clanEventGoldByDay", ref _byDay);

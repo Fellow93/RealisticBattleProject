@@ -282,6 +282,9 @@
     <Compile Include="Diagnostics\GarrisonRefillLog.cs" />
     <Compile Include="Diagnostics\LogRetention.cs" />
     <Compile Include="Diagnostics\BufferedLogWriter.cs" />
+    <Compile Include="Diagnostics\TestBattleCommand.cs" />
+    <Compile Include="Diagnostics\TestBattleCommand.Presets.cs" />
+    <Compile Include="Diagnostics\TestBattleCommand.Setup.cs" />
     <Compile Include="Caravans\RBMCaravanRegister.cs" />
     <Compile Include="Caravans\RBMCaravanDispatch.cs" />
     <Compile Include="Caravans\RBMCaravanArrival.cs" />
