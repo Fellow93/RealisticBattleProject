@@ -274,7 +274,7 @@ namespace RBMConfig
             FormationShoutsEnabledText = new TextViewModel(new TextObject("{=RBM_CON_155}Formation shouts"));
             FormationShoutsEnabled = new SelectorVM<SelectorItemVM>(formationShoutsOptions, 0, null);
 
-            List<string> orderReactionDelayOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            List<string> orderReactionDelayOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
             OrderReactionDelayEnabledText = new TextViewModel(new TextObject("{=RBM_CON_157}Staggered order reaction (experimental)"));
             OrderReactionDelayEnabled = new SelectorVM<SelectorItemVM>(orderReactionDelayOptions, 0, null);
 
@@ -872,7 +872,7 @@ namespace RBMConfig
             StaminaSystemEnabled.SelectedIndex = 1;
             AiKickBashEnabled.SelectedIndex = 1;
             FormationShoutsEnabled.SelectedIndex = 1;
-            OrderReactionDelayEnabled.SelectedIndex = 1;
+            OrderReactionDelayEnabled.SelectedIndex = 0;
             ShieldWallShare.SelectedIndex = ShieldWallShareDefaultIndex;
             HitStopEnabled.SelectedIndex = 1;
             RBMAIEnabled.SelectedIndex = 1;

@@ -253,7 +253,7 @@ namespace RBMConfig
             staminaEnabled = ReadOrCreate("/Config/RBMAI", "StaminaEnabled", "1").Equals("1");
             aiKickBashEnabled = ReadOrCreate("/Config/RBMAI", "AiKickBashEnabled", "1").Equals("1");
             formationShoutsEnabled = ReadOrCreate("/Config/RBMAI", "FormationShoutsEnabled", "1").Equals("1");
-            orderReactionDelayEnabled = ReadOrCreate("/Config/RBMAI", "OrderReactionDelayEnabled", "1").Equals("1");
+            orderReactionDelayEnabled = ReadOrCreate("/Config/RBMAI", "OrderReactionDelayEnabled", "0").Equals("1");
             // A share of the formation (0-1). Clamped so a hand-edited value cannot switch the shield wall off (above 1)
             // or put every formation in it (at or below the 0.1 hold margin).
             shieldWallShare = Math.Max(0.15f, Math.Min(1f, ParseFloat(ReadOrCreate("/Config/RBMAI", "ShieldWallShare", "0.6"))));
