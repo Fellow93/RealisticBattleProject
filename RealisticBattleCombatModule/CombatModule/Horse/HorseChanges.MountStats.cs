@@ -111,13 +111,11 @@ namespace RBMCombat
                     weightOfHorseAndRaider += equipment.GetTotalWeightOfWeapons();
                     weightOfHorseAndRaider += (float)agent.Monster.Weight;
                     weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
-                    weightOfHorseAndRaider += 100f;
                 }
                 else
                 {
                     weightOfHorseAndRaider += (float)agent.Monster.Weight;
                     weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
-                    weightOfHorseAndRaider += 100f;
                 }
                 agentDrivenProperties.MountChargeDamage = weightOfHorseAndRaider;
             }
