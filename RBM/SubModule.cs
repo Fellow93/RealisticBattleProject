@@ -136,7 +136,7 @@ namespace RBM
             {
                 if (RBMConfig.RBMConfig.rbmCampaignEnabled && Campaign.Current != null)
                 {
-                    LordSwitcher.CheckHotkey();
+                    LordSwitcher.Tick();
                     RBMLedgerHotkey.CheckHotkey();
                 }
                 return;

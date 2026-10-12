@@ -75,6 +75,7 @@
   - the clan takes back a tenth of the party's gold only above 40,000 instead of 10,000;
   - when the party recruits, it can borrow from the clan leader's gold, up to 20,000 a day, spending its own gold first. Whatever it does not spend goes straight back, and the clan leader always keeps at least 20,000.
 - Doctor's Oath (Medicine) gives your surgeon Medicine experience for enemy casualties in battles you fight again, as in vanilla. RBM kept the perk's better survival chance for the enemy wounded but had dropped the experience, so only auto-resolved battles gave it. Reported by Sir Tanselot.
+- The Switch Lord picker (Ctrl+Shift+L on the campaign map) shows each lord's troop count next to the name. After picking a lord you choose to switch to that lord or to observe: the camera follows the lord's party (or the captor's, if the lord is taken prisoner) and the map around it is revealed, while you keep playing your own character. You can also observe while your party is in an army, from the army's menus; joining, riding with or leaving an army does not interrupt it. Observing stops when you pick Stop observing at the top of the picker, move your party with a click on the map, a menu opens while you are not in an army, you are taken prisoner, or the lord has no party left. Switching is not available while a menu is open.
 
 ## v4.6.0 (changes since v4.5.4)
 
