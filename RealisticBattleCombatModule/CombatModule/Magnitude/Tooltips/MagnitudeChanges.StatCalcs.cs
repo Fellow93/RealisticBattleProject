@@ -97,6 +97,8 @@ namespace RBMCombat
                 float weaponWeight = weapon.Item.Weight;
                 float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia;
                 float weaponCOM = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).CenterOfMass;
+                WeaponClass weaponClass = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass;
+                float rawThrustSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
 
                 switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)
                 {
@@ -108,7 +110,7 @@ namespace RBMCombat
                         {
                             float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
 
-                            thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
+                            thrustWeaponSpeed = rawThrustSpeed;
                             thrustWeaponSpeed = thrustWeaponSpeed * 0.75f * thrustskillModifier * progressEffect;
                             break;
                         }
@@ -116,7 +118,7 @@ namespace RBMCombat
                         {
                             float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
 
-                            thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
+                            thrustWeaponSpeed = rawThrustSpeed;
                             thrustWeaponSpeed = thrustWeaponSpeed * 0.65f * thrustskillModifier * progressEffect;
                             break;
                         }
@@ -124,7 +126,7 @@ namespace RBMCombat
                         {
                             float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
 
-                            thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
+                            thrustWeaponSpeed = rawThrustSpeed;
                             thrustWeaponSpeed = thrustWeaponSpeed * 0.9f * thrustskillModifier * progressEffect;
                             break;
                         }
@@ -134,11 +136,12 @@ namespace RBMCombat
                         {
                             float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
 
-                            thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weaponWeight, weaponInertia, weaponCOM);
+                            thrustWeaponSpeed = rawThrustSpeed;
                             thrustWeaponSpeed = thrustWeaponSpeed * 0.7f * thrustskillModifier * progressEffect;
                             break;
                         }
                 }
+                float thrustBodySpeed = Utilities.CalculateThrustBodySpeed(weaponClass, thrustWeaponSpeed, rawThrustSpeed);
 
                 switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)
                 {
@@ -148,14 +151,14 @@ namespace RBMCombat
                     case WeaponClass.Mace:
                     case WeaponClass.LowGripPolearm:
                         {
-                            thrustMagnitude = Utilities.CalculateThrustMagnitudeForOneHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
+                            thrustMagnitude = Utilities.CalculateThrustMagnitudeForOneHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, thrustBodySpeed, 0f, Agent.UsageDirection.AttackDown);
                             break;
                         }
                     case WeaponClass.TwoHandedPolearm:
                     case WeaponClass.TwoHandedSword:
                     case WeaponClass.TwoHandedMace:
                         {
-                            thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, 0f, Agent.UsageDirection.AttackDown);
+                            thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weaponWeight, effectiveSkillDR, thrustWeaponSpeed, thrustBodySpeed, 0f, Agent.UsageDirection.AttackDown);
                             break;
                         }
                         //default:

@@ -192,7 +192,8 @@ uses `double`):
   speed in m/s (`Utilities.CalculateVisualSpeeds`), the sweet spot and its swing magnitude
   (`CalculateSweetSpotSwingMagnitude`, real length = weapon_length − CoM for descriptions with
   `use_center_of_mass_as_hand_base`), the thrust magnitude (`CalculateThrustMagnitude`,
-  `Utilities.CalculateThrustMagnitudeForOne/TwoHandedWeapon`), then `RBMConfig/Shared/SkillDamage.GetSkillBasedDamage`
+  `RBMConfig/Shared/ThrustEnergy.cs`, whose per-class reference speeds `THRUST_REF_SPEED` copies: keep the two in
+  step), then `RBMConfig/Shared/SkillDamage.GetSkillBasedDamage`
   and `BlowDamage.RBMComputeDamage` with √(damage factor) at armor 0..100 (damage, penetrated, blunt), the config's
   default weapon-type factors (`RBMConfig/Utilities.cs createWeaponTypesFactors`) and armor settings.
 

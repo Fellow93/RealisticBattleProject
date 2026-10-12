@@ -904,38 +904,37 @@
   // RBMConfig/Shared/SkillDamage.GetSkillBasedDamage and BlowDamage.RBMComputeDamage at armor 0..100.
   function effSkillDR(s) { return F(F(F(600) / F(600 + s)) * s); }
   function skillMod(s) { return clampF(F(s / 250), 0, 1); }
-  // Utilities.CalculateThrustSpeed (RBMCombat/Utilities/Utilities.Physics.cs).
+  // ThrustEnergy.CalculateThrustSpeed (RBMConfig/Shared/ThrustEnergy.cs).
   function rbmThrustSpeed(w, inertia, com) {
     var ig = F(inertia + F(F(w * com) * com));
     var n = 1.8 + w + ig * 0.2;
     var t = 0.33 * (simThrust(0.6, 250.0, 48.0, 4.0 + n) + simThrust(0.6, 170.0, 24.0, 2.0 + n) + simThrust(0.6, 90.0, 15.0, 0.5 + n));
     return F(3.8500000000000005 / t);
   }
-  function thrustMag1H(w, dr, speed, extra) {
-    if (speed > 9) speed = F(9);
-    var cs = F(speed + extra), sm = F(skillMod(dr) * 2);
-    var spear = F(F(F(0.5) * w) * F(cs * cs));
-    var str = F(w + F(F(2.5) * F(1 + sm)));
-    var cap = clampF(F(F(F(F(0.5) * str) * F(speed * speed)) * F(1.5)), 0, 180);
-    var e = F(F(F(F(0.5) * str) * F(speed * speed)) + F(F(F(0.5) * w) * F(cs * cs)));
-    if (e > cap) e = cap;
-    var mg = e;
-    if (spear > mg) mg = spear;
-    if (mg > cap) mg = cap;
-    return F(mg * F(RBM_CFG.ThrustMagnitudeModifier));
+  // ThrustEnergy.GetReferenceThrustSpeed / GetBodySpeedFactor: the body behind a thrust runs no faster than a median
+  // weapon of the class (raw rbmThrustSpeed), so a lighter shaft does not carry the wielder's body faster.
+  var THRUST_REF_SPEED = { Dagger: 8.58, OneHandedSword: 8.05, OneHandedPolearm: 7.73, LowGripPolearm: 7.73, Mace: 8.64, TwoHandedPolearm: 7.20, TwoHandedSword: 7.94, TwoHandedMace: 7.58 };
+  function thrustBodyFactor(cls, raw) {
+    var ref = THRUST_REF_SPEED[cls] ? F(THRUST_REF_SPEED[cls]) : 0;
+    return ref <= 0 || raw <= ref ? 1 : F(ref / raw);
   }
-  function thrustMag2H(w, dr, speed, extra) {
+  // ThrustEnergy.OneHanded / TwoHanded (not overhead) × ThrustMagnitudeModifier. The weapon's weight is only in the shaft term.
+  function thrustEnergy(w, dr, speed, body, extra, arm, energyCap) {
+    var sm = F(skillMod(dr) * 2), str = F(F(arm) * F(1 + sm));
+    var be = F(F(F(0.5) * str) * F(body * body));
+    var cs = F(speed + extra), shaft = F(F(F(0.5) * w) * F(cs * cs));
+    var cap = clampF(F(be * F(1.5)), 0, energyCap);
+    return F(Math.min(F(be + shaft), cap) * F(RBM_CFG.ThrustMagnitudeModifier));
+  }
+  function thrustMag1H(w, dr, speed, body, extra) {
+    if (speed > 9) speed = F(9);
+    if (body > speed) body = speed;
+    return thrustEnergy(w, dr, speed, body, extra, 2.5, 180);
+  }
+  function thrustMag2H(w, dr, speed, body, extra) {
     if (speed > 6) speed = F(6);
-    var cs = F(speed + extra), sm = F(skillMod(dr) * 2);
-    var spear = F(F(F(0.5) * w) * F(cs * cs));
-    var str = F(F(5) * F(1 + sm));
-    var cap = clampF(F(F(F(F(0.5) * str) * F(speed * speed)) * F(1.5)), 0, 250);
-    var e = F(F(F(F(0.5) * str) * F(speed * speed)) + F(F(F(0.5) * w) * F(cs * cs)));
-    if (e > cap) e = cap;
-    var mg = e;
-    if (spear > mg) mg = spear;
-    if (mg > cap) mg = cap;
-    return F(mg * F(RBM_CFG.ThrustMagnitudeModifier));
+    if (body > speed) body = speed;
+    return thrustEnergy(w, dr, speed, body, extra, 5, 250);
   }
   // RBMConfig/Shared/SkillDamage.GetSkillBasedDamage (not passive usage, not a handle hit).
   function skillBasedDamage(mag, cls, dt, es, sm, isSwing) {
@@ -1052,9 +1051,9 @@
       else if (cls === 'TwoHandedPolearm') tsp = F(F(F(rbmThrustSpeed(weight, u.totalInertia, u.com) * F(0.65)) * F(1 + F(dr / 800))) * 1);
       else if (cls === 'TwoHandedAxe') tsp = F(F(F(rbmThrustSpeed(weight, u.totalInertia, u.com) * F(0.9)) * F(1 + F(dr / 1000))) * 1);
       else if (SWORDS.indexOf(cls) >= 0) tsp = F(F(F(rbmThrustSpeed(weight, u.totalInertia, u.com) * F(0.7)) * F(1 + F(dr / 800))) * 1);
-      var tm = -1;
-      if (['OneHandedPolearm', 'OneHandedSword', 'Dagger', 'Mace', 'LowGripPolearm'].indexOf(cls) >= 0) tm = thrustMag1H(weight, dr, tsp, 0);
-      else if (['TwoHandedPolearm', 'TwoHandedSword', 'TwoHandedMace'].indexOf(cls) >= 0) tm = thrustMag2H(weight, dr, tsp, 0);
+      var tm = -1, body = F(tsp * thrustBodyFactor(cls, rbmThrustSpeed(weight, u.totalInertia, u.com)));
+      if (['OneHandedPolearm', 'OneHandedSword', 'Dagger', 'Mace', 'LowGripPolearm'].indexOf(cls) >= 0) tm = thrustMag1H(weight, dr, tsp, body, 0);
+      else if (['TwoHandedPolearm', 'TwoHandedSword', 'TwoHandedMace'].indexOf(cls) >= 0) tm = thrustMag2H(weight, dr, tsp, body, 0);
       var tbd = skillBasedDamage(tm, cls, u.thrustType, dr, sm, false), twdf = F(Math.sqrt(u.thrustFactor));
       out.thrust = { magnitude: tm, speed: tsp, skillDamage: tbd, factor: twdf, rows: damageRows(cls, u.thrustType, tbd, twdf) };
     }

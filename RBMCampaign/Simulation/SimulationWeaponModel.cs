@@ -31,20 +31,6 @@ namespace RBMCampaign
     /// </summary>
     internal static class SimulationWeaponModel
     {
-        // RBM's own caps on a thrust's energy (Utilities.cs:1335, 1378) and the arm behind it (1311-1312).
-        private const float OneHandedThrustCap = 180f;
-
-        private const float TwoHandedThrustCap = 250f;
-
-        private const float OneHandedArmStrength = 2.5f;
-
-        private const float TwoHandedArmStrength = 5f;
-
-        // A thrust's speed is capped at 9 (one-handed) and 6 (two-handed).
-        private const float OneHandedThrustSpeedCap = 9f;
-
-        private const float TwoHandedThrustSpeedCap = 6f;
-
         // How far into the stroke the blow lands, as RBM's own reference evaluation of a weapon reckons it: all
         // the way. A FULL thrust and a sweet-spot swing.
         //
@@ -252,52 +238,12 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// RBM's own thrust-speed physics (Utilities.CalculateThrustSpeed / SimulateThrustLayer), reproduced whole.
-        /// It is the ONLY thing that tells a dagger's thrust from a pike's: a heavy, unwieldy shaft accelerates
-        /// slowly and so carries less. Assuming the speed cap instead -- which is what this model did at first --
-        /// pinned every one-handed thrust at the 180 energy ceiling and made a looter's knife strike as hard as a
-        /// peasant's pitchfork, which is exactly what the log showed.
-        /// </summary>
-        private static float CalculateThrustSpeed(float weight, float inertia, float centerOfMass)
-        {
-            float inertiaAroundGrip = inertia + (weight * centerOfMass * centerOfMass);
-            double n = 1.8 + weight + (inertiaAroundGrip * 0.2);
-
-            double t1 = SimulateThrustLayer(0.6, 250.0, 48.0, 4.0 + n);
-            double t2 = SimulateThrustLayer(0.6, 170.0, 24.0, 2.0 + n);
-            double t3 = SimulateThrustLayer(0.6, 90.0, 15.0, 0.5 + n);
-
-            double meanTime = 0.33 * (t1 + t2 + t3);
-            if (meanTime <= 0.0)
-            {
-                return 0f;
-            }
-            return (float)(3.8500000000000005 / meanTime);
-        }
-
-        /// <summary>How long the arm takes to push this much mass through the thrust, integrated a hundredth at a time.</summary>
-        private static double SimulateThrustLayer(double distance, double usablePower, double maxUsableForce, double mass)
-        {
-            double travelled = 0.0;
-            double speed = 0.01;
-            double time = 0.0;
-            while (travelled < distance)
-            {
-                double force = usablePower / speed;
-                if (force > maxUsableForce)
-                {
-                    force = maxUsableForce;
-                }
-                speed += 0.01 * force / mass;
-                travelled += speed * 0.01;
-                time += 0.01;
-            }
-            return time;
-        }
-
-        /// <summary>
         /// A thrust's energy, which is what a Pierce blow's magnitude simply IS in RBM -- no clamp, no ceiling,
-        /// just what the arm and the shaft carry. Capped at 180 or 250 by how many hands are on it.
+        /// just what the arm and the shaft carry. Capped at 180 or 250 by how many hands are on it. The physics
+        /// (thrust speed, the body's share, the caps) is RBMConfig.ThrustEnergy, shared with the live blow. The
+        /// thrust speed is the ONLY thing that tells a dagger's thrust from a pike's: a heavy, unwieldy shaft
+        /// accelerates slowly and so carries less. Assuming the speed cap instead -- which is what this model did
+        /// at first -- pinned every one-handed thrust at the 180 energy ceiling.
         /// </summary>
         private static float GetThrustEnergy(WeaponComponentData weapon, float weaponWeight, int skill)
         {
@@ -310,7 +256,7 @@ namespace RBMCampaign
 
             // The speed the shaft is actually driven at: its own physics, blunted by its class and by the fact
             // that a thrust is thrown from a standstill (MagnitudeChanges.cs:96-133).
-            float raw = CalculateThrustSpeed(weaponWeight, weapon.TotalInertia, weapon.CenterOfMass);
+            float raw = ThrustEnergy.CalculateThrustSpeed(weaponWeight, weapon.TotalInertia, weapon.CenterOfMass);
             float classFactor;
             float skillDivisor;
             switch (weaponClass)
@@ -339,35 +285,13 @@ namespace RBMCampaign
             }
 
             float thrustSpeed = raw * classFactor * (1f + (skillDR / skillDivisor)) * ThrustAccelerationProgress;
-            float speedCap = twoHanded ? TwoHandedThrustSpeedCap : OneHandedThrustSpeedCap;
-            thrustSpeed = MathF.Min(thrustSpeed, speedCap);
+            // The body behind the thrust runs no faster than a median weapon of the class, however light the shaft.
+            float bodySpeed = thrustSpeed * ThrustEnergy.GetBodySpeedFactor(weaponClass, raw);
 
-            // RBM doubles the skill modifier here, and feeds it the diminished skill rather than the raw one.
-            float skillModifier = MBMath.ClampFloat(skillDR / 250f, 0f, 1f) * 2f;
-
-            float armStrength = twoHanded ? TwoHandedArmStrength : OneHandedArmStrength;
-            float cap = twoHanded ? TwoHandedThrustCap : OneHandedThrustCap;
-
-            // The one-handed strength carries the shaft's weight; the two-handed does not (Utilities.cs:1332, 1375).
-            float thrustStrength = armStrength * (1f + skillModifier);
-            if (!twoHanded)
-            {
-                thrustStrength += weaponWeight;
-            }
-
-            float energyCap = MBMath.ClampFloat(0.5f * thrustStrength * thrustSpeed * thrustSpeed * 1.5f, 0f, cap);
-            float energy = (0.5f * thrustStrength * thrustSpeed * thrustSpeed)
-                         + (0.5f * weaponWeight * thrustSpeed * thrustSpeed);
-
-            energy = MathF.Min(energy, energyCap);
-
-            // The shaft's own kinetic energy wins if it is the greater -- a heavy spear carries through.
-            float shaftEnergy = 0.5f * weaponWeight * thrustSpeed * thrustSpeed;
-            if (shaftEnergy > energy)
-            {
-                energy = shaftEnergy;
-            }
-            return MathF.Min(energy, energyCap);
+            // RBM feeds the thrust the diminished skill rather than the raw one.
+            return twoHanded
+                ? ThrustEnergy.TwoHanded(weaponWeight, skillDR, thrustSpeed, bodySpeed, 0f, false)
+                : ThrustEnergy.OneHanded(weaponWeight, skillDR, thrustSpeed, bodySpeed, 0f, false);
         }
 
         // ---------------------------------------------------------------------------------------------------

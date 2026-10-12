@@ -79,6 +79,7 @@ namespace RBMCombat
                             SkillObject skill = weapon.CurrentUsageItem.RelevantSkill;
                             int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attacker, skill);
                             float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
+                            float rawThrustSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.TotalInertia, weapon.CurrentUsageItem.CenterOfMass);
                             switch (weapon.CurrentUsageItem.WeaponClass)
                             {
                                 case WeaponClass.LowGripPolearm:
@@ -91,7 +92,7 @@ namespace RBMCombat
                                         float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
                                         float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
-                                        thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.TotalInertia, weapon.CurrentUsageItem.CenterOfMass);
+                                        thrustWeaponSpeed = rawThrustSpeed;
                                         thrustWeaponSpeed = thrustWeaponSpeed * 0.75f * thrustskillModifier * accelerationProgress;
                                         break;
                                     }
@@ -101,7 +102,7 @@ namespace RBMCombat
                                         float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
                                         float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
-                                        thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.TotalInertia, weapon.CurrentUsageItem.CenterOfMass);
+                                        thrustWeaponSpeed = rawThrustSpeed;
                                         thrustWeaponSpeed = thrustWeaponSpeed * 0.65f * thrustskillModifier * accelerationProgress;
                                         break;
                                     }
@@ -111,7 +112,7 @@ namespace RBMCombat
                                         float thrustskillModifier = 1f + (effectiveSkillDR / 1000f);
                                         float handlingskillModifier = 1f + (effectiveSkillDR / 700f);
 
-                                        thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.TotalInertia, weapon.CurrentUsageItem.CenterOfMass);
+                                        thrustWeaponSpeed = rawThrustSpeed;
                                         thrustWeaponSpeed = thrustWeaponSpeed * 0.9f * thrustskillModifier * accelerationProgress;
                                         break;
                                     }
@@ -123,12 +124,13 @@ namespace RBMCombat
                                         float thrustskillModifier = 1f + (effectiveSkillDR / 800f);
                                         float handlingskillModifier = 1f + (effectiveSkillDR / 800f);
 
-                                        thrustWeaponSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.TotalInertia, weapon.CurrentUsageItem.CenterOfMass);
+                                        thrustWeaponSpeed = rawThrustSpeed;
                                         thrustWeaponSpeed = thrustWeaponSpeed * 0.7f * thrustskillModifier * accelerationProgress;
                                         break;
                                     }
                             }
 
+                            float thrustBodySpeed = Utilities.CalculateThrustBodySpeed(weaponClass, thrustWeaponSpeed, rawThrustSpeed);
                             float thrustExtraSpeed = ApplyMeleeSpeedPerks(in attackInformation, currentUsageItem, exraLinearSpeed);
                             float thrustMagnitude = 0f;
                             switch (weapon.CurrentUsageItem.WeaponClass)
@@ -139,14 +141,14 @@ namespace RBMCombat
                                 case WeaponClass.Mace:
                                 case WeaponClass.LowGripPolearm:
                                     {
-                                        thrustMagnitude = Utilities.CalculateThrustMagnitudeForOneHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, thrustExtraSpeed, attacker.AttackDirection);
+                                        thrustMagnitude = Utilities.CalculateThrustMagnitudeForOneHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, thrustBodySpeed, thrustExtraSpeed, attacker.AttackDirection);
                                         break;
                                     }
                                 case WeaponClass.TwoHandedPolearm:
                                 case WeaponClass.TwoHandedSword:
                                 case WeaponClass.TwoHandedMace:
                                     {
-                                        thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, thrustExtraSpeed, attacker.AttackDirection);
+                                        thrustMagnitude = Utilities.CalculateThrustMagnitudeForTwoHandedWeapon(weapon.Item.Weight, effectiveSkillDR, thrustWeaponSpeed, thrustBodySpeed, thrustExtraSpeed, attacker.AttackDirection);
                                         break;
                                     }
                                     //default:
