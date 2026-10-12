@@ -28,6 +28,9 @@ namespace RBMAI
     /// 3. Every voice goes through one main-thread queue: per-agent cooldown, a global cap per second, and a lateness
     ///    limit past which a voice deferred by the cap is dropped. There is deliberately no distance limit to the
     ///    player; cooldowns and caps keep it cheap and keep it from turning into noise.
+    /// 4. Horns (module sounds rbm/horn/*). A mounted formation (cavalry, horse archers) going over to Charge blows
+    ///    its culture's charge horn just before its yells; Aserai and Nord formations also sound a horn with every
+    ///    order they are given or that their captain calls. A horn carries further than a voice (HornPullStart...).
     ///
     /// Staggered order reaction (orderReactionDelayEnabled, experimental): vanilla's AfterSetOrder gives every man of a
     /// formation the engine's default random decide time and only then fires OnOrderIssued, so a call made from the
@@ -77,8 +80,8 @@ namespace RBMAI
         /// <summary>One man says nothing again for this long after he was picked to speak.</summary>
         private const float AgentVoiceCooldown = 2f;
 
-        /// <summary>Voices started per rolling second, all formations together.</summary>
-        private const int MaxVoicesPerSecond = 60;
+        /// <summary>Voices started per rolling second, all formations together. 60 suspected of costing frames (user, 2026-10-10).</summary>
+        private const int MaxVoicesPerSecond = 30;
 
         /// <summary>A voice held back by the cap is dropped once it is this late; a reply ten seconds on is not a reply.</summary>
         private const float VoiceLateness = 1.5f;
@@ -132,7 +135,32 @@ namespace RBMAI
         private const float ContactRoarSpread = 2f;
 
         /// <summary>Most men one charge yell / contact roar picks, whatever the formation size.</summary>
-        private const int MaxBurst = 40;
+        private const int MaxBurst = 20;
+
+        // ---- tuning: horns ----
+
+        /// <summary>A formation this small blows no horn.</summary>
+        private const int HornMinUnits = 5;
+
+        /// <summary>A mounted formation's charge horn sounds this long after the charge order.</summary>
+        private const float ChargeHornDelayMin = 0.1f;
+        private const float ChargeHornDelayMax = 0.4f;
+
+        /// <summary>After a charge horn, the charge yells and the war cry start no sooner than this, so the horn leads.</summary>
+        private const float ChargeHornLead = 0.6f;
+
+        /// <summary>One formation's charge horn at most this often: Charge, something else, Charge again does not re-blow it.</summary>
+        private const float ChargeHornCooldown = 20f;
+
+        /// <summary>One team's charge horns start at least this far apart: a second formation charging with the first waits, it is not dropped.</summary>
+        private const float TeamChargeHornGap = 2.5f;
+
+        /// <summary>An order horn (Aserai, Nords) sounds this long after the order line starts, under the line and its echoes.</summary>
+        private const float OrderHornDelayMin = 0.1f;
+        private const float OrderHornDelayMax = 0.3f;
+
+        /// <summary>One formation's order horn at most this often.</summary>
+        private const float OrderHornCooldown = 6f;
 
         // ---- tuning: marching beat ----
 
@@ -258,7 +286,11 @@ namespace RBMAI
             public float NextReformCall = -1f;
             public float LastContactTime = -1000f;
             public MarchCadence Cadence;
+            /// <summary>MarchCultureOf, refreshed with the cadence (RefreshCulture). Null if none is known.</summary>
+            public string Culture;
             public float NextCultureCheck;
+            public float NextChargeHornTime;
+            public float NextOrderHornTime;
             public float NextWarCryTime;
             public int MarchCrowdEvent = -1;
             public float FemaleShare;
@@ -274,6 +306,8 @@ namespace RBMAI
             public int EventId;
             /// <summary>Set for an RBM march sample: played at this man, with no GenderRatio parameter. Null = a vanilla crowd event at the median man.</summary>
             public Agent Source;
+            /// <summary>With Source: a horn, carried as far as a horn (HornPullStart...) instead of a voice.</summary>
+            public bool Horn;
         }
 
         /// <summary>
@@ -292,6 +326,23 @@ namespace RBMAI
         /// <summary>Resolved march sample by culture; _marchCrowdGeneric for any other. Filled in AfterStart.</summary>
         private readonly Dictionary<string, int> _marchCrowdIds = new Dictionary<string, int>();
         private int _marchCrowdGeneric = -1;
+
+        /// <summary>
+        /// RBM's horns (module sounds): a mounted formation's charge horn by culture (the MarchCrowdCultures, else
+        /// generic), and an order horn for the two cultures that have one (OrderHornCultures, no generic).
+        /// </summary>
+        private const string ChargeHornPrefix = "rbm/horn/charge/";
+        private const string OrderHornPrefix = "rbm/horn/order/";
+
+        private static readonly string[] OrderHornCultures = { "aserai", "nord" };
+
+        /// <summary>Resolved horn events by culture; filled in AfterStart like the march samples.</summary>
+        private readonly Dictionary<string, int> _chargeHornIds = new Dictionary<string, int>();
+        private int _chargeHornGeneric = -1;
+        private readonly Dictionary<string, int> _orderHornIds = new Dictionary<string, int>();
+
+        /// <summary>When each team's next charge horn may start (TeamChargeHornGap).</summary>
+        private readonly Dictionary<Team, float> _teamNextChargeHorn = new Dictionary<Team, float>();
 
         private readonly List<PendingCrowd> _pendingCrowd = new List<PendingCrowd>();
         private readonly Dictionary<Team, float> _teamNextWarCry = new Dictionary<Team, float>();
@@ -360,6 +411,16 @@ namespace RBMAI
 
         /// <summary>Crowd grunts further than this from the listener are not played at all.</summary>
         private const float MaxHearDistance = 250f;
+
+        /// <summary>
+        /// The same three distances for a horn, which is made to be heard across the field: played where the man is
+        /// within HornPullStart, pulled to at most HornAudibleRange, silent beyond HornMaxHearDistance. User,
+        /// 2026-10-10: 60/120 m from the captain was too quiet, then 15/30 m from the nearest man made far horns sound
+        /// near. The nearest man keeps a close horn loud; a far one now sounds far (100 m ~ 35 m, 400 m ~ 90 m).
+        /// </summary>
+        private const float HornPullStart = 20f;
+        private const float HornAudibleRange = 90f;
+        private const float HornMaxHearDistance = 400f;
 
         /// <summary>A voice comes out of the head, not the feet.</summary>
         private const float MouthHeight = 1.6f;
@@ -607,6 +668,7 @@ namespace RBMAI
             _pendingCrowd.Clear();
             _teamNextWarCry.Clear();
             _teamNextCrowd.Clear();
+            _teamNextChargeHorn.Clear();
             _mainInfantry.Clear();
             _agentNextVoice.Clear();
             for (int i = 0; i < _recentVoices.Length; i++)
@@ -709,6 +771,16 @@ namespace RBMAI
                     state.NextPlayerEchoTime = now + PlayerEchoCooldown;
                     Vec2 from = hasSource ? source : formation.CachedAveragePosition;
                     ScheduleReplies(formation, line.Value, from, now);
+
+                    // The order horn sounds under the commander's line, which vanilla has just started. Not for a
+                    // charge that will get the charge horn: the poll sees the new group next tick (OnGroupChanged),
+                    // and state.Group is still the old one here.
+                    bool chargeHorn = (orderType == OrderType.Charge || orderType == OrderType.ChargeWithTarget)
+                        && state.Group != MoveGroup.Charge && ChargeHornDue(formation, state, now) >= 0;
+                    if (!chargeHorn)
+                    {
+                        TryOrderHorn(formation, state, now + MBRandom.RandomFloatRanged(OrderHornDelayMin, OrderHornDelayMax), now);
+                    }
                 }
             }
             catch (Exception e)
@@ -970,13 +1042,22 @@ namespace RBMAI
                 state.HaltWatchUntil = -1f;
             }
 
+            bool horned = false;
             if (group == MoveGroup.Charge)
             {
                 state.ContactPending = true;
+                // A mounted formation's horn leads its charge, player's or AI's (this is polled).
+                float hornTime = TryChargeHorn(formation, state, now);
+                horned = hornTime >= 0f;
                 if (now >= state.NextChargeYellTime)
                 {
                     state.NextChargeYellTime = now + ChargeYellCooldown;
                     float yellStart = now + MBRandom.RandomFloatRanged(ChargeYellDelayMin, ChargeYellDelayMax);
+                    if (horned)
+                    {
+                        // The horn first, the men after it (it may have waited for another formation's horn).
+                        yellStart = Math.Max(yellStart, hornTime + ChargeHornLead);
+                    }
                     ScheduleBurst(formation, SkinVoiceManager.VoiceType.Yell, ChargeYellShare, yellStart, ChargeYellSpread, now);
                     // The whole formation's war cry under the single yells; player charges too (this is polled).
                     TryWarCry(formation, state, yellStart, now);
@@ -987,7 +1068,8 @@ namespace RBMAI
                 state.ContactPending = false;
             }
 
-            AiOrderShout(formation, state, GroupLine(group), NodFor(group), now);
+            // A charge that got the charge horn gets no order horn on top.
+            AiOrderShout(formation, state, GroupLine(group), NodFor(group), now, orderHorn: !horned);
         }
 
         private void OnArrangementChanged(Formation formation, FormationState state, ArrangementOrder.ArrangementOrderEnum arrangement, float now)
@@ -1004,8 +1086,10 @@ namespace RBMAI
         /// An order the AI gave: the captain (or a man of the front rank) calls it, the rest echo and answer, and the
         /// crowd acknowledges it as vanilla's does the player's orders. Skipped if the player gave this formation an
         /// order a moment ago -- that one is already being echoed (and vanilla already played its crowd answer).
+        /// Aserai and Nord formations sound their order horn under the call (unless orderHorn is false).
         /// </summary>
-        private void AiOrderShout(Formation formation, FormationState state, SkinVoiceManager.SkinVoiceType? line, int crowdEvent, float now)
+        private void AiOrderShout(Formation formation, FormationState state, SkinVoiceManager.SkinVoiceType? line, int crowdEvent, float now,
+            bool orderHorn = true)
         {
             if (line == null || now - state.LastPlayerOrderTime < PlayerOrderShadow || now < state.NextAiShoutTime)
             {
@@ -1021,6 +1105,10 @@ namespace RBMAI
             Schedule(speaker, line.Value, start);
             ScheduleReplies(formation, line.Value, speaker.Position.AsVec2, start);
             ScheduleCrowd(formation, crowdEvent, start + MBRandom.RandomFloatRanged(CrowdAnswerDelayMin, CrowdAnswerDelayMax), now);
+            if (orderHorn)
+            {
+                TryOrderHorn(formation, state, start + MBRandom.RandomFloatRanged(OrderHornDelayMin, OrderHornDelayMax), now);
+            }
         }
 
         private void PollHalt(Formation formation, FormationState state, float now)
@@ -1223,9 +1311,10 @@ namespace RBMAI
 
         /// <summary>
         /// Who calls the step: the formation's captain, else its banner bearer, else one random soldier. Picked once per
-        /// cycle; the voice queue's per-man cooldown is not checked, the call belongs to him.
+        /// cycle; the voice queue's per-man cooldown is not checked, the call belongs to him. The random soldier is a
+        /// man on foot unless footOnly is false (a horn blower of a mounted formation is a rider).
         /// </summary>
-        private Agent PickCaller(Formation formation, float now)
+        private Agent PickCaller(Formation formation, float now, bool footOnly = true)
         {
             Agent captain = formation.Captain;
             if (captain != null && captain.IsActive() && captain.IsHuman && !captain.IsPlayerControlled)
@@ -1244,7 +1333,7 @@ namespace RBMAI
             {
                 return banner;
             }
-            PickUnits(formation, 1, now, footOnly: true);
+            PickUnits(formation, 1, now, footOnly);
             return (_picked.Count > 0) ? _picked[0] : null;
         }
 
@@ -1297,7 +1386,7 @@ namespace RBMAI
             return state.MarchCrowdEvent;
         }
 
-        /// <summary>Looks up the formation's culture again (cadence and crowd grunt) when it has never been or every CultureCheckInterval.</summary>
+        /// <summary>Looks up the formation's culture again (cadence, crowd grunt, horns) when it has never been or every CultureCheckInterval.</summary>
         private void RefreshCulture(Formation formation, FormationState state, float now)
         {
             if (state.Cadence != null && now < state.NextCultureCheck)
@@ -1305,6 +1394,7 @@ namespace RBMAI
                 return;
             }
             string culture = MarchCultureOf(formation);
+            state.Culture = culture;
             MarchCadence found;
             state.Cadence = (culture != null && Cadences.TryGetValue(culture, out found)) ? found : DefaultCadence;
             state.MarchCrowdEvent = MarchCrowdEventFor(culture);
@@ -1319,9 +1409,11 @@ namespace RBMAI
         private string MarchCultureOf(Formation formation)
         {
             // The team's general is deliberately not used: in custom battle he is the chosen commander, whose culture
-            // has nothing to do with the troops picked (and no commander is Nord).
+            // has nothing to do with the troops picked (and no commander is Nord). He is often the captain too (the
+            // game makes a commander on foot captain of the infantry), so a captain who is the general or the player
+            // does not count either: the troops' own culture decides.
             Agent leader = formation.Captain;
-            if (leader != null && leader.IsActive())
+            if (leader != null && leader.IsActive() && leader != formation.Team?.GeneralAgent && !leader.IsMainAgent)
             {
                 string leaderCulture = leader.Character?.Culture?.StringId;
                 if (leaderCulture != null)
@@ -1457,16 +1549,25 @@ namespace RBMAI
             _nodStop = SoundEvent.GetEventIdFromString("event:/alerts/nods/stop");
             _nodFormation = SoundEvent.GetEventIdFromString("event:/alerts/nods/formation");
 
-            _marchCrowdIds.Clear();
-            for (int i = 0; i < MarchCrowdCultures.Length; i++)
+            ResolveCultureEvents(MarchCrowdPrefix, MarchCrowdCultures, _marchCrowdIds);
+            _marchCrowdGeneric = SoundEvent.GetEventIdFromString(MarchCrowdPrefix + "generic");
+            ResolveCultureEvents(ChargeHornPrefix, MarchCrowdCultures, _chargeHornIds);
+            _chargeHornGeneric = SoundEvent.GetEventIdFromString(ChargeHornPrefix + "generic");
+            ResolveCultureEvents(OrderHornPrefix, OrderHornCultures, _orderHornIds);
+        }
+
+        /// <summary>Fills `ids` with prefix + culture for each culture whose event exists.</summary>
+        private static void ResolveCultureEvents(string prefix, string[] cultures, Dictionary<string, int> ids)
+        {
+            ids.Clear();
+            for (int i = 0; i < cultures.Length; i++)
             {
-                int id = SoundEvent.GetEventIdFromString(MarchCrowdPrefix + MarchCrowdCultures[i]);
+                int id = SoundEvent.GetEventIdFromString(prefix + cultures[i]);
                 if (id >= 0)
                 {
-                    _marchCrowdIds[MarchCrowdCultures[i]] = id;
+                    ids[cultures[i]] = id;
                 }
             }
-            _marchCrowdGeneric = SoundEvent.GetEventIdFromString(MarchCrowdPrefix + "generic");
         }
 
         /// <summary>
@@ -1475,12 +1576,96 @@ namespace RBMAI
         /// </summary>
         private int MarchCrowdEventFor(string culture)
         {
+            return CultureEventFor(_marchCrowdIds, _marchCrowdGeneric, culture);
+        }
+
+        /// <summary>
+        /// The event of one of the MarchCrowdCultures from `ids`, or `generic` for any other culture. No fallback
+        /// between them: a missing entry means silence.
+        /// </summary>
+        private static int CultureEventFor(Dictionary<string, int> ids, int generic, string culture)
+        {
             if (culture != null && Array.IndexOf(MarchCrowdCultures, culture) >= 0)
             {
                 int id;
-                return _marchCrowdIds.TryGetValue(culture, out id) ? id : -1;
+                return ids.TryGetValue(culture, out id) ? id : -1;
             }
-            return _marchCrowdGeneric;
+            return generic;
+        }
+
+        // ---------------- horns ----------------
+
+        private static bool IsMounted(Formation formation)
+        {
+            return formation.QuerySystem.IsCavalryFormationReadOnly || formation.QuerySystem.IsRangedCavalryFormationReadOnly;
+        }
+
+        /// <summary>
+        /// The charge horn the formation would blow now (rbm/horn/charge/{culture}, else generic), or -1: not mounted,
+        /// smaller than HornMinUnits, its horn cooling down, or no sample.
+        /// </summary>
+        private int ChargeHornDue(Formation formation, FormationState state, float now)
+        {
+            if (formation.CountOfUnits < HornMinUnits || now < state.NextChargeHornTime || formation.Team == null || !IsMounted(formation))
+            {
+                return -1;
+            }
+            RefreshCulture(formation, state, now);
+            return CultureEventFor(_chargeHornIds, _chargeHornGeneric, state.Culture);
+        }
+
+        /// <summary>
+        /// A mounted formation going over to Charge: its caller (a rider) blows the charge horn ChargeHornDelay after
+        /// the order, or TeamChargeHornGap after the team's last charge horn if that is later (two formations charging
+        /// together sound one after the other). Returns when the horn sounds, or -1 if it does not.
+        /// </summary>
+        private float TryChargeHorn(Formation formation, FormationState state, float now)
+        {
+            int id = ChargeHornDue(formation, state, now);
+            if (id < 0)
+            {
+                return -1f;
+            }
+            Agent caller = PickCaller(formation, now, footOnly: false);
+            if (caller == null)
+            {
+                return -1f;
+            }
+            float time = now + MBRandom.RandomFloatRanged(ChargeHornDelayMin, ChargeHornDelayMax);
+            float teamNext;
+            if (_teamNextChargeHorn.TryGetValue(formation.Team, out teamNext) && time < teamNext)
+            {
+                time = teamNext;
+            }
+            _teamNextChargeHorn[formation.Team] = time + TeamChargeHornGap;
+            state.NextChargeHornTime = now + ChargeHornCooldown;
+            _pendingCrowd.Add(new PendingCrowd { Time = time, Formation = formation, EventId = id, Source = caller, Horn = true });
+            return time;
+        }
+
+        /// <summary>
+        /// An Aserai or Nord formation's order horn (rbm/horn/order/{culture}; other cultures have none), from its
+        /// caller at `time`, at most once per OrderHornCooldown.
+        /// </summary>
+        private void TryOrderHorn(Formation formation, FormationState state, float time, float now)
+        {
+            if (formation.CountOfUnits < HornMinUnits || now < state.NextOrderHornTime)
+            {
+                return;
+            }
+            RefreshCulture(formation, state, now);
+            int id;
+            if (state.Culture == null || !_orderHornIds.TryGetValue(state.Culture, out id))
+            {
+                return;
+            }
+            Agent caller = PickCaller(formation, now, footOnly: false);
+            if (caller == null)
+            {
+                return;
+            }
+            state.NextOrderHornTime = now + OrderHornCooldown;
+            _pendingCrowd.Add(new PendingCrowd { Time = time, Formation = formation, EventId = id, Source = caller, Horn = true });
         }
 
         // ---------------- crowd sounds ----------------
@@ -1560,19 +1745,24 @@ namespace RBMAI
                 }
                 if (crowd.Source != null)
                 {
-                    if (!crowd.Source.IsActive())
-                    {
-                        continue;
-                    }
                     if (!haveListener)
                     {
                         listener = SoundManager.GetListenerFrame().origin;
                         haveListener = true;
                     }
-                    Vec3 mouth = crowd.Source.Position;
+                    // A horn is blown by the man of the formation nearest the camera, so it is heard (user, 2026-10-10).
+                    Agent source = crowd.Horn ? (ClosestUnit(formation, listener) ?? crowd.Source) : crowd.Source;
+                    if (!source.IsActive())
+                    {
+                        continue;
+                    }
+                    Vec3 mouth = source.Position;
                     mouth.z += MouthHeight;
                     Vec3 position;
-                    if (CarryPosition(mouth, listener, out position))
+                    bool heard = crowd.Horn
+                        ? CarryPosition(mouth, listener, HornPullStart, HornAudibleRange, HornMaxHearDistance, out position)
+                        : CarryPosition(mouth, listener, PullStart, AudibleRange, MaxHearDistance, out position);
+                    if (heard)
                     {
                         MBSoundEvent.PlaySound(crowd.EventId, position);
                     }
@@ -1591,6 +1781,33 @@ namespace RBMAI
                 MBSoundEvent.PlaySound(crowd.EventId, ref parameter, _picked[0].Position);
             }
             _pendingCrowd.RemoveRange(write, _pendingCrowd.Count - write);
+        }
+
+        /// <summary>The formation's active man nearest `point`, or null.</summary>
+        private static Agent ClosestUnit(Formation formation, Vec3 point)
+        {
+            MBReadOnlyList<IFormationUnit> units = formation.Arrangement?.GetAllUnits();
+            if (units == null)
+            {
+                return null;
+            }
+            Agent best = null;
+            float bestDistance = float.MaxValue;
+            for (int i = 0; i < units.Count; i++)
+            {
+                Agent agent = units[i] as Agent;
+                if (agent == null || !agent.IsActive())
+                {
+                    continue;
+                }
+                float distance = agent.Position.DistanceSquared(point);
+                if (distance < bestDistance)
+                {
+                    bestDistance = distance;
+                    best = agent;
+                }
+            }
+            return best;
         }
 
         private static float FemaleShare(Formation formation)
@@ -1626,25 +1843,26 @@ namespace RBMAI
         }
 
         /// <summary>
-        /// Where to play a crowd grunt so it carries further than a voice does (vanilla's fade out by 80 m): within PullStart of
-        /// the listener at the man himself, further out pulled toward the listener along the same line, the distance
-        /// squeezed from PullStart..MaxHearDistance into PullStart..AudibleRange. It still comes from the right side
-        /// and fades with distance. False beyond MaxHearDistance.
+        /// Where to play a crowd grunt or horn so it carries further than a voice does (vanilla's fade out by 80 m):
+        /// within pullStart of the listener at the man himself, further out pulled toward the listener along the same
+        /// line, the distance squeezed from pullStart..maxHear into pullStart..audibleRange. It still comes from the
+        /// right side and fades with distance. False beyond maxHear. Grunts use PullStart/AudibleRange/MaxHearDistance,
+        /// horns the Horn* distances.
         /// </summary>
-        private static bool CarryPosition(Vec3 mouth, Vec3 listener, out Vec3 position)
+        private static bool CarryPosition(Vec3 mouth, Vec3 listener, float pullStart, float audibleRange, float maxHear, out Vec3 position)
         {
             position = mouth;
             Vec3 offset = mouth - listener;
             float distance = offset.Length;
-            if (distance <= PullStart)
+            if (distance <= pullStart)
             {
                 return true;
             }
-            if (distance > MaxHearDistance)
+            if (distance > maxHear)
             {
                 return false;
             }
-            float carried = PullStart + (distance - PullStart) * (AudibleRange - PullStart) / (MaxHearDistance - PullStart);
+            float carried = pullStart + (distance - pullStart) * (audibleRange - pullStart) / (maxHear - pullStart);
             position = listener + offset * (carried / distance);
             return true;
         }

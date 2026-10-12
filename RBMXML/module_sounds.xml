@@ -18,6 +18,24 @@
       17-22  two different grunts of 1-8 layered 15-40 ms apart, for a bigger crowd
   One recording set, so the cultures differ by pitch: Sturgians and Nords deeper, Khuzaits and Aserai lighter,
   Battanians loosest.
+
+  Horns (FormationShoutsLogic), single blasts played at the formation's man nearest the camera:
+    rbm/horn/charge/<culture>  a mounted formation (cavalry, horse archers) going over to Charge, before its yells;
+                               same 7 cultures as the march grunt, else rbm/horn/charge/generic
+    rbm/horn/order/<culture>   Aserai and Nord formations, with every order (aserai, nord only, no generic)
+  No fallback between entries: a missing entry means no horn.
+  Category mission_siege_loud: the 3D category for the loudest battlefield events (big explosions), so a horn carries
+  further than the shouts; its 8 s limit covers the longest blast (horn_d_1, 7.6 s). Not alert: that one is pseudo-3D,
+  and a horn must still be heard from where it is blown. The code also pulls a far horn closer (Horn* distances).
+  All CC0, from Freesound's HQ previews (see ModuleSounds/README.md):
+      horn_viking_1-12   "medieval viking horn" by Artiom_Constantinov (freesound.org/s/856540), deep, 2.4-3.4 s
+      horn_d_1           "Viking Horn in D" by roemergruft (freesound.org/s/704440), 7.6 s long blast
+      horn_d_2           the same blast cut to 4 s with a fade
+      horn_battle_1      "Battle_horn_1" by kirmm (freesound.org/s/392180), 4.5 s, with echo
+      horn_shofar_1-5    "Small Shofar" by Sauron974 (freesound.org/s/223368), ram's horn, 1.5-5.9 s
+      horn_shofar_6      "shofar blast medium length two tone" by Sonicsheep (freesound.org/s/479310), 2.7 s
+  Empire and Vlandia blow the brass-like battle horn, Sturgians, Nords and Battanians the viking horn (Sturgians
+  deepest), Khuzaits and Aserai the ram's horn (Khuzaits the long, lower blasts).
   -->
 		<module_sound name="rbm/march/generic" sound_category="mission_voice_shout" min_pitch_multiplier="0.95" max_pitch_multiplier="1.05">
 			<variation path="march_crowd_1.ogg" weight="1.0" />
@@ -210,6 +228,106 @@
 			<variation path="march_crowd_20.ogg" weight="1.0" />
 			<variation path="march_crowd_21.ogg" weight="1.0" />
 			<variation path="march_crowd_22.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/horn/charge/empire" sound_category="mission_siege_loud" min_pitch_multiplier="1.02" max_pitch_multiplier="1.08">
+			<variation path="horn_battle_1.ogg" weight="1.0" />
+			<variation path="horn_d_1.ogg" weight="1.0" />
+			<variation path="horn_d_2.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/horn/charge/vlandia" sound_category="mission_siege_loud" min_pitch_multiplier="0.95" max_pitch_multiplier="1.0">
+			<variation path="horn_battle_1.ogg" weight="1.0" />
+			<variation path="horn_d_1.ogg" weight="1.0" />
+			<variation path="horn_d_2.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/horn/charge/sturgia" sound_category="mission_siege_loud" min_pitch_multiplier="0.85" max_pitch_multiplier="0.92">
+			<variation path="horn_viking_1.ogg" weight="1.0" />
+			<variation path="horn_viking_2.ogg" weight="1.0" />
+			<variation path="horn_viking_3.ogg" weight="1.0" />
+			<variation path="horn_viking_4.ogg" weight="1.0" />
+			<variation path="horn_viking_5.ogg" weight="1.0" />
+			<variation path="horn_viking_6.ogg" weight="1.0" />
+			<variation path="horn_viking_7.ogg" weight="1.0" />
+			<variation path="horn_viking_8.ogg" weight="1.0" />
+			<variation path="horn_viking_9.ogg" weight="1.0" />
+			<variation path="horn_viking_10.ogg" weight="1.0" />
+			<variation path="horn_viking_11.ogg" weight="1.0" />
+			<variation path="horn_viking_12.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/horn/charge/battania" sound_category="mission_siege_loud" min_pitch_multiplier="0.97" max_pitch_multiplier="1.03">
+			<variation path="horn_viking_1.ogg" weight="1.0" />
+			<variation path="horn_viking_2.ogg" weight="1.0" />
+			<variation path="horn_viking_3.ogg" weight="1.0" />
+			<variation path="horn_viking_4.ogg" weight="1.0" />
+			<variation path="horn_viking_5.ogg" weight="1.0" />
+			<variation path="horn_viking_6.ogg" weight="1.0" />
+			<variation path="horn_viking_7.ogg" weight="1.0" />
+			<variation path="horn_viking_8.ogg" weight="1.0" />
+			<variation path="horn_viking_9.ogg" weight="1.0" />
+			<variation path="horn_viking_10.ogg" weight="1.0" />
+			<variation path="horn_viking_11.ogg" weight="1.0" />
+			<variation path="horn_viking_12.ogg" weight="1.0" />
+			<variation path="horn_d_2.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/horn/charge/nord" sound_category="mission_siege_loud" min_pitch_multiplier="0.92" max_pitch_multiplier="0.98">
+			<variation path="horn_viking_1.ogg" weight="1.0" />
+			<variation path="horn_viking_2.ogg" weight="1.0" />
+			<variation path="horn_viking_3.ogg" weight="1.0" />
+			<variation path="horn_viking_4.ogg" weight="1.0" />
+			<variation path="horn_viking_5.ogg" weight="1.0" />
+			<variation path="horn_viking_6.ogg" weight="1.0" />
+			<variation path="horn_viking_7.ogg" weight="1.0" />
+			<variation path="horn_viking_8.ogg" weight="1.0" />
+			<variation path="horn_viking_9.ogg" weight="1.0" />
+			<variation path="horn_viking_10.ogg" weight="1.0" />
+			<variation path="horn_viking_11.ogg" weight="1.0" />
+			<variation path="horn_viking_12.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/horn/charge/khuzait" sound_category="mission_siege_loud" min_pitch_multiplier="0.88" max_pitch_multiplier="0.94">
+			<variation path="horn_shofar_1.ogg" weight="1.0" />
+			<variation path="horn_shofar_5.ogg" weight="1.0" />
+			<variation path="horn_shofar_6.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/horn/charge/aserai" sound_category="mission_siege_loud" min_pitch_multiplier="0.98" max_pitch_multiplier="1.04">
+			<variation path="horn_shofar_1.ogg" weight="1.0" />
+			<variation path="horn_shofar_2.ogg" weight="1.0" />
+			<variation path="horn_shofar_3.ogg" weight="1.0" />
+			<variation path="horn_shofar_5.ogg" weight="1.0" />
+			<variation path="horn_shofar_6.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/horn/charge/generic" sound_category="mission_siege_loud" min_pitch_multiplier="0.95" max_pitch_multiplier="1.05">
+			<variation path="horn_viking_1.ogg" weight="1.0" />
+			<variation path="horn_viking_2.ogg" weight="1.0" />
+			<variation path="horn_viking_3.ogg" weight="1.0" />
+			<variation path="horn_viking_4.ogg" weight="1.0" />
+			<variation path="horn_viking_5.ogg" weight="1.0" />
+			<variation path="horn_viking_6.ogg" weight="1.0" />
+			<variation path="horn_viking_7.ogg" weight="1.0" />
+			<variation path="horn_viking_8.ogg" weight="1.0" />
+			<variation path="horn_viking_9.ogg" weight="1.0" />
+			<variation path="horn_viking_10.ogg" weight="1.0" />
+			<variation path="horn_viking_11.ogg" weight="1.0" />
+			<variation path="horn_viking_12.ogg" weight="1.0" />
+			<variation path="horn_d_2.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/horn/order/aserai" sound_category="mission_siege_loud" min_pitch_multiplier="1.0" max_pitch_multiplier="1.04">
+			<variation path="horn_shofar_2.ogg" weight="1.0" />
+			<variation path="horn_shofar_3.ogg" weight="1.0" />
+			<variation path="horn_shofar_4.ogg" weight="1.0" />
+			<variation path="horn_shofar_6.ogg" weight="1.0" />
+		</module_sound>
+		<module_sound name="rbm/horn/order/nord" sound_category="mission_siege_loud" min_pitch_multiplier="0.94" max_pitch_multiplier="0.98">
+			<variation path="horn_viking_1.ogg" weight="1.0" />
+			<variation path="horn_viking_2.ogg" weight="1.0" />
+			<variation path="horn_viking_3.ogg" weight="1.0" />
+			<variation path="horn_viking_4.ogg" weight="1.0" />
+			<variation path="horn_viking_5.ogg" weight="1.0" />
+			<variation path="horn_viking_6.ogg" weight="1.0" />
+			<variation path="horn_viking_7.ogg" weight="1.0" />
+			<variation path="horn_viking_8.ogg" weight="1.0" />
+			<variation path="horn_viking_9.ogg" weight="1.0" />
+			<variation path="horn_viking_10.ogg" weight="1.0" />
+			<variation path="horn_viking_11.ogg" weight="1.0" />
+			<variation path="horn_viking_12.ogg" weight="1.0" />
 		</module_sound>
 	</module_sounds>
 </base>
