@@ -306,11 +306,13 @@ namespace RBMCombat
                             targetWcd.WeaponClass == WeaponClass.ThrowingKnife ||
                             targetWcd.WeaponClass == WeaponClass.Dagger)
                         {
-                            int calculatedMissileSpeed = Utilities.assignThrowableMissileSpeedForMenu(targetWeapon.Weight, (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
+                            // The throw is driven by the diminished skill, as in the live throw (RangedRework.EquipWield).
+                            float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
+                            int calculatedMissileSpeed = Utilities.assignThrowableMissileSpeedForMenu(targetWeapon.Weight, (int)Utilities.throwableCorrectionSpeed, effectiveSkillDR);
                             int? comparedMissileSpeed = null;
                             if (!comparedWeapon.IsEmpty)
                             {
-                                comparedMissileSpeed = Utilities.assignThrowableMissileSpeedForMenu(comparedWeapon.Weight, (int)Utilities.throwableCorrectionSpeed, effectiveSkill);
+                                comparedMissileSpeed = Utilities.assignThrowableMissileSpeedForMenu(comparedWeapon.Weight, (int)Utilities.throwableCorrectionSpeed, effectiveSkillDR);
                             }
 
                             AddHeader(__instance, new TextObject("{=RBM_COM_036}RBM Stats").ToString());
@@ -325,6 +327,11 @@ namespace RBMCombat
                             {
                                 tableDamageType = DamageTypes.Pierce;
                                 weaponDamageFactor = (float)Math.Sqrt(Utilities.getThrustDamageFactor(targetWcd, targetWeapon.ItemModifier));
+                                // Pilum: three times the factor, as in the live blow (DamageRework.Core's "special javelin case").
+                                if (targetWcd.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield))
+                                {
+                                    weaponDamageFactor *= 3f;
+                                }
                             }
                             else if (targetWcd.WeaponClass == WeaponClass.ThrowingAxe)
                             {

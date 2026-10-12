@@ -564,13 +564,14 @@ namespace RBMCombat
                     }
                 }
 
-                inflictedDamage = MBMath.ClampInt(MathF.Floor(Utilities.RBMComputeDamage(weaponType, damageType, stealthMagnitude, armorAmount, victimAgentAbsorbedDamageRatio, out float penetratedDamage, out _, weaponDamageFactor, player, isPlayerVictim, armorMaterial)), 0, 2000);
+                // Floored once, after the body-part multiplier (flooring before it as well dropped the fraction twice).
+                float computedDamage = Utilities.RBMComputeDamage(weaponType, damageType, stealthMagnitude, armorAmount, victimAgentAbsorbedDamageRatio, out float penetratedDamage, out _, weaponDamageFactor, player, isPlayerVictim, armorMaterial);
                 if (attackCollisionData.IsMissile)
                 {
                     // Arrows that only bruise through the armor break or glance off instead of sticking.
                     RangedRework.ArmorDeflection.RecordBodyHit(penetratedDamage);
                 }
-                inflictedDamage = MathF.Floor(inflictedDamage * dmgMultiplier);
+                inflictedDamage = MBMath.ClampInt(MathF.Floor(computedDamage * dmgMultiplier), 0, 2000);
 
                 if (isSneakAttack && RBMConfig.RBMConfig.sneakAttackInstaKill)
                 {
@@ -896,6 +897,18 @@ namespace RBMCombat
             {
                 private static bool Prefix(ref AttackInformation attackInformation, ref AttackCollisionData attackCollisionData, WeaponComponentData attackerWeapon, float blowMagnitude, out int inflictedDamage)
                 {
+                    // Vanilla multiplies an armed melee blow by its skill damage bonus; RBM scales by skill itself, so
+                    // the body hit divides it back out and a blocked blow must too. Missiles, kicks/bashes, unarmed
+                    // blows, falls and charges never get the bonus. (The shield-on-back call passes it already divided.)
+                    if (!attackCollisionData.IsMissile && !attackCollisionData.IsAlternativeAttack && !attackCollisionData.IsFallDamage && !attackCollisionData.IsHorseCharge
+                        && attackerWeapon != null && attackInformation.AttackerAgent != null)
+                    {
+                        float wdm = MissionGameModels.Current.AgentStatCalculateModel.GetWeaponDamageMultiplier(attackInformation.AttackerAgent, attackerWeapon);
+                        if (wdm > 0f)
+                        {
+                            blowMagnitude /= wdm;
+                        }
+                    }
                     RBMComputeBlowDamageOnShield(ref attackInformation, ref attackCollisionData, attackerWeapon, blowMagnitude, out inflictedDamage);
                     return false;
                 }

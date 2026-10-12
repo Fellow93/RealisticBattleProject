@@ -49,9 +49,9 @@ namespace RBMCampaign
         // spear, pike, lance and sword-thrust in the model has been worth a tenth of what RBM pays it.
         private const float ThrustAccelerationProgress = 1f;
 
-        // RBM multiplies the swing by accelerationProgress TWICE -- once turning the speed rating into radians,
-        // once inside the class switch -- so the swing carries progressEffect itself rather than its root. At the
-        // reference progressEffect of 1 both are 1, which is why one constant serves here.
+        // The swing carries accelerationProgress once, as the thrust does (it used to be applied twice, once in the
+        // speed rating and again in the class switch; fixed in MagnitudeChanges). At the reference progressEffect
+        // of 1 it is 1 either way.
         private const float SwingAccelerationProgress = 1f;
 
         // Where along the blade the blow lands. Not the tip, not the hilt: the part of it a man means to hit with.
@@ -632,11 +632,14 @@ namespace RBMCampaign
         private static float GetDamageFactor(WeaponComponentData weapon, bool isThrust)
         {
             float factor = isThrust ? weapon.ThrustDamageFactor : weapon.SwingDamageFactor;
-            if (factor <= 0f)
+            float damageFactor = factor <= 0f ? 1f : MathF.Sqrt(factor);
+            // A thrown pilum (a Javelin with the shield bonus) gets three times the factor, as in the live blow
+            // (DamageRework.Core's "special javelin case").
+            if (weapon.WeaponClass == WeaponClass.Javelin && weapon.WeaponFlags.HasAnyFlag(WeaponFlags.BonusAgainstShield))
             {
-                return 1f;
+                damageFactor *= 3f;
             }
-            return MathF.Sqrt(factor);
+            return damageFactor;
         }
 
         // ---------------------------------------------------------------------------------------------------

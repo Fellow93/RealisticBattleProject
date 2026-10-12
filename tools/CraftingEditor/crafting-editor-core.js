@@ -1032,9 +1032,9 @@
     // CalculateSweetSpotSwingMagnitude
     if (u.swingDamage > 0) {
       var ss = F(F(u.swingSpeed / F(4.5454545)) * 1);
-      if (ONE_H_FAST.indexOf(cls) >= 0 || cls === 'TwoHandedMace' || cls === 'TwoHandedPolearm') ss = F(F(F(ss * F(0.83)) * F(1 + F(dr / 1000))) * 1);
-      else if (cls === 'TwoHandedAxe') ss = F(F(F(ss * F(0.75)) * F(1 + F(dr / 800))) * 1);
-      else if (SWORDS.indexOf(cls) >= 0) ss = F(F(F(ss * F(0.83)) * F(1 + F(dr / 800))) * 1);
+      if (ONE_H_FAST.indexOf(cls) >= 0 || cls === 'TwoHandedMace' || cls === 'TwoHandedPolearm') ss = F(F(ss * F(0.83)) * F(1 + F(dr / 1000)));
+      else if (cls === 'TwoHandedAxe') ss = F(F(ss * F(0.75)) * F(1 + F(dr / 800)));
+      else if (SWORDS.indexOf(cls) >= 0) ss = F(F(ss * F(0.83)) * F(1 + F(dr / 800)));
       // GetRealWeaponLength: weapon_length × 0.01 + Frame.rotation.u · Frame.origin (−CoM with use_center_of_mass_as_hand_base).
       var realLen = F(F(u.length * F(0.01)) + (u.useCom ? F(-u.com) : 0));
       var best = -1, spot = -1;

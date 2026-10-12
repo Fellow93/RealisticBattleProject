@@ -189,21 +189,21 @@ namespace RBMCombat
                         case WeaponClass.TwoHandedMace:
                             {
                                 float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
-                                swingSpeed = swingSpeed * 0.83f * swingskillModifier * accelerationProgress;
+                                swingSpeed = swingSpeed * 0.83f * swingskillModifier;
                                 break;
                             }
                         case WeaponClass.TwoHandedPolearm:
                             {
                                 float swingskillModifier = 1f + (effectiveSkillDR / 1000f);
 
-                                swingSpeed = swingSpeed * 0.83f * swingskillModifier * accelerationProgress;
+                                swingSpeed = swingSpeed * 0.83f * swingskillModifier;
                                 break;
                             }
                         case WeaponClass.TwoHandedAxe:
                             {
                                 float swingskillModifier = 1f + (effectiveSkillDR / 800f);
 
-                                swingSpeed = swingSpeed * 0.75f * swingskillModifier * accelerationProgress;
+                                swingSpeed = swingSpeed * 0.75f * swingskillModifier;
                                 break;
                             }
                         case WeaponClass.OneHandedSword:
@@ -212,7 +212,7 @@ namespace RBMCombat
                             {
                                 float swingskillModifier = 1f + (effectiveSkillDR / 800f);
 
-                                swingSpeed = swingSpeed * 0.83f * swingskillModifier * accelerationProgress;
+                                swingSpeed = swingSpeed * 0.83f * swingskillModifier;
                                 break;
                             }
                     }
