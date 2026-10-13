@@ -107,7 +107,9 @@ namespace RBMCampaign
         ///
         ///   DefaultArmyManagementCalculationModel.CanLordCreateArmy   if (num5 &lt; 1000f) -- the army-power floor,
         ///                                                             which unscaled a handful of men clears, so
-        ///                                                             the gate stands permanently open
+        ///                                                             the gate stands permanently open (RBM
+        ///                                                             lowers it to 700 on this scale, see
+        ///                                                             ArmyStrengthFloorPatch)
         ///   DefaultTargetScoreCalculatingModel :212                   if (num6 &lt; 100f && Besieger) -- the damper
         ///                                                             on a weak party starting a siege; never fires
         ///   DefaultTargetScoreCalculatingModel :174                   MathF.Max(100f, num2) -- a floor that never
@@ -116,11 +118,15 @@ namespace RBMCampaign
         /// So the choice is to divide once here, or to chase vanilla's constants forever -- including the ones
         /// nobody has found yet. This divides.
         ///
-        /// 197 was measured, not picked, off 19,989 party pricings in logs/powerCalculation (1.85M men, 146k stack
-        /// rows): sum(men x thisModel) / sum(men x vanillaTier) = 197.4 in aggregate, and the MEDIAN party lands at
-        /// 198.8 -- the agreement between those two is what says one flat constant is honest here rather than a
-        /// fudge that happens to fit the average. Per-tier the ratio is flat within 187-227 across T1-T6, which is
-        /// the same statement seen from the side.
+        /// The value is measured, not picked: sum(men x thisModel) / sum(men x vanillaTier) over the party pricings in
+        /// logs/powerCalculation, heroes excluded. The first measurement (2026-07-17, 19,989 pricings) gave 197.4 with
+        /// the median party at 198.8 and every tier flat within 187-227. The next day (631f79f7) the armour divisor
+        /// started following 100/armorMultiplier (doubling armour's weight at the default 2) and a mount became a
+        /// share of its rider's power, and the re-derivation landed at 272. Re-measured 2026-10-13 off the 10-06 and
+        /// 10-07 logs (21k stack rows): 257, and no longer flat by tier (T1 ~272, T2-T3 ~225-236, T4 ~285,
+        /// T5-T6 ~330-397). Still 272 here: only absolute strengths read it (the 1000 army floor, renown and
+        /// influence, barter values, the encounter screen), never a ratio of two sides, so a ~6% drift is not worth
+        /// a moving target; re-measure on a fresh log once the combat model settles.
         ///
         /// What this deliberately does NOT do is flatten the model back into vanilla. Dividing every man by one
         /// number cannot touch what this model is FOR: that two tier-3 men differ (the measured spread at tier 3 is
@@ -128,7 +134,8 @@ namespace RBMCampaign
         /// off vanilla's tier-only answer, and that residue is the entire point -- it is the model disagreeing
         /// about THIS party, on the scale where the disagreement can be read.
         ///
-        /// The one tier that moves is T0, whose ratio is 345 rather than ~200: a peasant comes out at 0.70 against
+        /// (The 9.7% and the T0 figures below are from the 197 measurement.) The one tier that moved then was T0,
+        /// whose ratio was 345 rather than ~200: a peasant comes out at 0.70 against
         /// vanilla's 0.40. That is this model saying vanilla under-prices the rabble by 1.75x, and it is kept.
         ///
         /// Re-measure this if the offense model moves (rbmCombatEnabled, OneHandedThrustDamageBonus, armorMultiplier,

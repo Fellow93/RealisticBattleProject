@@ -115,6 +115,9 @@ namespace RBM
                 // Scales the project tile itself (DevelopmentItem.xml) to match the shrunken grid cells set
                 // above, so two full rows of building icons always fit with slack.
                 TownManagementGridPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
+                // The mercenary companies' hire price and cart gold on the army management screen; same
+                // cached-before-OnGameStart reason.
+                MercenaryArmyPrefabPatch.ApplyEarly(HarmonyModules.rbmcampaignHarmony);
             }
 
             Module.CurrentModule.AddInitialStateOption(new InitialStateOption("RbmConfiguration", new TextObject("{=RBM_CON_020}RBM Configuration"), 9999, delegate
@@ -226,6 +229,7 @@ namespace RBM
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSettlementDefenseBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMDeserterRaiderBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMRecruitPoolCampaignBehavior());
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMMercenaryCompanyBehavior());
                 // Registered last so it wins GetGameModel and receives whatever workshop model was
                 // already in place (vanilla's, or NavalDLC's) as its BaseModel to delegate to.
                 ((CampaignGameStarter)gameStarterObject).AddModel(new RBMCampaign.RBMWorkshopModel());

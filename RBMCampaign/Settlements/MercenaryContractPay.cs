@@ -56,7 +56,10 @@ namespace RBMCampaign
                 && clan.Kingdom != null
                 && clan.IsUnderMercenaryService
                 && clan.Kingdom.Leader != null
-                && clan.Kingdom.Leader != clan.Leader;
+                && clan.Kingdom.Leader != clan.Leader
+                // A neutral mercenary company is paid by its own contract (MercenaryContracts: hire price and
+                // daily pay from the army leader), never by the crown's stipend or the doubled wage.
+                && !MercenaryCompanies.IsCompany(clan);
         }
 
         /// <summary>
@@ -172,11 +175,25 @@ namespace RBMCampaign
         /// </summary>
         private static bool SuppressVanillaMercenaryIncomePrefix(Clan clan)
         {
-            return !(RBMConfig.RBMConfig.rbmCampaignEnabled && IsMercenaryClan(clan));
+            // A mercenary company's award multiplier is re-rolled by vanilla while it serves; its contract pays
+            // it instead, so the influence award is skipped for it too.
+            return !(RBMConfig.RBMConfig.rbmCampaignEnabled && (IsMercenaryClan(clan) || MercenaryCompanies.IsCompany(clan)));
         }
 
         private static void PayMercenaryContractThroughFinancePostfix(Clan clan, bool applyWithdrawals, ref ExplainedNumber __result)
         {
+            // The player's own daily pay to the neutral companies he hired (player clan only; both passes).
+            MercenaryCompanyPayLines.AddPlayerPayLines(clan, ref __result, applyWithdrawals);
+            if (MercenaryCompanies.IsCompany(clan))
+            {
+                // Vanilla adds 40 per tier to a fiefless minor clan's subsistence while it is a mercenary
+                // (CalculateClanIncomeInternal); a company under contract is paid by its employer instead.
+                if (clan.IsUnderMercenaryService && clan.Fiefs.Count == 0 && clan.Tier > 0)
+                {
+                    __result.Add(-clan.Tier * 40);
+                }
+                return;
+            }
             if (!RBMConfig.RBMConfig.rbmCampaignEnabled || !IsMercenaryClan(clan))
             {
                 return;

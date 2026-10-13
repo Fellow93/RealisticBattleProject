@@ -280,6 +280,9 @@
     <Compile Include="Diagnostics\EconomyLog.cs" />
     <Compile Include="Diagnostics\CaravanLog.cs" />
     <Compile Include="Diagnostics\GarrisonRefillLog.cs" />
+    <Compile Include="Diagnostics\MercenaryLog.cs" />
+    <Compile Include="Diagnostics\PartyBudgetLog.cs" />
+    <Compile Include="Diagnostics\ArmyCheckLog.cs" />
     <Compile Include="Diagnostics\LogRetention.cs" />
     <Compile Include="Diagnostics\BufferedLogWriter.cs" />
     <Compile Include="Diagnostics\TestBattleCommand.cs" />
@@ -297,6 +300,14 @@
     <Compile Include="AI\LordPackTrain.cs" />
     <Compile Include="AI\RBMLordSpawnSettlementBehavior.cs" />
     <Compile Include="AI\LordRespawn.cs" />
+    <Compile Include="MercenaryCompanies\MercenaryCompanies.cs" />
+    <Compile Include="MercenaryCompanies\MercenaryContracts.cs" />
+    <Compile Include="MercenaryCompanies\MercenaryCompanyPayLines.cs" />
+    <Compile Include="MercenaryCompanies\MercenaryCompanyPatches.cs" />
+    <Compile Include="MercenaryCompanies\RBMMercenaryCompanyBehavior.cs" />
+    <Compile Include="MercenaryCompanies\MercenaryArmyScreen.cs" />
+    <Compile Include="MercenaryCompanies\MercenaryArmyWidgets.cs" />
+    <Compile Include="MercenaryCompanies\MercenaryArmyPrefabPatch.cs" />
     <Compile Include="Spoils\SpoilsPool.cs" />
     <Compile Include="Spoils\SpoilsPool.Equipment.cs" />
     <Compile Include="Spoils\SpoilsPool.UpgradeMath.cs" />
@@ -481,7 +492,9 @@
     <Compile Include="Finance\SettlementAccrualPool.cs" />
     <Compile Include="Settlements\GarrisonUpkeep.cs" />
     <Compile Include="Settlements\GarrisonWageLimit.cs" />
-    <Compile Include="Settlements\LordPartyWageLimit.cs" />
+    <Compile Include="Settlements\PartyWageBudget.cs" />
+    <Compile Include="Power\ArmyStrengthFloor.cs" />
+    <Compile Include="Power\ArmyCallReach.cs" />
     <Compile Include="Settlements\GarrisonRecruitCost.cs" />
     <Compile Include="Settlements\GarrisonDrill.cs" />
     <Compile Include="Settlements\TradeTariff.cs" />

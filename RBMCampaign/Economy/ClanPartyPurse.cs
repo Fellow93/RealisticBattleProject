@@ -42,8 +42,9 @@ namespace RBMCampaign
         /// <summary>The most one party may spend of borrowed clan gold on recruits in one day.</summary>
         private const int DailyRecruitLoanCap = 20000;
 
-        /// <summary>The gold the clan leader always keeps back from recruit loans.</summary>
-        private const int LenderReserve = 20000;
+        /// <summary>The gold the clan leader always keeps back from recruit loans. Also the working reserve
+        /// <see cref="PartyWageBudget"/> leaves out of a clan's money on hand.</summary>
+        internal const int LenderReserve = 20000;
 
         // Vanilla's figures, for the log's comparison only.
         private const int VanillaPartyGoldFloor = 5000;

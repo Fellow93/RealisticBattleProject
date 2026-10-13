@@ -275,9 +275,13 @@ A stack's whole wage lands in its purse — the party's gold is untouched, so th
 `MenPerFoodPerDay = MobilePartyFoodConsumptionModel.NumberOfMenOnMapToEatOneFood` (vanilla 20 — one food feeds 20 men for a day).
 
 ```
-wanted = ceil(element.Number * troopSettlementFoodDays / MenPerFoodPerDay)
+targetDays   = CarriesCampaignRations(party) ? Max(troopSettlementFoodDays, LordRationDays) : troopSettlementFoodDays
+neededHours  = targetDays * 24 - hours of ration the stack still has
+wanted       = ceil(element.Number * neededHours / (MenPerFoodPerDay * 24))
 priceCeiling = Round(perManDailyWage * troopFoodWageFraction * MenPerFoodPerDay)   // "half a day's wage per man"
 ```
+
+`CarriesCampaignRations` is `IsLordParty && !IsMainParty` (AI lords, the player's companion-led parties, mercenary companies). Those stacks carry `LordRationDays` (30) and top up at any settlement once under `LordRationTopUpBelowDays` (20), so lords clear the army food gates (leader > 12 days, members > 15) between stops; the new hours are added onto the ration already held. Every other stack buys only when its ration has run out, and buys `troopSettlementFoodDays`.
 
 Buying is dearest-first, in two passes: first only items at or under the ceiling (a recruit stops at grain), then anything at all rather than starve. Purchases draw real stock at real settlement prices (`TroopMarketFeedback.UnitPrice`) from the purse. Partial supply feeds proportionally: `fedHours = Max(1, foodDays * 24 * bought / wanted)`. Visiting parties only, on `SettlementEntered` and hourly while they stay: garrisons and militia are fed by their settlement and buy no rations.
 

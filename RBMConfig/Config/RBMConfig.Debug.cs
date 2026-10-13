@@ -41,6 +41,17 @@ namespace RBMConfig
         // unless rbmCampaignEnabled is on. Used to write whenever the campaign module was on.
         public static bool garrisonRefillLoggingEnabled = false;
 
+        // Writes the neutral mercenary companies to their own logs/mercenaries folder -- creation, respawns,
+        // roaming and tavern hires, contracts (hire, daily pay, end and the actual leave), AI hiring decisions.
+        // No effect unless rbmCampaignEnabled and mercenaryCompaniesEnabled are on.
+        public static bool mercenaryLoggingEnabled = false;
+
+        // Writes the AI lords' daily wage budget (RBMCampaign Settlements/PartyWageBudget) to its own
+        // logs/partybudget folder -- each clan's money on hand, steady income, budget and every war party's
+        // share -- and each clan leader's army check (strength, food, influence, members). No effect unless
+        // rbmCampaignEnabled is on.
+        public static bool partyBudgetLoggingEnabled = false;
+
         // Writes every party out as it was priced -- the perks that reached it, then each stack with what one man of
         // it is worth and what he is made of -- to logs/powerCalculation. None of the model's constants are derived,
         // so this is how they get tuned. One block per party per in-game day; see StrategicPowerLog for why.

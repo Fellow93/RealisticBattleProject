@@ -104,6 +104,10 @@ namespace RBMCampaign
             {
                 return false; // leave the player's own heroes to the player
             }
+            if (MercenaryCompanies.IsCompany(lord.Clan))
+            {
+                return false; // a mercenary captain's gold is for wages and men, not lordly gear
+            }
             if (settlement == null || !settlement.IsTown || settlement.Town == null)
             {
                 return false;

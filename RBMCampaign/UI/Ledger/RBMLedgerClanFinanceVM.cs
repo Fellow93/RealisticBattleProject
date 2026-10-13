@@ -513,6 +513,7 @@ namespace RBMCampaign
                 case EventGoldKind.BloodMoney: return new TextObject("{=RBM_LEDGER_CF_EV_BLOOD_MONEY}Blood money").ToString();
                 case EventGoldKind.ShipScrap: return new TextObject("{=RBM_LEDGER_CF_EV_SHIP_SCRAP}Ship scrap").ToString();
                 case EventGoldKind.MercenaryPay: return new TextObject("{=RBM_LEDGER_CF_EV_MERC_PAY}Mercenary companies' pay").ToString();
+                case EventGoldKind.MercenaryCompanyHire: return new TextObject("{=RBM_LEDGER_CF_EV_MERC_HIRE}Mercenary company hire fees").ToString();
                 default: return kind.ToString();
             }
         }

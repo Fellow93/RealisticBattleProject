@@ -89,6 +89,7 @@ namespace RBMCampaign
                 __result.Add(-subsidies, GarrisonSubsidyFinanceLine.Label());
             }
             MercenaryContractPay.AddDisplayLines(clan, ref __result, income: false, expense: true);
+            MercenaryCompanyPayLines.AddPlayerPayLines(clan, ref __result, apply: false);
         }
     }
 }

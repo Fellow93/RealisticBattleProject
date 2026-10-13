@@ -413,6 +413,11 @@ namespace RBMConfig
             DeserterRaidersEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_DESERTER_RAIDERS}Deserter Raiders"));
             DeserterRaidersEnabled = new SelectorVM<SelectorItemVM>(deserterRaidersOptions, 0, null);
 
+            // Neutral mercenary companies: on by default, so Enabled carries the "(Default)" tag.
+            List<string> mercenaryCompaniesOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            MercenaryCompaniesEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_MERC_COMPANIES}Mercenary Companies"));
+            MercenaryCompaniesEnabled = new SelectorVM<SelectorItemVM>(mercenaryCompaniesOptions, 0, null);
+
             // Equipment simulation: Enabled is the default, so its option carries the "(Default)" tag.
             List<string> simulationEquipmentOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             SimulationEquipmentEnabledText = new TextViewModel(new TextObject("{=RBM_CON_093}Detailed Auto Resolve"));
@@ -483,6 +488,10 @@ namespace RBMConfig
             CaravanLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.caravanLoggingEnabled ? 1 : 0, null);
             GarrisonRefillLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_DBG_014}Garrison Refill Logging"));
             GarrisonRefillLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.garrisonRefillLoggingEnabled ? 1 : 0, null);
+            MercenaryLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_DBG_MERC_LOG}Mercenary Companies Logging"));
+            MercenaryLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.mercenaryLoggingEnabled ? 1 : 0, null);
+            PartyBudgetLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_DBG_BUDGET_LOG}Party Budget Logging"));
+            PartyBudgetLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.partyBudgetLoggingEnabled ? 1 : 0, null);
 
             if (RBMConfig.rbmCombatEnabled)
             {
@@ -542,6 +551,7 @@ namespace RBMConfig
             KingdomCaravansEnabled.SelectedIndex = RBMConfig.kingdomCaravansEnabled ? 1 : 0;
             CaravanInvestmentEnabled.SelectedIndex = RBMConfig.caravanInvestmentEnabled ? 1 : 0;
             DeserterRaidersEnabled.SelectedIndex = RBMConfig.deserterRaidersEnabled ? 1 : 0;
+            MercenaryCompaniesEnabled.SelectedIndex = RBMConfig.mercenaryCompaniesEnabled ? 1 : 0;
             SimulationEquipmentEnabled.SelectedIndex = RBMConfig.simulationEquipmentEnabled ? 1 : 0;
             SimulationRoutEnabled.SelectedIndex = RBMConfig.simulationRoutEnabled ? 1 : 0;
             StrategicPowerEnabled.SelectedIndex = RBMConfig.strategicPowerEnabled ? 1 : 0;
@@ -788,6 +798,7 @@ namespace RBMConfig
             RBMConfig.kingdomCaravansEnabled = KingdomCaravansEnabled.SelectedIndex == 1;
             RBMConfig.caravanInvestmentEnabled = CaravanInvestmentEnabled.SelectedIndex == 1;
             RBMConfig.deserterRaidersEnabled = DeserterRaidersEnabled.SelectedIndex == 1;
+            RBMConfig.mercenaryCompaniesEnabled = MercenaryCompaniesEnabled.SelectedIndex == 1;
             RBMConfig.simulationEquipmentEnabled = SimulationEquipmentEnabled.SelectedIndex == 1;
             RBMConfig.simulationRoutEnabled = SimulationRoutEnabled.SelectedIndex == 1;
             RBMConfig.strategicPowerEnabled = StrategicPowerEnabled.SelectedIndex == 1;
@@ -818,6 +829,8 @@ namespace RBMConfig
             RBMConfig.economyLoggingEnabled = EconomyLoggingEnabled.SelectedIndex == 1;
             RBMConfig.caravanLoggingEnabled = CaravanLoggingEnabled.SelectedIndex == 1;
             RBMConfig.garrisonRefillLoggingEnabled = GarrisonRefillLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.mercenaryLoggingEnabled = MercenaryLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.partyBudgetLoggingEnabled = PartyBudgetLoggingEnabled.SelectedIndex == 1;
 
             RBMConfig.saveXmlConfig();
             TaleWorlds.ScreenSystem.ScreenManager.PopScreen();
@@ -920,6 +933,7 @@ namespace RBMConfig
             KingdomCaravansEnabled.SelectedIndex = 1;
             CaravanInvestmentEnabled.SelectedIndex = 1;
             DeserterRaidersEnabled.SelectedIndex = 1;
+            MercenaryCompaniesEnabled.SelectedIndex = 1;
             SimulationEquipmentEnabled.SelectedIndex = 1;
             SimulationRoutEnabled.SelectedIndex = 0;
             StrategicPowerEnabled.SelectedIndex = 1;
@@ -941,6 +955,8 @@ namespace RBMConfig
             EconomyLoggingEnabled.SelectedIndex = 0;
             CaravanLoggingEnabled.SelectedIndex = 0;
             GarrisonRefillLoggingEnabled.SelectedIndex = 0;
+            MercenaryLoggingEnabled.SelectedIndex = 0;
+            PartyBudgetLoggingEnabled.SelectedIndex = 0;
         }
 
         private void ExecuteCancel()

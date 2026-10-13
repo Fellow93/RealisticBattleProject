@@ -31,7 +31,7 @@ namespace RBMCampaign
         // "Understrength": trigger while below this fraction of the party's *affordable* size limit.
         // FindPartySizeNormalLimit already caps the target at what the lord can pay for, so a broke
         // lord reads as "at his limit" and is left alone rather than sent on a pointless round-trip.
-        // With LordPartyWageLimit restoring a vanilla-scale affordable size, this can sit high: a lord
+        // With PartyWageBudget sizing the affordable limit in RBM wage money, this can sit high: a lord
         // three-quarters full still has real room, so send him home to top up rather than waiting until
         // he is nearly wiped out (the old 0.4 fired only under ~24% of the *raw* size cap).
         private const float DepletedFractionOfAffordableLimit = 0.75f;

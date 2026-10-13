@@ -1,6 +1,8 @@
 using System;
 using HarmonyLib;
+using Helpers;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Party;
@@ -65,6 +67,9 @@ namespace RBMCampaign
         private const float AnimalSpendFractionPerVisit = 0.15f;
         private const int GoldConsideredCap = 100000; // as vanilla: ignore hoards beyond this when sizing spend
 
+        // Share of a visit's animal budget the pack animals may use when spare mounts are short too.
+        private const float PackShareOfBudgetWhenBothShort = 0.5f;
+
         // Safety bound on the cheapest-first buy loop per category.
         private const int MaxBuyPasses = 8;
 
@@ -82,6 +87,11 @@ namespace RBMCampaign
                 return false;
             }
             if (!mobileParty.IsLordParty || mobileParty.LeaderHero == null || mobileParty.IsDisbanding)
+            {
+                return false;
+            }
+            // A mercenary company's gold is for wages and men, not a lord's baggage train.
+            if (MercenaryCompanies.IsCompanyParty(mobileParty))
             {
                 return false;
             }
@@ -148,13 +158,17 @@ namespace RBMCampaign
             int spent = 0;
 
             int needPack = packTarget - party.Party.NumberOfPackAnimals;
+            int needMount = mountTarget - party.Party.NumberOfMounts;
             if (needPack > 0 && budget > 0)
             {
-                spent += BuyCategory(party, town, DefaultItemCategories.PackAnimal, needPack, budget, out packBought);
+                // Packs used to take the whole visit's budget first, so spare mounts were almost never
+                // bought. When both are short, packs get only their share; mounts get the rest plus whatever
+                // the packs left unspent.
+                int packBudget = needMount > 0 ? (int)(budget * PackShareOfBudgetWhenBothShort) : budget;
+                spent += BuyCategory(party, town, DefaultItemCategories.PackAnimal, needPack, packBudget, out packBought);
                 budget -= spent;
             }
 
-            int needMount = mountTarget - party.Party.NumberOfMounts;
             if (needMount > 0 && budget > 0)
             {
                 int mountSpent = BuyCategory(party, town, DefaultItemCategories.Horse, needMount, budget, out mountBought);
@@ -279,6 +293,29 @@ namespace RBMCampaign
             return spent;
         }
 
+        // The party's carrying capacity with this many fewer pack animals or spare mounts. The capacity model's
+        // additionalPackAnimals/additionalSpareMounts parameters are ignored by DefaultInventoryCapacityModel, so
+        // this takes off what each animal adds there: a spare mount 20, a pack animal 100 raised by the same
+        // three perks (BeastWhisperer, DeeperSacks, ArenicosMules). Animals add nothing at sea.
+        private static float CapacityAfterSelling(MobileParty party, bool isPack, int count)
+        {
+            float capacity = party.InventoryCapacity;
+            if (party.IsCurrentlyAtSea)
+            {
+                return capacity;
+            }
+            float perAnimal = 20f;
+            if (isPack)
+            {
+                ExplainedNumber perPack = new ExplainedNumber(100f);
+                PerkHelper.AddPerkBonusForParty(DefaultPerks.Scouting.BeastWhisperer, party, isPrimaryBonus: false, ref perPack);
+                PerkHelper.AddPerkBonusForParty(DefaultPerks.Riding.DeeperSacks, party, isPrimaryBonus: true, ref perPack);
+                PerkHelper.AddPerkBonusForParty(DefaultPerks.Steward.ArenicosMules, party, isPrimaryBonus: true, ref perPack);
+                perAnimal = perPack.ResultNumber;
+            }
+            return capacity - perAnimal * count;
+        }
+
         /// <summary>
         /// Sells clean animals of <paramref name="cat"/> beyond <paramref name="target"/> back to the town,
         /// cheapest first so the party keeps its best stock. Gold-capped per element like vanilla's loot
@@ -288,6 +325,12 @@ namespace RBMCampaign
         {
             int current = isPack ? party.Party.NumberOfPackAnimals : party.Party.NumberOfMounts;
             int toSell = current - target;
+            // Never sell the capacity the party's load needs: goods the town couldn't afford to buy are still
+            // aboard, and an overloaded party has them destroyed hourly by vanilla's discard behavior.
+            while (toSell > 0 && CapacityAfterSelling(party, isPack, toSell) < party.TotalWeightCarried)
+            {
+                toSell--;
+            }
             if (toSell <= 0)
             {
                 return 0;

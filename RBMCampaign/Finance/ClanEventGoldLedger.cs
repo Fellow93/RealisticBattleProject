@@ -23,7 +23,13 @@ namespace RBMCampaign
         /// What a ruling player pays the mercenary companies in his kingdom's service, taken on THEIR clans'
         /// apply passes (a drain; see <see cref="MercenaryContractPay"/>), so it is never on his own.
         /// </summary>
-        MercenaryPay
+        MercenaryPay,
+        /// <summary>
+        /// The one-off fee the player pays to hire a neutral mercenary company into his army (a drain; see
+        /// <see cref="MercenaryContracts.Hire"/>). Its daily pay is NOT here: that is a finance line on the
+        /// player's own apply pass (<see cref="MercenaryCompanyPayLines"/>).
+        /// </summary>
+        MercenaryCompanyHire
     }
 
     /// <summary>
@@ -156,7 +162,7 @@ namespace RBMCampaign
         public static bool IsDrain(EventGoldKind kind)
         {
             return kind == EventGoldKind.UpgradeGold || kind == EventGoldKind.BloodMoney
-                || kind == EventGoldKind.MercenaryPay;
+                || kind == EventGoldKind.MercenaryPay || kind == EventGoldKind.MercenaryCompanyHire;
         }
 
         private static int Today()

@@ -74,6 +74,9 @@ namespace RBMCampaign
             bool mercDouble = !isMilitia
                 && MercenaryContractPay.CountsForMercWage(party?.MobileParty)
                 && MercenaryContractPay.IsMercenaryClan(GetPartyPayee(party)?.Clan);
+            // An idle mercenary company pays its men half wages (the cut is made on the party's total wage, which
+            // this per-stack sum does not read), so its stacks bank half: they keep exactly what they are paid.
+            float companyWageFactor = MercenaryCompanies.WageFactor(party?.MobileParty);
             int grantedTotal = 0;
             int stacksPaid = 0;
             for (int i = 0; i < roster.Count; i++)
@@ -85,6 +88,10 @@ namespace RBMCampaign
                 }
                 // The stack's wage, not one man's, so a small troop's half-point is not rounded away.
                 int wage = wageModel.GetCharacterWage(element.Character) * element.Number;
+                if (companyWageFactor < 1f)
+                {
+                    wage = MathF.Round(wage * companyWageFactor);
+                }
                 if (isMilitia)
                 {
                     // Militia are billed like a field troop -- a reduced wage into the purse, then kit-value

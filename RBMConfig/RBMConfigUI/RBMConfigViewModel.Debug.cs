@@ -60,6 +60,14 @@ namespace RBMConfig
         public TextViewModel GarrisonRefillLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> GarrisonRefillLoggingEnabled { get; }
 
+        // Mercenary companies logging (logs/mercenaries): on/off.
+        public TextViewModel MercenaryLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> MercenaryLoggingEnabled { get; }
+
+        // AI lords' wage budget and army check logging (logs/partybudget): on/off.
+        public TextViewModel PartyBudgetLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> PartyBudgetLoggingEnabled { get; }
+
         // Section title. Own RBM_DBG_* id block, so the new strings cannot collide with the crowded RBM_CON_* ids.
         [DataSourceProperty]
         public string RBMDebugt
@@ -183,5 +191,23 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel GarrisonRefillLoggingEnabledHint { get; } = Hint("{=RBM_DBG_015}Writes the garrison-refill AI to logs/garrison next to the config: depleted lords sent to their own surplus garrisons, the troops those garrisons hand over, and AI armies forming and dispersing. Needs RBM Campaign on. Default off.");
+
+        [DataSourceProperty]
+        public string MercenaryLoggingEnabledt
+        {
+            get { return new TextObject("{=RBM_DBG_MERC_LOG}Mercenary Companies Logging").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel MercenaryLoggingEnabledHint { get; } = Hint("{=RBM_DBG_MERC_LOG_HINT}Writes the mercenary companies to logs/mercenaries next to the config: companies created, respawned and destroyed, where they roam and what they hire, every contract (hire, daily pay, end and the reason) and which companies an AI army passed over and why. Needs Mercenary Companies on. Default off.");
+
+        [DataSourceProperty]
+        public string PartyBudgetLoggingEnabledt
+        {
+            get { return new TextObject("{=RBM_DBG_BUDGET_LOG}Party Budget Logging").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel PartyBudgetLoggingEnabledHint { get; } = Hint("{=RBM_DBG_BUDGET_LOG_HINT}Writes the AI lords' party budgets to logs/partybudget next to the config: once a day per clan, its gold on hand, steady income, daily wage budget and each war party's share of it, and once a day per clan leader, whether he could raise an army (his party's strength, food, influence, and the parties he could call). Needs RBM Campaign on. Default off.");
     }
 }

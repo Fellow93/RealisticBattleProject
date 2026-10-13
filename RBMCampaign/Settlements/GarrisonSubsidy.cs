@@ -50,7 +50,7 @@ namespace RBMCampaign
         ///
         /// Vanilla draws its garrison poverty line at 8000 (<c>DefaultClanFinanceModel.AddPartyExpense</c>:
         /// below that an AI clan pays a garrison nothing at all). RBM runs wages an order of magnitude
-        /// higher (see <c>LordPartyWageLimit</c>'s wage-limit scale of 10), so the same line in RBM money
+        /// higher (the ~10x of <c>Wages/TierBasedWageModel</c>), so the same line in RBM money
         /// is 80,000. UNCALIBRATED: derived, not measured.
         ///
         /// The player's clan has no floor -- a player who set a fief to unlimited wages meant it, and may

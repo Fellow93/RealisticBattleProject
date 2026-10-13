@@ -235,7 +235,14 @@ namespace RBMCampaign
                     {
                         float coveredMen = SpoilsPool.GetCoveredMen(party, character, upgradeTarget);
                         int affordable;
-                        if (SupplyGoldAllowed(party))
+                        if (MercenaryCompanies.IsCompanyParty(party.MobileParty))
+                        {
+                            // A mercenary company promotes only the men its spoils fully cover: its captain's
+                            // gold is for wages and recruits, never a promotion's kit (one tier-5 kit could take
+                            // all of it). No gold-buyers, so no town is billed either.
+                            affordable = (int)coveredMen;
+                        }
+                        else if (SupplyGoldAllowed(party))
                         {
                             // The gold leg is limited by the smaller of the purse and the party's remaining daily
                             // upgrade budget: the player's clan-screen cap on gold spent, spoils-covered men aside.

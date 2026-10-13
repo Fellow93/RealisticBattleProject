@@ -31,6 +31,10 @@ namespace RBMConfig
         public TextViewModel DeserterRaidersEnabledText { get; }
         public SelectorVM<SelectorItemVM> DeserterRaidersEnabled { get; }
 
+        // Neutral mercenary companies (hire-only clans, contract service in armies): master on/off.
+        public TextViewModel MercenaryCompaniesEnabledText { get; }
+        public SelectorVM<SelectorItemVM> MercenaryCompaniesEnabled { get; }
+
         // SupplyTown gate: on/off toggle for gating upgrades on a nearby friendly town.
         public TextViewModel TroopUpgradeRequireSupplyTownText { get; }
         public SelectorVM<SelectorItemVM> TroopUpgradeRequireSupplyTown { get; }
@@ -657,6 +661,15 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel DeserterRaidersEnabledHint { get; } = Hint("{=RBM_CFG_DESERTER_RAIDERS_HINT}Gives deserter parties initiative: they actively hunt nearby villager convoys and caravans and raid weakly-held villages when they out-match the target, instead of aimlessly patrolling their spawn point. Off leaves deserters on vanilla behavior. Default on.");
+
+        [DataSourceProperty]
+        public string MercenaryCompaniesEnabledt
+        {
+            get { return new TextObject("{=RBM_CFG_MERC_COMPANIES}Mercenary Companies").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel MercenaryCompaniesEnabledHint { get; } = Hint("{=RBM_CFG_MERC_COMPANIES_HINT}Adds two neutral mercenary companies for each main culture. They never join a kingdom on their own: they roam, hunt bandits and hire tavern mercenaries until an army leader pays to take them on, AI lords when they gather an army and you from the army management screen, where a company shows its price in gold. A contract lasts until the army breaks up or the leader can no longer pay the daily fee. Switching it off disbands the companies already in a save (within an in-game hour; one in a battle waits for the battle to end), and switching it back on raises new ones. The disbanding needs RBM Campaign on: switch Mercenary Companies off, play an hour, then you may turn RBM Campaign off. Default on.");
 
         // SupplyTown gate: radius slider (whole map units) + the toggle's row label.
         private float _troopUpgradeSupplyRadius;

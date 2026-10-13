@@ -218,6 +218,12 @@ namespace RBMConfig
         // aimless patrol around their spawn point. Off leaves deserters on vanilla behavior.
         public static bool deserterRaidersEnabled = true;
 
+        // Whether the neutral mercenary companies exist: two hire-only companies per main culture, each its
+        // own clan with one war party, that never join a kingdom on their own and serve an army only under a
+        // paid contract (AI army leaders and the player's army management screen). Off makes every
+        // MercenaryCompanies patch a no-op; companies already in a save are left to vanilla.
+        public static bool mercenaryCompaniesEnabled = true;
+
         // Whether AI lords spend gold in towns to upgrade their own battle gear to culture-matched items
         // (LordEquipmentUpgrade). Off leaves lord equipment to vanilla or another mod. Does not affect
         // the lord pack train.
