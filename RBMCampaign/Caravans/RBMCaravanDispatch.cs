@@ -614,26 +614,94 @@ namespace RBMCampaign
         /// is enough shorter to beat the slower hull. When the sea wins -- or there is simply no road at all,
         /// an island crossing -- the caravan is given a ship, keeps its land access so it is a hybrid that
         /// still walks the land legs, and is moved with <see cref="MobileParty.NavigationType.All"/> targeting
-        /// the port. Otherwise it takes the road. If a ship cannot be granted it falls back to a plain land
-        /// order; <see cref="CanDeliver"/> is expected to have already screened out truly unreachable pairs.
+        /// the port. Otherwise it takes the road. A leg with no road at all to a town WITHOUT a port (the way
+        /// home from an island port to an inland source) is sailed to the nearest coast and walked the rest,
+        /// targeting the gate -- a plain land order there finds no path and the caravan stands at the gate
+        /// for good. If a ship cannot be granted it falls back to a plain land order; <see cref="CanDeliver"/>
+        /// is expected to have already screened out truly unreachable pairs.
         /// </summary>
         internal static void RouteBetween(MobileParty caravan, Settlement from, Settlement to, CultureObject culture)
         {
             if (PreferSeaRoute(from, to, culture) && EnsureNaval(caravan, culture))
             {
-                // Board at the source's own dock. A transferred ship starts with an INVALID anchor -- its
-                // fleet is "nowhere" -- which the transition model charges ~2 days to summon before the party
-                // can embark. The caravan is standing in its port source, so plant the anchor at that port:
-                // the fleet is already at the quay and embarking is instant (distance ~0 => zero transition).
-                if (from != null && from.HasPort && caravan.Anchor != null)
-                {
-                    caravan.Anchor.Settlement = from;
-                }
+                SailFrom(caravan, from, true);
                 caravan.SetMoveGoToSettlement(to, MobileParty.NavigationType.All, true);
                 CaravanLog.Log("SEA", CaravanLog.Name(to), "by ship from " + CaravanLog.Name(from));
                 return;
             }
+            if (from != null && to != null
+                && !Campaign.Current.Models.MapDistanceModel.PathExistBetweenPoints(from.GatePosition, to.GatePosition, MobileParty.NavigationType.Default)
+                && EnsureNaval(caravan, culture))
+            {
+                // No road: the water is the only way, and the town has no quay to land at -- or the sea was
+                // not chosen for the port. All-navigation to the gate sails to the coast and walks inland.
+                SailFrom(caravan, from, true);
+                caravan.SetMoveGoToSettlement(to, MobileParty.NavigationType.All, false);
+                CaravanLog.Log("SEA", CaravanLog.Name(to), "by ship from " + CaravanLog.Name(from) + ", overland from the coast");
+                return;
+            }
             caravan.SetMoveGoToSettlement(to, MobileParty.NavigationType.Default, false);
+        }
+
+        /// <summary>
+        /// Readies a naval caravan standing in <paramref name="from"/> to put to sea. A transferred ship starts
+        /// with an INVALID anchor -- its fleet is "nowhere" -- which the transition model charges ~2 days to
+        /// summon before the party can embark; the caravan is standing in its port, so the anchor is planted
+        /// there and embarking is instant. When <paramref name="fromPort"/>, it also leaves through the port
+        /// rather than the gate, the way vanilla's <c>SetPartyAiAction</c> sends a party out with isFromPort:
+        /// walking out of the gate instead leaves it to find a place to board on the shore, and on a cliff
+        /// coast (Car Banseth) it never does and stands outside the walls.
+        /// </summary>
+        private static void SailFrom(MobileParty caravan, Settlement from, bool fromPort)
+        {
+            if (from == null || caravan.Anchor == null)
+            {
+                return;
+            }
+            if (!from.HasPort)
+            {
+                // An inland source: the caravan walks to the coast and boards there. With no anchor the
+                // transition model charges a flat 48 hours for the fleet to find it (the log showed every such
+                // caravan standing on the shore for exactly two days); anchored at the nearest port, the fleet
+                // only has the short sail from there to wherever the caravan reaches the water.
+                if (!caravan.Anchor.IsValid)
+                {
+                    Settlement port = NearestPort(from);
+                    if (port != null)
+                    {
+                        caravan.Anchor.Settlement = port;
+                    }
+                }
+                return;
+            }
+            caravan.Anchor.Settlement = from;
+            if (fromPort && caravan.CurrentSettlement == from && !caravan.IsCurrentlyAtSea && !caravan.IsTransitionInProgress)
+            {
+                caravan.StartTransitionNextFrameToExitFromPort = true;
+            }
+        }
+
+        /// <summary>The port town or castle closest to <paramref name="from"/> by road; null if none is reachable.</summary>
+        private static Settlement NearestPort(Settlement from)
+        {
+            var dist = Campaign.Current.Models.MapDistanceModel;
+            float unreachable = Campaign.MapDiagonal * 5f;
+            Settlement best = null;
+            float bestDist = unreachable;
+            foreach (Settlement s in Settlement.All)
+            {
+                if (s == null || !s.HasPort || !s.IsFortification)
+                {
+                    continue;
+                }
+                float d = dist.GetDistance(from, s, false, false, MobileParty.NavigationType.Default, out float _);
+                if (d < bestDist)
+                {
+                    bestDist = d;
+                    best = s;
+                }
+            }
+            return best;
         }
 
         /// <summary>

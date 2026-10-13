@@ -52,6 +52,12 @@ namespace RBMConfig
         // rbmCampaignEnabled is on.
         public static bool partyBudgetLoggingEnabled = false;
 
+        // Writes every map party that has somewhere to go but has not moved for a day to its own logs/stuckparties
+        // folder (RBMCampaign Diagnostics/StuckPartyLog*): position, target, naval/port state, ships and whether the
+        // engine's path search failed, plus an UNSTUCK line when it moves again. No effect unless rbmCampaignEnabled
+        // is on.
+        public static bool stuckPartyLoggingEnabled = false;
+
         // Writes every party out as it was priced -- the perks that reached it, then each stack with what one man of
         // it is worth and what he is made of -- to logs/powerCalculation. None of the model's constants are derived,
         // so this is how they get tuned. One block per party per in-game day; see StrategicPowerLog for why.

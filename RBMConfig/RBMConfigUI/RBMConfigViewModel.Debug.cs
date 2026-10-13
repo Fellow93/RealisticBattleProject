@@ -68,6 +68,10 @@ namespace RBMConfig
         public TextViewModel PartyBudgetLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> PartyBudgetLoggingEnabled { get; }
 
+        // Stuck-party logging (logs/stuckparties): on/off.
+        public TextViewModel StuckPartyLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> StuckPartyLoggingEnabled { get; }
+
         // Section title. Own RBM_DBG_* id block, so the new strings cannot collide with the crowded RBM_CON_* ids.
         [DataSourceProperty]
         public string RBMDebugt
@@ -209,5 +213,14 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel PartyBudgetLoggingEnabledHint { get; } = Hint("{=RBM_DBG_BUDGET_LOG_HINT}Writes the AI lords' party budgets to logs/partybudget next to the config: once a day per clan, its gold on hand, steady income, daily wage budget and each war party's share of it, and once a day per clan leader, whether he could raise an army (his party's strength, food, influence, and the parties he could call). Needs RBM Campaign on. Default off.");
+
+        [DataSourceProperty]
+        public string StuckPartyLoggingEnabledt
+        {
+            get { return new TextObject("{=RBM_DBG_STUCK_LOG}Stuck Party Logging").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel StuckPartyLoggingEnabledHint { get; } = Hint("{=RBM_DBG_STUCK_LOG_HINT}Writes to logs/stuckparties next to the config every map party (lords, caravans, villagers, fleets) that has a destination but has not moved for a day: where it is, where it is trying to go, whether it is at sea or heading for a port, its ships, and whether the game found a path. A second line when it moves again. For reporting parties stuck on coasts. Needs RBM Campaign on. Default off.");
     }
 }

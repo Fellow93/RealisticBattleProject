@@ -283,6 +283,8 @@
     <Compile Include="Diagnostics\MercenaryLog.cs" />
     <Compile Include="Diagnostics\PartyBudgetLog.cs" />
     <Compile Include="Diagnostics\ArmyCheckLog.cs" />
+    <Compile Include="Diagnostics\StuckPartyLog.cs" />
+    <Compile Include="Diagnostics\StuckPartyLogBehavior.cs" />
     <Compile Include="Diagnostics\LogRetention.cs" />
     <Compile Include="Diagnostics\BufferedLogWriter.cs" />
     <Compile Include="Diagnostics\TestBattleCommand.cs" />
@@ -300,6 +302,7 @@
     <Compile Include="AI\LordPackTrain.cs" />
     <Compile Include="AI\RBMLordSpawnSettlementBehavior.cs" />
     <Compile Include="AI\LordRespawn.cs" />
+    <Compile Include="Movement\BridgeSpeed.cs" />
     <Compile Include="MercenaryCompanies\MercenaryCompanies.cs" />
     <Compile Include="MercenaryCompanies\MercenaryContracts.cs" />
     <Compile Include="MercenaryCompanies\MercenaryCompanyPayLines.cs" />

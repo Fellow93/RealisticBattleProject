@@ -492,6 +492,8 @@ namespace RBMConfig
             MercenaryLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.mercenaryLoggingEnabled ? 1 : 0, null);
             PartyBudgetLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_DBG_BUDGET_LOG}Party Budget Logging"));
             PartyBudgetLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.partyBudgetLoggingEnabled ? 1 : 0, null);
+            StuckPartyLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_DBG_STUCK_LOG}Stuck Party Logging"));
+            StuckPartyLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.stuckPartyLoggingEnabled ? 1 : 0, null);
 
             if (RBMConfig.rbmCombatEnabled)
             {
@@ -831,6 +833,7 @@ namespace RBMConfig
             RBMConfig.garrisonRefillLoggingEnabled = GarrisonRefillLoggingEnabled.SelectedIndex == 1;
             RBMConfig.mercenaryLoggingEnabled = MercenaryLoggingEnabled.SelectedIndex == 1;
             RBMConfig.partyBudgetLoggingEnabled = PartyBudgetLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.stuckPartyLoggingEnabled = StuckPartyLoggingEnabled.SelectedIndex == 1;
 
             RBMConfig.saveXmlConfig();
             TaleWorlds.ScreenSystem.ScreenManager.PopScreen();
@@ -957,6 +960,7 @@ namespace RBMConfig
             GarrisonRefillLoggingEnabled.SelectedIndex = 0;
             MercenaryLoggingEnabled.SelectedIndex = 0;
             PartyBudgetLoggingEnabled.SelectedIndex = 0;
+            StuckPartyLoggingEnabled.SelectedIndex = 0;
         }
 
         private void ExecuteCancel()

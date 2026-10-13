@@ -224,6 +224,7 @@ namespace RBMConfig
             garrisonRefillLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "GarrisonRefillLoggingEnabled", "0").Equals("1");
             mercenaryLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "MercenaryLoggingEnabled", "0").Equals("1");
             partyBudgetLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "PartyBudgetLoggingEnabled", "0").Equals("1");
+            stuckPartyLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "StuckPartyLoggingEnabled", "0").Equals("1");
             deserterRaidersEnabled = ReadOrCreate("/Config/RBMCampaign", "DeserterRaidersEnabled", "1").Equals("1");
             mercenaryCompaniesEnabled = ReadOrCreate("/Config/RBMCampaign", "MercenaryCompaniesEnabled", "1").Equals("1");
             lordEquipmentUpgradeEnabled = ReadOrCreate("/Config/RBMCampaign", "LordEquipmentUpgradeEnabled", "1").Equals("1");
@@ -450,6 +451,7 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/GarrisonRefillLoggingEnabled"), garrisonRefillLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/MercenaryLoggingEnabled"), mercenaryLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/PartyBudgetLoggingEnabled"), partyBudgetLoggingEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/StuckPartyLoggingEnabled"), stuckPartyLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/DeserterRaidersEnabled"), deserterRaidersEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/MercenaryCompaniesEnabled"), mercenaryCompaniesEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/LordEquipmentUpgradeEnabled"), lordEquipmentUpgradeEnabled);

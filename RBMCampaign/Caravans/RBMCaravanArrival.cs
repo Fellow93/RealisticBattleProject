@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using Helpers;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -9,6 +10,7 @@ using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using RC = RBMConfig.RBMConfig;
 
@@ -515,10 +517,10 @@ namespace RBMCampaign
         /// The catch-all that keeps a caravan from ever stalling: if it is not already heading to its current
         /// target, it is put back on the road toward it. This re-drives a caravan left idle by a won battle
         /// (<see cref="AiBehavior.Hold"/>, target cleared), one that has wandered into a waypoint town and
-        /// stopped, or one in any other off-route state. It leaves alone a caravan that is already travelling
-        /// to the right place, one sitting inside its actual target (the arrival flow will handle that), one
-        /// caught in a map event, and one actively fleeing -- so normal travel and self-preservation are
-        /// never disturbed.
+        /// stopped, or one in any other off-route state. It leaves alone one caught in a map event and one
+        /// actively fleeing -- so self-preservation is never disturbed. A caravan with the right order is
+        /// still watched for progress (<see cref="CheckProgress"/>): an order the engine cannot path stands
+        /// it still for good, and that looks exactly like a caravan under way.
         /// </summary>
         private static void KeepMoving(MobileParty caravan, RBMCaravanRegister.Order order)
         {
@@ -533,19 +535,131 @@ namespace RBMCampaign
             }
             if (caravan.CurrentSettlement == target)
             {
-                return; // already at the target -- the settlement-entered arrival flow deals with it
-            }
-            if (caravan.DefaultBehavior == AiBehavior.GoToSettlement && caravan.TargetSettlement == target)
-            {
-                return; // already correctly under way
+                // Normally the settlement-entered arrival flow deals with it. A caravan turned home while it
+                // was still standing in its source never enters it again, so it is paid off here.
+                if (order.State == RBMCaravanRegister.StateReturning)
+                {
+                    HandleHomecoming(caravan, target, order);
+                }
+                return;
             }
             if (IsFleeing(caravan.DefaultBehavior))
             {
                 return; // running from a losing fight -- do not send it back toward danger
             }
+            if (caravan.DefaultBehavior != AiBehavior.GoToSettlement || caravan.TargetSettlement != target)
+            {
+                SendTo(caravan, target);
+                CaravanLog.Log("RESUME", CaravanLog.Name(target), "was idle/off-route — back on the road");
+                return;
+            }
+            CheckProgress(caravan, order, target);
+        }
 
-            SendTo(caravan, target);
-            CaravanLog.Log("RESUME", CaravanLog.Name(target), "was idle/off-route — back on the road");
+        // A caravan that has not moved StuckDistance in StuckHours with a correct order is stuck: the engine
+        // found no path for it (a land order with no road, a port it cannot board from). It is re-routed up
+        // to MaxStuckRetries times, then its trip is settled at home so its goods and coin are not lost.
+        private const float StuckHours = 12f;
+        private const float StuckDistance = 0.5f;
+        private const int MaxStuckRetries = 2;
+
+        private sealed class Progress
+        {
+            public Vec2 Position;
+            public CampaignTime Since;
+            public int Retries;
+        }
+
+        /// <summary>Where each caravan last moved from, and when. Keyed weakly on the party object, so a
+        /// loaded save starts every caravan's clock afresh and a dissolved one leaves nothing behind.</summary>
+        private static readonly ConditionalWeakTable<MobileParty, Progress> _progress = new ConditionalWeakTable<MobileParty, Progress>();
+
+        private static void CheckProgress(MobileParty caravan, RBMCaravanRegister.Order order, Settlement target)
+        {
+            Vec2 position = caravan.Position.ToVec2();
+            Progress progress = _progress.GetValue(caravan, _ => new Progress { Position = position, Since = CampaignTime.Now });
+            if (caravan.IsTransitionInProgress || position.Distance(progress.Position) > StuckDistance)
+            {
+                progress.Position = position;
+                progress.Since = CampaignTime.Now;
+                progress.Retries = 0;
+                return;
+            }
+            if (progress.Since.ElapsedHoursUntilNow < StuckHours)
+            {
+                return;
+            }
+
+            progress.Since = CampaignTime.Now;
+            progress.Retries++;
+            string state = "nav " + caravan.DesiredAiNavigationType + (caravan.IsTargetingPort ? " to port" : " to gate")
+                + (caravan.IsCurrentlyAtSea ? ", at sea" : ", on land")
+                + (caravan.HasNavalNavigationCapability ? ", has ship" : "")
+                + (caravan.CurrentSettlement != null ? ", in " + CaravanLog.Name(caravan.CurrentSettlement) : "");
+            if (progress.Retries > MaxStuckRetries)
+            {
+                Strand(caravan, order, target, state);
+                return;
+            }
+            Unstick(caravan, order, target, progress.Retries);
+            CaravanLog.Log("STUCK", CaravanLog.Name(target),
+                "no progress in " + (int)StuckHours + "h (" + state + ") — re-routed, try " + progress.Retries
+                + " → nav " + caravan.DesiredAiNavigationType + (caravan.IsTargetingPort ? " to port" : " to gate"));
+        }
+
+        /// <summary>
+        /// Gives a stuck caravan a different order to its target. First the route the game itself would pick
+        /// from where it stands (land or sea, gate or port, with what it carries); if that is the order it
+        /// already has, or the second time round, the leg is planned again from the settlement it started
+        /// from, which grants a ship where there is no road and leaves a port town by its dock.
+        /// </summary>
+        private static void Unstick(MobileParty caravan, RBMCaravanRegister.Order order, Settlement target, int attempt)
+        {
+            if (attempt == 1)
+            {
+                MobileParty.NavigationType nav = caravan.HasNavalNavigationCapability
+                    ? MobileParty.NavigationType.All
+                    : MobileParty.NavigationType.Default;
+                float d = DistanceHelper.FindClosestDistanceFromMobilePartyToSettlement(caravan, target, nav, out bool isPort, out float _);
+                bool changed = nav != caravan.DesiredAiNavigationType || isPort != caravan.IsTargetingPort;
+                if (d < Campaign.MapDiagonal * 5f && changed)
+                {
+                    caravan.SetMoveGoToSettlement(target, nav, isPort);
+                    return;
+                }
+            }
+            Settlement legStart = RBMCaravanRegister.FindSettlement(
+                order.State == RBMCaravanRegister.StateReturning ? order.DestId : order.SourceId);
+            Settlement source = RBMCaravanRegister.FindSettlement(order.SourceId);
+            RBMCaravanDispatch.RouteBetween(caravan, legStart ?? target, target, (source ?? target).Culture);
+        }
+
+        /// <summary>
+        /// The last resort for a caravan that stays stuck after every re-route: its trip is settled at home as
+        /// if it had come back -- the takings paid to the source, unsold goods returned to its market (an
+        /// out-bound one brings everything back, as a diverted one would) -- and it is dissolved. Nothing is
+        /// lost, and the goods it held in flight stop counting against the destination's headroom.
+        /// </summary>
+        private static void Strand(MobileParty caravan, RBMCaravanRegister.Order order, Settlement target, string state)
+        {
+            Settlement source = RBMCaravanRegister.FindSettlement(order.SourceId);
+            CaravanLog.Log("STRANDED", CaravanLog.Name(target),
+                "still stuck after " + MaxStuckRetries + " re-routes (" + state + ") — trip settled at "
+                + CaravanLog.Name(source) + " and caravan dissolved");
+            if (source == null)
+            {
+                RBMCaravanRegister.SetState(caravan.StringId, RBMCaravanRegister.StateDone);
+                return;
+            }
+            if (order.State == RBMCaravanRegister.StateEnRoute)
+            {
+                RBMCaravanRegister.SetProceeds(caravan.StringId, 0);
+                RBMCaravanRegister.SetState(caravan.StringId, RBMCaravanRegister.StateReturning);
+            }
+            if (RBMCaravanRegister.TryGetOrder(caravan.StringId, out RBMCaravanRegister.Order settled))
+            {
+                HandleHomecoming(caravan, source, settled);
+            }
         }
 
         /// <summary>Whether a behaviour is one of the flee modes, in which the caravan should be left to run.</summary>
