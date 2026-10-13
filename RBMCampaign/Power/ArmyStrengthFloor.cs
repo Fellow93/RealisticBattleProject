@@ -27,8 +27,10 @@ namespace RBMCampaign
     /// A transpiler on the one literal, because the sum is a local the method never exposes. That literal is the only
     /// <c>ldc.r4 1000</c> in this method (the type's other one is in <c>CalculatePartyInfluenceCost</c>); if the pattern
     /// is not found exactly once the method is left unpatched and a PATCH line goes to the party budget log.
-    /// Gated on <c>rbmCampaignEnabled</c> at run time (the literal becomes a call), so switching the module off
-    /// restores 1000 without re-patching. Nothing else in vanilla or RBM re-checks this floor: AiMilitaryBehavior only
+    /// Gated at run time on RBM's strength model being the one in use (<see cref="StrategicTroopPower.Enabled"/>:
+    /// RBM Campaign, RBM Combat and Equipment Based Troop Power all on) -- the 700 is the same number of men on RBM's
+    /// scale, so whenever the game's own strength is used (any of those off) the floor is vanilla's 1000 again. The
+    /// literal becomes a call, so this needs no re-patching. Nothing else in vanilla or RBM re-checks this floor: AiMilitaryBehavior only
     /// reads <c>CanLordCreateArmy</c>'s result, and <c>Diagnostics/ArmyCheckLog</c> reads <see cref="CurrentFloor"/>.
     /// </summary>
     [HarmonyPatch(typeof(DefaultArmyManagementCalculationModel), nameof(DefaultArmyManagementCalculationModel.CanLordCreateArmy))]
@@ -45,13 +47,13 @@ namespace RBMCampaign
         /// <summary>The floor <c>CanLordCreateArmy</c> is applying right now.</summary>
         internal static float CurrentFloor()
         {
-            return Applied && RBMConfig.RBMConfig.rbmCampaignEnabled ? ArmyStrengthFloor : VanillaFloor;
+            return Applied && StrategicTroopPower.Enabled ? ArmyStrengthFloor : VanillaFloor;
         }
 
         // Called in place of the literal; returns the floor for the comparison.
         private static float Floor()
         {
-            return RBMConfig.RBMConfig.rbmCampaignEnabled ? ArmyStrengthFloor : VanillaFloor;
+            return StrategicTroopPower.Enabled ? ArmyStrengthFloor : VanillaFloor;
         }
 
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)

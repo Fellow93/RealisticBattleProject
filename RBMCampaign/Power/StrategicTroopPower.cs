@@ -13,6 +13,7 @@ using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using RBMAutoResolve;
 
 namespace RBMCampaign
 {
@@ -138,7 +139,7 @@ namespace RBMCampaign
         /// whose ratio was 345 rather than ~200: a peasant comes out at 0.70 against
         /// vanilla's 0.40. That is this model saying vanilla under-prices the rabble by 1.75x, and it is kept.
         ///
-        /// Re-measure this if the offense model moves (rbmCombatEnabled, OneHandedThrustDamageBonus, armorMultiplier,
+        /// Re-measure this if the offense model moves (OneHandedThrustDamageBonus, armorMultiplier,
         /// armorEffectivenessMultiplier -- see _cacheRbmCombat) or if the tuning above is re-cut. The log prints what it was measured under.
         /// </summary>
         internal const float PowerScale = 272f;
@@ -158,9 +159,9 @@ namespace RBMCampaign
         private const float ZoneLeg = 0.11f;
 
         /// <summary>
-        /// How many armour points buy one man's worth of extra life, at armorMultiplier == 1 (vanilla). RBM's own
+        /// How many armour points buy one man's worth of extra life, at armorMultiplier == 1 of RBM's equation. RBM's own
         /// armour equation is <c>100/(100 + armor*armorMultiplier)</c>, so the divisor the passive term actually uses
-        /// is <c>ArmorConstant/(armorMultiplier*armorEffectivenessMultiplier)</c> whenever RBM Combat is on (the
+        /// is <c>ArmorConstant/(armorMultiplier*armorEffectivenessMultiplier)</c> (the
         /// "Armor Effectiveness" setting scales every armour value before that equation) -- that is what makes the
         /// passive term say the same thing about armour that a real RBM blow does (see PowerOfSet). At the default
         /// multiplier of 2 that halves the divisor, doubling armour's weight. This base value is only the
@@ -333,11 +334,19 @@ namespace RBMCampaign
 
         // ---------------------------------------------------------------------------------------------------------
 
+        /// <summary>
+        /// Whether RBM prices party strength at all. It also needs RBM COMBAT on: this model prices a man by RBM's own
+        /// combat rules and item data (class ceilings, draw-weight launchers, RBM's armour equation), and with RBM
+        /// Combat off the battles are native ones on native items -- so the game's own strength is used instead, and
+        /// every consumer of this (the GetPowerOfParty patch, the amphibious raid discount, the tooltip, the log) stands
+        /// down and leaves vanilla untouched.
+        /// </summary>
         internal static bool Enabled
         {
             get
             {
                 return RBMConfig.RBMConfig.rbmCampaignEnabled
+                    && RBMConfig.RBMConfig.rbmCombatEnabled
                     && RBMConfig.RBMConfig.strategicPowerEnabled
                     && Campaign.Current != null;
             }
@@ -364,11 +373,9 @@ namespace RBMCampaign
 
         private static readonly Dictionary<ItemObject, float> _tierCache = new Dictionary<ItemObject, float>();
 
-        // What the measurements were taken under. Both of these move the answer: rbmCombatEnabled picks the whole
-        // offense model, and OneHandedThrustDamageBonus is read by RBM's own melee TIER formula -- so a config screen
-        // slider really can make every cached number here a lie. Same reasoning as EnsureBaselines.
-        private static bool _cacheRbmCombat;
-
+        // What the measurements were taken under. OneHandedThrustDamageBonus is read by RBM's own melee TIER formula --
+        // so a config screen slider really can make every cached number here a lie. Same reasoning as EnsureBaselines.
+        // (rbmCombatEnabled is not a key: with it off this model does not run at all -- see Enabled.)
         private static float _cacheThrustBonus;
 
         // The armour term divides by armorMultiplier and armorEffectivenessMultiplier, and the config screen can move
@@ -397,18 +404,16 @@ namespace RBMCampaign
 
         private static void EnsureCacheFresh()
         {
-            bool rbmCombat = RBMConfig.RBMConfig.rbmCombatEnabled;
             float thrustBonus = RBMConfig.RBMConfig.OneHandedThrustDamageBonus;
             float armorMultiplier = RBMConfig.RBMConfig.armorMultiplier;
             float armorEffectiveness = RBMConfig.RBMConfig.armorEffectivenessMultiplier;
             lock (_cacheLock)
             {
-                if (_cachePrimed && _cacheRbmCombat == rbmCombat && _cacheThrustBonus == thrustBonus
+                if (_cachePrimed && _cacheThrustBonus == thrustBonus
                     && _cacheArmorMultiplier == armorMultiplier && _cacheArmorEffectiveness == armorEffectiveness)
                 {
                     return;
                 }
-                _cacheRbmCombat = rbmCombat;
                 _cacheThrustBonus = thrustBonus;
                 _cacheArmorMultiplier = armorMultiplier;
                 _cacheArmorEffectiveness = armorEffectiveness;
@@ -495,32 +500,8 @@ namespace RBMCampaign
         /// </summary>
         internal static float SidePower(MapEventSide side, bool discountLanding)
         {
-            if (side == null)
-            {
-                return 0f;
-            }
-            float total = 0f;
-            foreach (MapEventParty mapEventParty in side.Parties)
-            {
-                PartyBase party = (mapEventParty != null) ? mapEventParty.Party : null;
-                if (party == null)
-                {
-                    continue;
-                }
-                try
-                {
-                    float strength = party.CalculateCurrentStrength();
-                    if (discountLanding)
-                    {
-                        strength *= LandingFactor(party);
-                    }
-                    total += strength;
-                }
-                catch (Exception)
-                {
-                }
-            }
-            return total;
+            // One copy, kept with the auto-resolve log that also prints it (RBMAutoResolve cannot reference this module).
+            return SimulationSidePower.Of(side, discountLanding);
         }
 
         [HarmonyPatch(typeof(DefaultMilitaryPowerModel), "GetPowerOfParty")]
@@ -689,15 +670,6 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The least an amphibious raider's land strength can be discounted to. A party at sea whose hulls are all
-        /// deep-water can put no one ashore and by the letter of the cap is worth nothing on land -- true, but a raw
-        /// zero is a brittle thing to hand a scoring model (it turns "a poor raid" into "no party at all"), so the
-        /// discount bottoms out here and leaves a token weight. It never fires for a party with a shallow hull, which
-        /// is every party that would actually be choosing to raid.
-        /// </summary>
-        private const float MinLandingFactor = 0.1f;
-
-        /// <summary>
         /// A RAIDER COMING IN BY SEA IS ONLY AS STRONG AS IT CAN PUT ASHORE. A raider carrying 223 men whose shallow-
         /// draft hulls seat 30 lands 30 a wave and feeds them into the defenders piecemeal -- the War Sails sim caps
         /// the beach party to that deck crew (NavalDLCCombatSimulationModel.GetParticipatingTroopCount), and the
@@ -768,56 +740,19 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// How much of a party's strength it can actually put on a beach, in [<see cref="MinLandingFactor"/>, 1].
-        /// Mirrors the War Sails auto-resolve cap (NavalDLCCombatSimulationModel.GetShallowShipDeckCrewCapacity): only
-        /// hulls that can navigate shallow water land men, and only as many as their main deck seats. The fraction of
-        /// the party's fighting men that fits aboard those hulls is the fraction of its strength that can land.
+        /// How much of a party's strength it can actually put on a beach, in [0.1, 1]. Mirrors the War Sails
+        /// auto-resolve cap (NavalDLCCombatSimulationModel.GetShallowShipDeckCrewCapacity): only hulls that can
+        /// navigate shallow water land men, and only as many as their main deck seats. The fraction of the party's
+        /// fighting men that fits aboard those hulls is the fraction of its strength that can land.
         ///
         /// Priced by the party's SHIPS AND MEN alone, for a caller that already knows the fight is an amphibious
-        /// raid: the raid decision above, and the sim log, so the AttackerPower it prints is the strength the AI
-        /// actually weighed (the landing party) rather than the whole manifest.
+        /// raid: the raid decision above, and the auto-resolve log, so the AttackerPower it prints is the strength the
+        /// AI actually weighed (the landing party) rather than the whole manifest. The one copy lives with the log in
+        /// RBMAutoResolve (SimulationSidePower.LandingFactor), which cannot reference this module; this forwards to it.
         /// </summary>
         internal static float LandingFactor(PartyBase party)
         {
-            if (party == null || party.MemberRoster == null)
-            {
-                return 1f;
-            }
-            return LandingFactorFromCapacity(ShallowLandingCapacity(party), party.MemberRoster.TotalHealthyCount);
-        }
-
-        /// <summary>The men a party can put ashore in one wave: its main-deck crew across every shallow-draft hull it
-        /// owns. Mirrors NavalDLC's GetShallowShipDeckCrewCapacity. Zero for a party with no shallow hulls (and so for
-        /// every party when War Sails is absent, whose ship list is empty).</summary>
-        private static int ShallowLandingCapacity(PartyBase party)
-        {
-            MBReadOnlyList<Ship> ships = (party != null) ? party.Ships : null;
-            if (ships == null || ships.Count == 0)
-            {
-                return 0;
-            }
-
-            int landingCapacity = 0;
-            foreach (Ship ship in ships)
-            {
-                if (ship != null && ship.ShipHull != null && ship.ShipHull.CanNavigateShallowWater)
-                {
-                    landingCapacity += ship.MainDeckCrewCapacity;
-                }
-            }
-            return landingCapacity;
-        }
-
-        /// <summary>The fraction of a party's strength that fits into <paramref name="landingCapacity"/> beach slots,
-        /// clamped to [<see cref="MinLandingFactor"/>, 1]. A party that can land everyone -- or has no men to land --
-        /// is undiscounted.</summary>
-        private static float LandingFactorFromCapacity(int landingCapacity, int healthyMen)
-        {
-            if (healthyMen <= 0 || landingCapacity >= healthyMen)
-            {
-                return 1f;
-            }
-            return MathF.Max(MinLandingFactor, (float)landingCapacity / healthyMen);
+            return SimulationSidePower.LandingFactor(party);
         }
 
         /// <summary>
@@ -1081,7 +1016,6 @@ namespace RBMCampaign
         private static float Measure(CharacterObject troop, out PowerBreakdown detail)
         {
             detail = default(PowerBreakdown);
-            bool rbmCombat = RBMConfig.RBMConfig.rbmCombatEnabled;
 
             float sum = 0f;
             int sets = 0;
@@ -1091,7 +1025,7 @@ namespace RBMCampaign
             foreach (Equipment set in EnumerateBattleEquipments(troop))
             {
                 SetBreakdown parts;
-                float power = PowerOfSet(troop, set, rbmCombat, out parts);
+                float power = PowerOfSet(troop, set, out parts);
                 if (power <= 0f)
                 {
                     continue;
@@ -1154,7 +1088,7 @@ namespace RBMCampaign
         /// a soldier IS. A man in plate with a stick and a naked man with a war hammer are both useless, and any sum
         /// of the two terms would call them adequate.
         /// </summary>
-        private static float PowerOfSet(CharacterObject troop, Equipment set, bool rbmCombat, out SetBreakdown parts)
+        private static float PowerOfSet(CharacterObject troop, Equipment set, out SetBreakdown parts)
         {
             parts = default(SetBreakdown);
 
@@ -1162,8 +1096,8 @@ namespace RBMCampaign
             float shieldTier;
             float launcherTier, launcherSpeed;
             string launcherName;
-            float melee = MeleeOffense(troop, set, rbmCombat, out hasShield, out shieldTier);
-            float ranged = RangedOffense(troop, set, rbmCombat, out launcherTier, out launcherName, out launcherSpeed);
+            float melee = MeleeOffense(troop, set, out hasShield, out shieldTier);
+            float ranged = RangedOffense(troop, set, out launcherTier, out launcherName, out launcherSpeed);
 
             // WHO SHOOTS is a fact about the soldier, not about whether a bow is in his baggage. This asked only
             // whether he owned one, and so priced Nidir -- a mounted lord with a bow on his back -- as a man who
@@ -1203,21 +1137,21 @@ namespace RBMCampaign
             // PASSIVE -- what is left of a blow he did NOT turn aside. This is also where the shield answers an arrow:
             // nobody parries one, but a board on your arm is in the way whether you saw it coming or not.
             float head, neck, torso, shoulder, arm, leg;
-            SimulationEquipmentPower.GetArmorZones(set, rbmCombat, out head, out neck, out torso, out shoulder,
+            // RBM Combat's bone composition: this model only runs with RBM Combat on (see Enabled).
+            SimulationEquipmentPower.GetArmorZones(set, true, out head, out neck, out torso, out shoulder,
                 out arm, out leg);
             float weighted = (head * ZoneHead) + (neck * ZoneNeck) + (torso * ZoneTorso)
                            + (shoulder * ZoneShoulder) + (arm * ZoneArm) + (leg * ZoneLeg);
             // Barding is NOT here -- it is the horse's armour, and it is priced in the mount term (MountFractionOf).
             weighted += ShieldPassiveWeight * shieldTier;
-            // ArmorConstant is the vanilla (armorMultiplier == 1) value. Under RBM Combat the real blow first scales
-            // every armour value by armorEffectivenessMultiplier (E, "Armor Effectiveness") and then divides by
+            // ArmorConstant is RBM's armorMultiplier == 1 value. The real blow first scales every armour value by
+            // armorEffectivenessMultiplier (E, "Armor Effectiveness") and then divides by
             // 100/(100 + armor*E*armorMultiplier), so the passive term only says what a real blow says when the
             // divisor tracks 100/(armorMultiplier*E). At the default multiplier of 2 (E = 1) this doubles armour's
             // weight -- exactly the "price of protection" RBM's own armour equation charges. See ArmorConstant's own
             // summary. (E also moves the live penetration threshold, which this passive term has no part for.)
-            float armorConstant = rbmCombat
-                ? (ArmorConstant / (RBMConfig.RBMConfig.armorMultiplier * RBMConfig.RBMConfig.armorEffectivenessMultiplier))
-                : ArmorConstant;
+            float armorConstant =
+                ArmorConstant / (RBMConfig.RBMConfig.armorMultiplier * RBMConfig.RBMConfig.armorEffectivenessMultiplier);
             float passiveFactor = 1f + (weighted / armorConstant);
 
             parts.Offense = offense;
@@ -1267,7 +1201,7 @@ namespace RBMCampaign
         // OFFENSE
         // =========================================================================================================
 
-        private static float MeleeOffense(CharacterObject troop, Equipment set, bool rbmCombat,
+        private static float MeleeOffense(CharacterObject troop, Equipment set,
             out bool hasShield, out float shieldTier)
         {
             hasShield = false;
@@ -1299,15 +1233,14 @@ namespace RBMCampaign
                     }
                     continue;
                 }
-                // A bow is not a sword, and a javelin's listed ThrustDamage is its MISSILE damage. With RBM Combat
-                // on, ClassCeiling happened to drop these at 0; with it off, the listed-damage branch read a Fian's
-                // bow as his best "melee" weapon and priced every javelin-carrier's throw as a sword blow. Launchers
-                // are RangedOffense's business and thrown are deliberately unpriced -- neither belongs here.
+                // A bow is not a sword, and a javelin's listed ThrustDamage is its MISSILE damage. ClassCeiling
+                // happens to drop these at 0, but that is luck, not intent: launchers are RangedOffense's business
+                // and thrown are deliberately unpriced -- neither belongs here.
                 if (weapon.IsRangedWeapon || weapon.IsAmmo)
                 {
                     continue;
                 }
-                float score = MeleeWeaponScore(troop, item, weapon, rbmCombat);
+                float score = MeleeWeaponScore(troop, item, weapon);
                 if (score <= 0f)
                 {
                     continue;
@@ -1337,22 +1270,11 @@ namespace RBMCampaign
         /// is priced as comparable WORTH), while the combat model makes them 1.33x as deadly. Price a great axe off
         /// its tier and it reads weaker than a hand axe.
         ///
-        /// With RBM Combat off, the game really does use the listed damage, so we do too.
+        /// (There is no RBM-Combat-off branch: with RBM Combat off this model does not run -- see Enabled.)
         /// </summary>
-        private static float MeleeWeaponScore(CharacterObject troop, ItemObject item, WeaponComponentData weapon,
-            bool rbmCombat)
+        private static float MeleeWeaponScore(CharacterObject troop, ItemObject item, WeaponComponentData weapon)
         {
             float skillFrac = SkillFracFor(troop, weapon.RelevantSkill);
-
-            if (!rbmCombat)
-            {
-                float listed = Math.Max(weapon.SwingDamage, weapon.ThrustDamage);
-                if (listed <= 0f)
-                {
-                    return 0f;
-                }
-                return listed * (1f + (SkillOffenseSpread * skillFrac));
-            }
 
             bool blunt = BestDamageTypeOf(weapon) == DamageTypes.Blunt;
             float ceiling = ClassCeiling(weapon.WeaponClass, blunt);
@@ -1409,10 +1331,11 @@ namespace RBMCampaign
         /// kinetic, worked from real draw weights and real shaft weights, with no class clamp anywhere in it, so the
         /// numbers the tier is computed from are the numbers the blow is computed from.
         ///
-        /// And it needs no rbmCombat branch: RBM patches CalculateRangedWeaponTier and CalculateAmmoTier, so Tierf is
-        /// already whichever model is running.
+        /// It has no RBM-Combat-off branch because it never runs then (see Enabled): LauncherEnergyOf reads MissileSpeed
+        /// as RBM's draw weight in pounds, and with RBM Combat off RBM's ranged XML is not merged and RangedRework never
+        /// writes the draw weight in, so it would be native's missile SPEED.
         /// </summary>
-        private static float RangedOffense(CharacterObject troop, Equipment set, bool rbmCombat,
+        private static float RangedOffense(CharacterObject troop, Equipment set,
             out float launcherTierOut, out string launcherNameOut, out float launcherSpeedOut)
         {
             launcherTierOut = 0f;

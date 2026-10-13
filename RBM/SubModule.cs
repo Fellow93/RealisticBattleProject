@@ -1,8 +1,10 @@
 ﻿using HarmonyLib;
 using RBM.AgentStatusBar;
 using RBMAI;
+using RBMAutoResolve;
 using RBMCombat;
 using RBMCampaign;
+using RBMConfig.Logging;
 using RBMTournament;
 using System;
 using TaleWorlds.CampaignSystem;
@@ -26,6 +28,7 @@ namespace RBM
         public static Harmony rbmtHarmony = new Harmony("com.rbmt");
         public static Harmony rbmcombatHarmony = new Harmony("com.rbmcombat");
         public static Harmony rbmcampaignHarmony = new Harmony("com.rbmcampaign");
+        public static Harmony rbmautoresolveHarmony = new Harmony("com.rbmautoresolve");
         public static Harmony rbmHarmony = new Harmony("com.rbmmain");
     }
 
@@ -70,6 +73,16 @@ namespace RBM
             {
                 HarmonyModules.rbmcampaignHarmony.UnpatchAll(HarmonyModules.rbmcampaignHarmony.Id);
             }
+            // Detailed Auto Resolve: its own module, gated on its own setting alone -- it works with RBM Campaign and
+            // RBM Combat on or off (it reads Combat only to pick the armour equation it prices kit with).
+            if (RBMAutoResolvePatcher.Enabled)
+            {
+                RBMAutoResolvePatcher.DoPatching(ref HarmonyModules.rbmautoresolveHarmony);
+            }
+            else
+            {
+                HarmonyModules.rbmautoresolveHarmony.UnpatchAll(HarmonyModules.rbmautoresolveHarmony.Id);
+            }
         }
 
         public static void UnpatchAllRBM()
@@ -80,6 +93,7 @@ namespace RBM
             HarmonyModules.rbmaiHarmony.UnpatchAll(HarmonyModules.rbmaiHarmony.Id);
             HarmonyModules.rbmcombatHarmony.UnpatchAll(HarmonyModules.rbmcombatHarmony.Id);
             HarmonyModules.rbmcampaignHarmony.UnpatchAll(HarmonyModules.rbmcampaignHarmony.Id);
+            HarmonyModules.rbmautoresolveHarmony.UnpatchAll(HarmonyModules.rbmautoresolveHarmony.Id);
         }
 
         protected override void OnSubModuleLoad()
@@ -211,12 +225,20 @@ namespace RBM
             if (game.GameType is Campaign)
             {
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new SaveRosterRepairBehavior());
+                // Detailed Auto Resolve's battle record, session resets and log flush; independent of RBM Campaign.
+                // Registered ahead of RBMCampaign's behaviors so its caches are clean before any of them launch.
+                if (RBMAutoResolvePatcher.Enabled)
+                {
+                    ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSimulationCampaignBehavior());
+                }
             }
             if (RBMConfig.RBMConfig.rbmCampaignEnabled && game.GameType is Campaign)
             {
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSpoilsCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMTroopUpkeepCampaignBehavior());
-                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSimulationCampaignBehavior());
+                // Session cache resets and the hourly/before-save log flush, in the slot RBMSimulationCampaignBehavior
+                // held before the auto-resolve became its own module (the behaviors after it rely on that order).
+                ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMCampaignSessionBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSpectateCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMEconomyCampaignBehavior());
                 ((CampaignGameStarter)gameStarterObject).AddBehavior(new RBMSettlementWealthCampaignBehavior());

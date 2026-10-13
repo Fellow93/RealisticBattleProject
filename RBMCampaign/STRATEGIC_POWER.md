@@ -6,7 +6,7 @@ and the AI uses to decide whether to fight, flee, besiege, or run. It lives in
 Harmony-prefixing `DefaultMilitaryPowerModel.GetPowerOfParty`.
 
 > This is **not** the number that produces casualties. That is a separate system
-> (auto-resolve blow power, `Simulation/SimulationEquipmentPower.cs`) with its own
+> (auto-resolve blow power, `RBMAutoResolve/Simulation/SimulationEquipmentPower.cs`) with its own
 > constants. The two agree in *direction* but not *magnitude*, by design — never
 > tune one from the other's numbers.
 
@@ -23,8 +23,14 @@ modifier, §2).
 **Gate** (`StrategicTroopPower.cs:329-337`):
 
 ```
-Enabled = rbmCampaignEnabled && strategicPowerEnabled && Campaign.Current != null
+Enabled = rbmCampaignEnabled && rbmCombatEnabled && strategicPowerEnabled && Campaign.Current != null
 ```
+
+**It needs RBM Combat on.** The model prices a man by RBM's combat rules and item data (class
+ceilings, launchers by draw weight, RBM's armour equation), none of which hold with RBM Combat
+off, so then the game's own strength is used: the `GetPowerOfParty` patch, the amphibious raid
+discount, the tooltip and the log all stand down, and the army floor goes back to vanilla's
+1000 (`ArmyStrengthFloorPatch` follows `Enabled`). There is no combat-off pricing path.
 
 ---
 
@@ -89,7 +95,7 @@ It is **re-measured, never re-picked**, after any offence, armour or passive ret
 tracking `100/armorMultiplier`, doubling armour's weight) → 272 (when the mount became a
 proportional term). A stale value here silently rescales every AI fight/flee decision in
 the game. Its own doc comment names what should trigger a re-measure: a change to the
-offense model (`rbmCombatEnabled`, `OneHandedThrustDamageBonus`), to `armorMultiplier` or
+offense model (`OneHandedThrustDamageBonus`), to `armorMultiplier` or
 `armorEffectivenessMultiplier`, or a re-cut of the tuning constants (§6).
 
 The raw model output lands in the low hundreds; dividing by it maps the result back onto
@@ -137,8 +143,7 @@ Where `melee` and `ranged` come from:
 ```
 # MeleeOffense (1156-1214): shields and launchers/ammo/thrown are skipped
 melee  = BestWeaponWeight·best + (1 − BestWeaponWeight)·mean          over his melee weapons
-score  = rbmCombat ? ClassCeiling(class) · (1 + SkillOffenseSpread·skillFrac) · Penetration(damageFactor)
-                   : max(SwingDamage, ThrustDamage) · (1 + SkillOffenseSpread·skillFrac)
+score  = ClassCeiling(class) · (1 + SkillOffenseSpread·skillFrac) · Penetration(damageFactor)
 Penetration = 1 + PenetrationWeight·(sqrt(damageFactor) − 1)
 
 # RangedOffense (1301-1370): his highest-energy launcher, and only if he carries matching ammo
@@ -147,8 +152,8 @@ LauncherEnergyOf = 0.5 · (drawWeight·4.448) · powerstroke · efficiency     #
                    (÷ CrossbowReloadDivisor for a crossbow; a sling is a flat SlingEnergy)
 ```
 
-`skillFrac` is the weapon's own skill over `SkillSaturation`, clamped to 0…1. Under RBM
-Combat the listed damage is ignored: the blow is the class ceiling (`ClassCeiling`,
+`skillFrac` is the weapon's own skill over `SkillSaturation`, clamped to 0…1. The listed
+damage is ignored: the blow is the class ceiling (`ClassCeiling`,
 `1257-1290`, mirroring the `max · 4.6` / `· 4` clamps of `RBMConfig/Shared/SkillDamage.cs`
 — keep the two in step), so a great axe out-ranks a hand axe even though RBM's item tier
 divides it by 1.3. `MissileSpeed` is RBM's **draw weight in pounds**; the powerstroke is
@@ -169,8 +174,7 @@ shield stops an arrow (`1089-1107`):
 ```
 weighted = head·0.16 + neck·0.03 + torso·0.44 + shoulder·0.12 + arm·0.14 + leg·0.11
 weighted += ShieldPassiveWeight·shieldTier
-armorConstant = rbmCombat ? ArmorConstant / (armorMultiplier · armorEffectivenessMultiplier)
-                          : ArmorConstant
+armorConstant = ArmorConstant / (armorMultiplier · armorEffectivenessMultiplier)
 passiveFactor = 1 + weighted / armorConstant
 ```
 
@@ -184,7 +188,7 @@ armour value by `armorEffectivenessMultiplier` (the *Armor Effectiveness* settin
 divides a blow by `100/(100 + armor·armorMultiplier)`, so the passive term only agrees with a
 real blow when its divisor is `100/(armorMultiplier · armorEffectivenessMultiplier)`. At the
 defaults (2 and 1) that doubles armour's weight — exactly the price of protection RBM charges
-on the field. With RBM Combat off, the flat `ArmorConstant` is used.
+on the field.
 
 ### Two subtleties baked in
 
@@ -236,7 +240,7 @@ These are hardcoded in `StrategicTroopPower.cs` (lines `92-325`):
 |---|---|---|
 | `PowerScale` | `272f` | maps model output onto vanilla's power range. **Measured, not chosen** — re-derive it after any retune. |
 | Zone weights H/N/T/Sh/A/L | `0.16 / 0.03 / 0.44 / 0.12 / 0.14 / 0.11` | hit-share per armour zone |
-| `ArmorConstant` | `100f` | armour → passive-factor divisor, **divided by `armorMultiplier · armorEffectivenessMultiplier` when RBM Combat is on** |
+| `ArmorConstant` | `100f` | armour → passive-factor divisor, **divided by `armorMultiplier · armorEffectivenessMultiplier`** |
 | `ShieldPassiveWeight` | `4f` | shield's passive (arrow-stopping) worth, per point of shield tier |
 | `ReferenceMountSurvival` | `440f` | the barded-warhorse yardstick the mount share is scaled off |
 | `MountBonusAtReference` | `0.43f` | share of his own power a rider gains at that yardstick |
@@ -265,7 +269,8 @@ These are hardcoded in `StrategicTroopPower.cs` (lines `92-325`):
 
 - `rbmCampaignEnabled` and `strategicPowerEnabled` (*Equipment Based Troop Power* on the
   config screen) — on/off.
-- `rbmCombatEnabled`, `OneHandedThrustDamageBonus`, `armorMultiplier` and
+- `rbmCombatEnabled` — must be on (see `Enabled`, §1); off, the game's own strength is used.
+- `OneHandedThrustDamageBonus`, `armorMultiplier` and
   `armorEffectivenessMultiplier` — move the offense or armour model and trigger a cache
   rebuild (`EnsureCacheFresh`, `391-412`).
 - `simulationPerkSystem`, `simulationEquipmentEnabled` and `simulationEquipmentPowerWeight`
@@ -299,7 +304,11 @@ The rest of `Power/`:
 - **The siege gate** (`SiegeDecisionGate.cs`) — not gated on `strategicPowerEnabled`: a
   transpiler on `GetTargetScoreForFaction` that raises vanilla's fresh-siege strength
   factor from 2× to 2.5× (`SiegeStrengthGateMultiplier = 1.25`) and holds a formed army's
-  leader to 1.5× instead, so an army keeps the target it was gathered for.
+  leader to 1.5× instead, so an army keeps the target it was gathered for. A multiple of the
+  defenders' strength, so it reads the same on RBM's strength or the game's own.
+- **The army strength floor** (`ArmyStrengthFloor.cs`) — 700 instead of vanilla's 1000, which
+  is the same number of men on this model's scale; it follows `Enabled`, so whenever the
+  game's own strength is used the floor is 1000 again.
 
 ---
 

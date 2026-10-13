@@ -36,7 +36,7 @@ GetPowerOfParty(party, side, context)                      // sums troops, appli
 the same soldier to it. That one number drives party strength, the strength shown in encounters, every AI
 attack/flee/army decision, and auto-resolve casualty weighting.
 
-Nothing patches it today (`RBMCampaign/AUTO_RESOLVE.md:47` states this outright; RBMCombat's
+Nothing patches it today (`RBMAutoResolve/AUTO_RESOLVE.md:47`, then in RBMCampaign, states this outright; RBMCombat's
 `OverrideDefaultMilitaryPowerModel` is misnamed and inert — its nested classes actually patch
 `CommonAIComponent.InitializeMorale` and `Agent.InitializeSpawnEquipment`). RBM's own tier/noble tweaks to
 `CharacterObject.GetPower` never reach party strength, because `GetDefaultTroopPower` recomputes tier power

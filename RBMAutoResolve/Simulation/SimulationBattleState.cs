@@ -10,7 +10,7 @@ using TaleWorlds.CampaignSystem.Siege;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// The tick allocation is called once, at the top of every simulated round, and it is the ONLY place the

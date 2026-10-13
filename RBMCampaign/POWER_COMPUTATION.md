@@ -1,8 +1,10 @@
 # RBM Campaign — Power Computation Reference
 
 How Realistic Battle Mod's campaign layer prices soldiers. This document covers
-the two power systems in `RBMCampaign`, their formulas, the constants and config
-dials that drive them, and how equipment, tier, perks and terrain each factor in.
+the two power systems — strategic power in `RBMCampaign` and auto-resolve blow power in
+`RBMAutoResolve` (its own project since 2026-10-13; the `Simulation/...` paths below are
+under `RBMAutoResolve/`) — their formulas, the constants and config dials that drive
+them, and how equipment, tier, perks and terrain each factor in.
 
 ---
 
@@ -45,7 +47,8 @@ the way, §1.2).
 The gate (`StrategicTroopPower.cs:329-337`):
 
 ```
-Enabled = rbmCampaignEnabled && strategicPowerEnabled && Campaign.Current != null
+Enabled = rbmCampaignEnabled && rbmCombatEnabled && strategicPowerEnabled && Campaign.Current != null
+# RBM Combat off: the game's own strength is used (no combat-off pricing path)
 ```
 
 ### 1.2 The party formula
@@ -154,8 +157,7 @@ shield stops an arrow (`1089-1107`):
 ```
 weighted = head·0.16 + neck·0.03 + torso·0.44 + shoulder·0.12 + arm·0.14 + leg·0.11
 weighted += ShieldPassiveWeight·shieldTier
-armorConstant = rbmCombat ? ArmorConstant / (armorMultiplier · armorEffectivenessMultiplier)
-                          : ArmorConstant
+armorConstant = ArmorConstant / (armorMultiplier · armorEffectivenessMultiplier)
 passiveFactor = 1 + weighted / armorConstant
 ```
 
@@ -164,7 +166,7 @@ above. **The divisor tracks the combat module**: RBM's armour equation scales ar
 `armorEffectivenessMultiplier` and divides a blow by `100/(100 + armor·armorMultiplier)`, so
 the passive term only agrees with a real blow when its divisor is
 `100/(armorMultiplier · armorEffectivenessMultiplier)`. At the defaults (2 and 1) that doubles
-armour's weight. With RBM Combat off, the flat `ArmorConstant` is used.
+armour's weight.
 
 ### 1.5 Morale factor
 
@@ -207,7 +209,7 @@ These live **in code** (`StrategicTroopPower.cs:92-325`), *not* in the config sc
 
 ## 2. Auto-resolve blow power (`SimulateHit` postfix)
 
-**File:** `RBMCampaign/Simulation/SimulationEquipmentPower.cs`
+**File:** `RBMAutoResolve/Simulation/SimulationEquipmentPower.cs`
 
 Vanilla prices a simulated blow as:
 ```
@@ -304,13 +306,13 @@ if (troop.IsHero) power *= 1.5f;
 `RBMConfig.Combat.cs` (armour/thrust), `RBMConfig.Debug.cs` (log toggles),
 `RBMConfig.Core.cs` (module toggles and the XML loader). Defaults below are the loader's
 fallbacks — what a fresh config gets — and match the field initializers. The full
-auto-resolve list is in `AUTO_RESOLVE.md` §9.
+auto-resolve list is in `../RBMAutoResolve/AUTO_RESOLVE.md` §9.
 
 | Field | Default | Affects |
 |---|---|---|
 | `rbmCampaignEnabled` | `true` | master campaign gate |
-| `rbmCombatEnabled` | `true` | selects the whole offense/armour model + skill curve used by both power systems |
-| `strategicPowerEnabled` | `true` | §1 on/off |
+| `rbmCombatEnabled` | `true` | selects the auto-resolve's offense/armour model + skill curve (§2); §1 runs only with it on |
+| `strategicPowerEnabled` | `true` | §1 on/off (also needs `rbmCampaignEnabled` and `rbmCombatEnabled`) |
 | `strategicPowerLoggingEnabled` | `false` | strategic power log (`logs/powerCalculation/`) |
 | `simulationEquipmentEnabled` | `true` | §2 master gate |
 | `simulationEquipmentPowerWeight` | `1f` | ratio-mode exponent (`0` = vanilla, `>1` widens gaps); also part of `SimulationEnabled` |
@@ -338,7 +340,7 @@ proportionally less lethal.
 
 Changing a dial mid-session rebuilds the affected caches:
 
-- `StrategicTroopPower.EnsureCacheFresh` (`391-412`) watches `rbmCombatEnabled`,
+- `StrategicTroopPower.EnsureCacheFresh` (`391-412`) watches
   `OneHandedThrustDamageBonus`, `armorMultiplier` and `armorEffectivenessMultiplier`.
 - `SimulationEquipmentPower.EnsureBaselines` (`2676-2966`) watches `rbmCombatEnabled`,
   `simulationShieldBlockChance`, `armorMultiplier`, `armorThresholdModifier`,
@@ -360,13 +362,13 @@ as the item tier of a shield in the strategic passive term.
 What actually feeds **strategic** power instead (all in `StrategicTroopPower.cs`):
 
 - **Melee weapons** — `MeleeWeaponScore` (`1228-1250`), combined per kit by `MeleeOffense`
-  (`1156-1214`) as `0.7·best + 0.3·mean`. With RBM Combat **on**, the weapon's listed
+  (`1156-1214`) as `0.7·best + 0.3·mean`. The weapon's listed
   damage is discarded; the blow collapses onto a per-class ceiling (`ClassCeiling`,
   `1257-1290` — e.g. OneHandedSword cut `15·4.6`, TwoHandedAxe cut `24·4.6`, mirroring the
   clamps in `RBMConfig/Shared/SkillDamage.cs`) × `(1 + skillFrac)` × penetration. Weapon
   *quality* survives only as penetration (`Penetration`, `1426-1430`:
-  `1 + 0.35·(√factor − 1)`). With RBM Combat **off**, it uses listed `max(Swing, Thrust)`
-  × `(1 + skillFrac)`.
+  `1 + 0.35·(√factor − 1)`). (With RBM Combat off this model does not run; the game's own
+  strength is used.)
 - **Ranged launchers** — priced on **real kinetic energy in joules**
   (`LauncherEnergyOf`, `1387-1423`), not tier:
   `0.5 · (drawWeight·4.448) · powerstroke · efficiency`, crossbows `/ 2.5` for reload, then
@@ -395,7 +397,7 @@ Bannerlord has **two non-overlapping perk tracks**; RBM routes them differently.
 
 ### 5.1 Commander track (party-scoped) → hit points
 
-**File:** `RBMCampaign/Simulation/SimulationTroopHitPoints.cs`,
+**File:** `RBMAutoResolve/Simulation/SimulationTroopHitPoints.cs`,
 `BuildCommandedHealth` (`274-334`). Transcribes
 `SandboxAgentStatCalculateModel.GetEffectiveMaxHealth`. Perks that raise a trooper's
 HP pool include:
@@ -421,7 +423,7 @@ This HP number flows into **both** systems:
 
 ### 5.2 Captain track (formation-scoped) → skill → into the kit
 
-**File:** `RBMCampaign/Simulation/SimulationPerks.cs`, `SkillOf` (`197-261`).
+**File:** `RBMAutoResolve/Simulation/SimulationPerks.cs`, `SkillOf` (`197-261`).
 Transcribes `GetEffectiveSkill`'s captain branch. A captain's teaching is folded into
 the troop's **skill value**, which then flows through every real damage / miss /
 defense equation. Perk table (`88-100`): `FlexibleFighter`, `DeadAim`, `HorseMaster`,
@@ -507,6 +509,7 @@ per-arm-matchup pivot the equipment ratio divides against.
 | `Power/StrategicPowerLog.cs` | strategic power logging (`logs/powerCalculation/`) |
 | `Power/StrategicPowerTooltip*.cs` | strategic power UI tooltip (encounter strength bar) |
 | `Power/SiegeDecisionGate.cs` | AI siege-start strength bar (not gated on `strategicPowerEnabled`) |
+| `RBMAutoResolve/Simulation/` (all rows below with that prefix) | the auto-resolve, its own project |
 | `Simulation/SimulationEquipmentPower.cs` | §2 — auto-resolve blow power (`SimulateHit` postfix), baselines, arm buckets, terrain/leader neutralizing, commander Tactics |
 | `Simulation/SimulationTroopHitPoints.cs` | §5.1 — commander-perk HP pool + lethality scale |
 | `Simulation/SimulationPerks.cs` | §5.2 — captain-perk skill folding + kit signature |
@@ -520,7 +523,7 @@ per-arm-matchup pivot the equipment ratio divides against.
 | `RBMConfig/Shared/BlowDamage.cs`, `SkillDamage.cs` | RBM's armour equation and skill clamps, shared with live combat |
 | `RBMConfig/Config/RBMConfig.*.cs` | all config dials (§3) |
 
-Related design notes already in the repo: `RBMCampaign/AUTO_RESOLVE.md`,
+Related design notes already in the repo: `RBMAutoResolve/AUTO_RESOLVE.md`,
 `RBMCampaign/TROOP_POWER_TASK.md`, `RBMCampaign/ARCHITECTURE.md`.
 
 ---

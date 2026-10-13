@@ -131,7 +131,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel SimulationLoggingEnabledHint { get; } = Hint("{=RBM_DBG_010}Writes every auto-resolved battle to logs/simulation next to the config: the sides and their parties, troop power, charge and volley figures, and the outcome including routed men. Needs RBM Campaign on. Default off.");
+        public BasicTooltipViewModel SimulationLoggingEnabledHint { get; } = Hint("{=RBM_DBG_010}Writes every auto-resolved battle to logs/simulation next to the config: the sides and their parties, troop power, charge and volley figures, and the outcome including routed men. Needs Detailed Auto Resolve on. Default off.");
 
         [DataSourceProperty]
         public string SimulationLogHitst
@@ -149,7 +149,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel StrategicPowerLoggingEnabledHint { get; } = Hint("{=RBM_CFG_POWER_LOG_HINT}Once a day, writes every party's troop power breakdown to logs/powerCalculation next to the config: its commander's perks and each troop stack's power per man. Needs Equipment Based Troop Power on. Default off.");
+        public BasicTooltipViewModel StrategicPowerLoggingEnabledHint { get; } = Hint("{=RBM_CFG_POWER_LOG_HINT}Once a day, writes every party's troop power breakdown to logs/powerCalculation next to the config: its commander's perks and each troop stack's power per man. Needs Equipment Based Troop Power and RBM Combat on. Default off.");
 
         [DataSourceProperty]
         public string SpoilsLoggingt

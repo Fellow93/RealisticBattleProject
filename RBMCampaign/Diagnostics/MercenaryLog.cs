@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
+using RBMConfig.Logging;
 using RC = RBMConfig.RBMConfig;
 
 namespace RBMCampaign
@@ -172,7 +173,7 @@ namespace RBMCampaign
 
         private static string DayDividerIfChanged()
         {
-            if (!SpoilsLog.CampaignClockReady())
+            if (!CampaignLogClock.CampaignClockReady())
             {
                 return null;
             }

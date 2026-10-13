@@ -5,7 +5,7 @@ using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// Watches every battle on the map and writes down what happened in it: who stood on each side, what they were
@@ -17,6 +17,9 @@ namespace RBMCampaign
     /// battle nobody had fought. A record of the real thing cannot be wrong in that way.
     ///
     /// Costs nothing when the log is off: no snapshot is taken and no blow is recorded.
+    ///
+    /// Registered by RBM.SubModule for every campaign while Detailed Auto Resolve (simulationEquipmentEnabled) is on,
+    /// whatever the RBM Campaign toggle says: the auto-resolve is its own module and owns its session housekeeping.
     /// </summary>
     public class RBMSimulationCampaignBehavior : CampaignBehaviorBase
     {
@@ -26,13 +29,14 @@ namespace RBMCampaign
             CampaignEvents.MapEventStarted.AddNonSerializedListener(this, OnMapEventStarted);
             CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
 
-            // Every campaign log writes into a buffered file handle (BufferedLogWriter) instead of reopening its
-            // file per line. Push the buffers to disk once an in-game hour and before every save, so the files
-            // can be read while playing and a crash loses at most an hour of lines. Hosted here, with the other
-            // session-wide log/cache housekeeping, rather than in a behavior of its own. Game end and module
-            // unload close the files (RBM.SubModule).
-            CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, BufferedLogWriter.FlushAll);
-            CampaignEvents.OnBeforeSaveEvent.AddNonSerializedListener(this, BufferedLogWriter.FlushAll);
+            // The auto-resolve log writes into a buffered file handle (RBMConfig.Logging.BufferedLogWriter) instead of
+            // reopening its file per line. Push its buffer to disk once an in-game hour and before every save, so the
+            // file can be read while playing and a crash loses at most an hour of lines. Only its OWN writer: RBM
+            // Campaign flushes every buffered log the same way (RBMCampaignSessionBehavior), but that behavior is not
+            // there with RBM Campaign off, and this log must not depend on it. With both on the second flush finds an
+            // empty buffer. Game end and module unload close the file (RBM.SubModule, unconditionally).
+            CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, SimulationLog.Flush);
+            CampaignEvents.OnBeforeSaveEvent.AddNonSerializedListener(this, SimulationLog.Flush);
         }
 
         public override void SyncData(IDataStore dataStore)
@@ -41,12 +45,24 @@ namespace RBMCampaign
 
         private void OnSessionLaunched(CampaignGameStarter starter)
         {
-            // A session launches on a NEW game and on every LOADED save alike. The simulation's per-battle and
-            // per-troop caches are static, keyed by MapEvent/CharacterObject identity, and are reclaimed only by the
-            // MapEventEnded of the battle that filled them. A save loaded while an event was live tears that campaign
-            // down without ever ending its events, so those entries -- and any hero instances they hold -- would sit
-            // orphaned for the life of the process, and the loaded battle would resume against a stale round clock.
-            // Clear them all here so each session starts from a clean slate.
+            ResetForNewSession();
+            SimulationLog.StartCampaignLog();
+        }
+
+        /// <summary>
+        /// A session launches on a NEW game and on every LOADED save alike. The simulation's per-battle and per-troop
+        /// caches are static, keyed by MapEvent/CharacterObject identity, and are reclaimed only by the MapEventEnded
+        /// of the battle that filled them. A save loaded while an event was live tears that campaign down without ever
+        /// ending its events, so those entries -- and any hero instances they hold -- would sit orphaned for the life
+        /// of the process, and the loaded battle would resume against a stale round clock. Clear them all so each
+        /// session starts from a clean slate.
+        ///
+        /// Public because RBM Campaign's strategic troop power reads the kit, hit-point and perk caches below even
+        /// when the auto-resolve itself is off (and this behavior is then not registered), so it clears them from its
+        /// own session behavior too. Clearing twice is harmless.
+        /// </summary>
+        public static void ResetForNewSession()
+        {
             SimulationBattleState.ResetForNewSession();
             SimulationTroopHitPoints.ResetForNewSession();
             SimulationBattleSnapshot.ResetForNewSession();
@@ -54,34 +70,6 @@ namespace RBMCampaign
             SimulationEquipmentPower.ResetForNewSession();
             SimulationArmTargeting.ResetForNewSession();
             SimulationPerks.ResetForNewSession();
-
-            SimulationLog.StartCampaignLog();
-
-            // The strategic power model wants the same clean slate, for a stronger reason than the above: nothing
-            // reclaims its caches at all. They are keyed by CharacterObject and MobileParty and no event empties them,
-            // so a lord's measured power -- and the troop, party and hero instances it is filed under -- would outlive
-            // the campaign it was taken from and sit there for the life of the process. Worse than the leak: a hero's
-            // measurement is only re-taken when it is a day old, and the day it is stamped with comes from whichever
-            // campaign was running when it was taken. Load a save at an earlier date and that stamp is in the future,
-            // so the entry never looks stale -- and the lord is priced, indefinitely, off the harness he was wearing
-            // in a campaign the player has left.
-            StrategicTroopPower.ResetForNewSession();
-
-            // Same reasoning, smaller stakes: the town food caches are keyed by Town and would
-            // otherwise hold a departed campaign's settlements for the life of the process.
-            RBMTownFoodSupply.ResetForNewSession();
-            CitizenDemand.ResetForNewSession();
-            TownFoodReserve.ResetForNewSession();
-            HiddenMarketStock.ResetForNewSession();
-            RBMProsperityEquilibrium.ResetForNewSession();
-            RBMMarketPrices.ResetForNewSession();
-            WorkshopDemand.ResetForNewSession();
-            RBMItemWeightTextWidget.ResetForNewSession();
-
-            // The upgrade supply-town resolver caches a payee town per party, keyed by MobileParty
-            // identity; clear it so a departed campaign's parties and towns are not held for the life
-            // of the process.
-            UpgradeSupply.ResetForNewSession();
         }
 
         /// <summary>

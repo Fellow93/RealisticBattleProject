@@ -4,7 +4,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.Core;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// What a formation's CAPTAIN is worth to the men under him, in a battle nobody watched.

@@ -1,14 +1,14 @@
 using System;
 using System.IO;
 
-namespace RBMCampaign
+namespace RBMConfig.Logging
 {
     /// <summary>
     /// Every play session opens a fresh timestamped log, so a folder would otherwise grow without bound
     /// over a long campaign. Each log folder keeps only its most recent files; the rest are deleted when
-    /// the folder is opened.
+    /// the folder is opened. Shared by the RBMCampaign and RBMAutoResolve logs (see BufferedLogWriter).
     /// </summary>
-    internal static class LogRetention
+    public static class LogRetention
     {
         /// <summary>How many log files a single log folder is allowed to hold, the newest one included.</summary>
         public const int MaxFilesPerFolder = 10;

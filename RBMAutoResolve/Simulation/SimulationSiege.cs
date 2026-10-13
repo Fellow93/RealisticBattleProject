@@ -8,7 +8,7 @@ using TaleWorlds.CampaignSystem.Siege;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// A STORMED WALL IS NOT A FIELD BATTLE, and auto-resolve has only ever known how to fight one of those.

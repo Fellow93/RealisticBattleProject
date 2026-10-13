@@ -13,6 +13,10 @@ namespace RBMConfig
         // kit is valued by whichever combat model is running -- RBM's own per-item assessment when RBM
         // Combat is on, raw vanilla item stats when it is off -- so auto-resolve tracks a fought battle.
         // False (0) restores the vanilla tier-only simulation.
+        //
+        // This is the module switch of RBMAutoResolve (its patches and its campaign behavior), independent of
+        // rbmCampaignEnabled. The Simulation* keys still live under /Config/RBMCampaign in the XML so existing
+        // configs carry over; they do not need RBM Campaign on.
         public static bool simulationEquipmentEnabled = true;
 
         // How strongly kit quality bends the simulated outcome. 0 is vanilla (no effect); 1 applies the

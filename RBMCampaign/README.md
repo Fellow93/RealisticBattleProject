@@ -71,6 +71,8 @@ Otherwise spoils are a **closed loop**: what a stack loots and earns is spent on
 
 ## Detailed auto resolve
 
+> **Its own module now.** The detailed auto resolve lives in `RBMAutoResolve/` and has its own section in the RBM config ("RBM Auto Resolve"). It is switched by `SimulationEquipmentEnabled` alone and works with RBM Campaign turned off. It is described here because it grew up alongside the campaign overhaul; the settings below keep their place in the config XML.
+
 When a battle resolves on the map rather than on the field — you send your troops in, or two AI parties meet somewhere you aren't — vanilla decides it almost entirely on one number: the troop's **tier**. Its whole strength is `(2 + tier) × (10 + tier) × 0.02`, a blow lands the ratio of the two strengths to the power 0.7, and nothing else about the man enters into it. It does not know what he is wearing. It does not know what he is holding. A tier-1 recruit in mail behind a shield, levelling a spear, hits a tier-0 looter about **1.42×** as hard as the looter swinging a stick in rags hits back — and that thin margin is the entire difference between them.
 
 That is why your recruits could lose a close fight to looters on the map and slaughter the same looters on the field. The two battles were not being decided by the same things.
@@ -143,9 +145,9 @@ So the sim builds the formations auto-resolve never had, buckets each side's men
 
 It writes out the baselines it measured, every troop's kit item by item, and then **the battle itself, blow by blow** — round by round, every man who swung, what he was doing at the time (shooting, hurling a javelin, charging, setting a spear against a horse, or just walking into arrows with nothing to answer them), what armor he met, what the shield turned aside, what vanilla alone would have hit for, and what the model made of it. That last part is the only place a battle's *story* can be read: the averages tell you it went one way, but only the blows tell you the archers ran dry in round fifteen and were cut down with knives in their hands.
 
-A handful of figures in all this are judgement rather than measurement, and they are gathered in one place — `AUTO_RESOLVE.md` — so they can be argued with rather than hunted for: how often a man gets his shield in the way and how often he turns a defense into a counter, how often a shot goes wide, how much a man achieves while walking into arrows, what a spear set against a horse is worth, how often a horseman finds room to charge, how a blow at a rider divides between the horse and the man, and how the blows distribute across a man's body. Everything else is read from the game's own equations and item data, or measured from its own troop roster.
+A handful of figures in all this are judgement rather than measurement, and they are gathered in one place — `../RBMAutoResolve/AUTO_RESOLVE.md` — so they can be argued with rather than hunted for: how often a man gets his shield in the way and how often he turns a defense into a counter, how often a shot goes wide, how much a man achieves while walking into arrows, what a spear set against a horse is worth, how often a horseman finds room to charge, how a blow at a rider divides between the horse and the man, and how the blows distribute across a man's body. Everything else is read from the game's own equations and item data, or measured from its own troop roster.
 
-**`AUTO_RESOLVE.md` documents the whole of it** — including the exact difference between the RBM Combat and vanilla paths, and which terms are deliberately left out of the baseline and why.
+**`../RBMAutoResolve/AUTO_RESOLVE.md` documents the whole of it** — including the exact difference between the RBM Combat and vanilla paths, and which terms are deliberately left out of the baseline and why.
 
 ## What this changes about how you play
 
@@ -157,7 +159,7 @@ And the gear you buy your men now decides battles you never watch. Sending troop
 
 ## Tuning it
 
-Everything sits in the in-game RBM config under the campaign section, or in the config XML under `/Config/RBMCampaign`:
+Everything sits in the in-game RBM config under the campaign section (the `Simulation*` auto-resolve rows under "RBM Auto Resolve", and the logs under "RBM Debug & Logging"), or in the config XML under `/Config/RBMCampaign`. The `Simulation*` settings do not need RBM Campaign on:
 
 | Setting | Default | What it does |
 | --- | --- | --- |

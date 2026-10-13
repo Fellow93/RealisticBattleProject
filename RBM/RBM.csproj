@@ -315,6 +315,10 @@
       <Project>{a8d35c12-6b47-4e91-b9f2-3c8d7a45e601}</Project>
       <Name>RBMCampaign</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RBMAutoResolve\RBMAutoResolve.csproj">
+      <Project>{6ad9fd35-7844-47d0-befb-27eee0d7b330}</Project>
+      <Name>RBMAutoResolve</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBM_native_parameters_tweaks.xml" "$(SolutionDir)..\RBM\ModuleData\"

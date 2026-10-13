@@ -2,7 +2,7 @@ using HarmonyLib;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Roster;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// Puts the player back in the fight when he sends his troops.

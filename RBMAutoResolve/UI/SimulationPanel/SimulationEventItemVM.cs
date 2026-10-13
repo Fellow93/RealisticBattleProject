@@ -1,6 +1,6 @@
 using TaleWorlds.Library;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     internal class SimulationEventItemVM : ViewModel
     {

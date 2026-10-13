@@ -9,7 +9,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// Equipment-aware auto-resolve. Vanilla <see cref="DefaultCombatSimulationModel.SimulateHit"/> prices a
@@ -46,7 +46,7 @@ namespace RBMCampaign
         typeof(CharacterObject), typeof(CharacterObject), typeof(PartyBase), typeof(PartyBase),
         typeof(float), typeof(MapEvent), typeof(BattleEnvironment), typeof(float), typeof(float)
     })]
-    internal static class SimulationEquipmentPower
+    public static class SimulationEquipmentPower
     {
         // A troop is judged against his own arm of service, and ONLY his arm -- not his tier. Bucketing by tier
         // as well was a mistake: a typical recruit measured against typical recruits always came out typical,
@@ -74,14 +74,15 @@ namespace RBMCampaign
         // recruit. That his kit is nothing like a line troop's is the POINT, not a reason to hide it in a bucket.
         // The four arms of service. Internal, not private, because arm-aware target selection
         // (SimulationArmTargeting) picks strikers and struck men by the same taxonomy the damage model prices
-        // them with -- there must be exactly ONE arm classifier, and it is this one (see ArmOf/GetBucket).
-        internal const int InfantryType = 0;
+        // them with -- there must be exactly ONE arm classifier, and it is this one (see ArmOf/GetBucket). Public
+        // because RBM Campaign's upgrade weighting (UpgradeFormationWeights) classifies by it too, from its own module.
+        public const int InfantryType = 0;
 
-        internal const int ArcherType = 1;
+        public const int ArcherType = 1;
 
-        internal const int CavalryType = 2;
+        public const int CavalryType = 2;
 
-        internal const int HorseArcherType = 3;
+        public const int HorseArcherType = 3;
 
         private const int TypeCount = 4;
 
@@ -101,23 +102,38 @@ namespace RBMCampaign
         // With RBM Combat on, skill needs nothing from us: it is a first-class lever inside RBM's own damage clamp
         // (a master's cut lands three times a novice's) and SimulationWeaponModel mirrors that at full strength.
         //
-        // With RBM Combat OFF, native reaches damage through skill only indirectly -- proficiency buys handling and
-        // swing speed, and damage follows from those. It would be easy to conclude from that it should be left out
-        // entirely, and for a while it WAS left out: these constants sat here unused and a master swordsman and a
-        // raw recruit holding the same sword came out identical. That is not conservative, it is wrong -- because
-        // this model DIVIDES OUT vanilla's tier term, and tier was the only thing carrying a soldier's training.
-        // Remove tier and put nothing back in its place, and a veteran's whole superiority collapses to his gear.
+        // With RBM Combat OFF, native pays it DIRECTLY: SandboxAgentStatCalculateModel.GetWeaponDamageMultiplier
+        // multiplies every blow's magnitude (swing, thrust, couched lance, missile) by 1 + bonus x effective skill of
+        // the weapon's RelevantSkill, through DefaultSkillEffects (AddFactor, no base, no cap). It must not be left
+        // out: this model DIVIDES OUT vanilla's tier term, and tier was the only thing carrying a soldier's training.
         //
-        // So a modest share goes back. The 0.3 is an estimate of an indirect relationship, not a figure read out of
-        // native code -- the one number in the whole model not taken from somewhere.
+        // These are native's per-point bonuses (DefaultSkillEffects.InitializeAll). Crossbow has none -- native's
+        // crossbow skill buys reload speed and accuracy only (the accuracy is the miss roll's business). This used to
+        // be a flat 1 + 0.3 x min(skill/250, 1) for every weapon, a guess that overpaid crossbows, polearms and
+        // throwing and underpaid swords and two-handers.
         private const float SkillSaturationLevel = 250f;
 
-        private const float VanillaSkillDamageShare = 0.3f;
+        private const float VanillaOneHandedDamagePerSkill = 0.0015f;
 
-        /// <summary>A master under vanilla rules: 1 + 0.3. A recruit: 1. Saturating at 250 skill, as RBM's own does.</summary>
-        private static float VanillaSkillFactor(int skill)
+        private const float VanillaTwoHandedDamagePerSkill = 0.0016f;
+
+        private const float VanillaPolearmDamagePerSkill = 0.0007f;
+
+        private const float VanillaBowDamagePerSkill = 0.0011f;
+
+        private const float VanillaThrowingDamagePerSkill = 0.0006f;
+
+        /// <summary>Native's weapon-skill damage multiplier for a blow with a weapon trained by <paramref name="skillObject"/>.</summary>
+        private static float VanillaSkillFactor(SkillObject skillObject, int skill)
         {
-            return 1f + (VanillaSkillDamageShare * MBMath.ClampFloat(skill / SkillSaturationLevel, 0f, 1f));
+            float perPoint;
+            if (skillObject == DefaultSkills.OneHanded) { perPoint = VanillaOneHandedDamagePerSkill; }
+            else if (skillObject == DefaultSkills.TwoHanded) { perPoint = VanillaTwoHandedDamagePerSkill; }
+            else if (skillObject == DefaultSkills.Polearm) { perPoint = VanillaPolearmDamagePerSkill; }
+            else if (skillObject == DefaultSkills.Bow) { perPoint = VanillaBowDamagePerSkill; }
+            else if (skillObject == DefaultSkills.Throwing) { perPoint = VanillaThrowingDamagePerSkill; }
+            else { perPoint = 0f; }
+            return MathF.Max(0f, 1f + (perPoint * skill));
         }
 
         /// <summary>What a man brings to a blow: the weapon he swings, the armour he stands in, the shield he hides behind.</summary>
@@ -423,6 +439,21 @@ namespace RBMCampaign
         /// strong once both land, this is the number to pull back. A literal mass-and-velocity charge is the next step.
         /// </summary>
         private const float ChargeStrength = 0.02f;
+
+        /// <summary>
+        /// With RBM Combat OFF the horses are native's, and native lists about twice RBM's charge stat for the same
+        /// animal: across the troop mounts (t2/t3 and culture horses) RBM's charge_damage is 0.37-0.52 of native's,
+        /// about 0.45 on average (t3_vlandia_horse 13 vs 32, t2_khuzait_horse 9 vs 19). ChargeStrength was tuned on
+        /// RBM's numbers, so the native stat is brought back to RBM's scale by this before it is used: the same
+        /// horse charges with the same weight under either combat model (0.02 x 0.45 = 0.009 per native point).
+        /// </summary>
+        private const float VanillaChargeStatToRbm = 0.45f;
+
+        /// <summary>The weight a horse's charge stat carries, on whichever item data is loaded.</summary>
+        private static float ChargeStrengthFor(bool rbmCombat)
+        {
+            return rbmCombat ? ChargeStrength : ChargeStrength * VanillaChargeStatToRbm;
+        }
 
         // A CHARGE WEARS THE HORSE THAT MAKES IT. Driving half a ton of animal into a man is violence done to the
         // horse as much as by it -- and RBM's live combat hurts a charging horse for exactly this reason. So every
@@ -1842,7 +1873,7 @@ namespace RBMCampaign
             breakdown.ChargeBonus = 1f;
             if (chargeEligible)
             {
-                float chargeMagnitude = striker.ChargeDamage * ChargeStrength;
+                float chargeMagnitude = striker.ChargeDamage * ChargeStrengthFor(rbmCombat);
                 if (spend)
                 {
                     // A live blow either carries the horse or it does not -- rolled up above `charging`, ahead of the
@@ -1856,7 +1887,10 @@ namespace RBMCampaign
                         // more onto a set spear, more into armour -- fed into its own stack's HorsesAlive pool, so a
                         // squadron that charges all battle is ground down and finally unhorsed. Scaled by the charge's
                         // own weight (a heavy destrier hits harder and suffers more), then amplified by what it hit.
-                        if (strikerState != null)
+                        // RBM Combat's rule only: native never hurts a horse for charging (its only self-inflicted
+                        // damage is multiplayer friendly fire, Mission.GetAttackCollisionResults), so with RBM Combat
+                        // off a charging horse is worn only by the blows that find it.
+                        if (rbmCombat && strikerState != null)
                         {
                             float horseSelfDamage = ChargeSelfDamageBase * breakdown.ChargeBonus;
                             // A set spear rebounds the charge. The man setting it is on his own two feet by
@@ -1915,7 +1949,7 @@ namespace RBMCampaign
                 // (no charge exemption), so the glancing spread still applies -- a deliberate, milder choice.
                 if (struckStillMounted && state != null && struck.ChargeDamage > 0f)
                 {
-                    float closingBonus = struck.ChargeDamage * ChargeStrength * AntiCavalryClosingBonus;
+                    float closingBonus = struck.ChargeDamage * ChargeStrengthFor(rbmCombat) * AntiCavalryClosingBonus;
 
                     // The same thinned chance the charge itself rolls, read from the other end: here the horse is the
                     // STRUCK and the man setting the spear is the striker, so the foot being charged are the STRIKER's
@@ -3001,7 +3035,7 @@ namespace RBMCampaign
         /// by (GetBucket), deliberately, so selection and pricing never disagree about what a man is. Pure over the
         /// troop template, so the caller may cache it by CharacterObject and never invalidate it.
         /// </summary>
-        internal static int ArmOf(CharacterObject troop)
+        public static int ArmOf(CharacterObject troop)
         {
             return (troop != null) ? GetBucket(troop) : -1;
         }
@@ -3081,7 +3115,7 @@ namespace RBMCampaign
         }
 
         /// <summary>troop.IsRanged, but a slinger counts too (see CarriesSling). The one ranged test for the whole model.</summary>
-        internal static bool IsRangedTroop(CharacterObject troop)
+        public static bool IsRangedTroop(CharacterObject troop)
         {
             return troop.IsRanged || CarriesSling(troop);
         }
@@ -3514,8 +3548,8 @@ namespace RBMCampaign
         }
 
         /// <summary>The real armour points this kit carries, kept apart by the zone each protects.
-        /// (internal rather than private only so StrategicTroopPower can read the same zones; nothing else.)</summary>
-        internal static void GetArmorZones(Equipment set, bool rbmCombat,
+        /// (public rather than private only so StrategicTroopPower, in RBM Campaign, can read the same zones; nothing else.)</summary>
+        public static void GetArmorZones(Equipment set, bool rbmCombat,
             out float head, out float neck, out float torso, out float shoulder, out float arm, out float leg)
         {
             // When RBM Combat is live it does not read a piece's rating straight off: a blow lands on a BONE, and
@@ -3687,6 +3721,31 @@ namespace RBMCampaign
                     if (damageType == DamageTypes.Cut) { return 0.6f; }
                     if (damageType == DamageTypes.Blunt) { return 0.7f; }
                     return 1f;
+
+                default:
+                    return 1f;
+            }
+        }
+
+        /// <summary>
+        /// The same question with RBM Combat OFF: native's own bone multipliers
+        /// (SandboxAgentApplyDamageModel.GetDamageMultiplierForBodyPart, human victim). Head and neck 1.2 for a cut or
+        /// a blunt blow, 1.25 for a melee point and 2 for a missile point; chest, abdomen, shoulders and arms 1; legs
+        /// 0.8. RBM's table (head 1.5, limbs 0.5-0.7) used to be applied here too, which cut every native shot by
+        /// about a fifth and every native swing by about a tenth against what the fought battle pays.
+        /// </summary>
+        private static float VanillaBodyPartMultiplier(int zone, DamageTypes damageType, bool isMissile)
+        {
+            switch (zone)
+            {
+                case ZoneHead:
+                case ZoneNeck:
+                    if (damageType == DamageTypes.Pierce) { return isMissile ? 2f : 1.25f; }
+                    if (damageType == DamageTypes.Cut || damageType == DamageTypes.Blunt) { return 1.2f; }
+                    return 1.5f;
+
+                case ZoneLeg:
+                    return 0.8f;
 
                 default:
                     return 1f;
@@ -4097,7 +4156,7 @@ namespace RBMCampaign
                 damageType = weapon.SwingDamageType;
             }
 
-            profile.Magnitude = weapon.ThrustDamage * VanillaSkillFactor(skill);
+            profile.Magnitude = weapon.ThrustDamage * VanillaSkillFactor(weapon.RelevantSkill, skill);
             profile.DamageType = damageType;
             profile.WeaponType = weapon.WeaponClass.ToString();
             profile.DamageFactor = 1f;
@@ -4159,7 +4218,7 @@ namespace RBMCampaign
 
         /// <summary>
         /// Vanilla prices a blow on the number printed on the weapon, so with RBM Combat off that number is what is
-        /// read -- lifted by the modest share of a soldier's training that native lets reach damage. See
+        /// read -- lifted by native's own weapon-skill damage bonus for the weapon's skill. See
         /// VanillaSkillFactor: leaving skill out entirely is not the conservative choice, because this model has
         /// already divided vanilla's tier term away and tier was the only thing carrying it.
         /// </summary>
@@ -4178,7 +4237,7 @@ namespace RBMCampaign
             {
                 return false;
             }
-            profile.Magnitude = magnitude * VanillaSkillFactor(skill);
+            profile.Magnitude = magnitude * VanillaSkillFactor(weapon.RelevantSkill, skill);
             profile.DamageType = type;
             profile.WeaponType = weapon.WeaponClass.ToString();
             profile.DamageFactor = 1f;
@@ -4196,24 +4255,36 @@ namespace RBMCampaign
         /// the baseline cannot rescue a striker who is measured in different units from the man he is measured
         /// against.
         ///
-        /// Vanilla's answer is the arrowhead: the shaft's own listed damage. The bow reaches damage through missile
-        /// SPEED, so a heavier bow is worth more -- taken linearly against a hundred, which is the speed an ordinary
-        /// bow throws at, and clamped so that neither a toy nor a siege crossbow runs away with it.
+        /// Native's answer (DefaultStrikeMagnitudeModel.CalculateStrikeMagnitudeForMissile) is
+        /// MissileTotalDamage * (impact speed / launch speed)^2, and MissileTotalDamage is the LAUNCHER's thrust damage
+        /// plus the ammo's (Mission.OnAgentShootMissile hands the bow's GetModifiedThrustDamageForCurrentUsage in as
+        /// the damage bonus). In native item data the bow carries nearly all of it -- a woodland longbow 64, a
+        /// crossbow_f 100 -- and the arrow only 0..5. This used to read the ammo's damage alone, scaled by
+        /// MissileSpeed/100: a Fian's shot came out at magnitude 3 instead of ~57, every archer in Calradia dealt a
+        /// fraction of a hit point per shaft, and a quiver of 0-damage arrows was no shot at all. The speed ratio is
+        /// relative to the launcher's own speed, so a bow's missile speed does not scale its damage; what is left of
+        /// the launch energy at the target is the same flight judgement the RBM path makes
+        /// (SimulationWeaponModel.MissileMomentumRemaining).
         /// </summary>
         private static bool GetVanillaMissileProfile(WeaponComponentData launcher, WeaponComponentData ammo,
             int skill, out SimulationWeaponModel.WeaponProfile profile)
         {
             profile = default(SimulationWeaponModel.WeaponProfile);
-            if (ammo == null || ammo.ThrustDamage <= 0)
+            if (ammo == null)
             {
                 return false;
             }
 
-            float speedFactor = (launcher != null && launcher.MissileSpeed > 0)
-                ? MBMath.ClampFloat(launcher.MissileSpeed / 100f, 0.5f, 2f)
-                : 1f;
+            float totalDamage = ammo.ThrustDamage + ((launcher != null) ? launcher.ThrustDamage : 0);
+            if (totalDamage <= 0f)
+            {
+                return false;
+            }
 
-            profile.Magnitude = ammo.ThrustDamage * speedFactor * VanillaSkillFactor(skill);
+            // Native's skill bonus is read off the missile's own class (Arrow -> Bow, Bolt -> Crossbow, which has none),
+            // the same skill as the launcher's.
+            profile.Magnitude = totalDamage * SimulationWeaponModel.MissileMomentumRemaining
+                * VanillaSkillFactor(ammo.RelevantSkill, skill);
             profile.DamageType = ammo.ThrustDamageType;
             profile.WeaponType = ammo.WeaponClass.ToString();
             profile.DamageFactor = 1f;
@@ -4541,7 +4612,10 @@ namespace RBMCampaign
             // And what it is worth where it landed. RBM pays a head half again and an arm or a leg about half, and
             // it pays them by DAMAGE TYPE -- so this has to be inside the per-weapon loop, where the type is known.
             // A pool of a mace and a spear does not share one multiplier any more than it shares one armour rule.
-            return damage * BodyPartMultiplier(zone, profile.DamageType);
+            // And it is the LIVE combat model's table: with RBM Combat off, native's own bone multipliers.
+            return damage * (rbmCombat
+                ? BodyPartMultiplier(zone, profile.DamageType)
+                : VanillaBodyPartMultiplier(zone, profile.DamageType, profile.IsMissile));
         }
     }
 }

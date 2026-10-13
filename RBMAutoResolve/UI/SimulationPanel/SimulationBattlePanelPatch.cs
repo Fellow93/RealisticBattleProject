@@ -5,7 +5,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.GauntletUI.BaseTypes;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     [HarmonyPatch(typeof(GauntletMapBattleSimulationView), "CreateLayout")]
     internal static class SimulationBattlePanelPatch_CreateLayout

@@ -5,7 +5,7 @@ using HarmonyLib;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Core;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// A beaten side breaks and runs, instead of being butchered to the last man.

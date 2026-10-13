@@ -11,7 +11,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// EVERY SOLDIER HAS HIT POINTS NOW, not just the lords.
@@ -74,7 +74,7 @@ namespace RBMCampaign
     /// take before the last blow tells.
     /// </summary>
     [HarmonyPatch(typeof(MapEventSide), "ApplySimulationDamageToSelectedTroop")]
-    internal static class SimulationTroopHitPoints
+    public static class SimulationTroopHitPoints
     {
         /// <summary>
         /// How much of his native hundred a trooper's auto-resolve pool is widened to. 1.0 is native lethality; above
@@ -247,17 +247,17 @@ namespace RBMCampaign
         /// Gated on the perk system, so the toggle that governs whether RBM prices perks at all governs this too.
         /// </summary>
         /// <summary>
-        /// (internal rather than private only so StrategicTroopPower can price a man's staying power by the same
-        /// commander perks this does, rather than keeping a second list of them beside this one.)
+        /// (public rather than private only so StrategicTroopPower, in RBM Campaign, can price a man's staying power
+        /// by the same commander perks this does, rather than keeping a second list of them beside this one.)
         /// </summary>
-        internal static float CommandedHealth(CharacterObject troop, PartyBase party, bool dismounted)
+        public static float CommandedHealth(CharacterObject troop, PartyBase party, bool dismounted)
         {
             return BuildCommandedHealth(troop, party, dismounted, false, CommandCacheHour()).ResultNumber;
         }
 
         /// <summary>The same, for a caller that prices many stacks in one go and has already read the clock once
         /// (see <see cref="CommandCacheHour"/>) -- StrategicTroopPower's per-party loop.</summary>
-        internal static float CommandedHealth(CharacterObject troop, PartyBase party, bool dismounted, long cacheHour)
+        public static float CommandedHealth(CharacterObject troop, PartyBase party, bool dismounted, long cacheHour)
         {
             return BuildCommandedHealth(troop, party, dismounted, false, cacheHour).ResultNumber;
         }
@@ -343,7 +343,7 @@ namespace RBMCampaign
         private static volatile CommandCache _commandCache;
 
         /// <summary>The campaign hour the commander cache is stamped with, or -1 with no campaign (no caching).</summary>
-        internal static long CommandCacheHour()
+        public static long CommandCacheHour()
         {
             if (Campaign.Current == null)
             {
@@ -432,7 +432,7 @@ namespace RBMCampaign
         /// first. A log that keeps its own copy of the rules is a log that will one day disagree with them, and be
         /// believed.
         /// </summary>
-        internal static ExplainedNumber ExplainCommandedHealth(CharacterObject troop, PartyBase party, bool dismounted)
+        public static ExplainedNumber ExplainCommandedHealth(CharacterObject troop, PartyBase party, bool dismounted)
         {
             return BuildCommandedHealth(troop, party, dismounted, true, -1L);
         }

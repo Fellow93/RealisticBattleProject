@@ -6,7 +6,7 @@ using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// ARM-AWARE TARGET SELECTION for auto-resolve. Vanilla <see cref="MapEvent"/>.SimulateSingleTroopHit picks

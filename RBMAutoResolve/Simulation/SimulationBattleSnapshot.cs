@@ -6,7 +6,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Library;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// Who stood on the field before the first blow landed.
@@ -71,7 +71,8 @@ namespace RBMCampaign
 
             /// <summary>
             /// What the map believes each side is worth: every party on it priced and summed (see
-            /// <see cref="StrategicTroopPower.SidePower"/>). Taken here, before a blow lands, because that is the
+            /// <see cref="SimulationSidePower"/>: RBM Campaign's troop power when it is on, vanilla's otherwise). Taken
+            /// here, before a blow lands, because that is the
             /// number the AI read when it chose to fight and the only one worth comparing the outcome against.
             /// </summary>
             public float AttackerPower;
@@ -175,13 +176,14 @@ namespace RBMCampaign
             snapshot.DefenderName = Describe(mapEvent.DefenderSide);
 
             // For a naval raid the attacker is priced by what it can land, not what it embarked -- the same discount
-            // the raid-decision AI was given (see StrategicTroopPower.AmphibiousRaidStrengthPatch). Without this the log
+            // the raid-decision AI is given under RBM Campaign (StrategicTroopPower.AmphibiousRaidStrengthPatch), and
+            // what War Sails actually lands. Without this the log
             // would print the full manifest (e.g. 348 for 223 men) while the AI acted on a fraction of it, and the
             // raid it "should have won on paper" reads as an unexplained upset. The defenders are ashore already and
             // are always priced whole.
             bool navalRaid = snapshot.Context == MapEvent.PowerCalculationContext.NavalRaid;
-            snapshot.AttackerPower = StrategicTroopPower.SidePower(mapEvent.AttackerSide, navalRaid);
-            snapshot.DefenderPower = StrategicTroopPower.SidePower(mapEvent.DefenderSide);
+            snapshot.AttackerPower = SimulationSidePower.Of(mapEvent.AttackerSide, navalRaid);
+            snapshot.DefenderPower = SimulationSidePower.Of(mapEvent.DefenderSide);
 
             try
             {

@@ -117,7 +117,7 @@ namespace RBMCampaign
             // lookup would miss and every fief would seed at ZERO -- and a seed is banked once and kept
             // for the life of the campaign, so there is no recovering from it afterwards.
             //
-            // RBMSimulationCampaignBehavior already clears the cache for exactly this reason, and being
+            // RBMCampaignSessionBehavior already clears the cache for exactly this reason, and being
             // registered first (RBM.SubModule) its OnSessionLaunched runs before this one. This does not
             // duplicate that so much as refuse to depend on it: behaviour registration order is not a
             // contract, and a silent permanent zero is far too expensive to leave resting on one.

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using TaleWorlds.CampaignSystem;
+using RBMConfig.Logging;
 using RC = RBMConfig.RBMConfig;
 
 namespace RBMCampaign
@@ -159,7 +160,7 @@ namespace RBMCampaign
         // In-game time, "y1084 d157 14h" -- the log is about game hours, so the wall clock is left out.
         private static string GameStamp()
         {
-            if (!SpoilsLog.CampaignClockReady())
+            if (!CampaignLogClock.CampaignClockReady())
             {
                 return "y---- d--- --h";
             }
@@ -176,7 +177,7 @@ namespace RBMCampaign
 
         private static string DayDividerIfChanged()
         {
-            if (!SpoilsLog.CampaignClockReady())
+            if (!CampaignLogClock.CampaignClockReady())
             {
                 return null;
             }

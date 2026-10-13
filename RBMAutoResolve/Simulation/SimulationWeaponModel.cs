@@ -3,7 +3,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using RBMConfig;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// A mirror of how RBM's combat module actually decides what a blow is worth, so that a battle resolved on
@@ -63,8 +63,11 @@ namespace RBMCampaign
         // What is left of an arrow's momentum when it arrives. A shot in a battle is not loosed at arm's length --
         // it is loosed across the field, and it has been slowing the whole way. RBM's live path knows the real
         // remaining momentum because it knows the real flight; a simulated shot has no flight, so this stands in
-        // for one at the distance men actually shoot at. It is a judgement, and it is a dial.
-        private const float MissileMomentumRemaining = 0.7f;
+        // for one at the distance men actually shoot at. It is a judgement, and it is a dial. Shared with the RBM
+        // Combat OFF shot (SimulationEquipmentPower.GetVanillaMissileProfile): native pays a missile
+        // (speed at impact / launch speed)^2, and the engine's arrow drag (AirFrictionArrow 0.003) leaves 0.7 of the
+        // launch energy at ~60 m -- the same judgement, so both paths read this one number.
+        internal const float MissileMomentumRemaining = 0.7f;
 
         // A thrown weapon keeps more of itself than an arrow does, because it is not thrown nearly as far. A bowman
         // looses at a line eighty yards off; a man does not throw a javelin further than he can see a face.

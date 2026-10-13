@@ -2,10 +2,11 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using RBMConfig.Logging;
 using TaleWorlds.CampaignSystem;
 using RC = RBMConfig.RBMConfig;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// The auto-resolve model can only be judged by what it does to battles, and a battle resolves in a single
@@ -13,7 +14,9 @@ namespace RBMCampaign
     /// apart from the spoils log, which is about something else entirely -- as it was actually fought, so what
     /// the model did can be read rather than assumed.
     ///
-    /// Enabled by the SimulationLogging config flag. One file per play session.
+    /// Enabled by the SimulationLogging config flag alone -- it does not need RBM Campaign. One file per play
+    /// session. Flushed hourly and before a save by RBMSimulationCampaignBehavior (see <see cref="Flush"/>), and
+    /// closed with every other buffered log on game end (RBM.SubModule).
     /// </summary>
     internal static class SimulationLog
     {
@@ -28,7 +31,7 @@ namespace RBMCampaign
 
         public static bool IsEnabled
         {
-            get { return RC.rbmCampaignEnabled && RC.simulationLoggingEnabled; }
+            get { return RC.simulationLoggingEnabled; }
         }
 
         // Its own folder next to the campaign one: this log is about the battle model, not the purse.
@@ -146,6 +149,23 @@ namespace RBMCampaign
             WriteToFile(block);
         }
 
+        /// <summary>
+        /// Pushes this log's buffer to disk. The auto-resolve's own hourly/before-save flush: it does not lean on
+        /// RBM Campaign's flush of every buffered log, which is not there when that module is off. Never throws.
+        /// </summary>
+        public static void Flush()
+        {
+            BufferedLogWriter writer;
+            lock (_fileLock)
+            {
+                writer = _writer;
+            }
+            if (writer != null)
+            {
+                writer.Flush();
+            }
+        }
+
         public static string Fmt(float value)
         {
             return value.ToString("0.##", CultureInfo.InvariantCulture);
@@ -178,7 +198,7 @@ namespace RBMCampaign
         {
             try
             {
-                if (!SpoilsLog.CampaignClockReady())
+                if (!CampaignLogClock.CampaignClockReady())
                 {
                     return "----";
                 }

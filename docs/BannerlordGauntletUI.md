@@ -960,8 +960,9 @@ caveat and the `WidgetPrefab.LoadFrom` redirect details.
   wrapping that label plus a `HintWidget DataSource="{XHint}"` — then a vertical `ListPanel` with a
   caption `RichTextWidget DataSource="{XText}"` and
   `<Standard.DropdownWithHorizontalControl Parameter.SelectorDataSource="{X}"/>` bound to a
-  `SelectorVM<SelectorItemVM>`. Section order top→bottom: Combat, AI, Campaign, Tournament,
-  Debug & Logging.
+  `SelectorVM<SelectorItemVM>`. Section order top→bottom: Combat, AI, Campaign, Auto Resolve
+  (`AutoResolveSection`, title `@RBMAutoResolvet`; added 2026-10-13 when the auto-resolve became its own
+  module, so its rows no longer sit under the Campaign switch), Tournament, Debug & Logging.
 - C# side: `RBMConfigViewModel` is split by section (`.Core/.Combat/.Campaign/.Simulation/.Debug.cs`);
   the get-only selector properties can only be assigned in the constructor, so construction, the
   Done read-back and Reset-to-Default all stay in `.Core.cs`. Values are applied only on Done;

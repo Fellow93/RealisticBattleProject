@@ -300,6 +300,10 @@
     <Compile Include="Shared\SkillDamage.cs" />
     <Compile Include="Shared\ThrustEnergy.cs" />
     <Compile Include="Shared\TroopPerks.cs" />
+    <!-- Log-file primitives shared by RBMCampaign and RBMAutoResolve -->
+    <Compile Include="Shared\Logging\BufferedLogWriter.cs" />
+    <Compile Include="Shared\Logging\CampaignLogClock.cs" />
+    <Compile Include="Shared\Logging\LogRetention.cs" />
     <!-- Helpers -->
     <Compile Include="Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

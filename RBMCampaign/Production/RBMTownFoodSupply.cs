@@ -311,7 +311,7 @@ namespace RBMCampaign
             {
                 // CampaignTime.Now throws until the campaign clock exists (early new-game setup reads the
                 // cap); such a read is computed but not cached.
-                Hour = SpoilsLog.CampaignClockReady() ? (long)CampaignTime.Now.ToHours : -1L,
+                Hour = RBMConfig.Logging.CampaignLogClock.CampaignClockReady() ? (long)CampaignTime.Now.ToHours : -1L,
                 Prosperity = town.Prosperity,
                 GarrisonMen = town.GarrisonParty?.Party.NumberOfAllMembers ?? 0,
                 Militia = town.Militia,

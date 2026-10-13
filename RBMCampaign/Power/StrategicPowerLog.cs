@@ -10,6 +10,8 @@ using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
+using RBMAutoResolve;
+using RBMConfig.Logging;
 using RC = RBMConfig.RBMConfig;
 
 namespace RBMCampaign
@@ -62,7 +64,7 @@ namespace RBMCampaign
 
         internal static bool IsEnabled
         {
-            get { return RC.rbmCampaignEnabled && RC.strategicPowerEnabled && RC.strategicPowerLoggingEnabled; }
+            get { return RC.rbmCampaignEnabled && RC.rbmCombatEnabled && RC.strategicPowerEnabled && RC.strategicPowerLoggingEnabled; }
         }
 
         private static string LogFolderPath
@@ -434,8 +436,7 @@ namespace RBMCampaign
 
         /// <summary>
         /// Opens the log and stamps the settings on it the first time there is something to say. The settings belong
-        /// at the top because every number below is meaningless without them -- rbmCombatEnabled alone decides which
-        /// of two offense models produced the whole file.
+        /// at the top because every number below is meaningless without them.
         /// </summary>
         private static void EnsureFileOpen()
         {
@@ -490,8 +491,7 @@ namespace RBMCampaign
                     header.Append(Environment.NewLine);
                     header.Append("Settings:").Append(Environment.NewLine);
                     header.Append("  rbmCombatEnabled              = ").Append(RC.rbmCombatEnabled).Append(Environment.NewLine);
-                    header.Append("     (picks the offense model outright: ")
-                          .Append(RC.rbmCombatEnabled ? "RBM's class ceilings" : "vanilla's listed damage").Append(")").Append(Environment.NewLine);
+                    header.Append("     (required: with RBM Combat off the game's own strength is used and this log is off)").Append(Environment.NewLine);
                     header.Append("  strategicPowerEnabled         = ").Append(RC.strategicPowerEnabled).Append(Environment.NewLine);
                     header.Append("  simulationPerkSystem          = ").Append(RC.simulationPerkSystem).Append(Environment.NewLine);
                     header.Append("     (gates the commander's hit-point perks; see SimulationTroopHitPoints)").Append(Environment.NewLine);
@@ -501,7 +501,7 @@ namespace RBMCampaign
                     header.Append("  OneHandedThrustDamageBonus   = ").Append(Fmt(RC.OneHandedThrustDamageBonus)).Append(Environment.NewLine);
                     header.Append("     (read by RBM's melee TIER formula, so it moves ranged/shield/horse numbers)").Append(Environment.NewLine);
                     header.Append("  powerScale                    = ").Append(Fmt(StrategicTroopPower.PowerScale)).Append(Environment.NewLine);
-                    header.Append("     (measured off a run of THIS log; rbmCombatEnabled, armorMultiplier,").Append(Environment.NewLine);
+                    header.Append("     (measured off a run of THIS log; armorMultiplier,").Append(Environment.NewLine);
                     header.Append("      armorEffectivenessMultiplier and OneHandedThrustDamageBonus all move the raw").Append(Environment.NewLine);
                     header.Append("      number it divides, so a change to any of them makes this value a lie until").Append(Environment.NewLine);
                     header.Append("      it is re-measured -- sum(men x power/man x powerScale) / sum(men x vanillaTier))").Append(Environment.NewLine);

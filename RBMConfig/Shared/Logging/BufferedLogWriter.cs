@@ -3,19 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace RBMCampaign
+namespace RBMConfig.Logging
 {
     /// <summary>
-    /// One open, buffered file handle per campaign log, shared by every log under Diagnostics/ (and
-    /// Power/StrategicPowerLog). The logs used to call File.AppendAllText per line -- open, seek, write,
-    /// close, inside a lock, with Thread.Sleep retries on a sharing violation -- and with logging on that
-    /// was the main cause of map stutter. Now a line only lands in a 64 KB buffer; the disk is touched when
-    /// the buffer fills or when <see cref="FlushAll"/> runs.
+    /// One open, buffered file handle per campaign log, shared by every log under RBMCampaign/Diagnostics/ (and
+    /// Power/StrategicPowerLog) and by the auto-resolve's SimulationLog (RBMAutoResolve). It lives in RBMConfig
+    /// because both modules write through it and neither references the other's logging. The logs used to call
+    /// File.AppendAllText per line -- open, seek, write, close, inside a lock, with Thread.Sleep retries on a
+    /// sharing violation -- and with logging on that was the main cause of map stutter. Now a line only lands in
+    /// a 64 KB buffer; the disk is touched when the buffer fills or when <see cref="FlushAll"/> runs.
     ///
-    /// Flushed: every campaign hour and before a save (RBMSimulationCampaignBehavior), and closed on game end
-    /// and module unload (RBM.SubModule) with a ProcessExit fallback. A log that rolls to a new file closes its
-    /// old writer itself. The tradeoff: a hard crash loses whatever was written since the last flush, i.e. up to
-    /// one in-game hour of lines.
+    /// Flushed: every campaign hour and before a save -- all of them by RBMCampaign's RBMCampaignSessionBehavior,
+    /// and the auto-resolve log by its own RBMSimulationCampaignBehavior as well, so it is still flushed with RBM
+    /// Campaign off -- and closed on game end and module unload (RBM.SubModule, whatever the toggles) with a
+    /// ProcessExit fallback. A log that rolls to a new file closes its old writer itself. The tradeoff: a hard
+    /// crash loses whatever was written since the last flush, i.e. up to one in-game hour of lines.
     ///
     /// Thread-safe: SpoilsLog is written from the prefab-loading thread during campaign start, so every writer
     /// has its own lock. Lock order is always writer -> registry; the registry lock is never held while a

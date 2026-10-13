@@ -35,6 +35,17 @@ namespace RBMConfig
         public TextViewModel SpectateBattlesEnabledText { get; }
         public SelectorVM<SelectorItemVM> SpectateBattlesEnabled { get; }
 
+        // Title of the Auto Resolve section. The Detailed Auto Resolve is its own module (RBMAutoResolve), switched by
+        // SimulationEquipmentEnabled alone, so its rows sit in their own section rather than under RBM Campaign.
+        [DataSourceProperty]
+        public string RBMAutoResolvet
+        {
+            get
+            {
+                return new TextObject("{=RBM_CFG_CAT_AUTORESOLVE}RBM Auto Resolve").ToString();
+            }
+        }
+
         [DataSourceProperty]
         public string SimulationEquipmentt
         {
@@ -45,7 +56,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel SimulationEquipmentEnabledHint { get; } = Hint("{=RBM_CON_136}Auto-resolve works out every simulated blow from the troops' actual gear -- armor on each body part, shields and real missiles -- instead of their tier alone. Off returns auto-resolve to the base game, and Auto Resolve Routing and Auto Resolve Perks with it. Default on.");
+        public BasicTooltipViewModel SimulationEquipmentEnabledHint { get; } = Hint("{=RBM_CON_136}Auto-resolve works out every simulated blow from the troops' actual gear -- armor on each body part, shields and real missiles -- instead of their tier alone. Off returns auto-resolve to the base game, and Auto Resolve Routing and Auto Resolve Perks with it. Works with RBM Campaign on or off. Default on.");
 
         [DataSourceProperty]
         public string SimulationRoutt
@@ -69,7 +80,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel StrategicPowerEnabledHint { get; } = Hint("{=RBM_CON_138}Party strength -- what the encounter screen shows and what AI lords weigh before attacking, fleeing or gathering armies -- is worked out from each troop's gear, training and horse and his commander's perks instead of his tier alone. Auto-resolve itself is not affected, so the shown strength no longer predicts it exactly. Default on.");
+        public BasicTooltipViewModel StrategicPowerEnabledHint { get; } = Hint("{=RBM_CON_138}Party strength -- what the encounter screen shows and what AI lords weigh before attacking, fleeing or gathering armies -- is worked out from each troop's gear, training and horse and his commander's perks instead of his tier alone. Auto-resolve itself is not affected, so the shown strength no longer predicts it exactly. Needs RBM Combat on; with it off the game's own strength is used. Default on.");
 
         [DataSourceProperty]
         public string SimulationPerkt

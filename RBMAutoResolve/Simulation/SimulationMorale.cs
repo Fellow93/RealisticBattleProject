@@ -1,7 +1,7 @@
 using HarmonyLib;
 using TaleWorlds.CampaignSystem.GameComponents;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// Takes morale out of a simulated blow.

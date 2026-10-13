@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Text;
+using RBMConfig.Logging;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using RC = RBMConfig.RBMConfig;
@@ -35,11 +35,6 @@ namespace RBMCampaign
         private static bool _fileOpened;
         private static readonly StringBuilder _pending = new StringBuilder();
 
-        // The campaign whose clock CampaignClockReady last found ready. Once a campaign's clock is up it stays
-        // up, so the reflective MapTimeTracker read is skipped for every later line of that campaign. Weak, so
-        // a finished campaign is not kept alive by the log.
-        private static WeakReference<Campaign> _clockReadyCampaign;
-
         // The campaign day is printed once, as a divider, whenever it rolls over, rather than on every
         // line; this holds the last day written so a change can be spotted. -1 means "nothing yet".
         private static int _lastDayKey = -1;
@@ -52,10 +47,6 @@ namespace RBMCampaign
         // every line and the eye can scan straight down. Category holds the longest tag ("UPGRADE").
         private const int CategoryWidth = 8;
         private static readonly string[] SeasonNames = { "Spring", "Summer", "Autumn", "Winter" };
-
-        // Campaign.MapTimeTracker is internal; read it to tell whether CampaignTime.Now is safe yet.
-        private static readonly PropertyInfo MapTimeTrackerProperty =
-            typeof(Campaign).GetProperty("MapTimeTracker", BindingFlags.Instance | BindingFlags.NonPublic);
 
         /// <summary>
         /// The timestamp is fixed for the span of a log so every line of a single run lands in the
@@ -394,41 +385,11 @@ namespace RBMCampaign
         /// <remarks>
         /// CampaignTime.Now reads Campaign.Current, null before a campaign exists (the early UI lines),
         /// and can throw while the time system is still mid-init; both cases simply yield no divider.
+        /// The readiness check is RBMConfig.Logging.CampaignLogClock, shared with every campaign log.
         /// </remarks>
-        /// <summary>
-        /// True once CampaignTime.Now and its date getters can be read without throwing. Shared by
-        /// every campaign log's date stamp.
-        /// </summary>
-        internal static bool CampaignClockReady()
-        {
-            // DaysInYear is zero until CampaignTime.Initialize has run the time model; GetYear divides
-            // by the tick count derived from it, so a line written before then would divide by zero.
-            Campaign current = Campaign.Current;
-            if (current == null || CampaignTime.DaysInYear <= 0)
-            {
-                return false;
-            }
-            // Already found ready for this campaign: skip the reflective read below on every later line.
-            WeakReference<Campaign> cached = _clockReadyCampaign;
-            Campaign cachedCampaign;
-            if (cached != null && cached.TryGetTarget(out cachedCampaign) && ReferenceEquals(cachedCampaign, current))
-            {
-                return true;
-            }
-            // CampaignTime.Now dereferences Campaign.MapTimeTracker, which stays null on a new campaign
-            // until OnInitialize creates it. The callers' catch would swallow the NRE, but a first-chance
-            // exception on every early line stops an attached debugger, so check it up front.
-            bool ready = MapTimeTrackerProperty == null || MapTimeTrackerProperty.GetValue(current) != null;
-            if (ready)
-            {
-                _clockReadyCampaign = new WeakReference<Campaign>(current);
-            }
-            return ready;
-        }
-
         private static string DayDividerIfChanged()
         {
-            if (!CampaignClockReady())
+            if (!CampaignLogClock.CampaignClockReady())
             {
                 return null;
             }

@@ -10,7 +10,7 @@ using TaleWorlds.CampaignSystem.Siege;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// THE ARTILLERY. Engines are not troops and never were, and every part of the simulation up to here is built

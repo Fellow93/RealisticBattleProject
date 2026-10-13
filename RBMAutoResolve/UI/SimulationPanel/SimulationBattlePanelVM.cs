@@ -7,7 +7,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     internal class SimulationBattlePanelVM : ViewModel
     {
@@ -1390,7 +1390,7 @@ namespace RBMCampaign
         // Panel headings. They used to be literal Text="..." in SimulationBattlePanel.xml,
         // which no language file can reach.
         [DataSourceProperty]
-        public string PanelTitle => new TextObject("{=RBM_SIM_TITLE}RBM Campaign — Detailed Auto-Resolve").ToString();
+        public string PanelTitle => new TextObject("{=RBM_SIM_TITLE}RBM — Detailed Auto-Resolve").ToString();
 
         [DataSourceProperty]
         public string ChronicleTitle => new TextObject("{=RBM_SIM_CHRONICLE}Battle Chronicle").ToString();

@@ -276,6 +276,7 @@
   <!-- Files & Classes -->
   <ItemGroup>
     <Compile Include="RBMCampaignPatcher.cs" />
+    <Compile Include="RBMCampaignSessionBehavior.cs" />
     <Compile Include="Diagnostics\SpoilsLog.cs" />
     <Compile Include="Diagnostics\EconomyLog.cs" />
     <Compile Include="Diagnostics\CaravanLog.cs" />
@@ -285,8 +286,6 @@
     <Compile Include="Diagnostics\ArmyCheckLog.cs" />
     <Compile Include="Diagnostics\StuckPartyLog.cs" />
     <Compile Include="Diagnostics\StuckPartyLogBehavior.cs" />
-    <Compile Include="Diagnostics\LogRetention.cs" />
-    <Compile Include="Diagnostics\BufferedLogWriter.cs" />
     <Compile Include="Diagnostics\TestBattleCommand.cs" />
     <Compile Include="Diagnostics\TestBattleCommand.Presets.cs" />
     <Compile Include="Diagnostics\TestBattleCommand.Setup.cs" />
@@ -369,9 +368,6 @@
     <Compile Include="UI\UpgradeLimitPrefabPatch.cs" />
     <Compile Include="UI\ItemWeightWidget.cs" />
     <Compile Include="UI\ItemWeightPrefabPatch.cs" />
-    <Compile Include="UI\SimulationPanel\SimulationBattlePanelVM.cs" />
-    <Compile Include="UI\SimulationPanel\SimulationEventItemVM.cs" />
-    <Compile Include="UI\SimulationPanel\SimulationBattlePanelPatch.cs" />
     <Compile Include="UI\Ledger\RBMLedgerHeaders.cs" />
     <Compile Include="UI\Ledger\RBMLedgerTabVM.cs" />
     <Compile Include="UI\Ledger\RBMLedgerClanFinanceVM.cs" />
@@ -394,22 +390,6 @@
     <Compile Include="Power\StrategicPowerTooltip.cs" />
     <Compile Include="Power\StrategicPowerTooltipVM.cs" />
     <Compile Include="Power\StrategicTroopPower.cs" />
-    <Compile Include="Simulation\SimulationArmTargeting.cs" />
-    <Compile Include="Simulation\SimulationCommandStructure.cs" />
-    <Compile Include="Simulation\SimulationPerks.cs" />
-    <Compile Include="Simulation\SimulationEquipmentPower.cs" />
-    <Compile Include="Simulation\SimulationMorale.cs" />
-    <Compile Include="Simulation\SimulationPlayerParticipation.cs" />
-    <Compile Include="Simulation\SimulationRout.cs" />
-    <Compile Include="Simulation\SimulationWoundedCapture.cs" />
-    <Compile Include="Simulation\SimulationSiege.cs" />
-    <Compile Include="Simulation\SimulationSiegeEngines.cs" />
-    <Compile Include="Simulation\SimulationWeaponModel.cs" />
-    <Compile Include="Simulation\SimulationBattleState.cs" />
-    <Compile Include="Simulation\SimulationBattleSnapshot.cs" />
-    <Compile Include="Simulation\SimulationTroopHitPoints.cs" />
-    <Compile Include="Simulation\RBMSimulationCampaignBehavior.cs" />
-    <Compile Include="Diagnostics\SimulationLog.cs" />
     <Compile Include="Spectate\RBMSpectatorMission.cs" />
     <Compile Include="Spectate\RBMSpectatorMissionLogics.cs" />
     <Compile Include="Spectate\RBMSpectatorViewPatches.cs" />
@@ -516,6 +496,10 @@
     <ProjectReference Include="..\RBMConfig\RBMConfig.csproj">
       <Project>{d7f2b557-3d03-4dcf-850c-da8e5e2d8505}</Project>
       <Name>RBMConfig</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RBMAutoResolve\RBMAutoResolve.csproj">
+      <Project>{6ad9fd35-7844-47d0-befb-27eee0d7b330}</Project>
+      <Name>RBMAutoResolve</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- Post-Build -->

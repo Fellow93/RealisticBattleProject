@@ -6,7 +6,7 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
 
-namespace RBMCampaign
+namespace RBMAutoResolve
 {
     /// <summary>
     /// THE FORMATIONS AUTO-RESOLVE DOES NOT HAVE, AND THE CAPTAINS WHO WOULD HAVE LED THEM.

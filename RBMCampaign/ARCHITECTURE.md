@@ -13,9 +13,16 @@ It has grown well past the spoils system this document was first written for. Th
 also carries the **settlement wealth ledger** (`Settlements/`), the **village-to-town goods and
 food chain** (`Production/`), **workshop rules** (`Workshops/`), the **market and caravan economy**
 (`Economy/`, `Caravans/`), the **settlement manpower pool** (`Recruitment/`), **AI lord behaviors**
-(`AI/`), the **equipment-aware auto-resolve** (`Simulation/`, `Power/`), the **spectator battle**
+(`AI/`), **equipment-based strategic troop power** (`Power/`), the **spectator battle**
 (`Spectate/`) and the **RBM Ledger** screen (`UI/Ledger/`). Those have their own documents — see
 the file map at the foot of this one. Everything below is about the spoils purse specifically.
+
+> **Auto-resolve is not in this module any more.** The Detailed Auto Resolve (the equipment-aware battle
+> simulation, its live panel and `SimulationLog`) moved to its own project, `RBMAutoResolve/`, on
+> 2026-10-13 so it works with RBM Campaign off; it is gated by `simulationEquipmentEnabled` alone. See
+> `../RBMAutoResolve/AUTO_RESOLVE.md`. RBMCampaign references it: `StrategicTroopPower` prices a troop
+> through its kit/hit-point/perk model, `UpgradeFormationWeights` classifies arms with it, and
+> `StrategicTroopPower.SidePower`/`LandingFactor` forward to its `SimulationSidePower`.
 
 > **Money.** `docs/economy-money-flows.md` maps every gold pool in the campaign layer, every flow
 > between them, how spoils feed the settlement economy, and which edges still conjure or destroy
@@ -337,7 +344,9 @@ All under `/Config/RBMCampaign` in the config XML, most wired into the in-game s
 the spoils knobs this document discusses are listed here** — the maintenance, healing, luxury,
 leader-cut, supply-town, stewardship and simulation settings are tabulated in
 [README.md](README.md#tuning-it), and the store itself is `RBMConfig/Config/RBMConfig.Campaign.cs`
-plus `RBMConfig.Simulation.cs`, with the log toggles in `RBMConfig.Debug.cs`. The raid and siege
+plus `RBMConfig.Simulation.cs`, with the log toggles in `RBMConfig.Debug.cs`. The `Simulation*` keys
+still sit under `/Config/RBMCampaign` for compatibility, but belong to RBMAutoResolve and do not need
+`rbmCampaignEnabled`. The raid and siege
 spoils shares are code constants in `Spoils/SpoilsPool.Plunder.cs` / `.MarketSack.cs`, not settings.
 
 | Setting | Default | Effect |
@@ -365,21 +374,24 @@ capping how many are kept (it skips a file a live log still holds open). Lines g
 not to the engine's debug output (that copy was dropped with the buffering below) and never to the
 in-game message log.
 
-The other sinks: `EconomyLog` (`logs/economy/`), `SimulationLog` (`logs/simulation/`), `CaravanLog`
+The other sinks: `EconomyLog` (`logs/economy/`), `CaravanLog`
 (`logs/caravans/`), `Power/StrategicPowerLog` (`logs/powerCalculation/`) and `GarrisonRefillLog`
 (`logs/garrison/`, `GarrisonRefillLoggingEnabled`) and `MercenaryLog` (`logs/mercenaries/`, `MercenaryLoggingEnabled`;
 the mercenary companies' whole lifecycle under stable tags CREATE, SPAWN, WAIT, GONE, ROAM, TAVERN, CONTRACT, PAY,
 END, DEFER, LEAVE, AI-HIRE, listed in each file's header) and `PartyBudgetLog` (`logs/partybudget/`,
 `PartyBudgetLoggingEnabled`; BUDGET + SHARE per AI clan per day from `PartyWageBudget`, KEEP, COMPANY, and ARMY-CHECK
 once per army-capable party per day from `ArmyCheckLog`, a read-only postfix on vanilla's `CanLordCreateArmy`), each
-with its own toggle.
+with its own toggle. (The auto-resolve's `SimulationLog`, `logs/simulation/`, lives in RBMAutoResolve.)
 
 Every sink writes through `BufferedLogWriter`: one open 64 KB-buffered handle per file (shared
 `ReadWrite | Delete`, so it can be tailed), not a `File.AppendAllText` per line — the per-line open was
 the main map stutter with logging on. Buffers are flushed on `HourlyTickEvent` and `OnBeforeSaveEvent`
-(registered in `RBMSimulationCampaignBehavior`), closed on `RBM.SubModule.OnGameEnd` /
+(registered in `RBMCampaignSessionBehavior`), closed on `RBM.SubModule.OnGameEnd` /
 `OnSubModuleUnloaded` (plus a `ProcessExit` fallback), and a log rolling to a new session file closes its
-old writer. A hard crash loses up to one in-game hour of lines.
+old writer. A hard crash loses up to one in-game hour of lines. `BufferedLogWriter`, `LogRetention` and
+the date-stamp guard `CampaignLogClock.CampaignClockReady` live in `RBMConfig/Shared/Logging/` (namespace
+`RBMConfig.Logging`), because RBMAutoResolve's `SimulationLog` uses them too; that log flushes its own
+writer from `RBMSimulationCampaignBehavior`, so it is still flushed with this module off.
 
 ## File map
 
@@ -449,14 +461,15 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `Caravans/` | Intra-kingdom supply caravans: `RBMCaravanDispatch` (matches a surplus town to a short one), `RBMCaravanArrival` (keeps vanilla trade logic off them, sells on arrival), `RBMCaravanInvestment` (a repayable citizen-wealth injection from a rich town to a struggling one), `RBMCaravanRegister` (the persisted register and manifests), `RBMCaravanBehavior` (weekly dispatch, cleanup, save). |
 | `AI/` | AI lord behaviors: `LordEquipmentUpgrade` (buy culture-matched gear in town), `LordPackTrain` (pack animals and spare mounts), `RBMGarrisonRefillBehavior` (a depleted lord refills from a clan fortification's surplus garrison), `RBMRecruitBiasBehavior` (recruiting is free in his own fiefs), `RBMDeserterRaiderBehavior` (deserters hunt convoys and raid), `RBMLordSpawnSettlementBehavior` (a respawning lord appears at his clan's fortification). |
 | `MercenaryCompanies/` | Neutral hire-only companies (`mercenaryCompaniesEnabled`, under `rbmCampaignEnabled`). `MercenaryCompanies` — the roster: two per main culture (nord with War Sails), each its own runtime clan (`Clan.CreateClan`, id `rbm_merc_co_<culture>_<n>_g<gen>`, found again by prefix so it is idempotent across loads) with `IsMinorFaction` + `IsClanTypeMercenary` set by reflection (never `IsOutlaw`), one leader (`CanJoinArmy` off, `IsMinorFactionHero`) and one lord party of **mercenary troops only** (`Occupation.Mercenary`, non-hero): spawned without template men (`SkipTemplateForCompanies`, flag-gated prefix on `InitializeMobilePartyWithPartyTemplate`) and filled to 60% from `MercenaryPool` (the culture's `BasicMercenaryTroops` trees, every Mercenary troop if fewer than 3); `BasicTroop` is the pool's lowest troop (vanilla's minor-faction map recruiting buys it); notable volunteers, non-mercenary prisoner recruits and upgrades into non-mercenaries are blocked (`MercenaryCompanyPatches`: `RecruitVolunteersFromNotable`, `RecruitPrisonersAi`, an unreachable `GetXpCostForUpgrade`), and an hourly `PurgeNonMercenaries` dismisses anything else that slips in; **wages**: no wage cap (`PartyWageBudget` sets vanilla's unlimited `MaxWagePaymentLimit`, so no wage-limit desertion), half pay while idle (`IdleHalfPay`, a `Priority.First` postfix on `DefaultPartyWageModel.GetTotalWage` taking a flat line before RBM's display-only maintenance lines; `SpoilsPool.DepositWageSpoils` applies `WageFactor` per stack), contracts priced on `FullWage` (the postfix suppressed); tavern hires keep max(5,000, 5 days of the paid wage incl. the new men) (`AffordableRecruits`, also gating the recruit-town score); **switched off mid-save** (`CleanupActive`: RBM Campaign on, the toggle off) the behavior, registered whenever RBM Campaign is on, runs `MercenaryCompanies.DisbandAll` on session launch and hourly until none is left: leave the kingdom (`ApplyByLeaveKingdomAsMercenary`), then `DestroyClanAction.Apply` (parties removed, hero prisoners released by `RemoveParty`, heroes removed with `KillCharacterAction.ApplyByRemove`, wars cleared), deferred while the party or a captive leader's captor is in a battle/siege; while `Disbanding` is set the clan-destroyed pop-up/log entry and peace notices are suppressed; the slot's respawn timer is left due so switching back on raises a new generation at once; `DISBAND` lines via `MercenaryLog.LogCleanup` (needs only RBM Campaign + the log toggle); **upgrades** are spoils-only (`SpoilsUpgradePatches.GetPossibleUpgradeTargets`: a company's batch is clamped to the men its purse fully covers, so no gold leg and no supply-town kit purchase); **the player's pay** goes through his clan finance instead of a transfer (`MercenaryCompanyPayLines`, called from `MercenaryContractPay`'s `CalculateClanGoldChange` postfix and `ClanFinanceTabLines.ExpensesPostfix`: one "Mercenary company: X" line per company on both passes, the company leader credited on the apply pass, an unpayable contract ended for the hourly reconcile; `MercenaryContracts.PayDaily` skips main-party payers), and the hire fee is `EventGoldKind.MercenaryCompanyHire` in `ClanEventGoldLedger`; the army screen row shows hire + daily price; `ARMY-NEW` log line on every `ArmyCreated`; `LordEquipmentUpgrade` / `LordPackTrain` skip companies and vanilla's `PartiesBuyHorseCampaignBehavior.OnSettlementEntered` is skipped for them (`NoHorseBuying`); created on the first campaign hour, a lost party respawned 7 days later once the leader is free, a destroyed company replaced 7 days later; pricing (hire = 10 × the party's `TotalWage`, daily = 1.5 ×); tavern hiring through vanilla's private `ApplyRecruitMercenary` (so RBM's recruit payment and spoils seed apply). `MercenaryContracts` — the payer is the army's CURRENT `LeaderParty` (its leader's gold), topped up from that party's clan leader above 5,000 (`ClanLeaderReserve`; AI hires also keep `AiGoldReserve` 5,000 of party + clan); the player pays from his own gold; hire (gold to the leader, then `ApplyByJoinFactionAsMercenary` with award 0 and a 100-year stay, then `party.Army`), daily pay (an employer who cannot pay ends it), AI army leaders hiring up to 2 near companies on `ArmyCreated` (keeping 20,000), and an hourly `Reconcile` that takes a company out of its kingdom whenever its party no longer serves in an army of that kingdom, never during a battle or siege. `MercenaryCompanyPatches` — blocks vanilla's minor-faction hero/party spawn, diplomatic barters, kingdom decision proposals and the ruler's hire dialog for companies, zeroes their army influence cost, skips the "made peace" log/notice their leaving causes. `MercenaryContractPay` treats them as non-mercenaries (no crown stipend or doubled wage, vanilla's award and the +40/tier subsistence cancelled). `RBMMercenaryCompanyBehavior` — the ticks, `SyncData`, and the roaming AI (recruit town / bandit hunt scores, vanilla patrol otherwise). `MercenaryArmyScreen` + `MercenaryArmyWidgets` + `MercenaryArmyPrefabPatch` — idle companies listed on the player's army management screen with their gold price per row and a cart gold total (codegen skip of `ArmyManagement`, `GatherArmyTuple.xml` / `ArmyManagement.xml` redirects), Done blocked when unaffordable, hire on Done before vanilla assigns the army. |
-| `Simulation/` | The equipment-aware auto-resolve: weapon model, hit points, arm targeting, perks and command structure, morale, rout, wounded capture, player participation, the battle state and snapshot, the two-phase wall assault (`SimulationSiege.cs`) and siege artillery (`SimulationSiegeEngines.cs`). See `AUTO_RESOLVE.md`. |
-| `Power/` | `StrategicTroopPower` and its tooltip — the campaign-side power figure; `SiegeDecisionGate` (the strength an AI lord needs before he besieges), `ArmyStrengthFloor` (the AI army strength floor, 1000 → 700), `ArmyCallReach` (AI army call range ×1.5, kingdom army quota 70% → 90%) and `StrategicPowerLog`. |
+| *(moved)* | The equipment-aware auto-resolve (`Simulation/`, `UI/SimulationPanel/`, `Diagnostics/SimulationLog.cs`) is now its own project, `RBMAutoResolve/` — see `../RBMAutoResolve/AUTO_RESOLVE.md`. |
+| `Power/` | `StrategicTroopPower` and its tooltip — the campaign-side power figure (runs only with RBM Combat on as well; off, the game's own strength is used); `SiegeDecisionGate` (the strength an AI lord needs before he besieges), `ArmyStrengthFloor` (the AI army strength floor, 1000 → 700), `ArmyCallReach` (AI army call range ×1.5, kingdom army quota 70% → 90%) and `StrategicPowerLog`. |
 | `Spectate/` | Watching an AI-vs-AI battle as a no-agent spectator. |
-| `UI/` | The party-screen spoils bar, maintenance label and map party tooltip, the clan-screen upgrade-budget control, the inventory weight column, settlement nameplate bubbles (`RBMMapNotifications`), the smithy refine-row layout, building-effect tooltips and the Projects grid (below), each with its prefab injection; `UI/Ledger/` (the RBM Ledger screen, Ctrl+Shift+K or the Escape menu, with its 30-day town/village histories and the Clan finances tab, below) and `UI/SimulationPanel/` (a live auto-resolve panel on the map battle-simulation view). |
+| `UI/` | The party-screen spoils bar, maintenance label and map party tooltip, the clan-screen upgrade-budget control, the inventory weight column, settlement nameplate bubbles (`RBMMapNotifications`), the smithy refine-row layout, building-effect tooltips and the Projects grid (below), each with its prefab injection; `UI/Ledger/` (the RBM Ledger screen, Ctrl+Shift+K or the Escape menu, with its 30-day town/village histories and the Clan finances tab, below). (The live auto-resolve panel moved to RBMAutoResolve.) |
 | `SwitchLord/` | `LordSwitcher` — debug tool to take over another lord's party. |
 | `Movement/` | `BridgeSpeed` — cancels vanilla's -30% ford penalty on `TerrainType.Bridge` faces (postfix on `DefaultPartySpeedCalculatingModel.CalculateFinalSpeed`, which NavalDLC's model calls as its base). |
-| `Diagnostics/` | `SpoilsLog`, `EconomyLog`, `SimulationLog`, `CaravanLog`, `GarrisonRefillLog`, `MercenaryLog`, `PartyBudgetLog` (+ `ArmyCheckLog`, its ARMY-CHECK producer), `LogRetention`, `BufferedLogWriter` (the shared buffered file handle every log writes through). `TestBattleCommand` — console command `campaign.rbm_test_battle [countPerTroop=5] [attacker=<groups>] [defender=<groups>] [player=attacker|defender]`: a field battle at a random land spot, both sides holding every main culture's basic/noble tree, the tavern mercenary trees and the minor-faction template troops (no parameters opens the popup setup in `TestBattleCommand.Setup.cs`, with saved presets from `TestBattleCommand.Presets.cs` in `Configs/RBM/TestBattlePresets/`; each side narrowable by group: culture id, `mercenaries`, `minor`, clan id; `player` picks the player's side); the main party's roster, prisoners, items, gold, renown, morale, hero HP, spoils/ration buckets, finance record and position are snapshotted and restored once no encounter is left (polled from `RBM.SubModule.OnApplicationTick`, and on `OnBeforeSaveEvent`); the looters-clan enemy is destroyed. |
+| `Diagnostics/` | `SpoilsLog`, `EconomyLog`, `CaravanLog`, `GarrisonRefillLog`, `MercenaryLog`, `PartyBudgetLog` (+ `ArmyCheckLog`, its ARMY-CHECK producer), `StuckPartyLog` (+ `StuckPartyLogBehavior`). They write through `BufferedLogWriter` and prune with `LogRetention`, both in `RBMConfig/Shared/Logging/` (shared with RBMAutoResolve's `SimulationLog`). `TestBattleCommand` — console command `campaign.rbm_test_battle [countPerTroop=5] [attacker=<groups>] [defender=<groups>] [player=attacker|defender]`: a field battle at a random land spot, both sides holding every main culture's basic/noble tree, the tavern mercenary trees and the minor-faction template troops (no parameters opens the popup setup in `TestBattleCommand.Setup.cs`, with saved presets from `TestBattleCommand.Presets.cs` in `Configs/RBM/TestBattlePresets/`; each side narrowable by group: culture id, `mercenaries`, `minor`, clan id; `player` picks the player's side); the main party's roster, prisoners, items, gold, renown, morale, hero HP, spoils/ration buckets, finance record and position are snapshotted and restored once no encounter is left (polled from `RBM.SubModule.OnApplicationTick`, and on `OnBeforeSaveEvent`); the looters-clan enemy is destroyed. |
 | `RBMCampaignPatcher.cs` | Entry point (`DoPatching`), at the project root. |
+| `RBMCampaignSessionBehavior.cs` | Session housekeeping, at the project root: clears the module's static caches on session launch (strategic power, town food, market, workshop demand, upgrade supply, and the auto-resolve's kit/HP/perk caches strategic power reads) and flushes every buffered log hourly and before a save. Registered third, in the slot `RBMSimulationCampaignBehavior` held before the auto-resolve moved out, so the behaviors after it still launch on clean caches. |
 
 #### AI party wage budget (`Settlements/PartyWageBudget.cs`)
 
@@ -488,8 +501,8 @@ is a budget in RBM wage money:
 The army rules themselves are vanilla's (60% size ratio, food, influence) except the strength floor, the call range
 and the kingdom quota:
 `Power/ArmyStrengthFloor.cs` (`ArmyStrengthFloorPatch`) transpiles the single `ldc.r4 1000` in
-`DefaultArmyManagementCalculationModel.CanLordCreateArmy` into a call returning `ArmyStrengthFloor` = 700 (1000 with
-`rbmCampaignEnabled` off; left unpatched with a PATCH log line if the literal is not found exactly once), because lord
+`DefaultArmyManagementCalculationModel.CanLordCreateArmy` into a call returning `ArmyStrengthFloor` = 700 (1000
+whenever `StrategicTroopPower.Enabled` is false, i.e. the game's own strength is in use; left unpatched with a PATCH log line if the literal is not found exactly once), because lord
 parties price at ~0.9–1.2 siege strength a man under `StrategicTroopPower` (PowerScale unchanged). AI-only: the player
 creates armies through `CanPlayerCreateArmy`. `Power/ArmyCallReach.cs` (`ArmyCallReachPatch`) transpiles one more
 site of the same method so armies may hold more of the kingdom (the armies it raised, 3–6 members, could not clear
@@ -700,14 +713,15 @@ therefore starts new rows for the finance lines.
   spoils log is not opened here: early traces buffer until `SpoilsLog.StartCampaignLog` opens the file
   on session launch.
 - `OnApplicationTick` (on the map) → `LordSwitcher.CheckHotkey()` and `RBMLedgerHotkey.CheckHotkey()`.
-- `OnGameStart()` (Campaign only, under `rbmCampaignEnabled`) → adds sixteen behaviors:
-  `RBMSpoilsCampaignBehavior`, `RBMTroopUpkeepCampaignBehavior`, `RBMSimulationCampaignBehavior`,
+- `OnGameStart()` (Campaign only, under `rbmCampaignEnabled`) → adds these behaviors:
+  `RBMSpoilsCampaignBehavior`, `RBMTroopUpkeepCampaignBehavior`, `RBMCampaignSessionBehavior`,
   `RBMSpectateCampaignBehavior`, `RBMEconomyCampaignBehavior`, `RBMSettlementWealthCampaignBehavior`,
   `RBMCaravanBehavior`, `RBMVillageLedgerCampaignBehavior`, `RBMTownLedgerCampaignBehavior`,
   `RBMClanFinanceLedgerCampaignBehavior`, `RBMGarrisonRefillBehavior`, `RBMRecruitBiasBehavior`, `RBMSettlementDefenseBehavior`,
-  `RBMDeserterRaiderBehavior`, `RBMRecruitPoolCampaignBehavior`, `RBMMercenaryCompanyBehavior` — and, registered last,
-  `AddModel(new RBMWorkshopModel())`. (`SaveRosterRepairBehavior`, added for every campaign, is RBM's,
-  not RBMCampaign's.)
+  `RBMDeserterRaiderBehavior`, `RBMRecruitPoolCampaignBehavior`, `RBMMercenaryCompanyBehavior`, `StuckPartyLogBehavior` —
+  and, registered last, `AddModel(new RBMWorkshopModel())`. (`SaveRosterRepairBehavior`, added for every campaign, is
+  RBM's, not RBMCampaign's; `RBMSimulationCampaignBehavior` is RBMAutoResolve's, added for every campaign while
+  `simulationEquipmentEnabled` is on, ahead of these.)
 
 ### Campaign event listeners
 

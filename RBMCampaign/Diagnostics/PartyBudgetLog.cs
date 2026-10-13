@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
+using RBMConfig.Logging;
 using RC = RBMConfig.RBMConfig;
 
 namespace RBMCampaign
@@ -83,8 +84,8 @@ namespace RBMCampaign
                         .Append("vanilla's call range, ...),").Append(nl);
                     header.Append("  at most ").Append((ArmyCallReachPatch.KingdomQuota * 100f).ToString("0"))
                         .Append("% of the kingdom's war parties in armies (vanilla 70%);").Append(nl);
-                    header.Append("  leader + members' siege strength >= ").Append(ArmyStrengthFloorPatch.ArmyStrengthFloor.ToString("0"))
-                        .Append(" (RBM; vanilla 1000)").Append(nl);
+                    header.Append("  leader + members' siege strength >= ").Append(ArmyStrengthFloorPatch.CurrentFloor().ToString("0"))
+                        .Append(" (RBM 700 with Equipment Based Troop Power and RBM Combat on; vanilla 1000)").Append(nl);
                     header.Append(nl);
                     header.Append("Tags:").Append(nl);
                     header.Append("  BUDGET      a clan's day: leader gold, other leaders' purses, reserve, on hand, steady income and its parts, budget").Append(nl);
@@ -165,7 +166,7 @@ namespace RBMCampaign
 
         private static string DayDividerIfChanged()
         {
-            if (!SpoilsLog.CampaignClockReady())
+            if (!CampaignLogClock.CampaignClockReady())
             {
                 return null;
             }

@@ -23,8 +23,9 @@ namespace RBMCampaign
     ///
     /// This transpiler multiplies that fresh-siege 2f by <see cref="SiegeStrengthGateMultiplier"/>, raising the bar to
     /// 3x. An AI lord now demands ~50% more relative strength before he'll lay siege. Note RBM's StrategicTroopPower
-    /// already reprices BOTH sides from equipment, so ourStrength / num15 is a like-for-like ratio and this gate moves
-    /// it honestly — a well-armed garrison genuinely reads as harder to take.
+    /// (when it runs; with RBM Combat off the game's own strength is used) prices BOTH sides by the same model, so
+    /// ourStrength / num15 is a like-for-like ratio either way and this gate moves it honestly -- it is a multiple, not
+    /// a threshold on RBM's scale.
     ///
     /// Implemented as an IL edit of one literal rather than a pre/postfix because the gate depends on num15, a local
     /// the model computes from a dozen inputs and never exposes; reconstructing it outside the method would be a second
