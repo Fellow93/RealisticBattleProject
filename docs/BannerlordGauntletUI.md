@@ -960,7 +960,9 @@ caveat and the `WidgetPrefab.LoadFrom` redirect details.
   wrapping that label plus a `HintWidget DataSource="{XHint}"` — then a vertical `ListPanel` with a
   caption `RichTextWidget DataSource="{XText}"` and
   `<Standard.DropdownWithHorizontalControl Parameter.SelectorDataSource="{X}"/>` bound to a
-  `SelectorVM<SelectorItemVM>`. Section order top→bottom: Combat, AI, Campaign, Auto Resolve
+  `SelectorVM<SelectorItemVM>`. Section order top→bottom: Combat, AI, Stance (`StanceSection`, title
+  `@RBMStancet`, module switch `RBMStanceEnabled`; added 2026-10-13 when posture/stamina and AI kick/bash left
+  RBMAI for their own RBMStance module, so those rows no longer sit under the AI switch), Campaign, Auto Resolve
   (`AutoResolveSection`, title `@RBMAutoResolvet`; added 2026-10-13 when the auto-resolve became its own
   module, so its rows no longer sit under the Campaign switch), Tournament, Debug & Logging.
 - C# side: `RBMConfigViewModel` is split by section (`.Core/.Combat/.Campaign/.Simulation/.Debug.cs`);

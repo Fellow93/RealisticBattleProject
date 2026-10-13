@@ -14,10 +14,13 @@ namespace RBMConfig
         //RBMAI
         public static bool hitStopEnabled = true;
 
+        // RBM Stance sub-options (rbmStanceEnabled is the module switch; with it off none of these does anything).
+        // Their XML keys stay under /Config/RBMAI, where they were before RBMStance was split out of RBMAI.
         public static bool postureEnabled = true;
         public static bool staminaEnabled = true;
-        // AI kick / shield bash / weapon bash (RBMAI AiModule/Agents/AiKickBash.cs). Gates the whole feature:
-        // the AI attempts, their posture/stamina costs, the victim's loss and the knockdown rules. Off = vanilla.
+        // AI kick / shield bash / weapon bash (RBMStance KickBash/AiKickBash.cs). Gates the whole feature:
+        // the AI attempts, their posture/stamina costs, the victim's loss, the damage (RBMCombat) and the knockdown
+        // rules. Needs rbmStanceEnabled too. Off = vanilla.
         public static bool aiKickBashEnabled = true;
         // Formation shouts (RBMAI AiModule/Voices/FormationShoutsLogic.cs): soldiers echo and answer orders, grunt
         // when a halt or shield wall is done, yell on a charge and at contact. Sound only; off = vanilla voices.
@@ -30,6 +33,7 @@ namespace RBMConfig
         // a shield wall; it is held until the share drops 0.1 below this. Settings screen offers 0.4-0.9.
         public static float shieldWallShare = 0.6f;
 
+        // RBM Stance sub-options as well.
         public static float playerPostureMultiplier = 1f;
         public static bool postureGUIEnabled = true;
         public static bool vanillaCombatAi = false;

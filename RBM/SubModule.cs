@@ -5,6 +5,7 @@ using RBMAutoResolve;
 using RBMCombat;
 using RBMCampaign;
 using RBMConfig.Logging;
+using RBMStance;
 using RBMTournament;
 using System;
 using TaleWorlds.CampaignSystem;
@@ -29,6 +30,7 @@ namespace RBM
         public static Harmony rbmcombatHarmony = new Harmony("com.rbmcombat");
         public static Harmony rbmcampaignHarmony = new Harmony("com.rbmcampaign");
         public static Harmony rbmautoresolveHarmony = new Harmony("com.rbmautoresolve");
+        public static Harmony rbmstanceHarmony = new Harmony("com.rbmstance");
         public static Harmony rbmHarmony = new Harmony("com.rbmmain");
     }
 
@@ -65,6 +67,17 @@ namespace RBM
             {
                 HarmonyModules.rbmcombatHarmony.UnpatchAll(HarmonyModules.rbmcombatHarmony.Id);
             }
+            // RBM Stance (posture/stamina + AI kick/bash): its own module, gated on its own switch alone -- it works
+            // with RBM AI on or off. Patched after RBMCombat, whose patches it shares several targets with and runs
+            // after ([HarmonyAfter("com.rbmcombat")] on those patches makes the order explicit).
+            if (RBMStancePatcher.Enabled)
+            {
+                RBMStancePatcher.DoPatching(ref HarmonyModules.rbmstanceHarmony);
+            }
+            else
+            {
+                HarmonyModules.rbmstanceHarmony.UnpatchAll(HarmonyModules.rbmstanceHarmony.Id);
+            }
             if (RBMConfig.RBMConfig.rbmCampaignEnabled)
             {
                 RBMCampaignPatcher.DoPatching(ref HarmonyModules.rbmcampaignHarmony);
@@ -94,6 +107,7 @@ namespace RBM
             HarmonyModules.rbmcombatHarmony.UnpatchAll(HarmonyModules.rbmcombatHarmony.Id);
             HarmonyModules.rbmcampaignHarmony.UnpatchAll(HarmonyModules.rbmcampaignHarmony.Id);
             HarmonyModules.rbmautoresolveHarmony.UnpatchAll(HarmonyModules.rbmautoresolveHarmony.Id);
+            HarmonyModules.rbmstanceHarmony.UnpatchAll(HarmonyModules.rbmstanceHarmony.Id);
         }
 
         protected override void OnSubModuleLoad()
@@ -304,6 +318,8 @@ namespace RBM
             // Unconditional: turning the AI module off mid-session must still release the previous mission's
             // formations, or Formation._simulationFormationTemp outlives its scene.
             MissionStartReset.Reset();
+            // Same for RBM Stance's agent-holding statics (posture store, drop queues, kick/bash scratch list).
+            StanceReset.Reset();
             // Likewise unconditional: a mission that ended without OnEndMission must not leave the troop perk
             // recorder running (and holding its entries) into this one. TroopPerkLogLogic restarts it if it is on.
             TroopPerkLog.Reset();
@@ -313,10 +329,6 @@ namespace RBM
         public override void OnMissionBehaviorInitialize(Mission mission)
         {
             mission.AddMissionBehavior(new UnitStatusMissionView());
-            if (RBMConfig.RBMConfig.rbmAiEnabled && RBMConfig.RBMConfig.hitStopEnabled)
-            {
-                mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.HitStopLogic());
-            }
             Game.Current.GameTextManager.LoadGameTexts();
             if (RBMConfig.RBMConfig.rbmAiEnabled && RBMConfig.RBMConfig.developerMode)
             {
@@ -360,22 +372,12 @@ namespace RBM
                     // Hosts both toggles; each feature also checks its own toggle at runtime.
                     mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.FormationShoutsLogic());
                 }
-                if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
-                {
-                    mission.AddMissionBehavior((MissionBehavior)(object)new StanceVisualLogic());
-                }
                 if (RBMConfig.RBMConfig.frontlineEnabled)
                 {
                     // Inert until toggled in-mission with Ctrl+Shift+F.
                     mission.AddMissionBehavior((MissionBehavior)(object)new FrontlineDebugOverlay());
                 }
                 mission.AddMissionBehavior((MissionBehavior)(object)new SiegeArcherPoints());
-                // Always present: the Harmony posture patches self-gate on postureEnabled at runtime,
-                // so toggling posture on mid-mission would otherwise drain posture with no StanceLogic
-                // to regenerate it. StanceLogic's own tick and handlers check postureEnabled.
-                mission.AddMissionBehavior((MissionBehavior)(object)new StanceLogic());
-                // Inert until a first-person posture tiredness; needs no posture check of its own.
-                mission.AddMissionBehavior((MissionBehavior)(object)new PlayerExhaustionLogic());
             }
             else
             {
@@ -386,6 +388,34 @@ namespace RBM
                 if (mission.GetMissionBehavior<SiegeArcherPoints>() != null)
                 {
                     mission.RemoveMissionBehavior(mission.GetMissionBehavior<SiegeArcherPoints>());
+                }
+            }
+            // RBM Stance: the posture/stamina system, its own module, independent of RBM AI. (AI kick/bash needs no
+            // behavior: its patches attach a component to every soldier.)
+            if (RBMStancePatcher.Enabled)
+            {
+                if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.postureGUIEnabled)
+                {
+                    mission.AddMissionBehavior((MissionBehavior)(object)new StanceVisualLogic());
+                }
+                // Always present: the Harmony posture patches self-gate on postureEnabled at runtime,
+                // so toggling posture on mid-mission would otherwise drain posture with no StanceLogic
+                // to regenerate it. StanceLogic's own tick and handlers check postureEnabled.
+                mission.AddMissionBehavior((MissionBehavior)(object)new StanceLogic());
+                // Inert until a first-person posture tiredness; needs no posture check of its own.
+                mission.AddMissionBehavior((MissionBehavior)(object)new PlayerExhaustionLogic());
+                // Combat slow motion: the kill stop needs nothing else, the posture-break stop is raised by the
+                // posture patch (so only with postureEnabled).
+                if (RBMConfig.RBMConfig.hitStopEnabled)
+                {
+                    mission.AddMissionBehavior((MissionBehavior)(object)new HitStopLogic());
+                }
+            }
+            else
+            {
+                if (mission.GetMissionBehavior<HitStopLogic>() != null)
+                {
+                    mission.RemoveMissionBehavior(mission.GetMissionBehavior<HitStopLogic>());
                 }
                 if (mission.GetMissionBehavior<StanceVisualLogic>() != null)
                 {

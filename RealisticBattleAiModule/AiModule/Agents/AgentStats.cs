@@ -59,7 +59,8 @@ namespace RBMAI
             }
 
             // Runs after RBMCombat's postfix on the same method (Priority.High there), which assigns
-            // ReloadSpeed outright. The stamina multipliers below must apply on top of that base.
+            // ReloadSpeed outright, and before RBMStance's stamina multipliers (Priority.Last), which apply on top
+            // of the values set here.
             [HarmonyPriority(Priority.Low)]
             private static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties, WeaponComponentData equippedItem, WeaponComponentData secondaryItem, AgentStatCalculateModel __instance)
             {
@@ -90,7 +91,8 @@ namespace RBMAI
 
                 if (!RBMConfig.RBMConfig.vanillaCombatAi)
                 {
-                    if (RBMConfig.RBMConfig.postureEnabled)
+                    // Block/parry values tuned for the posture system (RBMStance), which makes blocking cost posture.
+                    if (RBMConfig.RBMConfig.rbmStanceEnabled && RBMConfig.RBMConfig.postureEnabled)
                     {
                         agentDrivenProperties.AIBlockOnDecideAbility = MBMath.ClampFloat(meleeLevel * 2f, 0.3f, 1f);// chance for directed blocking
                         if (agentHasShield)
@@ -295,48 +297,8 @@ namespace RBMAI
                     agentDrivenProperties.AiFlyingMissileCheckRadius = 0f;
                 }
 
-                //stamina effects
-                // Stamina is only tracked/regenerated while the posture system runs, so this needs
-                // both toggles: staminaEnabled alone would read a frozen stamina value.
-                if (RBMConfig.RBMConfig.postureEnabled && RBMConfig.RBMConfig.staminaEnabled)
-                {
-                    Stance stance = null;
-                    AgentStances.values.TryGetValue(agent, out stance);
-                    if (agent != null && stance != null)
-                    {
-                        float staminaLevel = stance.stamina / stance.maxStamina;
-
-                        //readying and blocking
-                        agentDrivenProperties.HandlingMultiplier *= MBMath.Lerp(0.5f, 1f, staminaLevel);
-                        agentDrivenProperties.OffhandWeaponDefendSpeedMultiplier = MBMath.Lerp(0.5f, 1f, staminaLevel);
-
-                        //movement speed
-                        agentDrivenProperties.MaxSpeedMultiplier *= MBMath.Lerp(0.85f, 1f, staminaLevel);
-
-                        //attack speed
-                        agentDrivenProperties.SwingSpeedMultiplier *= MBMath.Lerp(0.85f, 1f, staminaLevel);
-                        agentDrivenProperties.ThrustOrRangedReadySpeedMultiplier *= MBMath.Lerp(0.85f, 1f, staminaLevel);
-
-                        //reload speed
-                        agentDrivenProperties.ReloadSpeed *= MBMath.Lerp(0.8f, 1f, staminaLevel);
-
-                        //ranged penalties
-                        agentDrivenProperties.WeaponMaxMovementAccuracyPenalty *= MBMath.Lerp(1.15f, 1f, staminaLevel);
-                        agentDrivenProperties.WeaponMaxUnsteadyAccuracyPenalty *= MBMath.Lerp(1.15f, 1f, staminaLevel);
-
-                        //ranged AI
-                        agentDrivenProperties.WeaponBestAccuracyWaitTime *= MBMath.Lerp(1.3f, 1f, staminaLevel);
-
-                        //AI combat ability
-                        agentDrivenProperties.AIRealizeBlockingFromIncorrectSideAbility *= MBMath.Lerp(0.85f, 1f, staminaLevel);
-                        agentDrivenProperties.AIDecideOnRealizeEnemyBlockingAttackAbility *= MBMath.Lerp(0.85f, 1f, staminaLevel);
-                        agentDrivenProperties.AIAttackOnParryChance *= MBMath.Lerp(0.85f, 1f, staminaLevel);
-
-                        //AI aggressiveness
-                        agentDrivenProperties.AIDecideOnAttackChance *= MBMath.Lerp(0.85f, 1f, staminaLevel);
-                        agentDrivenProperties.AiAttackCalculationMaxTimeFactor *= MBMath.Lerp(0.85f, 1f, staminaLevel);
-                    }
-                }
+                // Stamina's effects on these properties are RBMStance's StanceStatsPatch, a postfix on this same method
+                // that runs after this one (Priority.Last), so it multiplies the values set here.
             }
         }
 

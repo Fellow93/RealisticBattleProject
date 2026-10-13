@@ -2,7 +2,7 @@ using System;
 using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 
-namespace RBMAI
+namespace RBMStance
 {
     /// <summary>
     /// Applies a brief slow-motion hit stop on key player combat events.
@@ -10,6 +10,8 @@ namespace RBMAI
     /// A running stop can only be interrupted by a strictly higher-priority one.
     /// Same-priority stops never restart each other mid-play.
     /// Uses Mission.AddTimeSpeedRequest / RemoveTimeSpeedRequest.
+    /// Added under rbmStanceEnabled + hitStopEnabled (RBM/SubModule.cs); the kill stop needs nothing else, the
+    /// posture-break stop is raised by the posture patch, so it also needs postureEnabled.
     /// </summary>
     public class HitStopLogic : MissionLogic
     {
@@ -64,7 +66,9 @@ namespace RBMAI
         public override void OnRemoveBehavior()
         {
             if (Instance == this)
+            {
                 Instance = null;
+            }
             EndHitStop();
         }
 
@@ -106,7 +110,7 @@ namespace RBMAI
                 TriggerHitStop(KILL_DURATION, KILL_SLOW, KILL_PRIORITY);
         }
 
-        // ── Static triggers called from StanceLogic ──────────────────────────
+        // ── Static triggers raised by the posture patch (MeleeBlowPatch) ─────
 
         public static void TriggerParryHitStop()
         {
@@ -116,6 +120,14 @@ namespace RBMAI
         public static void TriggerPostureBreakHitStop()
         {
             Instance?.TriggerHitStop(POSTURE_DURATION, POSTURE_SLOW, POSTURE_PRIORITY);
+        }
+
+        // Per-mission reset (StanceReset): drops a stale instance and the last mission's request owner, which
+        // OnRemoveBehavior normally clears. The previous mission is gone, so its time-speed request goes with it.
+        internal static void ResetStatics()
+        {
+            Instance = null;
+            _timeRequestMission = null;
         }
 
         // ── Internal helpers ─────────────────────────────────────────────────

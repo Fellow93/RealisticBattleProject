@@ -8,12 +8,12 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
-using static RBMAI.PostureDamage;
+using static RBMStance.PostureDamage;
 using static TaleWorlds.Core.ArmorComponent;
 using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Agent;
 
-namespace RBMAI
+namespace RBMStance
 {
     public partial class StanceLogic : MissionLogic
     {
@@ -152,7 +152,7 @@ namespace RBMAI
                     _inactiveAgentsBuffer.Clear();
                     _statRefreshBuffer.Clear();
                     // Stat refresh is AI work: only while AI ticking is on, and only stamina feeds
-                    // AgentDrivenProperties (AgentStats reads it under postureEnabled && staminaEnabled).
+                    // AgentDrivenProperties (StanceStatsPatch reads it under postureEnabled && staminaEnabled).
                     bool canRefreshStats = RBMConfig.RBMConfig.staminaEnabled && Mission.Current.AllowAiTicking;
                     float now = Mission.Current.CurrentTime;
                     foreach (KeyValuePair<Agent, Stance> entry in AgentStances.values)

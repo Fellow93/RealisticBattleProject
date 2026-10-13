@@ -9,16 +9,20 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
-using static RBMAI.PostureDamage;
+using static RBMStance.PostureDamage;
 using static TaleWorlds.Core.ArmorComponent;
 using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Agent;
-namespace RBMAI
+namespace RBMStance
 {
     public partial class StanceLogic : MissionLogic
     {
+        // After RBMCombat's postfixes on the same method (blow bookkeeping, blunt off-blade swings, XP): it always
+        // ran after them while it lived in RBMAI, which was patched later. The kick/bash knockdown postfix
+        // (Priority.Last) still runs after this one.
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("CreateMeleeBlow")]
+        [HarmonyAfter("com.rbmcombat")]
         private partial class CreateMeleeBlowPatch
         {
             public static void TryToDropWeapon(Agent victimAgent)
@@ -169,7 +173,7 @@ namespace RBMAI
             {
                 // A kick or bash already paid its posture and stamina as it started (AiKickBash ChargeCost), wherever it
                 // lands; charging the table cost on top made a landed kick cost the kicker ~40% of his posture.
-                if (collisionData.IsAlternativeAttack && attackerAgent.GetComponent<AgentAi.AiKickBashComponent>() != null)
+                if (collisionData.IsAlternativeAttack && attackerAgent.GetComponent<KickBash.AiKickBashComponent>() != null)
                 {
                     return;
                 }
@@ -245,7 +249,7 @@ namespace RBMAI
             {
                 int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, DefaultSkills.Athletics);
                 float athlethicModifier = effectiveAthleticSkill / 20f;
-                float agentArmorWeight = Math.Max(0f, Utilities.GetEffectiveArmorWeight(agent) - athlethicModifier);
+                float agentArmorWeight = Math.Max(0f, StanceUtilities.GetEffectiveArmorWeight(agent) - athlethicModifier);
                 stance.reduceStamina(staminaLoss * (1f + agentArmorWeight / 50f));
             }
 
@@ -342,7 +346,7 @@ namespace RBMAI
                 Mission mission = __instance;
 
                 //modifier of posture damage, closer the hit is to COM ( center of mass ), higher the Modifier
-                float comHitModifier = isUnarmedAttack ? 1f : Utilities.GetComHitModifier(in collisionData, in attackerWeapon);
+                float comHitModifier = isUnarmedAttack ? 1f : StanceUtilities.GetComHitModifier(in collisionData, in attackerWeapon);
 
                 //chamber block
                 if (collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)

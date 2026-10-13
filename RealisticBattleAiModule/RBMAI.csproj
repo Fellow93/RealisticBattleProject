@@ -171,7 +171,6 @@
   <ItemGroup>
     <Compile Include="AiModule\Misc\GeneralsAndCaptainsAssignmentLogicPatch.cs" />
     <Compile Include="AiModule\Agents\AgentStats.cs" />
-    <Compile Include="AiModule\Agents\AiKickBash.cs" />
     <Compile Include="AiModule\Agents\AmmoPickupSafety.cs" />
     <Compile Include="AiModule\Agents\CombatFixes.cs" />
     <Compile Include="AiModule\Agents\Weather.cs" />
@@ -179,7 +178,6 @@
     <Compile Include="AiModule\Agents\WeaponPreference.cs" />
     <Compile Include="AiModule\Agents\RangedReachGate.cs" />
     <Compile Include="AiModule\Agents\SignatureWeaponGrip.cs" />
-    <Compile Include="AiModule\Misc\HitStopLogic.cs" />
     <Compile Include="AiModule\Misc\MissionStartReset.cs" />
     <Compile Include="AiModule\Behaviors\SkirmishBehaviors.cs" />
     <Compile Include="AiModule\Behaviors\DefenseBehaviors.cs" />
@@ -195,27 +193,14 @@
     <Compile Include="AiModule\Formations\FormationCatchUpGate.cs" />
     <Compile Include="AiModule\Diagnostics\AiBehaviorLog.cs" />
     <Compile Include="AiModule\Diagnostics\AiBehaviorLogic.cs" />
+    <Compile Include="AiModule\Diagnostics\BattleStatsLogic.cs" />
+    <Compile Include="AiModule\Diagnostics\BattleStatsVM.cs" />
     <Compile Include="AiModule\Voices\FormationShoutsLogic.cs" />
     <Compile Include="AiModule\Frontline\AgentPanicFix.cs" />
     <Compile Include="AiModule\Frontline\FrontlineDebugOverlay.cs" />
     <Compile Include="AiModule\Frontline\FrontlineDecision.cs" />
     <Compile Include="AiModule\Frontline\FrontlinePositioning.cs" />
     <Compile Include="AiModule\Frontline\FormationMovement.cs" />
-    <Compile Include="AiModule\Stance\Stance.cs" />
-    <Compile Include="AiModule\Stance\PostureDamageTable.cs" />
-    <Compile Include="AiModule\Stance\AgentStances.cs" />
-    <Compile Include="AiModule\Stance\StanceLogic.Core.cs" />
-    <Compile Include="AiModule\Stance\StanceLogic.Visuals.cs" />
-    <Compile Include="AiModule\Stance\PlayerExhaustion.cs" />
-    <Compile Include="AiModule\Stance\StanceLifecyclePatches.cs" />
-    <Compile Include="AiModule\Stance\StanceMiscPatches.cs" />
-    <Compile Include="AiModule\Stance\MeleeBlowPatch.cs" />
-    <Compile Include="AiModule\Stance\MeleeBlowPatch.Math.cs" />
-    <Compile Include="AiModule\Stance\MeleeBlowPatch.Ranged.cs" />
-    <Compile Include="AiModule\Stance\UI\BattleStatsLogic.cs" />
-    <Compile Include="AiModule\Stance\UI\StanceVisualLogic.cs" />
-    <Compile Include="AiModule\Stance\UI\BattleStatsVM.cs" />
-    <Compile Include="AiModule\Stance\UI\StanceVisualVM.cs" />
     <Compile Include="AiModule\Behaviors\Custom\RBMBehaviorArcherSkirmish.cs" />
     <Compile Include="AiModule\Behaviors\Custom\RBMBehaviorCavalryCharge.cs" />
     <Compile Include="AiModule\Behaviors\Custom\RBMBehaviorEmbolon.cs" />
@@ -259,6 +244,10 @@
     <ProjectReference Include="..\RBMConfig\RBMConfig.csproj">
       <Project>{d7f2b557-3d03-4dcf-850c-da8e5e2d8505}</Project>
       <Name>RBMConfig</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RBMStance\RBMStance.csproj">
+      <Project>{2a2738af-44aa-4897-b4ff-0ccaeda8c976}</Project>
+      <Name>RBMStance</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

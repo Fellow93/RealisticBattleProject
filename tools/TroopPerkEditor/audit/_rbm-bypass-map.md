@@ -160,8 +160,9 @@ that assigns a result/ref field wholesale; **rewrite-arg** = prefix that returns
    TwoHanded.StrongGrip, Polearm.CleanThrust/CounterWeight, Bow.DeadAim, Throwing.StrongArms/RunningThrow (capt),
    Crossbow.DonkeysSwiftness, Throwing.FlexibleFighter, Riding.NimbleSteed, Polearm.Phalanx (party) still matter under RBM.
 10. **RBMAI patches are per mission.** They are unpatched on every game start/load and re-applied at
-    `RBMAIPatchLogic.EarlyStart`; with `rbmAiEnabled` off, rows #7, #9, #17 and the posture perk factors do not exist (vanilla
-    behaviour for those). Stats are computed at spawn and on wield change, so a troop-perk toggle mid-mission shows only after
+    `RBMAIPatchLogic.EarlyStart`; with `rbmAiEnabled` off, rows #7, #9 and #17 do not exist (vanilla behaviour for those).
+    The posture perk factors moved to RBMStance (2026-10-13), patched at game start and gated on `rbmStanceEnabled` +
+    `postureEnabled`, independent of `rbmAiEnabled`. Stats are computed at spawn and on wield change, so a troop-perk toggle mid-mission shows only after
     the next `UpdateAgentStats`; the posture block-perk factors are cached in the agent's Stance.
 11. **Misplaced priority attribute (harmless):** in `RangedRework.Reload.cs:29` `[HarmonyPriority(Priority.High)]` sits on
     `GetReloadPerkFactor`, not on `Postfix`. The postfix runs at default priority (400), still before RBMAI's `Priority.Low`

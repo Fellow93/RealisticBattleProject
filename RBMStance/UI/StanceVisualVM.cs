@@ -1,4 +1,4 @@
-﻿namespace RBMAI
+﻿namespace RBMStance
 {
     // MBTargetEnemyStatus.TargetEnemyStatusVM
     using TaleWorlds.Library;

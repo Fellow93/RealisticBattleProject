@@ -1,5 +1,5 @@
 using HarmonyLib;
-using RBMAI;
+using RBMStance;
 using SandBox.GameComponents;
 using SandBox.Missions.MissionLogics;
 using System;
@@ -415,8 +415,8 @@ namespace RBMCombat
                 ItemModifier itemModifier = null;
                 // Kicks and bashes: vanilla's flat 1-2 magnitude is replaced by the punch model, with the boot,
                 // shield or weapon in place of the gauntlet. A shove is not a cut, so the weapon's own class and
-                // damage factor play no part.
-                bool isKickOrBash = RBMConfig.RBMConfig.aiKickBashEnabled && attackCollisionData.IsAlternativeAttack && !attackBlockedWithShield && attacker != null && attacker.IsHuman && attackCollisionData.BaseMagnitude > 0f && !IsKickCaughtOnRaisedShield(attacker, victim);
+                // damage factor play no part. Part of the kick/bash feature (RBMStance), so it needs that module on too.
+                bool isKickOrBash = RBMConfig.RBMConfig.rbmStanceEnabled && RBMConfig.RBMConfig.aiKickBashEnabled && attackCollisionData.IsAlternativeAttack && !attackBlockedWithShield && attacker != null && attacker.IsHuman && attackCollisionData.BaseMagnitude > 0f && !IsKickCaughtOnRaisedShield(attacker, victim);
                 if (isKickOrBash)
                 {
                     bool isKick = attackerWeapon == null;
@@ -471,8 +471,8 @@ namespace RBMCombat
                     }
                 }
 
-                // Posture/stamina is RBMAI's system.
-                if (RBMConfig.RBMConfig.rbmAiEnabled && RBMConfig.RBMConfig.postureEnabled)
+                // Posture/stamina is RBMStance's system.
+                if (RBMConfig.RBMConfig.rbmStanceEnabled && RBMConfig.RBMConfig.postureEnabled)
                 {
                     Stance victimPosture = null;
                     Stance attackerPosture = null;

@@ -24,7 +24,7 @@ namespace RBMCombat
         [HarmonyPatch("SetAiRelatedProperties")]
         private class OverrideSetAiRelatedProperties
         {
-            // Runs before RBMAI's postfix on the same method (Priority.Low there), which multiplies
+            // Runs before RBMStance's postfix on the same method (Priority.Last there), which multiplies
             // ReloadSpeed by stamina. This one assigns the base value, so it must go first.
             [HarmonyPriority(Priority.High)]
             /// <summary>

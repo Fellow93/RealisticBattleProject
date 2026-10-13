@@ -4,7 +4,7 @@ using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View.Screens;
 
-namespace RBMAI
+namespace RBMStance
 {
     public class StanceVisualLogic : MissionLogic
     {

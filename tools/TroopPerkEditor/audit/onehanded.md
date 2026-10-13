@@ -50,7 +50,7 @@ Verdicts: works 14, partial 2, conditional 1, no-personal-effect 4.
   setter reads it into `BaseHealthLimit` at spawn, while `Mission.Current` is set, and `InitializeAgentStats`'
   non-hero branch builds HealthLimit from it.
 - **RBM adds a posture effect** for Wrapped Handles, Steel Core Shields and Shieldwall (`MeleeBlowPatch.Math.cs:376/406/412`).
-  It reads the troop's own CharacterObject, so troop perks feed it. It needs rbmAiEnabled + postureEnabled. The factors are
+  It reads the troop's own CharacterObject, so troop perks feed it. It needs rbmStanceEnabled + postureEnabled. The factors are
   cached per Stance.
 - **Way of the Sword** uses the raw `GetSkillValue` against 250. The highest One Handed among vanilla and RBM troop definitions
   is 240 (270/280/300 appear only on lords and hero skill sets).

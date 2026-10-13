@@ -6,7 +6,7 @@ using TaleWorlds.MountAndBlade;
 using TaleWorlds.MountAndBlade.View.MissionViews;
 using TaleWorlds.MountAndBlade.View.Screens;
 
-namespace RBMAI
+namespace RBMStance
 {
     // First-person posture tiredness. Any forced body clip moves the head bone the first-person camera rides, so a
     // first-person player on foot plays no animation at all: he is rooted with all input blocked for LockSeconds

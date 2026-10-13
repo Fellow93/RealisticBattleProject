@@ -11,11 +11,11 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
-using static RBMAI.PostureDamage;
+using static RBMStance.PostureDamage;
 using static TaleWorlds.Core.ArmorComponent;
 using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Agent;
-namespace RBMAI
+namespace RBMStance
 {
     public partial class StanceLogic : MissionLogic
     {

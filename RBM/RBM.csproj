@@ -319,6 +319,10 @@
       <Project>{6ad9fd35-7844-47d0-befb-27eee0d7b330}</Project>
       <Name>RBMAutoResolve</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RBMStance\RBMStance.csproj">
+      <Project>{2a2738af-44aa-4897-b4ff-0ccaeda8c976}</Project>
+      <Name>RBMStance</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>xcopy /d /y "$(SolutionDir)RBMXML\RBM_native_parameters_tweaks.xml" "$(SolutionDir)..\RBM\ModuleData\"

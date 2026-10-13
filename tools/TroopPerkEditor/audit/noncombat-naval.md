@@ -58,8 +58,8 @@ Verdicts (272 perks): works 4, conditional 22, partial 3, hero-only 6, campaign-
 - **HP perks work, with no RBM patch involved.** Agent spawn sets `BaseHealthLimit = MaxHitPoints()`
   (`Agent.cs:1438`) inside the mission, so the troop-perk postfix answers `DefaultCharacterStatsModel.MaxHitpoints`.
   `GetEffectiveMaxHealth` then builds on `BaseHealthLimit`. Auto-resolve HP does not see troop perks (no mission).
-- **Kick perks depend on RBM AI.** The native AI never kicks, so DirtyFighting and BruteForce do nothing for AI troops
-  unless `rbmAiEnabled` and `aiKickBashEnabled` are on. The DirtyFighting stun is the engine-read
+- **Kick perks depend on RBM Stance.** The native AI never kicks, so DirtyFighting and BruteForce do nothing for AI troops
+  unless `rbmStanceEnabled` and `aiKickBashEnabled` are on (RBM AI is not needed). The DirtyFighting stun is the engine-read
   `KickStunDurationMultiplier`, which the managed code cannot confirm (medium confidence).
 - **Siege morale (bypass #17):** RBMAI skips the morale shock when a siege defender goes down, so
   LeadershipMakeADifference does nothing for kills of siege defenders.

@@ -451,7 +451,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel HitStopEnabledHint { get; } = Hint("{=RBM_CON_146}Briefly slows the battle to a quarter of its speed, for three quarters of a second, when you kill or knock out an enemy or break his posture. Needs RBM AI, and the posture-break slowdown also needs the Posture System. Default on.");
+        public BasicTooltipViewModel HitStopEnabledHint { get; } = Hint("{=RBM_CON_146}Briefly slows the battle to a quarter of its speed, for three quarters of a second, when you kill or knock out an enemy or break his posture. Needs RBM Stance on (RBM AI may be off); the posture-break slowdown also needs the Posture System. Default on.");
 
         [DataSourceProperty]
         public string PostureSyst
@@ -463,7 +463,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel PostureSystemEnabledHint { get; } = Hint("{=RBM_CON_145}Blocks, parries and hits wear down a posture meter that recovers over time. When it runs out the soldier can be staggered, drop his weapon or shield, be knocked off his horse, or take damage that crushes through his guard. Off also switches off the Stamina System and the Posture GUI. Needs RBM AI on. Default on.");
+        public BasicTooltipViewModel PostureSystemEnabledHint { get; } = Hint("{=RBM_CON_145}Blocks, parries and hits wear down a posture meter that recovers over time. When it runs out the soldier can be staggered, drop his weapon or shield, be knocked off his horse, or take damage that crushes through his guard. Off also switches off the Stamina System and the Posture GUI. Needs RBM Stance on. Default on.");
 
         [DataSourceProperty]
         public string StaminaSyst
@@ -475,7 +475,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel StaminaSystemEnabledHint { get; } = Hint("{=RBM_CON_144}Attacking, blocking and being hit drain stamina, faster in heavy armor and slower with high Athletics. A tired soldier hits weaker, moves, swings and reloads slower, blocks worse and loses posture faster; above 85% stamina he slowly regains health. Needs RBM AI and the Posture System on. Default on.");
+        public BasicTooltipViewModel StaminaSystemEnabledHint { get; } = Hint("{=RBM_CON_144}Attacking, blocking and being hit drain stamina, faster in heavy armor and slower with high Athletics. A tired soldier hits weaker, moves, swings and reloads slower, blocks worse and loses posture faster; above 85% stamina he slowly regains health. Needs RBM Stance and the Posture System on. Default on.");
 
         [DataSourceProperty]
         public string AiKickBasht
@@ -487,7 +487,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel AiKickBashHint { get; } = Hint("{=RBM_CON_121}AI soldiers kick, shield bash and weapon bash. Kicks and bashes also deal real damage, cost posture and stamina, and can knock an enemy down. Applies to the player's kicks and bashes too. Default on.");
+        public BasicTooltipViewModel AiKickBashHint { get; } = Hint("{=RBM_CON_121}AI soldiers kick, shield bash and weapon bash. Kicks and bashes also deal real damage, cost posture and stamina, and can knock an enemy down. Applies to the player's kicks and bashes too. Needs RBM Stance on; with the Posture System off kicks and bashes still deal their damage and knock men down. Default on.");
 
         [DataSourceProperty]
         public string FormationShoutst
@@ -579,7 +579,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel PlayerPostureMultiplierHint { get; } = Hint("{=RBM_CON_143}Multiplies your own character's maximum posture and posture recovery, and with the Stamina System on also your maximum stamina and its recovery. AI soldiers are unaffected. Needs RBM AI and the Posture System on. Default 1x.");
+        public BasicTooltipViewModel PlayerPostureMultiplierHint { get; } = Hint("{=RBM_CON_143}Multiplies your own character's maximum posture and posture recovery, and with the Stamina System on also your maximum stamina and its recovery. AI soldiers are unaffected. Needs RBM Stance and the Posture System on. Default 1x.");
 
         [DataSourceProperty]
         public string PostureGUIt
@@ -591,7 +591,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel PostureGUIEnabledHint { get; } = Hint("{=RBM_CON_142}Shows your own posture bar in battle (and stamina bar, with the Stamina System on), and for a few seconds after you trade blows with an enemy, his name, health, posture and stamina. Needs RBM AI and the Posture System on. Default on.");
+        public BasicTooltipViewModel PostureGUIEnabledHint { get; } = Hint("{=RBM_CON_142}Shows your own posture bar in battle (and stamina bar, with the Stamina System on), and for a few seconds after you trade blows with an enemy, his name, health, posture and stamina. Needs RBM Stance and the Posture System on. Default on.");
 
         [DataSourceProperty]
         public string Vanillat

@@ -6,9 +6,9 @@ using static TaleWorlds.Core.ArmorComponent;
 namespace RBMConfig
 {
     /// <summary>
-    /// Melee damage math shared by RBMCombat (the real blow) and RBMAI (the posture
+    /// Melee damage math shared by RBMCombat (the real blow) and RBMStance (the posture
     /// crush-through HP estimate). Lives here because RBMConfig is the one project both
-    /// reference; RBMAI does not reference RBMCombat. RBMCombat's behaviour is the source
+    /// reference; RBMStance does not reference RBMCombat. RBMCombat's behaviour is the source
     /// of truth for everything in this file.
     /// </summary>
     public static class SkillDamage
@@ -67,7 +67,7 @@ namespace RBMConfig
 
         /// <summary>
         /// The skill a kick or bash is thrown with: mostly Athletics (footwork and balance), with a smaller share
-        /// of the skill with the weapon in hand. Athletics alone when unarmed. Same blend RBMAI's
+        /// of the skill with the weapon in hand. Athletics alone when unarmed. Same blend RBMStance's
         /// AiKickBash.KickSkill uses for its rolls and costs.
         /// </summary>
         public static int GetKickBashSkill(Agent agent)

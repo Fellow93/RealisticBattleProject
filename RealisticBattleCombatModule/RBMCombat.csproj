@@ -272,9 +272,9 @@
       <Project>{d7f2b557-3d03-4dcf-850c-da8e5e2d8505}</Project>
       <Name>RBMConfig</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RealisticBattleAiModule\RBMAI.csproj">
-      <Project>{7254e74d-4968-47c3-bb91-84d3fc207acb}</Project>
-      <Name>RBMAI</Name>
+    <ProjectReference Include="..\RBMStance\RBMStance.csproj">
+      <Project>{2a2738af-44aa-4897-b4ff-0ccaeda8c976}</Project>
+      <Name>RBMStance</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

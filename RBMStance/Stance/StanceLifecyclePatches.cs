@@ -8,17 +8,21 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
-using static RBMAI.PostureDamage;
+using static RBMStance.PostureDamage;
 using static TaleWorlds.Core.ArmorComponent;
 using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Agent;
 
-namespace RBMAI
+namespace RBMStance
 {
     public partial class StanceLogic : MissionLogic
     {
+        // The patches below share their targets with RBMCombat's and run after them, the order they always had while
+        // they lived in RBMAI (patched later), so the momentum recorded here is inOutMomentumRemaining as RBMCombat's
+        // prefix left it.
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("MeleeHitCallback")]
+        [HarmonyAfter("com.rbmcombat")]
         private class MeleeHitContextPatch
         {
             private static void Prefix(ref float inOutMomentumRemaining)
@@ -32,6 +36,7 @@ namespace RBMAI
 
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("EquipItemsFromSpawnEquipment")]
+        [HarmonyAfter("com.rbmcombat")]
         private class EquipItemsFromSpawnEquipmentPatch
         {
             private static void Prefix(ref Agent __instance)
@@ -47,6 +52,7 @@ namespace RBMAI
 
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("OnWieldedItemIndexChange")]
+        [HarmonyAfter("com.rbmcombat")]
         private class OnWieldedItemIndexChangePatch
         {
             private static void Postfix(ref Agent __instance, bool isOffHand, bool isWieldedInstantly, bool isWieldedOnSpawn)

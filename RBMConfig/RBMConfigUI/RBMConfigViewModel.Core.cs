@@ -29,12 +29,21 @@ namespace RBMConfig
 
         public TextViewModel RBMCampaignEnabledText { get; }
 
-        // Hover tooltips on the four "Module Status" rows.
+        // RBM Stance (posture/stamina + AI kick/bash), its own module since it left RBMAI; same caption as the
+        // RBMStancet section title.
+        public SelectorVM<SelectorItemVM> RBMStanceEnabled { get; }
+
+        public TextViewModel RBMStanceEnabledText { get; }
+
+        // Hover tooltips on the "Module Status" rows.
         [DataSourceProperty]
         public BasicTooltipViewModel RBMCombatEnabledHint { get; } = Hint("{=RBM_CON_130}Master switch for RBM's combat overhaul: damage, armor, weapon and missile physics, ranged reload, and RBM's reworked items, troops and siege engines. Off returns combat to the base game and every option in this section stops working. RBM's spear and weapon animation parameters only follow a change after a game restart. Default on.");
 
         [DataSourceProperty]
-        public BasicTooltipViewModel RBMAIEnabledHint { get; } = Hint("{=RBM_CON_131}Master switch for RBM's battle AI: formation tactics and behaviors, siege AI, AI blocking and parrying, the posture and stamina systems, the frontline system and AI kicks and bashes. Off returns battle AI to the base game and every option in this section stops working. Default on.");
+        public BasicTooltipViewModel RBMAIEnabledHint { get; } = Hint("{=RBM_CON_131}Master switch for RBM's battle AI: formation tactics and behaviors, siege AI, AI blocking and parrying and the frontline system. Off returns battle AI to the base game and every option in this section stops working. The posture and stamina systems, AI kicks and bashes and the combat slow motion have their own section, RBM Stance, and are not affected. Default on.");
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel RBMStanceEnabledHint { get; } = Hint("{=RBM_CFG_STANCE_HINT}Master switch for RBM's posture and stamina systems, AI kicks and bashes and the combat slow motion. Off returns blocking, stamina and kicks to the base game and every option in this section stops working. Works with RBM AI on or off. Default on.");
 
         [DataSourceProperty]
         public BasicTooltipViewModel RBMTournamentEnabledHint { get; } = Hint("{=RBM_CON_132}Tiered tournaments. Your tier comes from your level and the quality of your armor: below tier 5 you fight troops of your own tier, from tier 5 the lords and heroes in town. Arena gear, the prize (which can roll a better quality) and the renown you win follow your tier. Off restores the base game's tournaments. Default on.");
@@ -120,6 +129,15 @@ namespace RBMConfig
             get
             {
                 return new TextObject("{=RBM_CFG_CAT_CAMPAIGN}RBM Campaign").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public string RBMStancet
+        {
+            get
+            {
+                return new TextObject("{=RBM_CFG_CAT_STANCE}RBM Stance (Posture/Stamina/Kick)").ToString();
             }
         }
 
@@ -387,6 +405,11 @@ namespace RBMConfig
             List<string> rbmCampaignEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             RBMCampaignEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_CAT_CAMPAIGN}RBM Campaign"));
             RBMCampaignEnabled = new SelectorVM<SelectorItemVM>(rbmCampaignEnabledOptions, 0, null);
+
+            // Shares its id with the RBMStancet section title.
+            List<string> rbmStanceEnabledOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            RBMStanceEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_CAT_STANCE}RBM Stance (Posture/Stamina/Kick)"));
+            RBMStanceEnabled = new SelectorVM<SelectorItemVM>(rbmStanceEnabledOptions, RBMConfig.rbmStanceEnabled ? 1 : 0, null);
 
             // Inventory weight column: on by default, so Enabled carries the "(Default)" tag.
             List<string> showInventoryItemWeightOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
@@ -778,6 +801,8 @@ namespace RBMConfig
                 RBMConfig.rbmCampaignEnabled = true;
             }
 
+            RBMConfig.rbmStanceEnabled = RBMStanceEnabled.SelectedIndex == 1;
+
             RBMConfig.campaignStartingGoldMultiplier = _campaignStartingGoldMultiplier;
             RBMConfig.troopUpgradeCostMultiplier = _troopUpgradeCostMultiplier;
             RBMConfig.villageProductionMultiplier = _villageProductionMultiplier;
@@ -879,14 +904,17 @@ namespace RBMConfig
             ActiveTroopOverhaul.SelectedIndex = 1;
             RBMCombatEnabled.SelectedIndex = 1;
 
-            // AI
-            VanillaCombatAi.SelectedIndex = 0;
-            KeepBattleEnabled.SelectedIndex = 0;
+            // Stance
+            RBMStanceEnabled.SelectedIndex = 1;
             PostureGUIEnabled.SelectedIndex = 1;
             PlayerPostureMultiplier.SelectedIndex = 0;
             PostureSystemEnabled.SelectedIndex = 1;
             StaminaSystemEnabled.SelectedIndex = 1;
             AiKickBashEnabled.SelectedIndex = 1;
+
+            // AI
+            VanillaCombatAi.SelectedIndex = 0;
+            KeepBattleEnabled.SelectedIndex = 0;
             FormationShoutsEnabled.SelectedIndex = 1;
             OrderReactionDelayEnabled.SelectedIndex = 0;
             ShieldWallShare.SelectedIndex = ShieldWallShareDefaultIndex;

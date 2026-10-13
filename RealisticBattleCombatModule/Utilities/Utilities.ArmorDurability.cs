@@ -74,7 +74,7 @@ namespace RBMCombat
         {
             EquipmentElement equipmentElement = agent.SpawnEquipment[equipmentIndex];
             // A bash with real damage (kick/bash feature) is a shove like a punch or kick, which never wear armor.
-            if (RBMConfig.RBMConfig.aiKickBashEnabled && attackCollisionData.IsAlternativeAttack)
+            if (RBMConfig.RBMConfig.rbmStanceEnabled && RBMConfig.RBMConfig.aiKickBashEnabled && attackCollisionData.IsAlternativeAttack)
             {
                 return;
             }

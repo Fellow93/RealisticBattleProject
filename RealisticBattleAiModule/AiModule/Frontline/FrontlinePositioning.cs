@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RBMStance;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -521,7 +522,7 @@ namespace RBMAI
 
                 float postureModifier = 1f;
                 float staminaModifier = 1f;
-                if (RBMConfig.RBMConfig.postureEnabled)
+                if (RBMConfig.RBMConfig.rbmStanceEnabled && RBMConfig.RBMConfig.postureEnabled)
                 {
                     Stance stance = null;
                     AgentStances.values.TryGetValue(unit, out stance);

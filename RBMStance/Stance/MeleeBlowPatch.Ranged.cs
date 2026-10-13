@@ -8,11 +8,11 @@ using TaleWorlds.Engine;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
-using static RBMAI.PostureDamage;
+using static RBMStance.PostureDamage;
 using static TaleWorlds.Core.ArmorComponent;
 using static TaleWorlds.Core.ItemObject;
 using static TaleWorlds.MountAndBlade.Agent;
-namespace RBMAI
+namespace RBMStance
 {
     public partial class StanceLogic : MissionLogic
     {
@@ -99,8 +99,10 @@ namespace RBMAI
                 return result;
             }
 
+            // After RBMCombat's postfixes on the same method, the order it always ran in while it lived in RBMAI.
             [HarmonyPatch(typeof(Mission))]
             [HarmonyPatch("OnAgentShootMissile")]
+            [HarmonyAfter("com.rbmcombat")]
             [UsedImplicitly]
             [MBCallback]
             private class OverrideOnAgentShootMissile

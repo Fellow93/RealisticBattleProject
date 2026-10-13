@@ -162,6 +162,7 @@ namespace RBMCampaign
                 Field("configVersion", RC.CONFIG_VERSION),
                 Member("modules", Obj(2,
                     Field("rbmAiEnabled", RC.rbmAiEnabled),
+                    Field("rbmStanceEnabled", RC.rbmStanceEnabled),
                     Field("rbmCombatEnabled", RC.rbmCombatEnabled),
                     Field("rbmCampaignEnabled", RC.rbmCampaignEnabled),
                     Field("rbmTournamentEnabled", RC.rbmTournamentEnabled),

@@ -35,7 +35,7 @@ namespace RBMAI
         public override void AfterStart()
         {
             // The kick/bash counters are per battle.
-            AgentAi.AiKickBash.ResetCounters();
+            RBMStance.KickBash.AiKickBash.ResetCounters();
             System.Array.Clear(_blocks, 0, _blocks.Length);
             _meleeHits = 0;
             _missionScreen = TaleWorlds.ScreenSystem.ScreenManager.TopScreen as MissionScreen;
@@ -184,8 +184,8 @@ namespace RBMAI
             _dataSource.Defha = new TextObject("{=RBM_AI_006}DEF HA :").ToString() + defha;
             _dataSource.Defcav = new TextObject("{=RBM_AI_007}DEF CAV:").ToString() + defcav;
             _dataSource.Definf = new TextObject("{=RBM_AI_008}DEF INF:").ToString() + definf;
-            _dataSource.Kickbash = RBMConfig.RBMConfig.aiKickBashEnabled
-                ? new TextObject("{=RBM_AI_025}KICK/BASH:").ToString() + " " + AgentAi.AiKickBash.CountersText()
+            _dataSource.Kickbash = RBMConfig.RBMConfig.rbmStanceEnabled && RBMConfig.RBMConfig.aiKickBashEnabled
+                ? new TextObject("{=RBM_AI_025}KICK/BASH:").ToString() + " " + RBMStance.KickBash.AiKickBash.CountersText()
                 : "";
             _dataSource.Chamberblocks = BlockLine("{=RBM_AI_026}CHAMBER BLOCKS:", RBMConfig.MeleeBlockKind.ChamberBlock);
             _dataSource.Weaponblocks = BlockLine("{=RBM_AI_028}WEAPON BLOCKS:", RBMConfig.MeleeBlockKind.WeaponBlock);

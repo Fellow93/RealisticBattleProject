@@ -10,7 +10,7 @@
       "verdict": "works",
       "confidence": "high",
       "summary": "+20% handling while wielding a one-handed melee weapon; with RBM posture on, it also cuts the posture the troop loses when blocking or parrying (about 17% less).",
-      "conditions": "Main-hand weapon is a one-handed melee weapon. The posture reduction needs rbmAiEnabled + postureEnabled. Halved at sea (NavalReduced).",
+      "conditions": "Main-hand weapon is a one-handed melee weapon. The posture reduction needs rbmStanceEnabled + postureEnabled. Halved at sea (NavalReduced).",
       "sites": [
         { "method": "SandboxAgentStatCalculateModel.SetPerkAndBannerEffectsOnAgent", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:968", "reachesTroop": true, "why": "AddPerkBonusForCharacter on the agent's own CharacterObject -> HandlingMultiplier; not patched by RBM" },
         { "method": "SandboxAgentStatCalculateModel.GetEffectiveSkill", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentStatCalculateModel.cs:227", "reachesTroop": false, "why": "captain half (+30 one-handed skill to the formation); the captain is a hero" },
@@ -128,7 +128,7 @@
       "verdict": "works",
       "confidence": "high",
       "summary": "-20% damage to the troop's shield when it blocks from the wrong side; with RBM posture on, the same block also costs 20% less posture.",
-      "conditions": "Shield block on the incorrect side. Posture part needs rbmAiEnabled + postureEnabled. Halved at sea.",
+      "conditions": "Shield block on the incorrect side. Posture part needs rbmStanceEnabled + postureEnabled. Halved at sea.",
       "sites": [
         { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:423", "reachesTroop": true, "why": "victim's own CharacterObject; a block's InflictedDamage is the shield damage and still passes CalculateDamage" },
         { "method": "MeleeBlowPatch.ComputeDefenderBlockPerkFactors", "file": "RealisticBattleAiModule/AiModule/Stance/MeleeBlowPatch.Math.cs:412", "reachesTroop": true, "why": "RBM posture on incorrect shield blocks" },
@@ -143,7 +143,7 @@
       "verdict": "works",
       "confidence": "high",
       "summary": "RBM's own effect (the vanilla bigger shield catch area is overwritten by RBM): missiles blocked with the raised shield cost 25% less posture and stamina, do 20% less damage to the shield, and a pilum gets 15% less of its throw through the shield.",
-      "conditions": "Missile blocked with a wielded shield (not a shield on the back). Shield damage and pilum parts need rbmCombatEnabled; the posture/stamina part needs rbmAiEnabled + postureEnabled. Halved at sea (NavalReduced). A formation captain with the perk gives the other troops half of it (land only), capped at the full effect.",
+      "conditions": "Missile blocked with a wielded shield (not a shield on the back). Shield damage and pilum parts need rbmCombatEnabled; the posture/stamina part needs rbmStanceEnabled + postureEnabled. Halved at sea (NavalReduced). A formation captain with the perk gives the other troops half of it (land only), capped at the full effect.",
       "sites": [
         { "method": "ArrowCatcher.GetStrength", "file": "RBMConfig/Shared/ArrowCatcher.cs", "reachesTroop": true, "why": "CharacterObject.GetPerkValue(perk, CurrentBattleEnvironment, true, out value) on the shield holder's own character; the captain half the same way with isPrimaryEffect false. Tuning constants there" },
         { "method": "StanceLogic.OnAgentHit", "file": "RealisticBattleAiModule/AiModule/Stance/StanceLogic.Core.cs", "reachesTroop": true, "why": "RBM posture: missile shield-hit posture (and the stamina derived from it) x0.75" },
@@ -217,7 +217,7 @@
       "verdict": "works",
       "confidence": "high",
       "summary": "-10% damage to the troop's shield; with RBM posture on, shield blocks also cost 10% less posture.",
-      "conditions": "Hits blocked by the shield (RBM turns hits on a back-slung shield into blocks too). Posture part needs rbmAiEnabled + postureEnabled. Halved at sea.",
+      "conditions": "Hits blocked by the shield (RBM turns hits on a back-slung shield into blocks too). Posture part needs rbmStanceEnabled + postureEnabled. Halved at sea.",
       "sites": [
         { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:416", "reachesTroop": true, "why": "victim's own CharacterObject on shield blocks / back-shield hits" },
         { "method": "SandboxAgentApplyDamageModel.ApplyDamageReductions", "file": "decompiled/SandBox/SandBox.GameComponents/SandboxAgentApplyDamageModel.cs:419", "reachesTroop": false, "why": "captain half" },

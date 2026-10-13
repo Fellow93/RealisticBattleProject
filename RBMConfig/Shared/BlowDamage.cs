@@ -7,15 +7,15 @@ using static TaleWorlds.Core.ArmorComponent;
 namespace RBMConfig
 {
     /// <summary>
-    /// Armor/penetration damage math shared by RBMCombat (the real blow) and RBMAI (the
+    /// Armor/penetration damage math shared by RBMCombat (the real blow) and RBMStance (the
     /// posture crush-through HP estimate). Lives here because RBMConfig is the one project
-    /// both reference; RBMAI does not reference RBMCombat. RBMCombat's behaviour is the
+    /// both reference; RBMStance does not reference RBMCombat. RBMCombat's behaviour is the
     /// source of truth for everything in this file.
     /// </summary>
     public static class BlowDamage
     {
         // The damage type RBMCombat's ComputeBlowDamage override last settled on, after its handle/pommel -> blunt and
-        // off-tip sword thrust -> cut rules; null until it runs. RBMAI's crush-through clears it, re-runs the blocked
+        // off-tip sword thrust -> cut rules; null until it runs. RBMStance's crush-through clears it, re-runs the blocked
         // strike and reads it back, to register the blow with the type the damage was computed with.
         [ThreadStatic]
         public static DamageTypes? LastComputedDamageType;

@@ -1,7 +1,7 @@
 using HarmonyLib;
 using Helpers;
 using JetBrains.Annotations;
-using RBMAI;
+using RBMStance;
 using StoryMode.GameComponents;
 using StoryMode.Missions;
 using System.Collections.Generic;

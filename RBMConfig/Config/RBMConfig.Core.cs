@@ -30,6 +30,10 @@ namespace RBMConfig
         // tell the player a restart is needed for those files to follow a changed toggle.
         public static bool? rbmCombatEnabledAtLaunch = null;
         public static bool rbmCampaignEnabled = true;
+        // RBM Stance: the posture/stamina system and AI kick/bash (the RBMStance project). Independent of rbmAiEnabled;
+        // postureEnabled, staminaEnabled, postureGUIEnabled, playerPostureMultiplier and aiKickBashEnabled are its
+        // sub-options (their keys stay under /Config/RBMAI).
+        public static bool rbmStanceEnabled = true;
 
         // Internal, no settings-screen control: the newest CHANGELOG.md version the player has opened in the
         // title-screen changelog viewer (RBMChangelog). Empty until the first open, so a fresh install shows it.
@@ -160,6 +164,7 @@ namespace RBMConfig
                 xmlConfig.AppendChild(xmlConfig.CreateElement("Config"));
             EnsureNode("/Config", "RBMTournament");
             EnsureNode("/Config", "RBMAI");
+            EnsureNode("/Config", "RBMStance");
             EnsureNode("/Config", "RBMCombat");
             EnsureNode("/Config", "RBMCampaign");
             EnsureNode("/Config/RBMCombat", "PriceModifiers");
@@ -180,6 +185,8 @@ namespace RBMConfig
             rbmAiEnabled = ReadOrCreate("/Config/RBMAI", "Enabled", "1").Equals("1");
             rbmCombatEnabled = ReadOrCreate("/Config/RBMCombat", "Enabled", "1").Equals("1");
             rbmCampaignEnabled = ReadOrCreate("/Config/RBMCampaign", "Enabled", "1").Equals("1");
+            // Created "1" when missing, so configs from before the module split keep the posture system on.
+            rbmStanceEnabled = ReadOrCreate("/Config/RBMStance", "Enabled", "1").Equals("1");
 
             // RBMCampaign
             // Invariant culture: on comma-decimal locales "0.1" would otherwise parse as 1.
@@ -409,6 +416,7 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/Enabled"), rbmAiEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCombat/Enabled"), rbmCombatEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/Enabled"), rbmCampaignEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMStance/Enabled"), rbmStanceEnabled);
             //RBMCampaign
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeCostMultiplier"), troopUpgradeCostMultiplier.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/TroopUpgradeSpoilsLootMultiplier"), troopUpgradeSpoilsLootMultiplier.ToString(CultureInfo.InvariantCulture));

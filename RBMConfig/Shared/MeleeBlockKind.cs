@@ -4,7 +4,7 @@ namespace RBMConfig
 {
     /// <summary>
     /// The kind of block a melee attack met, in the posture system's own six cases
-    /// (RBMAI <c>MeleeBlowPatch</c>, the <c>MeleeHitType</c> branches), so the battle hit
+    /// (RBMStance <c>MeleeBlowPatch</c>, the <c>MeleeHitType</c> branches), so the battle hit
     /// log (RBMCombat) and the developer stats overlay (RBMAI) count the same thing the
     /// posture math reacts to. Lives here because both modules reference RBMConfig.
     /// If MeleeBlowPatch's branch conditions change, change <see cref="Classify"/> with them.

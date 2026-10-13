@@ -3,17 +3,21 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
-namespace RBMAI
+namespace RBMStance
 {
-    public static partial class AgentAi
+    // Host of the kick/bash classes (moved here from RBMAI's AgentAi with the rest of the posture system).
+    public static class KickBash
     {
         /// <summary>
         /// AI foot soldiers kick, shield bash and weapon bash. The native AI never does: the AiKick driven property has
         /// no effect in game. The engine's Kick input is contextual (a kick, or a bash while the agent blocks), so the
         /// input flag is injected into the AI's per-tick input (OnAIInputSet): a kick drops the agent's own block, a
         /// bash holds a block first. Until the action has played out the AI's own attack/event input is suppressed, or
-        /// it cancels the move before the hit frame. Gated by RBMConfig.aiKickBashEnabled (off = vanilla). "Kick"
-        /// below means kick, shield bash or weapon bash; the values are the constants of AiKickBash.
+        /// it cancels the move before the hit frame. Gated by RBMConfig.aiKickBashEnabled (off = vanilla), on top of the
+        /// RBM Stance module switch (rbmStanceEnabled: with it off none of these patches is installed). Independent of
+        /// RBM AI. With the posture system off a kick/bash still lands and does its damage, only its posture and stamina
+        /// effects are skipped. "Kick" below means kick, shield bash or weapon bash; the values are the constants of
+        /// AiKickBash.
         ///
         /// Skill: every roll, lead and cost uses one blended skill, mostly Athletics with a smaller share of the
         /// skill with the weapon in hand (RBMConfig.SkillDamage.GetKickBashSkill). Chances are relative: they scale
@@ -563,6 +567,13 @@ namespace RBMAI
             // Main thread only (OnTick); reused so a check allocates nothing.
             private static readonly MBList<Agent> NearbyFriends = new MBList<Agent>();
 
+            // Per-mission reset (StanceReset): the scratch list keeps the last query's agents, which would pin the
+            // previous mission.
+            internal static void ResetStatics()
+            {
+                NearbyFriends.Clear();
+            }
+
             // A friend within kick reach and in front of this man, where the kick/bash could land on him instead.
             private bool FriendInTheWay()
             {
@@ -725,7 +736,7 @@ namespace RBMAI
                     chance *= AiKickBash.KnockDownRecentKickMultiplier;
                 }
                 // A man in heavy armour is harder to tip over.
-                float armorWeight = Utilities.GetEffectiveArmorWeight(victimAgent);
+                float armorWeight = StanceUtilities.GetEffectiveArmorWeight(victimAgent);
                 chance *= MBMath.Lerp(1f, AiKickBash.KnockDownHeavyArmorMultiplier,
                     MathF.Clamp((armorWeight - AiKickBash.LightArmorWeight) / (AiKickBash.HeavyArmorWeight - AiKickBash.LightArmorWeight), 0f, 1f));
                 // A tired man is easier to put down.

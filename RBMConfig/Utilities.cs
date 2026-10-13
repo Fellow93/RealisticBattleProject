@@ -301,6 +301,14 @@ namespace RBMConfig
             RBMAI.AppendChild(KeepBattleEnabled);
             Config.AppendChild(RBMAI);
 
+            //RBM stance (its posture/stamina/kick sub-options stay under RBMAI above)
+            XmlElement RBMStance = xmlconfig.CreateElement("RBMStance");
+
+            XmlElement RBMStanceEnabled = xmlconfig.CreateElement("Enabled");
+            RBMStanceEnabled.InnerText = RBMConfig.rbmStanceEnabled ? "1" : "0";
+            RBMStance.AppendChild(RBMStanceEnabled);
+            Config.AppendChild(RBMStance);
+
             //RBM combat
             XmlElement RBMCombat = xmlconfig.CreateElement("RBMCombat");
 
