@@ -139,9 +139,6 @@ namespace RBMAI
 
         // ---- tuning: horns ----
 
-        /// <summary>A formation this small blows no horn.</summary>
-        private const int HornMinUnits = 5;
-
         /// <summary>A mounted formation's charge horn sounds this long after the charge order.</summary>
         private const float ChargeHornDelayMin = 0.1f;
         private const float ChargeHornDelayMax = 0.4f;
@@ -200,9 +197,15 @@ namespace RBMAI
         // vanilla only in multiplayer warmup) and the crowd acknowledgements (event:/alerts/nods/*, vanilla plays them
         // only for the player's orders). They are layered on top of the single voices.
 
-        /// <summary>A formation this small gets no war cry and no crowd acknowledgement: its own voices are enough.</summary>
-        private const int WarCryMinUnits = 20;
-        private const int CrowdMinUnits = 10;
+        /// <summary>
+        /// A formation smaller than this makes none of RBM's sounds -- no echoes, calls, grunts, march, yells, roar,
+        /// war cry, crowd answer or horn (user, 2026-10-12): the added sound is for formations big enough to need it.
+        /// Vanilla's own voices are untouched.
+        /// </summary>
+        private const int MinShoutUnits = 20;
+
+        /// <summary>The main infantry keeps up the marching call only with more men than this (user, 2026-10-12).</summary>
+        private const int MarchMinUnits = 50;
 
         /// <summary>A war cry lasts 7-15 s; one formation gives one at most this often.</summary>
         private const float WarCryCooldown = 40f;
@@ -764,7 +767,7 @@ namespace RBMAI
                         state.HaltStablePolls = 0;
                     }
 
-                    if (!shouts || line == null || now < state.NextPlayerEchoTime)
+                    if (!shouts || line == null || now < state.NextPlayerEchoTime || formation.CountOfUnits < MinShoutUnits)
                     {
                         continue;
                     }
@@ -1003,12 +1006,14 @@ namespace RBMAI
             state.Group = group;
             state.Arrangement = arrangement;
 
-            if (!live)
+            // Not live, or too small to make RBM's sounds (MinShoutUnits): changes are tracked, nothing is armed.
+            if (!live || formation.CountOfUnits < MinShoutUnits)
             {
                 state.HaltWatchUntil = -1f;
                 state.FormedWatchUntil = -1f;
                 state.ContactPending = false;
                 state.NextMarchBeat = -1f;
+                state.NextReformCall = -1f;
                 return;
             }
 
@@ -1204,6 +1209,7 @@ namespace RBMAI
         private void PollMarch(Formation formation, FormationState state, float now, bool isMainInfantry)
         {
             bool ordered = isMainInfantry
+                && formation.CountOfUnits > MarchMinUnits
                 && (state.Group == MoveGroup.Move || state.Group == MoveGroup.Advance
                     || state.Group == MoveGroup.FallBack || state.Group == MoveGroup.Follow)
                 && now - state.LastContactTime > MeleeContactWindow;
@@ -1602,11 +1608,11 @@ namespace RBMAI
 
         /// <summary>
         /// The charge horn the formation would blow now (rbm/horn/charge/{culture}, else generic), or -1: not mounted,
-        /// smaller than HornMinUnits, its horn cooling down, or no sample.
+        /// smaller than MinShoutUnits, its horn cooling down, or no sample.
         /// </summary>
         private int ChargeHornDue(Formation formation, FormationState state, float now)
         {
-            if (formation.CountOfUnits < HornMinUnits || now < state.NextChargeHornTime || formation.Team == null || !IsMounted(formation))
+            if (formation.CountOfUnits < MinShoutUnits || now < state.NextChargeHornTime || formation.Team == null || !IsMounted(formation))
             {
                 return -1;
             }
@@ -1649,7 +1655,7 @@ namespace RBMAI
         /// </summary>
         private void TryOrderHorn(Formation formation, FormationState state, float time, float now)
         {
-            if (formation.CountOfUnits < HornMinUnits || now < state.NextOrderHornTime)
+            if (formation.CountOfUnits < MinShoutUnits || now < state.NextOrderHornTime)
             {
                 return;
             }
@@ -1671,13 +1677,13 @@ namespace RBMAI
         // ---------------- crowd sounds ----------------
 
         /// <summary>
-        /// The formation's war cry, in its culture (MarchCultureOf), as its charge starts. Only a formation of WarCryMinUnits
+        /// The formation's war cry, in its culture (MarchCultureOf), as its charge starts. Only a formation of MinShoutUnits
         /// or more, at most once per WarCryCooldown, and one per team per TeamWarCryGap (a whole line charging gives a
         /// few cries, not one per formation on top of each other).
         /// </summary>
         private void TryWarCry(Formation formation, FormationState state, float time, float now)
         {
-            if (formation.CountOfUnits < WarCryMinUnits || now < state.NextWarCryTime || formation.Team == null)
+            if (formation.CountOfUnits < MinShoutUnits || now < state.NextWarCryTime || formation.Team == null)
             {
                 return;
             }
@@ -1703,10 +1709,10 @@ namespace RBMAI
             return (culture != null && _rallyIds.TryGetValue(culture, out id)) ? id : _rallyGeneric;
         }
 
-        /// <summary>A crowd acknowledgement (alerts/nods) from the formation, for formations of CrowdMinUnits or more, one per team per TeamCrowdGap.</summary>
+        /// <summary>A crowd acknowledgement (alerts/nods) from the formation, for formations of MinShoutUnits or more, one per team per TeamCrowdGap.</summary>
         private void ScheduleCrowd(Formation formation, int eventId, float time, float now)
         {
-            if (eventId < 0 || formation.CountOfUnits < CrowdMinUnits || formation.Team == null)
+            if (eventId < 0 || formation.CountOfUnits < MinShoutUnits || formation.Team == null)
             {
                 return;
             }
