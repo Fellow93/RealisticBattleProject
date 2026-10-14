@@ -8,28 +8,53 @@ namespace RBMCombat
 {
     internal partial class DamageRework
     {
-        // Vanilla picks a hit's Low/Med/High impact sound from InflictedDamage alone (Agent.HandleBlow ->
-        // Blow.IsBlowLow/IsBlowCrit). Under RBM armor most blows on mail or plate get through for a few points, so
-        // every one played the Low variant: a heavy axe on a steel helmet sounded like a tap. The tier is chosen from
-        // the blow's impact instead (what got through + what the armor absorbed, i.e. the damage it would do
-        // unarmored); the armor's own clank still comes from the "Armor Type" sound parameter vanilla sets.
-        // The calls are swapped in HandleBlow rather than patching the one-line Blow methods, which the JIT may inline.
+        // Vanilla picks a hit's Low/Med/High sound (Agent.HandleBlow -> Blow.IsBlowLow/IsBlowCrit) from the damage
+        // dealt. Low is the glance off armor, Med and High are flesh wounds. Under RBM a blow the armor stops still
+        // deals blunt trauma, often more than vanilla's Low limit (10), so a mace or axe stopped by plate sounded
+        // like it cut flesh. A blow the armor stopped (no point of penetration damage) now always plays Low, with the
+        // clank of the armor it lands on (vanilla's "Armor Type" parameter); one that got through keeps vanilla's
+        // choice. The calls are swapped in HandleBlow rather than patching the one-line Blow methods, which the JIT
+        // may inline.
         [HarmonyPatch(typeof(Agent))]
         [HarmonyPatch("HandleBlow")]
         private class HitSoundTierPatch
         {
-            // Shares of the victim's base hit points (Monster.HitPoints, 100 for a human). Vanilla's Low is the same
-            // 0.1; its High needed more than twice a man's hit points and practically never played.
-            private const float LowImpactShare = 0.1f;
-            private const float HighImpactShare = 0.6f;
+            // OverrideDamageCalc records each hit's penetration, HandleBlow reads it later in the same hit. Both run
+            // on the main thread; a record only counts for the same attacker and victim at the same mission time.
+            private static int _recordedAttacker = -1;
+            private static int _recordedVictim = -1;
+            private static float _recordedTime = -1f;
+            private static bool _recordedPenetrated;
+            private static bool _armorStoppedBlow;
+
+            internal static void RecordPenetration(Agent attacker, Agent victim, bool penetrated)
+            {
+                Mission mission = Mission.Current;
+                if (mission == null || victim == null)
+                {
+                    return;
+                }
+                _recordedAttacker = attacker?.Index ?? -1;
+                _recordedVictim = victim.Index;
+                _recordedTime = mission.CurrentTime;
+                _recordedPenetrated = penetrated;
+            }
+
+            private static void Prefix(Agent __instance, ref Blow b)
+            {
+                Mission mission = Mission.Current;
+                _armorStoppedBlow = mission != null && _recordedVictim == __instance.Index && _recordedAttacker == b.OwnerId
+                    && _recordedTime == mission.CurrentTime && !_recordedPenetrated;
+                _recordedVictim = -1;
+            }
 
             private static readonly MethodInfo IsBlowCritMethod = AccessTools.Method(typeof(Blow), nameof(Blow.IsBlowCrit));
             private static readonly MethodInfo IsBlowLowMethod = AccessTools.Method(typeof(Blow), nameof(Blow.IsBlowLow));
 
             private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                MethodInfo crit = AccessTools.Method(typeof(HitSoundTierPatch), nameof(IsHighImpact));
-                MethodInfo low = AccessTools.Method(typeof(HitSoundTierPatch), nameof(IsLowImpact));
+                MethodInfo crit = AccessTools.Method(typeof(HitSoundTierPatch), nameof(IsCritSound));
+                MethodInfo low = AccessTools.Method(typeof(HitSoundTierPatch), nameof(IsLowSound));
                 foreach (CodeInstruction instruction in instructions)
                 {
                     // Same stack shape: (ref Blow, int) -> bool.
@@ -47,20 +72,15 @@ namespace RBMCombat
                 }
             }
 
-            private static float Impact(ref Blow b)
+            // GetHitSound checks the crit flag first, so a stopped blow must clear it too.
+            private static bool IsCritSound(ref Blow b, int maxHitPoints)
             {
-                return b.InflictedDamage + b.AbsorbedByArmor;
+                return !_armorStoppedBlow && b.IsBlowCrit(maxHitPoints);
             }
 
-            // Vanilla passes Monster.HitPoints * 4 here.
-            private static bool IsHighImpact(ref Blow b, int hitPointsTimesFour)
+            private static bool IsLowSound(ref Blow b, int maxHitPoints)
             {
-                return Impact(ref b) > hitPointsTimesFour * 0.25f * HighImpactShare;
-            }
-
-            private static bool IsLowImpact(ref Blow b, int hitPoints)
-            {
-                return Impact(ref b) <= hitPoints * LowImpactShare;
+                return _armorStoppedBlow || b.IsBlowLow(maxHitPoints);
             }
         }
     }

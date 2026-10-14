@@ -581,6 +581,8 @@ namespace RBMCombat
                     RangedRework.ArmorDeflection.RecordBodyHit(penetratedDamage);
                 }
                 inflictedDamage = MBMath.ClampInt(MathF.Floor(computedDamage * dmgMultiplier), 0, 2000);
+                // Picks the armor or flesh hit sound: at least one point of the damage dealt got through the armor.
+                HitSoundTierPatch.RecordPenetration(attackInformation.AttackerAgent, attackInformation.VictimAgent, penetratedDamage * dmgMultiplier >= 1f);
 
                 if (isSneakAttack && RBMConfig.RBMConfig.sneakAttackInstaKill)
                 {
