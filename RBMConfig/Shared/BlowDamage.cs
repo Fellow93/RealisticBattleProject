@@ -61,7 +61,8 @@ namespace RBMConfig
             }
         }
 
-        public static float RBMComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, out float penetratedDamage, out float traumaAfterArmor, float weaponDamageFactor = 1f, ArmorMaterialTypes armorMaterial = ArmorMaterialTypes.None)
+        // canPenetrate false: the armor stops the whole blow, so all of it is trauma (no threshold).
+        public static float RBMComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, out float penetratedDamage, out float traumaAfterArmor, float weaponDamageFactor = 1f, ArmorMaterialTypes armorMaterial = ArmorMaterialTypes.None, bool canPenetrate = true)
         {
             armorEffectiveness *= RBMConfig.armorEffectivenessMultiplier;
 
@@ -88,11 +89,11 @@ namespace RBMConfig
             RBMCombatConfigWeaponType weaponTypeFactors = FactorRowWeaponTypes.Contains(weaponType)
                 ? RBMConfig.getWeaponTypeFactors(WeaponTypeKeys.NormalizeWeaponType(weaponType))
                 : null;
-            float damage = WeaponTypeDamage(weaponTypeFactors, magnitude, armorReduction, damageType, armorEffectiveness, weaponDamageFactor, traumaScale, out penetratedDamage, out traumaAfterArmor);
+            float damage = WeaponTypeDamage(weaponTypeFactors, magnitude, armorReduction, damageType, armorEffectiveness, weaponDamageFactor, traumaScale, canPenetrate, out penetratedDamage, out traumaAfterArmor);
             return damage * absorbedDamageRatio;
         }
 
-        private static float WeaponTypeDamage(RBMCombatConfigWeaponType weaponTypeFactors, float magnitude, float armorReduction, DamageTypes damageType, float armorEffectiveness, float weaponDamageFactor, float traumaScale, out float penetratedDamage, out float traumaAfterArmor)
+        private static float WeaponTypeDamage(RBMCombatConfigWeaponType weaponTypeFactors, float magnitude, float armorReduction, DamageTypes damageType, float armorEffectiveness, float weaponDamageFactor, float traumaScale, bool canPenetrate, out float penetratedDamage, out float traumaAfterArmor)
         {
             float extraArmorThresholdFactorCut = 1f;
             float extraArmorThresholdFactorPierce = 1f;
@@ -133,7 +134,7 @@ namespace RBMConfig
             }
 
             float armorThresholdModifier = RBMConfig.armorThresholdModifier / weaponDamageFactor;
-            penetratedDamage = Math.Max(0f, magnitude - armorEffectiveness * thresholdFactor * armorThresholdModifier);
+            penetratedDamage = canPenetrate ? Math.Max(0f, magnitude - armorEffectiveness * thresholdFactor * armorThresholdModifier) : 0f;
             float bluntFraction = 0f;
             if (magnitude > 0f)
             {

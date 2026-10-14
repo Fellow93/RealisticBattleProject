@@ -792,7 +792,10 @@ namespace RBMCombat
                             }
                     }
 
-                    localInflictedDamage = Utilities.RBMComputeDamage(weaponType, isHandleHit ? DamageTypes.Blunt : damageType, blowMagnitude, (float)shieldArmorForCurrentUsage * 10f, absorbedDamageRatio, out _, out _);
+                    // Shot missiles have no penetration threshold against a board: their whole magnitude counts as
+                    // stopped, so the damage grows smoothly with the shot instead of jumping once it would get through.
+                    bool isShotMissile = attackCollisionData.IsMissile && (weaponType == "Arrow" || weaponType == "Bolt" || weaponType == "SlingStone");
+                    localInflictedDamage = Utilities.RBMComputeDamage(weaponType, isHandleHit ? DamageTypes.Blunt : damageType, blowMagnitude, (float)shieldArmorForCurrentUsage * 10f, absorbedDamageRatio, out _, out _, canPenetrate: !isShotMissile);
 
                     if (attackCollisionData.IsMissile)
                     {

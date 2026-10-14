@@ -13,9 +13,9 @@ namespace RBMCombat
         }
 
         // Body lives in RBMConfig.BlowDamage so RBMAI's crush-through estimate uses the same armor math.
-        public static float RBMComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, out float penetratedDamage, out float traumaAfterArmor, float weaponDamageFactor = 1f, ArmorMaterialTypes armorMaterial = ArmorMaterialTypes.None)
+        public static float RBMComputeDamage(string weaponType, DamageTypes damageType, float magnitude, float armorEffectiveness, float absorbedDamageRatio, out float penetratedDamage, out float traumaAfterArmor, float weaponDamageFactor = 1f, ArmorMaterialTypes armorMaterial = ArmorMaterialTypes.None, bool canPenetrate = true)
         {
-            return BlowDamage.RBMComputeDamage(weaponType, damageType, magnitude, armorEffectiveness, absorbedDamageRatio, out penetratedDamage, out traumaAfterArmor, weaponDamageFactor, armorMaterial);
+            return BlowDamage.RBMComputeDamage(weaponType, damageType, magnitude, armorEffectiveness, absorbedDamageRatio, out penetratedDamage, out traumaAfterArmor, weaponDamageFactor, armorMaterial, canPenetrate);
         }
     }
 }
