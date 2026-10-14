@@ -21,7 +21,7 @@ namespace RBMStance
     {
         private partial class CreateMeleeBlowPatch
         {
-            private static float calculateDefenderStaminaLoss(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MeleeHitType meleeHitType, bool isUnarmedAttack)
+            private static float CalculateDefenderStaminaLoss(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
                 float directHit = (collisionData.InflictedDamage * 2f) + 20f;
                 float unarmedDefence = 40f;
@@ -42,27 +42,16 @@ namespace RBMStance
 
                 if (isUnarmedAttack)
                 {
-                    switch (meleeHitType)
-                    {
-                        case MeleeHitType.AgentHit:
-                            {
-                                result = directHit;
-                                return result;
-                            }
-                        default:
-                            {
-                                int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, DefaultSkills.Athletics);
-                                result = unarmedDefence * calculateDefenderStaminaSkillModifier(effectiveSkill);
-                                return result;
-                            }
-                    }
+                    int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, DefaultSkills.Athletics);
+                    result = unarmedDefence * CalculateDefenderStaminaSkillModifier(effectiveSkill);
+                    return result;
                 }
                 else
                 {
                     MissionWeapon defenderWeapon = defenderAgent.WieldedWeapon;
                     SkillObject defenderWeaponSkill = (defenderAgent.WieldedWeapon.IsEmpty || defenderWeapon.CurrentUsageItem == null) ? DefaultSkills.Athletics : WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass);
                     int effectiveSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
-                    float skillModifier = calculateDefenderStaminaSkillModifier(effectiveSkill);
+                    float skillModifier = CalculateDefenderStaminaSkillModifier(effectiveSkill);
 
                     switch (meleeHitType)
                     {
@@ -70,7 +59,7 @@ namespace RBMStance
                         case MeleeHitType.WeaponParry:
                         case MeleeHitType.ChamberBlock:
                             {
-                                bool isDefenderWeaponOneHanded = isOneHandedWeapon(defenderWeapon);
+                                bool isDefenderWeaponOneHanded = IsOneHandedWeapon(defenderWeapon);
 
                                 if (isDefenderWeaponOneHanded)
                                 {
@@ -91,7 +80,7 @@ namespace RBMStance
                                 if (defenderAgent.GetOffhandWieldedItemIndex() != EquipmentIndex.None)
                                 {
                                     MissionWeapon defenderShield = defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()];
-                                    isDefenderSmallShield = isSmallShield(defenderShield);
+                                    isDefenderSmallShield = IsSmallShield(defenderShield);
                                 }
                                 if (isDefenderSmallShield)
                                 {
@@ -113,7 +102,7 @@ namespace RBMStance
                 }
             }
 
-            private static float calculateAttackerStaminaLoss(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon attackerWeapon, MeleeHitType meleeHitType, bool isUnarmedAttack)
+            private static float CalculateAttackerStaminaLoss(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon attackerWeapon, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
                 float result = 0f;
 
@@ -154,7 +143,7 @@ namespace RBMStance
                 }
                 else
                 {
-                    bool isAttackerWeaponOneHanded = isOneHandedWeapon(attackerWeapon);
+                    bool isAttackerWeaponOneHanded = IsOneHandedWeapon(attackerWeapon);
 
                     switch (meleeHitType)
                     {
@@ -190,40 +179,31 @@ namespace RBMStance
                 }
             }
 
-            // The action type (block / parry / shield block / chamber) is encoded in the PostureDamage
-            // table rows selected by meleeHitType, so there is no separate per-action multiplier.
-            private static float calculateDefenderPostureDamage(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType, bool isUnarmedAttack)
+            // Riding for a rider, Athletics on foot.
+            private static int GetBodySkill(Agent agent)
             {
-                float result = 0f;
-                float strengthSkillModifier = 500f;
-                float weaponSkillModifier = 500f;
+                return MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, agent.HasMount ? DefaultSkills.Riding : DefaultSkills.Athletics);
+            }
 
-                float basePostureDamage = getDefenderPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, meleeHitType, isUnarmedAttack);
+            // Each side's 1 + body/500 + weapon/500. A shield adds 20 weapon skill; an unarmed attacker's weapon skill is his body skill.
+            private static void GetPostureSkillSums(Agent defenderAgent, Agent attackerAgent, MissionWeapon weapon, bool isUnarmedAttack, out float attackerSkillSum, out float defenderSkillSum)
+            {
+                const float strengthSkillModifier = 500f;
+                const float weaponSkillModifier = 500f;
 
-                //SkillObject attackerWeaponSkill = isUnarmedAttack ? null : WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
                 SkillObject attackerWeaponSkill = null;
                 if (!isUnarmedAttack && !weapon.IsEmpty && weapon.CurrentUsageItem != null)
                 {
                     attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
                 }
                 float attackerEffectiveWeaponSkill = 0;
-                float attackerEffectiveStrengthSkill = 0;
                 if (attackerWeaponSkill != null)
                 {
                     attackerEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, attackerWeaponSkill);
                 }
-                if (attackerAgent.HasMount)
-                {
-                    attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Riding);
-                }
-                else
-                {
-                    attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Athletics);
-                }
+                float attackerEffectiveStrengthSkill = GetBodySkill(attackerAgent);
 
                 float defenderEffectiveWeaponSkill = 0;
-                float defenderEffectiveStrengthSkill = 0;
-
                 if (defenderAgent.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
                 {
                     MissionWeapon defenderWeapon = defenderAgent.Equipment[defenderAgent.GetPrimaryWieldedItemIndex()];
@@ -236,8 +216,7 @@ namespace RBMStance
                         }
                     }
                 }
-                // A shield is worth the same bonus whether or not the defender also has a primary
-                // weapon wielded, so this check must sit outside the primary-weapon gate.
+                // Outside the primary-weapon gate: a shield counts with or without a primary weapon.
                 if (defenderAgent.GetOffhandWieldedItemIndex() != EquipmentIndex.None)
                 {
                     if (defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()].IsShield())
@@ -245,33 +224,50 @@ namespace RBMStance
                         defenderEffectiveWeaponSkill += 20f;
                     }
                 }
-                if (defenderAgent.HasMount)
-                {
-                    defenderEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, DefaultSkills.Riding);
-                }
-                else
-                {
-                    defenderEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, DefaultSkills.Athletics);
-                }
+                float defenderEffectiveStrengthSkill = GetBodySkill(defenderAgent);
 
                 if (isUnarmedAttack)
                 {
                     attackerEffectiveWeaponSkill = attackerEffectiveStrengthSkill;
                 }
 
-                defenderEffectiveWeaponSkill = defenderEffectiveWeaponSkill / weaponSkillModifier;
-                defenderEffectiveStrengthSkill = defenderEffectiveStrengthSkill / strengthSkillModifier;
+                attackerSkillSum = 1f + attackerEffectiveStrengthSkill / strengthSkillModifier + attackerEffectiveWeaponSkill / weaponSkillModifier;
+                defenderSkillSum = 1f + defenderEffectiveStrengthSkill / strengthSkillModifier + defenderEffectiveWeaponSkill / weaponSkillModifier;
+            }
 
-                attackerEffectiveWeaponSkill = attackerEffectiveWeaponSkill / weaponSkillModifier;
-                attackerEffectiveStrengthSkill = attackerEffectiveStrengthSkill / strengthSkillModifier;
+            // Parries and chambers cost the matching block's table row times their factor.
+            private static float CalculateDefenderPostureDamage(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType, bool isUnarmedAttack)
+            {
+                float result = 0f;
 
-                float skillModifier = (1f + attackerEffectiveStrengthSkill + attackerEffectiveWeaponSkill) / (1f + defenderEffectiveStrengthSkill + defenderEffectiveWeaponSkill);
-                float additiveSpeedModifier = getRelativeSpeedPostureModifier(attackerAgent, defenderAgent);
+                MeleeHitType tableHitType = meleeHitType;
+                float hitTypeFactor = 1f;
+                switch (meleeHitType)
+                {
+                    case MeleeHitType.WeaponParry:
+                        tableHitType = MeleeHitType.WeaponBlock;
+                        hitTypeFactor = PostureTuning.PerfectParryWeaponFactor;
+                        break;
+                    case MeleeHitType.ChamberBlock:
+                        tableHitType = MeleeHitType.WeaponBlock;
+                        hitTypeFactor = PostureTuning.PerfectParryWeaponFactor * PostureTuning.ChamberDefenderFactor;
+                        break;
+                    case MeleeHitType.ShieldParry:
+                        tableHitType = MeleeHitType.ShieldBlock;
+                        hitTypeFactor = PostureTuning.PerfectParryShieldFactor;
+                        break;
+                }
+
+                float basePostureDamage = GetDefenderPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, tableHitType, isUnarmedAttack);
+
+                GetPostureSkillSums(defenderAgent, attackerAgent, weapon, isUnarmedAttack, out float attackerSkillSum, out float defenderSkillSum);
+                float skillModifier = (float)Math.Pow(attackerSkillSum / defenderSkillSum, PostureTuning.SkillRatioExponent);
+                float additiveSpeedModifier = GetRelativeSpeedPostureModifier(attackerAgent, defenderAgent);
                 basePostureDamage = (basePostureDamage + additiveSpeedModifier) * skillModifier;
 
                 result = basePostureDamage * comHitModifier;
                 result *= GetDefenderBlockPerkFactor(defenderAgent, meleeHitType);
-                //InformationManager.DisplayMessage(new InformationMessage("Deffender PD: " + result));
+                result *= hitTypeFactor;
                 return result;
             }
 
@@ -416,87 +412,22 @@ namespace RBMStance
                 }
             }
 
-            private static float calculateAttackerPostureDamage(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType, bool isUnarmedAttack)
+            private static float CalculateAttackerPostureDamage(Agent defenderAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon weapon, float comHitModifier, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
                 float result = 0f;
 
-                float strengthSkillModifier = 500f;
-                float weaponSkillModifier = 500f;
+                float basePostureDamage = GetAttackerPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, meleeHitType, isUnarmedAttack);
 
-                float basePostureDamage = getAttackerPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, meleeHitType, isUnarmedAttack);
-
-                SkillObject attackerWeaponSkill = null;
-                if (!isUnarmedAttack && !weapon.IsEmpty && weapon.CurrentUsageItem != null)
-                {
-                    attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(weapon.CurrentUsageItem.WeaponClass);
-                }
-
-                float attackerEffectiveWeaponSkill = 0;
-                float attackerEffectiveStrengthSkill = 0;
-
-                if (attackerWeaponSkill != null)
-                {
-                    attackerEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, attackerWeaponSkill);
-                }
-                if (attackerAgent.HasMount)
-                {
-                    attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Riding);
-                }
-                else
-                {
-                    attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackerAgent, DefaultSkills.Athletics);
-                }
-
-                float defenderEffectiveWeaponSkill = 0;
-                float defenderEffectiveStrengthSkill = 0;
-
-                if (defenderAgent.GetPrimaryWieldedItemIndex() != EquipmentIndex.None)
-                {
-                    MissionWeapon defenderWeapon = defenderAgent.Equipment[defenderAgent.GetPrimaryWieldedItemIndex()];
-                    if (defenderWeapon.CurrentUsageItem != null)
-                    {
-                        SkillObject defenderWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(defenderWeapon.CurrentUsageItem.WeaponClass);
-                        if (defenderWeaponSkill != null)
-                        {
-                            defenderEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, defenderWeaponSkill);
-                        }
-                    }
-                }
-                // A shield is worth the same bonus whether or not the defender also has a primary
-                // weapon wielded, so this check must sit outside the primary-weapon gate.
-                if (defenderAgent.GetOffhandWieldedItemIndex() != EquipmentIndex.None)
-                {
-                    if (defenderAgent.Equipment[defenderAgent.GetOffhandWieldedItemIndex()].IsShield())
-                    {
-                        defenderEffectiveWeaponSkill += 20f;
-                    }
-                }
-                if (defenderAgent.HasMount)
-                {
-                    defenderEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, DefaultSkills.Riding);
-                }
-                else
-                {
-                    defenderEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(defenderAgent, DefaultSkills.Athletics);
-                }
-
-                if (isUnarmedAttack)
-                {
-                    attackerEffectiveWeaponSkill = attackerEffectiveStrengthSkill;
-                }
-
-                defenderEffectiveWeaponSkill = defenderEffectiveWeaponSkill / weaponSkillModifier;
-                defenderEffectiveStrengthSkill = defenderEffectiveStrengthSkill / strengthSkillModifier;
-
-                attackerEffectiveWeaponSkill = attackerEffectiveWeaponSkill / weaponSkillModifier;
-                attackerEffectiveStrengthSkill = attackerEffectiveStrengthSkill / strengthSkillModifier;
-
-                float skillModifier = (1f + defenderEffectiveStrengthSkill + defenderEffectiveWeaponSkill) / (1f + attackerEffectiveStrengthSkill + attackerEffectiveWeaponSkill);
-                float additiveSpeedModifier = getRelativeSpeedPostureModifier(attackerAgent, defenderAgent);
+                GetPostureSkillSums(defenderAgent, attackerAgent, weapon, isUnarmedAttack, out float attackerSkillSum, out float defenderSkillSum);
+                float skillModifier = (float)Math.Pow(defenderSkillSum / attackerSkillSum, PostureTuning.SkillRatioExponent);
+                float additiveSpeedModifier = GetRelativeSpeedPostureModifier(attackerAgent, defenderAgent);
                 basePostureDamage = (basePostureDamage + additiveSpeedModifier) * skillModifier;
 
                 result = basePostureDamage * comHitModifier;
-                //InformationManager.DisplayMessage(new InformationMessage("Attacker PD: " + result));
+                if (meleeHitType == MeleeHitType.ChamberBlock)
+                {
+                    result *= PostureTuning.ChamberAttackerFactor;
+                }
                 return result;
             }
 
@@ -526,7 +457,7 @@ namespace RBMStance
             // bodyPart and bone are the estimated landing spot (EstimateCrushThroughBodyPart / FindCrushThroughBone).
             // The block's own bone is never used: it is on the arm, and AttackInformation takes the vanilla body-part
             // multiplier from the bone, not the body part. damageType is the type the damage was computed with.
-            public static float calculateHealthDamage(Agent attacker, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, float overPostureDamage, BoneBodyPartType bodyPart, sbyte bone, out DamageTypes damageType)
+            public static float CalculateHealthDamage(Agent attacker, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, float overPostureDamage, BoneBodyPartType bodyPart, sbyte bone, out DamageTypes damageType)
             {
                 // An up normal: the weapon-on-weapon normal says nothing about a face or under-shoulder hit, and DamageRework
                 // reads it for both (face needs z < 0, under-shoulder z < 0.15 on bone 15/22); up rules both out.

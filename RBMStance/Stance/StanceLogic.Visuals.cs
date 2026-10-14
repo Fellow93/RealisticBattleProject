@@ -57,7 +57,7 @@ namespace RBMStance
             }
         }
 
-        private static void addPosturedamageVisual(Agent attackerAgent, Agent victimAgent)
+        private static void AddPostureDamageVisual(Agent attackerAgent, Agent victimAgent)
         {
             if (RBMConfig.RBMConfig.postureEnabled)
             {
@@ -169,7 +169,7 @@ namespace RBMStance
             return agent != null && agent.IsActive() && agent.IsOnLand() && !agent.IsUsingGameObject;
         }
 
-        public static void forceStaggerAnimation(Agent agent, AttackCollisionData collisionData, float actionSpeed, bool isAttacker)
+        public static void ForceStaggerAnimation(Agent agent, AttackCollisionData collisionData, float actionSpeed, bool isAttacker)
         {
             if (!CanForceReaction(agent))
             {
@@ -187,7 +187,7 @@ namespace RBMStance
         // The full clip runs too long for a combat reaction, so its opening is skipped. TUNE in game.
         private const float TiredAnimationStartProgress = 0.4f;
 
-        public static void forceTiredAnimation(Agent agent, AttackCollisionData collisionData, float actionSpeed, bool isAttacker)
+        public static void ForceTiredAnimation(Agent agent, AttackCollisionData collisionData, float actionSpeed, bool isAttacker)
         {
             if (!CanForceReaction(agent))
             {

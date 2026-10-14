@@ -97,7 +97,10 @@ namespace RBMCombat
         public static void ResetAgentPostureStamina(Agent agent)
         {
             Stance stance = null;
-            AgentStances.values.TryGetValue(agent, out stance);
+            if (agent != null)
+            {
+                AgentStances.values.TryGetValue(agent, out stance);
+            }
             if (stance != null)
             {
                 stance.posture = stance.maxPosture;

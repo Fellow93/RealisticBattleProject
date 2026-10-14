@@ -11,7 +11,7 @@ namespace RBMStance
     // First-person posture tiredness. Any forced body clip moves the head bone the first-person camera rides, so a
     // first-person player on foot plays no animation at all: he is rooted with all input blocked for LockSeconds
     // (mouse look still works) while the 3D view pulses dark like a man fighting for breath, then clears over
-    // RecoverSeconds. StanceLogic.forceTiredAnimation triggers it via TryBegin and falls back to its stagger when
+    // RecoverSeconds. StanceLogic.ForceTiredAnimation triggers it via TryBegin and falls back to its stagger when
     // TryBegin refuses (rider, no mission screen).
     //
     // The darkening is the native CameraFade prefab (a full-screen black square bound to a float) on a layer of

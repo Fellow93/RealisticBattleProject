@@ -22,14 +22,9 @@ namespace RBMStance
             ChamberBlock
         }
 
-        public const float POSTURE_RESET_MODIFIER = 0.75f;
-        public const float SHIELD_POSTURE_RESET_MODIFIER = 1f;
-
         // BASE VALUES
-        public const float BASE_ATTACK_COST = 20f;
-
         public const float BASE_DRAIN = 20f;
-        public const float BASE_DEFENSE_COST = 20f;
+        public const float BASE_COST = 20f;
         public const float BASE_REFLECT = 20f;
 
         // UNARMED
@@ -68,7 +63,6 @@ namespace RBMStance
         public const float DAGGER_OVERHEAD_DRAIN = +15f;
         public const float DAGGER_BLOCK_COST = -15f;
         public const float DAGGER_PARRY_COST = -25f;
-        public const float DAGGER_HIT_COST = +0f;
         public const float DAGGER_BLOCK_REFLECT = -20f;
         public const float DAGGER_PARRY_REFLECT = -5f;
 
@@ -82,7 +76,6 @@ namespace RBMStance
         public const float TWOHANDEDSWORD_OVERHEAD_DRAIN = +29f;
         public const float TWOHANDEDSWORD_BLOCK_COST = -25f;
         public const float TWOHANDEDSWORD_PARRY_COST = -35f;
-        public const float TWOHANDEDSWORD_HIT_COST = +8f;
         public const float TWOHANDEDSWORD_BLOCK_REFLECT = -5f;
         public const float TWOHANDEDSWORD_PARRY_REFLECT = +10f;
 
@@ -96,7 +89,6 @@ namespace RBMStance
         public const float ONEHANDEDAXE_OVERHEAD_DRAIN = +17f;
         public const float ONEHANDEDAXE_BLOCK_COST = -15f;
         public const float ONEHANDEDAXE_PARRY_COST = -25f;
-        public const float ONEHANDEDAXE_HIT_COST = +5f;
         public const float ONEHANDEDAXE_BLOCK_REFLECT = -20f;
         public const float ONEHANDEDAXE_PARRY_REFLECT = +5f;
 
@@ -110,7 +102,6 @@ namespace RBMStance
         public const float TWOHANDEDAXE_OVERHEAD_DRAIN = +32f;
         public const float TWOHANDEDAXE_BLOCK_COST = -20f;
         public const float TWOHANDEDAXE_PARRY_COST = -30f;
-        public const float TWOHANDEDAXE_HIT_COST = +15f;
         public const float TWOHANDEDAXE_BLOCK_REFLECT = -15f;
         public const float TWOHANDEDAXE_PARRY_REFLECT = +20f;
 
@@ -124,7 +115,6 @@ namespace RBMStance
         public const float MACE_OVERHEAD_DRAIN = +20f;
         public const float MACE_BLOCK_COST = -13f;
         public const float MACE_PARRY_COST = -23f;
-        public const float MACE_HIT_COST = +10f;
         public const float MACE_BLOCK_REFLECT = -20f;
         public const float MACE_PARRY_REFLECT = -10f;
 
@@ -138,7 +128,6 @@ namespace RBMStance
         public const float TWOHANDEDMACE_OVERHEAD_DRAIN = +36f;
         public const float TWOHANDEDMACE_BLOCK_COST = -17f;
         public const float TWOHANDEDMACE_PARRY_COST = -28f;
-        public const float TWOHANDEDMACE_HIT_COST = +22f;
         public const float TWOHANDEDMACE_BLOCK_REFLECT = -15f;
         public const float TWOHANDEDMACE_PARRY_REFLECT = -10f;
 
@@ -152,7 +141,6 @@ namespace RBMStance
         public const float ONEHANDEDPOLEARM_OVERHEAD_DRAIN = +15f;
         public const float ONEHANDEDPOLEARM_BLOCK_COST = -10f;
         public const float ONEHANDEDPOLEARM_PARRY_COST = -25f;
-        public const float ONEHANDEDPOLEARM_HIT_COST = +0f;
         public const float ONEHANDEDPOLEARM_BLOCK_REFLECT = -20f;
         public const float ONEHANDEDPOLEARM_PARRY_REFLECT = -15f;
 
@@ -166,7 +154,6 @@ namespace RBMStance
         public const float TWOHANDEDPOLEARM_OVERHEAD_DRAIN = +29f;
         public const float TWOHANDEDPOLEARM_BLOCK_COST = -20f;
         public const float TWOHANDEDPOLEARM_PARRY_COST = -30f;
-        public const float TWOHANDEDPOLEARM_HIT_COST = +8f;
         public const float TWOHANDEDPOLEARM_BLOCK_REFLECT = -15f;
         public const float TWOHANDEDPOLEARM_PARRY_REFLECT = +0f;
 
@@ -175,7 +162,6 @@ namespace RBMStance
 
         public const float SMALLSHIELD_BLOCK_COST = -30f;
         public const float SMALLSHIELD_PARRY_COST = -40f;
-        public const float SMALLSHIELD_HIT_COST = -5f;
         public const float SMALLSHIELD_INCORRECT_BLOCK_REFLECT = -20f;
         public const float SMALLSHIELD_BLOCK_REFLECT = -20f;
         public const float SMALLSHIELD_PARRY_REFLECT = -5f;
@@ -185,7 +171,6 @@ namespace RBMStance
 
         public const float LARGESHIELD_BLOCK_COST = -35f;
         public const float LARGESHIELD_PARRY_COST = -45f;
-        public const float LARGESHIELD_HIT_COST = -5f;
         public const float LARGESHIELD_INCORRECT_BLOCK_REFLECT = -20f;
         public const float LARGESHIELD_BLOCK_REFLECT = -20f;
         public const float LARGESHIELD_PARRY_REFLECT = -15f;
@@ -193,34 +178,33 @@ namespace RBMStance
         public const float SHIELD_ON_BACK_HIT_COST = -10f;
         public const float SHIELD_ON_BACK_HIT_REFLECT = -20f;
 
-        public const float AGENT_HIT_COST = -20f;
         public const float AGENT_HIT_REFLECT = -10f;
 
-        public static string getWeaponClassString(WeaponClass wc)
+        public static string GetWeaponClassString(WeaponClass wc)
         {
             switch (wc)
             {
                 // Dagger has its own DAGGER_* rows; only throwing knives borrow the sword rows.
                 case WeaponClass.ThrowingKnife:
                     {
-                        return WeaponClass.OneHandedSword.ToString().ToUpper();
+                        return WeaponClass.OneHandedSword.ToString().ToUpperInvariant();
                     }
                 case WeaponClass.Pick:
                     {
-                        return WeaponClass.Mace.ToString().ToUpper();
+                        return WeaponClass.Mace.ToString().ToUpperInvariant();
                     }
                 case WeaponClass.LowGripPolearm:
                 case WeaponClass.Javelin:
                     {
-                        return WeaponClass.OneHandedPolearm.ToString().ToUpper();
+                        return WeaponClass.OneHandedPolearm.ToString().ToUpperInvariant();
                     }
                 case WeaponClass.ThrowingAxe:
                     {
-                        return WeaponClass.OneHandedAxe.ToString().ToUpper();
+                        return WeaponClass.OneHandedAxe.ToString().ToUpperInvariant();
                     }
                 default:
                     {
-                        return wc.ToString().ToUpper();
+                        return wc.ToString().ToUpperInvariant();
                     }
             }
         }
@@ -242,56 +226,47 @@ namespace RBMStance
             return table;
         }
 
-        private static string getTableKey(WeaponClass wc)
+        private static string GetTableKey(WeaponClass wc)
         {
-            return wc == WeaponClass.Undefined ? "UNARMED" : getWeaponClassString(wc);
+            return wc == WeaponClass.Undefined ? "UNARMED" : GetWeaponClassString(wc);
         }
 
         // Returns 0 (a no-op offset over the base value) when the row does not exist.
-        private static float lookup(string key)
+        private static float Lookup(string key)
         {
             float value;
             return _table.TryGetValue(key, out value) ? value : 0f;
         }
 
-        public static float getDefenseCost(WeaponClass wc, MeleeHitType hitType)
+        public static float GetDefenseCost(WeaponClass wc, MeleeHitType hitType)
         {
-            float retVal = BASE_DEFENSE_COST;
-            string weaponClassString = getTableKey(wc);
+            float retVal = BASE_COST;
+            string weaponClassString = GetTableKey(wc);
             switch (hitType)
             {
                 case MeleeHitType.WeaponBlock:
                 case MeleeHitType.ShieldBlock:
                     {
-                        retVal += lookup(weaponClassString + "_BLOCK_COST");
+                        retVal += Lookup(weaponClassString + "_BLOCK_COST");
                         break;
                     }
                 case MeleeHitType.WeaponParry:
                 case MeleeHitType.ShieldParry:
+                case MeleeHitType.ChamberBlock:
                     {
-                        retVal += lookup(weaponClassString + "_PARRY_COST");
-                        break;
-                    }
-                case MeleeHitType.AgentHit:
-                    {
-                        retVal += AGENT_HIT_COST;
+                        retVal += Lookup(weaponClassString + "_PARRY_COST");
                         break;
                     }
                 case MeleeHitType.ShieldIncorrectBlock:
                     {
                         if (wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
                         {
-                            retVal += lookup(weaponClassString + "_INCORRECT_BLOCK_COST");
+                            retVal += Lookup(weaponClassString + "_INCORRECT_BLOCK_COST");
                         }
                         else
                         {
                             retVal += SHIELD_ON_BACK_HIT_COST;
                         }
-                        break;
-                    }
-                case MeleeHitType.ChamberBlock:
-                    {
-                        retVal += lookup(weaponClassString + "_PARRY_COST") * 0.5f;
                         break;
                     }
                 default:
@@ -303,84 +278,79 @@ namespace RBMStance
             return retVal;
         }
 
-        public static float getAttackDrain(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
+        public static float GetAttackDrain(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
         {
             float retVal = BASE_DRAIN;
-            string weaponClassString = getTableKey(wc);
+            string weaponClassString = GetTableKey(wc);
             if (strikeType == StrikeType.Swing)
             {
                 if (attackDirection == Agent.UsageDirection.AttackUp)
                 {
-                    retVal += lookup(weaponClassString + "_OVERHEAD_DRAIN");
+                    retVal += Lookup(weaponClassString + "_OVERHEAD_DRAIN");
                 }
                 else
                 {
-                    retVal += lookup(weaponClassString + "_SWING_DRAIN");
+                    retVal += Lookup(weaponClassString + "_SWING_DRAIN");
                 }
             }
             else
             {
-                retVal += lookup(weaponClassString + "_THRUST_DRAIN");
+                retVal += Lookup(weaponClassString + "_THRUST_DRAIN");
             }
             return retVal;
         }
 
-        public static float getAttackCost(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
+        public static float GetAttackCost(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
         {
-            float retVal = BASE_DEFENSE_COST;
-            string weaponClassString = getTableKey(wc);
+            float retVal = BASE_COST;
+            string weaponClassString = GetTableKey(wc);
             if (strikeType == StrikeType.Swing)
             {
                 if (attackDirection == Agent.UsageDirection.AttackUp)
                 {
-                    retVal += lookup(weaponClassString + "_OVERHEAD_COST");
+                    retVal += Lookup(weaponClassString + "_OVERHEAD_COST");
                 }
                 else
                 {
-                    retVal += lookup(weaponClassString + "_SWING_COST");
+                    retVal += Lookup(weaponClassString + "_SWING_COST");
                 }
             }
             else
             {
-                retVal += lookup(weaponClassString + "_THRUST_COST");
+                retVal += Lookup(weaponClassString + "_THRUST_COST");
             }
             return retVal;
         }
 
-        public static float getDefenseReflect(WeaponClass wc, MeleeHitType hitType)
+        public static float GetDefenseReflect(WeaponClass wc, MeleeHitType hitType)
         {
             float retVal = BASE_REFLECT;
-            string weaponClassString = getTableKey(wc);
+            string weaponClassString = GetTableKey(wc);
             switch (hitType)
             {
                 case MeleeHitType.WeaponBlock:
                 case MeleeHitType.ShieldBlock:
                     {
-                        retVal += lookup(weaponClassString + "_BLOCK_REFLECT");
+                        retVal += Lookup(weaponClassString + "_BLOCK_REFLECT");
                         break;
                     }
                 case MeleeHitType.WeaponParry:
                 case MeleeHitType.ShieldParry:
+                case MeleeHitType.ChamberBlock:
                     {
-                        retVal += lookup(weaponClassString + "_PARRY_REFLECT");
+                        retVal += Lookup(weaponClassString + "_PARRY_REFLECT");
                         break;
                     }
                 case MeleeHitType.ShieldIncorrectBlock:
                     {
                         if (wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
                         {
-                            retVal += lookup(weaponClassString + "_INCORRECT_BLOCK_REFLECT");
+                            retVal += Lookup(weaponClassString + "_INCORRECT_BLOCK_REFLECT");
                         }
                         else
                         {
                             retVal += SHIELD_ON_BACK_HIT_REFLECT;
                         }
-                        break;
-                    }
-                case MeleeHitType.ChamberBlock:
-                    {
-                        //TODO: decide chamber block posture damage
-                        retVal += lookup(weaponClassString + "_PARRY_REFLECT") * 2f;
                         break;
                     }
                 case MeleeHitType.AgentHit:
@@ -397,7 +367,7 @@ namespace RBMStance
             return retVal;
         }
 
-        public static WeaponClass getDefenderWeaponClass(Agent agent)
+        public static WeaponClass GetDefenderWeaponClass(Agent agent)
         {
             WeaponClass wc = WeaponClass.Undefined;
             if (!agent.WieldedOffhandWeapon.IsEmpty)
@@ -425,7 +395,7 @@ namespace RBMStance
             return wc;
         }
 
-        public static WeaponClass getAttackerWeaponClass(Agent agent)
+        public static WeaponClass GetAttackerWeaponClass(Agent agent)
         {
             WeaponClass wc = WeaponClass.Undefined;
             if (!agent.WieldedWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem != null)
@@ -436,26 +406,26 @@ namespace RBMStance
         }
 
         // A kick, shield bash or pommel strike uses the UNARMED rows, not the wielded weapon's.
-        public static float getDefenderPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType, bool isUnarmedAttack)
+        public static float GetDefenderPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType, bool isUnarmedAttack)
         {
-            WeaponClass defenderWC = getDefenderWeaponClass(defender);
-            WeaponClass attackerWC = isUnarmedAttack ? WeaponClass.Undefined : getAttackerWeaponClass(attacker);
+            WeaponClass defenderWC = GetDefenderWeaponClass(defender);
+            WeaponClass attackerWC = isUnarmedAttack ? WeaponClass.Undefined : GetAttackerWeaponClass(attacker);
 
-            float defenseCost = getDefenseCost(defenderWC, hitType);
-            float attackDrain = getAttackDrain(attackerWC, attackDirection, strikeType);
+            float defenseCost = GetDefenseCost(defenderWC, hitType);
+            float attackDrain = GetAttackDrain(attackerWC, attackDirection, strikeType);
 
             // Per-class costs are negative offsets from the base; a large-shield parry against a
             // zero-drain attack sums below zero, which would heal the defender past maxPosture.
             return Math.Max(0f, defenseCost + attackDrain);
         }
 
-        public static float getAttackerPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType, bool isUnarmedAttack)
+        public static float GetAttackerPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType, bool isUnarmedAttack)
         {
-            WeaponClass defenderWC = getDefenderWeaponClass(defender);
-            WeaponClass attackerWC = isUnarmedAttack ? WeaponClass.Undefined : getAttackerWeaponClass(attacker);
+            WeaponClass defenderWC = GetDefenderWeaponClass(defender);
+            WeaponClass attackerWC = isUnarmedAttack ? WeaponClass.Undefined : GetAttackerWeaponClass(attacker);
 
-            float attackCost = getAttackCost(attackerWC, attackDirection, strikeType);
-            float defenseReflect = getDefenseReflect(defenderWC, hitType);
+            float attackCost = GetAttackCost(attackerWC, attackDirection, strikeType);
+            float defenseReflect = GetDefenseReflect(defenderWC, hitType);
 
             return Math.Max(0f, attackCost + defenseReflect);
         }

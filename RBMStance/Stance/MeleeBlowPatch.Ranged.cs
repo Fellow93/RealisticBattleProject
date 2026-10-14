@@ -18,7 +18,7 @@ namespace RBMStance
     {
         private partial class CreateMeleeBlowPatch
         {
-            public static float calculateRangedPostureLoss(float fixedPS, float dynamicPS, Agent shooterAgent, WeaponClass wc)
+            public static float CalculateRangedPostureLoss(float fixedPS, float dynamicPS, Agent shooterAgent, WeaponClass wc)
             {
                 SkillObject attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wc);
 
@@ -28,7 +28,6 @@ namespace RBMStance
                 }
 
                 float attackerEffectiveWeaponSkill = 0;
-                float attackerEffectiveStrengthSkill = 0;
 
                 float fixedPostureLoss = fixedPS;
                 float dynamicPostureLoss = dynamicPS;
@@ -37,14 +36,7 @@ namespace RBMStance
                 {
                     attackerEffectiveWeaponSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, attackerWeaponSkill);
                 }
-                if (shooterAgent.HasMount)
-                {
-                    attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, DefaultSkills.Riding);
-                }
-                else
-                {
-                    attackerEffectiveStrengthSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(shooterAgent, DefaultSkills.Athletics);
-                }
+                float attackerEffectiveStrengthSkill = GetBodySkill(shooterAgent);
 
                 // Higher skill reduces the dynamic cost: skill 0 pays the full dynamicPS, skill >= 200 pays none.
                 dynamicPostureLoss -= Math.Min(1f, attackerEffectiveWeaponSkill / 200f) * (dynamicPS * 0.5f);
@@ -53,7 +45,7 @@ namespace RBMStance
                 return fixedPostureLoss + dynamicPostureLoss;
             }
 
-            private static float calculateShootMissileStaminaLoss(Agent agent, WeaponClass wc, MissionWeapon firedWeapon)
+            private static float CalculateShootMissileStaminaLoss(Agent agent, WeaponClass wc, MissionWeapon firedWeapon)
             {
                 SkillObject attackerWeaponSkill = WeaponComponentData.GetRelevantSkillFromWeaponClass(wc);
                 int attackerEffectiveWeaponSkill = 0;
@@ -121,9 +113,9 @@ namespace RBMStance
                             return;
                         }
                         WeaponClass wc = missionWeapon.CurrentUsageItem.WeaponClass;
-                        Stance shooterPosture = null;
-                        AgentStances.values.TryGetValue(shooterAgent, out shooterPosture);
-                        if (shooterPosture != null)
+                        Stance shooterStance = null;
+                        AgentStances.values.TryGetValue(shooterAgent, out shooterStance);
+                        if (shooterStance != null)
                         {
                             float currentTime = Mission.Current.CurrentTime;
                             float postureLoss = 0f;
@@ -131,35 +123,35 @@ namespace RBMStance
                             {
                                 case WeaponClass.Bow:
                                     {
-                                        postureLoss = calculateRangedPostureLoss(35f, 25f, shooterAgent, wc);
+                                        postureLoss = CalculateRangedPostureLoss(35f, 25f, shooterAgent, wc);
                                         break;
                                     }
                                 case WeaponClass.Crossbow:
                                     {
-                                        postureLoss = calculateRangedPostureLoss(5f, 5f, shooterAgent, wc);
+                                        postureLoss = CalculateRangedPostureLoss(5f, 5f, shooterAgent, wc);
                                         break;
                                     }
                                 case WeaponClass.Javelin:
                                     {
-                                        postureLoss = calculateRangedPostureLoss(25f, 25f, shooterAgent, wc);
+                                        postureLoss = CalculateRangedPostureLoss(25f, 25f, shooterAgent, wc);
                                         break;
                                     }
                                 case WeaponClass.ThrowingAxe:
                                 case WeaponClass.ThrowingKnife:
                                     {
-                                        postureLoss = calculateRangedPostureLoss(25f, 25f, shooterAgent, wc);
+                                        postureLoss = CalculateRangedPostureLoss(25f, 25f, shooterAgent, wc);
                                         break;
                                     }
                             }
 
                             // Shooting drains posture; it never refills it. Regen handles recovery.
-                            shooterPosture.posture = Math.Max(0f, shooterPosture.posture - postureLoss);
+                            shooterStance.posture = Math.Max(0f, shooterStance.posture - postureLoss);
 
                             // Crossbows pay stamina for spanning, not for loosing: see OverrideOnWeaponReloadPhaseChange.
                             if (RBMConfig.RBMConfig.staminaEnabled && wc != WeaponClass.Crossbow)
                             {
-                                float staminaLoss = calculateShootMissileStaminaLoss(shooterAgent, wc, missionWeapon);
-                                shooterPosture.reduceStamina(staminaLoss);
+                                float staminaLoss = CalculateShootMissileStaminaLoss(shooterAgent, wc, missionWeapon);
+                                shooterStance.ReduceStamina(staminaLoss);
                             }
                         }
                     }
@@ -199,11 +191,11 @@ namespace RBMStance
                     {
                         return;
                     }
-                    Stance shooterPosture = null;
-                    AgentStances.values.TryGetValue(__instance, out shooterPosture);
-                    if (shooterPosture != null)
+                    Stance shooterStance = null;
+                    AgentStances.values.TryGetValue(__instance, out shooterStance);
+                    if (shooterStance != null)
                     {
-                        shooterPosture.reduceStamina(calculateShootMissileStaminaLoss(__instance, WeaponClass.Crossbow, missionWeapon));
+                        shooterStance.ReduceStamina(CalculateShootMissileStaminaLoss(__instance, WeaponClass.Crossbow, missionWeapon));
                     }
                 }
             }

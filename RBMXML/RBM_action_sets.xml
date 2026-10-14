@@ -6,7 +6,7 @@
 
   act_scared_to_normal_2 is natively defined only in as_human_hideout_bandit (and the villager sets that inherit
   it), so a battle soldier (as_human_warrior / as_human_female_warrior) cannot play it. Adding it to
-  as_human_warrior also covers as_human_female_warrior, which inherits it. Used by StanceLogic.forceTiredAnimation.
+  as_human_warrior also covers as_human_female_warrior, which inherits it. Used by StanceLogic.ForceTiredAnimation.
 -->
 <action_sets>
 	<action_set

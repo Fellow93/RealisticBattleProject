@@ -525,11 +525,13 @@ namespace RBMAI
                 if (RBMConfig.RBMConfig.rbmStanceEnabled && RBMConfig.RBMConfig.postureEnabled)
                 {
                     Stance stance = null;
-                    AgentStances.values.TryGetValue(unit, out stance);
-                    // RecalculatePosture rebuilds these maxima additively from skills and gear, so a
-                    // zero is reachable. Dividing by it yields NaN, which Lerp propagates straight into
-                    // every decision score. Leave the modifier at its neutral 1f instead.
-                    if (unit != null && stance != null)
+                    if (unit != null)
+                    {
+                        AgentStances.values.TryGetValue(unit, out stance);
+                    }
+                    // A zero max (Stance.InitializePosture/InitializeStamina) would put NaN into every
+                    // decision score; the modifier then stays at its neutral 1f.
+                    if (stance != null)
                     {
                         if (stance.maxPosture > 0f)
                         {

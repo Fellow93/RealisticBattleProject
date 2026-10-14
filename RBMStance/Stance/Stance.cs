@@ -7,7 +7,6 @@ namespace RBMStance
 {
     public class Stance
     {
-        public const float PostureRegenRubberBandStrength = 0f;
         public const float StaminaRegenRubberBandStrength = 2.5f;
 
         public float posture;
@@ -38,6 +37,12 @@ namespace RBMStance
         // Stamina fraction that was last pushed into AgentDrivenProperties via UpdateAgentStats.
         // The refresh is event-driven: it only fires when the live fraction has drifted from this.
         public float lastAppliedStaminaFraction = 1f;
+
+        // Plain fields, written on the main thread only (RBMAI's Frontline job reads this object off-thread).
+        // Times are Mission.CurrentTime. The break count lets a blow's later patches tell that it broke posture.
+        public int postureBreakCount = 0;
+        public float lastPostureDamageTime = float.MinValue;
+        public float lastPostureEventTime = float.MinValue;
 
         public Stance()
         {
@@ -144,66 +149,63 @@ namespace RBMStance
             }
         }
 
-        public void reduceStamina(float value)
+        public void ReduceStamina(float value)
         {
             this.stamina = Math.Max(0f, this.stamina - value);
         }
 
-        public void addStamina(float value)
+        public void AddStamina(float value)
         {
             this.stamina = Math.Min(maxStamina, this.stamina + value);
         }
 
-        public void reducePosture(float value)
+        public void ReducePosture(float value)
         {
             this.posture = Math.Max(0f, this.posture - value);
         }
 
-        public void addPosture(float value)
+        public void AddPosture(float value)
         {
             this.posture = Math.Min(maxPosture, this.posture + value);
         }
 
-        public float calcualteRubberBandFactor(float current, float max, float rubberBandStrength)
+        // Posture refills at once to the reset share of max.
+        public void BreakPosture(float now, float resetShare)
         {
-            // Pow(x, 0) is always 1; skip the call entirely when the rubber band is disabled.
-            if (rubberBandStrength == 0f)
-            {
-                return 1f;
-            }
+            posture = Math.Max(0f, resetShare) * maxPosture;
+            postureBreakCount++;
+            MarkPostureDamage(now);
+        }
+
+        public void MarkPostureDamage(float now)
+        {
+            lastPostureDamageTime = now;
+            lastPostureEventTime = now;
+        }
+
+        // Regen speeds up as the bar empties.
+        private static float CalculateRubberBandFactor(float current, float max, float rubberBandStrength)
+        {
             float deficit = 1f - (current / max);
             return ((float)Math.Pow(1f + deficit, rubberBandStrength));
         }
 
-        public void tickStaminaRegen(int tickCount = 30, float multiplier = 1f)
+        public void TickStaminaRegen(float multiplier)
         {
-            float rubberBandFactor = calcualteRubberBandFactor(this.stamina, this.maxStamina, StaminaRegenRubberBandStrength);
+            float rubberBandFactor = CalculateRubberBandFactor(this.stamina, this.maxStamina, StaminaRegenRubberBandStrength);
             float value = this.staminaRegenPerTick;
-            value *= tickCount;
+            value *= PostureTuning.RegenTicksPerUpdate;
             value *= multiplier;
             value *= rubberBandFactor;
-            addStamina(value);
+            AddStamina(value);
         }
 
-        public void tickPostureRegen(int tickCount = 30, float multiplier = 1f)
+        public void TickPostureRegen(float multiplier)
         {
-            float rubberBandFactor = calcualteRubberBandFactor(this.posture, this.maxPosture, PostureRegenRubberBandStrength);
             float value = this.postureRegenPerTick;
-            value *= tickCount;
+            value *= PostureTuning.RegenTicksPerUpdate;
             value *= multiplier;
-            value *= rubberBandFactor;
-            addPosture(value);
-        }
-
-        public Stance(float maxPosture, float regenPerTick, float maxStamina, float staminaRegenPerTick)
-        {
-            this.maxPosture = maxPosture;
-            this.postureRegenPerTick = regenPerTick;
-            this.posture = this.maxPosture;
-
-            this.maxStamina = maxStamina;
-            this.staminaRegenPerTick = staminaRegenPerTick;
-            this.stamina = this.maxStamina;
+            AddPosture(value);
         }
     }
 }

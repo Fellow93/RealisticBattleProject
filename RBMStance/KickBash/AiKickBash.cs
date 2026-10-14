@@ -34,7 +34,7 @@ namespace RBMStance
         /// attacker is always kicked; otherwise either.
         ///
         /// Cost (player too): posture and stamina charged once as the action starts, hit or miss, less with skill. It is
-        /// the whole cost: the posture patch charges the kicker nothing more when it lands (handleAttacker).
+        /// the whole cost: the posture patch charges the kicker nothing more when it lands (HandleAttacker).
         ///
         /// Damage (RBMCombat, DamageRework.Core): the unarmed (punch) model with the boot, shield or weapon in place
         /// of the gauntlet, so blunt, skill-scaled, by body part and against that part's armour. None for a bash
@@ -42,8 +42,8 @@ namespace RBMStance
         /// patch's usual one for the blow, i.e. by its damage.
         ///
         /// Knockdown (player too, AiKickBashKnockDownPatch), for an enemy's blow not blocked by a shield on a man on
-        /// foot who is not already down: certain if he is still in a posture-break or posture-tiredness reaction or if the blow leaves his
-        /// posture empty; otherwise a relative-skill roll, at full chance against a man holding his weapon ready or
+        /// foot who is not already down: certain if he is still in a posture-break or posture-tiredness reaction or if the blow breaks his
+        /// posture; otherwise a relative-skill roll, at full chance against a man holding his weapon ready or
         /// hit from behind and scaled by the skill lead against anything else. The roll is higher for a kick than a
         /// bash, from behind, against a man kicked/bashed within KickStaggerSeconds and against a tired man, lower
         /// the heavier his armour. The fall is RBM's own (a light fall on the spot, AiKickBash.FallBackward/FallForward),
@@ -128,9 +128,6 @@ namespace RBMStance
 
             public const float StaminaCost = 50f;
 
-            // Share of max posture given back after a kick/bash empties it (the posture system's own reset share).
-            public const float PostureBreakReset = 0.75f;
-
             // How long a man counts as off balance after a kick/bash lands on him: a second one in that time is more
             // likely to knock him down (KnockDownRecentKickMultiplier).
             public const float KickStaggerSeconds = 1.2f;
@@ -167,7 +164,7 @@ namespace RBMStance
                 return MathF.Clamp((KickSkill(attacker) - KickSkill(victim)) / (float)FullSkillLead, 0f, 1f);
             }
 
-            // The posture system's forced reactions (StanceLogic.forceStaggerAnimation / forceTiredAnimation and the
+            // The posture system's forced reactions (StanceLogic.ForceStaggerAnimation / ForceTiredAnimation and the
             // horse-charge stagger), which it plays on the lower body of a man on foot.
             private static readonly ActionIndexCache[] StaggerActions =
             {
@@ -511,10 +508,10 @@ namespace RBMStance
                     return;
                 }
                 float skillModifier = CostSkillModifier();
-                stance.reducePosture(AiKickBash.PostureCost * skillModifier);
+                stance.ReducePosture(AiKickBash.PostureCost * skillModifier);
                 if (RBMConfig.RBMConfig.staminaEnabled)
                 {
-                    stance.reduceStamina(AiKickBash.StaminaCost * skillModifier);
+                    stance.ReduceStamina(AiKickBash.StaminaCost * skillModifier);
                 }
             }
 
@@ -636,7 +633,8 @@ namespace RBMStance
 
         /// <summary>
         /// The knockdown rules of a kick or bash that lands (see AiKickBash). Applies to the player's kicks and bashes
-        /// too. Runs after the posture patch, which may replace the blow and has by then taken the victim's posture.
+        /// too. Runs after the posture patch, which may replace the blow and has by then taken the victim's posture and,
+        /// on a break, already reset it; the prefix's break count tells whether this blow broke it.
         /// </summary>
         [HarmonyPatch(typeof(Mission))]
         [HarmonyPatch("CreateMeleeBlow")]
@@ -671,8 +669,19 @@ namespace RBMStance
                 victimComponent.QueueFall(fromBehind);
             }
 
+            // The victim's break count before the blow, -1 when there is nothing to compare.
+            private static void Prefix(Agent victimAgent, ref AttackCollisionData collisionData, out int __state)
+            {
+                __state = -1;
+                if (RBMConfig.RBMConfig.aiKickBashEnabled && RBMConfig.RBMConfig.postureEnabled && collisionData.IsAlternativeAttack &&
+                    victimAgent != null && AgentStances.values.TryGetValue(victimAgent, out Stance stance) && stance != null)
+                {
+                    __state = stance.postureBreakCount;
+                }
+            }
+
             [HarmonyPriority(Priority.Last)]
-            private static void Postfix(ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData)
+            private static void Postfix(ref Blow __result, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, int __state)
             {
                 // A friend's kick/bash is left to the engine, and a man already down is not knocked down again.
                 if (!RBMConfig.RBMConfig.aiKickBashEnabled || !collisionData.IsAlternativeAttack || attackerAgent == null || !attackerAgent.IsHuman ||
@@ -700,17 +709,12 @@ namespace RBMStance
                     KnockDown(ref __result, victimComponent, fromBehind);
                     return;
                 }
-                // The man hit has already lost posture and stamina to the posture patch, by the blow's damage.
-                if (RBMConfig.RBMConfig.postureEnabled &&
-                    AgentStances.values.TryGetValue(victimAgent, out Stance victimStance) && victimStance != null)
+                // This blow broke his posture: he goes down, no roll.
+                if (__state >= 0 && AgentStances.values.TryGetValue(victimAgent, out Stance victimStance) && victimStance != null &&
+                    victimStance.postureBreakCount != __state)
                 {
-                    // Posture gone: he goes down, no roll, and gets posture back as after any posture break.
-                    if (victimStance.posture <= 0f)
-                    {
-                        KnockDown(ref __result, victimComponent, fromBehind);
-                        StanceLogic.ResetPostureForAgent(ref victimStance, AiKickBash.PostureBreakReset);
-                        return;
-                    }
+                    KnockDown(ref __result, victimComponent, fromBehind);
+                    return;
                 }
 
                 float chance = AiKickBash.KnockDownEvenChance * AiKickBash.RelativeSkill(attackerAgent, victimAgent);

@@ -24,11 +24,6 @@ namespace RBMStance
         //private const float HIT_SLOW      = 0.05f;
         //private const int   HIT_PRIORITY  = 0;
 
-        //// Parry: player performs a perfect weapon or shield parry
-        //private const float PARRY_DURATION = 0.1f;
-        //private const float PARRY_SLOW     = 0.05f;
-        //private const int   PARRY_PRIORITY = 1;
-
         // Kill: player kills or wounds an enemy
         private const float KILL_DURATION = 0.75f;
 
@@ -111,11 +106,6 @@ namespace RBMStance
         }
 
         // ── Static triggers raised by the posture patch (MeleeBlowPatch) ─────
-
-        public static void TriggerParryHitStop()
-        {
-            //Instance?.TriggerHitStop(PARRY_DURATION, PARRY_SLOW, PARRY_PRIORITY);
-        }
 
         public static void TriggerPostureBreakHitStop()
         {

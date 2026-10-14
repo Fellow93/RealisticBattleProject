@@ -17,9 +17,6 @@ namespace RBMStance
 {
     public partial class StanceLogic : MissionLogic
     {
-        // (Removed) OnShieldDamagedPatch: it was a byte-identical reimplementation of vanilla
-        // Agent.OnShieldDamaged returning false, i.e. a no-op that only blocked other mods' patches.
-
         [HarmonyPatch(typeof(TournamentRound))]
         [HarmonyPatch("EndMatch")]
         private class EndMatchPatch
@@ -33,7 +30,6 @@ namespace RBMStance
                     {
                         if (entry.Key.IsPlayerControlled)
                         {
-                            //InformationManager.DisplayMessage(new InformationMessage(entry.Value.stance.ToString()));
                             PushPlayerStanceBars(entry.Value);
                         }
 
@@ -47,10 +43,7 @@ namespace RBMStance
                         }
                     }
                 }
-                agentsToDropShield.Clear();
-                agentsToDropWeapon.Clear();
-                agentsToChangeFormation.Clear();
-                AgentStances.values.Clear();
+                ClearMissionState();
             }
         }
     }

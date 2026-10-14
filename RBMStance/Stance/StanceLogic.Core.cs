@@ -17,8 +17,6 @@ namespace RBMStance
 {
     public partial class StanceLogic : MissionLogic
     {
-        private static float timeToCalc = 0.5f;
-        private static float timeToCalcStaminaHealth = 10f;
         // UpdateAgentStats is only re-run for an agent when its stamina fraction has moved at least
         // this far from the fraction last applied to its driven properties...
         private const float StaminaRefreshThreshold = 0.05f;
@@ -46,16 +44,60 @@ namespace RBMStance
             }
         }
 
-        //how much posture is regained after posture break
-        private static float postureResetModifier = 0.75f;
-
-        public static void ResetPostureForAgent(ref Stance stance, float resetModifier)
+        // Every agent the posture system holds for the current mission.
+        internal static void ClearMissionState()
         {
-            if (stance != null)
+            AgentStances.values.Clear();
+            currentDt = 0f;
+            currentDtToUpdateStaminaHealth = 0f;
+            agentsToDropShield.Clear();
+            agentsToDropWeapon.Clear();
+            agentsToChangeFormation.Clear();
+        }
+
+        // Drops the queued agents' shield (offhand) or weapon once they are not mid-release; inactive agents just leave the queue.
+        private static void ProcessDropQueue(MBArrayList<Agent> queue, MBArrayList<Agent> buffer, bool offhand)
+        {
+            buffer.Clear();
+            for (int i = queue.Count - 1; i >= 0; i--)
             {
-                stance.posture += stance.maxPosture * resetModifier;
-                stance.posture = Math.Max(0f, stance.posture);
+                if (queue[i] != null && queue[i].Mission != null && queue[i].IsActive())
+                {
+                    ActionCodeType currentActionType = queue[i].GetCurrentActionType(1);
+                    if (
+                        currentActionType == ActionCodeType.ReleaseMelee ||
+                        currentActionType == ActionCodeType.ReleaseRanged ||
+                        currentActionType == ActionCodeType.ReleaseThrowing ||
+                        currentActionType == ActionCodeType.WeaponBash)
+                    {
+                        continue;
+                    }
+                    buffer.Add(queue[i]);
+                }
+                else
+                {
+                    buffer.Add(queue[i]);
+                }
             }
+            foreach (Agent agent in buffer)
+            {
+                if (agent != null && agent.Mission != null && agent.IsActive())
+                {
+                    EquipmentIndex ei = offhand ? agent.GetOffhandWieldedItemIndex() : agent.GetPrimaryWieldedItemIndex();
+                    if (ei != EquipmentIndex.None)
+                    {
+                        agent.DropItem(ei);
+                        agent.UpdateAgentProperties();
+                    }
+                }
+                queue.Remove(agent);
+            }
+        }
+
+        public static float MissionNow()
+        {
+            Mission mission = Mission.Current;
+            return mission != null ? mission.CurrentTime : 0f;
         }
 
         [ThreadStatic]
@@ -66,41 +108,37 @@ namespace RBMStance
         [ThreadStatic]
         private static float _meleeHitMomentumRemaining;
 
-        private static bool IsAgentInQuickStaminaRegen(Agent agent, Stance stance)
+        // Neither dealt nor took a melee or ranged hit for longer than this.
+        private static bool NoRecentHits(Agent agent, float seconds)
         {
-            float quickStaminaThreshold = 0.7f;
-            if (stance.stamina >= quickStaminaThreshold * stance.maxStamina)
+            float currentTime = MBCommon.GetTotalMissionTime();
+            return currentTime - agent.LastMeleeHitTime > seconds &&
+                currentTime - agent.LastRecievedMeleeHitTime > seconds &&
+                currentTime - agent.LastRangedHitTime > seconds &&
+                currentTime - agent.LastRecievedRangedHitTime > seconds;
+        }
+
+        private static bool QualifiesForQuickStaminaRegen(Agent agent, Stance stance)
+        {
+            if (stance.stamina >= PostureTuning.QuickStaminaRegenBelowShare * stance.maxStamina)
             {
                 return false;
             }
-            float currentTime = MBCommon.GetTotalMissionTime();
-            if (currentTime - agent.LastMeleeHitTime > 10f &&
-                currentTime - agent.LastRecievedMeleeHitTime > 10f &&
-                currentTime - agent.LastRangedHitTime > 10f &&
-                currentTime - agent.LastRecievedRangedHitTime > 10f
-                )
-            {
-                return true;
-            }
-            return false;
+            return NoRecentHits(agent, PostureTuning.QuickStaminaRegenNoHitSeconds);
         }
 
-        private static bool IsAgentInQuickPostureRegen(Agent agent)
+        private static bool QualifiesForQuickPostureRegen(Agent agent, Stance stance, float now)
         {
-            float currentTime = MBCommon.GetTotalMissionTime();
-            if (currentTime - agent.LastMeleeHitTime > 10f &&
-                currentTime - agent.LastRecievedMeleeHitTime > 10f &&
-                currentTime - agent.LastRangedHitTime > 10f &&
-                currentTime - agent.LastRecievedRangedHitTime > 10f
-                )
+            if (now - stance.lastPostureEventTime <= PostureTuning.QuickPostureRegenQuietSeconds)
             {
-                return true;
+                return false;
             }
-            return false;
+            return NoRecentHits(agent, PostureTuning.QuickPostureRegenQuietSeconds);
         }
 
         public override void OnAgentRemoved(Agent affectedAgent, Agent affectorAgent, AgentState agentState, KillingBlow blow)
         {
+            base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, blow);
             if (!Mission.Current.IsFieldBattle)
             {
                 return;
@@ -131,8 +169,6 @@ namespace RBMStance
                         agent.SetActionChannel(0, ActionIndexCache.act_stagger_backward_3, actionSpeed: 1f);
                     }
                 }
-                base.OnAgentRemoved(affectedAgent, affectorAgent, agentState, blow);
-                return;
             }
         }
 
@@ -142,13 +178,12 @@ namespace RBMStance
             if (RBMConfig.RBMConfig.postureEnabled)
             {
                 currentDtToUpdateStaminaHealth += dt;
+                currentDt += dt;
 
-                if (currentDt < timeToCalc)
+                if (currentDt >= PostureTuning.RegenUpdatePeriodSeconds)
                 {
-                    currentDt += dt;
-                }
-                else
-                {
+                    float regenScale = Math.Min(currentDt, PostureTuning.RegenUpdatePeriodSeconds * PostureTuning.RegenMaxPeriodsPerUpdate)
+                        / PostureTuning.RegenUpdatePeriodSeconds;
                     _inactiveAgentsBuffer.Clear();
                     _statRefreshBuffer.Clear();
                     // Stat refresh is AI work: only while AI ticking is on, and only stamina feeds
@@ -185,38 +220,26 @@ namespace RBMStance
                                     AgentStances.postureVisual._dataSource.EnemyStaminaMax = (int)entry.Value.maxStamina;
                                 }
                             }
-                            bool isInQuickStaminaRegen = IsAgentInQuickPostureRegen(agent: entry.Key);
-                            if (isInQuickStaminaRegen)
+                            if (now - entry.Value.lastPostureDamageTime >= PostureTuning.PostureRegenPauseSeconds)
                             {
-                                entry.Value.tickPostureRegen(multiplier: 3f);
-                            }
-                            else
-                            {
-                                entry.Value.tickPostureRegen();
+                                bool quickRegen = QualifiesForQuickPostureRegen(entry.Key, entry.Value, now);
+                                entry.Value.TickPostureRegen((quickRegen ? PostureTuning.QuickRegenMultiplier : 1f) * regenScale);
                             }
                         }
                         if (RBMConfig.RBMConfig.staminaEnabled)
                         {
                             if (entry.Value.stamina < entry.Value.maxStamina)
                             {
-                                bool isInQuickStaminaRegen = IsAgentInQuickStaminaRegen(agent: entry.Key, stance: entry.Value);
-                                if (isInQuickStaminaRegen)
-                                {
-                                    entry.Value.tickStaminaRegen(multiplier: 3f);
-                                }
-                                else
-                                {
-                                    entry.Value.tickStaminaRegen();
-                                }
+                                bool quickRegen = QualifiesForQuickStaminaRegen(entry.Key, entry.Value);
+                                entry.Value.TickStaminaRegen((quickRegen ? PostureTuning.QuickRegenMultiplier : 1f) * regenScale);
                             }
 
-                            //stamina health regen
                             float staminaLevel = entry.Value.stamina / entry.Value.maxStamina;
-                            if (currentDtToUpdateStaminaHealth > timeToCalcStaminaHealth)
+                            if (currentDtToUpdateStaminaHealth > PostureTuning.StaminaHealthRegenIntervalSeconds)
                             {
-                                if (staminaLevel > 0.85f)
+                                if (staminaLevel > PostureTuning.StaminaHealthRegenAboveShare)
                                 {
-                                    entry.Key.Health = Math.Min(entry.Key.HealthLimit, entry.Key.Health + 0.9f);
+                                    entry.Key.Health = Math.Min(entry.Key.HealthLimit, entry.Key.Health + PostureTuning.StaminaHealthRegenAmount);
                                 }
                             }
 
@@ -242,9 +265,9 @@ namespace RBMStance
                         }
                     }
                     _statRefreshBuffer.Clear();
-                    if (currentDtToUpdateStaminaHealth > timeToCalcStaminaHealth)
+                    if (currentDtToUpdateStaminaHealth > PostureTuning.StaminaHealthRegenIntervalSeconds)
                     {
-                        currentDtToUpdateStaminaHealth = 0f;
+                        currentDtToUpdateStaminaHealth -= PostureTuning.StaminaHealthRegenIntervalSeconds;
                     }
                     foreach (Agent agent in _inactiveAgentsBuffer)
                     {
@@ -262,269 +285,152 @@ namespace RBMStance
                     }
                     agentsToChangeFormation.Clear();
 
-                    //shield drop
-                    _dropShieldBuffer.Clear();
-                    for (int i = agentsToDropShield.Count - 1; i >= 0; i--)
-                    {
-                        if (agentsToDropShield[i] != null && agentsToDropShield[i].Mission != null && agentsToDropShield[i].IsActive())
-                        {
-                            ActionCodeType currentActionType = agentsToDropShield[i].GetCurrentActionType(1);
-                            if (
-                                currentActionType == ActionCodeType.ReleaseMelee ||
-                                currentActionType == ActionCodeType.ReleaseRanged ||
-                                currentActionType == ActionCodeType.ReleaseThrowing ||
-                                currentActionType == ActionCodeType.WeaponBash)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                _dropShieldBuffer.Add(agentsToDropShield[i]);
-                            }
-                        }
-                        else
-                        {
-                            _dropShieldBuffer.Add(agentsToDropShield[i]);
-                        }
-                    }
-                    foreach (Agent agent in _dropShieldBuffer)
-                    {
-                        if (agent != null && agent.Mission != null && agent.IsActive())
-                        {
-                            EquipmentIndex ei = agent.GetOffhandWieldedItemIndex();
-                            if (ei != EquipmentIndex.None)
-                            {
-                                agent.DropItem(ei);
-                                agent.UpdateAgentProperties();
-                            }
-                        }
-                        agentsToDropShield.Remove(agent);
-                    }
-
-                    //weapon drop
-                    _dropWeaponBuffer.Clear();
-                    for (int i = agentsToDropWeapon.Count - 1; i >= 0; i--)
-                    {
-                        if (agentsToDropWeapon[i] != null && agentsToDropWeapon[i].Mission != null && agentsToDropWeapon[i].IsActive())
-                        {
-                            ActionCodeType currentActionType = agentsToDropWeapon[i].GetCurrentActionType(1);
-                            if (
-                                currentActionType == ActionCodeType.ReleaseMelee ||
-                                currentActionType == ActionCodeType.ReleaseRanged ||
-                                currentActionType == ActionCodeType.ReleaseThrowing ||
-                                currentActionType == ActionCodeType.WeaponBash)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                _dropWeaponBuffer.Add(agentsToDropWeapon[i]);
-                            }
-                        }
-                        else
-                        {
-                            _dropWeaponBuffer.Add(agentsToDropWeapon[i]);
-                        }
-                    }
-                    foreach (Agent agent in _dropWeaponBuffer)
-                    {
-                        if (agent != null && agent.Mission != null && agent.IsActive())
-                        {
-                            EquipmentIndex ei = agent.GetPrimaryWieldedItemIndex();
-                            if (ei != EquipmentIndex.None)
-                            {
-                                agent.DropItem(ei);
-                                agent.UpdateAgentProperties();
-                            }
-                        }
-                        agentsToDropWeapon.Remove(agent);
-                    }
+                    ProcessDropQueue(agentsToDropShield, _dropShieldBuffer, offhand: true);
+                    ProcessDropQueue(agentsToDropWeapon, _dropWeaponBuffer, offhand: false);
 
                     currentDt = 0f;
                 }
             }
         }
 
+        // The engine registers no blow for a missile stopped by a shield, so OnAgentHit only sees body hits;
+        // shield hits are charged in OnMissileHit. The last shield charge is kept so the same missile's
+        // pass-through or pilum wound right after it costs nothing more.
+        private const float ShieldChargeBodyHitWindowSeconds = 0.5f;
+        private int _shieldChargedMissileIndex = -1;
+        private Agent _shieldChargedVictim;
+        private float _shieldChargedTime;
+
+        private static readonly AccessTools.FieldRef<TaleWorlds.MountAndBlade.Mission, Dictionary<int, TaleWorlds.MountAndBlade.Mission.Missile>> MissilesByIndex =
+            AccessTools.FieldRefAccess<TaleWorlds.MountAndBlade.Mission, Dictionary<int, TaleWorlds.MountAndBlade.Mission.Missile>>("_missilesDictionary");
+
+        private static bool MissileCostsPosture(WeaponClass weaponClass)
+        {
+            switch (weaponClass)
+            {
+                case WeaponClass.Bow:
+                case WeaponClass.Crossbow:
+                case WeaponClass.Arrow:
+                case WeaponClass.Bolt:
+                case WeaponClass.ThrowingKnife:
+                case WeaponClass.Javelin:
+                case WeaponClass.ThrowingAxe:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Same gate the melee patch uses: enemy hits on an active human with a stance only.
+        private static bool TryGetMissilePostureTarget(Agent victim, Agent attacker, out Stance stance)
+        {
+            stance = null;
+            if (!RBMConfig.RBMConfig.postureEnabled || victim == null || !victim.IsActive() || !victim.IsHuman
+                || attacker == null || attacker.IsFriendOf(victim))
+            {
+                return false;
+            }
+            return AgentStances.values.TryGetValue(victim, out stance) && stance != null;
+        }
+
+        private static void ApplyMissilePosture(Agent victim, Agent attacker, Stance stance, WeaponClass weaponClass, float postureLoss, in AttackCollisionData collisionData)
+        {
+            if (RBMConfig.RBMConfig.staminaEnabled)
+            {
+                bool heavy = weaponClass == WeaponClass.Javelin || weaponClass == WeaponClass.ThrowingAxe;
+                stance.ReduceStamina(postureLoss * (heavy ? 3f : 2f));
+            }
+
+            if (postureLoss > 0f)
+            {
+                float now = MissionNow();
+                stance.posture = Math.Max(0f, stance.posture - postureLoss);
+                stance.MarkPostureDamage(now);
+
+                //ranged posture break
+                if (stance.posture <= 0f)
+                {
+                    // health is already reduced here but Die() hasn't run yet; don't animate a dying agent
+                    if (victim.Health >= 1f)
+                    {
+                        ForceStaggerAnimation(victim, collisionData, 0.85f, false);
+                    }
+                    stance.BreakPosture(now, PostureTuning.PostureBreakResetShare);
+                }
+            }
+
+            AddPostureDamageVisual(attacker, victim);
+        }
+
         public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon affectorWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
         {
             base.OnAgentHit(affectedAgent, affectorAgent, in affectorWeapon, in blow, in attackCollisionData);
-            if (affectedAgent == null || !affectedAgent.IsActive() || !affectedAgent.IsHuman)
+            if (!blow.IsMissile || attackCollisionData.AttackBlockedWithShield || affectorWeapon.CurrentUsageItem == null)
             {
                 return;
             }
-            // Same gate the melee patch uses: no posture bookkeeping for friendly fire or for hits
-            // with no identifiable affector.
-            if (affectorAgent == null || affectorAgent.IsFriendOf(affectedAgent))
+            WeaponClass weaponClass = affectorWeapon.CurrentUsageItem.WeaponClass;
+            if (!MissileCostsPosture(weaponClass) || !TryGetMissilePostureTarget(affectedAgent, affectorAgent, out Stance stance))
             {
                 return;
             }
-            if (RBMConfig.RBMConfig.postureEnabled)
+            if (blow.WeaponRecord.AffectorWeaponSlotOrMissileIndex == _shieldChargedMissileIndex && affectedAgent == _shieldChargedVictim
+                && MissionNow() - _shieldChargedTime <= ShieldChargeBodyHitWindowSeconds)
             {
-                Stance affectedAgentPosture = null;
-                AgentStances.values.TryGetValue(affectedAgent, out affectedAgentPosture);
-                if (affectedAgentPosture != null)
-                {
-                    //missile hit posture/stamina loss
-                    if (blow.IsMissile && affectorWeapon.CurrentUsageItem != null)
-                    {
-                        bool isDirectHit = !attackCollisionData.AttackBlockedWithShield;
-                        WeaponClass missileWeaponClass = affectorWeapon.CurrentUsageItem.WeaponClass;
-
-                        float arrowAgentPostureDamage = 25f;
-                        float throwingAgentPostureDamage = 100f;
-
-                        float arrowShieldPostureDamage = 20f;
-                        float throwingShieldPostureDamage = 70f;
-
-                        //agent hit
-                        if (isDirectHit)
-                        {
-                            //headshot multiplier
-                            if (blow.VictimBodyPart == BoneBodyPartType.Head || blow.VictimBodyPart == BoneBodyPartType.Neck)
-                            {
-                                arrowAgentPostureDamage = 50f;
-                                throwingAgentPostureDamage = 200f;
-                            }
-                            switch (missileWeaponClass)
-                            {
-                                case WeaponClass.Bow:
-                                case WeaponClass.Crossbow:
-                                case WeaponClass.Arrow:
-                                case WeaponClass.Bolt:
-                                case WeaponClass.ThrowingKnife:
-                                    {
-                                        affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - arrowAgentPostureDamage);
-                                        if (RBMConfig.RBMConfig.staminaEnabled)
-                                        {
-                                            affectedAgentPosture.reduceStamina(arrowAgentPostureDamage * 2f);
-                                        }
-                                        break;
-                                    }
-                                case WeaponClass.Javelin:
-                                case WeaponClass.ThrowingAxe:
-
-                                    {
-                                        affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - throwingAgentPostureDamage);
-                                        if (RBMConfig.RBMConfig.staminaEnabled)
-                                        {
-                                            affectedAgentPosture.reduceStamina(throwingAgentPostureDamage * 3f);
-                                        }
-                                        break;
-                                    }
-                            }
-                        }
-                        //shield hit
-                        else
-                        {
-                            // Arrow Catcher: a skilled shield man takes missiles on a raised shield more cheaply
-                            // (RBMConfig.ArrowCatcher). Not for a shield on the back.
-                            if (!attackCollisionData.CollidedWithShieldOnBack)
-                            {
-                                float arrowCatcherFactor = RBMConfig.ArrowCatcher.GetPostureFactor(affectedAgent);
-                                arrowShieldPostureDamage *= arrowCatcherFactor;
-                                throwingShieldPostureDamage *= arrowCatcherFactor;
-                            }
-                            switch (missileWeaponClass)
-                            {
-                                case WeaponClass.Bow:
-                                case WeaponClass.Crossbow:
-                                case WeaponClass.Arrow:
-                                case WeaponClass.Bolt:
-                                case WeaponClass.ThrowingKnife:
-
-                                    {
-                                        affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - arrowShieldPostureDamage);
-                                        if (RBMConfig.RBMConfig.staminaEnabled)
-                                        {
-                                            affectedAgentPosture.reduceStamina(arrowShieldPostureDamage * 2f);
-                                        }
-                                        break;
-                                    }
-                                case WeaponClass.Javelin:
-                                case WeaponClass.ThrowingAxe:
-                                    {
-                                        affectedAgentPosture.posture = Math.Max(0f, affectedAgentPosture.posture - throwingShieldPostureDamage);
-                                        if (RBMConfig.RBMConfig.staminaEnabled)
-                                        {
-                                            affectedAgentPosture.reduceStamina(throwingShieldPostureDamage * 3f);
-                                        }
-                                        break;
-                                    }
-                            }
-                        }
-
-                        //ranged posture break
-                        if (affectedAgentPosture.posture <= 0f)
-                        {
-                            affectedAgentPosture.posture = 0f;
-                            // health is already reduced here but Die() hasn't run yet; don't animate a dying agent
-                            if (affectedAgent.Health >= 1f)
-                            {
-                                forceStaggerAnimation(affectedAgent, attackCollisionData, 0.85f, false);
-                            }
-                            ResetPostureForAgent(ref affectedAgentPosture, postureResetModifier);
-                        }
-
-                        addPosturedamageVisual(affectorAgent, affectedAgent);
-                    }
-                }
+                return;
             }
-            //int ammoStuckInAgent = affectedAgent.GetAttachedWeaponsCount();
-            //int arrowsBoltsStuckInAgent = 0;
-            //int maxAmmoStuckInAgent = 5;
-            //for (int i = 0; i < ammoStuckInAgent; i++)
-            //{
-            //    //remove stuck javelins
-            //    WeaponClass ammoWeaponClass = affectedAgent.GetAttachedWeapon(i).CurrentUsageItem.WeaponClass;
-            //    if (ammoWeaponClass == WeaponClass.Javelin || ammoWeaponClass == WeaponClass.ThrowingAxe || ammoWeaponClass == WeaponClass.ThrowingKnife)
-            //    {
-            //        affectedAgent.DeleteAttachedWeapon(i);
-            //    }
+            ApplyMissilePosture(affectedAgent, affectorAgent, stance, weaponClass, Math.Max(0f, blow.InflictedDamage), in attackCollisionData);
+        }
 
-            //    if (ammoWeaponClass == WeaponClass.Arrow || ammoWeaponClass == WeaponClass.Bolt)
-            //    {
-            //        arrowsBoltsStuckInAgent++;
-            //    }
+        // Thrown weapons get the higher shield cap; arrows, bolts and sling stones the minimal one.
+        private static float ShieldMissilePostureCap(WeaponClass weaponClass)
+        {
+            switch (weaponClass)
+            {
+                case WeaponClass.Bow:
+                case WeaponClass.Crossbow:
+                case WeaponClass.Arrow:
+                case WeaponClass.Bolt:
+                case WeaponClass.Sling:
+                case WeaponClass.SlingStone:
+                    return PostureTuning.ShieldMissilePostureCap;
+                case WeaponClass.ThrowingKnife:
+                case WeaponClass.Javelin:
+                case WeaponClass.ThrowingAxe:
+                    return PostureTuning.ShieldThrownPostureCap;
+                default:
+                    return 0f;
+            }
+        }
 
-            //    //remove stuck arrows/bolts if there are too many of them
-            //    if (arrowsBoltsStuckInAgent >= maxAmmoStuckInAgent)
-            //    {
-            //        affectedAgent.DeleteAttachedWeapon(i);
-            //    }
-            //}
-
-            //drop shield if too many arrows/bolts or javelins/throwing axes/throwing knives are stuck in the shield, disabled for now
-            //int maxAmmoStuckInShield = 15;
-            //int maxJavelinsAxesKnivesStuckInShield = 3;
-            //if (affectedAgent.WieldedOffhandWeapon.IsShield())
-            //{
-            //    int ammoStuckInShieldCount = affectedAgent.WieldedOffhandWeapon.GetAttachedWeaponsCount();
-            //    int arrowsBoltsStuckInShieldCount = 0;
-            //    int javelinsAxesKnivesStuckInShieldCount = 0;
-            //    if (ammoStuckInShieldCount >= maxAmmoStuckInShield)
-            //    {
-            //        TryToDropShield(affectedAgent);
-            //    }
-            //    else
-            //    {
-            //        for (int i = 0; i < ammoStuckInShieldCount; i++)
-            //        {
-            //            WeaponClass ammoWeaponClass = affectedAgent.WieldedOffhandWeapon.GetAttachedWeapon(i).CurrentUsageItem.WeaponClass;
-            //            if (ammoWeaponClass == WeaponClass.Arrow || ammoWeaponClass == WeaponClass.Bolt)
-            //            {
-            //                arrowsBoltsStuckInShieldCount++;
-            //            }
-            //            else if (ammoWeaponClass == WeaponClass.Javelin || ammoWeaponClass == WeaponClass.ThrowingAxe || ammoWeaponClass == WeaponClass.ThrowingKnife)
-            //            {
-            //                javelinsAxesKnivesStuckInShieldCount++;
-            //            }
-            //        }
-            //        if (javelinsAxesKnivesStuckInShieldCount >= maxJavelinsAxesKnivesStuckInShield)
-            //        {
-            //            TryToDropShield(affectedAgent);
-            //        }
-            //    }
-            //}
+        // Posture lost = the damage done to the shield, capped per missile type. Raised shield only; Arrow Catcher scales it (RBMConfig.ArrowCatcher).
+        public override void OnMissileHit(Agent attacker, Agent victim, bool isCanceled, AttackCollisionData collisionData)
+        {
+            base.OnMissileHit(attacker, victim, isCanceled, collisionData);
+            if (isCanceled || !collisionData.AttackBlockedWithShield || collisionData.CollidedWithShieldOnBack)
+            {
+                return;
+            }
+            if (!TryGetMissilePostureTarget(victim, attacker, out Stance stance) || Mission == null)
+            {
+                return;
+            }
+            int missileIndex = collisionData.AffectorWeaponSlotOrMissileIndex;
+            if (!MissilesByIndex(Mission).TryGetValue(missileIndex, out TaleWorlds.MountAndBlade.Mission.Missile missile))
+            {
+                return;
+            }
+            WeaponComponentData usage = missile.Weapon.CurrentUsageItem;
+            float cap = usage == null ? 0f : ShieldMissilePostureCap(usage.WeaponClass);
+            if (cap <= 0f)
+            {
+                return;
+            }
+            _shieldChargedMissileIndex = missileIndex;
+            _shieldChargedVictim = victim;
+            _shieldChargedTime = MissionNow();
+            float postureLoss = Math.Min(cap, Math.Max(0f, collisionData.InflictedDamage)) * RBMConfig.ArrowCatcher.GetPostureFactor(victim);
+            ApplyMissilePosture(victim, attacker, stance, usage.WeaponClass, postureLoss, in collisionData);
         }
     }
 }

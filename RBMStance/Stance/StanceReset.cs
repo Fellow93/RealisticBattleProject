@@ -14,10 +14,7 @@ namespace RBMStance
     {
         public static void Reset()
         {
-            StanceLogic.agentsToChangeFormation.Clear();
-            StanceLogic.agentsToDropWeapon.Clear();
-            StanceLogic.agentsToDropShield.Clear();
-            AgentStances.values.Clear();
+            StanceLogic.ClearMissionState();
             // Normally cleared by their OnRemoveBehavior; a stale one would pin the last mission (and, for the
             // exhaustion logic, lock its input).
             AgentStances.postureVisual = null;

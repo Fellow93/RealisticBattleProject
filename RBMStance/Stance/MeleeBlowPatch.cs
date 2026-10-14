@@ -53,13 +53,13 @@ namespace RBMStance
                 }
             }
 
-            private static void crushThroughBlow(Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon,
-                ref Blow blow, ref Mission mission, float postureOverkill, BlowFlags addedBlowFlag)
+            private static void CrushThroughBlow(Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon,
+                ref Blow blow, ref Mission mission, float postureOverkill, BlowFlags addedBlowFlag, float forceFactor)
             {
                 BoneBodyPartType crushBodyPart = EstimateCrushThroughBodyPart(victimAgent, collisionData.CollisionGlobalPosition);
                 sbyte crushBone = FindCrushThroughBone(victimAgent, crushBodyPart, collisionData.CollisionGlobalPosition);
-                int hpDamage = (int)Math.Floor(calculateHealthDamage(attackerAgent, victimAgent, ref collisionData, in attackerWeapon, postureOverkill, crushBodyPart, crushBone, out DamageTypes crushDamageType));
-                makePostureCrashThroughBlow(ref mission, blow, attackerAgent, victimAgent, hpDamage, ref collisionData, attackerWeapon, addedBlowFlag, crushBodyPart, crushBone, crushDamageType);
+                int hpDamage = (int)Math.Floor(CalculateHealthDamage(attackerAgent, victimAgent, ref collisionData, in attackerWeapon, postureOverkill, crushBodyPart, crushBone, out DamageTypes crushDamageType) * forceFactor);
+                MakePostureCrushThroughBlow(ref mission, blow, attackerAgent, victimAgent, hpDamage, ref collisionData, attackerWeapon, addedBlowFlag, crushBodyPart, crushBone, crushDamageType);
                 if (victimAgent.IsPlayerControlled)
                 {
                     TextObject message = new TextObject("{=RBM_AI_033}Posture break: Posture depleted, {DMG} damage crushed through to the {PART}");
@@ -98,38 +98,30 @@ namespace RBMStance
                 }
             }
 
-            public static void handleDefender(Stance stance, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData,
+            public static void HandleDefender(Stance stance, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData,
                 MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission,
                 float staggerActionSpeed, bool dropWeapon, bool dropShield,
-                bool damageShield, bool stagger, bool resetPosture, MeleeHitType meleeHitType, bool crushThrough, bool isUnarmedAttack)
+                bool stagger, MeleeHitType meleeHitType, bool crushThrough, bool isUnarmedAttack)
             {
                 if (stance != null)
                 {
+                    float now = MissionNow();
+
                     // A direct hit costs posture equal to the damage it dealt; the table-driven
                     // calculator is only meaningful for blocks/parries, so don't run it for AgentHit.
                     float postureDmg = (meleeHitType == MeleeHitType.AgentHit)
                         ? blow.InflictedDamage
-                        : calculateDefenderPostureDamage(victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
-
-                    if (RBMConfig.RBMConfig.staminaEnabled)
-                    {
-                        float staminaLevel = stance.stamina / stance.maxStamina;
-                        postureDmg *= MBMath.Lerp(1.25f, 1f, staminaLevel);
-                    }
+                        : CalculateDefenderPostureDamage(victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
+                    postureDmg = ApplyStaminaFactor(stance, postureDmg);
 
                     float postureOverkill = Math.Abs(stance.posture - postureDmg);
-                    stance.posture = Math.Max(0f, stance.posture - postureDmg);
+                    ApplyPostureLoss(stance, postureDmg, now, meleeHitType, withParryRefund: true);
+                    ApplyDefenderStaminaLoss(stance, victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
 
-                    if (RBMConfig.RBMConfig.staminaEnabled)
-                    {
-                        float staminaLoss = calculateDefenderStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
-                        applyArmorWeightedStaminaLoss(stance, victimAgent, staminaLoss);
-                    }
-
-                    addPosturedamageVisual(attackerAgent, victimAgent);
+                    AddPostureDamageVisual(attackerAgent, victimAgent);
                     if (stance.posture <= 0f)
                     {
-                        if (postureOverkill >= stance.maxPosture * 0.5f)
+                        if (postureOverkill >= stance.maxPosture * PostureTuning.DropOverkillShare)
                         {
                             if (dropWeapon)
                             {
@@ -140,24 +132,27 @@ namespace RBMStance
                                 TryToDropShield(victimAgent);
                             }
                         }
+                        bool perfectParry = meleeHitType == MeleeHitType.WeaponParry || meleeHitType == MeleeHitType.ShieldParry;
                         if (crushThrough)
                         {
-                            crushThroughBlow(victimAgent, attackerAgent, ref collisionData, in attackerWeapon, ref blow, ref mission, postureOverkill, DismountFlags(victimAgent, stance, postureDmg));
+                            // A parry's overflow is small by design, so its crush-through is scaled by the parry factor alone.
+                            CrushThroughBlow(victimAgent, attackerAgent, ref collisionData, in attackerWeapon, ref blow, ref mission,
+                                perfectParry ? Math.Max(postureOverkill, CrushThroughFullDamageOverflow) : postureOverkill,
+                                perfectParry ? BlowFlags.None : DismountFlags(victimAgent, stance, postureDmg),
+                                perfectParry ? PostureTuning.PerfectParryCrushThroughFactor : 1f);
                         }
-                        else if (DismountFlags(victimAgent, stance, postureDmg) == BlowFlags.CanDismount)
+                        else if (!perfectParry && DismountFlags(victimAgent, stance, postureDmg) == BlowFlags.CanDismount)
                         {
                             // Shield-block breaks register no blow of their own, so a rider needs a zero-damage one
                             // to carry CanDismount.
-                            makePostureBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, BlowFlags.CanDismount);
+                            MakePostureBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, BlowFlags.CanDismount);
                         }
                         if (stagger)
                         {
-                            forceStaggerAnimation(victimAgent, collisionData, staggerActionSpeed, false);
+                            ForceStaggerAnimation(victimAgent, collisionData, staggerActionSpeed, false);
                         }
-                        if (resetPosture)
-                        {
-                            ResetPostureForAgent(ref stance, postureResetModifier);
-                        }
+                        stance.BreakPosture(now, PostureTuning.PostureBreakResetShare);
+                        AddPostureDamageVisual(attackerAgent, victimAgent);
                         // Hit stop: player broke an enemy's posture
                         if (attackerAgent.IsPlayerControlled)
                         {
@@ -167,9 +162,9 @@ namespace RBMStance
                 }
             }
 
-            public static void handleAttacker(Stance stance, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData,
+            public static void HandleAttacker(Stance stance, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData,
                 MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission,
-                float staggerActionSpeed, bool dropWeapon, bool stagger, bool resetPosture, bool tired, MeleeHitType meleeHitType, bool isUnarmedAttack)
+                float staggerActionSpeed, bool dropWeapon, bool stagger, bool tired, MeleeHitType meleeHitType, bool isUnarmedAttack)
             {
                 // A kick or bash already paid its posture and stamina as it started (AiKickBash ChargeCost), wherever it
                 // lands; charging the table cost on top made a landed kick cost the kicker ~40% of his posture.
@@ -179,27 +174,23 @@ namespace RBMStance
                 }
                 if (stance != null)
                 {
-                    float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
+                    float now = MissionNow();
 
-                    if (RBMConfig.RBMConfig.staminaEnabled)
+                    float postureDmg = CalculateAttackerPostureDamage(victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, isUnarmedAttack);
+                    if (meleeHitType == MeleeHitType.AgentHit)
                     {
-                        float staminaLevel = stance.stamina / stance.maxStamina;
-                        postureDmg *= MBMath.Lerp(1.25f, 1f, staminaLevel);
+                        postureDmg *= PostureTuning.LandedHitAttackerFactor;
                     }
+                    postureDmg = ApplyStaminaFactor(stance, postureDmg);
 
                     float postureOverkill = Math.Abs(stance.posture - postureDmg);
-                    stance.posture = Math.Max(0f, stance.posture - postureDmg);
+                    ApplyPostureLoss(stance, postureDmg, now, meleeHitType, withParryRefund: false);
+                    ApplyAttackerStaminaLoss(stance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, meleeHitType, isUnarmedAttack);
 
-                    if (RBMConfig.RBMConfig.staminaEnabled)
-                    {
-                        float staminaLoss = calculateAttackerStaminaLoss(victimAgent, attackerAgent, ref collisionData, attackerWeapon, meleeHitType, isUnarmedAttack);
-                        applyArmorWeightedStaminaLoss(stance, attackerAgent, staminaLoss);
-                    }
-
-                    addPosturedamageVisual(attackerAgent, victimAgent);
+                    AddPostureDamageVisual(attackerAgent, victimAgent);
                     if (stance.posture <= 0f)
                     {
-                        if (postureOverkill >= stance.maxPosture * 0.5f)
+                        if (postureOverkill >= stance.maxPosture * PostureTuning.DropOverkillShare)
                         {
                             if (dropWeapon)
                             {
@@ -208,30 +199,23 @@ namespace RBMStance
                         }
                         if (stagger)
                         {
-                            forceStaggerAnimation(attackerAgent, collisionData, staggerActionSpeed, true);
+                            ForceStaggerAnimation(attackerAgent, collisionData, staggerActionSpeed, true);
                         }
                         if (tired)
                         {
-                            forceTiredAnimation(attackerAgent, collisionData, staggerActionSpeed, false);
+                            ForceTiredAnimation(attackerAgent, collisionData, staggerActionSpeed, false);
                         }
                         // A rider whose blow is blocked or parried hard enough to break his posture is unseated, as a
                         // defender is. This path registers no blow of its own, so a zero-damage riposte carries
                         // CanDismount. Not on a direct hit: there the posture cost is his own strike landing.
                         if (meleeHitType != MeleeHitType.AgentHit && DismountFlags(attackerAgent, stance, postureDmg) == BlowFlags.CanDismount)
                         {
-                            makePostureRiposteBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, BlowFlags.CanDismount);
+                            MakePostureRiposteBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, BlowFlags.CanDismount);
                         }
-                        if (resetPosture)
-                        {
-                            if (meleeHitType == MeleeHitType.AgentHit)
-                            {
-                                ResetPostureForAgent(ref stance, 0.33f);
-                            }
-                            else
-                            {
-                                ResetPostureForAgent(ref stance, postureResetModifier);
-                            }
-                        }
+                        float resetShare = meleeHitType == MeleeHitType.AgentHit ? PostureTuning.LandedHitBreakResetShare
+                            : PostureTuning.PostureBreakResetShare;
+                        stance.BreakPosture(now, resetShare);
+                        AddPostureDamageVisual(attackerAgent, victimAgent);
                         // Hit stop: player's parry/block broke the attacker's posture
                         if (victimAgent.IsPlayerControlled)
                         {
@@ -241,34 +225,89 @@ namespace RBMStance
                 }
             }
 
-            /// <summary>
-            /// Heavier armour costs more stamina per action, offset by Athletics. Shared by the
-            /// defender, attacker and chamber-block handlers so the term stays identical everywhere.
-            /// </summary>
-            private static void applyArmorWeightedStaminaLoss(Stance stance, Agent agent, float staminaLoss)
+            // A tired man loses up to 25% more posture.
+            private static float ApplyStaminaFactor(Stance stance, float postureDamage)
             {
-                int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, DefaultSkills.Athletics);
-                float athlethicModifier = effectiveAthleticSkill / 20f;
-                float agentArmorWeight = Math.Max(0f, StanceUtilities.GetEffectiveArmorWeight(agent) - athlethicModifier);
-                stance.reduceStamina(staminaLoss * (1f + agentArmorWeight / 50f));
+                if (RBMConfig.RBMConfig.staminaEnabled)
+                {
+                    float staminaLevel = stance.stamina / stance.maxStamina;
+                    postureDamage *= MBMath.Lerp(1.25f, 1f, staminaLevel);
+                }
+                return postureDamage;
             }
 
-            public static void handleDefenderChamberBlock(Stance defenderPosture, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission, MeleeHitType meleeHitType)
+            // A refund that outweighs the loss is no posture damage, so it does not pause regen.
+            private static void ApplyPostureLoss(Stance stance, float postureDamage, float now, MeleeHitType meleeHitType, bool withParryRefund)
             {
-                float postureDmg = calculateDefenderPostureDamage(victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, false);
+                stance.posture = Math.Max(0f, stance.posture - postureDamage);
+                float refund = withParryRefund ? ApplyPerfectParryRefund(stance, meleeHitType) : 0f;
+                if (postureDamage > refund)
+                {
+                    stance.MarkPostureDamage(now);
+                }
+            }
+
+            private static void ApplyDefenderStaminaLoss(Stance stance, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MeleeHitType meleeHitType, bool isUnarmedAttack)
+            {
                 if (RBMConfig.RBMConfig.staminaEnabled)
                 {
-                    float staminaLevel = defenderPosture.stamina / defenderPosture.maxStamina;
-                    postureDmg *= MBMath.Lerp(1.25f, 1f, staminaLevel);
+                    float staminaLoss = CalculateDefenderStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, isUnarmedAttack);
+                    ApplyArmorWeightedStaminaLoss(stance, victimAgent, staminaLoss);
                 }
-                defenderPosture.posture = Math.Max(0f, defenderPosture.posture - postureDmg);
+            }
+
+            private static void ApplyAttackerStaminaLoss(Stance stance, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon attackerWeapon, MeleeHitType meleeHitType, bool isUnarmedAttack)
+            {
                 if (RBMConfig.RBMConfig.staminaEnabled)
                 {
-                    float staminaLoss = calculateDefenderStaminaLoss(victimAgent, attackerAgent, ref collisionData, meleeHitType, false);
-                    applyArmorWeightedStaminaLoss(defenderPosture, victimAgent, staminaLoss);
+                    float staminaLoss = CalculateAttackerStaminaLoss(victimAgent, attackerAgent, ref collisionData, attackerWeapon, meleeHitType, isUnarmedAttack);
+                    ApplyArmorWeightedStaminaLoss(stance, attackerAgent, staminaLoss);
                 }
-                addPosturedamageVisual(attackerAgent, victimAgent);
-                if (defenderPosture.posture <= 0f)
+            }
+
+            // Heavier armour costs more stamina per action, offset by Athletics.
+            private static void ApplyArmorWeightedStaminaLoss(Stance stance, Agent agent, float staminaLoss)
+            {
+                int effectiveAthleticSkill = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(agent, DefaultSkills.Athletics);
+                float athleticModifier = effectiveAthleticSkill / 20f;
+                float agentArmorWeight = Math.Max(0f, StanceUtilities.GetEffectiveArmorWeight(agent) - athleticModifier);
+                stance.ReduceStamina(staminaLoss * (1f + agentArmorWeight / 50f));
+            }
+
+            // Gives a perfect parry's or chamber's refund back to a defender left unbroken by it; returns the amount.
+            private static float ApplyPerfectParryRefund(Stance stance, MeleeHitType meleeHitType)
+            {
+                float share;
+                switch (meleeHitType)
+                {
+                    case MeleeHitType.WeaponParry:
+                    case MeleeHitType.ChamberBlock:
+                        share = PostureTuning.PerfectParryWeaponRefund;
+                        break;
+                    case MeleeHitType.ShieldParry:
+                        share = PostureTuning.PerfectParryShieldRefund;
+                        break;
+                    default:
+                        return 0f;
+                }
+                if (stance.posture <= 0f)
+                {
+                    return 0f;
+                }
+                float before = stance.posture;
+                stance.AddPosture(share * stance.maxPosture);
+                return stance.posture - before;
+            }
+
+            public static void HandleDefenderChamberBlock(Stance defenderStance, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission, MeleeHitType meleeHitType)
+            {
+                float now = MissionNow();
+                float postureDmg = CalculateDefenderPostureDamage(victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, false);
+                postureDmg = ApplyStaminaFactor(defenderStance, postureDmg);
+                ApplyPostureLoss(defenderStance, postureDmg, now, meleeHitType, withParryRefund: true);
+                ApplyDefenderStaminaLoss(defenderStance, victimAgent, attackerAgent, ref collisionData, meleeHitType, false);
+                AddPostureDamageVisual(attackerAgent, victimAgent);
+                if (defenderStance.posture <= 0f)
                 {
                     EquipmentIndex wieldedItemIndex = victimAgent.GetPrimaryWieldedItemIndex();
                     if (wieldedItemIndex != EquipmentIndex.None)
@@ -277,40 +316,36 @@ namespace RBMStance
                         {
                             InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_018}Posture break: Posture depleted, chamber block").ToString(), Color.FromUint(4282569842u)));
                         }
-                        makePostureBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, DismountFlags(victimAgent, defenderPosture, postureDmg));
+                        MakePostureBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, DismountFlags(victimAgent, defenderStance, postureDmg));
                     }
-                    ResetPostureForAgent(ref defenderPosture, postureResetModifier);
-                    addPosturedamageVisual(attackerAgent, victimAgent);
+                    defenderStance.BreakPosture(now, PostureTuning.PostureBreakResetShare);
+                    AddPostureDamageVisual(attackerAgent, victimAgent);
+                    if (attackerAgent.IsPlayerControlled)
+                    {
+                        HitStopLogic.TriggerPostureBreakHitStop();
+                    }
                 }
             }
 
-            public static void handleAttackerChamberBlock(Stance attackerPosture, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission, MeleeHitType meleeHitType)
+            public static void HandleAttackerChamberBlock(Stance attackerStance, Agent victimAgent, Agent attackerAgent, ref AttackCollisionData collisionData, MissionWeapon attackerWeapon, float comHitModifier, ref Blow blow, ref Mission mission, MeleeHitType meleeHitType)
             {
-                float postureDmg = calculateAttackerPostureDamage(victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, false);
-                if (RBMConfig.RBMConfig.staminaEnabled)
-                {
-                    float staminaLevel = attackerPosture.stamina / attackerPosture.maxStamina;
-                    postureDmg *= MBMath.Lerp(1.25f, 1f, staminaLevel);
-                }
-                attackerPosture.posture = Math.Max(0f, attackerPosture.posture - postureDmg);
-                if (RBMConfig.RBMConfig.staminaEnabled)
-                {
-                    float staminaLoss = calculateAttackerStaminaLoss(victimAgent, attackerAgent, ref collisionData, attackerWeapon, meleeHitType, false);
-                    applyArmorWeightedStaminaLoss(attackerPosture, attackerAgent, staminaLoss);
-                }
-                addPosturedamageVisual(attackerAgent, victimAgent);
-                if (attackerPosture.posture <= 0f)
+                float now = MissionNow();
+                float postureDmg = CalculateAttackerPostureDamage(victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, meleeHitType, false);
+                postureDmg = ApplyStaminaFactor(attackerStance, postureDmg);
+                ApplyPostureLoss(attackerStance, postureDmg, now, meleeHitType, withParryRefund: false);
+                ApplyAttackerStaminaLoss(attackerStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, meleeHitType, false);
+                AddPostureDamageVisual(attackerAgent, victimAgent);
+                if (attackerStance.posture <= 0f)
                 {
                     // The victim chambered this attack, so the broken posture belongs to the
                     // attacker: register the stagger blow on the attacker, not on the chamberer.
-                    MBTextManager.SetTextVariable("DMG", 0);
-                    if (attackerAgent.IsPlayerControlled)
+                    MakePostureRiposteBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, DismountFlags(attackerAgent, attackerStance, postureDmg));
+                    attackerStance.BreakPosture(now, PostureTuning.PostureBreakResetShare);
+                    AddPostureDamageVisual(attackerAgent, victimAgent);
+                    if (victimAgent.IsPlayerControlled)
                     {
-                        InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=RBM_AI_019}Posture break: Posture depleted, chamber block {DMG} damage crushed through").ToString(), Color.FromUint(4282569842u)));
+                        HitStopLogic.TriggerPostureBreakHitStop();
                     }
-                    makePostureRiposteBlow(ref mission, blow, attackerAgent, victimAgent, ref collisionData, attackerWeapon, DismountFlags(attackerAgent, attackerPosture, postureDmg));
-                    ResetPostureForAgent(ref attackerPosture, postureResetModifier);
-                    addPosturedamageVisual(attackerAgent, victimAgent);
                 }
             }
 
@@ -328,10 +363,10 @@ namespace RBMStance
                     return;
                 }
 
-                Stance defenderPosture = null;
-                Stance attackerPosture = null;
-                AgentStances.values.TryGetValue(victimAgent, out defenderPosture);
-                AgentStances.values.TryGetValue(attackerAgent, out attackerPosture);
+                Stance defenderStance = null;
+                Stance attackerStance = null;
+                AgentStances.values.TryGetValue(victimAgent, out defenderStance);
+                AgentStances.values.TryGetValue(attackerAgent, out attackerStance);
 
                 bool isUnarmedAttack = false;
                 //detect unarmed attack
@@ -348,16 +383,26 @@ namespace RBMStance
                 //modifier of posture damage, closer the hit is to COM ( center of mass ), higher the Modifier
                 float comHitModifier = isUnarmedAttack ? 1f : StanceUtilities.GetComHitModifier(in collisionData, in attackerWeapon);
 
+                float exchangeTime = MissionNow();
+                if (defenderStance != null)
+                {
+                    defenderStance.lastPostureEventTime = exchangeTime;
+                }
+                if (attackerStance != null)
+                {
+                    attackerStance.lastPostureEventTime = exchangeTime;
+                }
+
                 //chamber block
                 if (collisionData.CollisionResult == CombatCollisionResult.ChamberBlocked)
                 {
-                    if (defenderPosture != null)
+                    if (defenderStance != null)
                     {
-                        handleDefenderChamberBlock(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, MeleeHitType.ChamberBlock);
+                        HandleDefenderChamberBlock(defenderStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, MeleeHitType.ChamberBlock);
                     }
-                    if (attackerPosture != null)
+                    if (attackerStance != null)
                     {
-                        handleAttackerChamberBlock(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, MeleeHitType.ChamberBlock);
+                        HandleAttackerChamberBlock(attackerStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, MeleeHitType.ChamberBlock);
                     }
                 }
                 //weapon block
@@ -366,27 +411,22 @@ namespace RBMStance
                     //normal weapon block
                     if (collisionData.CollisionResult == CombatCollisionResult.Blocked)
                     {
-                        if (defenderPosture != null)
+                        if (defenderStance != null)
                         {
-                            //handleDefenderWeaponBlock(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
-                            handleDefender(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
+                            HandleDefender(defenderStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
                                 stagger: true,
                                 crushThrough: true,
-                                resetPosture: true,
                                 staggerActionSpeed: 0.85f,
                                 dropWeapon: true,
                                 dropShield: false,
-                                damageShield: false,
                                 meleeHitType: MeleeHitType.WeaponBlock,
                                 isUnarmedAttack: isUnarmedAttack
                                 );
                         }
-                        if (attackerPosture != null)
+                        if (attackerStance != null)
                         {
-                            //handleAttackerWeaponBlock(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
-                            handleAttacker(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
+                            HandleAttacker(attackerStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
                                 stagger: true,
-                                resetPosture: true,
                                 staggerActionSpeed: 0.95f,
                                 dropWeapon: true,
                                 tired: false,
@@ -398,27 +438,22 @@ namespace RBMStance
                     //perfect weapon block
                     else if (collisionData.CollisionResult == CombatCollisionResult.Parried)
                     {
-                        if (defenderPosture != null)
+                        if (defenderStance != null)
                         {
-                            //handleDefenderWeaponParry(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
-                            handleDefender(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
+                            HandleDefender(defenderStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
                                 stagger: true,
                                 crushThrough: true,
-                                resetPosture: true,
                                 staggerActionSpeed: 0.95f,
-                                dropWeapon: true,
+                                dropWeapon: false,
                                 dropShield: false,
-                                damageShield: false,
                                 meleeHitType: MeleeHitType.WeaponParry,
                                 isUnarmedAttack: isUnarmedAttack
                                 );
                         }
-                        if (attackerPosture != null)
+                        if (attackerStance != null)
                         {
-                            //handleAttackerWeaponParry(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
-                            handleAttacker(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
+                            HandleAttacker(attackerStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
                                 stagger: true,
-                                resetPosture: true,
                                 staggerActionSpeed: 0.85f,
                                 dropWeapon: true,
                                 tired: false,
@@ -426,36 +461,27 @@ namespace RBMStance
                                 isUnarmedAttack: isUnarmedAttack
                                 );
                         }
-                        // Hit stop: player performed a perfect parry
-                        if (victimAgent.IsPlayerControlled)
-                        {
-                            HitStopLogic.TriggerParryHitStop();
-                        }
                     }
                     //direct hit
                     else if (victimAgent.IsHuman && attackerAgent.IsHuman && collisionData.CollisionResult == CombatCollisionResult.StrikeAgent)
                     {
-                        if (defenderPosture != null)
+                        if (defenderStance != null)
                         {
-                            //handleDefenderDirectHit(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission);
-                            handleDefender(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
+                            // No forced stagger: the hit reaction is already playing.
+                            HandleDefender(defenderStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
                                 stagger: false,
                                 crushThrough: false,
-                                resetPosture: false,
                                 staggerActionSpeed: 0.85f,
                                 dropWeapon: false,
                                 dropShield: false,
-                                damageShield: false,
                                 meleeHitType: MeleeHitType.AgentHit,
                                 isUnarmedAttack: isUnarmedAttack
                                 );
                         }
-                        if (attackerPosture != null)
+                        if (attackerStance != null)
                         {
-                            //handleAttackerDirectHit(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
-                            handleAttacker(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
+                            HandleAttacker(attackerStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
                                 stagger: false,
-                                resetPosture: true,
                                 staggerActionSpeed: 1f,
                                 dropWeapon: false,
                                 tired: true,
@@ -471,27 +497,22 @@ namespace RBMStance
                     //bad shield block
                     if (collisionData.CollisionResult == CombatCollisionResult.Blocked && !collisionData.CorrectSideShieldBlock)
                     {
-                        if (defenderPosture != null)
+                        if (defenderStance != null)
                         {
-                            //handleDefenderShieldBlockBad(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
-                            handleDefender(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
+                            HandleDefender(defenderStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
                                 stagger: true,
-                                resetPosture: true,
                                 crushThrough: false,
                                 staggerActionSpeed: 0.85f,
                                 dropWeapon: false,
                                 dropShield: true,
-                                damageShield: true,
                                 meleeHitType: MeleeHitType.ShieldIncorrectBlock,
                                 isUnarmedAttack: isUnarmedAttack
                                 );
                         }
-                        if (attackerPosture != null)
+                        if (attackerStance != null)
                         {
-                            //handleAttackerShieldBlockBad(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
-                            handleAttacker(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
+                            HandleAttacker(attackerStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
                                 stagger: false,
-                                resetPosture: true,
                                 staggerActionSpeed: 1f,
                                 dropWeapon: false,
                                 tired: true,
@@ -503,27 +524,22 @@ namespace RBMStance
                     //normal shield block
                     else if ((collisionData.CollisionResult == CombatCollisionResult.Blocked && collisionData.CorrectSideShieldBlock) || (collisionData.CollisionResult == CombatCollisionResult.Parried && !collisionData.CorrectSideShieldBlock))
                     {
-                        if (defenderPosture != null)
+                        if (defenderStance != null)
                         {
-                            //handleDefenderShieldBlockNormal(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
-                            handleDefender(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
+                            HandleDefender(defenderStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
                                 stagger: true,
                                 crushThrough: false,
-                                resetPosture: true,
                                 staggerActionSpeed: 0.9f,
                                 dropWeapon: false,
                                 dropShield: true,
-                                damageShield: true,
                                 meleeHitType: MeleeHitType.ShieldBlock,
                                 isUnarmedAttack: isUnarmedAttack
                                 );
                         }
-                        if (attackerPosture != null)
+                        if (attackerStance != null)
                         {
-                            //handleAttackerShieldBlockNormal(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
-                            handleAttacker(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
+                            HandleAttacker(attackerStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
                                 stagger: true,
-                                resetPosture: true,
                                 staggerActionSpeed: 0.9f,
                                 dropWeapon: false,
                                 tired: false,
@@ -535,27 +551,22 @@ namespace RBMStance
                     //parry shield block
                     else if (collisionData.CollisionResult == CombatCollisionResult.Parried && collisionData.CorrectSideShieldBlock)
                     {
-                        if (defenderPosture != null)
+                        if (defenderStance != null)
                         {
-                            //handleDefenderShieldBlockParry(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
-                            handleDefender(defenderPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
+                            HandleDefender(defenderStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
                                 stagger: true,
                                 crushThrough: false,
-                                resetPosture: true,
                                 staggerActionSpeed: 0.95f,
                                 dropWeapon: false,
-                                dropShield: true,
-                                damageShield: true,
+                                dropShield: false,
                                 meleeHitType: MeleeHitType.ShieldParry,
                                 isUnarmedAttack: isUnarmedAttack
                                 );
                         }
-                        if (attackerPosture != null)
+                        if (attackerStance != null)
                         {
-                            //handleAttackerShieldBlockParry(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission, shouldPostureBreakEffectApply);
-                            handleAttacker(attackerPosture, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
+                            HandleAttacker(attackerStance, victimAgent, attackerAgent, ref collisionData, attackerWeapon, comHitModifier, ref blow, ref mission,
                                 stagger: true,
-                                resetPosture: true,
                                 staggerActionSpeed: 0.85f,
                                 dropWeapon: true,
                                 tired: false,
@@ -563,32 +574,11 @@ namespace RBMStance
                                 isUnarmedAttack: isUnarmedAttack
                                 );
                         }
-                        // Hit stop: player performed a perfect shield parry
-                        if (victimAgent.IsPlayerControlled)
-                        {
-                            HitStopLogic.TriggerParryHitStop();
-                        }
                     }
                 }
             }
 
-            private static void applyShieldDamage(Agent victim, int amount)
-            {
-                for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
-                {
-                    if (victim.Equipment != null && !victim.Equipment[equipmentIndex].IsEmpty)
-                    {
-                        if (victim.Equipment[equipmentIndex].Item.Type == ItemTypeEnum.Shield && !victim.WieldedOffhandWeapon.IsEmpty && victim.WieldedOffhandWeapon.Item.Id == victim.Equipment[equipmentIndex].Item.Id)
-                        {
-                            int num = MathF.Max(0, victim.Equipment[equipmentIndex].HitPoints - amount);
-                            victim.ChangeWeaponHitPoints(equipmentIndex, (short)num);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            private static bool isOneHandedWeapon(MissionWeapon weapon)
+            private static bool IsOneHandedWeapon(MissionWeapon weapon)
             {
                 if (weapon.IsEmpty || weapon.CurrentUsageItem == null)
                 {
@@ -605,7 +595,7 @@ namespace RBMStance
                     wc == WeaponClass.Pick;
             }
 
-            private static bool isSmallShield(MissionWeapon weapon)
+            private static bool IsSmallShield(MissionWeapon weapon)
             {
                 if (weapon.IsEmpty || weapon.CurrentUsageItem == null)
                 {
@@ -615,21 +605,24 @@ namespace RBMStance
                 return wc == WeaponClass.SmallShield;
             }
 
-            private static float calculateDefenderStaminaSkillModifier(int skill)
+            private static float CalculateDefenderStaminaSkillModifier(int skill)
             {
                 //100 skill = 10% reduction
                 return Math.Max(0f, 1f - (skill * 0.001f));
             }
 
-            public static float getRelativeSpeedPostureModifier(Agent attackerAgent, Agent defenderAgent)
+            // Closing speed only: how fast the two close along the line between them (horizontal, world space).
+            public static float GetRelativeSpeedPostureModifier(Agent attackerAgent, Agent defenderAgent)
             {
-                float retVal = 0f;
-                float relativeSpeed = (defenderAgent.Velocity - attackerAgent.Velocity).Length;
-                if (relativeSpeed > 0f)
+                Vec2 toDefender = defenderAgent.Position.AsVec2 - attackerAgent.Position.AsVec2;
+                float distance = toDefender.Length;
+                if (distance < 0.001f)
                 {
-                    retVal = relativeSpeed * 4f;
+                    return 0f;
                 }
-                return retVal;
+                Vec2 relativeVelocity = attackerAgent.Velocity.AsVec2 - defenderAgent.Velocity.AsVec2;
+                float closingSpeed = Vec2.DotProduct(relativeVelocity, toDefender) / distance;
+                return Math.Max(0f, closingSpeed) * PostureTuning.ClosingSpeedPostureFactor;
             }
 
             // Share of a rider's max posture that the breaking hit alone must deal for the break to unseat him, so a
@@ -652,7 +645,7 @@ namespace RBMStance
             // so a posture blow carrying CanDismount never dismounted anyone. Replay it engine-side with 1 damage;
             // the managed health change was already skipped. RBMCombat's HandleBlowPatch already replays kicks and
             // bashes, so don't run them twice.
-            private static void registerPostureBlow(Agent target, Blow blow, ref AttackCollisionData collisionData)
+            private static void RegisterPostureBlow(Agent target, Blow blow, ref AttackCollisionData collisionData)
             {
                 target.RegisterBlow(blow, collisionData);
                 bool replayedByCombat = RBMConfig.RBMConfig.rbmCombatEnabled && (blow.AttackType == AgentAttackType.Bash || blow.AttackType == AgentAttackType.Kick);
@@ -664,66 +657,61 @@ namespace RBMStance
                 }
             }
 
-            private static void makePostureRiposteBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag)
-            {
-                Blow newBLow = blow;
-                newBLow.BaseMagnitude = collisionData.BaseMagnitude;
-                newBLow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
-                newBLow.InflictedDamage = 0;
-                newBLow.SelfInflictedDamage = collisionData.SelfInflictedDamage;
-                newBLow.AbsorbedByArmor = collisionData.AbsorbedByArmor;
+            // Posture breaks happen on blocks, parries and chambers, which already made their clash sound; the
+            // zero-damage break blow would add a body-hit sound on top. The crush-through blow lands for real and keeps
+            // its sound.
+            private const BlowFlags SilentBreakBlow = BlowFlags.NoSound;
 
+            // A zero-damage copy of the attacker's blow carrying the block's collision data; callers set what differs.
+            private static Blow BuildPostureBlow(Blow blow, Agent attackerAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag)
+            {
+                Blow newBlow = blow;
+                newBlow.BaseMagnitude = collisionData.BaseMagnitude;
+                newBlow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
+                newBlow.InflictedDamage = 0;
+                newBlow.SelfInflictedDamage = collisionData.SelfInflictedDamage;
+                newBlow.AbsorbedByArmor = collisionData.AbsorbedByArmor;
                 sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
-                newBLow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
-                newBLow.StrikeType = (StrikeType)collisionData.StrikeType;
-                newBLow.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
-                newBLow.NoIgnore = collisionData.IsAlternativeAttack;
-                newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
-                newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
-                newBLow.BlowFlag = addedBlowFlag;
-                newBLow.GlobalPosition = collisionData.CollisionGlobalPosition;
-                newBLow.BoneIndex = collisionData.CollisionBoneIndex;
-                newBLow.Direction = blow.Direction;
-                newBLow.SwingDirection = blow.SwingDirection;
-                //blow.InflictedDamage = 1;
-                newBLow.VictimBodyPart = collisionData.VictimHitBodyPart;
-                registerPostureBlow(attackerAgent, newBLow, ref collisionData);
+                newBlow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
+                newBlow.StrikeType = (StrikeType)collisionData.StrikeType;
+                newBlow.DamageType = (!attackerWeapon.IsEmpty && !collisionData.IsAlternativeAttack) ? (DamageTypes)collisionData.DamageType : DamageTypes.Blunt;
+                newBlow.NoIgnore = collisionData.IsAlternativeAttack;
+                newBlow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
+                newBlow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
+                newBlow.BlowFlag = addedBlowFlag;
+                newBlow.GlobalPosition = collisionData.CollisionGlobalPosition;
+                newBlow.BoneIndex = collisionData.CollisionBoneIndex;
+                newBlow.Direction = blow.Direction;
+                newBlow.SwingDirection = blow.SwingDirection;
+                newBlow.VictimBodyPart = collisionData.VictimHitBodyPart;
+                return newBlow;
+            }
+
+            // Registers the blow on the target and tells every mission behavior that the striker dealt it.
+            private static void DeliverPostureBlow(ref Mission mission, Agent striker, Agent target, Blow blow, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon)
+            {
+                RegisterPostureBlow(target, blow, ref collisionData);
                 foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
                 {
-                    missionBehaviour.OnRegisterBlow(victimAgent, attackerAgent, WeakGameEntity.Invalid, newBLow, ref collisionData, in attackerWeapon);
+                    missionBehaviour.OnRegisterBlow(striker, target, WeakGameEntity.Invalid, blow, ref collisionData, in attackerWeapon);
                 }
+            }
+
+            // Lands on the attacker: the defender's guard broke his posture.
+            private static void MakePostureRiposteBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag)
+            {
+                Blow newBlow = BuildPostureBlow(blow, attackerAgent, ref collisionData, in attackerWeapon, addedBlowFlag | SilentBreakBlow);
+                DeliverPostureBlow(ref mission, victimAgent, attackerAgent, newBlow, ref collisionData, in attackerWeapon);
                 if (CanForceReaction(attackerAgent))
                 {
                     attackerAgent.SetActionChannel(0, ActionIndexCache.act_stagger_left, actionSpeed: 0.9f);
                 }
             }
 
-            private static void makePostureBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag)
+            private static void MakePostureBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag)
             {
-                Blow newBLow = blow;
-                newBLow.BaseMagnitude = collisionData.BaseMagnitude;
-                newBLow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
-                newBLow.SelfInflictedDamage = collisionData.SelfInflictedDamage;
-                newBLow.AbsorbedByArmor = collisionData.AbsorbedByArmor;
-                newBLow.InflictedDamage = 0;
-                sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
-                newBLow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
-                newBLow.StrikeType = (StrikeType)collisionData.StrikeType;
-                newBLow.DamageType = ((!attackerWeapon.IsEmpty && true && !collisionData.IsAlternativeAttack) ? ((DamageTypes)collisionData.DamageType) : DamageTypes.Blunt);
-                newBLow.NoIgnore = collisionData.IsAlternativeAttack;
-                newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod;
-                newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod;
-                newBLow.BlowFlag = addedBlowFlag;
-                newBLow.GlobalPosition = collisionData.CollisionGlobalPosition;
-                newBLow.BoneIndex = collisionData.CollisionBoneIndex;
-                newBLow.Direction = blow.Direction;
-                newBLow.SwingDirection = blow.SwingDirection;
-                newBLow.VictimBodyPart = collisionData.VictimHitBodyPart;
-                registerPostureBlow(victimAgent, newBLow, ref collisionData);
-                foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
-                {
-                    missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, WeakGameEntity.Invalid, newBLow, ref collisionData, in attackerWeapon);
-                }
+                Blow newBlow = BuildPostureBlow(blow, attackerAgent, ref collisionData, in attackerWeapon, addedBlowFlag | SilentBreakBlow);
+                DeliverPostureBlow(ref mission, attackerAgent, victimAgent, newBlow, ref collisionData, in attackerWeapon);
                 if (CanForceReaction(victimAgent))
                 {
                     victimAgent.SetActionChannel(0, ActionIndexCache.act_stagger_left, actionSpeed: 0.9f);
@@ -733,33 +721,16 @@ namespace RBMStance
             // The blow lands on the estimated body part and bone, not the guarding arm the block reports, with the damage
             // type the damage was computed with. The block's own collision data still goes with it, so listeners keep
             // seeing a block (RBMCombat's armor wear, for one, only runs on StrikeAgent).
-            private static void makePostureCrashThroughBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, int hpDamage, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag, BoneBodyPartType bodyPart, sbyte bone, DamageTypes damageType)
+            private static void MakePostureCrushThroughBlow(ref Mission mission, Blow blow, Agent attackerAgent, Agent victimAgent, int hpDamage, ref AttackCollisionData collisionData, in MissionWeapon attackerWeapon, BlowFlags addedBlowFlag, BoneBodyPartType bodyPart, sbyte bone, DamageTypes damageType)
             {
-                Blow newBLow = blow;
-                newBLow.BaseMagnitude = collisionData.BaseMagnitude;
-                newBLow.MovementSpeedDamageModifier = collisionData.MovementSpeedDamageModifier;
-                newBLow.InflictedDamage = hpDamage;
-                newBLow.SelfInflictedDamage = collisionData.SelfInflictedDamage;
-                newBLow.AbsorbedByArmor = collisionData.AbsorbedByArmor;
-                sbyte weaponAttachBoneIndex = (sbyte)(attackerWeapon.IsEmpty ? (-1) : attackerAgent.Monster.GetBoneToAttachForItemFlags(attackerWeapon.Item.ItemFlags));
-                newBLow.WeaponRecord.FillAsMeleeBlow(attackerWeapon.Item, attackerWeapon.CurrentUsageItem, collisionData.AffectorWeaponSlotOrMissileIndex, weaponAttachBoneIndex);
-                newBLow.StrikeType = (StrikeType)collisionData.StrikeType;
-                newBLow.DamageType = damageType;
-                newBLow.NoIgnore = collisionData.IsAlternativeAttack;
-                newBLow.AttackerStunPeriod = collisionData.AttackerStunPeriod / 5f;
-                newBLow.DefenderStunPeriod = collisionData.DefenderStunPeriod * 5f;
-                newBLow.BlowFlag = addedBlowFlag;
-                newBLow.GlobalPosition = collisionData.CollisionGlobalPosition;
-                newBLow.BoneIndex = bone;
-                newBLow.Direction = blow.Direction;
-                newBLow.SwingDirection = blow.SwingDirection;
-                newBLow.VictimBodyPart = bodyPart;
-                registerPostureBlow(victimAgent, newBLow, ref collisionData);
-                foreach (MissionBehavior missionBehaviour in mission.MissionBehaviors)
-                {
-                    missionBehaviour.OnRegisterBlow(attackerAgent, victimAgent, WeakGameEntity.Invalid, newBLow, ref collisionData, in attackerWeapon);
-                }
-                //victimAgent.SetActionChannel(0, ActionIndexCache.act_stagger_left, actionSpeed: 0.9f);
+                Blow newBlow = BuildPostureBlow(blow, attackerAgent, ref collisionData, in attackerWeapon, addedBlowFlag);
+                newBlow.InflictedDamage = hpDamage;
+                newBlow.DamageType = damageType;
+                newBlow.AttackerStunPeriod = collisionData.AttackerStunPeriod / 5f;
+                newBlow.DefenderStunPeriod = collisionData.DefenderStunPeriod * 5f;
+                newBlow.BoneIndex = bone;
+                newBlow.VictimBodyPart = bodyPart;
+                DeliverPostureBlow(ref mission, attackerAgent, victimAgent, newBlow, ref collisionData, in attackerWeapon);
             }
 
         }

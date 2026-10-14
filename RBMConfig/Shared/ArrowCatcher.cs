@@ -12,7 +12,7 @@ namespace RBMConfig
     /// (AttributeShieldMissileCollisionBodySizeAdder), which RBMCombat fixes at 0.01 for everyone on purpose
     /// (DamageRework.HitReaction.cs: no magic shields). The perk instead makes the shield holder better at taking
     /// missiles on a raised shield:
-    ///  - posture and stamina a missile block costs (RBMStance StanceLogic.OnAgentHit, needs rbmStanceEnabled + postureEnabled);
+    ///  - posture and stamina a missile block costs (RBMStance StanceLogic.OnMissileHit, needs rbmStanceEnabled + postureEnabled);
     ///  - damage a missile does to the shield (RBMCombat DamageRework.RBMComputeBlowDamageOnShield);
     ///  - how much of a pilum gets through the shield (RBMCombat RangedRework.PilumShieldPenetration).
     /// Only for a wielded shield; a missile into a shield on the back gets none of it.

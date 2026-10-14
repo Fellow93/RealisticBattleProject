@@ -67,11 +67,7 @@ namespace RBMStance
                         stance = AgentStances.values[__instance];
                         Stance.InitializeStamina(__instance, ref stance);
                     }
-                    AgentStances.values.TryGetValue(__instance, out stance);
-                    if (stance != null)
-                    {
-                        Stance.InitializePosture(__instance, ref stance);
-                    }
+                    Stance.InitializePosture(__instance, ref stance);
                 }
             }
         }
@@ -82,11 +78,8 @@ namespace RBMStance
         {
             private static void Postfix()
             {
-                AgentStances.values.Clear();
+                ClearMissionState();
                 AgentStances.postureVisual = null;
-                agentsToDropShield.Clear();
-                agentsToDropWeapon.Clear();
-                agentsToChangeFormation.Clear();
             }
         }
 
@@ -96,11 +89,8 @@ namespace RBMStance
         {
             private static void Postfix()
             {
-                AgentStances.values.Clear();
+                ClearMissionState();
                 AgentStances.postureVisual = null;
-                agentsToDropShield.Clear();
-                agentsToDropWeapon.Clear();
-                agentsToChangeFormation.Clear();
             }
         }
     }
