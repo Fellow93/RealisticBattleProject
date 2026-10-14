@@ -137,7 +137,7 @@ namespace RBMCombat
 
                         float targetFactor = swingDamageFactor;
                         swingCombinedStringOut = GenerateDamageTable((float armor, out float pen, out float blunt) =>
-                            Utilities.RBMComputeDamage(targetWcd.WeaponClass.ToString(), targetWcd.SwingDamageType, skillBasedDamage, armor, 1f, out pen, out blunt, targetFactor, null, false));
+                            Utilities.RBMComputeDamage(targetWcd.WeaponClass.ToString(), targetWcd.SwingDamageType, skillBasedDamage, armor, 1f, out pen, out blunt, targetFactor));
 
                         if (!comparedWeapon.IsEmpty)
                         {
@@ -152,7 +152,7 @@ namespace RBMCombat
 
                             float comparedFactor = swingDamageFactorCompared;
                             swingCombinedStringComparedOut = GenerateDamageTable((float armor, out float pen, out float blunt) =>
-                                Utilities.RBMComputeDamage(comparedWcd.WeaponClass.ToString(), comparedWcd.SwingDamageType, skillBasedDamageCompared, armor, 1f, out pen, out blunt, comparedFactor, null, false));
+                                Utilities.RBMComputeDamage(comparedWcd.WeaponClass.ToString(), comparedWcd.SwingDamageType, skillBasedDamageCompared, armor, 1f, out pen, out blunt, comparedFactor));
                         }
                     }
 
@@ -170,7 +170,7 @@ namespace RBMCombat
 
                         float targetFactor = thrustDamageFactor;
                         thrustCombinedStringOut = GenerateDamageTable((float armor, out float pen, out float blunt) =>
-                            Utilities.RBMComputeDamage(targetWcd.WeaponClass.ToString(), targetWcd.ThrustDamageType, skillBasedDamage, armor, 1f, out pen, out blunt, targetFactor, null, false));
+                            Utilities.RBMComputeDamage(targetWcd.WeaponClass.ToString(), targetWcd.ThrustDamageType, skillBasedDamage, armor, 1f, out pen, out blunt, targetFactor));
 
                         if (!comparedWeapon.IsEmpty)
                         {
@@ -185,7 +185,7 @@ namespace RBMCombat
 
                             float comparedFactor = thrustDamageFactorCompared;
                             thrustCombinedStringComparedOut = GenerateDamageTable((float armor, out float pen, out float blunt) =>
-                                Utilities.RBMComputeDamage(comparedWcd.WeaponClass.ToString(), comparedWcd.ThrustDamageType, skillBasedDamageCompared, armor, 1f, out pen, out blunt, comparedFactor, null, false));
+                                Utilities.RBMComputeDamage(comparedWcd.WeaponClass.ToString(), comparedWcd.ThrustDamageType, skillBasedDamageCompared, armor, 1f, out pen, out blunt, comparedFactor));
                         }
                     }
                 }
@@ -294,12 +294,12 @@ namespace RBMCombat
                             //pierce
                             float pierceMagnitude = CalculateMissileMagnitude(ammoClass, ammoWeightIdeal, calculatedMissileSpeed, targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex) + 100f, 1f, DamageTypes.Pierce);
                             AddDamageSubHeader(__instance, new TextObject("{=RBM_COM_012}Missile Damage Pierce").ToString(), GenerateDamageTable((float armor, out float pen, out float blunt) =>
-                                Utilities.RBMComputeDamage(ammoClass.ToString(), DamageTypes.Pierce, pierceMagnitude, armor, 1f, out pen, out blunt, 1f, null, false)));
+                                Utilities.RBMComputeDamage(ammoClass.ToString(), DamageTypes.Pierce, pierceMagnitude, armor, 1f, out pen, out blunt, 1f)));
 
                             //cut
                             float cutMagnitude = CalculateMissileMagnitude(ammoClass, ammoWeightIdeal, calculatedMissileSpeed, targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex) + 115f, 1f, DamageTypes.Cut);
                             AddDamageSubHeader(__instance, new TextObject("{=RBM_COM_013}Missile Damage Cut").ToString(), GenerateDamageTable((float armor, out float pen, out float blunt) =>
-                                Utilities.RBMComputeDamage(ammoClass.ToString(), DamageTypes.Cut, cutMagnitude, armor, 1f, out pen, out blunt, 1f, null, false)));
+                                Utilities.RBMComputeDamage(ammoClass.ToString(), DamageTypes.Cut, cutMagnitude, armor, 1f, out pen, out blunt, 1f)));
                         }
                         if (targetWcd.WeaponClass == WeaponClass.Javelin ||
                             targetWcd.WeaponClass == WeaponClass.ThrowingAxe ||
@@ -346,7 +346,7 @@ namespace RBMCombat
 
                             float missileMagnitude = CalculateMissileMagnitude(targetWcd.WeaponClass, targetWeapon.Weight, calculatedMissileSpeed, targetWeapon.GetModifiedThrustDamageForUsage(targetWeaponUsageIndex), 1f, magnitudeDamageType);
                             AddDamageSubHeader(__instance, new TextObject("{=RBM_COM_015}Missile Damage").ToString(), GenerateDamageTable((float armor, out float pen, out float blunt) =>
-                                Utilities.RBMComputeDamage(targetWcd.WeaponClass.ToString(), tableDamageType, missileMagnitude, armor, 1f, out pen, out blunt, weaponDamageFactor, null, false)));
+                                Utilities.RBMComputeDamage(targetWcd.WeaponClass.ToString(), tableDamageType, missileMagnitude, armor, 1f, out pen, out blunt, weaponDamageFactor)));
                         }
                     }
                 }

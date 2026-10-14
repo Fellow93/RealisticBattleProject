@@ -227,8 +227,12 @@ namespace RBMAutoResolve
             /// <summary>The weight behind a charge, which is a thing that happens once and not for the whole battle.</summary>
             public float ChargeDamage;
 
-            /// <summary>A man in plate answers an arrow properly; a man in mail does not. RBM halves all but plate.</summary>
-            public bool IsPlate;
+            /// <summary>
+            /// The material of his body armour (the most common across his sets), or None for a man without any. A man
+            /// in plate answers an arrow properly and a man in mail does not (RBM halves all but plate); mail also
+            /// passes more trauma and plate less, for every damage type (BlowDamage.GetTraumaMaterialFactor).
+            /// </summary>
+            public ArmorComponent.ArmorMaterialTypes Material;
 
             /// <summary>RBM's own reckoning of the shield he carries, or 0 for a man with no shield.</summary>
             public float ShieldQuality;
@@ -2355,7 +2359,7 @@ namespace RBMAutoResolve
             /// <summary>Arrows/bolts/stones per man, read off his quivers -- what his stack's quiver is seeded from.</summary>
             public float ShotPerMan;
 
-            public bool IsPlate;
+            public ArmorComponent.ArmorMaterialTypes Material;
 
             public float ShieldBlock;
 
@@ -2518,7 +2522,7 @@ namespace RBMAutoResolve
             info.ThrownType = kit.Thrown.IsValid ? kit.Thrown.WeaponType : null;
             info.ThrownPerMan = kit.ThrownPerMan;
             info.ShotPerMan = kit.ShotPerMan;
-            info.IsPlate = kit.IsPlate;
+            info.Material = kit.Material;
             // The melee figure, as the plain statement of what his shield is worth. The blow-by-blow table below it
             // in the log prints the one that actually applied, which is higher when an arrow was what met it.
             info.ShieldBlock = GetShieldBlock(kit.ShieldQuality, againstMissile: false);
@@ -2825,7 +2829,7 @@ namespace RBMAutoResolve
                 float head = 0f, neck = 0f, torso = 0f, shoulder = 0f, arm = 0f, leg = 0f;
                 float horseLeg = 0f, horseBody = 0f;
                 int mounted = 0;
-                int plate = 0;
+                int[] materials = new int[MaterialCount];
                 foreach (TroopKit kit in byBucket[i])
                 {
                     head += kit.Head;
@@ -2849,10 +2853,7 @@ namespace RBMAutoResolve
                     {
                         mounted++;
                     }
-                    if (kit.IsPlate)
-                    {
-                        plate++;
-                    }
+                    materials[(int)kit.Material]++;
                 }
                 typical[i].Head = head / count;
                 typical[i].Neck = neck / count;
@@ -2863,7 +2864,7 @@ namespace RBMAutoResolve
                 typical[i].HorseLeg = horseLeg / count;
                 typical[i].HorseBody = horseBody / count;
                 bucketMounted[i] = (mounted * 2) > count;
-                typical[i].IsPlate = (plate * 2) > count;
+                typical[i].Material = DominantMaterial(materials);
             }
 
             // The shield the average shield-bearer carries. Measured over the men who actually carry one, so
@@ -3225,7 +3226,7 @@ namespace RBMAutoResolve
             float shieldQuality = 0f, shieldHitPoints = 0f;
             float charge = 0f;
             float bestShotMagnitude = 0f;
-            int plateSets = 0;
+            int[] materialSets = new int[MaterialCount];
             SimulationWeaponModel.WeaponProfile bestShot = default(SimulationWeaponModel.WeaponProfile);
             List<MeleeOption> melee = new List<MeleeOption>();
             int sets = 0;
@@ -3315,10 +3316,7 @@ namespace RBMAutoResolve
 
                 float setHead, setNeck, setTorso, setShoulder, setArm, setLeg;
                 GetArmorZones(set, rbmCombat, out setHead, out setNeck, out setTorso, out setShoulder, out setArm, out setLeg);
-                if (IsPlateArmoured(set))
-                {
-                    plateSets++;
-                }
+                materialSets[(int)GetBodyArmorMaterial(set)]++;
 
                 // The horse is not merely something he sits on: to the footman hacking upward it IS the target, and
                 // its barding and its bulk are what that man's blade finds. So it answers at the leg -- but it is
@@ -3377,7 +3375,7 @@ namespace RBMAutoResolve
                 kit.HorseBody = horseBody / sets;
                 kit.HorseHealth = horseHealth / sets;
                 kit.ChargeDamage = charge / sets;
-                kit.IsPlate = (plateSets * 2) > sets;
+                kit.Material = DominantMaterial(materialSets);
 
                 // The label -- the heaviest shaft he owns, and the test of whether he is a bowman at all. What he is
                 // actually PRICED on is the pool below, where each arrow meets armour on its own terms.
@@ -3865,14 +3863,14 @@ namespace RBMAutoResolve
             if (shooting)
             {
                 drawn = striker.Shot;
-                return ShotDamage(striker, armor, struck.IsPlate, rbmCombat, zone);
+                return ShotDamage(striker, armor, struck.Material, rbmCombat, zone);
             }
             if (throwing)
             {
                 drawn = striker.Thrown;
-                return ExpectedDamage(striker.Thrown, armor, struck.IsPlate, rbmCombat, zone);
+                return ExpectedDamage(striker.Thrown, armor, struck.Material, rbmCombat, zone);
             }
-            return MeleeDamage(striker, armor, struck.IsPlate, rbmCombat, struckStillMounted, zone, out drawn, out braced);
+            return MeleeDamage(striker, armor, struck.Material, rbmCombat, struckStillMounted, zone, out drawn, out braced);
         }
 
         /// <summary>
@@ -3936,11 +3934,12 @@ namespace RBMAutoResolve
         /// afterwards, which is the only order that can be right when a bodkin halves armour and a broadhead does
         /// not.
         /// </summary>
-        private static float ShotDamage(TroopKit kit, float armor, bool victimIsPlate, bool rbmCombat, int zone)
+        private static float ShotDamage(TroopKit kit, float armor, ArmorComponent.ArmorMaterialTypes victimMaterial,
+            bool rbmCombat, int zone)
         {
             if (kit.Shots == null || kit.Shots.Length == 0)
             {
-                return ExpectedDamage(kit.Shot, armor, victimIsPlate, rbmCombat, zone);
+                return ExpectedDamage(kit.Shot, armor, victimMaterial, rbmCombat, zone);
             }
 
             float damage = 0f;
@@ -3948,7 +3947,7 @@ namespace RBMAutoResolve
             for (int i = 0; i < kit.Shots.Length; i++)
             {
                 ShotOption option = kit.Shots[i];
-                damage += ExpectedDamage(option.Profile, armor, victimIsPlate, rbmCombat, zone) * option.Weight;
+                damage += ExpectedDamage(option.Profile, armor, victimMaterial, rbmCombat, zone) * option.Weight;
                 weight += option.Weight;
             }
 
@@ -3968,7 +3967,7 @@ namespace RBMAutoResolve
         /// <paramref name="braced"/> comes back true when the pool that was used is the polearm pool -- which is
         /// exactly the condition for setting a spear against a horse, so the caller need not test the weapon twice.
         /// </summary>
-        private static float MeleeDamage(TroopKit kit, float armor, bool victimIsPlate, bool rbmCombat,
+        private static float MeleeDamage(TroopKit kit, float armor, ArmorComponent.ArmorMaterialTypes victimMaterial, bool rbmCombat,
             bool targetMounted, int zone, out SimulationWeaponModel.WeaponProfile shown, out bool braced)
         {
             shown = default(SimulationWeaponModel.WeaponProfile);
@@ -3992,7 +3991,7 @@ namespace RBMAutoResolve
                 {
                     continue;
                 }
-                damage += ExpectedDamage(option.Profile, armor, victimIsPlate, rbmCombat, zone) * option.Weight;
+                damage += ExpectedDamage(option.Profile, armor, victimMaterial, rbmCombat, zone) * option.Weight;
                 weight += option.Weight;
 
                 // The weapon shown in the log is the heaviest of the pool actually drawn from -- a label for the
@@ -4294,13 +4293,37 @@ namespace RBMAutoResolve
             return true;
         }
 
-        /// <summary>Whether his body armour is plate -- the only armour RBM does not halve against an arrow.</summary>
-        private static bool IsPlateArmoured(Equipment set)
+        private const int MaterialCount = (int)ArmorComponent.ArmorMaterialTypes.Plate + 1;
+
+        /// <summary>
+        /// The material of his body armour, or None for a man without any -- what the live blow reads for a chest hit
+        /// (ArmorRework getChestArmorMaterial). Plate is the only armour RBM does not halve against an arrow, and the
+        /// material also scales blunt trauma.
+        /// </summary>
+        private static ArmorComponent.ArmorMaterialTypes GetBodyArmorMaterial(Equipment set)
         {
             ItemObject body = set[EquipmentIndex.Body].Item;
-            return body != null
-                && body.ArmorComponent != null
-                && body.ArmorComponent.MaterialType == ArmorComponent.ArmorMaterialTypes.Plate;
+            if (body == null || body.ArmorComponent == null)
+            {
+                return ArmorComponent.ArmorMaterialTypes.None;
+            }
+            ArmorComponent.ArmorMaterialTypes material = body.ArmorComponent.MaterialType;
+            return ((int)material >= 0 && (int)material < MaterialCount) ? material : ArmorComponent.ArmorMaterialTypes.None;
+        }
+
+        /// <summary>The most common material in these counts (indexed by ArmorMaterialTypes). A tie goes to the lighter
+        /// one, as the old plate test (a strict majority) never called a half-plated troop plate.</summary>
+        private static ArmorComponent.ArmorMaterialTypes DominantMaterial(int[] counts)
+        {
+            int best = 0;
+            for (int m = 1; m < counts.Length; m++)
+            {
+                if (counts[m] > counts[best])
+                {
+                    best = m;
+                }
+            }
+            return (ArmorComponent.ArmorMaterialTypes)best;
         }
 
         /// <summary>
@@ -4598,15 +4621,15 @@ namespace RBMAutoResolve
         /// used at all under RBM (a blow is its class and its wielder's training), and the weapon's quality shows
         /// itself as PENETRATION, dividing the armour threshold, rather than as force.
         /// </summary>
-        private static float ExpectedDamage(SimulationWeaponModel.WeaponProfile profile, float armor, bool victimIsPlate,
-            bool rbmCombat, int zone)
+        private static float ExpectedDamage(SimulationWeaponModel.WeaponProfile profile, float armor,
+            ArmorComponent.ArmorMaterialTypes victimMaterial, bool rbmCombat, int zone)
         {
             if (!profile.IsValid || profile.Magnitude <= 0f)
             {
                 return 0f;
             }
             float damage = rbmCombat
-                ? SimulationWeaponModel.RbmDamage(profile, armor, victimIsPlate)
+                ? SimulationWeaponModel.RbmDamage(profile, armor, victimMaterial)
                 : SimulationWeaponModel.VanillaDamage(profile.Magnitude, armor, profile.DamageType);
 
             // And what it is worth where it landed. RBM pays a head half again and an arm or a leg about half, and

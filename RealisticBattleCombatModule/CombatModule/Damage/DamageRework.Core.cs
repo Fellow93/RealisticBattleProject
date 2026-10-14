@@ -565,7 +565,16 @@ namespace RBMCombat
                 }
 
                 // Floored once, after the body-part multiplier (flooring before it as well dropped the fraction twice).
-                float computedDamage = Utilities.RBMComputeDamage(weaponType, damageType, stealthMagnitude, armorAmount, victimAgentAbsorbedDamageRatio, out float penetratedDamage, out _, weaponDamageFactor, player, isPlayerVictim, armorMaterial);
+                float computedDamage = Utilities.RBMComputeDamage(weaponType, damageType, stealthMagnitude, armorAmount, victimAgentAbsorbedDamageRatio, out float penetratedDamage, out float traumaAfterArmor, weaponDamageFactor, armorMaterial);
+                if (RBMConfig.RBMConfig.armorPenetrationMessage && player != null)
+                {
+                    MBTextManager.SetTextVariable("DMG1", (int)traumaAfterArmor);
+                    MBTextManager.SetTextVariable("DMG2", (int)penetratedDamage);
+                    string message = isPlayerVictim
+                        ? new TextObject("{=RBM_AI_021}You received {DMG1} blunt trauma, {DMG2} armor penetration damage").ToString()
+                        : new TextObject("{=RBM_AI_022}You dealt {DMG1} blunt trauma, {DMG2} armor penetration damage").ToString();
+                    InformationManager.DisplayMessage(new InformationMessage(message));
+                }
                 if (attackCollisionData.IsMissile)
                 {
                     // Arrows that only bruise through the armor break or glance off instead of sticking.

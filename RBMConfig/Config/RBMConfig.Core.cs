@@ -18,6 +18,10 @@ namespace RBMConfig
         // Blunt factors (the ammo switched from Cut to Blunt).
         internal const string SlingStoneBluntMigratedNode = "SlingStoneBluntMigrated";
 
+        // Marker leaf under RBMCombat/Global recording that sling stone ammo's blunt factor was rescaled once when the
+        // blunt trauma base went from 0.7 to 0.6, so the stones keep their trauma.
+        internal const string SlingStoneBluntBaseRescaledNode = "SlingStoneBluntBaseRescaled";
+
         public static XmlDocument xmlConfig = new XmlDocument();
 
         //modules
@@ -79,6 +83,7 @@ namespace RBMConfig
                     }
                     else
                     {
+                        ApplyForcedSettings(false);
                         parseXmlConfig();
                         loaded = true;
                     }
@@ -92,6 +97,7 @@ namespace RBMConfig
             {
                 xmlConfig = new XmlDocument();
                 Utilities.createXmlConfig(ref xmlConfig);
+                ApplyForcedSettings(true);
                 // createXmlConfig writes only part of the settings. Parse the fresh document straight away so
                 // ReadOrCreate adds every missing node now; otherwise saveXmlConfig (which only fills nodes that
                 // exist) drops settings-screen changes to those options until the next launch.
@@ -121,6 +127,58 @@ namespace RBMConfig
         }
 
         // Ensures a structural (non-leaf) XML node exists, creating it if missing.
+        private sealed class ForcedSetting
+        {
+            public readonly string Id;
+            public readonly string Path;
+            public readonly string Value;
+
+            public ForcedSetting(string id, string path, string value)
+            {
+                Id = id;
+                Path = path;
+                Value = value;
+            }
+        }
+
+        // Values pushed onto every saved config once, on the first start of the release that adds them; the player's
+        // own later choice sticks. Give the code default the same value (a missing node falls back to it). Never
+        // change or remove a shipped entry: add a new one with a new id.
+        private static readonly ForcedSetting[] ForcedSettings =
+        {
+            new ForcedSetting("2026-10-14-blunt-trauma-0.9", "/Config/RBMCombat/Global/BluntTraumaMultiplier", "0.9"),
+        };
+
+        private const string AppliedForcedSettingsNode = "AppliedForcedSettings";
+
+        // A fresh config already has the new defaults, so its entries are only marked as applied.
+        private static void ApplyForcedSettings(bool freshConfig)
+        {
+            XmlNode applied = EnsureNode("/Config", AppliedForcedSettingsNode);
+            if (applied == null)
+            {
+                return;
+            }
+            foreach (ForcedSetting setting in ForcedSettings)
+            {
+                if (applied.SelectSingleNode("Setting[@id='" + setting.Id + "']") != null)
+                {
+                    continue;
+                }
+                if (!freshConfig)
+                {
+                    XmlNode node = xmlConfig.SelectSingleNode(setting.Path);
+                    if (node != null)
+                    {
+                        node.InnerText = setting.Value;
+                    }
+                }
+                XmlElement mark = xmlConfig.CreateElement("Setting");
+                mark.SetAttribute("id", setting.Id);
+                applied.AppendChild(mark);
+            }
+        }
+
         private static XmlNode EnsureNode(string parentXpath, string name)
         {
             string xpath = parentXpath + "/" + name;
@@ -307,7 +365,7 @@ namespace RBMConfig
             maceBluntModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "MaceBluntModifier", "1"));
             armorThresholdModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "ArmorThresholdModifier", "1"));
             bluntTraumaBonus = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "BluntTraumaBonus", "0"));
-            bluntTraumaMultiplier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "BluntTraumaMultiplier", "1"));
+            bluntTraumaMultiplier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "BluntTraumaMultiplier", "0.9"));
             armorEffectivenessMultiplier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "ArmorEffectivenessMultiplier", "1"));
             ThrustMagnitudeModifier = ParseFloat(ReadOrCreate("/Config/RBMCombat/Global", "ThrustMagnitudeModifier", "0.05"));
             OneHandedThrustDamageBonus = 1f / ThrustMagnitudeModifier;
@@ -381,6 +439,21 @@ namespace RBMConfig
                     }
                 }
                 ReadOrCreate("/Config/RBMCombat/Global", SlingStoneBluntMigratedNode, "1");
+            }
+
+            // One-time rescale for the blunt trauma base dropping from 0.7 to 0.6 (BlowDamage.BluntTraumaBase): every
+            // other class takes the cut, but sling stones were tuned to land 0.5 of the stopped magnitude, so their
+            // saved factor (0.714 by default, or the player's own) is raised by 0.7 / 0.6 to keep the same trauma. Runs
+            // after the Cut -> Blunt carry-over above, which still produces a value relative to the old 0.7 base.
+            if (xmlConfig.SelectSingleNode("/Config/RBMCombat/Global/" + SlingStoneBluntBaseRescaledNode) == null)
+            {
+                RBMCombatConfigWeaponType sling = weaponTypesFactors.Find(x => x.weaponType == "SlingStone");
+                // No saved SlingStone row means the new default (already relative to 0.6) is in use.
+                if (sling != null && xmlConfig.SelectSingleNode("/Config/RBMCombat/WeaponTypes/SlingStone") != null)
+                {
+                    sling.ExtraBluntFactorBlunt *= 0.7f / BlowDamage.BluntTraumaBase;
+                }
+                ReadOrCreate("/Config/RBMCombat/Global", SlingStoneBluntBaseRescaledNode, "1");
             }
 
             // Price modifiers

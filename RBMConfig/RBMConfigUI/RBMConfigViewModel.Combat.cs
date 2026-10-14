@@ -195,7 +195,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel BluntTraumaMultiplierHint { get; } = Hint("{=RBM_CFG_BLUNT_MULT_HINT}Scales blunt trauma, the damage that gets through armor without penetrating it, for every weapon type. Lower makes armored troops tankier; higher makes armor protect less. Penetrating damage is unchanged. Also feeds auto-resolve. With Armor Effectiveness: that setting first decides how much of a hit armor stops and how much of the stopped part it absorbs; this one then scales whatever blunt trauma is left. They don't multiply into each other: this does not make armor count for more, it only changes how much a stopped hit still hurts. Default 1.00.");
+        public BasicTooltipViewModel BluntTraumaMultiplierHint { get; } = Hint("{=RBM_CFG_BLUNT_MULT_HINT}Scales blunt trauma, the damage that gets through armor without penetrating it, for every weapon type. Lower makes armored troops tankier; higher makes armor protect less. Penetrating damage is unchanged. Also feeds auto-resolve. With Armor Effectiveness: that setting first decides how much of a hit armor stops and how much of the stopped part it absorbs; this one then scales whatever blunt trauma is left. They don't multiply into each other: this does not make armor count for more, it only changes how much a stopped hit still hurts. Default 0.90.");
 
         private float _armorThresholdModifier;
 

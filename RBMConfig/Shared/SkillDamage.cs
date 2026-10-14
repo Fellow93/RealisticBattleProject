@@ -5,19 +5,9 @@ using static TaleWorlds.Core.ArmorComponent;
 
 namespace RBMConfig
 {
-    /// <summary>
-    /// Melee damage math shared by RBMCombat (the real blow) and RBMStance (the posture
-    /// crush-through HP estimate). Lives here because RBMConfig is the one project both
-    /// reference; RBMStance does not reference RBMCombat. RBMCombat's behaviour is the source
-    /// of truth for everything in this file.
-    /// </summary>
+    /// <summary>Skill-scaled blow magnitudes shared by RBMCombat, RBMStance and the auto-resolve.</summary>
     public static class SkillDamage
     {
-        /// <summary>
-        /// Base magnitude of an unarmed punch before the skill scaling in
-        /// <see cref="GetSkillBasedDamage"/>: 1 x a factor for the attacker's arm-armor
-        /// material, plus half the gauntlet's weight.
-        /// </summary>
         public static float GetPunchMagnitude(ArmorMaterialTypes gauntletMaterial, float gauntletWeight)
         {
             float magnitude = 1f;
@@ -26,10 +16,6 @@ namespace RBMConfig
             return magnitude;
         }
 
-        /// <summary>
-        /// Magnitude factor of a punch by the attacker's arm-armor material. Materials not
-        /// listed leave the magnitude unchanged.
-        /// </summary>
         public static float GetPunchMaterialFactor(ArmorMaterialTypes gauntletMaterial)
         {
             switch (gauntletMaterial)
@@ -58,18 +44,13 @@ namespace RBMConfig
             return 1f;
         }
 
-        // Share of the weapon skill in the skill a kick or bash uses; the rest is Athletics.
+        // Share of the weapon skill in a kick or bash; the rest is Athletics.
         public const float KickBashWeaponSkillShare = 0.3f;
 
-        // A kick lands harder than a punch thrown with the same skill. Applied after the skill scaling, so it
-        // still holds where the unarmed clamp caps both.
+        // Applied after the skill scaling, so it still holds where the unarmed clamp caps both.
         public const float KickDamageFactor = 1.2f;
 
-        /// <summary>
-        /// The skill a kick or bash is thrown with: mostly Athletics (footwork and balance), with a smaller share
-        /// of the skill with the weapon in hand. Athletics alone when unarmed. Same blend RBMStance's
-        /// AiKickBash.KickSkill uses for its rolls and costs.
-        /// </summary>
+        // Same blend RBMStance's AiKickBash.KickSkill uses.
         public static int GetKickBashSkill(Agent agent)
         {
             AgentStatCalculateModel model = MissionGameModels.Current.AgentStatCalculateModel;
@@ -83,360 +64,208 @@ namespace RBMConfig
             return MathF.Round(athletics * (1f - KickBashWeaponSkillShare) + weaponSkill * KickBashWeaponSkillShare);
         }
 
-        /// <summary>
-        /// Base magnitude of a kick before the unarmed skill scaling in <see cref="GetSkillBasedDamage"/>: the
-        /// punch model with the attacker's leg armor in place of the gauntlet. A quarter of the boot's weight
-        /// rather than half, as leg armor covers the whole leg and little of it is behind the foot.
-        /// </summary>
         public static float GetKickMagnitude(ArmorMaterialTypes bootMaterial, float bootWeight)
         {
             return GetPunchMaterialFactor(bootMaterial) + bootWeight * 0.25f;
         }
 
-        /// <summary>
-        /// Base magnitude of a shield bash before the unarmed skill scaling: a shove with the shield's face or
-        /// rim, modestly heavier with the shield's weight. Between a bare and a plated fist for the usual shields.
-        /// </summary>
         public static float GetShieldBashMagnitude(float shieldWeight)
         {
             return 0.4f + shieldWeight * 0.1f;
         }
 
-        /// <summary>
-        /// Base magnitude of a weapon bash (pommel or haft shove) before the unarmed skill scaling: a bare fist
-        /// with something hard in it, modestly heavier with the weapon's weight. The blade plays no part.
-        /// </summary>
         public static float GetWeaponBashMagnitude(float weaponWeight)
         {
             return GetPunchMaterialFactor(ArmorMaterialTypes.None) + weaponWeight * 0.1f;
         }
 
-        /// <summary>
-        /// Lower clamp for a handle hit, before the Blunt multipliers. Only matters for unskilled men, whose
-        /// skill term is near zero and whose hilt magnitude alone would make the blow nearly harmless.
-        /// </summary>
         private const float HandleHitFloor = 4f;
 
-        /// <param name="isHandleHit">A swing that landed with the hilt, pommel or haft rather than the blade (the
-        /// caller has already turned its damage type to Blunt). Its Blunt branch uses the small HandleHitFloor
-        /// instead of the usual lower clamp, so the weapon's swing physics and the skill set the blow instead of a
-        /// floor that made a graze hit as hard as a full pommel strike. The ceiling still applies. Genuinely blunt
-        /// items in these classes keep the usual floor.</param>
+        // Below these the input magnitude is kept; polearm thrusts are on the ThrustMagnitudeModifier scale.
+        private const float MinScaledMagnitude = 1f;
+        private const float MinScaledPolearmMagnitude = 0.15f;
+
+        private const float AshBreakThreshold = 430f;
+        private const float PoplarBreakThreshold = 260f;
+
         public static float GetSkillBasedDamage(float magnitude, bool isPassiveUsage, string weaponType, DamageTypes damageType, float effectiveSkill, float skillModifier, StrikeType strikeType, float weaponWeight, bool isHandleHit = false)
         {
-            float skillBasedDamage = 0f;
-            const float ashBreakTreshold = 430f;
-            const float poplarBreakTreshold = 260f;
-            float BraceBonus = 0f;
-            float BraceModifier = 1f; // because lances have 3 times more damage
-            switch (weaponType)
+            float skillBasedDamage;
+            switch (WeaponTypeKeys.NormalizeWeaponType(weaponType))
             {
                 case "Dagger":
                 case "OneHandedSword":
                 case "ThrowingKnife":
+                    if (damageType == DamageTypes.Cut)
                     {
-                        if (damageType == DamageTypes.Cut)
-                        {
-                            float value = magnitude + (effectiveSkill * 0.133f);
-                            float min = 5f * (1 + skillModifier);
-                            float max = 15f * (1 + (2 * skillModifier));
-                            skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4.6f);
-                            //skillBasedDamage = magnitude + 40f + (effectiveSkill * 0.53f);
-                        }
-                        else if (damageType == DamageTypes.Blunt)
-                        {
-                            //skillBasedDamage = magnitude + 0.50f * (40f + (effectiveSkill * 0.53f));
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.075f), isHandleHit ? HandleHitFloor : 15f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f) * 0.4f;
-                        }
-                        else
-                        {
-                            if (strikeType == (int)StrikeType.Swing)
-                            {
-                                skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.133f), 5f * (1 + skillModifier), 15f * (1 + (2 * skillModifier))) * 4f) * RBMConfig.ThrustMagnitudeModifier;
-                            }
-                            else
-                            {
-                                skillBasedDamage = magnitude;
-                            }
-                        }
-                        if (magnitude > 1f || isHandleHit)
-                        {
-                            magnitude = skillBasedDamage;
-                        }
-                        break;
+                        skillBasedDamage = SkillClamp(magnitude + effectiveSkill * 0.133f, 5f, 15f, skillModifier) * 4.6f;
                     }
+                    else if (damageType == DamageTypes.Blunt)
+                    {
+                        skillBasedDamage = (BluntClamp(magnitude + effectiveSkill * 0.075f, isHandleHit, 15f, 20f, skillModifier) * 4f) * 0.4f;
+                    }
+                    else if (strikeType == StrikeType.Swing)
+                    {
+                        skillBasedDamage = (SkillClamp(magnitude + effectiveSkill * 0.133f, 5f, 15f, skillModifier) * 4f) * RBMConfig.ThrustMagnitudeModifier;
+                    }
+                    else
+                    {
+                        return magnitude;
+                    }
+                    return magnitude > MinScaledMagnitude || isHandleHit ? skillBasedDamage : magnitude;
+
                 case "TwoHandedSword":
+                    if (damageType == DamageTypes.Cut)
                     {
-                        if (damageType == DamageTypes.Cut)
-                        {
-                            float value = magnitude + (effectiveSkill * 0.199f);
-                            float min = 12f * (1 + skillModifier);
-                            float max = 20f * (1 + (2 * skillModifier));
-                            skillBasedDamage = MBMath.ClampFloat(value, min, max) * 4.6f;
-                        }
-                        else if (damageType == DamageTypes.Blunt)
-                        {
-                            //skillBasedDamage = magnitude * 1.3f + 0.5f * ((40f + (effectiveSkill * 0.53f)) * 1.3f);
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.112f), isHandleHit ? HandleHitFloor : 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.4f;
-                        }
-                        else
-                        {
-                            if (strikeType == (int)StrikeType.Swing)
-                            {
-                                skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.199f), 12f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f) * RBMConfig.ThrustMagnitudeModifier;
-                            }
-                            else
-                            {
-                                skillBasedDamage = magnitude;
-                            }
-                        }
-                        if (magnitude > 1f || isHandleHit)
-                        {
-                            magnitude = skillBasedDamage;
-                        }
-                        break;
+                        skillBasedDamage = SkillClamp(magnitude + effectiveSkill * 0.199f, 12f, 20f, skillModifier) * 4.6f;
                     }
+                    else if (damageType == DamageTypes.Blunt)
+                    {
+                        skillBasedDamage = (BluntClamp(magnitude + effectiveSkill * 0.112f, isHandleHit, 20f, 26f, skillModifier) * 4f) * 0.4f;
+                    }
+                    else if (strikeType == StrikeType.Swing)
+                    {
+                        skillBasedDamage = (SkillClamp(magnitude + effectiveSkill * 0.199f, 12f, 20f, skillModifier) * 4f) * RBMConfig.ThrustMagnitudeModifier;
+                    }
+                    else
+                    {
+                        return magnitude;
+                    }
+                    return magnitude > MinScaledMagnitude || isHandleHit ? skillBasedDamage : magnitude;
+
                 case "OneHandedAxe":
                 case "ThrowingAxe":
-                    {
-                        float value = magnitude + (effectiveSkill * 0.1f);
-                        float min = 10f * (1 + skillModifier);
-                        float max = 18f * (1 + (2 * skillModifier));
-                        skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4.6f);
-                        if (damageType == DamageTypes.Blunt)
-                        {
-                            //skillBasedDamage = magnitude + 0.5f * (60f + (effectiveSkill * 0.4f));
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.075f), isHandleHit ? HandleHitFloor : 15f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
-                        }
-                        if (magnitude > 1f || isHandleHit)
-                        {
-                            magnitude = skillBasedDamage;
-                        }
-                        break;
-                    }
+                    skillBasedDamage = damageType == DamageTypes.Blunt
+                        ? (BluntClamp(magnitude + effectiveSkill * 0.075f, isHandleHit, 15f, 20f, skillModifier) * 4f) * 0.3f
+                        : SkillClamp(magnitude + effectiveSkill * 0.1f, 10f, 18f, skillModifier) * 4.6f;
+                    return magnitude > MinScaledMagnitude || isHandleHit ? skillBasedDamage : magnitude;
+
                 case "TwoHandedAxe":
-                    {
-                        float value = magnitude + (effectiveSkill * 0.15f);
-                        float min = 15f * (1 + skillModifier);
-                        float max = 24f * (1 + (2 * skillModifier));
-                        skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4.6f);
-                        if (damageType == DamageTypes.Blunt)
-                        {
-                            //skillBasedDamage = magnitude * 1.3f + 0.5f * ((60f + (effectiveSkill * 0.4f)) * 1.30f);
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.112f), isHandleHit ? HandleHitFloor : 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
-                        }
-                        if (magnitude > 1f || isHandleHit)
-                        {
-                            magnitude = skillBasedDamage;
-                        }
-                        break;
-                    }
+                    skillBasedDamage = damageType == DamageTypes.Blunt
+                        ? (BluntClamp(magnitude + effectiveSkill * 0.112f, isHandleHit, 20f, 26f, skillModifier) * 4f) * 0.3f
+                        : SkillClamp(magnitude + effectiveSkill * 0.15f, 15f, 24f, skillModifier) * 4.6f;
+                    return magnitude > MinScaledMagnitude || isHandleHit ? skillBasedDamage : magnitude;
+
                 case "Mace":
+                    if (damageType == DamageTypes.Pierce || !(magnitude > MinScaledMagnitude))
                     {
-                        if (damageType == DamageTypes.Pierce)
-                        {
-                            skillBasedDamage = magnitude;
-                        }
-                        else
-                        {
-                            float value = magnitude + (effectiveSkill * 0.075f);
-                            float min = 10f * (1 + skillModifier);
-                            float max = 15f * (1 + (2 * skillModifier));
-                            skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4.6f);
-                        }
-                        if (magnitude > 1f)
-                        {
-                            magnitude = skillBasedDamage;
-                        }
-                        break;
+                        return magnitude;
                     }
-                case "unarmedAttack":
-                    {
-                        float value = magnitude * (effectiveSkill * 0.2f);
-                        float min = 1f * (1 + skillModifier);
-                        float max = 10f * (1 + (2 * skillModifier));
-                        skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 2f);
-                        magnitude = skillBasedDamage;
-                        break;
-                    }
+                    return SkillClamp(magnitude + effectiveSkill * 0.075f, 10f, 15f, skillModifier) * 4.6f;
+
                 case "TwoHandedMace":
+                    if (damageType == DamageTypes.Pierce || !(magnitude > MinScaledMagnitude))
                     {
-                        if (damageType == DamageTypes.Pierce)
-                        {
-                            skillBasedDamage = magnitude;
-                        }
-                        else
-                        {
-                            float value = magnitude + (effectiveSkill * 0.1125f);
-                            float min = 15f * (1 + skillModifier);
-                            float max = 22f * (1 + (2 * skillModifier));
-                            skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4.6f);
-                        }
-                        if (magnitude > 1f)
-                        {
-                            magnitude = skillBasedDamage;
-                        }
-                        break;
+                        return magnitude;
                     }
+                    return SkillClamp(magnitude + effectiveSkill * 0.1125f, 15f, 22f, skillModifier) * 4.6f;
+
+                case "unarmedAttack":
+                    return SkillClamp(magnitude * (effectiveSkill * 0.2f), 1f, 10f, skillModifier) * 2f;
+
                 case "OneHandedPolearm":
+                    if (isPassiveUsage)
                     {
-                        if (damageType == DamageTypes.Cut)
-                        {
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.1f), 15f * (1 + skillModifier), 24f * (1 + (2 * skillModifier))) * 4f);
-                        }
-                        else if (damageType == DamageTypes.Blunt && !isPassiveUsage)
-                        {
-                            //skillBasedDamage = magnitude + 30f + (effectiveSkill * 0.26f);
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.075f), isHandleHit ? HandleHitFloor : 15f * (1 + skillModifier), 20f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
-                        }
-                        else
-                        {
-                            if (isPassiveUsage)
-                            {
-                                float couchedSkill = 0.5f + effectiveSkill * 0.02f;
-                                float skillCap = (150f + effectiveSkill * 1.5f);
-
-                                if (weaponWeight < 2.1f)
-                                {
-                                    BraceBonus += 0.5f;
-                                    BraceModifier *= 1f;
-                                }
-                                float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
-                                float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
-                                float BluntLanceBalistics = ((magnitude * BraceModifier) / weaponWeight) * RBMConfig.OneHandedThrustDamageBonus;
-                                float BluntCouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus) * RBMConfig.OneHandedThrustDamageBonus;
-                                magnitude = CouchedMagnitude;
-
-                                if (damageType == DamageTypes.Blunt)
-                                {
-                                    magnitude = BluntCouchedMagnitude;
-                                    if (BluntCouchedMagnitude > skillCap && (BluntLanceBalistics * (weaponWeight + BraceBonus)) < skillCap) //skill based damage
-                                    {
-                                        magnitude = skillCap;
-                                    }
-
-                                    if ((BluntLanceBalistics * (weaponWeight + BraceBonus)) >= skillCap) //ballistics
-                                    {
-                                        magnitude = (BluntLanceBalistics * (weaponWeight + BraceBonus));
-                                    }
-
-                                    if (magnitude > poplarBreakTreshold) // damage cap - lance break threshold
-                                    {
-                                        magnitude = poplarBreakTreshold;
-                                    }
-                                    magnitude *= 1f;
-                                }
-                                else
-                                {
-                                    if (CouchedMagnitude > (skillCap * RBMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMConfig.ThrustMagnitudeModifier)) //skill based damage
-                                    {
-                                        magnitude = skillCap * RBMConfig.ThrustMagnitudeModifier;
-                                    }
-
-                                    if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMConfig.ThrustMagnitudeModifier)) //ballistics
-                                    {
-                                        magnitude = (lanceBalistics * (weaponWeight + BraceBonus));
-                                    }
-
-                                    if (magnitude > (ashBreakTreshold * RBMConfig.ThrustMagnitudeModifier)) // damage cap - lance break threshold
-                                    {
-                                        magnitude = ashBreakTreshold * RBMConfig.ThrustMagnitudeModifier;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                skillBasedDamage = magnitude;
-                            }
-                        }
-                        if ((magnitude > 0.15f || isHandleHit) && !isPassiveUsage)
-                        {
-                            magnitude = skillBasedDamage;
-                        }
-                        break;
+                        return damageType == DamageTypes.Cut ? magnitude : GetCouchedMagnitude(magnitude, damageType, effectiveSkill, weaponWeight);
                     }
+                    if (damageType == DamageTypes.Cut)
+                    {
+                        skillBasedDamage = SkillClamp(magnitude + effectiveSkill * 0.1f, 15f, 24f, skillModifier) * 4f;
+                    }
+                    else if (damageType == DamageTypes.Blunt)
+                    {
+                        skillBasedDamage = (BluntClamp(magnitude + effectiveSkill * 0.075f, isHandleHit, 15f, 20f, skillModifier) * 4f) * 0.3f;
+                    }
+                    else
+                    {
+                        return magnitude;
+                    }
+                    return magnitude > MinScaledPolearmMagnitude || isHandleHit ? skillBasedDamage : magnitude;
+
                 case "TwoHandedPolearm":
+                    if (isPassiveUsage)
                     {
-                        if (damageType == DamageTypes.Cut)
-                        {
-                            float value = magnitude + (effectiveSkill * 0.1495f);
-                            float min = 18f * (1 + skillModifier);
-                            float max = 28f * (1 + (2 * skillModifier));
-                            skillBasedDamage = (MBMath.ClampFloat(value, min, max) * 4f);
-                        }
-                        else if (damageType == DamageTypes.Blunt && !isPassiveUsage)
-                        {
-                            //skillBasedDamage = magnitude + (30f + (effectiveSkill * 0.26f) * 1.3f);
-                            skillBasedDamage = (MBMath.ClampFloat(magnitude + (effectiveSkill * 0.0975f), isHandleHit ? HandleHitFloor : 20f * (1 + skillModifier), 26f * (1 + (2 * skillModifier))) * 4f) * 0.3f;
-                        }
-                        else
-                        {
-                            if (isPassiveUsage)
-                            {
-                                float couchedSkill = 0.5f + effectiveSkill * 0.02f;
-                                float skillCap = (150f + effectiveSkill * 1.5f);
-
-                                if (weaponWeight < 2.1f)
-                                {
-                                    BraceBonus += 0.5f;
-                                    BraceModifier *= 1f;
-                                }
-                                float lanceBalistics = (magnitude * BraceModifier) / weaponWeight;
-                                float CouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus);
-                                float BluntLanceBalistics = ((magnitude * BraceModifier) / weaponWeight) * RBMConfig.OneHandedThrustDamageBonus;
-                                float BluntCouchedMagnitude = lanceBalistics * (weaponWeight + couchedSkill + BraceBonus) * RBMConfig.OneHandedThrustDamageBonus;
-                                magnitude = CouchedMagnitude;
-
-                                if (damageType == DamageTypes.Blunt)
-                                {
-                                    magnitude = BluntCouchedMagnitude;
-                                    if (BluntCouchedMagnitude > skillCap && (BluntLanceBalistics * (weaponWeight + BraceBonus)) < skillCap) //skill based damage
-                                    {
-                                        magnitude = skillCap;
-                                    }
-
-                                    if ((BluntLanceBalistics * (weaponWeight + BraceBonus)) >= skillCap) //ballistics
-                                    {
-                                        magnitude = (BluntLanceBalistics * (weaponWeight + BraceBonus));
-                                    }
-
-                                    if (magnitude > poplarBreakTreshold) // damage cap - lance break threshold
-                                    {
-                                        magnitude = poplarBreakTreshold;
-                                    }
-                                    magnitude *= 1f;
-                                }
-                                else
-                                {
-                                    if (CouchedMagnitude > (skillCap * RBMConfig.ThrustMagnitudeModifier) && (lanceBalistics * (weaponWeight + BraceBonus)) < (skillCap * RBMConfig.ThrustMagnitudeModifier)) //skill based damage
-                                    {
-                                        magnitude = skillCap * RBMConfig.ThrustMagnitudeModifier;
-                                    }
-
-                                    if ((lanceBalistics * (weaponWeight + BraceBonus)) >= (skillCap * RBMConfig.ThrustMagnitudeModifier)) //ballistics
-                                    {
-                                        magnitude = (lanceBalistics * (weaponWeight + BraceBonus));
-                                    }
-
-                                    if (magnitude > (ashBreakTreshold * RBMConfig.ThrustMagnitudeModifier)) // damage cap - lance break threshold
-                                    {
-                                        magnitude = ashBreakTreshold * RBMConfig.ThrustMagnitudeModifier;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                skillBasedDamage = magnitude;
-                            }
-                        }
-                        if ((magnitude > 0.15f || isHandleHit) && !isPassiveUsage)
-                        {
-                            magnitude = skillBasedDamage;
-                        }
-                        break;
+                        return damageType == DamageTypes.Cut ? magnitude : GetCouchedMagnitude(magnitude, damageType, effectiveSkill, weaponWeight);
                     }
+                    if (damageType == DamageTypes.Cut)
+                    {
+                        skillBasedDamage = SkillClamp(magnitude + effectiveSkill * 0.1495f, 18f, 28f, skillModifier) * 4f;
+                    }
+                    else if (damageType == DamageTypes.Blunt)
+                    {
+                        skillBasedDamage = (BluntClamp(magnitude + effectiveSkill * 0.0975f, isHandleHit, 20f, 26f, skillModifier) * 4f) * 0.3f;
+                    }
+                    else
+                    {
+                        return magnitude;
+                    }
+                    return magnitude > MinScaledPolearmMagnitude || isHandleHit ? skillBasedDamage : magnitude;
+
+                default:
+                    return magnitude;
             }
-            return magnitude;
+        }
+
+        private static float SkillClamp(float value, float minBase, float maxBase, float skillModifier)
+        {
+            return MBMath.ClampFloat(value, minBase * (1 + skillModifier), maxBase * (1 + (2 * skillModifier)));
+        }
+
+        private static float BluntClamp(float value, bool isHandleHit, float minBase, float maxBase, float skillModifier)
+        {
+            return MBMath.ClampFloat(value, isHandleHit ? HandleHitFloor : minBase * (1 + skillModifier), maxBase * (1 + (2 * skillModifier)));
+        }
+
+        // Couched lance or braced polearm, Pierce or Blunt.
+        private static float GetCouchedMagnitude(float magnitude, DamageTypes damageType, float effectiveSkill, float weaponWeight)
+        {
+            float couchedSkill = 0.5f + effectiveSkill * 0.02f;
+            float skillCap = 150f + effectiveSkill * 1.5f;
+            float braceBonus = weaponWeight < 2.1f ? 0.5f : 0f;
+
+            float lanceBallistics = magnitude / weaponWeight;
+            float couchedMagnitude = lanceBallistics * (weaponWeight + couchedSkill + braceBonus);
+
+            if (damageType == DamageTypes.Blunt)
+            {
+                // One-handed bonus for both classes; the two bonuses are equal.
+                float bluntLanceBallistics = lanceBallistics * RBMConfig.OneHandedThrustDamageBonus;
+                float bluntCouchedMagnitude = lanceBallistics * (weaponWeight + couchedSkill + braceBonus) * RBMConfig.OneHandedThrustDamageBonus;
+                float bluntBallisticMagnitude = bluntLanceBallistics * (weaponWeight + braceBonus);
+
+                float result = bluntCouchedMagnitude;
+                if (bluntCouchedMagnitude > skillCap && bluntBallisticMagnitude < skillCap)
+                {
+                    result = skillCap;
+                }
+                if (bluntBallisticMagnitude >= skillCap)
+                {
+                    result = bluntBallisticMagnitude;
+                }
+                if (result > PoplarBreakThreshold)
+                {
+                    result = PoplarBreakThreshold;
+                }
+                return result;
+            }
+
+            float thrustSkillCap = skillCap * RBMConfig.ThrustMagnitudeModifier;
+            float ballisticMagnitude = lanceBallistics * (weaponWeight + braceBonus);
+            float thrustResult = couchedMagnitude;
+            if (couchedMagnitude > thrustSkillCap && ballisticMagnitude < thrustSkillCap)
+            {
+                thrustResult = thrustSkillCap;
+            }
+            if (ballisticMagnitude >= thrustSkillCap)
+            {
+                thrustResult = ballisticMagnitude;
+            }
+            float thrustBreakThreshold = AshBreakThreshold * RBMConfig.ThrustMagnitudeModifier;
+            if (thrustResult > thrustBreakThreshold)
+            {
+                thrustResult = thrustBreakThreshold;
+            }
+            return thrustResult;
         }
     }
 }

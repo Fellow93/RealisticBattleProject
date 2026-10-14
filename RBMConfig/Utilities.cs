@@ -23,7 +23,7 @@ namespace RBMConfig
         }
 
         // Blunt blows read ExtraArmorThresholdFactorBlunt (5 = the old hardcoded threshold) and ExtraBluntFactorBlunt
-        // (a multiplier on the fixed 0.7 trauma base, 1 = unchanged); see BlowDamage.WeaponTypeDamage.
+        // (a multiplier on BlowDamage.BluntTraumaBase, 1 = unchanged); see BlowDamage.WeaponTypeDamage.
         public static void createWeaponTypesFactors(ref List<RBMCombatConfigWeaponType> weaponTypesFactors)
         {
             weaponTypesFactors.Add(new RBMCombatConfigWeaponType(
@@ -192,7 +192,7 @@ namespace RBMConfig
                )
             );
             // Stone and chiseled sling ammo is Blunt. Its blunt values reproduce what the old Cut workaround gave
-            // (threshold 10, trauma base 0.5): 0.7 x 0.7142857 = 0.5.
+            // (threshold 10, trauma base 0.5): BluntTraumaBase 0.6 x 0.8333333 = 0.5.
             weaponTypesFactors.Add(new RBMCombatConfigWeaponType(
                weaponType: "SlingStone",
                ExtraBluntFactorCut: 0.5f,
@@ -219,8 +219,9 @@ namespace RBMConfig
             );
         }
 
-        // 0.5 / 0.7: the sling stone's old Cut trauma base expressed as a multiplier on the blunt 0.7 base.
-        internal const float SlingStoneBluntFactorBlunt = 0.7142857f;
+        // The sling stone's old Cut trauma base 0.5 expressed as a multiplier on the blunt base (0.5 / 0.6). It was
+        // 0.5 / 0.7 = 0.7142857 while the base was 0.7; parseXmlConfig rescales saved values once.
+        internal const float SlingStoneBluntFactorBlunt = 0.8333333f;
 
         public static string getPostureMultiplier(float playerPostureMultiplier)
         {
@@ -380,6 +381,9 @@ namespace RBMConfig
             // Same for the one-time sling stone Cut -> Blunt factor carry-over.
             XmlElement SlingStoneBluntMigrated = xmlconfig.CreateElement(RBMConfig.SlingStoneBluntMigratedNode);
             SlingStoneBluntMigrated.InnerText = "1";
+            // And for the one-time sling stone rescale to the 0.6 blunt base.
+            XmlElement SlingStoneBluntBaseRescaled = xmlconfig.CreateElement(RBMConfig.SlingStoneBluntBaseRescaledNode);
+            SlingStoneBluntBaseRescaled.InnerText = "1";
 
             Global.AppendChild(ArmorMultiplier);
             Global.AppendChild(ArmorPenetrationMessage);
@@ -404,6 +408,7 @@ namespace RBMConfig
             Global.AppendChild(ThrustMagnitudeModifier);
             Global.AppendChild(MacePierceThresholdMigrated);
             Global.AppendChild(SlingStoneBluntMigrated);
+            Global.AppendChild(SlingStoneBluntBaseRescaled);
 
             //Weapon types
             XmlElement WeaponTypes = xmlconfig.CreateElement("WeaponTypes");

@@ -887,7 +887,7 @@ namespace RBMConfig
             ThrustModifier.SelectedIndex = thrustModifierList.IndexOf(new TextObject("0.05").ToString());
             ArmorEffectiveness = 1f;
             ArmorMultiplier = 2f;
-            BluntTraumaMultiplier = 1f;
+            BluntTraumaMultiplier = 0.9f;
             ArmorThresholdModifier = 1f;
             RealisticArrowArc.SelectedIndex = 0;
             ArmorStatusUIEnabled.SelectedIndex = 1;

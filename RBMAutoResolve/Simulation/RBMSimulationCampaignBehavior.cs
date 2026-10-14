@@ -771,7 +771,9 @@ namespace RBMAutoResolve
               .Append(!string.IsNullOrEmpty(k.ThrownType)
                   ? ("  " + SimulationLog.Fmt(k.ThrownPerMan) + "x " + Clip(k.ThrownType, 12) + " " + SimulationLog.Fmt(k.ThrownMagnitude))
                   : "")
-              .Append(k.IsPlate ? "  plate" : "")
+              // His body armour's material, which decides the arrow halving and the blunt trauma he takes.
+              .Append(k.Material == ArmorComponent.ArmorMaterialTypes.Plate ? "  plate"
+                  : k.Material == ArmorComponent.ArmorMaterialTypes.Chainmail ? "  mail" : "")
               .Append(k.IsValid ? "" : "   <INVALID>")
               .Append("\n");
 

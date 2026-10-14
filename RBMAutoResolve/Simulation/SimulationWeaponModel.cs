@@ -564,7 +564,8 @@ namespace RBMAutoResolve
             profile.Magnitude = best;
             profile.DamageType = bestType;
             profile.WeaponType = weapon.WeaponClass.ToString();
-            profile.DamageFactor = GetDamageFactor(weapon, bestIsThrust);
+            // A thrust that cuts is graded on the SWING factor, as the live blow grades it (DamageRework.Core).
+            profile.DamageFactor = GetDamageFactor(weapon, bestIsThrust && bestType != DamageTypes.Cut);
             profile.Skill = weapon.RelevantSkill;
             profile.IsMissile = false;
             profile.IsValid = true;
@@ -650,11 +651,12 @@ namespace RBMAutoResolve
         // ---------------------------------------------------------------------------------------------------
 
         /// <summary>
-        /// What this blow lands through that armour, by RBM's own equation (Utilities.WeaponTypeDamage), with
-        /// RBM's own per-weapon factors -- read from the config it actually runs on, rather than guessed at.
-        /// The armour reduction touches ONLY the blunt trauma; what penetrates is a flat threshold subtraction.
+        /// What this blow lands through that armour: the live blow's own equation, RBMConfig.BlowDamage.RBMComputeDamage,
+        /// called rather than copied so the auto-resolve can never drift from live combat again (a hand copy here
+        /// did, more than once). <paramref name="victimMaterial"/> is the victim's body-armour material, which picks
+        /// the arrow-vs-non-plate halving and the blunt-trauma material factor exactly as a live chest hit does.
         /// </summary>
-        internal static float RbmDamage(WeaponProfile profile, float armor, bool victimIsPlate)
+        internal static float RbmDamage(WeaponProfile profile, float armor, ArmorComponent.ArmorMaterialTypes victimMaterial)
         {
             float magnitude = profile.Magnitude;
             if (magnitude <= 0f)
@@ -662,61 +664,22 @@ namespace RBMAutoResolve
                 return 0f;
             }
 
-            // "Armor Effectiveness" scales the armour first, exactly as the live blow does (BlowDamage.RBMComputeDamage),
-            // so the threshold and the trauma curve below both see it.
-            float armorEffectiveness = armor * RBMConfig.RBMConfig.armorEffectivenessMultiplier;
-
-            // A mail coat is poor answer to an arrow: RBM halves it, for everything but plate.
-            if (!victimIsPlate && profile.DamageType == DamageTypes.Pierce
-                && (profile.WeaponType.Contains("Arrow") || profile.WeaponType.Contains("Bolt")))
+            // This model's Pierce magnitudes are in the CANCELLED scale (raw energy: the live ×ThrustMagnitudeModifier
+            // and RBMComputeDamage's ×One/TwoHandedThrustDamageBonus taken as one, see GetThrownMagnitude). The shared
+            // function applies that bonus itself to a Pierce blow, so take it back out first. Read from the same
+            // BlowDamage.GetThrustBonus the function multiplies by, so a change to its class list cannot leave this
+            // scaling twice.
+            if (profile.DamageType == DamageTypes.Pierce)
             {
-                armorEffectiveness *= 0.5f;
+                float thrustBonus = BlowDamage.GetThrustBonus(profile.WeaponType);
+                if (thrustBonus > 0f)
+                {
+                    magnitude /= thrustBonus;
+                }
             }
 
-            float armorReduction = 100f / (100f + (armorEffectiveness * RBMConfig.RBMConfig.armorMultiplier));
-            float thresholdModifier = RBMConfig.RBMConfig.armorThresholdModifier / MathF.Max(profile.DamageFactor, 0.01f);
-
-            RBMCombatConfigWeaponType f = RBMConfig.RBMConfig.getWeaponTypeFactors(profile.WeaponType);
-            float thresholdCut = (f != null) ? f.ExtraArmorThresholdFactorCut : 5f;
-            float thresholdPierce = (f != null) ? f.ExtraArmorThresholdFactorPierce : 3f;
-            float thresholdBlunt = (f != null) ? f.ExtraArmorThresholdFactorBlunt : 5f;
-            float carryCut = (f != null) ? f.ExtraBluntFactorCut : 0.25f;
-            float carryPierce = (f != null) ? f.ExtraBluntFactorPierce : 0.35f;
-            float carryBluntFactor = (f != null) ? f.ExtraBluntFactorBlunt : 1f;
-            float bluntBonus = RBMConfig.RBMConfig.bluntTraumaBonus;
-            float bluntMultiplier = RBMConfig.RBMConfig.bluntTraumaMultiplier;
-
-            switch (profile.DamageType)
-            {
-                case DamageTypes.Blunt:
-                    {
-                        // A blunt blow's threshold is the class's blunt threshold factor (default 5, sling stones 10), and
-                        // its carry seven tenths times the class's blunt factor (default 1, sling stones 0.714).
-                        float penetrated = MathF.Max(0f, magnitude - (armorEffectiveness * thresholdBlunt * thresholdModifier));
-                        float stopped = (magnitude - penetrated) / magnitude;
-                        float trauma = magnitude * (0.7f * RBMConfig.RBMConfig.maceBluntModifier * carryBluntFactor) * stopped * bluntMultiplier * armorReduction;
-                        return penetrated + MathF.Max(0f, trauma);
-                    }
-
-                case DamageTypes.Pierce:
-                    {
-                        // Same shape as a cut, with the pierce threshold and carry. The live blow dropped its
-                        // capped "partial penetration" term on 2026-09-26 (RBMConfig/Shared/BlowDamage.cs), so
-                        // this one has none either.
-                        float penetrated = MathF.Max(0f, magnitude - (armorEffectiveness * thresholdPierce * thresholdModifier));
-                        float stopped = (magnitude - penetrated) / magnitude;
-                        float trauma = magnitude * (carryPierce + bluntBonus) * stopped * bluntMultiplier * armorReduction;
-                        return penetrated + MathF.Max(0f, trauma);
-                    }
-
-                default:
-                    {
-                        float penetrated = MathF.Max(0f, magnitude - (armorEffectiveness * thresholdCut * thresholdModifier));
-                        float stopped = (magnitude - penetrated) / magnitude;
-                        float trauma = magnitude * (carryCut + bluntBonus) * stopped * bluntMultiplier * armorReduction;
-                        return penetrated + MathF.Max(0f, trauma);
-                    }
-            }
+            return BlowDamage.RBMComputeDamage(profile.WeaponType, profile.DamageType, magnitude, armor, 1f,
+                out _, out _, MathF.Max(profile.DamageFactor, 0.01f), victimMaterial);
         }
 
         /// <summary>
