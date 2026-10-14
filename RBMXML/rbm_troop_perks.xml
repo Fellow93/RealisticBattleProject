@@ -60,8 +60,19 @@
   <Troop id="aserai_tribesman">
     <Perk id="ThrowingQuickDraw"/>
   </Troop>
+  <Troop id="aserai_youth">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="RidingNimbleStead"/>
+  </Troop>
+  <Troop id="beni_zilal_tier_1">
+    <Perk id="OneHandedToBeBlunt"/>
+  </Troop>
   <Troop id="jawwal_tier_1">
     <Perk id="ThrowingHunter"/>
+  </Troop>
+  <Troop id="aserai_skirmisher">
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowBodkin"/>
   </Troop>
   <Troop id="aserai_footman">
     <Perk id="ThrowingQuickDraw"/>
@@ -75,9 +86,41 @@
     <Perk id="RidingNimbleStead"/>
     <Perk id="ThrowingSaddlebags"/>
   </Troop>
+  <Troop id="aserai_militia_archer">
+    <Perk id="BowBodkin"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="aserai_militia_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="mercenary_2">
+    <Perk id="ThrowingQuickDraw"/>
+    <Perk id="ThrowingLastHit"/>
+  </Troop>
+  <Troop id="aserai_tribal_horseman">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="RidingNimbleStead"/>
+  </Troop>
+  <Troop id="beni_zilal_tier_2">
+    <Perk id="OneHandedToBeBlunt"/>
+    <Perk id="BowRapidFire"/>
+  </Troop>
   <Troop id="jawwal_tier_2">
     <Perk id="ThrowingHunter"/>
     <Perk id="ThrowingResourceful"/>
+  </Troop>
+  <Troop id="aserai_archer">
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowBodkin"/>
+  </Troop>
+  <Troop id="mercenary_4">
+    <Perk id="ThrowingQuickDraw"/>
+    <Perk id="ThrowingLastHit"/>
+  </Troop>
+  <Troop id="aserai_faris">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="RidingNimbleStead"/>
   </Troop>
   <Troop id="aserai_infantry">
     <Perk id="OneHandedWrappedHandles"/>
@@ -91,6 +134,23 @@
     <Perk id="AthleticsFury"/>
     <Perk id="TwoHandedHeadBasher"/>
   </Troop>
+  <Troop id="aserai_militia_veteran_archer">
+    <Perk id="BowBodkin"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="aserai_militia_veteran_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="aserai_marine_t4">
+    <Perk id="PiratesProwess"/>
+    <Perk id="ShatteringBlow"/>
+  </Troop>
+  <Troop id="aserai_marine_t5">
+    <Perk id="ShatteringVolley"/>
+    <Perk id="BowStrongBows"/>
+    <Perk id="BowDiscipline"/>
+  </Troop>
   <Troop id="aserai_mameluke_heavy_cavalry">
     <Perk id="RidingNimbleStead"/>
     <Perk id="BowRapidFire"/>
@@ -101,14 +161,416 @@
     <Perk id="TwoHandedHeadBasher"/>
     <Perk id="TwoHandedBeastSlayer"/>
   </Troop>
+  <Troop id="aserai_master_archer">
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowBodkin"/>
+    <Perk id="BowQuickDraw"/>
+  </Troop>
+  <Troop id="mercenary_7">
+    <Perk id="ThrowingQuickDraw"/>
+    <Perk id="ThrowingLastHit"/>
+    <Perk id="ThrowingHeadHunter"/>
+  </Troop>
+  <Troop id="aserai_veteran_faris">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="RidingNimbleStead"/>
+  </Troop>
   <Troop id="aserai_veteran_infantry">
     <Perk id="ThrowingQuickDraw"/>
     <Perk id="OneHandedWrappedHandles"/>
     <Perk id="AthleticsPowerful"/>
+  </Troop>
+  <Troop id="beni_zilal_tier_3">
+    <Perk id="OneHandedToBeBlunt"/>
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowSkirmishPhaseMaster"/>
   </Troop>
   <Troop id="jawwal_tier_3">
     <Perk id="ThrowingHunter"/>
     <Perk id="ThrowingResourceful"/>
     <Perk id="ThrowingWeakSpot"/>
   </Troop>
+  <Troop id="aserai_vanguard_faris">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="RidingNimbleStead"/>
+  </Troop>
+  <Troop id="battanian_volunteer">
+    <Perk id="AthleticsWellBuilt"/>
+  </Troop>
+  <Troop id="battanian_clanwarrior">
+    <Perk id="AthleticsWellBuilt"/>
+  </Troop>
+  <Troop id="battanian_highborn_youth">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="BowBodkin"/>
+  </Troop>
+  <Troop id="battanian_woodrunner">
+    <Perk id="AthleticsWellBuilt"/>
+  </Troop>
+  <Troop id="wolfskins_tier_1">
+    <Perk id="BowDeepQuivers"/>
+  </Troop>
+  <Troop id="battanian_highborn_warrior">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="BowBodkin"/>
+    <Perk id="BowRapidFire"/>
+  </Troop>
+  <Troop id="battanian_militia_archer">
+    <Perk id="BowBodkin"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="battanian_militia_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="battanian_raider">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="TwoHandedConfidence"/>
+  </Troop>
+  <Troop id="battanian_skirmisher">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="ThrowingWellPrepared"/>
+  </Troop>
+  <Troop id="battanian_trained_warrior">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="PolearmCleanThrust"/>
+  </Troop>
+  <Troop id="galloglass_tier_1">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="BowBodkin"/>
+  </Troop>
+  <Troop id="wolfskins_tier_2">
+    <Perk id="BowDeepQuivers"/>
+    <Perk id="BowHunterClan"/>
+  </Troop>
+  <Troop id="battanian_falxman">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="TwoHandedConfidence"/>
+  </Troop>
+  <Troop id="battanian_hero">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="BowBodkin"/>
+    <Perk id="BowRapidFire"/>
+  </Troop>
+  <Troop id="battanian_militia_veteran_archer">
+    <Perk id="BowBodkin"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="battanian_militia_veteran_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="battanian_picked_warrior">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="PolearmCleanThrust"/>
+  </Troop>
+  <Troop id="battanian_marine_t4">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="ShatteringVolley"/>
+  </Troop>
+  <Troop id="battanian_scout">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="RidingHorseArcher"/>
+  </Troop>
+  <Troop id="battanian_veteran_skirmisher">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="ThrowingWellPrepared"/>
+  </Troop>
+  <Troop id="galloglass_tier_2">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="BowBodkin"/>
+  </Troop>
+  <Troop id="battanian_fian">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="BowBodkin"/>
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowQuickDraw"/>
+  </Troop>
+  <Troop id="battanian_horseman">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="RidingHorseArcher"/>
+    <Perk id="RidingMountedWarrior"/>
+  </Troop>
+  <Troop id="battanian_mounted_skirmisher">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="RidingHorseArcher"/>
+    <Perk id="ThrowingSaddlebags"/>
+  </Troop>
+  <Troop id="battanian_oathsworn">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmSureFooted"/>
+  </Troop>
+  <Troop id="battanian_marine_t5">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="ShatteringVolley"/>
+    <Perk id="ThrowingLastHit"/>
+  </Troop>
+  <Troop id="battanian_veteran_falxman">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="PolearmCounterweight"/>
+    <Perk id="PolearmGuards"/>
+  </Troop>
+  <Troop id="battanian_wildling">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="ThrowingWellPrepared"/>
+    <Perk id="ThrowingResourceful"/>
+  </Troop>
+  <Troop id="galloglass_tier_3">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="BowBodkin"/>
+    <Perk id="BowRapidFire"/>
+  </Troop>
+  <Troop id="wolfskins_tier_3">
+    <Perk id="BowDeepQuivers"/>
+    <Perk id="BowHunterClan"/>
+    <Perk id="BowSkirmishPhaseMaster"/>
+  </Troop>
+  <Troop id="battanian_fian_champion">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="BowBodkin"/>
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowQuickDraw"/>
+    <Perk id="BowStrongBows"/>
+  </Troop>
+  <Troop id="imperial_recruit">
+    <Perk id="OneHandedWrappedHandles"/>
+  </Troop>
+  <Troop id="hidden_hand_tier_1">
+    <Perk id="ThrowingQuickDraw"/>
+  </Troop>
+  <Troop id="imperial_archer">
+    <Perk id="BowSkirmishPhaseMaster"/>
+  </Troop>
+  <Troop id="imperial_infantryman">
+    <Perk id="OneHandedWrappedHandles"/>
+  </Troop>
+  <Troop id="imperial_vigla_recruit">
+    <Perk id="RidingVeterinary"/>
+    <Perk id="RidingFullSpeed"/>
+  </Troop>
+  <Troop id="eleftheroi_tier_1">
+    <Perk id="RidingSweepingWind"/>
+  </Troop>
+  <Troop id="eleftheroi_tier_2">
+    <Perk id="RidingSweepingWind"/>
+    <Perk id="RidingMountedWarrior"/>
+  </Troop>
+  <Troop id="legion_of_the_betrayed_tier_1">
+    <Perk id="ThrowingShieldBreaker"/>
+    <Perk id="ThrowingLastHit"/>
+  </Troop>
+  <Troop id="hidden_hand_tier_2">
+    <Perk id="ThrowingQuickDraw"/>
+    <Perk id="ThrowingHeadHunter"/>
+  </Troop>
+  <Troop id="imperial_equite">
+    <Perk id="RidingVeterinary"/>
+    <Perk id="RidingFullSpeed"/>
+    <Perk id="RidingMountedWarrior"/>
+  </Troop>
+  <Troop id="imperial_militia_archer">
+    <Perk id="BowBodkin"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="imperial_militia_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="empire_marine_t3">
+    <Perk id="PiratesProwess"/>
+    <Perk id="ShatteringBlow"/>
+  </Troop>
+  <Troop id="imperial_trained_archer">
+    <Perk id="BowSkirmishPhaseMaster"/>
+    <Perk id="BowDeepQuivers"/>
+  </Troop>
+  <Troop id="imperial_trained_infantryman">
+    <Perk id="OneHandedWrappedHandles"/>
+    <Perk id="OneHandedSteelCoreShields"/>
+  </Troop>
+  <Troop id="guardians_tier_1">
+    <Perk id="OneHandedWrappedHandles"/>
+    <Perk id="ThrowingQuickDraw"/>
+  </Troop>
+  <Troop id="embers_of_flame_tier_1">
+    <Perk id="TwoHandedStrongGrip"/>
+    <Perk id="TwoHandedBladeMaster"/>
+  </Troop>
+  <Troop id="embers_of_flame_tier_2">
+    <Perk id="TwoHandedStrongGrip"/>
+    <Perk id="TwoHandedBladeMaster"/>
+  </Troop>
+  <Troop id="empire_marine_t4">
+    <Perk id="PiratesProwess"/>
+    <Perk id="ShatteringBlow"/>
+  </Troop>
+  <Troop id="imperial_crossbowman">
+    <Perk id="CrossbowCounterFire"/>
+    <Perk id="CrossbowDeftHands"/>
+  </Troop>
+  <Troop id="imperial_heavy_horseman">
+    <Perk id="RidingVeterinary"/>
+    <Perk id="RidingFullSpeed"/>
+    <Perk id="RidingMountedWarrior"/>
+  </Troop>
+  <Troop id="imperial_menavliaton">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmGuards"/>
+  </Troop>
+  <Troop id="imperial_militia_veteran_archer">
+    <Perk id="BowBodkin"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="imperial_militia_veteran_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="imperial_veteran_archer">
+    <Perk id="BowSkirmishPhaseMaster"/>
+    <Perk id="BowDeepQuivers"/>
+  </Troop>
+  <Troop id="imperial_veteran_infantryman">
+    <Perk id="OneHandedWrappedHandles"/>
+    <Perk id="OneHandedSteelCoreShields"/>
+  </Troop>
+  <Troop id="guardians_tier_2">
+    <Perk id="OneHandedWrappedHandles"/>
+    <Perk id="ThrowingQuickDraw"/>
+  </Troop>
+  <Troop id="legion_of_the_betrayed_tier_2">
+    <Perk id="ThrowingShieldBreaker"/>
+    <Perk id="ThrowingLastHit"/>
+  </Troop>
+  <Troop id="imperial_cataphract">
+    <Perk id="RidingVeterinary"/>
+    <Perk id="RidingFullSpeed"/>
+    <Perk id="RidingMountedWarrior"/>
+    <Perk id="RidingToughSteed"/>
+  </Troop>
+  <Troop id="imperial_elite_menavliaton">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmGuards"/>
+    <Perk id="PolearmSureFooted"/>
+  </Troop>
+  <Troop id="imperial_legionary">
+    <Perk id="OneHandedWrappedHandles"/>
+    <Perk id="OneHandedSteelCoreShields"/>
+    <Perk id="OneHandedDeadlyPurpose"/>
+  </Troop>
+  <Troop id="guardians_tier_3">
+    <Perk id="OneHandedWrappedHandles"/>
+    <Perk id="ThrowingQuickDraw"/>
+    <Perk id="ThrowingHeadHunter"/>
+  </Troop>
+  <Troop id="empire_marine_t5">
+    <Perk id="PiratesProwess"/>
+    <Perk id="ShatteringBlow"/>
+    <Perk id="OneHandedSteelCoreShields"/>
+  </Troop>
+  <Troop id="imperial_palatine_guard">
+    <Perk id="BowSkirmishPhaseMaster"/>
+    <Perk id="BowDeepQuivers"/>
+    <Perk id="BowStrongBows"/>
+  </Troop>
+  <Troop id="imperial_sergeant_crossbowman">
+    <Perk id="CrossbowCounterFire"/>
+    <Perk id="CrossbowDeftHands"/>
+    <Perk id="CrossbowPuncture"/>
+  </Troop>
+  <Troop id="hidden_hand_tier_3">
+    <Perk id="ThrowingQuickDraw"/>
+    <Perk id="ThrowingHeadHunter"/>
+    <Perk id="ThrowingWeakSpot"/>
+  </Troop>
+  <Troop id="legion_of_the_betrayed_tier_3">
+    <Perk id="ThrowingShieldBreaker"/>
+    <Perk id="ThrowingLastHit"/>
+    <Perk id="AthleticsPowerful"/>
+  </Troop>
+  <Troop id="eleftheroi_tier_3">
+    <Perk id="RidingSweepingWind"/>
+    <Perk id="RidingMountedWarrior"/>
+    <Perk id="PolearmLancer"/>
+  </Troop>
+  <Troop id="imperial_elite_cataphract">
+    <Perk id="RidingVeterinary"/>
+    <Perk id="RidingFullSpeed"/>
+    <Perk id="RidingMountedWarrior"/>
+    <Perk id="RidingToughSteed"/>
+    <Perk id="OneHandedUnwaveringDefense"/>
+  </Troop>
+  <Troop id="embers_of_flame_tier_3">
+    <Perk id="TwoHandedStrongGrip"/>
+    <Perk id="TwoHandedBladeMaster"/>
+    <Perk id="TwoHandedVandal"/>
+  </Troop>
+  <Troop id="khuzait_militia_archer">
+    <Perk id="BowBodkin"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="khuzait_militia_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="khuzait_militia_veteran_archer">
+    <Perk id="BowBodkin"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="khuzait_militia_veteran_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="nord_militia_archer">
+    <Perk id="BowBodkin"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="nord_militia_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="nord_militia_veteran_archer">
+    <Perk id="BowBodkin"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="nord_militia_veteran_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="nord_berserkr">
+    <Perk id="TwoHandedBerserker"/>
+  </Troop>
+  <Troop id="sturgian_militia_archer">
+    <Perk id="BowBodkin"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="sturgian_militia_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="sturgian_militia_veteran_archer">
+    <Perk id="BowBodkin"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="sturgian_militia_veteran_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="vlandian_militia_archer">
+    <Perk id="CrossbowPuncture"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="vlandian_militia_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="vlandian_militia_veteran_archer">
+    <Perk id="CrossbowPuncture"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="vlandian_militia_veteran_spearman">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingSkirmisher"/>
+  </Troop>
 </TroopPerks>
+
