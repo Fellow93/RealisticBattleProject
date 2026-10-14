@@ -77,6 +77,46 @@
 		<TextWidget Brush="RBMLabels" SuggestedWidth="100" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="14" MarginRight="120" IsVisible="@ShowPlayerStaminaBar" Text="@PlayerStaminaText" />
 		<TextWidget Brush="RBMLabels" SuggestedWidth="100" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="14" MarginRight="100" IsVisible="@ShowPlayerStaminaBar" Text="/" />
 		<TextWidget Brush="RBMLabels" SuggestedWidth="100" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginBottom="14" MarginRight="80" IsVisible="@ShowPlayerStaminaBar" Text="@PlayerStaminaMaxText" />
+
+		<!-- Large vertical player bars (config postureVerticalBarsEnabled), replacing the small ones above: posture left,
+		     stamina right, at the right edge, vertically centred. FillBarVerticalWidget, never FillBar IsVertical="true"
+		     (its fill is offset at UI scales other than 1080p). The widget re-sizes its fill child from InitialAmount /
+		     MaxAmount on every render, so binding InitialAmount updates the bar live. A hidden column drops out of the
+		     ListPanel, so posture alone sits at the edge when the stamina system is off. -->
+		<ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="30" LayoutImp.LayoutMethod="HorizontalLeftToRight" DoNotAcceptEvents="true">
+		  <Children>
+			<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="48" SuggestedHeight="444" IsVisible="@ShowPlayerPostureBarVertical" DoNotAcceptEvents="true">
+			  <Children>
+				<TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="90" SuggestedHeight="24" HorizontalAlignment="Center" VerticalAlignment="Top" Brush="RBMLabels" Brush.FontSize="16" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@PostureLabel" DoNotAcceptEvents="true" />
+				<Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="388" VerticalAlignment="Top" MarginTop="26" Sprite="BlankWhiteSquare_9" Color="#000000E6" DoNotAcceptEvents="true">
+				  <Children>
+					<FillBarVerticalWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="4" MarginRight="4" MarginTop="4" MarginBottom="4" IsDirectionUpward="true" InitialAmount="@PlayerPosture" MaxAmount="@PlayerPostureMax" FillWidget="PostureVerticalFill" Sprite="BlankWhiteSquare_9" Color="#3A3A3AFF" DoNotAcceptEvents="true">
+					  <Children>
+						<Widget Id="PostureVerticalFill" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" Sprite="BlankWhiteSquare_9" Color="#22CC22FF" DoNotAcceptEvents="true" />
+					  </Children>
+					</FillBarVerticalWidget>
+				  </Children>
+				</Widget>
+				<TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="90" SuggestedHeight="28" HorizontalAlignment="Center" VerticalAlignment="Bottom" Brush="RBMLabels" Brush.FontSize="18" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@PlayerPostureText" DoNotAcceptEvents="true" />
+			  </Children>
+			</Widget>
+			<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="48" SuggestedHeight="444" MarginLeft="20" IsVisible="@ShowPlayerStaminaBarVertical" DoNotAcceptEvents="true">
+			  <Children>
+				<TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="90" SuggestedHeight="24" HorizontalAlignment="Center" VerticalAlignment="Top" Brush="RBMLabels" Brush.FontSize="16" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@StaminaLabel" DoNotAcceptEvents="true" />
+				<Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="388" VerticalAlignment="Top" MarginTop="26" Sprite="BlankWhiteSquare_9" Color="#000000E6" DoNotAcceptEvents="true">
+				  <Children>
+					<FillBarVerticalWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="4" MarginRight="4" MarginTop="4" MarginBottom="4" IsDirectionUpward="true" InitialAmount="@PlayerStamina" MaxAmount="@PlayerStaminaMax" FillWidget="StaminaVerticalFill" Sprite="BlankWhiteSquare_9" Color="#3A3A3AFF" DoNotAcceptEvents="true">
+					  <Children>
+						<Widget Id="StaminaVerticalFill" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" Sprite="BlankWhiteSquare_9" Color="#FFE020FF" DoNotAcceptEvents="true" />
+					  </Children>
+					</FillBarVerticalWidget>
+				  </Children>
+				</Widget>
+				<TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="90" SuggestedHeight="28" HorizontalAlignment="Center" VerticalAlignment="Bottom" Brush="RBMLabels" Brush.FontSize="18" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@PlayerStaminaText" DoNotAcceptEvents="true" />
+			  </Children>
+			</Widget>
+		  </Children>
+		</ListPanel>
 	  </Children>
     </Widget>
   </Window>

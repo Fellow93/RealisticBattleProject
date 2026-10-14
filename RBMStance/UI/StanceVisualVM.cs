@@ -17,6 +17,8 @@
 
         private bool showPostureBar = RBMConfig.RBMConfig.postureEnabled;
         private bool showStaminaBar = RBMConfig.RBMConfig.staminaEnabled;
+        // Large vertical bars at the right edge replace the small horizontal player bars (read once per mission).
+        private bool verticalPlayerBars = RBMConfig.RBMConfig.postureVerticalBarsEnabled;
 
         private int enemyHealth = 100;
         private int enemyHealthMax = 50;
@@ -113,6 +115,8 @@
                     OnPropertyChanged("ShowPlayerPostureStatus");
                     OnPropertyChanged("ShowPlayerPostureBar");
                     OnPropertyChanged("ShowPlayerStaminaBar");
+                    OnPropertyChanged("ShowPlayerPostureBarVertical");
+                    OnPropertyChanged("ShowPlayerStaminaBarVertical");
             }
         }
 
@@ -137,10 +141,16 @@
         }
 
         [DataSourceProperty]
-        public bool ShowPlayerPostureBar => showPlayerPostureStatus && showPostureBar;
+        public bool ShowPlayerPostureBar => !verticalPlayerBars && showPlayerPostureStatus && showPostureBar;
 
         [DataSourceProperty]
-        public bool ShowPlayerStaminaBar => showPlayerPostureStatus && showStaminaBar;
+        public bool ShowPlayerStaminaBar => !verticalPlayerBars && showPlayerPostureStatus && showStaminaBar;
+
+        [DataSourceProperty]
+        public bool ShowPlayerPostureBarVertical => verticalPlayerBars && showPlayerPostureStatus && showPostureBar;
+
+        [DataSourceProperty]
+        public bool ShowPlayerStaminaBarVertical => verticalPlayerBars && showPlayerPostureStatus && showStaminaBar;
 
         [DataSourceProperty]
         public bool ShowEnemyPostureBar => showEnemyStatus && showPostureBar;

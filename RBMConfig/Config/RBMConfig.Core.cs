@@ -327,6 +327,7 @@ namespace RBMConfig
             // or put every formation in it (at or below the 0.1 hold margin).
             shieldWallShare = Math.Max(0.15f, Math.Min(1f, ParseFloat(ReadOrCreate("/Config/RBMAI", "ShieldWallShare", "0.6"))));
             postureGUIEnabled = ReadOrCreate("/Config/RBMAI", "PostureGUIEnabled", "1").Equals("1");
+            postureVerticalBarsEnabled = ReadOrCreate("/Config/RBMAI", "PostureVerticalBarsEnabled", "0").Equals("1");
             vanillaCombatAi = ReadOrCreate("/Config/RBMAI", "VanillaCombatAi", "0").Equals("1");
             keepBattleEnabled = ReadOrCreate("/Config/RBMAI", "KeepBattleEnabled", "0").Equals("1");
             frontlineEnabled = ReadOrCreate("/Config/RBMAI", "FrontlineEnabled", "1").Equals("1");
@@ -567,6 +568,7 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/OrderReactionDelayEnabled"), orderReactionDelayEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/ShieldWallShare"), shieldWallShare.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureGUIEnabled"), postureGUIEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureVerticalBarsEnabled"), postureVerticalBarsEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/VanillaCombatAi"), vanillaCombatAi);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/KeepBattleEnabled"), keepBattleEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/FrontlineEnabled"), frontlineEnabled);

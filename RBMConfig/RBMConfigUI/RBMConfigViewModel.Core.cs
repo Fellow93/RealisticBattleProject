@@ -313,6 +313,10 @@ namespace RBMConfig
             PostureGUIEnabledText = new TextViewModel(new TextObject("{=RBM_CON_014}Posture GUI"));
             PostureGUIEnabled = new SelectorVM<SelectorItemVM>(postureGUIOptions, 0, null);
 
+            List<string> postureVerticalBarsOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
+            PostureVerticalBarsEnabledText = new TextViewModel(new TextObject("{=RBM_CON_161}Large Vertical Bars"));
+            PostureVerticalBarsEnabled = new SelectorVM<SelectorItemVM>(postureVerticalBarsOptions, 0, null);
+
             List<string> vanillaCombatAiOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")", new TextObject("{=tsPjK1Ke}Enabled").ToString() };
             VanillaCombatAiText = new TextViewModel(new TextObject("{=RBM_CON_015}Vanilla AI Block/Parry/Attack"));
             VanillaCombatAi = new SelectorVM<SelectorItemVM>(vanillaCombatAiOptions, 0, null);
@@ -370,6 +374,8 @@ namespace RBMConfig
             {
                 PostureGUIEnabled.SelectedIndex = 0;
             }
+
+            PostureVerticalBarsEnabled.SelectedIndex = RBMConfig.postureVerticalBarsEnabled ? 1 : 0;
 
             if (RBMConfig.vanillaCombatAi)
             {
@@ -739,6 +745,8 @@ namespace RBMConfig
                 RBMConfig.postureGUIEnabled = true;
             }
 
+            RBMConfig.postureVerticalBarsEnabled = PostureVerticalBarsEnabled.SelectedIndex == 1;
+
             if (VanillaCombatAi.SelectedIndex == 0)
             {
                 RBMConfig.vanillaCombatAi = false;
@@ -907,6 +915,7 @@ namespace RBMConfig
             // Stance
             RBMStanceEnabled.SelectedIndex = 1;
             PostureGUIEnabled.SelectedIndex = 1;
+            PostureVerticalBarsEnabled.SelectedIndex = 0;
             PlayerPostureMultiplier.SelectedIndex = 0;
             PostureSystemEnabled.SelectedIndex = 1;
             StaminaSystemEnabled.SelectedIndex = 1;

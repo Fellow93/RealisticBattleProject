@@ -192,6 +192,7 @@ namespace RBMCampaign
                     Field("staminaEnabled", RC.staminaEnabled),
                     Field("playerPostureMultiplier", RC.playerPostureMultiplier),
                     Field("postureGUIEnabled", RC.postureGUIEnabled),
+                    Field("postureVerticalBarsEnabled", RC.postureVerticalBarsEnabled),
                     Field("vanillaCombatAi", RC.vanillaCombatAi),
                     Field("keepBattleEnabled", RC.keepBattleEnabled))),
                 Member("combat", Obj(2,

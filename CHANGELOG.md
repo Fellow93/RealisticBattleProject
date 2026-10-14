@@ -31,6 +31,7 @@
 - The stagger of an axe or two-handed weapon blocked without a shield (or on the wrong side) no longer adds a soft body-hit sound on top of the clash of the block.
 - The Armor Penetration Message setting now also reports blunt hits (maces, kicks, pommel hits). It used to show only cuts and thrusts.
 - Mod compatibility: weapons from other mods of the low-grip polearm or pick type now deal damage like a one-handed spear and a mace. Their thrusts used to hit for about a twentieth of their strength, and their other blows ignored most armor. No weapon in the game or in RBM is of either type.
+- New Large Vertical Bars setting (RBM Stance, under Posture GUI, off by default): shows your posture and stamina as two big, thick vertical bars side by side at the right edge of the screen, with their current values underneath, instead of the small bars at the bottom right. Needs RBM Stance, the Posture System and Posture GUI on; the stamina bar shows only with the Stamina System on.
 
 ### AI
 - **AI horse archers no longer bunch up and ride around into your other formations.** Since they started keeping formation (v4.5.4), they circled an enemy formation as one tight block and swung round its flank without regard for anything else on the field, so a line set up in steps led them straight past the next formation's archers and into its cavalry. Now:

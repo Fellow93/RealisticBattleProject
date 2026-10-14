@@ -282,6 +282,8 @@ namespace RBMConfig
             ShieldWallShare.InnerText = RBMConfig.shieldWallShare.ToString(System.Globalization.CultureInfo.InvariantCulture);
             XmlElement PostureGUIEnabled = xmlconfig.CreateElement("PostureGUIEnabled");
             PostureGUIEnabled.InnerText = RBMConfig.postureGUIEnabled ? "1" : "0";
+            XmlElement PostureVerticalBarsEnabled = xmlconfig.CreateElement("PostureVerticalBarsEnabled");
+            PostureVerticalBarsEnabled.InnerText = RBMConfig.postureVerticalBarsEnabled ? "1" : "0";
             XmlElement VanillaCombatAi = xmlconfig.CreateElement("VanillaCombatAi");
             VanillaCombatAi.InnerText = RBMConfig.vanillaCombatAi ? "1" : "0";
             XmlElement KeepBattleEnabled = xmlconfig.CreateElement("KeepBattleEnabled");
@@ -298,6 +300,7 @@ namespace RBMConfig
             RBMAI.AppendChild(ShieldWallShare);
             RBMAI.AppendChild(PlayerPostureMultiplier);
             RBMAI.AppendChild(PostureGUIEnabled);
+            RBMAI.AppendChild(PostureVerticalBarsEnabled);
             RBMAI.AppendChild(VanillaCombatAi);
             RBMAI.AppendChild(KeepBattleEnabled);
             Config.AppendChild(RBMAI);

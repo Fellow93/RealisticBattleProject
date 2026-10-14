@@ -162,6 +162,12 @@ PropertyOwnerObject
 > `FillBar.OnRender` throws. Bar heights cannot come from a bound `SuggestedHeight` (not bindable); bind
 > `InitialAmount` instead. A bar cannot grow below its baseline, so the Ledger draws a negative value as a red bar
 > of its size (a second, toggled `FillBarVerticalWidget`).
+>
+> `FillBarVerticalWidget`'s `InitialAmount`/`MaxAmount`/`CurrentAmount` are `int` (with `…AsFloat` twins over the
+> same fields); `OnRender` re-sizes the fill child every frame to `InitialAmount / MaxAmount` of its parent's height
+> minus the fill's own top/bottom margins, so a bound `InitialAmount` updates the bar live. Setting `CurrentAmount`
+> only drives the optional `ChangeWidget` (difference to `InitialAmount`). RBM's large player posture/stamina bars
+> (`CombatUI.xml`) use it this way.
 
 ### 1g. Special / helpers (ExtraWidgets)
 

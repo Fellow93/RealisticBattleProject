@@ -48,6 +48,9 @@ namespace RBMConfig
         public TextViewModel PostureGUIEnabledText { get; }
         public SelectorVM<SelectorItemVM> PostureGUIEnabled { get; }
 
+        public TextViewModel PostureVerticalBarsEnabledText { get; }
+        public SelectorVM<SelectorItemVM> PostureVerticalBarsEnabled { get; }
+
         public TextViewModel VanillaCombatAiText { get; }
         public SelectorVM<SelectorItemVM> VanillaCombatAi { get; }
 
@@ -592,6 +595,18 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel PostureGUIEnabledHint { get; } = Hint("{=RBM_CON_142}Shows your own posture bar in battle (and stamina bar, with the Stamina System on), and for a few seconds after you trade blows with an enemy, his name, health, posture and stamina. Needs RBM Stance and the Posture System on. Default on.");
+
+        [DataSourceProperty]
+        public string PostureVerticalBarst
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_161}Large Vertical Bars").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel PostureVerticalBarsEnabledHint { get; } = Hint("{=RBM_CON_162}Shows your posture and stamina as two large vertical bars at the right edge of the screen, instead of the small bars at the bottom right. Needs RBM Stance, the Posture System and Posture GUI on. Default off.");
 
         [DataSourceProperty]
         public string Vanillat

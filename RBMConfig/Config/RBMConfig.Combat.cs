@@ -36,6 +36,9 @@ namespace RBMConfig
         // RBM Stance sub-options as well.
         public static float playerPostureMultiplier = 1f;
         public static bool postureGUIEnabled = true;
+        // Sub-option of postureGUIEnabled: the player's posture/stamina as two large vertical bars at the right
+        // edge (RBMStance StanceVisualVM + CombatUI.xml) instead of the small horizontal bars at the bottom right.
+        public static bool postureVerticalBarsEnabled = false;
         public static bool vanillaCombatAi = false;
         public static bool keepBattleEnabled = false;
 
