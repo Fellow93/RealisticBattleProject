@@ -325,6 +325,7 @@ namespace RBMCampaign
             public int SpawnCost;       // kit value of one recruit
             public int Reserve;         // full daily bill × GarrisonReserveDays -- the recruit gate
             public bool Held;           // treasury below the recruit reserve, so no growth
+            public bool AutoRecruitOff; // the owner unticked garrison auto-recruitment, so no growth
             public int Rate;            // wealth / (SpawnCost × mult), before any cap
             public int Barracks;        // extra men a day the Barracks lets through the cap
             public int Capped;          // rate clamped to the daily maximum
@@ -357,6 +358,10 @@ namespace RBMCampaign
             int wealth = FiefWealth(settlement);
             c.Reserve = FullDailyBill(settlement) * GarrisonReserveDays;
             c.Held = wealth < c.Reserve;
+            // The party screen's "auto recruitment" tick is the owner's say over his garrison's intake,
+            // as it was over vanilla's volunteer drip. Off = no growth; shedding (below) still applies,
+            // that answers to the treasury, not to recruitment.
+            c.AutoRecruitOff = !settlement.Town.GarrisonAutoRecruitmentIsEnabled;
 
             c.Rate = wealth / (c.SpawnCost * GarrisonSpawnReserveMult);
             // Barracks: lodgings and a drill yard are what actually limit how many men a fief can take in
@@ -389,8 +394,8 @@ namespace RBMCampaign
 
             if (!c.Held)
             {
-                // Enough reserve over the whole settlement's bill: recruit.
-                c.Final = c.AfterManpower;
+                // Enough reserve over the whole settlement's bill: recruit, unless the owner turned it off.
+                c.Final = c.AutoRecruitOff ? 0 : c.AfterManpower;
             }
             else if (garrisonBill > 0 && wealth < c.KeepThreshold && manCount > 0)
             {
@@ -528,8 +533,13 @@ namespace RBMCampaign
                     en.Add(c.AfterManpower - c.AfterHeadroom, manpower);
                 }
 
-                // Held at zero until the treasury clears its reserve (its whole daily bill, many times over).
-                if (c.Held && c.AfterManpower > 0)
+                // Held at zero when the owner has switched garrison auto-recruitment off...
+                if (c.AutoRecruitOff && c.AfterManpower > 0)
+                {
+                    en.Add(0 - c.AfterManpower, new TextObject("{=rbm_garr_auto_off}Held — auto-recruitment disabled"));
+                }
+                // ...or until the treasury clears its reserve (its whole daily bill, many times over).
+                else if (c.Held && c.AfterManpower > 0)
                 {
                     TextObject resText = new TextObject("{=rbm_garr_res}Held — treasury below reserve ({RES})");
                     resText.SetTextVariable("RES", c.Reserve);
