@@ -904,6 +904,13 @@
   // RBMConfig/Shared/SkillDamage.GetSkillBasedDamage and BlowDamage.RBMComputeDamage at armor 0..100.
   function effSkillDR(s) { return F(F(F(600) / F(600 + s)) * s); }
   function skillMod(s) { return clampF(F(s / 250), 0, 1); }
+  // SkillDamage.MeleeSkillDR / MeleeSkillMod: the melee curve (c 200), equal to effSkillDR / skillMod at skill 100.
+  // Drives the blow (swing/thrust speed, thrust energy, skill damage) and the shown attack/handling speeds.
+  var MELEE_C = 200, MELEE_ANCHOR = 100;
+  var MELEE_SCALE = F(F(F(600 * MELEE_ANCHOR) / F(600 + MELEE_ANCHOR)) / F(F(MELEE_C * MELEE_ANCHOR) / F(MELEE_C + MELEE_ANCHOR)));
+  function meleeSkillDR(s) { var x = Math.max(s, 0); return F(F(F(MELEE_SCALE * MELEE_C) * x) / F(MELEE_C + x)); }
+  var MELEE_DR_ANCHOR = meleeSkillDR(MELEE_ANCHOR);
+  function meleeSkillMod(s) { return clampF(F(F(F(MELEE_ANCHOR / 250) * meleeSkillDR(s)) / MELEE_DR_ANCHOR), 0, 1); }
   // ThrustEnergy.CalculateThrustSpeed (RBMConfig/Shared/ThrustEnergy.cs).
   function rbmThrustSpeed(w, inertia, com) {
     var ig = F(inertia + F(F(w * com) * com));
@@ -1015,26 +1022,26 @@
   var SWORDS = ['OneHandedSword', 'Dagger', 'TwoHandedSword'];
   function rbmMeleeStats(u, weight, skill) {
     if (!u.melee) return null;
-    var dr = effSkillDR(skill), sm = skillMod(skill), cls = u.cls, out = { skill: skill, dr: dr };
+    var dr = effSkillDR(skill), mdr = meleeSkillDR(skill), sm = meleeSkillMod(skill), cls = u.cls, out = { skill: skill, dr: dr };
     // Utilities.CalculateVisualSpeeds (EquipmentElement overload): m/s = speed / 4.5454545 (swing), / 11.7647057 (thrust).
     var cts = function () { return Math.floor(F(rbmThrustSpeed(weight, u.totalInertia, u.com) * F(11.7647057))); };
     var sw = -1, th = -1, hd = -1;
     if (ONE_H_FAST.indexOf(cls) >= 0) {
-      sw = Math.ceil(F(F(u.swingSpeed * F(0.83)) * F(1 + F(dr / 800)))); th = Math.ceil(F(F(cts() * F(1.1)) * F(1 + F(dr / 900)))); hd = Math.ceil(F(F(u.handling * F(0.83)) * F(1 + F(dr / 600))));
+      sw = Math.ceil(F(F(u.swingSpeed * F(0.83)) * F(1 + F(mdr / 800)))); th = Math.ceil(F(F(cts() * F(1.1)) * F(1 + F(mdr / 900)))); hd = Math.ceil(F(F(u.handling * F(0.83)) * F(1 + F(mdr / 600))));
     } else if (cls === 'TwoHandedPolearm' || cls === 'TwoHandedMace') {
-      sw = Math.ceil(F(F(u.swingSpeed * F(0.83)) * F(1 + F(dr / 500)))); th = Math.ceil(F(F(cts() * F(1.05)) * F(1 + F(dr / 800)))); hd = Math.ceil(F(F(u.handling * 5) * F(1 + F(dr / 450))));
+      sw = Math.ceil(F(F(u.swingSpeed * F(0.83)) * F(1 + F(mdr / 500)))); th = Math.ceil(F(F(cts() * F(1.05)) * F(1 + F(mdr / 800)))); hd = Math.ceil(F(F(u.handling * 5) * F(1 + F(mdr / 450))));
     } else if (cls === 'TwoHandedAxe') {
-      sw = Math.ceil(F(F(u.swingSpeed * F(0.75)) * F(1 + F(dr / 450)))); th = Math.ceil(F(F(u.thrustSpeed * F(0.9)) * F(1 + F(dr / 900)))); hd = Math.ceil(F(F(u.handling * F(0.83)) * F(1 + F(dr / 400))));
+      sw = Math.ceil(F(F(u.swingSpeed * F(0.75)) * F(1 + F(mdr / 450)))); th = Math.ceil(F(F(u.thrustSpeed * F(0.9)) * F(1 + F(mdr / 900)))); hd = Math.ceil(F(F(u.handling * F(0.83)) * F(1 + F(mdr / 400))));
     } else if (SWORDS.indexOf(cls) >= 0) {
-      sw = Math.ceil(F(F(u.swingSpeed * F(0.83)) * F(1 + F(dr / 650)))); th = Math.ceil(F(F(cts() * F(1.15)) * F(1 + F(dr / 700)))); hd = Math.ceil(F(F(u.handling * F(0.9)) * F(1 + F(dr / 600))));
+      sw = Math.ceil(F(F(u.swingSpeed * F(0.83)) * F(1 + F(mdr / 650)))); th = Math.ceil(F(F(cts() * F(1.15)) * F(1 + F(mdr / 700)))); hd = Math.ceil(F(F(u.handling * F(0.9)) * F(1 + F(mdr / 600))));
     }
     out.swingMs = sw < 0 ? null : F(sw / F(4.5454545)); out.thrustMs = th < 0 ? null : F(th / F(11.7647057)); out.handling = hd < 0 ? null : hd;
     // CalculateSweetSpotSwingMagnitude
     if (u.swingDamage > 0) {
       var ss = F(F(u.swingSpeed / F(4.5454545)) * 1);
-      if (ONE_H_FAST.indexOf(cls) >= 0 || cls === 'TwoHandedMace' || cls === 'TwoHandedPolearm') ss = F(F(ss * F(0.83)) * F(1 + F(dr / 1000)));
-      else if (cls === 'TwoHandedAxe') ss = F(F(ss * F(0.75)) * F(1 + F(dr / 800)));
-      else if (SWORDS.indexOf(cls) >= 0) ss = F(F(ss * F(0.83)) * F(1 + F(dr / 800)));
+      if (ONE_H_FAST.indexOf(cls) >= 0 || cls === 'TwoHandedMace' || cls === 'TwoHandedPolearm') ss = F(F(ss * F(0.83)) * F(1 + F(mdr / 1000)));
+      else if (cls === 'TwoHandedAxe') ss = F(F(ss * F(0.75)) * F(1 + F(mdr / 800)));
+      else if (SWORDS.indexOf(cls) >= 0) ss = F(F(ss * F(0.83)) * F(1 + F(mdr / 800)));
       // GetRealWeaponLength: weapon_length × 0.01 + Frame.rotation.u · Frame.origin (−CoM with use_center_of_mass_as_hand_base).
       var realLen = F(F(u.length * F(0.01)) + (u.useCom ? F(-u.com) : 0));
       var best = -1, spot = -1;
@@ -1042,19 +1049,19 @@
         var mg = strikeSwing(ss, cur, weight, realLen, u.totalInertia, u.com, 0);
         if (mg > best) { best = mg; spot = cur; }
       }
-      var sbd = skillBasedDamage(best, cls, u.swingType, dr, sm, true), wdf = F(Math.sqrt(u.swingFactor));
+      var sbd = skillBasedDamage(best, cls, u.swingType, mdr, sm, true), wdf = F(Math.sqrt(u.swingFactor));
       out.swing = { magnitude: best, sweetSpot: spot, skillDamage: sbd, factor: wdf, rows: damageRows(cls, u.swingType, sbd, wdf) };
     }
     if (u.thrustDamage > 0) {
       var ts = F(F(u.thrustSpeed / F(11.7647057)) * 1), tsp = ts;
-      if (ONE_H_FAST.indexOf(cls) >= 0 || cls === 'TwoHandedMace') tsp = F(F(F(rbmThrustSpeed(weight, u.totalInertia, u.com) * F(0.75)) * F(1 + F(dr / 1000))) * 1);
-      else if (cls === 'TwoHandedPolearm') tsp = F(F(F(rbmThrustSpeed(weight, u.totalInertia, u.com) * F(0.65)) * F(1 + F(dr / 800))) * 1);
-      else if (cls === 'TwoHandedAxe') tsp = F(F(F(rbmThrustSpeed(weight, u.totalInertia, u.com) * F(0.9)) * F(1 + F(dr / 1000))) * 1);
-      else if (SWORDS.indexOf(cls) >= 0) tsp = F(F(F(rbmThrustSpeed(weight, u.totalInertia, u.com) * F(0.7)) * F(1 + F(dr / 800))) * 1);
+      if (ONE_H_FAST.indexOf(cls) >= 0 || cls === 'TwoHandedMace') tsp = F(F(F(rbmThrustSpeed(weight, u.totalInertia, u.com) * F(0.75)) * F(1 + F(mdr / 1000))) * 1);
+      else if (cls === 'TwoHandedPolearm') tsp = F(F(F(rbmThrustSpeed(weight, u.totalInertia, u.com) * F(0.65)) * F(1 + F(mdr / 800))) * 1);
+      else if (cls === 'TwoHandedAxe') tsp = F(F(F(rbmThrustSpeed(weight, u.totalInertia, u.com) * F(0.9)) * F(1 + F(mdr / 1000))) * 1);
+      else if (SWORDS.indexOf(cls) >= 0) tsp = F(F(F(rbmThrustSpeed(weight, u.totalInertia, u.com) * F(0.7)) * F(1 + F(mdr / 800))) * 1);
       var tm = -1, body = F(tsp * thrustBodyFactor(cls, rbmThrustSpeed(weight, u.totalInertia, u.com)));
-      if (['OneHandedPolearm', 'OneHandedSword', 'Dagger', 'Mace', 'LowGripPolearm'].indexOf(cls) >= 0) tm = thrustMag1H(weight, dr, tsp, body, 0);
-      else if (['TwoHandedPolearm', 'TwoHandedSword', 'TwoHandedMace'].indexOf(cls) >= 0) tm = thrustMag2H(weight, dr, tsp, body, 0);
-      var tbd = skillBasedDamage(tm, cls, u.thrustType, dr, sm, false), twdf = F(Math.sqrt(u.thrustFactor));
+      if (['OneHandedPolearm', 'OneHandedSword', 'Dagger', 'Mace', 'LowGripPolearm'].indexOf(cls) >= 0) tm = thrustMag1H(weight, mdr, tsp, body, 0);
+      else if (['TwoHandedPolearm', 'TwoHandedSword', 'TwoHandedMace'].indexOf(cls) >= 0) tm = thrustMag2H(weight, mdr, tsp, body, 0);
+      var tbd = skillBasedDamage(tm, cls, u.thrustType, mdr, sm, false), twdf = F(Math.sqrt(u.thrustFactor));
       out.thrust = { magnitude: tm, speed: tsp, skillDamage: tbd, factor: twdf, rows: damageRows(cls, u.thrustType, tbd, twdf) };
     }
     return out;

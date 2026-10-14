@@ -48,6 +48,7 @@
 - Breaking an enemy's posture in a chamber block, with your chamber or with the blow he chambers, now slows time like any other posture break you cause. The message you got when your own posture broke on his chamber, which always said 0 damage got through, is gone: nothing gets through, as after any other blocked blow.
 - After a posture break, the posture bars now show the posture he gets back at once, instead of an empty bar for up to half a second.
 - New Large Vertical Bars setting (RBM Stance, under Posture GUI, off by default): shows your posture and stamina as two big, thick vertical bars side by side at the right edge of the screen, with their current values underneath, instead of the small bars at the bottom right. Needs RBM Stance, the Posture System and Posture GUI on; the stamina bar shows only with the Stamina System on.
+- **Melee weapon skill has stronger diminishing returns.** Each extra point of skill now adds less than the one before: melee damage at skill 100 is unchanged, a little higher below it, about 10% lower at 200, 15% at 250 and 20% at 330. This covers swing and thrust speed, the strength behind a thrust and the skill damage bonus. Skill's bonus to attack and parry animation speed follows the same curve. The weapon tooltips and battle auto-resolve follow. Thrown weapons, slings and bows are unchanged.
 
 ### AI
 - With RBM Stance's posture system on, skilled AI fighters now parry more often instead of holding a block: up to 80% of the time without a shield (was 60%) and up to 65% with one (was 60%).

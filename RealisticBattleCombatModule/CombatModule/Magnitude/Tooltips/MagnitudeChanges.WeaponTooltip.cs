@@ -102,8 +102,8 @@ namespace RBMCombat
                 {
                     SkillObject skill = targetWeapon.Item.GetWeaponWithUsageIndex(targetWeaponUsageIndex).RelevantSkill;
                     int effectiveSkill = currentSelectedChar.GetSkillValue(skill);
-                    float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(effectiveSkill);
-                    float skillModifier = Utilities.CalculateSkillModifier(effectiveSkill);
+                    float effectiveSkillDR = RBMConfig.SkillDamage.MeleeSkillDR(effectiveSkill);
+                    float skillModifier = RBMConfig.SkillDamage.MeleeSkillMod(effectiveSkill);
 
                     Utilities.CalculateVisualSpeeds(targetWeapon, targetWeaponUsageIndex, effectiveSkillDR, out int swingSpeedReal, out int thrustSpeedReal, out int handlingReal);
                     Utilities.CalculateVisualSpeeds(comparedWeapon, comparedWeaponUsageIndex, effectiveSkillDR, out int swingSpeedRealCompred, out int thrustSpeedRealCompared, out int handlingRealCompared);

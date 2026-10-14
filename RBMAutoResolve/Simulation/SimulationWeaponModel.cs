@@ -111,14 +111,10 @@ namespace RBMAutoResolve
             public bool IsValid;
         }
 
+        // The throw/sling skill curve (MissileBallistics.EffectiveSkillWithDR). Melee uses SkillDamage.MeleeSkillDR/MeleeSkillMod.
         internal static float EffectiveSkill(int skill)
         {
             return (600f / (600f + skill)) * skill;
-        }
-
-        internal static float SkillModifier(int skill)
-        {
-            return MBMath.ClampFloat(skill / 250f, 0f, 1f);
         }
 
         // ---------------------------------------------------------------------------------------------------
@@ -201,7 +197,7 @@ namespace RBMAutoResolve
         /// <summary>The speed RBM actually swings this weapon at: its rating, blunted by its class and its wielder's arm.</summary>
         private static float GetSwingMagnitude(WeaponComponentData weapon, float weight, int skill)
         {
-            float skillDR = EffectiveSkill(skill);
+            float skillDR = SkillDamage.MeleeSkillDR(skill);
 
             // These are the SWING factors. They were the THRUST factors -- 0.90/1000 for a two-handed axe and a
             // bare 0.75 default -- which is RBM's thrust table copied into the swing path by hand. A two-handed
@@ -255,7 +251,7 @@ namespace RBMAutoResolve
                           || weaponClass == WeaponClass.TwoHandedSword
                           || weaponClass == WeaponClass.TwoHandedMace;
 
-            float skillDR = EffectiveSkill(skill);
+            float skillDR = SkillDamage.MeleeSkillDR(skill);
 
             // The speed the shaft is actually driven at: its own physics, blunted by its class and by the fact
             // that a thrust is thrown from a standstill (MagnitudeChanges.cs:96-133).
@@ -508,8 +504,8 @@ namespace RBMAutoResolve
             DamageTypes bestType = DamageTypes.Blunt;
             bool bestIsThrust = false;
 
-            float skillModifier = SkillModifier(skill);
-            float skillDR = EffectiveSkill(skill);
+            float skillModifier = SkillDamage.MeleeSkillMod(skill);
+            float skillDR = SkillDamage.MeleeSkillDR(skill);
 
             // The swing: its real physics, then RBM's clamp -- which is the point. A blow lands where the clamp
             // lets it, and that is somewhere BETWEEN the floor and the ceiling for anything but the very best or

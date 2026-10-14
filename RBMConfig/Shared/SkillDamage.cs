@@ -79,6 +79,42 @@ namespace RBMConfig
             return GetPunchMaterialFactor(ArmorMaterialTypes.None) + weaponWeight * 0.1f;
         }
 
+        // Melee skill curve: bends harder than the shared 600 one (MissileBallistics.EffectiveSkillWithDR),
+        // so each extra point is worth less; scaled to equal that curve at the anchor skill.
+        public const float MeleeSkillCurvature = 200f;
+        public const float MeleeSkillAnchor = 100f;
+        private const float SharedSkillCurvature = 600f;
+        // The old linear skill modifier divided by this.
+        private const float SkillModifierFullSkill = 250f;
+
+        private static readonly float MeleeSkillScale =
+            (SharedSkillCurvature * MeleeSkillAnchor / (SharedSkillCurvature + MeleeSkillAnchor))
+            / (MeleeSkillCurvature * MeleeSkillAnchor / (MeleeSkillCurvature + MeleeSkillAnchor));
+        private static readonly float MeleeSkillDRAtAnchor = MeleeSkillDR(MeleeSkillAnchor);
+        private static readonly float MeleeSkillModAtAnchor = MeleeSkillAnchor / SkillModifierFullSkill;
+
+        public static float MeleeSkillDR(float effectiveSkill)
+        {
+            float x = MathF.Max(effectiveSkill, 0f);
+            return MeleeSkillScale * MeleeSkillCurvature * x / (MeleeSkillCurvature + x);
+        }
+
+        public static float MeleeSkillDR(int effectiveSkill)
+        {
+            return MeleeSkillDR((float)effectiveSkill);
+        }
+
+        // Replaces the linear clamp(skill / 250) in melee: follows the melee curve, same value at the anchor.
+        public static float MeleeSkillMod(float effectiveSkill)
+        {
+            return MBMath.ClampFloat(MeleeSkillModAtAnchor * MeleeSkillDR(effectiveSkill) / MeleeSkillDRAtAnchor, 0f, 1f);
+        }
+
+        public static float MeleeSkillMod(int effectiveSkill)
+        {
+            return MeleeSkillMod((float)effectiveSkill);
+        }
+
         private const float HandleHitFloor = 4f;
 
         // Below these the input magnitude is kept; polearm thrusts are on the ThrustMagnitudeModifier scale.

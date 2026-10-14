@@ -55,7 +55,8 @@ namespace RBMCombat
 
                             MissionWeapon missionWeapon = __instance.Equipment[equipmentSlot];
                             EquipmentElement ee = new EquipmentElement(missionWeapon.Item);
-                            Utilities.CalculateVisualSpeeds(ee, i, effectiveSkillDR, out int swingSpeedReal, out int thrustSpeedReal, out int handlingReal);
+                            // Melee attack/handling speeds follow the melee skill curve; throws keep effectiveSkillDR.
+                            Utilities.CalculateVisualSpeeds(ee, i, RBMConfig.SkillDamage.MeleeSkillDR(ef), out int swingSpeedReal, out int thrustSpeedReal, out int handlingReal);
 
                             if (swingSpeedReal >= 0 && thrustSpeedReal >= 0 && handlingReal >= 0)
                             {

@@ -454,8 +454,8 @@ namespace RBMCombat
                     if (skill != null)
                     {
                         int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attackInformation.AttackerAgent, skill);
-                        float effectiveSkill = Utilities.GetEffectiveSkillWithDR(ef);
-                        float skillModifier = Utilities.CalculateSkillModifier(ef);
+                        float effectiveSkill = RBMConfig.SkillDamage.MeleeSkillDR(ef);
+                        float skillModifier = RBMConfig.SkillDamage.MeleeSkillMod(ef);
                         // Unarmed runs the skill formula exactly once; the wielded-item branch would
                         // otherwise apply it a second time when the attacker holds something.
                         // (itemModifier is only read when attackerWeapon != null, never for a punch.)

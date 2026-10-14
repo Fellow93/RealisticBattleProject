@@ -195,7 +195,9 @@ uses `double`):
   `RBMConfig/Shared/ThrustEnergy.cs`, whose per-class reference speeds `THRUST_REF_SPEED` copies: keep the two in
   step), then `RBMConfig/Shared/SkillDamage.GetSkillBasedDamage`
   and `BlowDamage.RBMComputeDamage` with √(damage factor) at armor 0..100 (damage, penetrated, blunt), the config's
-  default weapon-type factors (`RBMConfig/Utilities.cs createWeaponTypesFactors`) and armor settings.
+  default weapon-type factors (`RBMConfig/Utilities.cs createWeaponTypesFactors`) and armor settings. The blow (sweet
+  spot, thrust speed and energy, skill damage) and the shown speeds use the melee skill curve
+  `SkillDamage.MeleeSkillDR`/`MeleeSkillMod` (`meleeSkillDR`/`meleeSkillMod`: keep in step).
 
 Approximations and limits (marked in the page where they apply):
 

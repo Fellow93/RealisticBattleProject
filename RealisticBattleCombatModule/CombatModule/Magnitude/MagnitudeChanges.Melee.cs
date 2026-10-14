@@ -78,7 +78,7 @@ namespace RBMCombat
 
                             SkillObject skill = weapon.CurrentUsageItem.RelevantSkill;
                             int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attacker, skill);
-                            float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
+                            float effectiveSkillDR = RBMConfig.SkillDamage.MeleeSkillDR(ef);
                             float rawThrustSpeed = Utilities.CalculateThrustSpeed(weapon.Item.Weight, weapon.CurrentUsageItem.TotalInertia, weapon.CurrentUsageItem.CenterOfMass);
                             switch (weapon.CurrentUsageItem.WeaponClass)
                             {
@@ -179,7 +179,7 @@ namespace RBMCombat
                     Agent attacker = attackInformation.AttackerAgent;
                     SkillObject skill = weapon.CurrentUsageItem.RelevantSkill;
                     int ef = MissionGameModels.Current.AgentStatCalculateModel.GetEffectiveSkill(attacker, skill);
-                    float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
+                    float effectiveSkillDR = RBMConfig.SkillDamage.MeleeSkillDR(ef);
                     switch (weapon.CurrentUsageItem.WeaponClass)
                     {
                         case WeaponClass.LowGripPolearm:

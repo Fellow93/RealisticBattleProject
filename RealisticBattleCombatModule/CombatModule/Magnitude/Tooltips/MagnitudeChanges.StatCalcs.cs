@@ -26,7 +26,7 @@ namespace RBMCombat
                 float swingSpeed = (float)weapon.GetModifiedSwingSpeedForUsage(weaponUsageIndex) / 4.5454545f * progressEffect;
 
                 int ef = relevantSkill;
-                float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
+                float effectiveSkillDR = RBMConfig.SkillDamage.MeleeSkillDR(ef);
                 switch (weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).WeaponClass)
                 {
                     case WeaponClass.LowGripPolearm:
@@ -92,7 +92,7 @@ namespace RBMCombat
                 float thrustWeaponSpeed = (float)weapon.GetModifiedThrustSpeedForUsage(weaponUsageIndex) / 11.7647057f * progressEffect;
 
                 int ef = relevantSkill;
-                float effectiveSkillDR = Utilities.GetEffectiveSkillWithDR(ef);
+                float effectiveSkillDR = RBMConfig.SkillDamage.MeleeSkillDR(ef);
 
                 float weaponWeight = weapon.Item.Weight;
                 float weaponInertia = weapon.Item.GetWeaponWithUsageIndex(weaponUsageIndex).TotalInertia;
