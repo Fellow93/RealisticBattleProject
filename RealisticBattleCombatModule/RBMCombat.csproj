@@ -191,6 +191,7 @@
     <Compile Include="CombatModule\Damage\DamageRework.Core.cs" />
     <Compile Include="CombatModule\Damage\DamageRework.Blows.cs" />
     <Compile Include="CombatModule\Damage\DamageRework.HitReaction.cs" />
+    <Compile Include="CombatModule\Damage\DamageRework.HitSound.cs" />
     <Compile Include="CombatModule\Damage\DamageRework.Entities.cs" />
     <!-- Armor -->
     <Compile Include="CombatModule\Armor\ArmorRework.Human.cs" />

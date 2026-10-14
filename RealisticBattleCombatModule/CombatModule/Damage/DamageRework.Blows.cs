@@ -95,6 +95,8 @@ namespace RBMCombat
                                     newBlow.InflictedDamage = 0;
                                     newBlow.VictimBodyPart = collisionData.VictimHitBodyPart;
                                     newBlow.BlowFlag |= BlowFlags.NonTipThrust;
+                                    // Only the stagger: the block already made its own sound, a 0-damage blow would add a body-hit tap.
+                                    newBlow.BlowFlag |= BlowFlags.NoSound;
                                     victimAgent.RegisterBlow(newBlow, collisionData);
                                     foreach (MissionBehavior missionBehaviour in __instance.MissionBehaviors)
                                     {
