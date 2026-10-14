@@ -67,8 +67,10 @@ namespace RBMCampaign
                     header.Append("Tags:").Append(Environment.NewLine);
                     header.Append("  CREATE    a company (clan) was created: id, culture, home town, leader, gold").Append(Environment.NewLine);
                     header.Append("  SPAWN     a company party was spawned (new company or respawn): town, men, size limit, gold").Append(Environment.NewLine);
-                    header.Append("  WAIT      a company without a party, or an empty slot, is waiting to respawn (once per change)").Append(Environment.NewLine);
-                    header.Append("  GONE      a company was found destroyed (its slot starts the respawn clock)").Append(Environment.NewLine);
+                    header.Append("  WAIT      a company without a party, or an empty slot, is waiting to respawn, or a due rebuild is waiting (once per change)").Append(Environment.NewLine);
+                    header.Append("  GONE      a company was found destroyed (its slot starts the respawn clock), or a gone company's clock was dropped").Append(Environment.NewLine);
+                    header.Append("  WEAK      an idle company's party is nearly empty and its leader broke: its rebuild clock started, or stopped").Append(Environment.NewLine);
+                    header.Append("  REBUILD   a broke, nearly empty party was retired and its leader given a new one at a safe town (what it carried)").Append(Environment.NewLine);
                     header.Append("  ROAM      an idle company's new roaming target (recruit town or bandit) and its score; only on change").Append(Environment.NewLine);
                     header.Append("  TAVERN    tavern mercenaries hired: town, troop, count, price, gold left").Append(Environment.NewLine);
                     header.Append("  BLOCK     a non-mercenary troop kept out (notable volunteers, prisoner recruits per troop); once per company and source per game session").Append(Environment.NewLine);
@@ -79,6 +81,7 @@ namespace RBMCampaign
                     header.Append("  PAY       a day's contract pay").Append(Environment.NewLine);
                     header.Append("  END       a contract ended, and why").Append(Environment.NewLine);
                     header.Append("  DEFER     leaving the kingdom deferred: the party is in a battle or siege").Append(Environment.NewLine);
+                    header.Append("  HOLD      a hired company's party is lost and its leader a captive of the employer's enemy: it stays, unpaid, until he is free").Append(Environment.NewLine);
                     header.Append("  LEAVE     the company actually left the kingdom").Append(Environment.NewLine);
                     header.Append("  DISBAND   Mercenary Companies switched off: a company leaving its kingdom and being destroyed (or deferred)").Append(Environment.NewLine);
                     header.Append("  ARMY-NEW  every army the ArmyCreated event reports (player's too), when it fires").Append(Environment.NewLine);

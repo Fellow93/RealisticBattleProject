@@ -13,7 +13,8 @@ namespace RBMCampaign
     /// <summary>
     /// Drives the mercenary companies (<see cref="MercenaryCompanies"/>, <see cref="MercenaryContracts"/>):
     /// creates the roster on the first campaign hour, keeps contracts and kingdom membership in step hourly,
-    /// pays contracts and respawns lost companies daily, lets AI army leaders hire on <c>ArmyCreated</c>, and
+    /// pays contracts, respawns lost companies and rebuilds broke, near-empty ones daily, lets AI army leaders
+    /// hire on <c>ArmyCreated</c>, and
     /// gives an unhired company something to do: recruit tavern mercenaries when understrength, otherwise hunt
     /// bandit parties it outmatches, otherwise vanilla's patrol around its home town. The roaming AI only adds
     /// scores to the shared think params (the RBMDeserterRaiderBehavior shape); it never issues a move itself.
@@ -110,7 +111,8 @@ namespace RBMCampaign
                 return;
             }
             _lastRoam.Remove(party);
-            if (!MercenaryCompanies.IsCompanyParty(party))
+            // A rebuild retires the old party itself and writes its own REBUILD line.
+            if (!MercenaryCompanies.IsCompanyParty(party) || MercenaryCompanies.Rebuilding)
             {
                 return;
             }
@@ -202,6 +204,8 @@ namespace RBMCampaign
                     MercenaryCompanies.PurgeNonMercenaries(party);
                 }
             }
+            // Contracts of companies that are no longer living (leader dead, clan destroyed), so they get their END line.
+            MercenaryContracts.ReconcileGone();
         }
 
         private void OnDailyTick()

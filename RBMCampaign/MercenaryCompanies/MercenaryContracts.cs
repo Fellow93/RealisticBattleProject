@@ -17,7 +17,9 @@ namespace RBMCampaign
     /// the employer's kingdom (joined with no mercenary award and a stay-until far in the future, so vanilla
     /// neither pays it nor lets it drift off) and its party is a member of the employer's army. The contract
     /// lasts exactly as long as the party serves in an army of that kingdom: when the army disperses, the party
-    /// is removed from it, or the employer stops paying, the company leaves the kingdom again.
+    /// is removed from it, or the employer stops paying, the company leaves the kingdom again -- except while its
+    /// party is lost and its leader is a captive of the employer's enemy, when it stays, unpaid, until he is free
+    /// (<see cref="HoldForCaptiveLeader"/>).
     ///
     /// Ending is reconciled, not event-driven: <see cref="Reconcile"/> runs hourly over every company and
     /// takes any company that is in a kingdom without a serving contract out of it -- but never while its
@@ -50,10 +52,11 @@ namespace RBMCampaign
         // Persisted: company clan StringId -> "employerHeroId|kingdomId|dailyPay|startDay".
         private static Dictionary<string, string> _contracts = new Dictionary<string, string>();
 
-        // Transient, for the log only: why a company's army ended (clan id -> note), and which companies have
-        // already logged a DEFER for the battle they are waiting out.
+        // Transient, for the log only: why a company's army ended (clan id -> note), which companies have
+        // already logged a DEFER for the battle they are waiting out, and which a HOLD for their captive leader.
         private static readonly Dictionary<string, string> _armyEndNotes = new Dictionary<string, string>();
         private static readonly HashSet<string> _deferLogged = new HashSet<string>();
+        private static readonly HashSet<string> _holdLogged = new HashSet<string>();
 
         private struct Contract
         {
@@ -68,6 +71,7 @@ namespace RBMCampaign
             _contracts = new Dictionary<string, string>();
             _armyEndNotes.Clear();
             _deferLogged.Clear();
+            _holdLogged.Clear();
         }
 
         /// <summary>Drops a company's contract and notes without leaving any kingdom (the disband cleanup does that).</summary>
@@ -78,8 +82,7 @@ namespace RBMCampaign
                 return;
             }
             _contracts.Remove(clan.StringId);
-            _armyEndNotes.Remove(clan.StringId);
-            _deferLogged.Remove(clan.StringId);
+            ClearNotes(clan);
         }
 
         /// <summary>
@@ -167,8 +170,14 @@ namespace RBMCampaign
         private static bool TryGet(Clan clan, out Contract contract)
         {
             contract = default(Contract);
+            return clan != null && TryGet(clan.StringId, out contract);
+        }
+
+        private static bool TryGet(string clanId, out Contract contract)
+        {
+            contract = default(Contract);
             string value;
-            if (clan == null || !_contracts.TryGetValue(clan.StringId, out value) || value == null)
+            if (clanId == null || !_contracts.TryGetValue(clanId, out value) || value == null)
             {
                 return false;
             }
@@ -392,9 +401,51 @@ namespace RBMCampaign
         }
 
         /// <summary>
+        /// The hourly pass over contracts whose company is no longer among the living ones (its leader died and
+        /// vanilla destroyed the clan, which also took it out of the kingdom), so each gets its END line. The
+        /// pass over living companies never sees them.
+        /// </summary>
+        internal static void ReconcileGone()
+        {
+            if (Campaign.Current == null || _contracts.Count == 0)
+            {
+                return;
+            }
+            foreach (string clanId in _contracts.Keys.ToList())
+            {
+                Clan clan = Campaign.Current.CampaignObjectManager.Find<Clan>(clanId);
+                if (clan == null)
+                {
+                    DropMissing(clanId);
+                }
+                else if (clan.IsEliminated)
+                {
+                    Reconcile(clan);
+                }
+            }
+        }
+
+        /// <summary>A contract whose clan cannot be found any more: dropped, with its END line.</summary>
+        private static void DropMissing(string clanId)
+        {
+            Contract contract;
+            if (TryGet(clanId, out contract))
+            {
+                MercenaryLog.Log("END", clanId, "company no longer found (served " + (Today - contract.StartDay) + " days)");
+            }
+            _contracts.Remove(clanId);
+            _armyEndNotes.Remove(clanId);
+            _deferLogged.Remove(clanId);
+            _holdLogged.Remove(clanId);
+        }
+
+        /// <summary>
         /// Keeps the company's kingdom membership and its contract in step: a company in a kingdom stays only
         /// while its party serves in an army of the kingdom it was hired by; otherwise it leaves (deferred while
-        /// in a battle or siege). A company out of any kingdom holds no contract.
+        /// in a battle or siege). One exception: a company whose party was lost and whose leader is held captive
+        /// by an enemy of its employer keeps its kingdom and contract (unpaid -- there is no party to pay) until
+        /// he is free again, because leaving would make peace with his captor and so set him free for nothing.
+        /// A company out of any kingdom holds no contract.
         /// </summary>
         public static void Reconcile(Clan clan)
         {
@@ -409,7 +460,11 @@ namespace RBMCampaign
                 if (hasContract)
                 {
                     _contracts.Remove(clan.StringId);
-                    MercenaryLog.Log("END", clan, "company destroyed (served " + (Today - contract.StartDay) + " days)");
+                    Kingdom employer = Campaign.Current?.CampaignObjectManager.Find<Kingdom>(contract.KingdomId);
+                    MercenaryLog.Log("END", clan, "company destroyed"
+                        + (clan.IsEliminated && (clan.Leader == null || !clan.Leader.IsAlive) ? " (leader dead)" : "")
+                        + "; the game already took it out of " + (employer != null ? employer.Name.ToString() : contract.KingdomId)
+                        + " (served " + (Today - contract.StartDay) + " days)");
                 }
                 ClearNotes(clan);
                 return;
@@ -439,7 +494,12 @@ namespace RBMCampaign
             }
             else if (party == null)
             {
-                why = "party lost";
+                if (HoldForCaptiveLeader(clan, kingdom))
+                {
+                    return;
+                }
+                why = _holdLogged.Contains(clan.StringId) ? "party lost, leader " + clan.Leader?.Name + " no longer held by an enemy"
+                    : "party lost";
             }
             else if (party.Army == null)
             {
@@ -474,10 +534,37 @@ namespace RBMCampaign
             ClearNotes(clan);
         }
 
+        /// <summary>
+        /// True while the hired company's party is lost and its leader is a prisoner of a faction at war with
+        /// <paramref name="kingdom"/> (his captor: the party or settlement that holds him). The contract and the
+        /// kingdom membership are then kept: ChangeKingdomAction's leave would make peace between the company
+        /// and every enemy of the kingdom, and PrisonerReleaseCampaignBehavior frees a hero whose faction is not
+        /// at war with his captor. Nothing is paid meanwhile (PayDaily and the player's pay lines pay only through
+        /// a party in an army). Once he escapes, is ransomed or released by a peace, the normal "party lost" end
+        /// applies; if he dies, vanilla destroys the clan and <see cref="ReconcileGone"/> writes the END.
+        /// </summary>
+        private static bool HoldForCaptiveLeader(Clan clan, Kingdom kingdom)
+        {
+            Hero leader = clan.Leader;
+            IFaction captor = leader != null && leader.IsAlive && leader.IsPrisoner ? leader.PartyBelongedToAsPrisoner?.MapFaction : null;
+            if (captor == null || !FactionManager.IsAtWarAgainstFaction(captor, kingdom))
+            {
+                return false;
+            }
+            if (_holdLogged.Add(clan.StringId))
+            {
+                MercenaryLog.Log("HOLD", clan, "party lost, leader " + leader.Name + " held by " + leader.PartyBelongedToAsPrisoner.Name
+                    + " (" + captor.Name + ", at war with " + kingdom.Name + "): stays in " + kingdom.Name
+                    + " under contract, unpaid, until he is free");
+            }
+            return true;
+        }
+
         private static void ClearNotes(Clan clan)
         {
             _armyEndNotes.Remove(clan.StringId);
             _deferLogged.Remove(clan.StringId);
+            _holdLogged.Remove(clan.StringId);
         }
 
         private static string Where(MobileParty party)
@@ -501,7 +588,18 @@ namespace RBMCampaign
             {
                 Clan clan = Campaign.Current.CampaignObjectManager.Find<Clan>(clanId);
                 Contract contract;
-                if (clan == null || clan.IsEliminated || !TryGet(clan, out contract))
+                if (clan == null)
+                {
+                    DropMissing(clanId);
+                    continue;
+                }
+                if (clan.IsEliminated)
+                {
+                    // Normally caught by the hourly ReconcileGone first; this writes the same END line.
+                    Reconcile(clan);
+                    continue;
+                }
+                if (!TryGet(clan, out contract))
                 {
                     _contracts.Remove(clanId);
                     continue;

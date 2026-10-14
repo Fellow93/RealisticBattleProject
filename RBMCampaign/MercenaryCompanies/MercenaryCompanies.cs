@@ -32,9 +32,12 @@ namespace RBMCampaign
     ///
     /// Slot ids: <c>rbm_merc_co_&lt;culture&gt;_&lt;n&gt;_g&lt;generation&gt;</c>. A slot whose company was destroyed
     /// (its only lord killed) is refilled by a new generation after <see cref="RespawnDays"/>; a company whose
-    /// party was lost but whose leader lives gets a new party for him after the same delay (once he is free).
-    /// Vanilla's minor-faction hero/party spawning is blocked for these clans (MercenaryCompanyPatches), so
-    /// this is the only thing that ever spawns them.
+    /// party was lost but whose leader lives gets a new party for him after the same delay (once he is free);
+    /// an idle company that has dwindled to (almost) its leader alone with no gold to hire is rebuilt like a
+    /// lost one after the same delay (<see cref="CheckWeak"/>). Every party appears at a safe town
+    /// (<see cref="SpawnTown"/>), and a spawn that fails is retried on the next daily check. Vanilla's
+    /// minor-faction hero/party spawning is blocked for these clans (MercenaryCompanyPatches), so this is the
+    /// only thing that ever spawns them.
     /// </summary>
     public static class MercenaryCompanies
     {
@@ -64,10 +67,13 @@ namespace RBMCampaign
         internal const int RespawnDays = 7;
 
         // Persisted respawn clocks: "party:<clanId>" = day the company was first seen without a party,
-        // "slot:<slotKey>" = day the slot was first seen with no living company.
+        // "weak:<clanId>" = day its idle party was first seen broke and nearly empty (CheckWeak),
+        // "slot:<slotKey>" = day the slot was first seen with no living company. A clock set back by
+        // RespawnDays is due at once (a spawn to retry on the next daily check).
         private static Dictionary<string, int> _timers = new Dictionary<string, int>();
 
-        // Transient, for the log only: the last WAIT reason logged per company, so a wait is logged once per change.
+        // Transient, for the log only: the last WAIT reason logged per company (keyed by clan id for a lost
+        // party, "weak:<clanId>" for a rebuild), so a wait is logged once per change.
         private static readonly Dictionary<string, string> _waitNotes = new Dictionary<string, string>();
 
         private static readonly MethodInfo ApplyRecruitMercenaryMethod =
@@ -304,7 +310,9 @@ namespace RBMCampaign
             }
             MercenaryContracts.Forget(clan);
             _timers.Remove("party:" + clan.StringId);
+            _timers.Remove("weak:" + clan.StringId);
             _waitNotes.Remove(clan.StringId);
+            _waitNotes.Remove("weak:" + clan.StringId);
             // Due at once: switched back on, this slot gets a new company on the next roster check.
             _timers["slot:" + SlotOf(clan)] = Today - RespawnDays;
             MercenaryLog.LogCleanup("DISBAND", MercenaryLog.Who(clan), "disbanded and destroyed (" + what + ")");
@@ -330,7 +338,8 @@ namespace RBMCampaign
         /// <summary>
         /// Creates every slot's company that is missing: at once for a slot that never had one (a new game,
         /// or an older save meeting the feature for the first time), and <see cref="RespawnDays"/> after the
-        /// last generation was destroyed otherwise. Idempotent.
+        /// last generation was destroyed otherwise. A creation that fails keeps the slot's clock due, so it is
+        /// retried on the next daily check. Also drops the clocks of companies that are gone. Idempotent.
         /// </summary>
         internal static void EnsureRoster()
         {
@@ -338,6 +347,7 @@ namespace RBMCampaign
             {
                 return;
             }
+            PruneStaleTimers();
             List<Clan> all = Clan.All.ToList();
             foreach (string cultureId in CultureIds)
             {
@@ -389,16 +399,58 @@ namespace RBMCampaign
                     {
                         continue;
                     }
-                    _timers.Remove(key);
-                    CreateCompany(culture, n, prefix + generations, home);
+                    if (CreateCompany(culture, n, prefix + generations, home))
+                    {
+                        _timers.Remove(key);
+                    }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Drops the "party:" and "weak:" clocks of companies that are destroyed or no longer found.
+        /// <see cref="CheckRespawns"/> only visits living companies, so the clock of a company whose leader died
+        /// while it waited for a new party would otherwise stay in the save for good.
+        /// </summary>
+        private static void PruneStaleTimers()
+        {
+            foreach (string key in _timers.Keys.ToList())
+            {
+                int colon = key.IndexOf(':');
+                string kind = colon > 0 ? key.Substring(0, colon) : "";
+                if (kind != "party" && kind != "weak")
+                {
+                    continue;
+                }
+                string clanId = key.Substring(colon + 1);
+                Clan clan = Campaign.Current.CampaignObjectManager.Find<Clan>(clanId);
+                if (clan == null || clan.IsEliminated)
+                {
+                    _timers.Remove(key);
+                    _waitNotes.Remove(kind == "weak" ? key : clanId);
+                    MercenaryLog.Log("GONE", clan != null ? MercenaryLog.Who(clan) : clanId, "dropped the " + kind
+                        + " clock of a company that is " + (clan == null ? "no longer found" : "destroyed"));
+                }
+            }
+        }
+
+        /// <summary>Logs a WAIT line for <paramref name="noteKey"/> only when its reason changed since the last one.</summary>
+        private static void LogWaitOnce(string noteKey, Clan clan, string reason, string detail)
+        {
+            string previous;
+            if (!_waitNotes.TryGetValue(noteKey, out previous) || previous != reason)
+            {
+                _waitNotes[noteKey] = reason;
+                MercenaryLog.Log("WAIT", clan, reason + detail);
             }
         }
 
         /// <summary>
         /// Gives a company whose party was lost a new one, <see cref="RespawnDays"/> after the loss, once its
         /// leader is free and active again (a captured leader is waited out: vanilla's escape and ransom
-        /// release him, and only then does he get a band).
+        /// release him, and only then does he get a band). A company that still has its party is checked for a
+        /// rebuild instead (<see cref="CheckWeak"/>). The clock is cleared only once the party is spawned, so a
+        /// failed spawn is retried on the next daily check.
         /// </summary>
         internal static void CheckRespawns()
         {
@@ -410,12 +462,16 @@ namespace RBMCampaign
             {
                 string key = "party:" + clan.StringId;
                 Hero leader = clan.Leader;
-                if (leader == null || !leader.IsAlive || ActiveParty(clan) != null)
+                MobileParty active = ActiveParty(clan);
+                if (leader == null || !leader.IsAlive || active != null)
                 {
                     _timers.Remove(key);
                     _waitNotes.Remove(clan.StringId);
+                    CheckWeak(clan, leader, active);
                     continue;
                 }
+                // No party: the lost-party clock rules, a rebuild clock means nothing any more.
+                StopWeakClock(clan, "party lost");
                 int since;
                 if (!_timers.TryGetValue(key, out since))
                 {
@@ -435,18 +491,206 @@ namespace RBMCampaign
                 }
                 if (wait != null)
                 {
-                    string previous;
-                    if (!_waitNotes.TryGetValue(clan.StringId, out previous) || previous != wait)
-                    {
-                        _waitNotes[clan.StringId] = wait;
-                        MercenaryLog.Log("WAIT", clan, wait + ", leader gold " + leader.Gold + "d");
-                    }
+                    LogWaitOnce(clan.StringId, clan, wait, ", leader gold " + leader.Gold + "d");
+                    continue;
+                }
+                if (SpawnParty(leader, town, "respawn after " + (Today - since) + " days") == null)
+                {
+                    LogWaitOnce(clan.StringId, clan, "respawn due, spawning at " + town.Name + " failed (retried daily)",
+                        ", leader gold " + leader.Gold + "d");
                     continue;
                 }
                 _timers.Remove(key);
                 _waitNotes.Remove(clan.StringId);
-                SpawnParty(leader, town, "respawn after " + (Today - since) + " days");
             }
+        }
+
+        // ---- Rebuilding a broke, near-empty company ------------------------------------------------------
+        // An idle company can dwindle to its leader and a handful of men with no way back: it keeps its party
+        // (so it is never "lost"), it cannot hire below RecruitGoldFloor (tavern hiring and the recruit trip
+        // both keep that much), and AI armies hire only companies at least 40% full. Such a party is treated
+        // as lost: after RespawnDays in that state it is retired (DestroyPartyAction, the same teardown vanilla
+        // uses for a hero's own party in DisableHeroAction/ApplyHeirSelectionAction) and its leader gets a fresh
+        // InitialFillShare party at a safe town (SpawnTown), exactly like a lost-party respawn. What the old
+        // party still held -- men (with wounds and XP) and their spoils purses, prisoners, hero prisoners and
+        // goods -- is carried into the new one; only its ships go, through vanilla's NavalShipDistribution on
+        // the destroy (redistributed or refunded to the clan leader).
+
+        // A party under this share of its size limit counts as nearly empty.
+        private const float WeakPartyShare = 0.15f;
+
+        /// <summary>True only while <see cref="RebuildParty"/> retires the old party (its GONE line is skipped).</summary>
+        internal static bool Rebuilding { get; private set; }
+
+        private static void StopWeakClock(Clan clan, string why)
+        {
+            string key = "weak:" + clan.StringId;
+            int since;
+            if (_timers.TryGetValue(key, out since))
+            {
+                _timers.Remove(key);
+                MercenaryLog.Log("WEAK", clan, "rebuild clock stopped after " + (Today - since) + " days: " + why);
+            }
+            _waitNotes.Remove(key);
+        }
+
+        /// <summary>
+        /// The daily rebuild check of a company that has its party. The "weak:" clock runs while the company is
+        /// idle (no kingdom, no contract), its party out of any battle or siege and led by its free leader, with
+        /// fewer than <see cref="WeakPartyShare"/> of its size limit and the leader under
+        /// <see cref="RecruitGoldFloor"/>; it stops the day any of that fails. After <see cref="RespawnDays"/> the
+        /// party is rebuilt (<see cref="RebuildParty"/>), or the rebuild waits, retried daily, while something
+        /// makes it unsafe right now (no safe town, inside a besieged town, at sea, a quest, another hero aboard,
+        /// the player its prisoner).
+        /// </summary>
+        private static void CheckWeak(Clan clan, Hero leader, MobileParty party)
+        {
+            if (party == null || leader == null || !leader.IsAlive)
+            {
+                StopWeakClock(clan, "no party or no living leader");
+                return;
+            }
+            int men = party.MemberRoster.TotalManCount;
+            int limit = party.Party.PartySizeLimit;
+            string recovered = clan.Kingdom != null || MercenaryContracts.IsHired(clan) ? "serving a contract"
+                : InFight(party) ? "in a battle or siege"
+                : leader.IsPrisoner || party.LeaderHero != leader ? "leader is not leading it"
+                : men >= WeakPartyShare * limit ? "back to " + men + "/" + limit + " men"
+                : leader.Gold >= RecruitGoldFloor ? "leader has " + leader.Gold + "d again"
+                : null;
+            if (recovered != null)
+            {
+                StopWeakClock(clan, recovered);
+                return;
+            }
+            string key = "weak:" + clan.StringId;
+            int since;
+            if (!_timers.TryGetValue(key, out since))
+            {
+                since = Today;
+                _timers[key] = since;
+                MercenaryLog.Log("WEAK", party, men + "/" + limit + " men (under " + (WeakPartyShare * 100f).ToString("0")
+                    + "%), leader gold " + leader.Gold + "d (under " + RecruitGoldFloor + "d): rebuilt at a safe town from day "
+                    + (since + RespawnDays) + " unless it recovers");
+            }
+            if (Today - since < RespawnDays)
+            {
+                return;
+            }
+            string wait = party.Army != null ? "in an army"
+                : party.CurrentSettlement != null && party.CurrentSettlement.IsUnderSiege ? "inside a besieged settlement"
+                : party.IsCurrentlyAtSea ? "at sea"
+                : party.IsCurrentlyUsedByAQuest ? "used by a quest"
+                : party.MemberRoster.TotalHeroes > 1 ? "another hero rides with it"
+                : Hero.MainHero != null && Hero.MainHero.PartyBelongedToAsPrisoner == party.Party ? "holds the player prisoner"
+                : null;
+            Settlement town = wait == null ? SpawnTown(clan) : null;
+            if (wait == null && town == null)
+            {
+                wait = "no safe town to appear at";
+            }
+            if (wait != null)
+            {
+                LogWaitOnce(key, clan, "rebuild due, " + wait, " (" + men + "/" + limit + " men, leader gold " + leader.Gold + "d)");
+                return;
+            }
+            if (RebuildParty(clan, leader, party, town, Today - since) == null)
+            {
+                LogWaitOnce(key, clan, "rebuild due, spawning at " + town.Name + " failed (retried daily)",
+                    ", leader gold " + leader.Gold + "d");
+                return;
+            }
+            _timers.Remove(key);
+            _waitNotes.Remove(key);
+        }
+
+        /// <summary>
+        /// Retires <paramref name="old"/> and spawns its leader a new party at <paramref name="town"/>, carrying
+        /// over what the old one held (see the section note). Hero prisoners are taken off the old roster first,
+        /// the way TransferPrisonerAction moves them (out of one roster, into the other), because destroying the
+        /// party would free them (MobileParty.RemoveParty → ReleaseHeroPrisoners). Returns the new party, or null
+        /// when the spawn failed -- then the leader is party-less, his "party:" clock is set due so the lost-party
+        /// respawn picks him up on the next daily check, and the hero prisoners are released as the destroy would
+        /// have released them.
+        /// </summary>
+        private static MobileParty RebuildParty(Clan clan, Hero leader, MobileParty old, Settlement town, int weakDays)
+        {
+            TroopRoster men = TroopRoster.CreateDummyTroopRoster();
+            TroopRoster prisoners = TroopRoster.CreateDummyTroopRoster();
+            List<Hero> heroPrisoners = new List<Hero>();
+            Dictionary<CharacterObject, int> purses = new Dictionary<CharacterObject, int>();
+            foreach (TroopRosterElement element in old.MemberRoster.GetTroopRoster())
+            {
+                if (element.Character == null || element.Character.IsHero || element.Number <= 0)
+                {
+                    continue;
+                }
+                men.Add(element);
+                int purse = SpoilsPool.IsEnabled ? SpoilsPool.GetSpoils(old.Party, element.Character) : 0;
+                if (purse > 0)
+                {
+                    purses[element.Character] = purse;
+                }
+            }
+            foreach (TroopRosterElement element in old.PrisonRoster.GetTroopRoster())
+            {
+                if (element.Character == null || element.Number <= 0)
+                {
+                    continue;
+                }
+                if (element.Character.IsHero)
+                {
+                    heroPrisoners.Add(element.Character.HeroObject);
+                }
+                else
+                {
+                    prisoners.Add(element);
+                }
+            }
+            ItemRoster items = new ItemRoster(old.ItemRoster);
+            string what = men.TotalManCount + " men, " + (prisoners.TotalManCount + heroPrisoners.Count) + " prisoners ("
+                + heroPrisoners.Count + " lords), " + items.Count + " kinds of goods, " + old.Ships.Count + " ships";
+
+            foreach (Hero prisoner in heroPrisoners)
+            {
+                old.PrisonRoster.AddToCounts(prisoner.CharacterObject, -1);
+            }
+            Rebuilding = true;
+            try
+            {
+                DestroyPartyAction.Apply(null, old);
+            }
+            finally
+            {
+                Rebuilding = false;
+            }
+            MobileParty party = SpawnParty(leader, town, "rebuilt after " + weakDays + " days broke and nearly empty", men);
+            if (party == null)
+            {
+                foreach (Hero prisoner in heroPrisoners)
+                {
+                    EndCaptivityAction.ApplyByReleasedByChoice(prisoner);
+                }
+                _timers["party:" + clan.StringId] = Today - RespawnDays;
+                MercenaryLog.Log("REBUILD", clan, "old party retired (" + what + ") but the new one failed to spawn at "
+                    + town.Name + "; respawned as a lost party on the next daily check (" + heroPrisoners.Count
+                    + " lord prisoners released, the rest lost)");
+                return null;
+            }
+            party.PrisonRoster.Add(prisoners);
+            foreach (Hero prisoner in heroPrisoners)
+            {
+                party.AddPrisoner(prisoner.CharacterObject, 1);
+            }
+            party.ItemRoster.Add(items);
+            foreach (KeyValuePair<CharacterObject, int> purse in purses)
+            {
+                SpoilsPool.AddSpoils(party.Party, purse.Key, purse.Value);
+            }
+            MercenaryLog.Log("REBUILD", party, "old party retired and rebuilt at " + town.Name + ", carried " + what
+                + " (ships go through vanilla's redistribution), now " + party.MemberRoster.TotalManCount + "/"
+                + party.Party.PartySizeLimit + " men, leader gold " + leader.Gold + "d");
+            return party;
         }
 
         private static Settlement PickHomeTown(CultureObject culture, int index)
@@ -499,14 +743,20 @@ namespace RBMCampaign
                 && settlement.MapFaction != null && !FactionManager.IsAtWarAgainstFaction(clan.MapFaction, settlement.MapFaction);
         }
 
-        private static void CreateCompany(CultureObject culture, int index, string clanId, Settlement home)
+        /// <summary>
+        /// Creates the company clan and its leader, homed at <paramref name="home"/>, and spawns his party at the
+        /// first safe town (<see cref="SpawnTown"/>: the home town, or the nearest safe one of the culture). False
+        /// only when no clan was created; a clan whose party could not be spawned has its "party:" clock set due,
+        /// so the lost-party respawn retries it daily.
+        /// </summary>
+        private static bool CreateCompany(CultureObject culture, int index, string clanId, Settlement home)
         {
             CharacterObject template = culture.LordTemplates?.FirstOrDefault(x => x.Occupation == Occupation.Lord)
                 ?? culture.LordTemplates?.FirstOrDefault();
             if (template == null)
             {
                 MercenaryLog.Log("CREATE", clanId, "FAILED: culture " + culture.StringId + " has no lord template");
-                return;
+                return false;
             }
 
             Clan clan = Clan.CreateClan(clanId);
@@ -547,7 +797,14 @@ namespace RBMCampaign
 
             MercenaryLog.Log("CREATE", clan, "id " + clan.StringId + ", culture " + culture.StringId + ", home " + home.Name
                 + ", tier " + clan.Tier + ", leader " + hero.Name + " (" + hero.StringId + "), gold " + hero.Gold + "d");
-            SpawnParty(hero, home, "new company");
+            Settlement town = SpawnTown(clan);
+            if (town == null || SpawnParty(hero, town, town == home ? "new company" : "new company, home town unsafe") == null)
+            {
+                _timers["party:" + clan.StringId] = Today - RespawnDays;
+                MercenaryLog.Log("WAIT", clan, (town == null ? "no safe town to appear at" : "spawning at " + town.Name + " failed")
+                    + "; its party is respawned on the next daily check");
+            }
+            return true;
         }
 
         // Set only while SpawnParty creates a company party: the lord party template's men are skipped, so the
@@ -555,11 +812,12 @@ namespace RBMCampaign
         private static bool _spawning;
 
         /// <summary>
-        /// Spawns the leader's party at the gate of <paramref name="town"/> with no template men, then fills it
-        /// with mercenary troops (<see cref="MercenaryPool"/>) to <see cref="InitialFillShare"/> of its size
-        /// limit. The fill is given the usual recruit spoils seed.
+        /// Spawns the leader's party at the gate of <paramref name="town"/> with no template men, adds the men
+        /// carried over from a rebuilt party (<paramref name="carry"/>, if any), then fills it with mercenary
+        /// troops (<see cref="MercenaryPool"/>) to <see cref="InitialFillShare"/> of its size limit. Only the fill
+        /// is given the usual recruit spoils seed (carried men bring their own purses, see RebuildParty).
         /// </summary>
-        private static MobileParty SpawnParty(Hero hero, Settlement town, string why)
+        private static MobileParty SpawnParty(Hero hero, Settlement town, string why, TroopRoster carry = null)
         {
             MobileParty party;
             _spawning = true;
@@ -574,6 +832,10 @@ namespace RBMCampaign
             if (party == null)
             {
                 return null;
+            }
+            if (carry != null)
+            {
+                party.MemberRoster.Add(carry);
             }
             Dictionary<CharacterObject, int> before = SpoilsPool.IsEnabled ? SpoilsPool.SnapshotStacks(party.Party) : null;
             int toAdd = (int)(party.Party.PartySizeLimit * InitialFillShare) - party.MemberRoster.TotalManCount;
