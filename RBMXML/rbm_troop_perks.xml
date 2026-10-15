@@ -442,6 +442,11 @@
     <Perk id="ThrowingShieldBreaker"/>
     <Perk id="ThrowingLastHit"/>
   </Troop>
+  <Troop id="bucellarii">
+    <Perk id="BowBodkin"/>
+    <Perk id="BowSkirmishPhaseMaster"/>
+    <Perk id="RidingHorseArcher"/>
+  </Troop>
   <Troop id="imperial_cataphract">
     <Perk id="RidingVeterinary"/>
     <Perk id="RidingFullSpeed"/>
@@ -505,6 +510,34 @@
     <Perk id="TwoHandedBladeMaster"/>
     <Perk id="TwoHandedVandal"/>
   </Troop>
+  <Troop id="khuzait_nomad">
+    <Perk id="PolearmCleanThrust"/>
+  </Troop>
+  <Troop id="karakhuzaits_tier_1">
+    <Perk id="RidingNimbleStead"/>
+  </Troop>
+  <Troop id="khuzait_footman">
+    <Perk id="PolearmCleanThrust"/>
+  </Troop>
+  <Troop id="khuzait_noble_son">
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowStrongBows"/>
+  </Troop>
+  <Troop id="khuzait_tribal_warrior">
+    <Perk id="BowRapidFire"/>
+  </Troop>
+  <Troop id="karakhuzaits_tier_2">
+    <Perk id="RidingNimbleStead"/>
+    <Perk id="RidingHorseArcher"/>
+  </Troop>
+  <Troop id="khuzait_horseman">
+    <Perk id="RidingMountedWarrior"/>
+    <Perk id="PolearmLancer"/>
+  </Troop>
+  <Troop id="khuzait_hunter">
+    <Perk id="BowDeadAim"/>
+    <Perk id="BowRapidFire"/>
+  </Troop>
   <Troop id="khuzait_militia_archer">
     <Perk id="BowBodkin"/>
     <Perk id="AthleticsFury"/>
@@ -513,6 +546,31 @@
     <Perk id="AthleticsPowerful"/>
     <Perk id="ThrowingSkirmisher"/>
   </Troop>
+  <Troop id="khuzait_qanqli">
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowStrongBows"/>
+    <Perk id="BowQuickDraw"/>
+  </Troop>
+  <Troop id="khuzait_raider">
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowDeepQuivers"/>
+  </Troop>
+  <Troop id="khuzait_spearman">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmGuards"/>
+  </Troop>
+  <Troop id="khuzait_archer">
+    <Perk id="BowDeadAim"/>
+    <Perk id="BowRapidFire"/>
+  </Troop>
+  <Troop id="khuzait_horse_archer">
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowDeepQuivers"/>
+  </Troop>
+  <Troop id="khuzait_lancer">
+    <Perk id="RidingMountedWarrior"/>
+    <Perk id="PolearmLancer"/>
+  </Troop>
   <Troop id="khuzait_militia_veteran_archer">
     <Perk id="BowBodkin"/>
     <Perk id="AthleticsFury"/>
@@ -520,6 +578,53 @@
   <Troop id="khuzait_militia_veteran_spearman">
     <Perk id="AthleticsPowerful"/>
     <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="khuzait_spear_infantry">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmGuards"/>
+  </Troop>
+  <Troop id="khuzait_torguud">
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowStrongBows"/>
+    <Perk id="BowQuickDraw"/>
+  </Troop>
+  <Troop id="karakhuzaits_tier_3">
+    <Perk id="RidingNimbleStead"/>
+    <Perk id="RidingHorseArcher"/>
+    <Perk id="BowStrongBows"/>
+  </Troop>
+  <Troop id="khuzait_darkhan">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmGuards"/>
+    <Perk id="ThrowingHeadHunter"/>
+  </Troop>
+  <Troop id="khuzait_heavy_horse_archer">
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowDeepQuivers"/>
+    <Perk id="RidingHorseArcher"/>
+  </Troop>
+  <Troop id="khuzait_heavy_lancer">
+    <Perk id="RidingMountedWarrior"/>
+    <Perk id="PolearmLancer"/>
+    <Perk id="PolearmCleanThrust"/>
+  </Troop>
+  <Troop id="khuzait_kheshig">
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowStrongBows"/>
+    <Perk id="BowQuickDraw"/>
+    <Perk id="PolearmLancer"/>
+  </Troop>
+  <Troop id="khuzait_marksman">
+    <Perk id="BowDeadAim"/>
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowQuickDraw"/>
+  </Troop>
+  <Troop id="khuzait_khans_guard">
+    <Perk id="BowRapidFire"/>
+    <Perk id="BowStrongBows"/>
+    <Perk id="BowQuickDraw"/>
+    <Perk id="PolearmLancer"/>
+    <Perk id="RidingHorseArcher"/>
   </Troop>
   <Troop id="nord_militia_archer">
     <Perk id="BowBodkin"/>
