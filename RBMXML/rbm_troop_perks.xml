@@ -333,6 +333,20 @@
     <Perk id="BowQuickDraw"/>
     <Perk id="BowStrongBows"/>
   </Troop>
+  <Troop id="ghilman_tier_1">
+    <Perk id="RidingHorseArcher"/>
+    <Perk id="RidingNimbleStead"/>
+  </Troop>
+  <Troop id="ghilman_tier_2">
+    <Perk id="RidingHorseArcher"/>
+    <Perk id="RidingNimbleStead"/>
+  </Troop>
+  <Troop id="ghilman_tier_3">
+    <Perk id="RidingHorseArcher"/>
+    <Perk id="RidingNimbleStead"/>
+    <Perk id="PolearmSkewer"/>
+    <Perk id="PolearmLancer"/>
+  </Troop>
   <Troop id="imperial_recruit">
     <Perk id="OneHandedWrappedHandles"/>
   </Troop>
@@ -351,6 +365,10 @@
   </Troop>
   <Troop id="eleftheroi_tier_1">
     <Perk id="RidingSweepingWind"/>
+  </Troop>
+  <Troop id="sword_sisters_sister_t3">
+    <Perk id="CrossbowMarksmen"/>
+    <Perk id="CrossbowPiercer"/>
   </Troop>
   <Troop id="eleftheroi_tier_2">
     <Perk id="RidingSweepingWind"/>
@@ -441,6 +459,15 @@
   <Troop id="legion_of_the_betrayed_tier_2">
     <Perk id="ThrowingShieldBreaker"/>
     <Perk id="ThrowingLastHit"/>
+  </Troop>
+  <Troop id="sword_sisters_sister_t4">
+    <Perk id="CrossbowMarksmen"/>
+    <Perk id="CrossbowPiercer"/>
+  </Troop>
+  <Troop id="sword_sisters_sister_t5">
+    <Perk id="PolearmLancer"/>
+    <Perk id="BowQuickDraw"/>
+    <Perk id="BowSkirmishPhaseMaster"/>
   </Troop>
   <Troop id="bucellarii">
     <Perk id="BowBodkin"/>
@@ -626,6 +653,103 @@
     <Perk id="PolearmLancer"/>
     <Perk id="RidingHorseArcher"/>
   </Troop>
+  <Troop id="western_mercenary">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="PolearmCleanThrust"/>
+  </Troop>
+  <Troop id="eastern_mercenary">
+    <Perk id="ThrowingResourceful"/>
+    <Perk id="OneHandedWrappedHandles"/>
+  </Troop>
+  <Troop id="western_crossbow_t4">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="CrossbowWindWinder"/>
+  </Troop>
+  <Troop id="mercenary_6">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="ThrowingSaddlebags"/>
+  </Troop>
+  <Troop id="western_mercenary_t4">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="PolearmCleanThrust"/>
+  </Troop>
+  <Troop id="mercenary_1">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="TwoHandedHeadBasher"/>
+  </Troop>
+  <Troop id="eastern_mounted_mercenary_t4">
+    <Perk id="RidingHorseArcher"/>
+    <Perk id="RidingMountedWarrior"/>
+  </Troop>
+  <Troop id="eastern_mercenary_t4">
+    <Perk id="ThrowingResourceful"/>
+    <Perk id="OneHandedWrappedHandles"/>
+  </Troop>
+  <Troop id="mercenary_5">
+    <Perk id="ThrowingResourceful"/>
+    <Perk id="ThrowingLastHit"/>
+  </Troop>
+  <Troop id="western_crossbow_t5">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="BowBodkin"/>
+    <Perk id="BowRapidFire"/>
+  </Troop>
+  <Troop id="eastern_mercenary_t5">
+    <Perk id="ThrowingResourceful"/>
+    <Perk id="OneHandedWrappedHandles"/>
+    <Perk id="OneHandedChinkInTheArmor"/>
+  </Troop>
+  <Troop id="sword_sisters_sister_infantry_t5">
+    <Perk id="BowQuickDraw"/>
+    <Perk id="BowDeepQuivers"/>
+    <Perk id="PolearmSwiftSwing"/>
+  </Troop>
+  <Troop id="western_mercenary_t5">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmGuards"/>
+  </Troop>
+  <Troop id="mercenary_3">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="TwoHandedHeadBasher"/>
+    <Perk id="TwoHandedBerserker"/>
+  </Troop>
+  <Troop id="mercenary_9">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="ThrowingSaddlebags"/>
+    <Perk id="PolearmLancer"/>
+  </Troop>
+  <Troop id="mercenary_8">
+    <Perk id="ThrowingResourceful"/>
+    <Perk id="ThrowingLastHit"/>
+    <Perk id="ThrowingWeakSpot"/>
+  </Troop>
+  <Troop id="eastern_mounted_mercenary_t5">
+    <Perk id="RidingHorseArcher"/>
+    <Perk id="RidingMountedWarrior"/>
+    <Perk id="BowSkirmishPhaseMaster"/>
+  </Troop>
+  <Troop id="nord_youngling">
+    <Perk id="OneHandedToBeBlunt"/>
+  </Troop>
+  <Troop id="nord_huntsman">
+    <Perk id="PolearmSureFooted"/>
+  </Troop>
+  <Troop id="nord_ungmann">
+    <Perk id="ThrowingShieldBreaker"/>
+    <Perk id="WarriorsMight"/>
+  </Troop>
+  <Troop id="nord_drengr">
+    <Perk id="OneHandedToBeBlunt"/>
+  </Troop>
+  <Troop id="nord_axe_warrior">
+    <Perk id="OneHandedToBeBlunt"/>
+    <Perk id="OneHandedShieldWall"/>
+  </Troop>
+  <Troop id="nord_freeman_archer">
+    <Perk id="PolearmSureFooted"/>
+    <Perk id="BowHunterClan"/>
+  </Troop>
   <Troop id="nord_militia_archer">
     <Perk id="BowBodkin"/>
     <Perk id="AthleticsFury"/>
@@ -633,6 +757,32 @@
   <Troop id="nord_militia_spearman">
     <Perk id="AthleticsPowerful"/>
     <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="nord_spear_warrior">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmSteadKiller"/>
+  </Troop>
+  <Troop id="nord_thegn">
+    <Perk id="ThrowingShieldBreaker"/>
+    <Perk id="WarriorsMight"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="skolderbrotva_tier_1">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="OneHandedPrestige"/>
+  </Troop>
+  <Troop id="nord_jarlsmann">
+    <Perk id="ThrowingShieldBreaker"/>
+    <Perk id="WarriorsMight"/>
+    <Perk id="AthleticsFury"/>
+  </Troop>
+  <Troop id="nord_hew-bearer">
+    <Perk id="TwoHandedBerserker"/>
+    <Perk id="TwoHandedWoodChopper"/>
+  </Troop>
+  <Troop id="nord_marksman">
+    <Perk id="PolearmSureFooted"/>
+    <Perk id="BowHunterClan"/>
   </Troop>
   <Troop id="nord_militia_veteran_archer">
     <Perk id="BowBodkin"/>
@@ -642,8 +792,88 @@
     <Perk id="AthleticsPowerful"/>
     <Perk id="ThrowingSkirmisher"/>
   </Troop>
+  <Troop id="nord_boandi">
+    <Perk id="OneHandedToBeBlunt"/>
+    <Perk id="OneHandedShieldWall"/>
+  </Troop>
+  <Troop id="nord_vargr">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmSteadKiller"/>
+  </Troop>
+  <Troop id="skolderbrotva_tier_2">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="OneHandedPrestige"/>
+  </Troop>
   <Troop id="nord_berserkr">
     <Perk id="TwoHandedBerserker"/>
+    <Perk id="TwoHandedShieldBreaker"/>
+    <Perk id="TwoHandedWoodChopper"/>
+  </Troop>
+  <Troop id="nord_hirdmann">
+    <Perk id="ThrowingShieldBreaker"/>
+    <Perk id="WarriorsMight"/>
+    <Perk id="AthleticsFury"/>
+    <Perk id="AthleticsIgnorePain"/>
+  </Troop>
+  <Troop id="nord_skjaldbrestir">
+    <Perk id="OneHandedToBeBlunt"/>
+    <Perk id="OneHandedShieldWall"/>
+    <Perk id="OneHandedDeadlyPurpose"/>
+  </Troop>
+  <Troop id="nord_skathi">
+    <Perk id="PolearmSureFooted"/>
+    <Perk id="BowHunterClan"/>
+    <Perk id="BowSkirmishPhaseMaster"/>
+  </Troop>
+  <Troop id="nord_ulfhednar">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmSteadKiller"/>
+    <Perk id="PolearmCounterweight"/>
+  </Troop>
+  <Troop id="nord_huscarl">
+    <Perk id="ThrowingShieldBreaker"/>
+    <Perk id="WarriorsMight"/>
+    <Perk id="AthleticsFury"/>
+    <Perk id="AthleticsIgnorePain"/>
+    <Perk id="TwoHandedVandal"/>
+  </Troop>
+  <Troop id="skolderbrotva_tier_3">
+    <Perk id="AthleticsWellBuilt"/>
+    <Perk id="OneHandedPrestige"/>
+    <Perk id="OneHandedUnwaveringDefense"/>
+  </Troop>
+  <Troop id="sturgian_recruit">
+    <Perk id="OneHandedShieldWall"/>
+  </Troop>
+  <Troop id="lakepike_tier_1">
+    <Perk id="PolearmCleanThrust"/>
+  </Troop>
+  <Troop id="sturgian_warrior_son">
+    <Perk id="PolearmSteadKiller"/>
+    <Perk id="AthleticsPowerful"/>
+  </Troop>
+  <Troop id="sturgian_warrior">
+    <Perk id="OneHandedShieldWall"/>
+  </Troop>
+  <Troop id="sturgian_woodsman">
+    <Perk id="ThrowingQuickDraw"/>
+  </Troop>
+  <Troop id="lakepike_tier_2">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="ThrowingLastHit"/>
+  </Troop>
+  <Troop id="sturgian_brigand">
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="ThrowingShieldBreaker"/>
+  </Troop>
+  <Troop id="sturgia_marine_t3">
+    <Perk id="PiratesProwess"/>
+    <Perk id="ShatteringBlow"/>
+    <Perk id="WarriorsMight"/>
+  </Troop>
+  <Troop id="sturgian_hunter">
+    <Perk id="BowHunterClan"/>
+    <Perk id="TwoHandedBeastSlayer"/>
   </Troop>
   <Troop id="sturgian_militia_archer">
     <Perk id="BowBodkin"/>
@@ -653,6 +883,23 @@
     <Perk id="AthleticsPowerful"/>
     <Perk id="ThrowingSkirmisher"/>
   </Troop>
+  <Troop id="sturgian_soldier">
+    <Perk id="OneHandedShieldWall"/>
+    <Perk id="ThrowingSplinters"/>
+  </Troop>
+  <Troop id="varyag">
+    <Perk id="PolearmSteadKiller"/>
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="RidingMountedWarrior"/>
+  </Troop>
+  <Troop id="sturgian_archer">
+    <Perk id="BowHunterClan"/>
+    <Perk id="TwoHandedBeastSlayer"/>
+  </Troop>
+  <Troop id="sturgian_berzerker">
+    <Perk id="TwoHandedBerserker"/>
+    <Perk id="TwoHandedHeadBasher"/>
+  </Troop>
   <Troop id="sturgian_militia_veteran_archer">
     <Perk id="BowBodkin"/>
     <Perk id="AthleticsFury"/>
@@ -660,6 +907,124 @@
   <Troop id="sturgian_militia_veteran_spearman">
     <Perk id="AthleticsPowerful"/>
     <Perk id="ThrowingSkirmisher"/>
+  </Troop>
+  <Troop id="sturgian_spearman">
+    <Perk id="OneHandedShieldWall"/>
+    <Perk id="ThrowingLastHit"/>
+  </Troop>
+  <Troop id="sturgian_hardened_brigand">
+    <Perk id="CrossbowWindWinder"/>
+    <Perk id="CrossbowFletcher"/>
+  </Troop>
+  <Troop id="sturgia_marine_t4">
+    <Perk id="PiratesProwess"/>
+    <Perk id="ShatteringBlow"/>
+  </Troop>
+  <Troop id="varyag_veteran">
+    <Perk id="PolearmSteadKiller"/>
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="RidingMountedWarrior"/>
+  </Troop>
+  <Troop id="lakepike_tier_3">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="ThrowingLastHit"/>
+    <Perk id="ThrowingWeakSpot"/>
+  </Troop>
+  <Troop id="druzhinnik">
+    <Perk id="PolearmSteadKiller"/>
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="RidingMountedWarrior"/>
+    <Perk id="TwoHandedThickHides"/>
+  </Troop>
+  <Troop id="sturgian_veteran_warrior">
+    <Perk id="OneHandedShieldWall"/>
+    <Perk id="ThrowingLastHit"/>
+    <Perk id="OneHandedDeadlyPurpose"/>
+  </Troop>
+  <Troop id="sturgian_horse_raider">
+    <Perk id="CrossbowWindWinder"/>
+    <Perk id="CrossbowFletcher"/>
+    <Perk id="CrossbowCounterFire"/>
+  </Troop>
+  <Troop id="sturgia_marine_t5">
+    <Perk id="PiratesProwess"/>
+    <Perk id="ShatteringBlow"/>
+    <Perk id="WarriorsMight"/>
+  </Troop>
+  <Troop id="sturgian_shock_troop">
+    <Perk id="PolearmSwiftSwing"/>
+    <Perk id="PolearmGuards"/>
+    <Perk id="PolearmCounterweight"/>
+  </Troop>
+  <Troop id="sturgian_ulfhednar">
+    <Perk id="TwoHandedBerserker"/>
+    <Perk id="TwoHandedHeadBasher"/>
+    <Perk id="TwoHandedThickHides"/>
+  </Troop>
+  <Troop id="sturgian_veteran_bowman">
+    <Perk id="BowHunterClan"/>
+    <Perk id="TwoHandedBeastSlayer"/>
+    <Perk id="BowDeepQuivers"/>
+  </Troop>
+  <Troop id="druzhinnik_champion">
+    <Perk id="PolearmSteadKiller"/>
+    <Perk id="AthleticsPowerful"/>
+    <Perk id="RidingMountedWarrior"/>
+    <Perk id="TwoHandedThickHides"/>
+    <Perk id="TwoHandedVandal"/>
+  </Troop>
+  <Troop id="forest_people_tier_1">
+    <Perk id="BowHunterClan"/>
+  </Troop>
+  <Troop id="forest_people_tier_2">
+    <Perk id="BowHunterClan"/>
+    <Perk id="TwoHandedBeastSlayer"/>
+  </Troop>
+  <Troop id="forest_people_tier_3">
+    <Perk id="BowHunterClan"/>
+    <Perk id="TwoHandedBeastSlayer"/>
+    <Perk id="BowQuickDraw"/>
+  </Troop>
+  <Troop id="vlandian_recruit">
+    <Perk id="PolearmCleanThrust"/>
+  </Troop>
+  <Troop id="brotherhood_of_woods_tier_1">
+    <Perk id="BowDeadAim"/>
+  </Troop>
+  <Troop id="vlandian_footman">
+    <Perk id="PolearmCleanThrust"/>
+  </Troop>
+  <Troop id="vlandian_levy_crossbowman">
+    <Perk id="CrossbowUnhorser"/>
+  </Troop>
+  <Troop id="vlandian_squire">
+    <Perk id="RidingFullSpeed"/>
+    <Perk id="PolearmLancer"/>
+  </Troop>
+  <Troop id="company_of_the_boar_tier_1">
+    <Perk id="CrossbowWindWinder"/>
+    <Perk id="CrossbowPuncture"/>
+  </Troop>
+  <Troop id="brotherhood_of_woods_tier_2">
+    <Perk id="BowDeadAim"/>
+    <Perk id="BowBodkin"/>
+  </Troop>
+  <Troop id="vlandian_crossbowman">
+    <Perk id="CrossbowUnhorser"/>
+    <Perk id="CrossbowSheriff"/>
+  </Troop>
+  <Troop id="vlandian_gallant">
+    <Perk id="RidingFullSpeed"/>
+    <Perk id="PolearmLancer"/>
+    <Perk id="RidingMountedWarrior"/>
+  </Troop>
+  <Troop id="vlandian_infantry">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmSteadKiller"/>
+  </Troop>
+  <Troop id="vlandian_spearman">
+    <Perk id="PolearmLancer"/>
+    <Perk id="RidingMountedWarrior"/>
   </Troop>
   <Troop id="vlandian_militia_archer">
     <Perk id="CrossbowPuncture"/>
@@ -669,6 +1034,27 @@
     <Perk id="AthleticsPowerful"/>
     <Perk id="ThrowingSkirmisher"/>
   </Troop>
+  <Troop id="company_of_the_boar_tier_2">
+    <Perk id="CrossbowWindWinder"/>
+    <Perk id="CrossbowPuncture"/>
+  </Troop>
+  <Troop id="vlandian_billman">
+    <Perk id="TwoHandedHeadBasher"/>
+    <Perk id="TwoHandedBladeMaster"/>
+  </Troop>
+  <Troop id="vlandian_hardened_crossbowman">
+    <Perk id="CrossbowUnhorser"/>
+    <Perk id="CrossbowSheriff"/>
+  </Troop>
+  <Troop id="vlandian_knight">
+    <Perk id="RidingFullSpeed"/>
+    <Perk id="PolearmLancer"/>
+    <Perk id="RidingMountedWarrior"/>
+  </Troop>
+  <Troop id="vlandian_light_cavalry">
+    <Perk id="PolearmLancer"/>
+    <Perk id="RidingMountedWarrior"/>
+  </Troop>
   <Troop id="vlandian_militia_veteran_archer">
     <Perk id="CrossbowPuncture"/>
     <Perk id="AthleticsFury"/>
@@ -677,5 +1063,71 @@
     <Perk id="AthleticsPowerful"/>
     <Perk id="ThrowingSkirmisher"/>
   </Troop>
+  <Troop id="vlandian_marine_t4">
+    <Perk id="ShatteringVolley"/>
+    <Perk id="CrossbowPiercer"/>
+  </Troop>
+  <Troop id="vlandian_swordsman">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmSteadKiller"/>
+  </Troop>
+  <Troop id="brotherhood_of_woods_tier_3">
+    <Perk id="BowDeadAim"/>
+    <Perk id="BowBodkin"/>
+    <Perk id="BowStrongBows"/>
+  </Troop>
+  <Troop id="vlandian_champion">
+    <Perk id="RidingFullSpeed"/>
+    <Perk id="PolearmLancer"/>
+    <Perk id="RidingMountedWarrior"/>
+    <Perk id="PolearmSkewer"/>
+  </Troop>
+  <Troop id="vlandian_cavalry">
+    <Perk id="RidingVeterinary"/>
+    <Perk id="RidingMountedWarrior"/>
+    <Perk id="TwoHandedVandal"/>
+  </Troop>
+  <Troop id="vlandian_marine_t5">
+    <Perk id="ShatteringVolley"/>
+    <Perk id="CrossbowPiercer"/>
+    <Perk id="CrossbowWindWinder"/>
+  </Troop>
+  <Troop id="vlandian_pikeman">
+    <Perk id="PolearmSteadKiller"/>
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmSureFooted"/>
+  </Troop>
+  <Troop id="vlandian_sergeant">
+    <Perk id="PolearmCleanThrust"/>
+    <Perk id="PolearmSteadKiller"/>
+    <Perk id="PolearmSharpenTheTip"/>
+  </Troop>
+  <Troop id="vlandian_sharpshooter">
+    <Perk id="CrossbowUnhorser"/>
+    <Perk id="CrossbowSheriff"/>
+    <Perk id="CrossbowDeftHands"/>
+  </Troop>
+  <Troop id="vlandian_vanguard">
+    <Perk id="PolearmLancer"/>
+    <Perk id="RidingMountedWarrior"/>
+    <Perk id="OneHandedUnwaveringDefense"/>
+  </Troop>
+  <Troop id="vlandian_voulgier">
+    <Perk id="PolearmSwiftSwing"/>
+    <Perk id="PolearmGuards"/>
+    <Perk id="TwoHandedVandal"/>
+  </Troop>
+  <Troop id="company_of_the_boar_tier_3">
+    <Perk id="CrossbowWindWinder"/>
+    <Perk id="CrossbowPuncture"/>
+    <Perk id="CrossbowCounterFire"/>
+    <Perk id="CrossbowDeftHands"/>
+  </Troop>
+  <Troop id="vlandian_banner_knight">
+    <Perk id="RidingFullSpeed"/>
+    <Perk id="PolearmLancer"/>
+    <Perk id="RidingMountedWarrior"/>
+    <Perk id="PolearmSkewer"/>
+    <Perk id="OneHandedChinkInTheArmor"/>
+  </Troop>
 </TroopPerks>
-
