@@ -74,10 +74,10 @@ Clamp to 1–3 for cost tables. No new state needed.
 
 | Purpose | Village | Castle | City (town) |
 |---|---|---|---|
-| Militia **salary** | free | free | 25% of wage: debit city treasury → credit citizens |
-| Militia **maintenance** | village wealth ← bound-city citizen wealth | castle wealth | citizen wealth |
-| Militia **spawn / upgrade gear** | village wealth ← bound-city citizen wealth/stock | castle wealth | citizen wealth / trade stock |
-| Militia **soft / hard cap** | 40% / 75% hearth | 40% / 75% avg bound-village hearth | 40% / 75% prosperity |
+| Militia **salary** | free (`MilitiaWageFactorVillage = 0`) | 10% of wage: castle wealth → the man's spoils purse | 25% of wage: citizen wealth (treasury backstops) → the man's spoils purse |
+| Militia **maintenance** | ×0.10 kit maintenance: purse first, then village wealth → bound-town citizen wealth | ×0.25: purse first, then castle wealth → nearest friendly town | ×0.25: purse first, then citizen wealth (treasury backstops) → the town itself |
+| Militia **spawn / upgrade gear** | village wealth ← bound-city citizen wealth/stock (a tenth of the kit, `MilitiaVillageGearShare`) | castle wealth | citizen wealth / trade stock |
+| Militia **soft / hard cap** | 10% / 20% hearth | 40% / 75% avg bound-village hearth | 40% / 75% prosperity |
 | Garrison **wages** | — | castle wealth, owner backstop | city wealth, owner backstop |
 | Garrison **food** | — | free from castle stocks | free from city stocks/market |
 | Garrison **spawn / upgrade gear** | — | castle wealth | city wealth |
@@ -150,11 +150,20 @@ base = city    -> Town.Prosperity
                    no bound villages -> castle prosperity / 1.5)
        village -> Village.Hearth
 
+town, castle:
 soft = base * clamp(0.40 + bonuses, 0, 0.70)     // MilitiaSoftCapShare / MilitiaSoftCapMaxShare
 hard = base * 0.75                               // MilitiaHardCapShare
+village (2026-10-15):
+soft = base * clamp(0.10 + bonuses, 0, 0.18)     // MilitiaVillageSoftCapShare / MilitiaVillageSoftCapMaxShare
+hard = base * 0.20                               // MilitiaVillageHardCapShare
 ```
 
-**Soft-cap bonuses** (share points added to 0.40):
+Villages had the town shares until 2026-10-15; with uncapped hearth growth that let a grown
+village field hundreds of militia and put it beyond any raid. Village hearths now also settle
+at a land capacity (2× starting hearth, see `Economy/VillageLandCapacity.cs`). The 0.18 village
+max keeps the policy bonuses (at most +0.09) from collapsing the taper against the 0.20 hard cap.
+
+**Soft-cap bonuses** (share points added to the base share, 0.40 or a village's 0.10):
 
 | Source | Bonus | Applies to |
 |---|---|---|
@@ -182,7 +191,10 @@ if !CanKeepMilitia: change = min(change, -1)      // "Cannot be paid"
 
 Men drained over the hard cap are refunded their kit value like the unpaid shed
 (`RecordMilitiaChange` → `_pendingRefund`); combat losses are never refunded. The understrength
-catch-up still fires below 0.5 × the *effective* soft cap; the new-campaign seed is clamped to it.
+catch-up still fires below 0.5 × the *effective* soft cap (5% of hearth for a village); the
+new-campaign seed is clamped to it (a village's 20 + hearth/10 always exceeds its 10% soft cap,
+so villages open at the soft cap). Saves from before the village shares drain their oversized
+village levies at 5% of the overflow a day.
 
 **War Sails:** `NavalMilitiaChangePatch` skip-prefixes `NavalDLCSettlementMilitiaModel
 .CalculateMilitiaChange`: it takes the growth stage from the base model chain, re-adds the

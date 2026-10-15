@@ -73,9 +73,10 @@ namespace RBMCampaign
         /// Starting treasury per point of hearth, for a village. Villages are poor as institutions --
         /// a headman's chest, not a town's -- but at two per hearth the chest held barely a thousand
         /// denars, too little to arm a single militiaman, so a village opened the campaign unable to
-        /// raise the watch its hearths support. Twenty-five per hearth gives a fair-sized village a
-        /// chest of some fifteen thousand -- enough for a handful of levies and the odd convoy escort,
-        /// still a fraction of what a town treasury per head holds.
+        /// raise the watch its hearths support. A hundred and fifty per hearth gives a typical village
+        /// (about 300 hearths at the start) a chest of some forty-five thousand, and a large one of 600
+        /// hearths some ninety thousand -- enough to arm its levy at the village's tenth-price kit and
+        /// fund the odd convoy escort, still a fraction of what a town treasury per head holds.
         /// </summary>
         public const int TreasuryPerHearth = 150;
 

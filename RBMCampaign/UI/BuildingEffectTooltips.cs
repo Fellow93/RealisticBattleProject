@@ -58,13 +58,16 @@ namespace RBMCampaign
 
         /// <summary>
         /// Vanilla effects that do nothing under RBM, whose effect lines are removed from the building text:
-        /// garrison capacity (RBM lifts the garrison size limit, see GarrisonPartySize) and garrison auto
-        /// recruitment (RBM's own garrison growth replaces vanilla's, see GarrisonRecruitCost).
+        /// garrison capacity (RBM lifts the garrison size limit, see GarrisonPartySize), garrison auto
+        /// recruitment (RBM's own garrison growth replaces vanilla's, see GarrisonRecruitCost) and the bound
+        /// villages' hearths a day of Roads and Paths and Irrigation (VillageLandCapacity replaces the hearth
+        /// change; those buildings raise the villages' capacity instead, on RBM's own line).
         /// </summary>
         private static readonly BuildingEffectEnum[] DeadEffects =
         {
             BuildingEffectEnum.GarrisonCapacity,
             BuildingEffectEnum.GarrisonAutoRecruitment,
+            BuildingEffectEnum.VillageHeartsPerDay,
         };
 
         /// <summary>
@@ -237,6 +240,11 @@ namespace RBMCampaign
             else if (type == DefaultBuildingTypes.SettlementRoadsAndPaths || type == DefaultBuildingTypes.CastleRoadsAndPaths)
             {
                 Line(lines, "{=RBM_BLDL_VILLAGE_POOL}+{VALUE}% recruit pool growth in bound villages", Pick(level, 10, 20, 30));
+                Line(lines, "{=RBM_BLDL_VILLAGE_CAPACITY}+{VALUE}% hearth capacity of bound villages", Pick(level, 5, 10, 15));
+            }
+            else if (type == DefaultBuildingTypes.SettlementDailyIrrigation || type == DefaultBuildingTypes.CastleDailyIrrigation)
+            {
+                Line(lines, "{=RBM_BLDL_IRRIGATION_CAPACITY}+{VALUE}% hearth capacity of bound villages while running", 15);
             }
             else if (type == DefaultBuildingTypes.SettlementDailyTrainMilitia)
             {

@@ -61,11 +61,6 @@ namespace RBMCampaign
         private const float CaravanHuntBaseScore = 4f;
         private const float RaidBaseScore = 5f;
 
-        // A village's mustering militia counts for this much "strength" per man in the raid gate. Militia are
-        // weak, so a real band clears a normal village's levy while a beaten remnant cannot -- which is the
-        // whole "if they are strong enough" gate, expressed purely relative to the target.
-        private const float MilitiaStrengthPerMan = 0.6f;
-
         // Confidence ceiling: a raid score is scaled by how overwhelming the band is versus the defence,
         // capped here so a wildly strong band doesn't produce an absurd score that would swamp everything.
         private const float MaxRaidConfidence = 2f;
@@ -455,14 +450,20 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// Rough defensive strength of a village for the raid gate: any garrison/militia/lord party actually
-        /// standing in it, plus the levy it will muster when attacked (its <see cref="Settlement.Militia"/>
-        /// count, weighted down because militia are weak). Deliberately cheap and target-relative -- it is
+        /// Rough defensive strength of a village for the raid gate: the estimated strength of every militia,
+        /// garrison or lord party actually standing in it. Deliberately cheap and target-relative -- it is
         /// only ever compared against the band's own strength, never reported as an absolute.
+        ///
+        /// The village's levy is counted ONCE, through its militia party. It used to be added a second time
+        /// as <see cref="Settlement.Militia"/> x 0.6 on top -- but that count IS the militia party's headcount
+        /// (plus at most one man still mustering), so every village's levy was counted twice over and read
+        /// as far stronger than it was. The party's own estimated strength is the better of the two: it is
+        /// on the same scale as the band's (<c>EstimatedStrength</c>), and it knows a veteran levy from a
+        /// fresh one.
         /// </summary>
         private static float EstimateVillageDefence(Settlement settlement)
         {
-            float defence = settlement.Militia * MilitiaStrengthPerMan;
+            float defence = 0f;
             MBReadOnlyList<MobileParty> parties = settlement.Parties;
             if (parties != null)
             {

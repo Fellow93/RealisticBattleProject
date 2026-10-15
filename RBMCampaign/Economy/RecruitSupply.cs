@@ -537,7 +537,7 @@ namespace RBMCampaign
         /// </summary>
         /// <param name="valueShare">
         /// Fraction of each man's full kit value to actually draw and pay for. One for a recruit, who is
-        /// armed properly; a quarter for a village's militia levy, who is not (see
+        /// armed properly; a tenth for a village's militia levy, who is not (see
         /// <see cref="MilitiaUpkeep.MilitiaVillageGearShare"/>). Scales every slot's need, so the man is
         /// armed in every slot with gear of that fraction of his troop's worth, and the kit budget with it.
         /// </param>

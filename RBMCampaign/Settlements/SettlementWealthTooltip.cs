@@ -155,7 +155,26 @@ namespace RBMCampaign
             {
                 AppendConstruction(propertyBasedTooltipVM, settlement);
             }
+            if (settlement.IsVillage)
+            {
+                AppendLandCapacity(propertyBasedTooltipVM, settlement);
+            }
             AppendRecruitPool(propertyBasedTooltipVM, settlement);
+        }
+
+        /// <summary>
+        /// The hearth a village's land can carry -- what its hearths grow toward and, above it, decline back
+        /// to. Read next to vanilla's own "Hearths" line above. See <see cref="VillageLandCapacity"/>.
+        /// </summary>
+        private static void AppendLandCapacity(PropertyBasedTooltipVM propertyBasedTooltipVM, Settlement settlement)
+        {
+            float capacity = VillageLandCapacity.Capacity(settlement.Village);
+            if (capacity <= 0f)
+            {
+                return;
+            }
+            propertyBasedTooltipVM.AddProperty(new TextObject("{=RBM_land_capacity_label}Land capacity").ToString(),
+                ((int)capacity).ToString("N0", CultureInfo.InvariantCulture), 0);
         }
 
         /// <summary>

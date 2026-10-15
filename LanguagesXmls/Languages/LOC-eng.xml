@@ -1149,6 +1149,9 @@
 	<string id="RBM_FOOD_SHORTAGE" text="Unmet rations" />
 	<string id="RBM_PROSPERITY_HEARTH" text="Countryside support" />
 	<string id="RBM_PROSPERITY_HUNGER" text="Hunger" />
+	<string id="RBM_hearth_capacity" text="Land capacity ({CAPACITY})" />
+	<string id="RBM_hearth_overcapacity" text="Over land capacity" />
+	<string id="RBM_land_capacity_label" text="Land capacity" />
 	<string id="RBM_STARVE_001" text="{DEAD} of your wounded have died of hunger." />
 	<string id="RBM_VILLAGE_WAREHOUSE" text="Warehouse" />
 	<string id="RBM_WORKSHOP_SCALE" text="Workshop share" />
@@ -1250,6 +1253,8 @@
 	<string id="RBM_BLDL_CONSTRUCTION_CAP" text="+{VALUE}% daily construction limit" />
 	<string id="RBM_BLDL_WATERWORKS" text="+{VALUE}% prosperity from the town's other buildings" />
 	<string id="RBM_BLDL_VILLAGE_POOL" text="+{VALUE}% recruit pool growth in bound villages" />
+	<string id="RBM_BLDL_VILLAGE_CAPACITY" text="+{VALUE}% hearth capacity of bound villages" />
+	<string id="RBM_BLDL_IRRIGATION_CAPACITY" text="+{VALUE}% hearth capacity of bound villages while running" />
 	<string id="RBM_BLDL_POOL_GROWTH" text="+{VALUE}% recruit pool growth" />
 	<!-- Town management: headers over the selected project's current and next-level effects (ProjectEffectHeaders.cs) -->
 	<string id="RBM_bld_effects_now" text="Now (level {LEVEL}):" />

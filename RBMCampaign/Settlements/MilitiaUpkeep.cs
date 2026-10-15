@@ -29,9 +29,10 @@ namespace RBMCampaign
     /// stands a watch rather than marching a campaign (see the wage- and maint-factor tables):
     ///
     ///   * WAGE -- pay for the days a man bears arms instead of working his trade. A town's part-time
-    ///     watch draws a quarter of a soldier's wage; a village's or castle's levy, owing service under
-    ///     feudalism, a tenth. Drawn from the settlement's funding pot into the man's own spoils purse,
-    ///     the way a field troop banks the wage its leader paid.
+    ///     watch draws a quarter of a soldier's wage; a castle's levy, owing service under feudalism, a
+    ///     tenth; a village's levy, serving its own fields' defence, nothing at all. Drawn from the
+    ///     settlement's funding pot into the man's own spoils purse, the way a field troop banks the wage
+    ///     its leader paid.
     ///
     ///   * MAINTENANCE -- the kit he wears out standing his watch, priced off its worth exactly as a
     ///     marching troop's is and scaled down for standing still. Met first from the purse the wage just
@@ -53,9 +54,11 @@ namespace RBMCampaign
 
         /// <summary>
         /// Share of a full soldier's wage a militiaman draws as pay, by settlement type. A town's watch is
-        /// a paid part-time body -- a quarter-wage -- while a village's or castle's levy, owing service
-        /// under feudalism, draws only a tenth. Banked into the man's spoils purse the way a field troop's
-        /// whole wage is, so his own purse then meets his maintenance before the settlement's pot does.
+        /// a paid part-time body -- a quarter-wage -- while a castle's levy, owing service under feudalism,
+        /// draws only a tenth, and a village's levy, turning out unpaid to defend its own fields, draws no
+        /// wage at all (with nothing banked, its kit maintenance falls almost wholly on the village's pot).
+        /// The wage is banked into the man's spoils purse the way a field troop's whole wage is, so his
+        /// own purse then meets his maintenance before the settlement's pot does.
         /// </summary>
         public const float MilitiaWageFactorTown = 0.25f;
         public const float MilitiaWageFactorCastle = 0.10f;
@@ -92,31 +95,63 @@ namespace RBMCampaign
         //
         // Every settlement's watch is bounded by two caps sized on one BASE -- the manpower behind it (see
         // MilitiaCapBase): a town's prosperity, a castle's countryside (the AVERAGE hearth of its bound
-        // villages), a village's own hearths. The same shares then apply to all three kinds of place:
+        // villages), a village's own hearths. Towns and castles share one set of shares; a village has its
+        // own, far smaller set (see MilitiaVillageSoftCapShare):
         //
-        //   * SOFT cap = MilitiaSoftCapShare of the base, plus the fief's bonuses in percentage points
-        //     (buildings, the running daily project, kingdom policies), never above MilitiaSoftCapMaxShare.
-        //     Below it the day's growth runs untouched.
-        //   * HARD cap = MilitiaHardCapShare of the base, for everyone, moved by nothing. Between the two
-        //     the day's growth tapers by (1 - fill)^2, fill = how far the count has climbed from soft to
-        //     hard; growth may never carry the count past the hard cap; and a watch standing ABOVE it (a
-        //     siege spawn, an escort returning, a cap that fell under it) disbands MilitiaOverflowDrainRate
-        //     of the overflow a day, each man's kit refunded like an unpaid one's.
+        //   * SOFT cap = MilitiaSoftCapShare of the base (a village: MilitiaVillageSoftCapShare), plus the
+        //     fief's bonuses in percentage points (buildings, the running daily project, kingdom policies),
+        //     never above MilitiaSoftCapMaxShare (a village: MilitiaVillageSoftCapMaxShare). Below it the
+        //     day's growth runs untouched.
+        //   * HARD cap = MilitiaHardCapShare of the base (a village: MilitiaVillageHardCapShare), moved by
+        //     nothing. Between the two the day's growth tapers by (1 - fill)^2, fill = how far the count has
+        //     climbed from soft to hard; growth may never carry the count past the hard cap; and a watch
+        //     standing ABOVE it (a siege spawn, an escort returning, a cap that fell under it) disbands
+        //     MilitiaOverflowDrainRate of the overflow a day, each man's kit refunded like an unpaid one's.
 
-        /// <summary>The soft cap's share of the base before any bonus -- 40% of the manpower behind it.</summary>
+        /// <summary>
+        /// A town's or castle's soft cap share of the base before any bonus -- 40% of the manpower behind it.
+        /// Villages use <see cref="MilitiaVillageSoftCapShare"/> instead.
+        /// </summary>
         public const float MilitiaSoftCapShare = 0.40f;
 
         /// <summary>
-        /// The most the bonuses may lift the soft cap's share to -- 70%, kept under the hard cap's 75% so the
-        /// taper between the two never collapses.
+        /// The most the bonuses may lift a town's or castle's soft cap share to -- 70%, kept under the hard
+        /// cap's 75% so the taper between the two never collapses. Villages use
+        /// <see cref="MilitiaVillageSoftCapMaxShare"/>.
         /// </summary>
         public const float MilitiaSoftCapMaxShare = 0.70f;
 
         /// <summary>
-        /// The HARD cap's share of the base -- 75%, the same for every settlement and moved by no bonus. No
-        /// day's muster may carry the count past it, and a watch standing over it disbands the excess.
+        /// A town's or castle's HARD cap share of the base -- 75%, moved by no bonus. No day's muster may
+        /// carry the count past it, and a watch standing over it disbands the excess. Villages use
+        /// <see cref="MilitiaVillageHardCapShare"/>.
         /// </summary>
         public const float MilitiaHardCapShare = 0.75f;
+
+        /// <summary>
+        /// A VILLAGE's soft cap share of its hearths before any bonus -- 10%. A village is not a walled
+        /// place with a standing watch: its levy is the handful of farmers who keep a spear by the door,
+        /// and at the town shares (40% soft, 75% hard) a grown village of 1500 hearths could field six
+        /// hundred armed men and more, more than most lords' parties, which put every village on the map
+        /// beyond the reach of a raid. A tenth keeps a typical village's levy at a few dozen men -- enough
+        /// to see off a looter band, not enough to stand off a lord.
+        /// </summary>
+        public const float MilitiaVillageSoftCapShare = 0.10f;
+
+        /// <summary>
+        /// The most kingdom policies may lift a village's soft cap share to -- 18%. A village builds nothing,
+        /// so only its owner's policies move it (up to +9 points from three of them); held two points under
+        /// the village hard cap (<see cref="MilitiaVillageHardCapShare"/>) so the taper between the two
+        /// never collapses into a wall.
+        /// </summary>
+        public const float MilitiaVillageSoftCapMaxShare = 0.18f;
+
+        /// <summary>
+        /// A VILLAGE's hard cap share of its hearths -- 20%, moved by no bonus. A village whose levy stands
+        /// over it (an old save from before the village shares, or hearths fallen since) disbands the excess
+        /// at <see cref="MilitiaOverflowDrainRate"/> a day, like any other settlement.
+        /// </summary>
+        public const float MilitiaVillageHardCapShare = 0.20f;
 
         /// <summary>
         /// Barracks (town or castle): soft-cap share added at levels 1/2/3 (+2/+3/+5 percentage points). The
@@ -244,9 +279,11 @@ namespace RBMCampaign
         // A new campaign opens every settlement on the steady state VANILLA's curve would have reached
         // (intake / 0.025, see EquilibriumMilitia). RBM's live curve has no retirement, so its own
         // steady state is the soft cap -- but seeding at the cap would open large towns with thousands of
-        // militia; the vanilla-equivalent seed (~Prosperity/25 for a town, ~Hearth/10 for a village) keeps
-        // campaign starts familiar and lets the watch grow from there, budget permitting. This replaces
-        // both vanilla's cap-blind MilitiaChange*45 seed and RBM's earlier "quarter of the soft cap" seed.
+        // militia; the vanilla-equivalent seed (~Prosperity/25 for a town) keeps campaign starts familiar
+        // and lets the watch grow from there, budget permitting. A village's vanilla-equivalent figure
+        // (20 + Hearth/10) always sits above its 10% soft cap, so a village simply opens at that soft cap.
+        // This replaces both vanilla's cap-blind MilitiaChange*45 seed and RBM's earlier "quarter of the
+        // soft cap" seed.
 
         /// <summary>Times a militiaman's kit cost the funding pot must hold before it may arm a new one.</summary>
         public const int MilitiaSpawnReserveMult = 5;
@@ -255,7 +292,7 @@ namespace RBMCampaign
         /// The same reserve for a VILLAGE, held lower than a fortification's. A village purse is small and
         /// spiky -- it swells on a convoy's return and empties again -- so demanding as many days of a
         /// kit's cost in hand as a town would gate its levy out of ever mustering. Three rather than five,
-        /// alongside the quarter-price kit (<see cref="MilitiaVillageGearShare"/>), so a village that has
+        /// alongside the tenth-price kit (<see cref="MilitiaVillageGearShare"/>), so a village that has
         /// turned a season's trade can actually arm the watch its hearths support.
         /// </summary>
         public const int MilitiaVillageSpawnReserveMult = 3;
@@ -263,11 +300,11 @@ namespace RBMCampaign
         /// <summary>
         /// Share of a militiaman's full war-kit value a VILLAGE actually pays to arm one. A village
         /// levy is not outfitted like a soldier: the men bring their own tools and cheap arms and are
-        /// given only what the muster cannot do without, so the village buys a quarter of a real kit off
+        /// given only what the muster cannot do without, so the village buys a tenth of a real kit off
         /// the town it trades with rather than a whole one. Priced at full value everywhere else -- a
         /// town or castle arms its watch properly.
         ///
-        /// Applied to both the affordability gate (so the reserve it must hold is a quarter as steep) and
+        /// Applied to both the affordability gate (so the reserve it must hold is a tenth as steep) and
         /// the charge itself, keeping the two in step: at full value the ~18k Empire kit put the 5x
         /// spawn reserve (~89k) out of every village purse's reach, so no village ever fielded a growing
         /// militia at all.
@@ -508,14 +545,18 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The share of <see cref="MilitiaCapBase"/> this settlement's SOFT cap sits at:
-        /// <see cref="MilitiaSoftCapShare"/> plus its building and policy bonuses, clamped to
-        /// [0, <see cref="MilitiaSoftCapMaxShare"/>].
+        /// The share of <see cref="MilitiaCapBase"/> this settlement's SOFT cap sits at: the base share
+        /// (<see cref="MilitiaSoftCapShare"/> for a town or castle, <see cref="MilitiaVillageSoftCapShare"/>
+        /// for a village) plus its building and policy bonuses, clamped to [0, the matching max share --
+        /// <see cref="MilitiaSoftCapMaxShare"/> or <see cref="MilitiaVillageSoftCapMaxShare"/>].
         /// </summary>
         public static float MilitiaSoftCapShareFor(Settlement settlement)
         {
-            float share = MilitiaSoftCapShare + SoftCapBuildingBonus(settlement) + SoftCapPolicyBonus(settlement);
-            return MBMath.ClampFloat(share, 0f, MilitiaSoftCapMaxShare);
+            bool village = settlement != null && settlement.IsVillage;
+            float baseShare = village ? MilitiaVillageSoftCapShare : MilitiaSoftCapShare;
+            float maxShare = village ? MilitiaVillageSoftCapMaxShare : MilitiaSoftCapMaxShare;
+            float share = baseShare + SoftCapBuildingBonus(settlement) + SoftCapPolicyBonus(settlement);
+            return MBMath.ClampFloat(share, 0f, maxShare);
         }
 
         /// <summary>
@@ -530,12 +571,14 @@ namespace RBMCampaign
 
         /// <summary>
         /// The hard cap on this settlement's militia: <see cref="MilitiaHardCapShare"/> of
-        /// <see cref="MilitiaCapBase"/>, the same share everywhere. Growth never carries the count past it,
-        /// and a count above it disbands the excess (<see cref="OverflowDrain"/>).
+        /// <see cref="MilitiaCapBase"/> for a town or castle, <see cref="MilitiaVillageHardCapShare"/> for a
+        /// village. Growth never carries the count past it, and a count above it disbands the excess
+        /// (<see cref="OverflowDrain"/>).
         /// </summary>
         public static float MilitiaHardCap(Settlement settlement)
         {
-            return MilitiaCapBase(settlement) * MilitiaHardCapShare;
+            float share = (settlement != null && settlement.IsVillage) ? MilitiaVillageHardCapShare : MilitiaHardCapShare;
+            return MilitiaCapBase(settlement) * share;
         }
 
         /// <summary>
@@ -644,10 +687,11 @@ namespace RBMCampaign
         /// <summary>
         /// The new-campaign seed count: where vanilla's curve would have settled, with the base muster and
         /// manpower intake balanced against vanilla's retirement drag (<see cref="MilitiaSeedRetirementRate"/>)
-        /// -- a town on ~Prosperity/25, a village on ~Hearth/10. RBM's live curve has no retirement, so
+        /// -- a town on ~Prosperity/25, a village on 20 + Hearth/10. RBM's live curve has no retirement, so
         /// this is a starting point the watch grows up from, not a level it holds; it is clamped to the
-        /// soft cap for safety. The kept vanilla modifiers (loyalty, policies, perks, market weapons) are
-        /// not folded in -- at campaign start they are near-zero.
+        /// soft cap for safety -- which for a village always binds (20 + Hearth/10 is more than its 10%
+        /// soft cap), so every village opens at its soft cap. The kept vanilla modifiers (loyalty,
+        /// policies, perks, market weapons) are not folded in -- at campaign start they are near-zero.
         /// </summary>
         public static float EquilibriumMilitia(Settlement settlement)
         {
