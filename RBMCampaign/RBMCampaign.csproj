@@ -460,6 +460,7 @@
     <Compile Include="Settlements\BuildingEffects.cs" />
     <Compile Include="Settlements\PrisonLabour.cs" />
     <Compile Include="UI\BuildingEffectTooltips.cs" />
+    <Compile Include="UI\ProjectEffectHeaders.cs" />
     <Compile Include="Settlements\Construction.cs" />
     <Compile Include="Settlements\Construction.Materials.cs" />
     <Compile Include="Settlements\Construction.Patches.cs" />

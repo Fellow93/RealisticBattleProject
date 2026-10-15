@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem.Settlements.Buildings;
 using TaleWorlds.Core;
@@ -15,11 +17,12 @@ namespace RBMCampaign
     /// garrison fills, the mason yard that decides whether anything gets built. A player reading the
     /// vanilla text would be choosing his projects on a fraction of the facts.
     ///
-    /// So a plain "RBM:" block is appended to the effect text the town management screen builds, per
-    /// building type, naming the RBM effects at all three levels at once. It hangs off
-    /// <see cref="BuildingType.GetExplanationAtLevel"/> -- the single method every one of those surfaces
-    /// reads (the project list's current and next-level lines both route through it) -- so one postfix
-    /// covers them all, and a building RBM does not touch is left exactly as vanilla wrote it.
+    /// So the RBM effects are appended to the effect text the town management screen builds, one line
+    /// per effect with the value at the level asked for, in the same shape as vanilla's own lines. It
+    /// hangs off <see cref="BuildingType.GetExplanationAtLevel"/> -- the single method every one of those
+    /// surfaces reads (the project list's "L-I/L-II/L-III" current and next-level lines both route through
+    /// it, each with its own level) -- so one postfix covers them all, and a building RBM does not touch
+    /// is left exactly as vanilla wrote it. Vanilla lines for effects RBM removed or replaced are cut.
     /// </summary>
     internal static class BuildingEffectTooltips
     {
@@ -33,9 +36,14 @@ namespace RBMCampaign
                     return;
                 }
                 StripDeadEffectLines(__instance, level, ref __result);
-                string extra = Describe(__instance);
+                string extra = Describe(__instance, level);
                 if (extra == null)
                 {
+                    return;
+                }
+                if (__result.ToString().Length == 0)
+                {
+                    __result = new TextObject("{=!}" + extra);
                     return;
                 }
 
@@ -60,14 +68,42 @@ namespace RBMCampaign
         };
 
         /// <summary>
-        /// Drops the <see cref="DeadEffects"/> lines from vanilla's per-level effect text. Each line is rendered
-        /// exactly as vanilla renders it and cut out of the finished text, so nothing else is rebuilt.
+        /// Vanilla effects one building type has that RBM replaces with its own line: the castle Guard
+        /// House's militia a day (MilitiaUpkeep skips it), Farmlands' flat food (RBMTownFoodSupply takes it
+        /// back), the Mason's construction a day (Construction) and the Warehouse/Granary food limit
+        /// (RBMTownFoodSupply.FoodStocksUpperLimitPatch). Empty for every other type.
+        /// </summary>
+        private static BuildingEffectEnum[] ReplacedEffects(BuildingType type)
+        {
+            if (type == DefaultBuildingTypes.CastleGuardHouse)
+            {
+                return new[] { BuildingEffectEnum.Militia };
+            }
+            if (type == DefaultBuildingTypes.CastleFarmlands)
+            {
+                return new[] { BuildingEffectEnum.FoodProduction };
+            }
+            if (type == DefaultBuildingTypes.SettlementMason || type == DefaultBuildingTypes.CastleMason)
+            {
+                return new[] { BuildingEffectEnum.ConstructionPerDay };
+            }
+            if (type == DefaultBuildingTypes.SettlementWarehouse || type == DefaultBuildingTypes.CastleGranary)
+            {
+                return new[] { BuildingEffectEnum.FoodStock };
+            }
+            return new BuildingEffectEnum[0];
+        }
+
+        /// <summary>
+        /// Drops the <see cref="DeadEffects"/> and <see cref="ReplacedEffects"/> lines from vanilla's per-level
+        /// effect text. Each line is rendered exactly as vanilla renders it and cut out of the finished text,
+        /// so nothing else is rebuilt.
         /// </summary>
         private static void StripDeadEffectLines(BuildingType type, int level, ref TextObject text)
         {
             string s = text.ToString();
             bool changed = false;
-            foreach (BuildingEffectEnum effect in DeadEffects)
+            foreach (BuildingEffectEnum effect in DeadEffects.Concat(ReplacedEffects(type)))
             {
                 float value = type.GetBaseBuildingEffectAmount(effect, level);
                 if (value == 0f)
@@ -128,81 +164,116 @@ namespace RBMCampaign
         }
 
         /// <summary>
-        /// The RBM line for a building type, or null when RBM adds nothing to it. Written at all three
-        /// levels together (the "+10/20/30%" idiom) because a player choosing what to build is choosing a
-        /// whole ladder, not the next rung.
+        /// The RBM lines for a building type at one level (1-3), one effect per line in vanilla's own
+        /// shape, or null when RBM adds nothing to it. Only that level's values: the project list shows
+        /// the current and the next level side by side, each through its own call, so the comparison
+        /// reads off the two numbers.
         /// </summary>
-        private static string Describe(BuildingType type)
+        private static string Describe(BuildingType type, int level)
         {
+            List<string> lines = new List<string>();
             if (type == DefaultBuildingTypes.SettlementFortifications || type == DefaultBuildingTypes.CastleFortifications)
             {
-                return new TextObject("{=RBM_BLD_FORT}RBM: siege defence +10/20/30% · garrison & militia maintenance -0/5/10%").ToString();
+                Line(lines, "{=RBM_BLDL_SIEGE_DEFENCE}+{VALUE}% siege defence", Pick(level, 10, 20, 30));
+                Line(lines, "{=RBM_BLDL_FORT_UPKEEP}-{VALUE}% garrison and militia upkeep", Pick(level, 0, 5, 10));
             }
-            if (type == DefaultBuildingTypes.SettlementBarracks || type == DefaultBuildingTypes.CastleBarracks)
+            else if (type == DefaultBuildingTypes.SettlementBarracks || type == DefaultBuildingTypes.CastleBarracks)
             {
-                return new TextObject("{=RBM_BLD_BARRACKS}RBM: cost of arming garrison & militia recruits -5/10/15% · garrison and militia intake +1/2/3 per day when the treasury can fund them · garrison soft size +20/40/60 men (recruits get dearer from the recruit pool later) · militia soft cap +2/3/5% of the fief's manpower").ToString();
+                Line(lines, "{=RBM_BLDL_INTAKE}+{VALUE} garrison and militia recruits a day, if the treasury can pay", Pick(level, 1, 2, 3));
+                Line(lines, "{=RBM_BLDL_ARMING_COST}-{VALUE}% cost of arming new recruits", Pick(level, 5, 10, 15));
+                Line(lines, "{=RBM_BLDL_GARRISON_SOFT}+{VALUE} garrison size before recruits get scarce", Pick(level, 20, 40, 60));
+                Line(lines, "{=RBM_BLDL_MILITIA_CAP}+{VALUE}% of manpower to the militia cap", Pick(level, 2, 3, 5));
             }
-            if (type == DefaultBuildingTypes.SettlementTrainingFields || type == DefaultBuildingTypes.CastleTrainingFields)
+            else if (type == DefaultBuildingTypes.SettlementTrainingFields || type == DefaultBuildingTypes.CastleTrainingFields)
             {
-                return new TextObject("{=RBM_BLD_TRAINING}RBM: garrison promotions -5/10/15% · garrison and militia gain +10/20/30 experience a day (replaces the 1/2/3 above) · militia soft cap +1/2/3% of the fief's manpower").ToString();
+                Line(lines, "{=RBM_BLDL_DRILL_XP}+{VALUE} daily experience from drill for garrison and militia", Pick(level, 10, 20, 30));
+                Line(lines, "{=RBM_BLDL_PROMOTION_COST}-{VALUE}% garrison promotion cost", Pick(level, 5, 10, 15));
+                Line(lines, "{=RBM_BLDL_MILITIA_CAP}+{VALUE}% of manpower to the militia cap", Pick(level, 1, 2, 3));
             }
-            if (type == DefaultBuildingTypes.SettlementGuardHouse)
+            else if (type == DefaultBuildingTypes.SettlementGuardHouse || type == DefaultBuildingTypes.CastleGuardHouse)
             {
-                return new TextObject("{=RBM_BLD_GUARD_TOWN}RBM: tariff on caravan and traveller trade +0.3/0.6/1.0 percentage points · convicts kept at work on the fief's building projects").ToString();
+                LineText(lines, "{=RBM_BLDL_TRAVEL_TARIFF}+{VALUE} percentage points tariff on caravan and traveller trade", level == 1 ? "0.3" : level == 2 ? "0.6" : "1.0");
+                lines.Add(new TextObject("{=RBM_BLDL_CONVICTS}Convicts work on the building projects").ToString());
+                if (type == DefaultBuildingTypes.CastleGuardHouse)
+                {
+                    Line(lines, "{=RBM_BLDL_MILITIA_CAP}+{VALUE}% of manpower to the militia cap", Pick(level, 2, 3, 5));
+                }
             }
-            if (type == DefaultBuildingTypes.CastleGuardHouse)
+            else if (type == DefaultBuildingTypes.CastleCastallansOffice)
             {
-                return new TextObject("{=RBM_BLD_GUARD_CASTLE}RBM: tariff on caravan and traveller trade +0.3/0.6/1.0 percentage points · convicts kept at work on the fief's building projects · militia soft cap +2/3/5% of the castle's manpower (replaces the militia per day above; the barracks owns intake)").ToString();
+                Line(lines, "{=RBM_BLDL_ELITE_RECRUITS}{VALUE}% of garrison recruits join as elite troops", Pick(level, 10, 20, 30));
+                Line(lines, "{=RBM_BLDL_MOUNTED_UPKEEP}-{VALUE}% mounted garrison upkeep", Pick(level, 10, 20, 30));
+                Line(lines, "{=RBM_BLDL_POOL_MAX}+{VALUE}% recruit pool size", Pick(level, 10, 20, 30));
             }
-            if (type == DefaultBuildingTypes.CastleCastallansOffice)
+            else if (type == DefaultBuildingTypes.CastleCraftmansQuarters)
             {
-                return new TextObject("{=RBM_BLD_CASTELLAN}RBM: 10/20/30% of garrison recruits enlist as the culture's elite soldier rather than its common one · upkeep of the mounted garrison -10/20/30% · recruit pool max +10/20/30%").ToString();
+                Line(lines, "{=RBM_BLDL_LAND_INCOME}+{VALUE}% income from the castle's lands", Pick(level, 10, 20, 30));
             }
-            if (type == DefaultBuildingTypes.CastleCraftmansQuarters)
+            else if (type == DefaultBuildingTypes.CastleFarmlands)
             {
-                return new TextObject("{=RBM_BLD_CRAFTSMEN}RBM: the castle's daily income from its lands +10/20/30%").ToString();
+                Line(lines, "{=RBM_BLDL_FOOD_PRODUCTION}+{VALUE}% castle food production", Pick(level, 10, 20, 30));
             }
-            if (type == DefaultBuildingTypes.CastleFarmlands)
+            else if (type == DefaultBuildingTypes.SettlementTaxOffice)
             {
-                return new TextObject("{=RBM_BLD_FARMLANDS}RBM: the castle's own food production +10/20/30% (replaces the flat 6/12/18 food a day)").ToString();
+                Line(lines, "{=RBM_BLDL_WEALTH_TAX}+{VALUE}% wealth tax and minting income", Pick(level, 5, 10, 15));
             }
-            if (type == DefaultBuildingTypes.SettlementTaxOffice)
+            else if (type == DefaultBuildingTypes.SettlementMarketplace)
             {
-                return new TextObject("{=RBM_BLD_TAX_OFFICE}RBM: wealth tax and minting cuts +5/10/15%, to the fief and its lord alike").ToString();
+                Line(lines, "{=RBM_BLDL_MARKET_TARIFF}+{VALUE}% tariff on every trade in the town", Pick(level, 10, 20, 30));
             }
-            if (type == DefaultBuildingTypes.SettlementMarketplace)
+            else if (type == DefaultBuildingTypes.SettlementWarehouse || type == DefaultBuildingTypes.CastleGranary)
             {
-                return new TextObject("{=RBM_BLD_MARKET}RBM: tariff on every trade in the settlement +10/20/30%").ToString();
+                Line(lines, "{=RBM_BLDL_FOOD_DAYS}Stores {VALUE} days of food (30 without it)", Pick(level, 40, 50, 60));
             }
-            if (type == DefaultBuildingTypes.SettlementWarehouse || type == DefaultBuildingTypes.CastleGranary)
+            else if (type == DefaultBuildingTypes.SettlementMason || type == DefaultBuildingTypes.CastleMason)
             {
-                return new TextObject("{=RBM_BLD_GRANARY}RBM: the granary holds 40/50/60 days of the fief's own eating (30 days with no granary), replacing the fixed food limit; a town's market refuses food beyond it").ToString();
+                Line(lines, "{=RBM_BLDL_CONSTRUCTION_EFF}+{VALUE}% construction efficiency", Pick(level, 5, 10, 15));
+                Line(lines, "{=RBM_BLDL_CONSTRUCTION_CAP}+{VALUE}% daily construction limit", Pick(level, 10, 20, 30));
             }
-            if (type == DefaultBuildingTypes.SettlementMason || type == DefaultBuildingTypes.CastleMason)
+            else if (type == DefaultBuildingTypes.SettlementWaterworks)
             {
-                return new TextObject("{=RBM_BLD_MASON}RBM: construction efficiency +5/10/15% · labour ceiling +10/20/30% (replaces construction per day)").ToString();
+                Line(lines, "{=RBM_BLDL_WATERWORKS}+{VALUE}% prosperity from the town's other buildings", Pick(level, 10, 20, 30));
             }
-            if (type == DefaultBuildingTypes.SettlementWaterworks)
+            else if (type == DefaultBuildingTypes.SettlementRoadsAndPaths || type == DefaultBuildingTypes.CastleRoadsAndPaths)
             {
-                return new TextObject("{=RBM_BLD_WATERWORKS}RBM: everything else the town has built is worth +10/20/30% more prosperity").ToString();
+                Line(lines, "{=RBM_BLDL_VILLAGE_POOL}+{VALUE}% recruit pool growth in bound villages", Pick(level, 10, 20, 30));
             }
-            if (type == DefaultBuildingTypes.SettlementRoadsAndPaths || type == DefaultBuildingTypes.CastleRoadsAndPaths)
+            else if (type == DefaultBuildingTypes.SettlementDailyTrainMilitia)
             {
-                return new TextObject("{=RBM_BLD_ROADS}RBM: bound villages produce +5/10/15% more goods · bound villages' recruit pool growth +10/20/30%").ToString();
+                Line(lines, "{=RBM_BLDL_POOL_GROWTH}+{VALUE}% recruit pool growth", 25);
+                Line(lines, "{=RBM_BLDL_MILITIA_CAP}+{VALUE}% of manpower to the militia cap", 3);
             }
-            if (type == DefaultBuildingTypes.SettlementDailyTrainMilitia)
+            else if (type == DefaultBuildingTypes.SettlementDailyHousing)
             {
-                return new TextObject("{=RBM_BLD_DAILY_TRAIN_MILITIA}RBM: recruit pool growth +25% and militia soft cap +3% of the town's manpower while running").ToString();
+                Line(lines, "{=RBM_BLDL_POOL_GROWTH}+{VALUE}% recruit pool growth", 25);
             }
-            if (type == DefaultBuildingTypes.SettlementDailyHousing)
+            else if (type == DefaultBuildingTypes.CastleDailyRaiseTroops)
             {
-                return new TextObject("{=RBM_BLD_DAILY_MILITIA_HOUSING}RBM: recruit pool growth +25% while running").ToString();
+                Line(lines, "{=RBM_BLDL_POOL_GROWTH}+{VALUE}% recruit pool growth", 50);
+                Line(lines, "{=RBM_BLDL_MILITIA_CAP}+{VALUE}% of manpower to the militia cap", 3);
             }
-            if (type == DefaultBuildingTypes.CastleDailyRaiseTroops)
+            return lines.Count == 0 ? null : string.Join("\n", lines);
+        }
+
+        private static int Pick(int level, int l1, int l2, int l3)
+        {
+            return level == 1 ? l1 : level == 2 ? l2 : l3;
+        }
+
+        /// <summary>Adds one effect line with its value, or nothing when the value is zero at this level.</summary>
+        private static void Line(List<string> lines, string template, int value)
+        {
+            if (value != 0)
             {
-                return new TextObject("{=RBM_BLD_DAILY_RAISE_TROOPS}RBM: recruit pool growth +50% and militia soft cap +3% of the castle's manpower while running").ToString();
+                LineText(lines, template, value.ToString());
             }
-            return null;
+        }
+
+        private static void LineText(List<string> lines, string template, string value)
+        {
+            TextObject text = new TextObject(template);
+            text.SetTextVariable("VALUE", value);
+            lines.Add(text.ToString());
         }
     }
 }
