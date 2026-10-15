@@ -7,7 +7,12 @@ using TaleWorlds.Library;
 
 namespace RBMStance
 {
-    // When there is attack, there is always default 20 posture drain for both the attack and the defender. For example: ONE_HANDED_SWORD_ATTACK_SWING vs SMALL_SHIELD_BLOCK; Attacker gets 20 default damage - ONE_HANDED_SWORD_ATTACK_SWING posture damage + SMALL_SHIELD_BLOCK posture damage. Defender gets 20 default damage + ONE_HANDED_SWORD_ATTACK_SWING posture damage - SMALL_SHIELD_BLOCK posture damage.
+    // Per-class rows are offsets on the base values (20 each). On a block or parry:
+    //   defender loses (BASE_COST + defender's _BLOCK_COST) + (BASE_DRAIN + attacker's _DRAIN),
+    //   attacker loses (BASE_COST + attacker's _COST) + (BASE_REFLECT + defender's _BLOCK/_PARRY_REFLECT),
+    // each at least 0, before skill, speed, contact point and the parry/chamber factors (MeleeBlowPatch.Math).
+    // A parry or chamber costs the defender the matching block row (times its factor), so there are no _PARRY_COST
+    // rows. The attacker's _COST grows with the weapon's heft; a landed hit costs the defender its damage instead.
     public static class PostureDamage
     {
         public enum MeleeHitType
@@ -36,9 +41,12 @@ namespace RBMStance
         public const float UNARMED_THRUST_DRAIN = 0f;
         public const float UNARMED_OVERHEAD_DRAIN = 0f;
         public const float UNARMED_BLOCK_COST = 20f;
-        public const float UNARMED_PARRY_COST = 10f;
         public const float UNARMED_BLOCK_REFLECT = 0f;
         public const float UNARMED_PARRY_REFLECT = 0f;
+
+        // KICK / SHIELD BASH / WEAPON BASH caught on a guard: the blocker's drain, any direction. A shove is meant to
+        // open a guard, so it drains about what a mace overhead does. The kicker's own cost is AiKickBash's ChargeCost.
+        public const float KICKBASH_DRAIN = +20f;
 
         // ONE-HANDED SWORD
         public const float ONEHANDEDSWORD_SWING_COST = -5f;
@@ -49,33 +57,31 @@ namespace RBMStance
         public const float ONEHANDEDSWORD_THRUST_DRAIN = 5f;
         public const float ONEHANDEDSWORD_OVERHEAD_DRAIN = 15f;
         public const float ONEHANDEDSWORD_BLOCK_COST = -20f;
-        public const float ONEHANDEDSWORD_PARRY_COST = -30f;
         public const float ONEHANDEDSWORD_BLOCK_REFLECT = -15f;
         public const float ONEHANDEDSWORD_PARRY_REFLECT = 0f;
 
         // DAGGER
-        public const float DAGGER_SWING_COST = -5f;
+        // The class is mostly short swords (seax, gladius, skaen, sica), so it sits just under the sword, not far below.
+        public const float DAGGER_SWING_COST = -7f;
 
-        public const float DAGGER_THRUST_COST = -7f;
-        public const float DAGGER_OVERHEAD_COST = -3f;
-        public const float DAGGER_SWING_DRAIN = +10f;
-        public const float DAGGER_THRUST_DRAIN = +5f;
-        public const float DAGGER_OVERHEAD_DRAIN = +15f;
+        public const float DAGGER_THRUST_COST = -9f;
+        public const float DAGGER_OVERHEAD_COST = -5f;
+        public const float DAGGER_SWING_DRAIN = +6f;
+        public const float DAGGER_THRUST_DRAIN = +3f;
+        public const float DAGGER_OVERHEAD_DRAIN = +11f;
         public const float DAGGER_BLOCK_COST = -15f;
-        public const float DAGGER_PARRY_COST = -25f;
         public const float DAGGER_BLOCK_REFLECT = -20f;
         public const float DAGGER_PARRY_REFLECT = -5f;
 
         // TWO-HANDED SWORD
-        public const float TWOHANDEDSWORD_SWING_COST = -5f;
+        public const float TWOHANDEDSWORD_SWING_COST = +0f;
 
-        public const float TWOHANDEDSWORD_THRUST_COST = -7f;
-        public const float TWOHANDEDSWORD_OVERHEAD_COST = -3f;
+        public const float TWOHANDEDSWORD_THRUST_COST = -3f;
+        public const float TWOHANDEDSWORD_OVERHEAD_COST = +2f;
         public const float TWOHANDEDSWORD_SWING_DRAIN = +27f;
         public const float TWOHANDEDSWORD_THRUST_DRAIN = +25f;
         public const float TWOHANDEDSWORD_OVERHEAD_DRAIN = +29f;
         public const float TWOHANDEDSWORD_BLOCK_COST = -25f;
-        public const float TWOHANDEDSWORD_PARRY_COST = -35f;
         public const float TWOHANDEDSWORD_BLOCK_REFLECT = -5f;
         public const float TWOHANDEDSWORD_PARRY_REFLECT = +10f;
 
@@ -88,20 +94,18 @@ namespace RBMStance
         public const float ONEHANDEDAXE_THRUST_DRAIN = +7f;
         public const float ONEHANDEDAXE_OVERHEAD_DRAIN = +17f;
         public const float ONEHANDEDAXE_BLOCK_COST = -15f;
-        public const float ONEHANDEDAXE_PARRY_COST = -25f;
         public const float ONEHANDEDAXE_BLOCK_REFLECT = -20f;
         public const float ONEHANDEDAXE_PARRY_REFLECT = +5f;
 
         // TWO-HANDED AXE
-        public const float TWOHANDEDAXE_SWING_COST = -2f;
+        public const float TWOHANDEDAXE_SWING_COST = +4f;
 
-        public const float TWOHANDEDAXE_THRUST_COST = -4f;
-        public const float TWOHANDEDAXE_OVERHEAD_COST = +0f;
+        public const float TWOHANDEDAXE_THRUST_COST = +1f;
+        public const float TWOHANDEDAXE_OVERHEAD_COST = +6f;
         public const float TWOHANDEDAXE_SWING_DRAIN = +32f;
         public const float TWOHANDEDAXE_THRUST_DRAIN = +18f;
         public const float TWOHANDEDAXE_OVERHEAD_DRAIN = +32f;
         public const float TWOHANDEDAXE_BLOCK_COST = -20f;
-        public const float TWOHANDEDAXE_PARRY_COST = -30f;
         public const float TWOHANDEDAXE_BLOCK_REFLECT = -15f;
         public const float TWOHANDEDAXE_PARRY_REFLECT = +20f;
 
@@ -114,20 +118,18 @@ namespace RBMStance
         public const float MACE_THRUST_DRAIN = +10f;
         public const float MACE_OVERHEAD_DRAIN = +20f;
         public const float MACE_BLOCK_COST = -13f;
-        public const float MACE_PARRY_COST = -23f;
         public const float MACE_BLOCK_REFLECT = -20f;
         public const float MACE_PARRY_REFLECT = -10f;
 
         // TWO-HANDED MACE
-        public const float TWOHANDEDMACE_SWING_COST = +0f;
+        public const float TWOHANDEDMACE_SWING_COST = +4f;
 
-        public const float TWOHANDEDMACE_THRUST_COST = -2f;
-        public const float TWOHANDEDMACE_OVERHEAD_COST = +2f;
+        public const float TWOHANDEDMACE_THRUST_COST = +1f;
+        public const float TWOHANDEDMACE_OVERHEAD_COST = +6f;
         public const float TWOHANDEDMACE_SWING_DRAIN = +36f;
         public const float TWOHANDEDMACE_THRUST_DRAIN = +22f;
         public const float TWOHANDEDMACE_OVERHEAD_DRAIN = +36f;
         public const float TWOHANDEDMACE_BLOCK_COST = -17f;
-        public const float TWOHANDEDMACE_PARRY_COST = -28f;
         public const float TWOHANDEDMACE_BLOCK_REFLECT = -15f;
         public const float TWOHANDEDMACE_PARRY_REFLECT = -10f;
 
@@ -140,20 +142,18 @@ namespace RBMStance
         public const float ONEHANDEDPOLEARM_THRUST_DRAIN = +10f;
         public const float ONEHANDEDPOLEARM_OVERHEAD_DRAIN = +15f;
         public const float ONEHANDEDPOLEARM_BLOCK_COST = -10f;
-        public const float ONEHANDEDPOLEARM_PARRY_COST = -25f;
         public const float ONEHANDEDPOLEARM_BLOCK_REFLECT = -20f;
         public const float ONEHANDEDPOLEARM_PARRY_REFLECT = -15f;
 
         // TWO-HANDED POLEARM
-        public const float TWOHANDEDPOLEARM_SWING_COST = -3f;
+        public const float TWOHANDEDPOLEARM_SWING_COST = +0f;
 
-        public const float TWOHANDEDPOLEARM_THRUST_COST = -5f;
-        public const float TWOHANDEDPOLEARM_OVERHEAD_COST = -1f;
+        public const float TWOHANDEDPOLEARM_THRUST_COST = -3f;
+        public const float TWOHANDEDPOLEARM_OVERHEAD_COST = +2f;
         public const float TWOHANDEDPOLEARM_SWING_DRAIN = +29f;
         public const float TWOHANDEDPOLEARM_THRUST_DRAIN = +22f;
         public const float TWOHANDEDPOLEARM_OVERHEAD_DRAIN = +29f;
         public const float TWOHANDEDPOLEARM_BLOCK_COST = -20f;
-        public const float TWOHANDEDPOLEARM_PARRY_COST = -30f;
         public const float TWOHANDEDPOLEARM_BLOCK_REFLECT = -15f;
         public const float TWOHANDEDPOLEARM_PARRY_REFLECT = +0f;
 
@@ -161,7 +161,6 @@ namespace RBMStance
         public const float SMALLSHIELD_INCORRECT_BLOCK_COST = -25f;
 
         public const float SMALLSHIELD_BLOCK_COST = -30f;
-        public const float SMALLSHIELD_PARRY_COST = -40f;
         public const float SMALLSHIELD_INCORRECT_BLOCK_REFLECT = -20f;
         public const float SMALLSHIELD_BLOCK_REFLECT = -20f;
         public const float SMALLSHIELD_PARRY_REFLECT = -5f;
@@ -170,7 +169,6 @@ namespace RBMStance
         public const float LARGESHIELD_INCORRECT_BLOCK_COST = -30f;
 
         public const float LARGESHIELD_BLOCK_COST = -35f;
-        public const float LARGESHIELD_PARRY_COST = -45f;
         public const float LARGESHIELD_INCORRECT_BLOCK_REFLECT = -20f;
         public const float LARGESHIELD_BLOCK_REFLECT = -20f;
         public const float LARGESHIELD_PARRY_REFLECT = -15f;
@@ -244,17 +242,14 @@ namespace RBMStance
             string weaponClassString = GetTableKey(wc);
             switch (hitType)
             {
+                // A parry or chamber reads the block row; the caller applies its factor.
                 case MeleeHitType.WeaponBlock:
                 case MeleeHitType.ShieldBlock:
-                    {
-                        retVal += Lookup(weaponClassString + "_BLOCK_COST");
-                        break;
-                    }
                 case MeleeHitType.WeaponParry:
                 case MeleeHitType.ShieldParry:
                 case MeleeHitType.ChamberBlock:
                     {
-                        retVal += Lookup(weaponClassString + "_PARRY_COST");
+                        retVal += Lookup(weaponClassString + "_BLOCK_COST");
                         break;
                     }
                 case MeleeHitType.ShieldIncorrectBlock:
@@ -405,14 +400,14 @@ namespace RBMStance
             return wc;
         }
 
-        // A kick, shield bash or pommel strike uses the UNARMED rows, not the wielded weapon's.
-        public static float GetDefenderPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType, bool isUnarmedAttack)
+        // A punch uses the UNARMED rows, a kick, shield bash or weapon bash KICKBASH_DRAIN, not the wielded weapon's.
+        public static float GetDefenderPostureDamage(Agent defender, Agent attacker, Agent.UsageDirection attackDirection, StrikeType strikeType, MeleeHitType hitType, bool isUnarmedAttack, bool isKickOrBash)
         {
             WeaponClass defenderWC = GetDefenderWeaponClass(defender);
             WeaponClass attackerWC = isUnarmedAttack ? WeaponClass.Undefined : GetAttackerWeaponClass(attacker);
 
             float defenseCost = GetDefenseCost(defenderWC, hitType);
-            float attackDrain = GetAttackDrain(attackerWC, attackDirection, strikeType);
+            float attackDrain = isKickOrBash ? BASE_DRAIN + KICKBASH_DRAIN : GetAttackDrain(attackerWC, attackDirection, strikeType);
 
             // Per-class costs are negative offsets from the base; a large-shield parry against a
             // zero-drain attack sums below zero, which would heal the defender past maxPosture.

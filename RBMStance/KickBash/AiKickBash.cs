@@ -39,7 +39,8 @@ namespace RBMStance
         /// Damage (RBMCombat, DamageRework.Core): the unarmed (punch) model with the boot, shield or weapon in place
         /// of the gauntlet, so blunt, skill-scaled, by body part and against that part's armour. None for a bash
         /// blocked by a shield or a kick into a raised shield. The victim's posture and stamina loss is the posture
-        /// patch's usual one for the blow, i.e. by its damage.
+        /// patch's usual one for the blow, i.e. by its damage; one caught on a shield or weapon block costs the
+        /// blocker his block row plus PostureDamage.KICKBASH_DRAIN, like a heavy blow.
         ///
         /// Knockdown (player too, AiKickBashKnockDownPatch), for an enemy's blow not blocked by a shield on a man on
         /// foot who is not already down: certain if he is still in a posture-break or posture-tiredness reaction or if the blow breaks his

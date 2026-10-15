@@ -258,7 +258,9 @@ namespace RBMStance
                         break;
                 }
 
-                float basePostureDamage = GetDefenderPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, tableHitType, isUnarmedAttack);
+                // An unarmed alternative attack is a kick, shield bash or weapon bash; a plain punch is not.
+                bool isKickOrBash = isUnarmedAttack && collisionData.IsAlternativeAttack;
+                float basePostureDamage = GetDefenderPostureDamage(defenderAgent, attackerAgent, collisionData.AttackDirection, (StrikeType)collisionData.StrikeType, tableHitType, isUnarmedAttack, isKickOrBash);
 
                 GetPostureSkillSums(defenderAgent, attackerAgent, weapon, isUnarmedAttack, out float attackerSkillSum, out float defenderSkillSum);
                 float skillModifier = (float)Math.Pow(attackerSkillSum / defenderSkillSum, PostureTuning.SkillRatioExponent);
