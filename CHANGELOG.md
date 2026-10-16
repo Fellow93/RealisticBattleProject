@@ -1,5 +1,10 @@
 # Changelog
 
+## v4.7.1 (changes since v4.7.0)
+
+### Performance
+- Better battle performance, especially in large battles: fewer stutters when armies deploy and reinforcements arrive, at first contact and at the first volleys, and less work every frame in a big melee.
+
 ## v4.7.0 (changes since v4.6.0)
 
 ### Combat
