@@ -359,6 +359,15 @@ namespace RBMConfig
         // (speed, rounded height difference, friction) -> reach. Speeds are ints and heights round to the metre, but
         // speeds differ per ammo, launcher, modifier and slinger, so hilly battles fill hundreds to thousands of entries.
         private static readonly Dictionary<long, float> _reachCache = new Dictionary<long, float>();
+        // (speed, exact friction bits) -> one ReachColumn per elevation degree, filled on first use. A miss in
+        // _reachCache reads its elevations from here, so a new height step for a known speed integrates at most the
+        // stretch of descent below the steps already asked for.
+        private static readonly Dictionary<long, ReachColumn[]> _reachColumns = new Dictionary<long, ReachColumn[]>();
+        // Cleared whole past this many (speed, friction) pairs. A column holds one float per height step from its
+        // apex down to ReachColumnFloorStep; a pair used ~30 of its 61 columns, ~8 KB, in a -20..+20 m sweep, and
+        // more when a wide height sweep moves the refine window across all 61 columns (estimated ~80 KB at 120 m/s,
+        // least drag), so the store stays around 2 MB in battle and is bounded at roughly 20 MB by this clear.
+        private const int MaxReachColumnSpeeds = 256;
 
         /// <summary>
         /// Horizontal distance at which a missile launched at (vHorizontal, vUp) crosses heightDifference metres above
@@ -478,7 +487,6 @@ namespace RBMConfig
 
         private static float MaxReachAtStep(int speed, int heightStep, float airFriction)
         {
-            float dz = heightStep * ReachHeightStep;
             long key = ((long)speed << 40) ^ ((long)(heightStep + 100000) << 20) ^ (long)(airFriction * 1000000f);
             lock (_reachLock)
             {
@@ -489,12 +497,14 @@ namespace RBMConfig
             }
             // Reach is single-peaked in elevation, so a 5-degree scan and a 1-degree refine within 4 degrees of its best
             // give the same maximum as a full 1-degree scan (checked over 252 speed/height/drag cases) at a third of the
-            // cost. A miss is 0.5-1 ms of trajectory steps and RangedReachGate misses on every new (speed, height) pair.
+            // cost. The ranges come from the (speed, friction) pair's columns, so after a pair's first height step only
+            // lower steps and degrees new to the refine window integrate; RangedReachGate misses on every new height.
+            ReachColumn[] columns = GetReachColumns(speed, airFriction);
             float best = 0f;
             int bestDeg = -1;
             for (int deg = 0; deg <= 60; deg += 5)
             {
-                float r = RangeAtElevation(speed, deg, dz, airFriction);
+                float r = ColumnRange(columns, speed, deg, heightStep, airFriction);
                 if (r > best)
                 {
                     best = r;
@@ -510,7 +520,7 @@ namespace RBMConfig
                 {
                     continue;
                 }
-                float r = RangeAtElevation(speed, deg, dz, airFriction);
+                float r = ColumnRange(columns, speed, deg, heightStep, airFriction);
                 if (r > best)
                 {
                     best = r;
@@ -527,6 +537,169 @@ namespace RBMConfig
         {
             double rad = degrees * Math.PI / 180.0;
             return RangeAtHeight((float)(Math.Cos(rad) * speed), (float)(Math.Sin(rad) * speed), heightDifference, airFriction);
+        }
+
+        // Lowest height step a ReachColumn records (-100 m). Lower targets fall back to RangeAtElevation per call.
+        private const int ReachColumnFloorStep = -50;
+
+        /// <summary>
+        /// RangeAtElevation for every height step of one (speed, degrees, friction) flight, from a single integration.
+        /// The flight never depends on the height, so each step's answer is the first descending step at or below it,
+        /// with RangeAtHeight's own crossing test and interpolation on the same floats: bit-identical to
+        /// RangeAtElevation. Built up to the apex; the descent is integrated on only as far as the lowest step asked
+        /// for, so the first call costs what one RangeAtElevation did.
+        /// </summary>
+        private sealed class ReachColumn
+        {
+            private readonly float _airFriction;
+            private readonly int _steps;
+            // The first descending step: RangeAtHeight returns there for any height at or above its z (so above the
+            // apex too, extrapolated back past px), which is why those heights need no array slot.
+            private readonly bool _descends;
+            private readonly float _px0, _x0, _pz0, _z0;
+            // Height steps ReachColumnFloorStep.. below _z0, index step - ReachColumnFloorStep; filled above _next.
+            private readonly float[] _ranges;
+            // The flight where the descent was left off, carried on under lock (this): position, velocity, step index,
+            // and the highest height step not crossed yet.
+            private float _x, _z, _vx, _vy, _vz;
+            private int _i, _next;
+
+            public ReachColumn(int speed, int degrees, float airFriction)
+            {
+                _airFriction = airFriction;
+                _steps = (int)(MaxFlightSeconds / StepSeconds);
+                double rad = degrees * Math.PI / 180.0;
+                float x = 0f, z = 0f, vx = (float)(Math.Cos(rad) * speed), vy = 0f, vz = (float)(Math.Sin(rad) * speed);
+                int i = 0;
+                for (; i < _steps; i++)
+                {
+                    float px = x, pz = z;
+                    StepVelocity(ref vx, ref vy, ref vz, airFriction);
+                    x += vx * StepSeconds;
+                    z += vz * StepSeconds;
+                    if (vz < 0f)
+                    {
+                        _descends = true;
+                        _px0 = px;
+                        _x0 = x;
+                        _pz0 = pz;
+                        _z0 = z;
+                        break;
+                    }
+                }
+                if (!_descends)
+                {
+                    _ranges = new float[0];
+                    return;
+                }
+                // Highest step below the first descending z; every step above it is answered from that step.
+                int top = (int)Math.Floor(_z0 / ReachHeightStep);
+                while (top * ReachHeightStep >= _z0)
+                {
+                    top--;
+                }
+                while ((top + 1) * ReachHeightStep < _z0)
+                {
+                    top++;
+                }
+                _ranges = new float[Math.Max(0, top - ReachColumnFloorStep + 1)];
+                _x = x;
+                _z = z;
+                _vx = vx;
+                _vy = vy;
+                _vz = vz;
+                _i = i + 1;
+                _next = top;
+            }
+
+            /// <summary>RangeAtElevation at heightStep * ReachHeightStep; heightStep must be >= ReachColumnFloorStep.</summary>
+            public float RangeAt(int heightStep)
+            {
+                if (!_descends)
+                {
+                    return -1f;
+                }
+                float heightDifference = heightStep * ReachHeightStep;
+                if (_z0 <= heightDifference)
+                {
+                    float t = (_pz0 - heightDifference) / (_pz0 - _z0);
+                    return _px0 + (_x0 - _px0) * t;
+                }
+                lock (this)
+                {
+                    if (_next >= heightStep && _i < _steps)
+                    {
+                        float x = _x, z = _z, vx = _vx, vy = _vy, vz = _vz;
+                        int i = _i, next = _next;
+                        for (; i < _steps && next >= heightStep; i++)
+                        {
+                            float px = x, pz = z;
+                            StepVelocity(ref vx, ref vy, ref vz, _airFriction);
+                            x += vx * StepSeconds;
+                            z += vz * StepSeconds;
+                            while (next >= ReachColumnFloorStep && vz < 0f && z <= next * ReachHeightStep)
+                            {
+                                float stepHeight = next * ReachHeightStep;
+                                float t = (pz - stepHeight) / (pz - z);
+                                _ranges[next - ReachColumnFloorStep] = px + (x - px) * t;
+                                next--;
+                            }
+                        }
+                        _x = x;
+                        _z = z;
+                        _vx = vx;
+                        _vy = vy;
+                        _vz = vz;
+                        _i = i;
+                        _next = next;
+                    }
+                    // Still not crossed: the flight ran out of MaxFlightSeconds above this height.
+                    return _next >= heightStep ? -1f : _ranges[heightStep - ReachColumnFloorStep];
+                }
+            }
+        }
+
+        private static ReachColumn[] GetReachColumns(int speed, float airFriction)
+        {
+            // Exact friction bits, unlike _reachCache's key: a column serves every height, so no near-miss may share it.
+            long key = ((long)speed << 32) | (uint)BitConverter.ToInt32(BitConverter.GetBytes(airFriction), 0);
+            lock (_reachLock)
+            {
+                if (!_reachColumns.TryGetValue(key, out ReachColumn[] columns))
+                {
+                    if (_reachColumns.Count >= MaxReachColumnSpeeds)
+                    {
+                        _reachColumns.Clear();
+                    }
+                    columns = new ReachColumn[61];
+                    _reachColumns[key] = columns;
+                }
+                return columns;
+            }
+        }
+
+        private static float ColumnRange(ReachColumn[] columns, int speed, int degrees, int heightStep, float airFriction)
+        {
+            if (heightStep < ReachColumnFloorStep)
+            {
+                return RangeAtElevation(speed, degrees, heightStep * ReachHeightStep, airFriction);
+            }
+            ReachColumn column;
+            lock (_reachLock)
+            {
+                column = columns[degrees];
+            }
+            if (column == null)
+            {
+                // Built (to the apex) outside the lock, like a _reachCache miss; a racing thread builds the same column
+                // and the first one is kept. The descent is extended under the column's own lock, in RangeAt.
+                ReachColumn built = new ReachColumn(speed, degrees, airFriction);
+                lock (_reachLock)
+                {
+                    column = columns[degrees] ?? (columns[degrees] = built);
+                }
+            }
+            return column.RangeAt(heightStep);
         }
     }
 }

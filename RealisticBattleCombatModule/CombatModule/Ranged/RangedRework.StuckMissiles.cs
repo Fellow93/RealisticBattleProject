@@ -257,17 +257,23 @@ namespace RBMCombat
                 }
                 try
                 {
-                    // The frames of whatever hangs off the skeleton lag the animation until the bones are brought up
-                    // to date; without this the loose missile appears where the stuck one was some frames ago (far
-                    // off for a running or animation-culled agent). Vanilla does the same before dropping a weapon
-                    // or a corpse's stuck missiles (Mission.SpawnWeaponAsDropFromAgentAux, SpawnAttachedWeaponOnCorpse).
-                    agent.AgentVisuals?.GetSkeleton()?.ForceUpdateBoneFrames();
                     return entry.InShield ? DetachFromShield(entry, agent) : DetachFromBody(entry, agent);
                 }
                 catch (Exception)
                 {
                     return DetachResult.Gone;
                 }
+            }
+
+            // The frames of whatever hangs off the skeleton lag the animation until the bones are brought up to
+            // date; without this the loose missile appears where the stuck one was some frames ago (far off for a
+            // running or animation-culled agent). Vanilla does the same before dropping a weapon or a corpse's stuck
+            // missiles (Mission.SpawnWeaponAsDropFromAgentAux, SpawnAttachedWeaponOnCorpse). Called only once the
+            // missile is found, right before its frame is read: the lookups before it read only the managed
+            // attachment records and the entity tree, which the bones do not move.
+            private static void UpdateBoneFrames(Agent agent)
+            {
+                agent.AgentVisuals?.GetSkeleton()?.ForceUpdateBoneFrames();
             }
 
             // The engine has no call that takes a missile back out of a weapon an agent holds. What it has is the
@@ -337,6 +343,7 @@ namespace RBMCombat
                 }
 
                 MissionWeapon missileWeapon = shield.GetAttachedWeapon(index);
+                UpdateBoneFrames(agent);
                 MatrixFrame stuckMeshFrame = GetGlobalMeshFrame(missileEntity);
                 using (new TWSharedMutexWriteLock(Scene.PhysicsAndRayCastLock))
                 {
@@ -375,6 +382,7 @@ namespace RBMCombat
                     return DetachResult.Gone;
                 }
                 MissionWeapon missileWeapon = agent.GetAttachedWeapon(index);
+                UpdateBoneFrames(agent);
                 MatrixFrame stuckMeshFrame = GetGlobalMeshFrame(missileEntity.WeakEntity);
                 agent.DeleteAttachedWeapon(index);
                 SpawnLooseCopy(missileWeapon, stuckMeshFrame, agent);

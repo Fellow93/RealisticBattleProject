@@ -50,6 +50,9 @@ namespace RBMAI
             // OnTick runs on the main thread only, so one shared buffer serves every rider. GetNearbyAgents clears it first.
             private static readonly MBList<Agent> _riderCrowdScratch = new MBList<Agent>();
 
+            // Same for the banner-bearer enemy check. GetNearbyEnemyAgents clears it first.
+            private static readonly MBList<Agent> _bannerEnemyScratch = new MBList<Agent>();
+
             // A rider hemmed in by 3+ foot soldiers (either side), at least one of them an enemy. Horses, ridden or
             // not, are agents too and are not counted.
             private static bool IsRiderCrowdedByFoot(Agent rider)
@@ -265,12 +268,21 @@ namespace RBMAI
                     bool bannerHoldTarget = false;
                     if (___Agent.IsActive() && RBMAI.Utilities.IsBannerBearer(___Agent))
                     {
-                        MBList<Agent> bannerNearbyEnemies = new MBList<Agent>();
-                        bannerNearbyEnemies = Mission.Current.GetNearbyEnemyAgents(___Agent.GetWorldPosition().AsVec2, 5f, ___Agent.Team, bannerNearbyEnemies);
+                        MBList<Agent> bannerNearbyEnemies = _bannerEnemyScratch;
+                        Mission.Current.GetNearbyEnemyAgents(___Agent.GetWorldPosition().AsVec2, 5f, ___Agent.Team, bannerNearbyEnemies);
                         // Fleeing routers run through our lines and end up within 5m; a banner bearer shouldn't chase-swing
                         // at them (it can't catch them = "attacking air"), so treat only non-routing enemies as a reason to fight.
-                        bannerNearbyEnemies.RemoveAll((Agent a) => a.IsRunningAway);
-                        if (bannerNearbyEnemies.Count == 0 && ___Agent.Formation != null)
+                        int bannerFightingEnemies = 0;
+                        for (int i = 0; i < bannerNearbyEnemies.Count; i++)
+                        {
+                            if (!bannerNearbyEnemies[i].IsRunningAway)
+                            {
+                                bannerFightingEnemies++;
+                            }
+                        }
+                        // Don't keep the last batch of agents reachable from a static between frames.
+                        bannerNearbyEnemies.Clear();
+                        if (bannerFightingEnemies == 0 && ___Agent.Formation != null)
                         {
                             // Park on a grid neighbour rather than the nearest ally so bearers don't pull toward each other.
                             // Detached / removed units carry file-rank index -1 and the arrangement's neighbour lookup would

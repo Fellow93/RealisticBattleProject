@@ -1,7 +1,9 @@
 using HarmonyLib;
 using Helpers;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
@@ -399,6 +401,7 @@ namespace RBMCampaign
                 _cachePrimed = false;
                 _lastSweepDay = double.MinValue;
             }
+            _missionMemo = null;
             StrategicPowerLog.ResetForNewSession();
         }
 
@@ -517,10 +520,16 @@ namespace RBMCampaign
                 try
                 {
                     float power;
+                    if (TryGetMissionMemo(party, side, context, out power))
+                    {
+                        __result = power;
+                        return false;
+                    }
                     if (!TryGetPowerOfParty(party, side, context, out power))
                     {
                         return true;
                     }
+                    RememberForMission(party, side, context, power);
                     __result = power;
                     return false;
                 }
@@ -531,6 +540,143 @@ namespace RBMCampaign
                     return true;
                 }
             }
+        }
+
+        // ---------------------------------------------------------------------------------------------------------
+        // THE SAME PARTY, PRICED ONCE PER BATTLE. In a campaign battle every man who spawns re-prices EVERY party in
+        // it, about three times over: CampaignAgentComponent.GetMoraleAddition and SandboxBattleMoraleModel's
+        // StandUnited test both call MapEvent.GetStrengthsRelativeToParty, which walks all involved parties through
+        // GetCustomStrength. Vanilla's per-stack price is a tier formula; ours reads each troop's max hit points (a
+        // full stat-model call) on top, so a deployment of a thousand men against a few hundred stacks became a
+        // million of them. In a mission the campaign does not tick, so a party's price can only move when its roster
+        // does (casualties are booked live) -- the roster's VersionNo is in the key, so a loss re-prices it. Morale,
+        // the leader and the commander-perk hour are all frozen until the mission ends.
+        //
+        // Only for a party that is in a battle (MapEvent set): a town or tavern mission can still move a party's
+        // morale (buying a round), and nothing there needs the speed. Kept only while Mission.Current is set, and
+        // dropped on the first map pricing after it, so no stale price outlives the battle; the mission itself is
+        // held weakly, so a memo left over when the player quits the campaign does not keep it alive. Never used
+        // while the tooltip is capturing a breakdown (that needs the loop to run).
+
+        private struct MissionPowerKey : IEquatable<MissionPowerKey>
+        {
+            public readonly PartyBase Party;
+
+            public readonly BattleSideEnum Side;
+
+            public readonly MapEvent.PowerCalculationContext Context;
+
+            public readonly int RosterVersion;
+
+            public MissionPowerKey(PartyBase party, BattleSideEnum side, MapEvent.PowerCalculationContext context,
+                int rosterVersion)
+            {
+                Party = party;
+                Side = side;
+                Context = context;
+                RosterVersion = rosterVersion;
+            }
+
+            public bool Equals(MissionPowerKey other)
+            {
+                return ReferenceEquals(Party, other.Party) && Side == other.Side && Context == other.Context
+                    && RosterVersion == other.RosterVersion;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is MissionPowerKey && Equals((MissionPowerKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = RuntimeHelpers.GetHashCode(Party);
+                    hash = (hash * 397) ^ (int)Side;
+                    hash = (hash * 397) ^ (int)Context;
+                    hash = (hash * 397) ^ RosterVersion;
+                    return hash;
+                }
+            }
+        }
+
+        private sealed class MissionPowerMemo
+        {
+            private readonly WeakReference<TaleWorlds.MountAndBlade.Mission> _mission;
+
+            public readonly ConcurrentDictionary<MissionPowerKey, float> Entries =
+                new ConcurrentDictionary<MissionPowerKey, float>();
+
+            public MissionPowerMemo(TaleWorlds.MountAndBlade.Mission mission)
+            {
+                _mission = new WeakReference<TaleWorlds.MountAndBlade.Mission>(mission);
+            }
+
+            public bool IsFor(TaleWorlds.MountAndBlade.Mission mission)
+            {
+                TaleWorlds.MountAndBlade.Mission held;
+                return _mission.TryGetTarget(out held) && ReferenceEquals(held, mission);
+            }
+        }
+
+        private static volatile MissionPowerMemo _missionMemo;
+
+        /// <summary>The memo for the mission now running, or null on the map (which also drops the last one).</summary>
+        private static MissionPowerMemo CurrentMissionMemo(bool create)
+        {
+            TaleWorlds.MountAndBlade.Mission mission = TaleWorlds.MountAndBlade.Mission.Current;
+            MissionPowerMemo memo = _missionMemo;
+            if (mission == null)
+            {
+                if (memo != null)
+                {
+                    _missionMemo = null;
+                }
+                return null;
+            }
+            if (memo == null || !memo.IsFor(mission))
+            {
+                if (!create)
+                {
+                    return null;
+                }
+                memo = new MissionPowerMemo(mission);
+                _missionMemo = memo;
+            }
+            return memo;
+        }
+
+        private static bool TryGetMissionMemo(PartyBase party, BattleSideEnum side,
+            MapEvent.PowerCalculationContext context, out float power)
+        {
+            power = 0f;
+            if (party == null || party.MapEvent == null || party.MemberRoster == null || _captureFor == party)
+            {
+                return false;
+            }
+            MissionPowerMemo memo = CurrentMissionMemo(false);
+            if (memo == null)
+            {
+                return false;
+            }
+            return memo.Entries.TryGetValue(
+                new MissionPowerKey(party, side, context, party.MemberRoster.VersionNo), out power);
+        }
+
+        private static void RememberForMission(PartyBase party, BattleSideEnum side,
+            MapEvent.PowerCalculationContext context, float power)
+        {
+            if (party == null || party.MapEvent == null || party.MemberRoster == null)
+            {
+                return;
+            }
+            MissionPowerMemo memo = CurrentMissionMemo(true);
+            if (memo == null)
+            {
+                return;
+            }
+            memo.Entries[new MissionPowerKey(party, side, context, party.MemberRoster.VersionNo)] = power;
         }
 
         /// <summary>

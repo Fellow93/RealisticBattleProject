@@ -83,7 +83,7 @@ namespace RBMCombat
                 WeaponClass weaponType = attackerWeapon.CurrentUsageItem.WeaponClass;
 
                 float weaponTypeScaling = 1f;
-                RBMCombatConfigWeaponType rbmCombatConfigWeaponType = RBMConfig.RBMConfig.getWeaponTypeFactors(weaponType.ToString());
+                RBMCombatConfigWeaponType rbmCombatConfigWeaponType = RBMConfig.RBMConfig.getWeaponTypeFactors(Utilities.WeaponClassName(weaponType));
                 float armorThreshold = 4f;
                 float armorValue = ArmorRework.GetBaseArmorEffectivenessForBodyPartRBM(agent, attackCollisionData.VictimHitBodyPart);
 

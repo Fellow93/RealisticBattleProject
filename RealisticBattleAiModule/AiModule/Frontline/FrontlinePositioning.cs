@@ -641,35 +641,73 @@ namespace RBMAI
                 }
             }
 
+            private const float StepAllyReuseMin = 0.25f;
+            private const float StepAllyReuseJitter = 0.15f;
+            private const float StepAllyReuseMaxRange = 3f;
+
             // Returns a finished target position -- a short step toward the nearest ally, not the ally's own
             // position. Callers must use it as-is; scaling it again shrinks the step to nothing.
             public static WorldPosition GetStepTowardNearbyAlly(Mission mission, Vec2 unitPosition, Agent unit)
             {
-                MBList<Agent> nearbyAllyAgents = ScratchNearbyAllies;
-                mission.GetNearbyAllyAgents(unitPosition, 1.5f, unit.Team, nearbyAllyAgents);
-                if (nearbyAllyAgents.Count == 0)
-                {
-                    mission.GetNearbyAllyAgents(unitPosition, 3f, unit.Team, nearbyAllyAgents);
-                }
-                if (nearbyAllyAgents.Count == 0)
-                {
-                    mission.GetNearbyAllyAgents(unitPosition, 20f, unit.Team, nearbyAllyAgents);
-                }
-
                 Agent nearestAlly = null;
                 float nearestDistance = 10000f;
-                for (int i = 0; i < nearbyAllyAgents.Count; i++)
+
+                // The nearest ally is remembered for 0.25-0.4 s (AIDecisionState.stepAlly*) and reused while he is
+                // alive and still inside the radius he was found in, capped at StepAllyReuseMaxRange, so the reused
+                // man is one the same query tier would still return. Direction and distance stay live.
+                aiDecisionCooldownDict.TryGetValue(unit, out AIDecisionState memo);
+                float now = mission.CurrentTime;
+                if (memo != null)
                 {
-                    Agent ally = nearbyAllyAgents[i];
-                    if (ally == unit)
+                    Agent cachedAlly = memo.stepAllyCached;
+                    if (cachedAlly != null && now < memo.stepAllyExpiry && cachedAlly.IsActive())
                     {
-                        continue;
+                        float cachedDistance = unitPosition.Distance(cachedAlly.Position.AsVec2);
+                        if (cachedDistance <= MathF.Min(memo.stepAllyRadius, StepAllyReuseMaxRange))
+                        {
+                            nearestAlly = cachedAlly;
+                            nearestDistance = cachedDistance;
+                        }
                     }
-                    float allyDistance = unitPosition.Distance(ally.Position.AsVec2);
-                    if (allyDistance < nearestDistance)
+                }
+
+                if (nearestAlly == null)
+                {
+                    float searchRadius = 1.5f;
+                    MBList<Agent> nearbyAllyAgents = ScratchNearbyAllies;
+                    mission.GetNearbyAllyAgents(unitPosition, 1.5f, unit.Team, nearbyAllyAgents);
+                    if (nearbyAllyAgents.Count == 0)
                     {
-                        nearestAlly = ally;
-                        nearestDistance = allyDistance;
+                        searchRadius = 3f;
+                        mission.GetNearbyAllyAgents(unitPosition, 3f, unit.Team, nearbyAllyAgents);
+                    }
+                    if (nearbyAllyAgents.Count == 0)
+                    {
+                        searchRadius = 20f;
+                        mission.GetNearbyAllyAgents(unitPosition, 20f, unit.Team, nearbyAllyAgents);
+                    }
+
+                    for (int i = 0; i < nearbyAllyAgents.Count; i++)
+                    {
+                        Agent ally = nearbyAllyAgents[i];
+                        if (ally == unit)
+                        {
+                            continue;
+                        }
+                        float allyDistance = unitPosition.Distance(ally.Position.AsVec2);
+                        if (allyDistance < nearestDistance)
+                        {
+                            nearestAlly = ally;
+                            nearestDistance = allyDistance;
+                        }
+                    }
+
+                    // A "nobody found" answer is not remembered: the next frame queries again, as before.
+                    if (memo != null && nearestAlly != null)
+                    {
+                        memo.stepAllyCached = nearestAlly;
+                        memo.stepAllyRadius = searchRadius;
+                        memo.stepAllyExpiry = now + StepAllyReuseMin + StepAllyReuseJitter * IndexJitter(unit.Index);
                     }
                 }
 
@@ -733,9 +771,9 @@ namespace RBMAI
             }
 
             // False only when no unit of any enemy formation can be within `radius` of the unit: the distance to an
-            // enemy formation's bounding box (built from its units' actual positions once per frame, see
-            // Utilities.GetFormationUnitSnapshot) is a lower bound on the distance to each of its men, scattered or
-            // not. Enemies outside every formation are not counted: on their own they could only trip the >2 tests
+            // enemy formation's bounding box (built from its units' actual positions at most SnapshotMaxAge = 0.1 s
+            // ago, see Utilities.GetFormationUnitSnapshot; a rider covers ~1 m in that, inside the caller's 2 m gate
+            // margin) is a lower bound on the distance to each of its men, scattered or not. Enemies outside every formation are not counted: on their own they could only trip the >2 tests
             // above as three or more formation-less men close together, which field battles practically never have.
             private static bool IsEnemyFormationWithin(Mission mission, Agent unit, float radius)
             {
@@ -758,7 +796,7 @@ namespace RBMAI
                         {
                             continue;
                         }
-                        Utilities.FormationUnitSnapshot snapshot = Utilities.GetFormationUnitSnapshot(formation);
+                        Utilities.FormationUnitSnapshot snapshot = Utilities.GetFormationUnitSnapshot(formation, Utilities.SnapshotMaxAge);
                         if (snapshot.Agents.Length > 0 && snapshot.DistanceSquaredToBounds(position) <= radiusSquared)
                         {
                             return true;
@@ -827,7 +865,53 @@ namespace RBMAI
             private const float OccupancyLookahead = 0.5f;
             private const float OccupancyMaxShift = 0.5f;
 
+            // Verdict reuse (AIDecisionState.occupancy*): 0.1-0.15 s, jittered by agent index. Within one decision
+            // the probed spot only moves with the random step length (up to 0.35 m) and the man's own walk; it jumps
+            // further when the step direction swings (a new target or nearest ally, up to ~1 m in the Attack branch),
+            // so a spot more than OccupancyReuseMaxDrift from the one the verdict was taken for is probed afresh.
+            private const float OccupancyReuseMin = 0.1f;
+            private const float OccupancyReuseJitter = 0.05f;
+            private const float OccupancyReuseMaxDrift = 0.5f;
+            // A probe this close to the man's own spot (FindAlly's hold, a near-zero BackStep) is never "occupied":
+            // nobody can be nearer to it than to him. Such a verdict says nothing about his neighbours, so it is
+            // neither cached nor reused for a real step; it is queried as before.
+            private const float OccupancyMemoMinStep = 0.1f;
+
+            // Deterministic per-agent value in [0, 1) for spreading memo expiries: MBRandom is not thread-safe and
+            // this runs on the movement workers.
+            private static float IndexJitter(int index)
+            {
+                return unchecked(((uint)index * 2654435761u) >> 16) * (1f / 65536f);
+            }
+
             public static bool IsPositionOccupied(Mission mission, Vec2 position, Agent self)
+            {
+                // No decision state: the plain query, as before the memo.
+                if (!aiDecisionCooldownDict.TryGetValue(self, out AIDecisionState memo) || memo == null
+                    || position.DistanceSquared(self.Position.AsVec2) < OccupancyMemoMinStep * OccupancyMemoMinStep)
+                {
+                    return QueryPositionOccupied(mission, position, self);
+                }
+                AIMindset mindset = memo.AIMindset;
+                float now = mission.CurrentTime;
+                if (now < memo.occupancyExpiry
+                    && memo.occupancyDecision == mindset.currentDecision
+                    && memo.occupancyDecisionTimer == mindset.AIDecisionTimer
+                    && memo.occupancyPosition.IsValid
+                    && memo.occupancyPosition.DistanceSquared(position) <= OccupancyReuseMaxDrift * OccupancyReuseMaxDrift)
+                {
+                    return memo.occupancyVerdict;
+                }
+                bool verdict = QueryPositionOccupied(mission, position, self);
+                memo.occupancyVerdict = verdict;
+                memo.occupancyPosition = position;
+                memo.occupancyDecision = mindset.currentDecision;
+                memo.occupancyDecisionTimer = mindset.AIDecisionTimer;
+                memo.occupancyExpiry = now + OccupancyReuseMin + OccupancyReuseJitter * IndexJitter(self.Index);
+                return verdict;
+            }
+
+            private static bool QueryPositionOccupied(Mission mission, Vec2 position, Agent self)
             {
                 Vec2 currentPosition = self.Position.AsVec2;
                 MBList<Agent> nearbyAgents = ScratchOccupancy;

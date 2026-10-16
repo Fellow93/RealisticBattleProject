@@ -236,10 +236,72 @@ namespace RBMStance
             return _table.TryGetValue(key, out value) ? value : 0f;
         }
 
+        // The row suffixes the Get* methods read, in Row order.
+        private enum Row
+        {
+            SwingCost,
+            ThrustCost,
+            OverheadCost,
+            SwingDrain,
+            ThrustDrain,
+            OverheadDrain,
+            BlockCost,
+            BlockReflect,
+            ParryReflect,
+            IncorrectBlockCost,
+            IncorrectBlockReflect,
+            Count
+        }
+
+        private static readonly string[] RowSuffixes =
+        {
+            "_SWING_COST",
+            "_THRUST_COST",
+            "_OVERHEAD_COST",
+            "_SWING_DRAIN",
+            "_THRUST_DRAIN",
+            "_OVERHEAD_DRAIN",
+            "_BLOCK_COST",
+            "_BLOCK_REFLECT",
+            "_PARRY_REFLECT",
+            "_INCORRECT_BLOCK_COST",
+            "_INCORRECT_BLOCK_REFLECT"
+        };
+
+        // Every (weapon class, row) value resolved once through the same key and Lookup as a by-name read, so a
+        // melee blow does no enum-to-string or concatenation. The rows are constants, so it never needs a rebuild.
+        // After _table and RowSuffixes: static initializers run in textual order.
+        private static readonly float[,] _rows = BuildRows();
+
+        private static float[,] BuildRows()
+        {
+            int classCount = (int)WeaponClass.NumClasses + 1;
+            float[,] rows = new float[classCount, (int)Row.Count];
+            for (int i = 0; i < classCount; i++)
+            {
+                string key = GetTableKey((WeaponClass)i);
+                for (int row = 0; row < (int)Row.Count; row++)
+                {
+                    rows[i, row] = Lookup(key + RowSuffixes[row]);
+                }
+            }
+            return rows;
+        }
+
+        private static float Lookup(WeaponClass wc, Row row)
+        {
+            int i = (int)wc;
+            if (i >= 0 && i < _rows.GetLength(0))
+            {
+                return _rows[i, (int)row];
+            }
+            // Not a known class: resolve by name, as before.
+            return Lookup(GetTableKey(wc) + RowSuffixes[(int)row]);
+        }
+
         public static float GetDefenseCost(WeaponClass wc, MeleeHitType hitType)
         {
             float retVal = BASE_COST;
-            string weaponClassString = GetTableKey(wc);
             switch (hitType)
             {
                 // A parry or chamber reads the block row; the caller applies its factor.
@@ -249,14 +311,14 @@ namespace RBMStance
                 case MeleeHitType.ShieldParry:
                 case MeleeHitType.ChamberBlock:
                     {
-                        retVal += Lookup(weaponClassString + "_BLOCK_COST");
+                        retVal += Lookup(wc, Row.BlockCost);
                         break;
                     }
                 case MeleeHitType.ShieldIncorrectBlock:
                     {
                         if (wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
                         {
-                            retVal += Lookup(weaponClassString + "_INCORRECT_BLOCK_COST");
+                            retVal += Lookup(wc, Row.IncorrectBlockCost);
                         }
                         else
                         {
@@ -276,21 +338,20 @@ namespace RBMStance
         public static float GetAttackDrain(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
         {
             float retVal = BASE_DRAIN;
-            string weaponClassString = GetTableKey(wc);
             if (strikeType == StrikeType.Swing)
             {
                 if (attackDirection == Agent.UsageDirection.AttackUp)
                 {
-                    retVal += Lookup(weaponClassString + "_OVERHEAD_DRAIN");
+                    retVal += Lookup(wc, Row.OverheadDrain);
                 }
                 else
                 {
-                    retVal += Lookup(weaponClassString + "_SWING_DRAIN");
+                    retVal += Lookup(wc, Row.SwingDrain);
                 }
             }
             else
             {
-                retVal += Lookup(weaponClassString + "_THRUST_DRAIN");
+                retVal += Lookup(wc, Row.ThrustDrain);
             }
             return retVal;
         }
@@ -298,21 +359,20 @@ namespace RBMStance
         public static float GetAttackCost(WeaponClass wc, Agent.UsageDirection attackDirection, StrikeType strikeType)
         {
             float retVal = BASE_COST;
-            string weaponClassString = GetTableKey(wc);
             if (strikeType == StrikeType.Swing)
             {
                 if (attackDirection == Agent.UsageDirection.AttackUp)
                 {
-                    retVal += Lookup(weaponClassString + "_OVERHEAD_COST");
+                    retVal += Lookup(wc, Row.OverheadCost);
                 }
                 else
                 {
-                    retVal += Lookup(weaponClassString + "_SWING_COST");
+                    retVal += Lookup(wc, Row.SwingCost);
                 }
             }
             else
             {
-                retVal += Lookup(weaponClassString + "_THRUST_COST");
+                retVal += Lookup(wc, Row.ThrustCost);
             }
             return retVal;
         }
@@ -320,27 +380,26 @@ namespace RBMStance
         public static float GetDefenseReflect(WeaponClass wc, MeleeHitType hitType)
         {
             float retVal = BASE_REFLECT;
-            string weaponClassString = GetTableKey(wc);
             switch (hitType)
             {
                 case MeleeHitType.WeaponBlock:
                 case MeleeHitType.ShieldBlock:
                     {
-                        retVal += Lookup(weaponClassString + "_BLOCK_REFLECT");
+                        retVal += Lookup(wc, Row.BlockReflect);
                         break;
                     }
                 case MeleeHitType.WeaponParry:
                 case MeleeHitType.ShieldParry:
                 case MeleeHitType.ChamberBlock:
                     {
-                        retVal += Lookup(weaponClassString + "_PARRY_REFLECT");
+                        retVal += Lookup(wc, Row.ParryReflect);
                         break;
                     }
                 case MeleeHitType.ShieldIncorrectBlock:
                     {
                         if (wc == WeaponClass.SmallShield || wc == WeaponClass.LargeShield)
                         {
-                            retVal += Lookup(weaponClassString + "_INCORRECT_BLOCK_REFLECT");
+                            retVal += Lookup(wc, Row.IncorrectBlockReflect);
                         }
                         else
                         {

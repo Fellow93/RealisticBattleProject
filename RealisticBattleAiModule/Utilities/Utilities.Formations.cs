@@ -120,7 +120,7 @@ namespace RBMAI
             // Bulletproof fallback: every Raise Your Banner item id begins with "RYB_" (StringId == the XML item id),
             // including the TwoHandedPolearm "spear banner" variants that share no banner WeaponClass.
             ItemObject item = weapon.Item;
-            return item != null && item.StringId != null && item.StringId.StartsWith("RYB_");
+            return item != null && item.StringId != null && item.StringId.StartsWith("RYB_", StringComparison.Ordinal);
         }
 
         public static bool IsBannerBearer(Agent agent)

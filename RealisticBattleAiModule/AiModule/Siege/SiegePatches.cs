@@ -366,6 +366,35 @@ namespace RBMAI
         //    }
         //}
 
+        // Ladder/tower queue spacing, re-applied every tick. Cached field refs instead of a GetField + SetValue
+        // per field per frame; each field is written only when it differs. The ladder prefix can run on the
+        // parallel siege-weapon tick, and a float store through a FieldRef is as atomic as SetValue was.
+        private static readonly AccessTools.FieldRef<LadderQueueManager, float> _queueAgentSpacing =
+            AccessTools.FieldRefAccess<LadderQueueManager, float>("_agentSpacing");
+        private static readonly AccessTools.FieldRef<LadderQueueManager, float> _queueBeginDistance =
+            AccessTools.FieldRefAccess<LadderQueueManager, float>("_queueBeginDistance");
+        private static readonly AccessTools.FieldRef<LadderQueueManager, float> _queueRowSize =
+            AccessTools.FieldRefAccess<LadderQueueManager, float>("_queueRowSize");
+
+        private static void ApplyQueueSpacing(LadderQueueManager queue)
+        {
+            ref float agentSpacing = ref _queueAgentSpacing(queue);
+            if (agentSpacing != 1.5f)
+            {
+                agentSpacing = 1.5f;
+            }
+            ref float queueBeginDistance = ref _queueBeginDistance(queue);
+            if (queueBeginDistance != 3f)
+            {
+                queueBeginDistance = 3f;
+            }
+            ref float queueRowSize = ref _queueRowSize(queue);
+            if (queueRowSize != 1.5f)
+            {
+                queueRowSize = 1.5f;
+            }
+        }
+
         [HarmonyPatch(typeof(SiegeTower))]
         private class OverrideSiegeTower
         {
@@ -377,17 +406,7 @@ namespace RBMAI
                 {
                     foreach (var queue in ____queueManagers)
                     {
-                        FieldInfo _agentSpacing = typeof(LadderQueueManager).GetField("_agentSpacing", BindingFlags.NonPublic | BindingFlags.Instance);
-                        _agentSpacing.DeclaringType.GetField("_agentSpacing");
-                        _agentSpacing.SetValue(queue, 1.5f);
-
-                        FieldInfo _queueBeginDistance = typeof(LadderQueueManager).GetField("_queueBeginDistance", BindingFlags.NonPublic | BindingFlags.Instance);
-                        _queueBeginDistance.DeclaringType.GetField("_queueBeginDistance");
-                        _queueBeginDistance.SetValue(queue, 3f);
-
-                        FieldInfo _queueRowSize = typeof(LadderQueueManager).GetField("_queueRowSize", BindingFlags.NonPublic | BindingFlags.Instance);
-                        _queueRowSize.DeclaringType.GetField("_queueRowSize");
-                        _queueRowSize.SetValue(queue, 1.5f);
+                        ApplyQueueSpacing(queue);
                     }
                 }
             }
@@ -402,17 +421,7 @@ namespace RBMAI
             {
                 if (____queueManagerForAttackers != null)
                 {
-                    FieldInfo _agentSpacing = typeof(LadderQueueManager).GetField("_agentSpacing", BindingFlags.NonPublic | BindingFlags.Instance);
-                    _agentSpacing.DeclaringType.GetField("_agentSpacing");
-                    _agentSpacing.SetValue(____queueManagerForAttackers, 1.5f);
-
-                    FieldInfo _queueBeginDistance = typeof(LadderQueueManager).GetField("_queueBeginDistance", BindingFlags.NonPublic | BindingFlags.Instance);
-                    _queueBeginDistance.DeclaringType.GetField("_queueBeginDistance");
-                    _queueBeginDistance.SetValue(____queueManagerForAttackers, 3f);
-
-                    FieldInfo _queueRowSize = typeof(LadderQueueManager).GetField("_queueRowSize", BindingFlags.NonPublic | BindingFlags.Instance);
-                    _queueRowSize.DeclaringType.GetField("_queueRowSize");
-                    _queueRowSize.SetValue(____queueManagerForAttackers, 1.5f);
+                    ApplyQueueSpacing(____queueManagerForAttackers);
                 }
 
                 if (sideEnum == BattleSideEnum.Defender)

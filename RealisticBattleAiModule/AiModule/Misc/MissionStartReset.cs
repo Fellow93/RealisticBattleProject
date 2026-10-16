@@ -65,6 +65,7 @@ namespace RBMAI
 
             // Agent-keyed state. Some of these were only cleared from MissionCombatantsLogic.EarlyStart, i.e. field
             // battles, so town, arena and other missions without it kept the last battle's agents alive.
+            // Also drops the Agents its states hold (cachedTarget, cachedHeadingTarget, stepAllyCached).
             Frontline.aiDecisionCooldownDict.Clear();
             Tactics.agentDamage.Clear();
             AgentAi.OnTickPatch.itemPickupDistanceStorage.Clear();

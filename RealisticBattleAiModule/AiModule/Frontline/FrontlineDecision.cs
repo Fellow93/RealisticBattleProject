@@ -196,6 +196,23 @@ namespace RBMAI
             public Agent cachedHeadingTarget = null;
             public WorldPosition cachedHeadingPosition = WorldPosition.Invalid;
             public float cachedHeadingExpiry = float.MinValue;
+
+            // Step-branch memos (OverrideFormation.IsPositionOccupied / GetStepTowardNearbyAlly): each step branch
+            // ran a 1.2 m all-agents query every frame, FindAlly 1-3 more, all behind Mission's global agent-query
+            // lock. The occupied/free verdict is reused for 0.1-0.15 s while the decision (the same decision frame,
+            // tracked by its AIDecisionTimer) holds and the probed spot stays near the one it was taken for; the
+            // nearest ally for 0.25-0.4 s while he is alive and within reach. Only the worker ticking this agent
+            // touches them in a frame; a stray main-thread caller (the AI behaviour log's slot sampling) can at worst
+            // read or write one memo a frame early or late, which only means one fresh or one reused query.
+            public bool occupancyVerdict = false;
+            public Vec2 occupancyPosition = Vec2.Invalid;
+            public AIMindset.AIDecision occupancyDecision = AIMindset.AIDecision.Attack;
+            public Timer occupancyDecisionTimer = null;
+            public float occupancyExpiry = float.MinValue;
+            public Agent stepAllyCached = null;
+            // The search radius (1.5/3/20 m) the cached ally was found in.
+            public float stepAllyRadius = 0f;
+            public float stepAllyExpiry = float.MinValue;
         }
 
         // Returns this agent's melee/charge target, reusing the cached one while it is fresh and still alive.

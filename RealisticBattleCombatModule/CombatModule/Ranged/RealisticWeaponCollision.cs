@@ -39,6 +39,28 @@ namespace RBMCombat
 
         private static float plateBluntStick = 33f;
 
+        // Hit particle runtime ids, looked up once (a native, string-marshalled call) instead of three times per
+        // damaging hit. The ids are engine-wide; vanilla's DefaultDamageParticleModel caches the same ones in its
+        // constructor and keeps them for every mission of a game.
+        private static bool hitParticleIdsCached;
+        private static int sweatSwordEnterId;
+        private static int bloodSwordEnterId;
+        private static int bloodSwordInsideId;
+        private static int bloodSwordExitId;
+
+        private static void CacheHitParticleIds()
+        {
+            if (hitParticleIdsCached)
+            {
+                return;
+            }
+            sweatSwordEnterId = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
+            bloodSwordEnterId = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_enter");
+            bloodSwordInsideId = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_inside");
+            bloodSwordExitId = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_exit");
+            hitParticleIdsCached = true;
+        }
+
         public static ArmorComponent.ArmorMaterialTypes GetMateirialTypeofHitBodyPart(Agent defender, BoneBodyPartType hitBodyPart)
         {
             EquipmentIndex equipmentIndex = EquipmentIndex.None;
@@ -129,25 +151,26 @@ namespace RBMCombat
             {
                 return;
             }
+            CacheHitParticleIds();
             if (!blow.WeaponRecord.HasWeapon() || blow.WeaponRecord.WeaponFlags.HasFlag(WeaponFlags.NoBlood) || collisionData.IsAlternativeAttack)
             {
-                hprd.StartHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
-                hprd.ContinueHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
-                hprd.EndHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
+                hprd.StartHitParticleIndex = sweatSwordEnterId;
+                hprd.ContinueHitParticleIndex = sweatSwordEnterId;
+                hprd.EndHitParticleIndex = sweatSwordEnterId;
                 return;
             }
             ArmorComponent.ArmorMaterialTypes mateirialTypeofHitBodyPart = GetMateirialTypeofHitBodyPart(victim, collisionData.VictimHitBodyPart);
             if ((mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Chainmail || mateirialTypeofHitBodyPart == ArmorComponent.ArmorMaterialTypes.Plate) && (blow.DamageType == DamageTypes.Cut || blow.DamageType == DamageTypes.Blunt) || blow.InflictedDamage <= 20)
             {
-                hprd.StartHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
-                hprd.ContinueHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_inside");
-                hprd.EndHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_sweat_sword_enter");
+                hprd.StartHitParticleIndex = sweatSwordEnterId;
+                hprd.ContinueHitParticleIndex = bloodSwordInsideId;
+                hprd.EndHitParticleIndex = sweatSwordEnterId;
             }
             else
             {
-                hprd.StartHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_enter");
-                hprd.ContinueHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_inside");
-                hprd.EndHitParticleIndex = ParticleSystemManager.GetRuntimeIdByName("psys_game_blood_sword_exit");
+                hprd.StartHitParticleIndex = bloodSwordEnterId;
+                hprd.ContinueHitParticleIndex = bloodSwordInsideId;
+                hprd.EndHitParticleIndex = bloodSwordExitId;
             }
         }
 

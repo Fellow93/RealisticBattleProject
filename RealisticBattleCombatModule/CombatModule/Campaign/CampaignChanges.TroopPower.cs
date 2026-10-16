@@ -6,6 +6,7 @@ using StoryMode.Missions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
@@ -92,32 +93,78 @@ namespace RBMCombat
                 return (float)((2f + tier) * (8f + tier)) * 0.02f * (isHero ? 1.5f : 1f) * (isMounted ? 1.5f : 1f) * (isNoble ? 1.5f : 1f);
             }
 
+            private sealed class NobleEntry
+            {
+                public readonly CultureObject Culture;
+
+                public readonly bool IsNoble;
+
+                public NobleEntry(CultureObject culture, bool isNoble)
+                {
+                    Culture = culture;
+                    IsNoble = isNoble;
+                }
+            }
+
+            // Whether a troop sits in his culture's noble (elite) upgrade tree. GetPower and GetBattlePower are asked
+            // per spawn, per casualty and per scoreboard update (twice per troop type of the party), and walking the
+            // tree allocated a dozen lists each time for an answer that only changes with the troop's culture.
+            // Weakly keyed, so a template from an unloaded campaign is not held; thread-safe for the AI's threads.
+            private static readonly ConditionalWeakTable<CharacterObject, NobleEntry> _nobleCache =
+                new ConditionalWeakTable<CharacterObject, NobleEntry>();
+
+            private static bool IsNobleTroop(CharacterObject troop)
+            {
+                if (troop == null || troop.Culture == null)
+                {
+                    return false;
+                }
+                CultureObject culture = troop.Culture;
+                NobleEntry entry;
+                if (_nobleCache.TryGetValue(troop, out entry) && entry.Culture == culture)
+                {
+                    return entry.IsNoble;
+                }
+                bool isNoble = false;
+                CharacterObject EliteBasicTroop = culture.EliteBasicTroop;
+                if (troop == EliteBasicTroop)
+                {
+                    isNoble = true;
+                }
+                else
+                {
+                    List<CharacterObject> cultureNobleTroopList = FillTroopListUntilTier(EliteBasicTroop, 10);
+                    foreach (CharacterObject co in cultureNobleTroopList)
+                    {
+                        if (co == troop)
+                        {
+                            isNoble = true;
+                        }
+                    }
+                }
+                // An entry is never rewritten (another thread may be reading it): a character whose culture changed
+                // after he was cached -- a hero, rarely -- is simply worked out afresh each time.
+                if (entry == null)
+                {
+                    try
+                    {
+                        _nobleCache.Add(troop, new NobleEntry(culture, isNoble));
+                    }
+                    catch (System.ArgumentException)
+                    {
+                        // Another thread added it first; its answer is the same.
+                    }
+                }
+                return isNoble;
+            }
+
             [HarmonyPrefix]
             [HarmonyPatch("GetPower")]
             private static bool PrefixGetPower(ref CharacterObject __instance, ref float __result)
             {
                 //return GetPowerImp(IsHero ? (HeroObject.Level / 4 + 1) : Tier, IsHero, IsMounted);
                 int tier = __instance.IsHero ? (__instance.HeroObject.Level / 4 + 1) : __instance.Tier;
-                bool isNoble = false;
-                if (__instance != null && __instance.Culture != null)
-                {
-                    CharacterObject EliteBasicTroop = __instance.Culture.EliteBasicTroop;
-                    if (__instance == EliteBasicTroop)
-                    {
-                        isNoble = true;
-                    }
-                    else
-                    {
-                        List<CharacterObject> cultureNobleTroopList = FillTroopListUntilTier(__instance.Culture.EliteBasicTroop, 10);
-                        foreach (CharacterObject co in cultureNobleTroopList)
-                        {
-                            if (co == __instance)
-                            {
-                                isNoble = true;
-                            }
-                        }
-                    }
-                }
+                bool isNoble = IsNobleTroop(__instance);
                 //float origPower = (float)((2 + tier) * (8 + tier)) * 0.02f * (__instance.IsHero ? 1.5f : (__instance.IsMounted ? 1.2f : 1f));
                 float modifiedTier = (tier - 1) * 3f;
                 modifiedTier = MathF.Clamp(modifiedTier, 1f, modifiedTier);
@@ -130,26 +177,7 @@ namespace RBMCombat
             private static bool PrefixGetBattlePower(ref CharacterObject __instance, ref float __result)
             {
                 int tier = __instance.IsHero ? (__instance.HeroObject.Level / 4 + 1) : __instance.Tier;
-                bool isNoble = false;
-                if (__instance != null && __instance.Culture != null)
-                {
-                    CharacterObject EliteBasicTroop = __instance.Culture.EliteBasicTroop;
-                    if (__instance == EliteBasicTroop)
-                    {
-                        isNoble = true;
-                    }
-                    else
-                    {
-                        List<CharacterObject> cultureNobleTroopList = FillTroopListUntilTier(__instance.Culture.EliteBasicTroop, 10);
-                        foreach (CharacterObject co in cultureNobleTroopList)
-                        {
-                            if (co == __instance)
-                            {
-                                isNoble = true;
-                            }
-                        }
-                    }
-                }
+                bool isNoble = IsNobleTroop(__instance);
                 float modifiedTier = (tier - 1) * 3f;
                 modifiedTier = MathF.Clamp(modifiedTier, 1f, modifiedTier);
                 //__result = (float)((2f + modifiedTier) * (8f + modifiedTier)) * 0.02f * (__instance.IsHero ? 1.5f : 1f) * (__instance.IsMounted ? 1.5f : 1f) * (isNoble ? 1.5f : 1f);

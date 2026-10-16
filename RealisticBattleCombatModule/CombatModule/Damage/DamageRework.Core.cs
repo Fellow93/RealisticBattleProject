@@ -45,6 +45,28 @@ namespace RBMCombat
         private static readonly MethodInfo UpdateLastAttackAndHitTimesMethod =
             typeof(Agent).GetMethod("UpdateLastAttackAndHitTimes", BindingFlags.NonPublic | BindingFlags.Instance);
 
+        // Bound once as an open-instance delegate (Agent is a class) instead of a MethodInfo.Invoke per shield hit.
+        // It calls the method's own code, which Harmony detours, so RBMAI's prefix on it still runs.
+        private static readonly Action<Agent, Agent, bool> UpdateLastAttackAndHitTimes = BindUpdateLastAttackAndHitTimes();
+
+        private static Action<Agent, Agent, bool> BindUpdateLastAttackAndHitTimes()
+        {
+            if (UpdateLastAttackAndHitTimesMethod != null)
+            {
+                try
+                {
+                    return (Action<Agent, Agent, bool>)Delegate.CreateDelegate(typeof(Action<Agent, Agent, bool>), UpdateLastAttackAndHitTimesMethod);
+                }
+                catch (ArgumentException)
+                {
+                    // Signature changed (game update): the reflection call below, so only this call fails, as before,
+                    // never the whole class's type initializer.
+                }
+            }
+            // Method gone or changed (game update): fail exactly as the old reflection call did.
+            return (victim, attacker, isMissile) => UpdateLastAttackAndHitTimesMethod.Invoke(victim, new object[] { attacker, isMissile });
+        }
+
         private static readonly MethodInfo HandleBlowAuxMethod =
             typeof(Agent).GetMethod("HandleBlowAux", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -400,7 +422,7 @@ namespace RBMCombat
                 string weaponType = "otherDamage";
                 if (attackerWeapon != null)
                 {
-                    weaponType = attackerWeapon.WeaponClass.ToString();
+                    weaponType = Utilities.WeaponClassName(attackerWeapon.WeaponClass);
                 }
                 else
                 {
@@ -621,7 +643,7 @@ namespace RBMCombat
 
                 if (victim != null && attacker != null)
                 {
-                    UpdateLastAttackAndHitTimesMethod.Invoke(victim, new object[] { attacker, attackCollisionData.IsMissile });
+                    UpdateLastAttackAndHitTimes(victim, attacker, attackCollisionData.IsMissile);
                 }
 
                 victimShield = attackInformation.VictimShield;
@@ -634,7 +656,7 @@ namespace RBMCombat
                     string weaponType = "otherDamage";
                     if (attackerWeapon != null)
                     {
-                        weaponType = attackerWeapon.WeaponClass.ToString();
+                        weaponType = Utilities.WeaponClassName(attackerWeapon.WeaponClass);
                     }
 
                     bool isPassiveUsage = attackInformation.IsAttackerAgentDoingPassiveAttack;

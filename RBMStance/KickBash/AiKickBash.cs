@@ -534,12 +534,8 @@ namespace RBMStance
                 {
                     return false;
                 }
-                // Not while bracing: the passive usage set has no guard and no kick usage.
-                WeaponComponentData weapon = Agent.WieldedWeapon.IsEmpty ? null : Agent.WieldedWeapon.CurrentUsageItem;
-                if (Agent.IsDoingPassiveAttack || (weapon != null && MBItem.GetItemIsPassiveUsage(weapon.ItemUsage)))
-                {
-                    return false;
-                }
+                // Every check here only reads, so their order is free: the target and reach gate, which turns most men
+                // away, runs before the bracing engine queries.
                 Agent target = Agent.GetTargetAgent();
                 // The target is not always an enemy: a banner bearer's is parked on a squadmate (TickPatches) to keep him
                 // from swinging at a distant enemy. Nothing to kick over in a man already down.
@@ -550,6 +546,12 @@ namespace RBMStance
                 Vec2 toTarget = target.Position.AsVec2 - Agent.Position.AsVec2;
                 float distance = toTarget.Normalize();
                 if (distance > AiKickBash.TriggerDistance || Agent.GetMovementDirection().DotProduct(toTarget) < AiKickBash.FacingCosine)
+                {
+                    return false;
+                }
+                // Not while bracing: the passive usage set has no guard and no kick usage.
+                WeaponComponentData weapon = Agent.WieldedWeapon.IsEmpty ? null : Agent.WieldedWeapon.CurrentUsageItem;
+                if (Agent.IsDoingPassiveAttack || (weapon != null && MBItem.GetItemIsPassiveUsage(weapon.ItemUsage)))
                 {
                     return false;
                 }

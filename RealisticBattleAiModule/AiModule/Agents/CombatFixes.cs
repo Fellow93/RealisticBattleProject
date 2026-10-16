@@ -165,10 +165,24 @@ namespace RBMAI
         [HarmonyPatch("UpdateLastAttackAndHitTimes")]
         internal class UpdateLastAttackAndHitTimesFix
         {
-            private static readonly PropertyInfo _lastRangedHitTime = typeof(Agent).GetProperty("LastRecievedRangedHitTime");
-            private static readonly PropertyInfo _lastRangedAttackTime = typeof(Agent).GetProperty("LastRangedHitTime");
-            private static readonly PropertyInfo _lastMeleeHitTime = typeof(Agent).GetProperty("LastRecievedMeleeHitTime");
-            private static readonly PropertyInfo _lastMeleeAttackTime = typeof(Agent).GetProperty("LastMeleeHitTime");
+            // The private setters, bound once as open-instance delegates (Agent is a class) instead of a
+            // PropertyInfo.SetValue per blow.
+            private static readonly Action<Agent, float> _lastRangedHitTime = BindSetter("LastRecievedRangedHitTime");
+            private static readonly Action<Agent, float> _lastRangedAttackTime = BindSetter("LastRangedHitTime");
+            private static readonly Action<Agent, float> _lastMeleeHitTime = BindSetter("LastRecievedMeleeHitTime");
+            private static readonly Action<Agent, float> _lastMeleeAttackTime = BindSetter("LastMeleeHitTime");
+
+            private static Action<Agent, float> BindSetter(string propertyName)
+            {
+                PropertyInfo property = typeof(Agent).GetProperty(propertyName);
+                MethodInfo setter = property?.GetSetMethod(true);
+                if (setter != null)
+                {
+                    return (Action<Agent, float>)Delegate.CreateDelegate(typeof(Action<Agent, float>), setter);
+                }
+                // Property or setter gone (game update): fail exactly as the old reflection call did.
+                return (agent, value) => property.SetValue(agent, value, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+            }
 
             private static bool Prefix(ref Agent __instance, Agent attackerAgent, bool isMissile)
             {
@@ -176,12 +190,12 @@ namespace RBMAI
                 if (isMissile)
                 {
                     //__instance.LastRecievedRangedHitTime = currentTime;
-                    _lastRangedHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    _lastRangedHitTime(__instance, currentTime);
                 }
                 else
                 {
                     //LastRecievedMeleeHitTime = currentTime;
-                    _lastMeleeHitTime.SetValue(__instance, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    _lastMeleeHitTime(__instance, currentTime);
                 }
                 // v1.5.x: vanilla also stamps the contact times here. FormationQuerySystem.IsUnderRangedAttack
                 // reads only those, so without this a formation counts as under fire only from shield-blocked
@@ -192,12 +206,12 @@ namespace RBMAI
                     if (isMissile)
                     {
                         //attackerAgent.LastRangedHitTime = currentTime;
-                        _lastRangedAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        _lastRangedAttackTime(attackerAgent, currentTime);
                     }
                     else
                     {
                         //attackerAgent.LastMeleeHitTime = currentTime;
-                        _lastMeleeAttackTime.SetValue(attackerAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                        _lastMeleeAttackTime(attackerAgent, currentTime);
                     }
                 }
 
@@ -208,12 +222,12 @@ namespace RBMAI
                         if (isMissile)
                         {
                             //__instance.LastRecievedRangedHitTime = currentTime;
-                            _lastRangedHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            _lastRangedHitTime(__instance.RiderAgent, currentTime);
                         }
                         else
                         {
                             //LastRecievedMeleeHitTime = currentTime;
-                            _lastMeleeHitTime.SetValue(__instance.RiderAgent, currentTime, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                            _lastMeleeHitTime(__instance.RiderAgent, currentTime);
                         }
                         __instance.RiderAgent.UpdateLastRecievedContactTimes(isMissile);
                     }

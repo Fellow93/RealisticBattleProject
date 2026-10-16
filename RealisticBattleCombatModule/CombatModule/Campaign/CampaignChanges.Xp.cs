@@ -51,6 +51,31 @@ namespace RBMCombat
         [HarmonyPatch(typeof(DefaultCombatXpModel))]
         private class GetXpFromHitPatch
         {
+            private delegate void BattleXpBonusFromPerks(PartyBase party, ref ExplainedNumber xpToGain, CharacterObject troop);
+
+            // Vanilla's private perk bonus, bound once. This runs on every damaging hit by a party troop, and
+            // GetMethod + Invoke per hit looked the method up again and boxed the ExplainedNumber each time.
+            // Null if the method ever disappears from a game version, which skips the bonus as before.
+            private static readonly BattleXpBonusFromPerks _battleXpBonusFromPerks = BindBattleXpBonusFromPerks();
+
+            private static BattleXpBonusFromPerks BindBattleXpBonusFromPerks()
+            {
+                MethodInfo method = typeof(DefaultCombatXpModel).GetMethod("GetBattleXpBonusFromPerks", BindingFlags.NonPublic | BindingFlags.Static);
+                if (method == null)
+                {
+                    return null;
+                }
+                try
+                {
+                    return (BattleXpBonusFromPerks)System.Delegate.CreateDelegate(typeof(BattleXpBonusFromPerks), method);
+                }
+                catch (System.ArgumentException)
+                {
+                    // Signature changed: no bonus, as when the method is missing.
+                    return null;
+                }
+            }
+
             [HarmonyPrefix]
             [HarmonyPatch("GetXpFromHit")]
             private static bool PrefixGetXpFromHit(ref ExplainedNumber __result, ref DefaultCombatXpModel __instance, CharacterObject attackerTroop, PartyBase attackerParty, CharacterObject captain, CharacterObject attackedTroop, int damage, bool isFatal, MissionTypeEnum missionType)
@@ -99,17 +124,9 @@ namespace RBMCombat
                     //rawXpNum = rawXpNum * xpModifier * levelDiffModifier;
                     rawXpNum = rawXpNum * xpModifier;
                     ExplainedNumber xpToGain = new ExplainedNumber(rawXpNum);
-                    if (attackerParty != null)
+                    if (attackerParty != null && _battleXpBonusFromPerks != null)
                     {
-                        MethodInfo method = typeof(DefaultCombatXpModel).GetMethod("GetBattleXpBonusFromPerks", BindingFlags.NonPublic | BindingFlags.Static);
-                        if (method != null)
-                        {
-                            // ExplainedNumber is a struct passed by ref: the callee writes into the boxed
-                            // args[1], so it must be read back or every perk bonus is discarded.
-                            object[] args = new object[] { attackerParty, xpToGain, attackerTroop };
-                            method.Invoke(null, args);
-                            xpToGain = (ExplainedNumber)args[1];
-                        }
+                        _battleXpBonusFromPerks(attackerParty, ref xpToGain, attackerTroop);
                     }
                     if (captain != null && captain.IsHero && captain.GetPerkValue(DefaultPerks.Leadership.InspiringLeader))
                     {

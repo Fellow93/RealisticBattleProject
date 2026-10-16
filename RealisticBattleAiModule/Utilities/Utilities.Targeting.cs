@@ -76,9 +76,10 @@ namespace RBMAI
         // One formation's units as of one frame, shared by every caller in that frame. The nearest-agent scans below
         // run per charging agent (GetCorrectTarget, every 0.5-1 s each, from the parallel movement job) and each used
         // to walk every enemy formation's roster with a fresh ToArray; the cavalry free-charge gate in
-        // FrontlinePositioning reads the bounds every frame. Same scheme as SignificantFormationsEntry: built once
-        // per formation per frame and never mutated after it is published, so workers only ever read a finished
-        // one; two workers racing on the same frame both build it, which is harmless. Cleared in MissionStartReset.
+        // FrontlinePositioning reads the bounds every frame (and accepts one up to SnapshotMaxAge old). Same scheme as
+        // SignificantFormationsEntry: built at most once per formation per frame and never mutated after it is
+        // published, so workers only ever read a finished one; two workers racing on the same frame both build it,
+        // which is harmless. Cleared in MissionStartReset.
         internal sealed class FormationUnitSnapshot
         {
             public readonly float Time;
@@ -134,19 +135,48 @@ namespace RBMAI
 
         internal static readonly ConcurrentDictionary<Formation, FormationUnitSnapshot> formationUnitSnapshots = new ConcurrentDictionary<Formation, FormationUnitSnapshot>();
 
+        // How old a snapshot the cavalry free-charge gate (FrontlinePositioning's IsEnemyFormationWithin, per AI rider
+        // per frame, bounds only) accepts. The target pickers below stay on this frame's snapshot: they also read
+        // Selectable (the routing flag), which must not lag.
+        internal const float SnapshotMaxAge = 0.1f;
+
         // The returned snapshot is shared between callers: read it, never modify it. A unit can die after the snapshot
         // was taken in the same frame, so pickers re-check IsActive (the live roster they replace never held the dead).
         internal static FormationUnitSnapshot GetFormationUnitSnapshot(Formation formation)
         {
+            return GetFormationUnitSnapshot(formation, 0f);
+        }
+
+        // maxAge > 0 also accepts a snapshot from an earlier frame younger than maxAge, unless the formation has
+        // gained or lost a man since (its unit count no longer matches the snapshot's).
+        internal static FormationUnitSnapshot GetFormationUnitSnapshot(Formation formation, float maxAge)
+        {
             Mission mission = Mission.Current;
             float now = mission != null ? mission.CurrentTime : 0f;
-            if (mission != null && formationUnitSnapshots.TryGetValue(formation, out FormationUnitSnapshot entry) && entry.Time == now)
+            if (mission != null && formationUnitSnapshots.TryGetValue(formation, out FormationUnitSnapshot entry))
             {
-                return entry;
+                if (entry.Time == now)
+                {
+                    return entry;
+                }
+                if (maxAge > 0f && entry.Time < now && now - entry.Time < maxAge && entry.Agents.Length == formation.CountOfUnits)
+                {
+                    return entry;
+                }
             }
-            List<Agent> units = new List<Agent>(formation.CountOfUnits);
-            formation.ApplyActionOnEachUnitViaBackupList(units.Add);
-            FormationUnitSnapshot snapshot = new FormationUnitSnapshot(now, units.ToArray());
+            // Same content and order as ApplyActionOnEachUnitViaBackupList (arrangement units, then detached ones),
+            // and like it each live list is copied with one ToArray first: this runs on the movement workers, and
+            // indexing a live list another thread shrinks could throw. The copies go straight into the snapshot's
+            // array instead of through a List and a second ToArray.
+            IFormationUnit[] attachedUnits = formation.Arrangement.GetAllUnits().ToArray();
+            Agent[] detachedUnits = formation.DetachedUnits.ToArray();
+            Agent[] units = new Agent[attachedUnits.Length + detachedUnits.Length];
+            for (int i = 0; i < attachedUnits.Length; i++)
+            {
+                units[i] = (Agent)attachedUnits[i];
+            }
+            Array.Copy(detachedUnits, 0, units, attachedUnits.Length, detachedUnits.Length);
+            FormationUnitSnapshot snapshot = new FormationUnitSnapshot(now, units);
             if (mission != null)
             {
                 formationUnitSnapshots[formation] = snapshot;

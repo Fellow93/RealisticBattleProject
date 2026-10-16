@@ -72,6 +72,17 @@ namespace RBM.AgentStatusBar
                 }
                 _newAgents.Clear();
             }
+            // Bars switched off (the default until Ctrl+H) or the menu is open: every bar would be hidden by the test
+            // below anyway, so skip the per-agent screen projection and the map copy, and only hide and prune.
+            if (_keyToggled || _escapeMenuOpened)
+            {
+                foreach (KeyValuePair<Agent, AgentStatusVM> entry in _agentStatusMap)
+                {
+                    entry.Value.IsHidden = true;
+                }
+                RemoveFinishedEntries(_agentStatusMap);
+                return;
+            }
             _agentDictionary = new Dictionary<Agent, AgentStatusVM>(_agentStatusMap);
             foreach (KeyValuePair<Agent, AgentStatusVM> entry2 in _agentDictionary)
             {
@@ -137,10 +148,26 @@ namespace RBM.AgentStatusBar
                     entry2.Value.IsHidden = true;
                 }
             }
-            foreach (KeyValuePair<Agent, AgentStatusVM> entry in _agentDictionary.Where((KeyValuePair<Agent, AgentStatusVM> e) => e.Key.State == AgentState.Deleted || (e.Value._isRemoved && !e.Value._isHit)))
+            RemoveFinishedEntries(_agentDictionary);
+        }
+
+        private readonly List<KeyValuePair<Agent, AgentStatusVM>> _finishedEntries = new List<KeyValuePair<Agent, AgentStatusVM>>();
+
+        // Deleted agents, and removed ones whose hit fade is over. Collected first because RemoveEntry edits the map.
+        private void RemoveFinishedEntries(Dictionary<Agent, AgentStatusVM> entries)
+        {
+            foreach (KeyValuePair<Agent, AgentStatusVM> e in entries)
+            {
+                if (e.Key.State == AgentState.Deleted || (e.Value._isRemoved && !e.Value._isHit))
+                {
+                    _finishedEntries.Add(e);
+                }
+            }
+            foreach (KeyValuePair<Agent, AgentStatusVM> entry in _finishedEntries)
             {
                 RemoveEntry(entry.Key, entry.Value);
             }
+            _finishedEntries.Clear();
         }
 
         private void RemoveEntry(Agent agent, AgentStatusVM status)

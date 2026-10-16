@@ -33,6 +33,29 @@ namespace RBMCombat
         }
 
         private static readonly PropertyInfo MissileSpeedProperty = typeof(WeaponComponentData).GetProperty("MissileSpeed");
+
+        // MissileSpeed's private setter, bound once as an open-instance delegate (WeaponComponentData is a class)
+        // for the per-shot writes, instead of a PropertyInfo.SetValue with a boxed int.
+        private static readonly Action<WeaponComponentData, int> SetMissileSpeed = BindMissileSpeedSetter();
+
+        private static Action<WeaponComponentData, int> BindMissileSpeedSetter()
+        {
+            MethodInfo setter = MissileSpeedProperty?.GetSetMethod(true);
+            if (setter != null)
+            {
+                try
+                {
+                    return (Action<WeaponComponentData, int>)Delegate.CreateDelegate(typeof(Action<WeaponComponentData, int>), setter);
+                }
+                catch (ArgumentException)
+                {
+                    // Type changed (game update): the reflection call below, so only this write fails, as before,
+                    // never the whole class's type initializer.
+                }
+            }
+            // Property or setter gone or changed (game update): fail exactly as the old reflection call did.
+            return (weapon, value) => MissileSpeedProperty.SetValue(weapon, value, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+        }
         private static readonly PropertyInfo SwingSpeedProperty = typeof(WeaponComponentData).GetProperty("SwingSpeed");
         private static readonly PropertyInfo ThrustSpeedProperty = typeof(WeaponComponentData).GetProperty("ThrustSpeed");
         private static readonly PropertyInfo HandlingProperty = typeof(WeaponComponentData).GetProperty("Handling");

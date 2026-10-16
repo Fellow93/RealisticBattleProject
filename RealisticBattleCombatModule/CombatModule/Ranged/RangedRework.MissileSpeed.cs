@@ -137,24 +137,39 @@ namespace RBMCombat
         [MBCallback]
         private class OverrideOnAgentShootMissile
         {
-            private static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, ref Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
+            // The launcher's dictionary key, built once in the prefix and handed to the postfix with the item and
+            // modifier it was built from; the postfix rebuilds it if the slot holds anything else by then.
+            private struct ShotKey
             {
+                public ItemObject Item;
+                public ItemModifier Modifier;
+                public string Key;
+            }
+
+            private static bool Prefix(Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, ref Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance, out ShotKey __state)
+            {
+                __state = default;
                 MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
-                WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
+                // The first usage's class, what GetWeaponStatsData()[0].WeaponClass held, without building the
+                // stats of every usage.
+                WeaponClass weaponClass = missionWeapon.GetWeaponComponentDataForUsage(0).WeaponClass;
                 Vec3 engineLaunchVelocity = velocity;
 
                 // AI javelin/throwing-axe throws used to be pitched down here after the AI had aimed (axes a flat 5
                 // deg, javelins by the shooter's receding speed, and 1.4/2 m/s off the upward speed with no target
                 // agent). Removed 2026-10-01: the engine aims with the throw speed RBMCombat's WeaponEquipped prefix
                 // hands it, so the tweaks only moved throws off target. AI throws are traced as THROW/LAND lines.
-                WeaponClass thrownClass = (WeaponClass)wsd[0].WeaponClass;
+                WeaponClass thrownClass = weaponClass;
                 if (thrownClass == WeaponClass.Javelin || thrownClass == WeaponClass.ThrowingAxe || thrownClass == WeaponClass.ThrowingKnife || thrownClass == WeaponClass.Stone)
                 {
                     MissileAimTrace.BeginThrow(shooterAgent, thrownClass, position, engineLaunchVelocity, velocity, ItemObject.GetAirFrictionConstant(thrownClass, missionWeapon.CurrentUsageItem.WeaponFlags));
                 }
 
-                if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))
+                if ((weaponClass == WeaponClass.Bow) || (weaponClass == WeaponClass.Crossbow) || (weaponClass == WeaponClass.Sling))
                 {
+                    string min = GetRangedWeaponKey(missionWeapon);
+                    __state = new ShotKey { Item = missionWeapon.Item, Modifier = missionWeapon.ItemModifier, Key = min };
+
                     float ammoWeight;
                     if (missionWeapon.AmmoWeapon.Item != null && missionWeapon.Item != null && !missionWeapon.AmmoWeapon.IsEmpty && missionWeapon.AmmoWeapon.Amount > 0)
                     {
@@ -168,13 +183,11 @@ namespace RBMCombat
                     }
 
                     RangedWeaponStats rws;
-                    if (!rangedWeaponStats.TryGetValue(GetRangedWeaponKey(missionWeapon), out rws))
+                    if (!rangedWeaponStats.TryGetValue(min, out rws))
                     {
-                        rangedWeaponMW[GetRangedWeaponKey(missionWeapon)] = missionWeapon;
-                        rangedWeaponStats[GetRangedWeaponKey(missionWeapon)] = new RangedWeaponStats(missionWeapon.CurrentUsageItem.MissileSpeed);
+                        rangedWeaponMW[min] = missionWeapon;
+                        rangedWeaponStats[min] = new RangedWeaponStats(missionWeapon.CurrentUsageItem.MissileSpeed);
                     }
-
-                    string min = GetRangedWeaponKey(missionWeapon);
 
                     int msModifier = 0;
                     if (missionWeapon.ItemModifier != null)
@@ -183,7 +196,7 @@ namespace RBMCombat
                     }
 
                     int calculatedMissileSpeed;
-                    if (wsd[0].WeaponClass == (int)WeaponClass.Sling)
+                    if (weaponClass == WeaponClass.Sling)
                     {
                         // Slings factor in the shooter's skill and equipment weight on every shot. Same function as
                         // the equip patch (what the engine aims with) and RBMAI's reach gate; it adds the modifier
@@ -221,13 +234,13 @@ namespace RBMCombat
                     float flightFriction = !missionWeapon.AmmoWeapon.IsEmpty && missionWeapon.AmmoWeapon.CurrentUsageItem != null
                         ? ItemObject.GetAirFrictionConstant(missionWeapon.AmmoWeapon.CurrentUsageItem.WeaponClass, missionWeapon.AmmoWeapon.CurrentUsageItem.WeaponFlags)
                         : ItemObject.GetAirFrictionConstant(missionWeapon.CurrentUsageItem.AmmoClass, (WeaponFlags)0);
-                    MissileAimTrace.BeginShot(shooterAgent, (WeaponClass)wsd[0].WeaponClass, position, engineVelocity, velocity, calculatedMissileSpeed, ammoWeight, flightFriction);
+                    MissileAimTrace.BeginShot(shooterAgent, weaponClass, position, engineVelocity, velocity, calculatedMissileSpeed, ammoWeight, flightFriction);
 
-                    MissileSpeedProperty.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, calculatedMissileSpeed, BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    SetMissileSpeed(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, calculatedMissileSpeed);
                 }
 
                 //if (shooterAgent != null && !shooterAgent.IsAIControlled && !BannerlordConfig.DisplayTargetingReticule && (wsd[0].WeaponClass == (int)WeaponClass.Bow || wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
-                if (shooterAgent != null && !shooterAgent.IsAIControlled && RBMConfig.RBMConfig.rbmCombatEnabled && RBMConfig.RBMConfig.realisticArrowArc && (wsd[0].WeaponClass == (int)WeaponClass.Bow || wsd[0].WeaponClass == (int)WeaponClass.Crossbow))
+                if (shooterAgent != null && !shooterAgent.IsAIControlled && RBMConfig.RBMConfig.rbmCombatEnabled && RBMConfig.RBMConfig.realisticArrowArc && (weaponClass == WeaponClass.Bow || weaponClass == WeaponClass.Crossbow))
                 {
 
                     double rotRad = 0.083141f;
@@ -247,12 +260,12 @@ namespace RBMCombat
                 return true;
             }
 
-            private static void Postfix(ref Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance)
+            private static void Postfix(ref Agent shooterAgent, EquipmentIndex weaponIndex, Vec3 position, Vec3 velocity, Mat3 orientation, bool hasRigidBody, bool isPrimaryWeaponShot, int forcedMissileIndex, Mission __instance, ShotKey __state)
             {
                 MissionWeapon missionWeapon = shooterAgent.Equipment[weaponIndex];
-                WeaponStatsData[] wsd = missionWeapon.GetWeaponStatsData();
+                WeaponClass weaponClass = missionWeapon.GetWeaponComponentDataForUsage(0).WeaponClass;
 
-                if (shooterAgent != null && Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege && !shooterAgent.IsMainAgent && (wsd[0].WeaponClass == (int)WeaponClass.Javelin || wsd[0].WeaponClass == (int)WeaponClass.ThrowingAxe) && shooterAgent.Team?.Side == BattleSideEnum.Defender)
+                if (shooterAgent != null && Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege && !shooterAgent.IsMainAgent && (weaponClass == WeaponClass.Javelin || weaponClass == WeaponClass.ThrowingAxe) && shooterAgent.Team?.Side == BattleSideEnum.Defender)
                 {
                     for (EquipmentIndex equipmentIndex = EquipmentIndex.WeaponItemBeginSlot; equipmentIndex < EquipmentIndex.NumAllWeaponSlots; equipmentIndex++)
                     {
@@ -262,9 +275,12 @@ namespace RBMCombat
                         }
                     }
                 }
-                if ((wsd[0].WeaponClass == (int)WeaponClass.Bow) || (wsd[0].WeaponClass == (int)WeaponClass.Crossbow) || (wsd[0].WeaponClass == (int)WeaponClass.Sling))
+                if ((weaponClass == WeaponClass.Bow) || (weaponClass == WeaponClass.Crossbow) || (weaponClass == WeaponClass.Sling))
                 {
-                    MissileSpeedProperty.SetValue(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, rangedWeaponStats[GetRangedWeaponKey(missionWeapon)].getDrawWeight(), BindingFlags.NonPublic | BindingFlags.SetProperty, null, null, null);
+                    string key = __state.Key != null && __state.Item == missionWeapon.Item && __state.Modifier == missionWeapon.ItemModifier
+                        ? __state.Key
+                        : GetRangedWeaponKey(missionWeapon);
+                    SetMissileSpeed(shooterAgent.Equipment[weaponIndex].CurrentUsageItem, rangedWeaponStats[key].getDrawWeight());
                 }
                 MissileAimTrace.CommitShot(__instance);
             }

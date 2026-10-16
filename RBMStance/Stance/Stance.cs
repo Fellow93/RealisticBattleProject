@@ -34,9 +34,19 @@ namespace RBMStance
         // UpdateAgentStats never runs on an agent whose spawn is still in progress.
         public float createdAt = 0f;
 
-        // Stamina fraction that was last pushed into AgentDrivenProperties via UpdateAgentStats.
+        // Stamina fraction at StanceLogic's last stamina refresh of this man (main thread only).
         // The refresh is event-driven: it only fires when the live fraction has drifted from this.
         public float lastAppliedStaminaFraction = 1f;
+
+        // Stamina fraction the agent's driven properties actually hold, NaN while unknown (no rebuild with the stamina
+        // effects since this stance was made, or the last one ran with them off). Written by StanceStatsPatch on every
+        // rebuild, which can also run on the parallel agent tick (NavalDLC), and by StanceLogic's in-place refresh on
+        // the main thread; a plain float.
+        public float bakedStaminaFraction = float.NaN;
+
+        // Whether that rebuild ran for an AI-controlled man. Taking control (player → AI) does not rebuild stats, so
+        // a man whose properties still hold player-built values gets a full rebuild, not the in-place rescale.
+        public bool bakedAsAI = false;
 
         // Plain fields, written on the main thread only (RBMAI's Frontline job reads this object off-thread).
         // Times are Mission.CurrentTime. The break count lets a blow's later patches tell that it broke posture.

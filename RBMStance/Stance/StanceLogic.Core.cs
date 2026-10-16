@@ -17,7 +17,7 @@ namespace RBMStance
 {
     public partial class StanceLogic : MissionLogic
     {
-        // UpdateAgentStats is only re-run for an agent when its stamina fraction has moved at least
+        // A man's stamina effects are only refreshed (TryRescaleStaminaStats, else UpdateAgentStats) when his stamina fraction has moved at least
         // this far from the fraction last applied to its driven properties...
         private const float StaminaRefreshThreshold = 0.05f;
         // ...and never for an agent whose stance is younger than this (seconds of mission time), so a
@@ -259,7 +259,7 @@ namespace RBMStance
                     // that add stance entries.
                     foreach (Agent agent in _statRefreshBuffer)
                     {
-                        if (agent.Mission != null && agent.IsActive())
+                        if (agent.Mission != null && agent.IsActive() && !TryRescaleStaminaStats(agent))
                         {
                             agent.UpdateAgentStats();
                         }
@@ -291,6 +291,35 @@ namespace RBMStance
                     currentDt = 0f;
                 }
             }
+        }
+
+        // The stamina refresh of an AI man without re-running the stat model: the stamina effects are rescaled in
+        // place from the fraction his properties hold to the live one, and the whole Values array is pushed to the
+        // engine, as a rebuild pushes it. Inputs that changed without a rebuild of their own (a new formation's
+        // captain, its arrangement) wait for the next real rebuild. False for the player, or when the baked fraction
+        // is unknown: the caller then does the full UpdateAgentStats.
+        private static bool TryRescaleStaminaStats(Agent agent)
+        {
+            if (!agent.IsAIControlled)
+            {
+                return false;
+            }
+            AgentDrivenProperties properties = agent.AgentDrivenProperties;
+            Stance stance;
+            if (properties == null || !AgentStances.values.TryGetValue(agent, out stance) || stance == null
+                || !stance.bakedAsAI)
+            {
+                return false;
+            }
+            // The same fraction the rebuild's StanceStatsPatch would read now.
+            float staminaLevel = stance.stamina / stance.maxStamina;
+            if (!StaminaStatEffects.TryRescale(properties, stance.bakedStaminaFraction, staminaLevel))
+            {
+                return false;
+            }
+            stance.bakedStaminaFraction = staminaLevel;
+            agent.UpdateCustomDrivenProperties();
+            return true;
         }
 
         // The engine registers no blow for a missile stopped by a shield, so OnAgentHit only sees body hits;
