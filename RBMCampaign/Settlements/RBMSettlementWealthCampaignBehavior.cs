@@ -22,6 +22,7 @@ namespace RBMCampaign
             WealthTax.ResetForNewSession();
             GarrisonSubsidy.ResetForNewSession();
             MilitiaUpkeep.ResetForNewSession();
+            PatrolUpkeep.ResetForNewSession();
             Construction.Reset();
         }
 
@@ -71,6 +72,10 @@ namespace RBMCampaign
             // Grow the garrison off the fief's wealth, after its upkeep and its militia are paid, so it
             // recruits from genuine surplus and the base local defence (militia) is funded first.
             GarrisonRecruitCost.GrowGarrison(settlement);
+            // The patrol's day: refresh its size limit if the funds moved it, and log a change of state. Its pay
+            // is billed from the party's own daily tick (SpoilsPool wage pass), its raising and refills from
+            // vanilla's patrol behaviour (see PatrolUpkeep).
+            PatrolUpkeep.OnDailyTick(settlement);
             WealthTax.OnDailyTick(settlement);
             // Building last of the day's spending: the fief funds its construction reserve out of what is
             // left once its soldiers, its watch, its staff and its lord have been paid, and then spends
@@ -128,6 +133,9 @@ namespace RBMCampaign
                 SettlementWealth.SeedCitizenWealth();
                 MilitiaUpkeep.SeedInitialMilitia();
             }
+            // Every land patrol's size limit into the cache the map's movement threads read, before the first map
+            // tick and once the funds it is sized from are initialised. See PatrolUpkeep.CachedPartyLimit.
+            PatrolUpkeep.OnSessionLaunched();
             // Installed here, once the session is up: the game registers the settlement tooltip refresher
             // at startup, so re-registering now sticks for the whole process. See SettlementWealthTooltip
             // for why this is a re-registration rather than a Harmony patch.
@@ -174,6 +182,8 @@ namespace RBMCampaign
             // The tool wear each building site is carrying, which must survive a save or a reload would
             // clear a debt the fief has genuinely run up. See Construction.
             Construction.SyncData(dataStore);
+            // Each fief's week-averaged patrol pot, so a load does not restart it from a single day's figure.
+            PatrolUpkeep.SyncData(dataStore);
         }
     }
 }

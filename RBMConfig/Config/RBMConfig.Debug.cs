@@ -58,6 +58,12 @@ namespace RBMConfig
         // is on.
         public static bool stuckPartyLoggingEnabled = false;
 
+        // Writes the settlement-funded patrols (RBMCampaign Settlements/PatrolUpkeep) to their own logs/patrols
+        // folder -- patrols raised and refilled with what they cost, each patrol's daily pay, patrols stood down or
+        // lost, and a fief's pot / budget / size on a day its patrol state changed. No effect unless
+        // rbmCampaignEnabled and settlementPatrolsEnabled are on (and troopUpgradeCostMultiplier above 0).
+        public static bool patrolLoggingEnabled = false;
+
         // Writes every party out as it was priced -- the perks that reached it, then each stack with what one man of
         // it is worth and what he is made of -- to logs/powerCalculation. None of the model's constants are derived,
         // so this is how they get tuned. One block per party per in-game day; see StrategicPowerLog for why.

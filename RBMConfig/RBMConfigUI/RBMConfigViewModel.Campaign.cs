@@ -35,6 +35,10 @@ namespace RBMConfig
         public TextViewModel MercenaryCompaniesEnabledText { get; }
         public SelectorVM<SelectorItemVM> MercenaryCompaniesEnabled { get; }
 
+        // Settlement-funded patrols (towns and castles raise and pay their own): master on/off.
+        public TextViewModel SettlementPatrolsEnabledText { get; }
+        public SelectorVM<SelectorItemVM> SettlementPatrolsEnabled { get; }
+
         // SupplyTown gate: on/off toggle for gating upgrades on a nearby friendly town.
         public TextViewModel TroopUpgradeRequireSupplyTownText { get; }
         public SelectorVM<SelectorItemVM> TroopUpgradeRequireSupplyTown { get; }
@@ -670,6 +674,61 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel MercenaryCompaniesEnabledHint { get; } = Hint("{=RBM_CFG_MERC_COMPANIES_HINT}Adds two neutral mercenary companies for each main culture. They never join a kingdom on their own: they roam, hunt bandits and hire tavern mercenaries until an army leader pays to take them on, AI lords when they gather an army and you from the army management screen, where a company shows its price in gold. A contract lasts until the army breaks up or the leader can no longer pay the daily fee. Switching it off disbands the companies already in a save (within an in-game hour; one in a battle waits for the battle to end), and switching it back on raises new ones. The disbanding needs RBM Campaign on: switch Mercenary Companies off, play an hour, then you may turn RBM Campaign off. Default on.");
+
+        [DataSourceProperty]
+        public string SettlementPatrolsEnabledt
+        {
+            get { return new TextObject("{=RBM_CFG_PATROLS}Settlement Patrols").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel SettlementPatrolsEnabledHint { get; } = Hint("{=RBM_CFG_PATROLS_HINT}Every town and castle can keep a patrol if its own money can pay for it, Guard House or not. The patrol is sized and armed from the settlement's treasury (a town's citizens chip in from their savings above a reserve), and the Guard House, the Coastal Guard Edict and the Patrols perk make it bigger and better. The settlement pays for the men's kit when it raises the patrol and for every man it replaces, and pays their wages and upkeep every day; a settlement that can no longer pay stands its patrol down and its men rejoin the garrison. Your clan's gold is never touched. Needs Troop Upgrade Cost above 0 (the spoils system pays the patrols' wages); without it the base game's patrols apply. Off restores the base game's free patrols for towns with a Guard House. Default on.");
+
+        private float _patrolBudgetFraction;
+
+        /// <summary>
+        /// Share of a fief's patrol funding pot spent on the patrol each day, before the Guard House / edict /
+        /// perk boost. Snapped to thousandths so the 0.02 default and its neighbours are reachable on the slider.
+        /// </summary>
+        [DataSourceProperty]
+        public float PatrolBudgetFraction
+        {
+            get
+            {
+                return _patrolBudgetFraction;
+            }
+            set
+            {
+                float snapped = MathF.Clamp((float)System.Math.Round(value, 3), 0f, 0.1f);
+                if (snapped != _patrolBudgetFraction)
+                {
+                    _patrolBudgetFraction = snapped;
+                    OnPropertyChangedWithValue(snapped, "PatrolBudgetFraction");
+                    OnPropertyChanged("PatrolBudgetFractionValue");
+                }
+            }
+        }
+
+        [DataSourceProperty]
+        public string PatrolBudgetFractionValue
+        {
+            get
+            {
+                return _patrolBudgetFraction.ToString("0.000");
+            }
+        }
+
+        [DataSourceProperty]
+        public string PatrolBudgetFractiont
+        {
+            get
+            {
+                return new TextObject("{=RBM_CFG_PATROL_BUDGET}Patrol Budget Share").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel PatrolBudgetFractionHint { get; } = Hint("{=RBM_CFG_PATROL_BUDGET_HINT}The share of a settlement's patrol funds (its treasury, plus a town's citizen savings above their reserve) it sets aside for its patrol each day, before the Guard House, Coastal Guard Edict and Patrols perk bonuses. Divided by what one soldier costs a day, it sets how many men the patrol has, between 6 and 60. Zero keeps every patrol at the smallest size. Needs Settlement Patrols on. Default 0.020.");
 
         // SupplyTown gate: radius slider (whole map units) + the toggle's row label.
         private float _troopUpgradeSupplyRadius;

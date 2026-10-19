@@ -169,7 +169,9 @@ wage notionally went (kit maintenance). Applies to every party in the world but 
 Garrisons bank their wage like any troop (the fief pays it, `GarrisonUpkeep`). Militia stacks go to
 `MilitiaUpkeep.PayMilitiaUpkeep` instead: the settlement's funding pot pays a reduced wage into the
 purse — town 0.25, castle 0.10, village 0 of a soldier's wage (`MilitiaWageFactor*`) — and their kit
-maintenance is met from that purse first.
+maintenance is met from that purse first. Settlement patrol stacks (land and naval, while
+`settlementPatrolsEnabled`) go to `PatrolUpkeep.PayPatrolUpkeep` the same way, at a field troop's full
+wage and maintenance, the home fief's pot paying; with the toggle off they keep the plain deposit.
 
 A stack recruited from a village or town is seeded `recruitMaintenanceDays` (20) days of maintenance
 (`OnTroopRecruited` for the AI, `OnUnitRecruited` for the player; the two events are disjoint).
@@ -325,6 +327,7 @@ Serialized via `SyncData`:
 - `RBM_settlementWealth` — the town/castle treasury pot (`SettlementWealth`; citizen wealth rides on vanilla's `Gold`, as does a village's single purse).
 - `RBM_settlementRecruitPool` — each settlement's manpower pool (`RecruitPool`); a settlement with no entry starts full.
 - `RBM_constructionToolDebt`, `RBM_pendingWealthTaxIncome`, `RBM_campaignSeeded` — construction, wealth tax and the one-time seeding flag.
+- `RBM_patrolAveragePot` — each town's/castle's week-averaged patrol funding pot (`PatrolUpkeep.AveragePot`, `Dictionary<string,int>` by StringId); a fief with no entry starts from its live pot.
 - `RBM_wealthTaxBookedFiefs`, `RBM_pendingGarrisonMaintSubsidy`, `RBM_garrisonMaintBookedFiefs` — which fiefs have booked today's wealth tax, and the owner's garrison-maintenance subsidy booked but not yet charged on the clan apply pass (`SettlementAccrualPool`).
 - `RBM_mercContracts`, `RBM_mercCompanyTimers` — each hired company's contract (employer, kingdom, daily pay, start day) and the companies' respawn clocks (`MercenaryContracts`, `MercenaryCompanies`). The companies' clans, heroes and parties themselves are ordinary saved campaign objects.
 - `RBM_caravan*` (`RBMCaravanRegister`, `RBMCaravanInvestment`) and `RBM_town*Hist` / `RBM_village*Hist` (the Ledger's histories).
@@ -380,7 +383,9 @@ The other sinks: `EconomyLog` (`logs/economy/`), `CaravanLog`
 the mercenary companies' whole lifecycle under stable tags CREATE, SPAWN, WAIT, GONE, ROAM, TAVERN, CONTRACT, PAY,
 END, DEFER, LEAVE, AI-HIRE, listed in each file's header) and `PartyBudgetLog` (`logs/partybudget/`,
 `PartyBudgetLoggingEnabled`; BUDGET + SHARE per AI clan per day from `PartyWageBudget`, KEEP, COMPANY, and ARMY-CHECK
-once per army-capable party per day from `ArmyCheckLog`, a read-only postfix on vanilla's `CanLordCreateArmy`), each
+once per army-capable party per day from `ArmyCheckLog`, a read-only postfix on vanilla's `CanLordCreateArmy`) and
+`PatrolLog` (`logs/patrols/`, `PatrolLoggingEnabled`; SPAWN, REFILL, TRIM, PAY, DISBAND, LOST, STATE from `PatrolUpkeep`;
+STATE only when has-patrol / can-keep / can-raise / short-of-men / template level changes, never on a size change alone), each
 with its own toggle. (The auto-resolve's `SimulationLog`, `logs/simulation/`, lives in RBMAutoResolve.)
 
 Every sink writes through `BufferedLogWriter`: one open 64 KB-buffered handle per file (shared
@@ -453,7 +458,7 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 
 | Folder | Role |
 |---|---|
-| `Settlements/` | The two-pot settlement wealth ledger (`SettlementWealth`, `SettlementWealthTooltip`; the same tooltip wrapper also groups the Alt troop list by type and tier, `SettlementTroopTooltip`), its funnel over vanilla's writes (`SettlementGoldFunnel`, `NativeTradeConservation`, `ShipTradeFunnel`, `VillageGoldStock`), tariffs (`TradeTariff`), wealth tax and owner income (`WealthTax`, `SettlementIncomeFinanceLine`), minting, castle income (`CastleEconomy`), ransom funding (`RansomFunding`), garrison/militia/administrative upkeep (`GarrisonUpkeep`, `MilitiaUpkeep`, `AdministrativeUpkeep`), the owner/citizen garrison backstop (`GarrisonSubsidy` + its player-facing `GarrisonSubsidyFinanceLine`), wealth-driven garrison growth (`GarrisonRecruitCost`), drill XP (`GarrisonDrill`), garrison morale/size/wage-limit patches, AI clans' daily party wage budget (`PartyWageBudget`, below), mercenary contract pay, fief starvation, the defence muster (`SettlementDefenseMuster`), notable and artisan purses, workshop purses and diagnostics, prison labour, building effects, and the **construction engine** (`Construction.cs` / `.Materials.cs` / `.Patches.cs`). Details in the sub-sections below. |
+| `Settlements/` | The two-pot settlement wealth ledger (`SettlementWealth`, `SettlementWealthTooltip`; the same tooltip wrapper also groups the Alt troop list by type and tier, `SettlementTroopTooltip`), its funnel over vanilla's writes (`SettlementGoldFunnel`, `NativeTradeConservation`, `ShipTradeFunnel`, `VillageGoldStock`), tariffs (`TradeTariff`), wealth tax and owner income (`WealthTax`, `SettlementIncomeFinanceLine`), minting, castle income (`CastleEconomy`), ransom funding (`RansomFunding`), garrison/militia/administrative upkeep (`GarrisonUpkeep`, `MilitiaUpkeep`, `AdministrativeUpkeep`), settlement-funded patrols (`PatrolUpkeep` + `.Patches.cs`, below), the owner/citizen garrison backstop (`GarrisonSubsidy` + its player-facing `GarrisonSubsidyFinanceLine`), wealth-driven garrison growth (`GarrisonRecruitCost`), drill XP (`GarrisonDrill`), garrison morale/size/wage-limit patches, AI clans' daily party wage budget (`PartyWageBudget`, below), mercenary contract pay, fief starvation, the defence muster (`SettlementDefenseMuster`), notable and artisan purses, workshop purses and diagnostics, prison labour, building effects, and the **construction engine** (`Construction.cs` / `.Materials.cs` / `.Patches.cs`). Details in the sub-sections below. |
 | `Recruitment/` | `RecruitPool` — each settlement's finite **manpower pool** (towns/castles off Prosperity, villages off Hearth): +0.03/point a day, ceiling 0.2/point, persisted as `RBM_settlementRecruitPool` by `RBMRecruitPoolCampaignBehavior` (daily refill + one `MANPOWER` economy-log summary line). Each volunteer slot the vanilla daily roll fills draws one man (`VolunteerSpawnPatch`, a before/after occupied-slot diff on `RecruitmentCampaignBehavior.UpdateVolunteersOfNotablesInSettlement`, clearing over-budget fills; `Priority.First` so `RecruitSupply`'s kit draw sees only admitted men). A garrison recruit (`GarrisonRecruitCost.GrowGarrison`, clamped in `Compute`, never below a 0.07/point reserve kept for volunteers) costs `1 + (garrison / softSize)²` men, `softSize` 150 for a town, 100 for a castle, plus Barracks +20/40/60. Promotions, transfers, prisoners, the defence muster and militia are not charged. Building multipliers: growth (`GetGrowthBonus`) +25% while Train Militia or Housing runs, +50% for Raise Troops, a village +10/20/30% from its bound fief's Roads; ceiling (`GetMaxBonus`) +10/20/30% from the Castellan's Office. Also `TavernMercenaryTroopsPatch` (forces the tavern's regular-mercenary spawn chance to 1, so towns never stock caravan guards). |
 | `Production/` | Village production (`RBMVillageProduction`, `VillageHousehold`, `VillageShopping`, `VillageProductionIconPatch`), villager convoys, dispatch, escorts and deliveries, town food supply, storage and reserve (`RBMTownFoodSupply`, `TownStorage`, `TownFoodReserve`), citizen and workshop demand, the artisan bench (`ArtisanOutput`), workshop output choice (`WorkshopTroopOrders`, `WorkshopItemTierBias`, `WorkshopVillageBias`), smithy steel refining (`SteelRefining`), and quest trade goods. |
 | `Workshops/` | RBM's ownership of the workshop rules. `RBMWorkshopModel` — a `WorkshopModel` decorator registered in `OnGameStart`; it owns `InitialCapital` (60,000), `CapitalLowLimit` (half of it) and `DailyExpense` (250, the standing overhead only), and applies `ArtisanOutput.Scale` inside `GetEffectiveConversionSpeedOfProduction`. Everything else delegates to `BaseModel`, so NavalDLC's own workshop-model decoration survives whichever order the two are registered in. `RBMWorkshopCycle` — the produce-or-not decision, as skip-prefixes on both `Can*WorkshopProduceThisCycle` gates: storage glut (folded in from the deleted `WorkshopHeadroomGate`), then a proportional margin (`payout − salary ≥ inputCost × 1.15`, replacing vanilla's speed-inverted floor; the artisans need only `payout > inputCost`), shop solvency and town cash, all judged on the payout `RBMWorkshopSettlement` will actually pay. Also the single `SettlesInGold` predicate (the artisans settle in kind). `RBMWorkshopSettlement` — the money and goods legs, as skip-prefixes on `ProduceAnOutputToTown` and `ConsumeInputFromTownMarket`: one sell-side valuation ceilinged at 10% of town gold (min 500) serves gate and payment alike, and inputs are priced on the whole draw rather than vanilla's one unit. `RBMWorkshopExpense` — the **salary**, a share of every sale paid to citizen wealth as `Source.WorkshopWages` right after the payout lands (`PaySalary`: 55% − 5% per 48,000 of `EquipmentCost`, floor 10%; nothing while capital is at or below 40,000, nothing for the artisans), and the daily overhead as one skip-prefix on `HandleDailyExpense` replacing vanilla's three methods, paid down vanilla's ladder (capital while above `CapitalLowLimit`, else a player owner's gold, else capital if it covers the overhead, else vanilla's own `ChangeWorkshopOwnerByBankruptcy`) and credited to citizens the same way. It still counts the day's batches off the two `TickOneProductionCycleFor*Workshop` methods, for the log and the card. `WorkshopCardPayrollLine` — the clan-card "Production Wages" row. See `WORKSHOP_RULES_PLAN.md` for the phases that follow. |
@@ -467,7 +472,7 @@ explicit `<Compile Include>` — **update it when adding or moving one**.
 | `UI/` | The party-screen spoils bar, maintenance label and map party tooltip, the clan-screen upgrade-budget control, the inventory weight column, settlement nameplate bubbles (`RBMMapNotifications`), the smithy refine-row layout, building-effect tooltips and the Projects grid (below), each with its prefab injection; `UI/Ledger/` (the RBM Ledger screen, Ctrl+Shift+K or the Escape menu, with its 30-day town/village histories and the Clan finances tab, below). (The live auto-resolve panel moved to RBMAutoResolve.) |
 | `SwitchLord/` | `LordSwitcher` — debug tool to take over another lord's party. |
 | `Movement/` | `BridgeSpeed` — cancels vanilla's -30% ford penalty on `TerrainType.Bridge` faces (postfix on `DefaultPartySpeedCalculatingModel.CalculateFinalSpeed`, which NavalDLC's model calls as its base). |
-| `Diagnostics/` | `SpoilsLog`, `EconomyLog`, `CaravanLog`, `GarrisonRefillLog`, `MercenaryLog`, `PartyBudgetLog` (+ `ArmyCheckLog`, its ARMY-CHECK producer), `StuckPartyLog` (+ `StuckPartyLogBehavior`). They write through `BufferedLogWriter` and prune with `LogRetention`, both in `RBMConfig/Shared/Logging/` (shared with RBMAutoResolve's `SimulationLog`). `TestBattleCommand` — console command `campaign.rbm_test_battle [countPerTroop=5] [attacker=<groups>] [defender=<groups>] [player=attacker|defender]`: a field battle at a random land spot, both sides holding every main culture's basic/noble tree, the tavern mercenary trees and the minor-faction template troops (no parameters opens the popup setup in `TestBattleCommand.Setup.cs`, with saved presets from `TestBattleCommand.Presets.cs` in `Configs/RBM/TestBattlePresets/`; each side narrowable by group: culture id, `mercenaries`, `minor`, clan id; `player` picks the player's side); the main party's roster, prisoners, items, gold, renown, morale, hero HP, spoils/ration buckets, finance record and position are snapshotted and restored once no encounter is left (polled from `RBM.SubModule.OnApplicationTick`, and on `OnBeforeSaveEvent`); the looters-clan enemy is destroyed. |
+| `Diagnostics/` | `SpoilsLog`, `EconomyLog`, `CaravanLog`, `GarrisonRefillLog`, `MercenaryLog`, `PatrolLog`, `PartyBudgetLog` (+ `ArmyCheckLog`, its ARMY-CHECK producer), `StuckPartyLog` (+ `StuckPartyLogBehavior`). They write through `BufferedLogWriter` and prune with `LogRetention`, both in `RBMConfig/Shared/Logging/` (shared with RBMAutoResolve's `SimulationLog`). `TestBattleCommand` — console command `campaign.rbm_test_battle [countPerTroop=5] [attacker=<groups>] [defender=<groups>] [player=attacker|defender]`: a field battle at a random land spot, both sides holding every main culture's basic/noble tree, the tavern mercenary trees and the minor-faction template troops (no parameters opens the popup setup in `TestBattleCommand.Setup.cs`, with saved presets from `TestBattleCommand.Presets.cs` in `Configs/RBM/TestBattlePresets/`; each side narrowable by group: culture id, `mercenaries`, `minor`, clan id; `player` picks the player's side); the main party's roster, prisoners, items, gold, renown, morale, hero HP, spoils/ration buckets, finance record and position are snapshotted and restored once no encounter is left (polled from `RBM.SubModule.OnApplicationTick`, and on `OnBeforeSaveEvent`); the looters-clan enemy is destroyed. |
 | `RBMCampaignPatcher.cs` | Entry point (`DoPatching`), at the project root. |
 | `RBMCampaignSessionBehavior.cs` | Session housekeeping, at the project root: clears the module's static caches on session launch (strategic power, town food, market, workshop demand, upgrade supply, and the auto-resolve's kit/HP/perk caches strategic power reads) and flushes every buffered log hourly and before a save. Registered third, in the slot `RBMSimulationCampaignBehavior` held before the auto-resolve moved out, so the behaviors after it still launch on clean caches. |
 
@@ -612,6 +617,137 @@ castle with none uses its prosperity / 1.5).
   (`_growthOnlyDepth`), re-adds the perk (looked up by id `Accuracytraining`), drops the factor, then
   applies the ceiling & floor.
 
+#### Settlement patrols (`Settlements/PatrolUpkeep.cs` + `.Patches.cs`)
+
+Gated on `rbmCampaignEnabled && settlementPatrolsEnabled && SpoilsPool.IsEnabled` (off = vanilla; the spoils
+system is required because the patrols are billed from its daily wage pass, which does not run with
+`troopUpgradeCostMultiplier` 0). Vanilla's
+`PatrolPartiesCampaignBehavior` and `PatrolPartyComponent` keep the party (AI, dialogs, save type 330, UI);
+RBM steers them with patches. NavalDLC's models pass land queries (`naval: false`) to the default models, so
+patching those covers both setups; naval patrols keep War Sails' gate, template, size and refill and are only
+billed.
+
+- **Who**: every town and castle with an owner clan that is not a rebel clan (`IsEligible`); no Guard House needed.
+- **Pot** (`FundingPot` / `DebitPot`): treasury first, then a town's citizen money above
+  `GarrisonSubsidy.CitizenReserveFloor` (`GarrisonSubsidy.CitizenCapacity`); a castle has only its treasury.
+  The owner clan never pays.
+- **Boost** `B = 1 + 0.5 × town Guard House level + 0.25 Coastal Guard Edict (port town, policy id
+  `policy_coastal_guard_edict`) + 0.25 Scouting perk Patrols (governor, else the owner clan leader)`.
+- **Size** (`ExplainSize`, a skip-prefix on `DefaultPartySizeLimitModel.CalculatePatrolPartySizeLimit`, land
+  only): `clamp(floor(avgPot × patrolBudgetFraction × B / perMan), MinSize 12, min(60, round(20 × B)))`.
+  `avgPot` = `AveragePot`, the funding pot averaged over `PotAverageDays` 7 (exponential, stepped once a day in
+  `OnDailyTick`, saved as `RBM_patrolAveragePot`; a fief with no entry reads the live pot); the keep and raise gates read it too, while
+  spending (wages, kit) checks and draws the live pot. In game a town's pot (incl. citizen money) fell 198k → 3k
+  → 175k in two days and its patrol was stood down on the dip; MinSize was 6 until a 9-man castle patrol died to
+  looters the day after it was raised. perMan = the fief's
+  template's average man (wage + `SpoilsPool.GetDailyMaintenanceCost`, weighted by stack max value; the owner
+  culture's `BasicTroop` without a template), so a higher-level patrol is priced as the dearer company it is. The tooltip lines (funds, Guard House,
+  edict, perk, min/cap) are whole men summing to the result.
+- **Size-limit cache** (threads): `DefaultPartySpeedCalculatingModel` reads `PartySizeLimit` inside the map's
+  parallel movement tick, and computing the size there would write `SpoilsPool`'s lazy kit-value caches from
+  several threads. So the plain query (`includeDescriptions` false) only reads `_partyLimit`
+  (`CachedPartyLimit`, a `ConcurrentDictionary`), written on the main thread by `RefreshLimit` -- at session
+  launch for every land patrol (`RBMSettlementWealthCampaignBehavior.OnSessionLaunched` → `OnSessionLaunched`),
+  in the daily pass, and after a spawn, refill, stall change or trim -- which bumps the roster version when the
+  figure moved (`PartyBase.PartySizeLimit` is cached per roster version). A miss on the main thread computes
+  and stores; a miss elsewhere writes nothing and returns max(6, head count). The main thread is the one
+  recorded in `ResetForNewSession` / `OnSessionLaunched`. Only the tooltip computes the breakdown.
+- **Quality** (`GetPartyTemplateForPatrolParty` postfix): `patrol_party_<owner culture>_template_level_N`,
+  `N = clamp(1 + floor((B − 1) / 0.5), 1, 4)`, falling down the levels, then vanilla's pick, then the cultures'
+  weak template; never one with ship hulls (that would raise a naval party from the land path). `TargetRoster`
+  scales a template to a size by its stacks' max values (largest remainder).
+- **Manning** (`Fill`, shared by raise, refill and the spawn-gate's plan): the scaled template roster is the
+  shape; each slot (troop T, n men) takes, in order, (1) healthy garrison men of T, (2) healthy garrison men of
+  the same tier and kind (`IsMounted` and `IsRanged` both equal), largest stacks first, who keep their own troop
+  id, (3) healthy garrison men of the same kind `GarrisonLowerTierSteps` (1) tier lower, nearest tier first,
+  (4) men bought as T. The garrison is never taken below `GarrisonKeepFloor` = a fixed 50 healthy men
+  (`GarrisonKeepFloorMen`; not a share of the size limit, which `GarrisonPartySize` lifts by 10000); moved men carry their stack's XP pro rata and their purse share
+  (`SpoilsPool.TransferSpoils`, which also moves the fed state). Buying takes the garrison's price
+  (`GarrisonRecruitCost.SpawnCostFor`, kit × Barracks factor) and recruit pool (`RecruitPool.GarrisonAvailable`
+  ≥ 1 then `ConsumeGarrison`), but money is the FUNDING POT, the one the size is worked from: the pot must hold
+  `GarrisonSpawnReserveMult` 5 × the price, stay ≥ the keep reserve after it, and still size the patrol at
+  ≥ the head count he makes (`SizeAtPot` on the pot after his price; buying past that had the surplus trimmed
+  straight back, seen in game). Paid by PatrolUpkeep's own
+  `PayRecruitKit` through `DebitPot` (treasury first, then a town's citizen surplus), booked `PatrolRecruit`; in a
+  town the treasury's share is credited to the citizens as the armourers, the citizens' own share and a castle's
+  coin leave the ledger; then `SpoilsPool.SeedNewMen`. (The garrison's own `CanAffordRecruit` / `PayRecruitKit`,
+  treasury only, are not used: a town with a thin treasury and rich citizens sized a big patrol and bought
+  nobody.) Buying stops for good at the first refusal; men neither taken nor bought are counted "pool short"
+  or "funds short". With `apply: false` nothing moves and the pot and pool are tracked locally (each bought man
+  takes his full price off the plan's pot, though in a town the treasury's share comes back as citizen surplus;
+  the pool's per-man cost held at today's, which only eases as garrison men leave), so the plan never promises
+  more than the real fill delivers. SPAWN and REFILL lines give the garrison as the fill found it ("garrison H
+  healthy, S spare" above `GarrisonKeepFloor`), so a floor that left nobody spare reads apart from spare men
+  who matched no slot.
+- **Gates**: keep (`CanSettlementHavePatrolParties` postfix) = pot ≥ 6 × perMan × 15 days; spawn
+  (`CanSettlementSpawnNewPartyCurrently` postfix) also needs the plan to man the whole roster and the pot to
+  hold `SpawnKeepFloorMult` 2 × the keep reserve + `SpawnKitReserveMult` 3 × (a castle `CastleSpawnKitReserveMult`
+  1 ×, its pot being its treasury alone) the kit of the men it would BUY
+  (garrison men are free; the doubled reserve keeps a garrison-manned raise, which buys nothing, from being
+  stood down by the keep-gate the next day), and sets the status reasons "Cannot
+  fund a patrol" / "Too few men to raise a patrol" (the plan ran out of pool) / "Saving to raise a patrol" in
+  place of vanilla's "No Guard House". `GetPatrolPartySpawnDuration` (vanilla throws without a Guard House) is
+  10 days for a fief without one.
+- **Raising** (`SpawnPatrolParty` postfix → `OnPatrolSpawned`): vanilla's conjured template men are removed and
+  the scaled template roster is manned by `Fill`. Since the gate planned the same fill it comes out whole; a
+  party that still ends up empty is stood down (`DestroyPartyAction`) and the fief re-queues. Vanilla's free
+  new-game spawn (`OnNewGameCreated`, index 50, before the treasuries are seeded) is skipped; patrols come
+  through the daily queue.
+- **Refill** (`ReplenishParty` skip-prefix → `Replenish`, land only, vanilla's hourly timing): nothing once
+  `CanKeepPatrol` fails (the day's keep-gate stands it down); keeps the roster; `MissingFromTarget` matches the
+  men it has to the template slots in passes over all slots, each man filling one slot: (0) own troop, (1) same
+  tier and kind, (2) same kind up to `PromotedSlotTiers` 2 tiers higher, (3) same kind up to
+  `GarrisonLowerTierSteps` 1 tier lower (the garrison substitute `Fill` step 3 drew), (4) the slot troop's upgrade
+  line (`UpgradeTargets`, any depth, any kind), (5) same kind any tier -- so promoted men, lower-tier garrison
+  substitutes and men of an older template level keep their slots; `Fill` mans what is still missing, up to the size. A refill that finds nobody logs at
+  most once a day. With the toggle off the prefix does nothing; the main module's always-installed guard
+  (`RBM/PatrolReplenishGuard.cs`, `com.rbmmain`, `Priority.Last`, passes through when `__runOriginal` is already
+  false) skips vanilla's refill when the template is null -- a castle's or a no-Guard-House town's patrol still on
+  the map with the feature or RBM Campaign off (vanilla gives such a town a size limit of 10 from its level-0
+  Guard House building, so one under 10 at home would reach `FindAppropriateInitialRosterForMobileParty` with a
+  null template and throw). Nothing can guard a save once RBM itself is removed.
+- **Stalled refill** (`_refillStalled`): vanilla's AI keeps a patrol home while `PartySizeRatio` < 0.9
+  (`AiHourlyTick`) and pulls it home by 1.1 / ratio. A refill that leaves it under `RefillStallRatio` 0.9 of
+  the size marks it stalled and records its head count; while stalled the limit is held at THAT count (tooltip
+  line "No men to refill it"), so the ratio reads 1 and it patrols short, and men lost afterwards show as a
+  shortfall that draws it home. Cleared when it enters home (`PatrolPartiesCampaignBehavior.SettlementEntered`
+  postfix), when the daily pass finds it resting at home (the hourly roll then tries again; finding nobody it
+  re-stalls and leaves), or after `RefillStallMaxDays` 7.
+- **Short stand-down**: a refill that leaves the patrol under `MinSize` with men short marks it
+  (`_pendingStandDown`); the next daily pass, if it is still at home and still that short, returns its men to the
+  garrison and destroys it with `DestroyPartyAction` (DISBAND line), so vanilla's spawn queue re-queues the fief.
+  Not from the refill itself, which runs inside vanilla's hourly tick of that very party.
+- **Trim** (`TrimSurplus`, daily pass and the `SettlementEntered` postfix): a patrol resting at home with more men
+  than its fief's current size sends the surplus to the garrison -- first men that fill no template slot (lowest
+  tier first), then the lowest tiers -- wounded first within a stack (TRIM line).
+- **Standing down** (`RemoveSettlementParties` prefix → `OnStandingDown`): before vanilla destroys the patrol (keep
+  gate failed in `UpdateSettlementParties`, or `OnSettlementOwnerChangedEvent`), its men, healthy and wounded, go
+  into the garrison (created with `AddGarrisonParty` if missing) with XP pro rata and their purses
+  (`TransferSpoils`); vanilla destroys the emptied party. Not for a fief taken by force: an
+  `OnSettlementOwnerChangedEvent` prefix (+ finalizer) marks the `ChangeOwnerOfSettlementDetail`, and `BySiege` /
+  `ByRebellion` keep vanilla's destroy; every peaceful change (Default, ByBarter, ByGift, ByKingDecision,
+  ByLeaveFaction, ByClanDestruction -- all keep the garrison) returns them. Never while the patrol or the fief
+  is in a MapEvent or siege (the men are then lost as in vanilla). DISBAND line with the count returned.
+- **Speed** (`DefaultPartySpeedCalculatingModel.CalculateBaseSpeed` postfix → `AddSpeedBonus`): land patrols
+  +0.5 (`SpeedBonus`) on the base, labelled "Patrol remounts" on the speed tooltip; it sits in the base number,
+  so terrain/night/weather factors scale it. NavalDLC's speed model calls the default one for parties on land.
+- **Pay** (`PayPatrolUpkeep`, from `SpoilsPool.DepositWageSpoils`, land and naval): wage pot → purse (only what
+  was paid is banked), maintenance purse then pot, all of it to the mending market (`TroopMarketFeedback`;
+  the town itself, or the nearest friendly town for a castle). Ledger sources `Patrol` / `PatrolRecruit`.
+  `DailyBill` is added to `GarrisonRecruitCost.FullDailyBill`, so garrison growth leaves the patrol's money.
+- **Security** (`DefaultSettlementSecurityModel.CalculateSecurityChange` postfix → `AddSecurityBonus`): vanilla's
+  `CalculateSettlementPatrolPartiesBonuses` only counts a patrol with a town Guard House ≥ 1 (+0.5 × level + 0.5);
+  a fief with a land patrol and no town Guard House (every castle -- its Guard House is the castle building -- and
+  any town without one) gets the level-0 figure, +0.5/day (`NoGuardHouseSecurityBonus`), under vanilla's
+  `str_patrol_parties` label. NavalDLC's security model starts from the default one.
+- **Untouched**: owner-change removal itself (only its men are saved), the patrol AI. The fief lists show a
+  patrol row for towns only (castles have none).
+- Saving: patrols, the spawn queue and visit times are vanilla's own saved state. RBM saves only the averaged
+  pot (`_averagePot`, key `RBM_patrolAveragePot`, via `PatrolUpkeep.SyncData` from
+  `RBMSettlementWealthCampaignBehavior.SyncData`); the rest of its per-fief state (`_lastState`, `_payTally`,
+  `_shortRefillLogDay`, `_refillStalled`, `_pendingStandDown`, `_partyLimit`) is session-only. All of it is reset
+  from that behaviour's ctor, before the load's SyncData.
+
 #### Building effects (`Settlements/BuildingEffects.cs`)
 
 `BuildingEffects.Tier(town, townType, castleType)` reads `Building.CurrentLevel` for whichever of a
@@ -635,6 +771,7 @@ vanilla effect stays in place unless the row says "replaces".
 | | manpower pool growth +25% (Train Militia, also Housing) / +50% (Raise Troops) while running | `RecruitPool.GetGrowthBonus` |
 | Guard House | tariff +0.3/0.6/1.0 percentage points on GUARDED trade only (caravans, lords, the player) | `TradeTariff.Levy(.., guardedTrade: true)` from `SettlementWealth.RouteNativeWrite` and `InventoryLogic.DoneLogic` |
 | | passive convict labour | the Guard House terms in the construction ceiling/free-labour above |
+| | patrol boost +0.5 a level (budget, size ceiling, template level); no longer needed for a patrol; first patrol trains in 10 − 2 × (level − 1) days (10 with none). Without one a patrol still gives vanilla's level-0 security (+0.5/day) | `PatrolUpkeep.Boost` / `GuardHouseLevel`, `PatrolUpkeepPatches.SpawnDurationPatch` |
 | Tax Office | wealth tax and minting cuts x1.05/1.1/1.15, owner and fief legs alike | `WealthTax.OnDailyTick`, `Minting` |
 | Marketplace | tariff x1.1/1.2/1.3 on ALL channels | `TradeTariff.Levy` rate factor |
 | Warehouse / Granary | granary = 30/40/50/60 days of the fief's own consumption (**replaces** the flat `TownFoodStockScale` x10), castles included; for towns it is also the market's food intake ceiling (`TownStorage.Headroom`) | `RBMTownFoodSupply.FoodStocksUpperLimitPatch`, sized off `GetFoodConsumption(town).Total` with a 300 floor |

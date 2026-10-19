@@ -72,6 +72,10 @@ namespace RBMConfig
         public TextViewModel StuckPartyLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> StuckPartyLoggingEnabled { get; }
 
+        // Settlement patrol logging (logs/patrols): on/off.
+        public TextViewModel PatrolLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> PatrolLoggingEnabled { get; }
+
         // Section title. Own RBM_DBG_* id block, so the new strings cannot collide with the crowded RBM_CON_* ids.
         [DataSourceProperty]
         public string RBMDebugt
@@ -222,5 +226,14 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel StuckPartyLoggingEnabledHint { get; } = Hint("{=RBM_DBG_STUCK_LOG_HINT}Writes to logs/stuckparties next to the config every map party (lords, caravans, villagers, fleets) that has a destination but has not moved for a day: where it is, where it is trying to go, whether it is at sea or heading for a port, its ships, and whether the game found a path. A second line when it moves again. For reporting parties stuck on coasts. Needs RBM Campaign on. Default off.");
+
+        [DataSourceProperty]
+        public string PatrolLoggingEnabledt
+        {
+            get { return new TextObject("{=RBM_DBG_PATROL_LOG}Patrol Logging").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel PatrolLoggingEnabledHint { get; } = Hint("{=RBM_DBG_PATROL_LOG_HINT}Writes the settlement patrols to logs/patrols next to the config: each patrol raised (size, quality, kit cost) and refilled (men bought, cost), each patrol's daily wage and upkeep against what it was owed, patrols stood down (and why) or lost, and a settlement's patrol funds, budget and size on a day they changed. Needs Settlement Patrols and RBM Campaign on. Default off.");
     }
 }

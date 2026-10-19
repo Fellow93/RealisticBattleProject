@@ -192,6 +192,17 @@
 	<string id="RBM_militia_overflow" text="Disbanding excess" />
 	<string id="RBM_militia_barracks" text="Barracks" />
 	<string id="RBM_militia_base_caps" text="Base (soft cap {SOFT}, hard cap {HARD})" />
+	<string id="RBM_patrol_funds" text="Settlement funds ({POT} on hand, {COST} a man a day)" />
+	<string id="RBM_patrol_guardhouse" text="Guard House" />
+	<string id="RBM_patrol_edict" text="Coastal Guard Edict" />
+	<string id="RBM_patrol_perk" text="Patrols perk" />
+	<string id="RBM_patrol_min" text="Smallest patrol worth fielding" />
+	<string id="RBM_patrol_cap" text="Most the fief can command (cap {MAX})" />
+	<string id="RBM_patrol_unfunded" text="Cannot fund a patrol" />
+	<string id="RBM_patrol_saving" text="Saving to raise a patrol" />
+	<string id="RBM_patrol_nomen" text="Too few men to raise a patrol" />
+	<string id="RBM_patrol_speed" text="Patrol remounts" />
+	<string id="RBM_patrol_stalled" text="No men to refill it: patrolling short" />
 	<string id="RBM_recruit_tithe" text="Foreign levy" />
 	<string id="RBM_recruit_gear" text="Equipment" />
 	<string id="RBM_recruit_cost_title" text="Recruitment cost" />
@@ -723,6 +734,8 @@
 	<string id="RBM_LEDGER_SRC_GARRISON_RECRUIT" text="Garrison recruit kit" />
 	<string id="RBM_LEDGER_SRC_GARRISON_LEVY" text="Garrison men levied by lords" />
 	<string id="RBM_LEDGER_SRC_MILITIA" text="Militia upkeep" />
+	<string id="RBM_LEDGER_SRC_PATROL" text="Patrol upkeep" />
+	<string id="RBM_LEDGER_SRC_PATROL_RECRUIT" text="Patrol kit" />
 	<string id="RBM_LEDGER_SRC_ADMIN" text="Administration" />
 	<string id="RBM_LEDGER_SRC_CONSTRUCTION" text="Construction" />
 	<string id="RBM_LEDGER_SRC_BOOST" text="Construction labour" />
@@ -1195,6 +1208,12 @@
 	<string id="RBM_CFG_CAT_WAGES" text="Wages &amp; Maintenance" />
 	<string id="RBM_CFG_DESERTER_RAIDERS" text="Deserter Raiders" />
 	<string id="RBM_CFG_DESERTER_RAIDERS_HINT" text="Gives deserter parties initiative: they actively hunt nearby villager convoys and caravans and raid weakly-held villages when they out-match the target, instead of aimlessly patrolling their spawn point. Off leaves deserters on vanilla behavior. Default on." />
+	<string id="RBM_CFG_PATROLS" text="Settlement Patrols" />
+	<string id="RBM_CFG_PATROLS_HINT" text="Every town and castle can keep a patrol if its own money can pay for it, Guard House or not. The patrol is sized and armed from the settlement's treasury (a town's citizens chip in from their savings above a reserve), and the Guard House, the Coastal Guard Edict and the Patrols perk make it bigger and better. The settlement pays for the men's kit when it raises the patrol and for every man it replaces, and pays their wages and upkeep every day; a settlement that can no longer pay stands its patrol down and its men rejoin the garrison. Your clan's gold is never touched. Needs Troop Upgrade Cost above 0 (the spoils system pays the patrols' wages); without it the base game's patrols apply. Off restores the base game's free patrols for towns with a Guard House. Default on." />
+	<string id="RBM_CFG_PATROL_BUDGET" text="Patrol Budget Share" />
+	<string id="RBM_CFG_PATROL_BUDGET_HINT" text="The share of a settlement's patrol funds (its treasury, plus a town's citizen savings above their reserve) it sets aside for its patrol each day, before the Guard House, Coastal Guard Edict and Patrols perk bonuses. Divided by what one soldier costs a day, it sets how many men the patrol has, between 6 and 60. Zero keeps every patrol at the smallest size. Needs Settlement Patrols on. Default 0.020." />
+	<string id="RBM_DBG_PATROL_LOG" text="Patrol Logging" />
+	<string id="RBM_DBG_PATROL_LOG_HINT" text="Writes the settlement patrols to logs/patrols next to the config: each patrol raised (size, quality, kit cost) and refilled (men bought, cost), each patrol's daily wage and upkeep against what it was owed, patrols stood down (and why) or lost, and a settlement's patrol funds, budget and size on a day they changed. Needs Settlement Patrols and RBM Campaign on. Default off." />
 	<string id="RBM_CFG_FL_ATTACK" text="Frontline Attack Weight" />
 	<string id="RBM_CFG_FL_ATTACK_HINT" text="Multiplier on the 'press forward at my target' score. Above 1 makes lines more aggressive and thinner; below 1 makes them hang back. Default 1.00." />
 	<string id="RBM_CFG_FL_BACKSTEP" text="Frontline Back Step Weight" />

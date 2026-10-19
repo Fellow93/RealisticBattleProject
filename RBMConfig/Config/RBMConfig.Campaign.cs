@@ -228,5 +228,16 @@ namespace RBMConfig
         // (LordEquipmentUpgrade). Off leaves lord equipment to vanilla or another mod. Does not affect
         // the lord pack train.
         public static bool lordEquipmentUpgradeEnabled = true;
+
+        // Whether towns and castles raise, refill and pay their patrols out of their own funds (RBMCampaign
+        // Settlements/PatrolUpkeep): no Guard House needed, size and quality from the funds and a Guard House /
+        // Coastal Guard Edict / Patrols perk boost, the kit and every replacement paid for, the daily wage and
+        // maintenance billed to the fief. Off is vanilla's free, Guard-House-only town patrol; so is
+        // troopUpgradeCostMultiplier 0, since the spoils wage pass that bills the patrols then never runs.
+        public static bool settlementPatrolsEnabled = true;
+
+        // The share of a fief's patrol funding pot (treasury + a town's citizen surplus) set aside for its patrol
+        // each day, before the boost. Divided by one man's daily cost it sets the patrol's size.
+        public static float patrolBudgetFraction = 0.02f;
     }
 }

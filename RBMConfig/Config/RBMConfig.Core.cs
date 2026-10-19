@@ -290,6 +290,9 @@ namespace RBMConfig
             mercenaryLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "MercenaryLoggingEnabled", "0").Equals("1");
             partyBudgetLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "PartyBudgetLoggingEnabled", "0").Equals("1");
             stuckPartyLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "StuckPartyLoggingEnabled", "0").Equals("1");
+            patrolLoggingEnabled = ReadOrCreate("/Config/RBMCampaign", "PatrolLoggingEnabled", "0").Equals("1");
+            settlementPatrolsEnabled = ReadOrCreate("/Config/RBMCampaign", "SettlementPatrolsEnabled", "1").Equals("1");
+            patrolBudgetFraction = float.Parse(ReadOrCreate("/Config/RBMCampaign", "PatrolBudgetFraction", "0.02"), CultureInfo.InvariantCulture);
             deserterRaidersEnabled = ReadOrCreate("/Config/RBMCampaign", "DeserterRaidersEnabled", "1").Equals("1");
             mercenaryCompaniesEnabled = ReadOrCreate("/Config/RBMCampaign", "MercenaryCompaniesEnabled", "1").Equals("1");
             lordEquipmentUpgradeEnabled = ReadOrCreate("/Config/RBMCampaign", "LordEquipmentUpgradeEnabled", "1").Equals("1");
@@ -534,6 +537,9 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/MercenaryLoggingEnabled"), mercenaryLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/PartyBudgetLoggingEnabled"), partyBudgetLoggingEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/StuckPartyLoggingEnabled"), stuckPartyLoggingEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/PatrolLoggingEnabled"), patrolLoggingEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/SettlementPatrolsEnabled"), settlementPatrolsEnabled);
+            setInnerText(xmlConfig.SelectSingleNode("/Config/RBMCampaign/PatrolBudgetFraction"), patrolBudgetFraction.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/DeserterRaidersEnabled"), deserterRaidersEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/MercenaryCompaniesEnabled"), mercenaryCompaniesEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMCampaign/LordEquipmentUpgradeEnabled"), lordEquipmentUpgradeEnabled);

@@ -447,6 +447,11 @@ namespace RBMConfig
             MercenaryCompaniesEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_MERC_COMPANIES}Mercenary Companies"));
             MercenaryCompaniesEnabled = new SelectorVM<SelectorItemVM>(mercenaryCompaniesOptions, 0, null);
 
+            // Settlement-funded patrols: on by default, so Enabled carries the "(Default)" tag.
+            List<string> settlementPatrolsOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            SettlementPatrolsEnabledText = new TextViewModel(new TextObject("{=RBM_CFG_PATROLS}Settlement Patrols"));
+            SettlementPatrolsEnabled = new SelectorVM<SelectorItemVM>(settlementPatrolsOptions, 0, null);
+
             // Equipment simulation: Enabled is the default, so its option carries the "(Default)" tag.
             List<string> simulationEquipmentOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
             SimulationEquipmentEnabledText = new TextViewModel(new TextObject("{=RBM_CON_093}Detailed Auto Resolve"));
@@ -523,6 +528,8 @@ namespace RBMConfig
             PartyBudgetLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.partyBudgetLoggingEnabled ? 1 : 0, null);
             StuckPartyLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_DBG_STUCK_LOG}Stuck Party Logging"));
             StuckPartyLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.stuckPartyLoggingEnabled ? 1 : 0, null);
+            PatrolLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_DBG_PATROL_LOG}Patrol Logging"));
+            PatrolLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.patrolLoggingEnabled ? 1 : 0, null);
 
             if (RBMConfig.rbmCombatEnabled)
             {
@@ -583,6 +590,8 @@ namespace RBMConfig
             CaravanInvestmentEnabled.SelectedIndex = RBMConfig.caravanInvestmentEnabled ? 1 : 0;
             DeserterRaidersEnabled.SelectedIndex = RBMConfig.deserterRaidersEnabled ? 1 : 0;
             MercenaryCompaniesEnabled.SelectedIndex = RBMConfig.mercenaryCompaniesEnabled ? 1 : 0;
+            SettlementPatrolsEnabled.SelectedIndex = RBMConfig.settlementPatrolsEnabled ? 1 : 0;
+            _patrolBudgetFraction = MathF.Clamp(RBMConfig.patrolBudgetFraction, 0f, 0.1f);
             SimulationEquipmentEnabled.SelectedIndex = RBMConfig.simulationEquipmentEnabled ? 1 : 0;
             SimulationRoutEnabled.SelectedIndex = RBMConfig.simulationRoutEnabled ? 1 : 0;
             StrategicPowerEnabled.SelectedIndex = RBMConfig.strategicPowerEnabled ? 1 : 0;
@@ -834,6 +843,8 @@ namespace RBMConfig
             RBMConfig.caravanInvestmentEnabled = CaravanInvestmentEnabled.SelectedIndex == 1;
             RBMConfig.deserterRaidersEnabled = DeserterRaidersEnabled.SelectedIndex == 1;
             RBMConfig.mercenaryCompaniesEnabled = MercenaryCompaniesEnabled.SelectedIndex == 1;
+            RBMConfig.settlementPatrolsEnabled = SettlementPatrolsEnabled.SelectedIndex == 1;
+            RBMConfig.patrolBudgetFraction = _patrolBudgetFraction;
             RBMConfig.simulationEquipmentEnabled = SimulationEquipmentEnabled.SelectedIndex == 1;
             RBMConfig.simulationRoutEnabled = SimulationRoutEnabled.SelectedIndex == 1;
             RBMConfig.strategicPowerEnabled = StrategicPowerEnabled.SelectedIndex == 1;
@@ -867,6 +878,7 @@ namespace RBMConfig
             RBMConfig.mercenaryLoggingEnabled = MercenaryLoggingEnabled.SelectedIndex == 1;
             RBMConfig.partyBudgetLoggingEnabled = PartyBudgetLoggingEnabled.SelectedIndex == 1;
             RBMConfig.stuckPartyLoggingEnabled = StuckPartyLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.patrolLoggingEnabled = PatrolLoggingEnabled.SelectedIndex == 1;
 
             RBMConfig.saveXmlConfig();
             TaleWorlds.ScreenSystem.ScreenManager.PopScreen();
@@ -974,6 +986,8 @@ namespace RBMConfig
             CaravanInvestmentEnabled.SelectedIndex = 1;
             DeserterRaidersEnabled.SelectedIndex = 1;
             MercenaryCompaniesEnabled.SelectedIndex = 1;
+            SettlementPatrolsEnabled.SelectedIndex = 1;
+            PatrolBudgetFraction = 0.02f;
             SimulationEquipmentEnabled.SelectedIndex = 1;
             SimulationRoutEnabled.SelectedIndex = 0;
             StrategicPowerEnabled.SelectedIndex = 1;
@@ -998,6 +1012,7 @@ namespace RBMConfig
             MercenaryLoggingEnabled.SelectedIndex = 0;
             PartyBudgetLoggingEnabled.SelectedIndex = 0;
             StuckPartyLoggingEnabled.SelectedIndex = 0;
+            PatrolLoggingEnabled.SelectedIndex = 0;
         }
 
         private void ExecuteCancel()

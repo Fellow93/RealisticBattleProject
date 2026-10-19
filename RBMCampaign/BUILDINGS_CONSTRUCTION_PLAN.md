@@ -1,7 +1,7 @@
 # Buildings & construction rework — plan (2026-09-03)
 
 Status: phase 1 (engine) committed `df4ccaad`; phase 2 (building effects) BUILT 2026-09-03;
-phase 3 (patrols) deferred. Neither phase playtested yet. Companion to `GARRISON_MILITIA_WALL_ECONOMY_PLAN.md`
+phase 3 (patrols) BUILT 2026-10-15 as a rebuild, one patrol per fief (see §3). Neither phase playtested yet. Companion to `GARRISON_MILITIA_WALL_ECONOMY_PLAN.md`
 (its deferred task 6c "wall upgrade gold cost" is subsumed by this plan).
 
 ## 0. What exists today (verified)
@@ -40,9 +40,9 @@ RBM:
   `TownFoodStockScale` is a leftover constant no longer used by the cap.
 - Daily settlement pass: `RBMSettlementWealthCampaignBehavior.OnDailyTickSettlement` — CastleEconomy,
   Minting, AdministrativeUpkeep, GarrisonUpkeep, MilitiaUpkeep, GarrisonRecruitCost, WealthTax, flushes.
-- **Patrols: NOT on the branch.** `PatrolUpkeep.cs/.Patches.cs/.Naval.cs` + config/prefab wiring exist
-  only in `stash@{0}` ("!!GitHub_Desktop<campaignModule>", 2026-08-27, ~1,000 lines, build-verified,
-  never played). Must be popped, rebased on the current branch and committed before Guard House work.
+- **Patrols: rebuilt 2026-10-15** (`Settlements/PatrolUpkeep.cs` + `.Patches.cs`, design in
+  `ARCHITECTURE.md` "Settlement patrols"). The old stash / commit `27497002` was not revived; only its
+  patterns were reused (no naval reflection patches, no cavalry remount).
 
 ## 1. Construction engine (phase 1)
 
@@ -125,9 +125,9 @@ Vanilla effects stay unless a row says "replace". Shared helper: `Settlements/Bu
 | | growth +1/2/3 per day when funded | `GarrisonRecruitCost.Compute` (`GarrisonSpawnDailyMax` term + tooltip line), `MilitiaUpkeep.ComputeMilitiaChange` intake | ✅ |
 | **Training Field** | garrison upgrade −5/10/15% | `SpoilsUpgradePatches.DiscountGarrisonUpgrade` — **no militia upgrade path exists** (the watch is armed and shed, never promoted) | ✅ |
 | | XP ×10 (10/20/30 per day), militia too | `GarrisonDrill` postfix on `GetEffectiveDailyExperience`, filter widened to `IsMilitia` | ✅ |
-| **Guard House** T0/1/2/3 | T0 spawns a light patrol; each tier adds one patrol | needs multi-patrol — **OUT OF SCOPE**, see §5 | — |
+| **Guard House** T0/1/2/3 | T0 spawns a light patrol; each tier adds one patrol | multi-patrol still **OUT OF SCOPE**; built instead: every funded fief keeps one patrol, the Guard House adds +0.5 boost per level (budget, size ceiling, template level) — `PatrolUpkeep.Boost` | ✅ (one patrol) |
 | | tariff +0.3/0.6/1.0% on caravan + player trades | `TradeTariff.Levy(.., guardedTrade)`; only `RouteNativeWrite` + `DoneLogic` pass true | ✅ |
-| | patrol maintenance −25/50/75% | `PatrolUpkeep.PayPatrolUpkeep` (stash) — **OUT OF SCOPE** | — |
+| | patrol maintenance −25/50/75% | not built — the patrol rebuild bills full wage + maintenance (`PatrolUpkeep.PayPatrolUpkeep`) | — |
 | | passive prisoners | `Construction.GuardHouseTier`, §1.2 cap/discount terms | ✅ |
 | **Siege Workshop** | unchanged | — | — |
 | **Tax Office** | +5/10/15% on wealth tax (owner + fief) and the minting cuts | `WealthTax.OnDailyTick` rates × `TaxFactor`; same factor in `Minting` | ✅ |
@@ -173,6 +173,12 @@ Untouched: `Construction.cs:57/:60` still gives +60 cap and 30 free construction
 
 ## 3. Guard House & patrols (phase 3)
 
+**BUILT 2026-10-15 as a rebuild** (not the stash): every town and castle keeps one patrol funded from
+its treasury (+ a town's citizen surplus), sized by `patrolBudgetFraction` × boost, the Guard House /
+Coastal Guard Edict / Patrols perk raising the boost; kit paid on raising and refills, wage + maintenance
+billed daily. Multi-patrol (items 2–3) and the maintenance discount (item 4) were NOT built. The original
+plan, kept for reference:
+
 1. Pop `stash@{0}`, resolve against current `campaignModule`, build, commit ("Campaign: wealth-funded
    patrols (phase 1)"). Nothing else in this section is possible until then.
 2. Multi-patrol: vanilla keeps one patrol per settlement (`Settlement.PatrolParty`,
@@ -207,4 +213,4 @@ cap/discount terms in this pass.
 1. Phase 1 engine, log-verified in-game over ~30 days on one town + one castle.
 2. Phase 2 effects, one building per commit, each on its named seam (Guard House: tariff + passive
    prisoners only).
-3. Later: pop the patrol stash, then §3.
+3. Later: pop the patrol stash, then §3. (Done differently 2026-10-15: patrols rebuilt from scratch, see §3.)

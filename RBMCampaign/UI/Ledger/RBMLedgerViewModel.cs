@@ -669,6 +669,8 @@ namespace RBMCampaign
             { SettlementWealth.Source.GarrisonRecruit,"{=RBM_LEDGER_SRC_GARRISON_RECRUIT}Garrison recruit kit" },
             { SettlementWealth.Source.GarrisonLevy,   "{=RBM_LEDGER_SRC_GARRISON_LEVY}Garrison men levied by lords" },
             { SettlementWealth.Source.Militia,        "{=RBM_LEDGER_SRC_MILITIA}Militia upkeep" },
+            { SettlementWealth.Source.Patrol,         "{=RBM_LEDGER_SRC_PATROL}Patrol upkeep" },
+            { SettlementWealth.Source.PatrolRecruit,  "{=RBM_LEDGER_SRC_PATROL_RECRUIT}Patrol kit" },
             { SettlementWealth.Source.Admin,          "{=RBM_LEDGER_SRC_ADMIN}Administration" },
             { SettlementWealth.Source.Construction,   "{=RBM_LEDGER_SRC_CONSTRUCTION}Construction" },
             { SettlementWealth.Source.Boost,          "{=RBM_LEDGER_SRC_BOOST}Construction labour" },

@@ -71,13 +71,15 @@ namespace RBMCampaign
 
         /// <summary>
         /// The whole settlement's standing daily cost: the garrison (wage + maintenance), the militia, the
-        /// administration and the walls. The basic-requirement reserve is a multiple of this -- a fief must
-        /// be able to cover everything it already pays for, with room to spare, before it spends on new men.
+        /// patrols, the administration and the walls. The basic-requirement reserve is a multiple of this -- a
+        /// fief must be able to cover everything it already pays for, with room to spare, before it spends on
+        /// new men.
         /// </summary>
         internal static int FullDailyBill(Settlement settlement)
         {
             return GarrisonUpkeep.EstimateDailyBill(settlement)
                 + MilitiaUpkeep.DailyMaintenanceBill(settlement)
+                + PatrolUpkeep.DailyBill(settlement)
                 + AdministrativeUpkeep.EstimateDailyBill(settlement);
         }
 
@@ -118,9 +120,10 @@ namespace RBMCampaign
 
         /// <summary>
         /// What arming THIS man costs. Priced off the troop actually being enlisted, so a castellan's elite
-        /// recruit is billed for his own better kit rather than the common soldier's.
+        /// recruit is billed for his own better kit rather than the common soldier's. Also the price of a man
+        /// a fief buys for its patrol (<see cref="PatrolUpkeep"/>), which pays the garrison's price.
         /// </summary>
-        private static int SpawnCostFor(Settlement settlement, CharacterObject troop)
+        internal static int SpawnCostFor(Settlement settlement, CharacterObject troop)
         {
             if (troop == null)
             {
@@ -130,6 +133,32 @@ namespace RBMCampaign
             // cheaply. −5/10/15% at levels 1/2/3, on the rate and the charge alike, this being the one place
             // the price of a recruit is worked out.
             return (int)(SpoilsPool.GetEquipmentValue(troop) * BuildingEffects.SpawnCostFactor(settlement.Town));
+        }
+
+        /// <summary>
+        /// The per-man affordability rule: the treasury must hold <see cref="GarrisonSpawnReserveMult"/> times
+        /// the man's price to arm him. Re-checked man by man as the treasury drains by the garrison's own
+        /// intake. (A patrol buying its men holds its funding pot, not the treasury, to the same multiple --
+        /// see <see cref="PatrolUpkeep"/>.)
+        /// </summary>
+        internal static bool CanAffordRecruit(Settlement settlement, int cost)
+        {
+            return cost > 0 && FiefWealth(settlement) >= cost * GarrisonSpawnReserveMult;
+        }
+
+        /// <summary>
+        /// Pays one recruit's kit out of the treasury, booked under <paramref name="source"/>. In a town the coin
+        /// reaches the armourers who kitted him; a castle sources the gear from outside its walls and the coin
+        /// leaves the ledger. Returns what was paid.
+        /// </summary>
+        internal static int PayRecruitKit(Settlement settlement, int cost, string source)
+        {
+            int paid = SettlementWealth.Debit(settlement, cost, source);
+            if (paid > 0 && settlement.IsTown)
+            {
+                SettlementWealth.CreditCitizens(settlement, paid, source);
+            }
+            return paid;
         }
 
         /// <summary>
@@ -204,7 +233,7 @@ namespace RBMCampaign
                     int spawnCost = SpawnCostFor(settlement, troop);
                     // Stop the moment arming the next man would break the per-man reserve -- the same floor
                     // the rate is built on, enforced man by man as the treasury drains.
-                    if (spawnCost <= 0 || FiefWealth(settlement) < spawnCost * GarrisonSpawnReserveMult)
+                    if (!CanAffordRecruit(settlement, spawnCost))
                     {
                         break;
                     }
@@ -304,14 +333,7 @@ namespace RBMCampaign
             garrison.MemberRoster.AddToCounts(troop, 1);
             // He arrives with the recruit seed in his purse, as a lord's recruit does.
             SpoilsPool.SeedNewMen(garrison.Party, troop, 1);
-
-            int paid = SettlementWealth.Debit(settlement, cost, SettlementWealth.Source.GarrisonRecruit);
-            // In a town the coin reaches the armourers who kitted him; a castle sources the gear from
-            // outside its walls and the coin leaves the ledger.
-            if (paid > 0 && settlement.IsTown)
-            {
-                SettlementWealth.CreditCitizens(settlement, paid, SettlementWealth.Source.GarrisonRecruit);
-            }
+            PayRecruitKit(settlement, cost, SettlementWealth.Source.GarrisonRecruit);
         }
 
         /// <summary>

@@ -66,6 +66,11 @@ namespace RBMCampaign
             // maintenance pass never touches it and nothing is charged twice.
             PartyWageModel wageModel = Campaign.Current.Models.PartyWageModel;
             bool isMilitia = party?.MobileParty != null && party.MobileParty.IsMilitia;
+            // A settlement patrol, land or naval, is paid by its home fief out of the fief's funds (see
+            // PatrolUpkeep), exactly as a militia is -- so, like a militia's, its wage is billed rather than
+            // banked from nothing here. With the patrol rework off, patrols keep the plain deposit below.
+            bool isPatrol = !isMilitia && party?.MobileParty != null && party.MobileParty.IsPatrolParty
+                && PatrolUpkeep.IsEnabled;
             // A mercenary company's men are kept at double pay while the contract holds, so a stack under it
             // banks twice its wage into spoils. This is the second wage the company is charged for through the
             // finance model (see MercenaryContractPay) and the crown then reimburses, so the extra deposit is
@@ -100,6 +105,12 @@ namespace RBMCampaign
                     MilitiaUpkeep.PayMilitiaUpkeep(party.MobileParty, element.Character, element.Number, wage);
                     continue;
                 }
+                if (isPatrol)
+                {
+                    // A full field wage and full maintenance, the home fief paying (see PatrolUpkeep).
+                    PatrolUpkeep.PayPatrolUpkeep(party.MobileParty, element.Character, element.Number, wage);
+                    continue;
+                }
                 // The men skim their whole day's wage into their purse, cap or no cap. Spoils are a
                 // closed loop now -- what lands here is spent on upgrades, food and drink, never handed
                 // back to the owner as gold.
@@ -123,6 +134,12 @@ namespace RBMCampaign
                 AddSpoils(party, element.Character, granted);
                 grantedTotal += granted;
                 stacksPaid++;
+            }
+
+            // The patrol's one pay line for the day, its stacks all billed.
+            if (isPatrol)
+            {
+                PatrolUpkeep.FlushPayLog(party.MobileParty);
             }
 
             // The party-level line, always: the day's wage-into-spoils, without naming stacks.

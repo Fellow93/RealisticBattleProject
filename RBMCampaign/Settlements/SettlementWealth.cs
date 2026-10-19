@@ -271,6 +271,21 @@ namespace RBMCampaign
             /// </summary>
             public const string GarrisonLevy = "garrison-levy";
             public const string Militia = "militia";
+
+            /// <summary>
+            /// A fief keeping its patrol on the road: the men's daily wage, drawn into their purses, and the kit
+            /// maintenance their purses could not meet, both out of the treasury first and a town's citizen
+            /// surplus after. The maintenance lands in the mending town under this same name. See
+            /// <see cref="PatrolUpkeep"/>.
+            /// </summary>
+            public const string Patrol = "patrol";
+
+            /// <summary>
+            /// A fief arming its patrol: the kit of every man raised or bought back, out of the same pot. In a town
+            /// the treasury's share reaches the armourers (citizen wealth); the rest leaves the ledger. See
+            /// <see cref="PatrolUpkeep"/>.
+            /// </summary>
+            public const string PatrolRecruit = "patrol-recruit";
             public const string Admin = "admin";
 
             /// <summary>

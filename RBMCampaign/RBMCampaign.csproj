@@ -282,6 +282,7 @@
     <Compile Include="Diagnostics\CaravanLog.cs" />
     <Compile Include="Diagnostics\GarrisonRefillLog.cs" />
     <Compile Include="Diagnostics\MercenaryLog.cs" />
+    <Compile Include="Diagnostics\PatrolLog.cs" />
     <Compile Include="Diagnostics\PartyBudgetLog.cs" />
     <Compile Include="Diagnostics\ArmyCheckLog.cs" />
     <Compile Include="Diagnostics\StuckPartyLog.cs" />
@@ -485,6 +486,8 @@
     <Compile Include="Settlements\TradeTariff.cs" />
     <Compile Include="Settlements\WealthTax.cs" />
     <Compile Include="Settlements\MilitiaUpkeep.cs" />
+    <Compile Include="Settlements\PatrolUpkeep.cs" />
+    <Compile Include="Settlements\PatrolUpkeep.Patches.cs" />
     <Compile Include="Settlements\SettlementDefenseMuster.cs" />
     <Compile Include="Settlements\VillageGoldStock.cs" />
     <Compile Include="Settlements\RBMSettlementWealthCampaignBehavior.cs" />
