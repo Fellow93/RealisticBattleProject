@@ -382,7 +382,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel TroopPerksEnabledHint { get; } = Hint("{=RBM_CFG_TROOP_PERKS_HINT}Lets regular soldiers have hero perks, listed per troop in the mod's troop perks file (rbm_troop_perks.xml). Only personal perks have an effect, and only in battle. A troop's perks are listed in its tooltip and on its encyclopedia page. The perks need RBM Combat. This setting also shows a troop's tooltip when you hover its row on the party screen (needs RBM Campaign; that hover only follows a change after a game restart). No troops have perks yet. Default on.");
+        public BasicTooltipViewModel TroopPerksEnabledHint { get; } = Hint("{=RBM_CFG_TROOP_PERKS_HINT2}Lets regular soldiers have hero perks, listed per troop in the mod's troop perks file (rbm_troop_perks.xml). Only personal perks have an effect, in battle and in auto-resolve (which also needs its Auto Resolve Perks setting and counts the perks it can model). A troop's perks are listed in its tooltip and on its encyclopedia page. The perks need RBM Combat. This setting also shows a troop's tooltip when you hover its row on the party screen (needs RBM Campaign; that hover only follows a change after a game restart). Default on.");
 
         [DataSourceProperty]
         public string PassiveShieldt

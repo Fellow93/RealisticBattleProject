@@ -132,7 +132,8 @@ namespace RBMAutoResolve
         /// <summary>...and burns this many around him.</summary>
         private const int PotCatapultSplashTargets = 10;
 
-        /// <summary>How badly, as a share of the man's own wound pool. A heavy burn that mostly does not kill on
+        /// <summary>How badly, as a share of a reference man's wound pool (SimulationTroopHitPoints.ReferenceWoundPool,
+        /// so a man with more hit points has more left). A heavy burn that mostly does not kill on
         /// its own but leaves him easy to finish -- so a pot's real toll arrives a round or two later, in the
         /// ordinary fighting, which is exactly how burns work.</summary>
         private const float SplashDamageMin = 0.2f;
@@ -196,7 +197,8 @@ namespace RBMAutoResolve
         private const int BallistaAmmo = 30;
 
         /// <summary>
-        /// WHAT A BOLT DOES TO THE MAN IT FINDS, as a share of his own wound pool.
+        /// WHAT A BOLT DOES TO THE MAN IT FINDS, as a share of a reference man's wound pool (the plain trooper's,
+        /// SimulationTroopHitPoints.ReferenceWoundPool -- so a man with more hit points than that survives more of it).
         ///
         /// It used to kill outright -- every hit, one man gone -- and that was too absolute. A bolt-thrower is a
         /// terrible weapon, but it is still a weapon meeting a man in armour, and the rest of this model spends a
@@ -756,7 +758,7 @@ namespace RBMAutoResolve
         }
 
         /// <summary>Burn a scattering of men around where the pot burst -- a heavy wound apiece, priced against
-        /// each man's own pool so armour still counts for something. Returns how many were actually caught, which
+        /// the reference pool (see WoundOne), so a tougher man keeps more of himself. Returns how many were actually caught, which
         /// is fewer than asked for when there are fewer men left than the pot would have reached.</summary>
         private static int Scorch(SimulationBattleState.BattleState state, MapEventSide target, MapEventSide owner,
             int count)
@@ -779,10 +781,14 @@ namespace RBMAutoResolve
         private const int StruckAndDown = 2;
 
         /// <summary>
-        /// Put a heavy wound on one man taken at random, priced as a share of HIS OWN pool -- so the same stone or
-        /// bolt that finishes a levy leaves an armoured man on his feet, which is the whole point of pricing a blow
-        /// against the man rather than flatly. Wounds accumulate in the pool, so a second one usually finishes what
-        /// the first began.
+        /// Put a heavy wound on one man taken at random, priced as a share of a REFERENCE man's pool
+        /// (SimulationTroopHitPoints.ReferenceWoundPool: the plain trooper's, so he is hurt exactly as before). Wounds
+        /// accumulate in the pool, so a second one usually finishes what the first began.
+        ///
+        /// It was a share of HIS OWN pool, and that cancelled every hit-point perk: half of whatever he has leaves a
+        /// 140-HP man as near death as a 125-HP one. A stone is the same stone whoever it lands on, so the wound is
+        /// sized against the reference, and a man with more hit points -- his own perks, his commander's, a lord's
+        /// own -- genuinely has more left after it.
         /// </summary>
         private static int WoundOne(SimulationBattleState.BattleState state, MapEventSide target,
             MapEventSide owner, float shareMin, float shareMax)
@@ -799,15 +805,9 @@ namespace RBMAutoResolve
                 return StruckNobody;
             }
 
-            PartyBase party = target.GetAllocatedTroopParty(SelectedDescriptor(target));
-            float pool = SimulationTroopHitPoints.MaxHitPoints(troop, party, state != null && state.Dismounted);
-            if (pool <= 0f)
-            {
-                return StruckNobody;
-            }
-
             float share = MBRandom.RandomFloatRanged(shareMin, shareMax);
-            bool downed = Apply(target, owner, Math.Max(1, MathF.Round(pool * share)));
+            bool downed = Apply(target, owner,
+                Math.Max(1, MathF.Round(SimulationTroopHitPoints.ReferenceWoundPoolFor(troop) * share)));
             return downed ? StruckAndDown : StruckAndStanding;
         }
 
@@ -840,17 +840,9 @@ namespace RBMAutoResolve
         private static readonly AccessTools.FieldRef<MapEventSide, CharacterObject> SelectedTroopRef =
             AccessTools.FieldRefAccess<MapEventSide, CharacterObject>("_selectedSimulationTroop");
 
-        private static readonly AccessTools.FieldRef<MapEventSide, UniqueTroopDescriptor> SelectedDescriptorRef =
-            AccessTools.FieldRefAccess<MapEventSide, UniqueTroopDescriptor>("_selectedSimulationTroopDescriptor");
-
         private static CharacterObject SelectedTroop(MapEventSide side)
         {
             return SelectedTroopRef(side);
-        }
-
-        private static UniqueTroopDescriptor SelectedDescriptor(MapEventSide side)
-        {
-            return SelectedDescriptorRef(side);
         }
 
         // =========================================================================================================

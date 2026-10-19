@@ -108,6 +108,21 @@ namespace RBMAutoResolve
 
             public bool IsMissile;
 
+            /// <summary>
+            /// The melee blow this profile prices is a THRUST rather than a swing (GetMeleeProfile's own pick). Read only
+            /// by the troop perks, because two of native's damage perks (Polearm.CleanThrust, Polearm.SharpenTheTip) ask
+            /// the strike type and nothing else here does. False for missiles and for every vanilla-priced profile.
+            /// </summary>
+            public bool IsThrust;
+
+            /// <summary>
+            /// What the troop's OWN perks do to this weapon's blows (SimulationTroopPerks) -- all zero on a perk-free kit,
+            /// which is every baseline kit and every kit of a troop with no perks, so the profile then prices exactly as
+            /// it always did. Filled once, when the kit is built; applied where the armour is met and the damage paid
+            /// (SimulationEquipmentPower.ExpectedDamage) and where a shield is worn (ShieldDamageFromBlow).
+            /// </summary>
+            public SimulationTroopPerks.WeaponPerks Perks;
+
             public bool IsValid;
         }
 
@@ -564,6 +579,7 @@ namespace RBMAutoResolve
             profile.DamageFactor = GetDamageFactor(weapon, bestIsThrust && bestType != DamageTypes.Cut);
             profile.Skill = weapon.RelevantSkill;
             profile.IsMissile = false;
+            profile.IsThrust = bestIsThrust;
             profile.IsValid = true;
             return true;
         }

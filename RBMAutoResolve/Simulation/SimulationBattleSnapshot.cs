@@ -276,6 +276,10 @@ namespace RBMAutoResolve
         /// The perks and numbers are read out of ExplainedNumber's own record of what the REAL method did (see
         /// SimulationTroopHitPoints.ExplainCommandedHealth), never from a list kept here. Nothing in this file knows
         /// which perks exist, and nothing in it can drift from the ones that fired.
+        ///
+        /// That pool also carries the TROOPS' OWN hit-point perks (RBM's troop perks), as lines of their own marked
+        /// "(troop)" -- so the baseline printed here stays the bare MaxHitPoints() the map reads, and a troop's Well
+        /// Built is told apart from his lord's. A leaderless party (bandits, say) can print a line on those alone.
         /// </summary>
         private static string DescribeCommanderPerks(PartyBase party, List<CharacterObject> troops, bool dismounted)
         {

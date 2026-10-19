@@ -92,7 +92,7 @@ namespace RBMConfig
         }
 
         [DataSourceProperty]
-        public BasicTooltipViewModel SimulationPerkSystemHint { get; } = Hint("{=RBM_CON_139}In auto-resolve, troops are split into formations under captains as in a real battle, and each captain's own combat perks apply to his formation; the commander's hit-point perks also reach his men. Replaces the base game's flat bonus for the number of captain perks. Needs Detailed Auto Resolve on. Default on.");
+        public BasicTooltipViewModel SimulationPerkSystemHint { get; } = Hint("{=RBM_CON_163}In auto-resolve, troops are split into formations under captains as in a real battle, and each captain's own combat perks apply to his formation; the commander's hit-point perks also reach his men, and troops given perks of their own (Troop Perks setting, needs RBM Combat) fight with them. Replaces the base game's flat bonus for the number of captain perks. Needs Detailed Auto Resolve on. Default on.");
 
         [DataSourceProperty]
         public string SpectateBattlest

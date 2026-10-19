@@ -182,6 +182,7 @@
     <Compile Include="Simulation\SimulationSiege.cs" />
     <Compile Include="Simulation\SimulationSiegeEngines.cs" />
     <Compile Include="Simulation\SimulationTroopHitPoints.cs" />
+    <Compile Include="Simulation\SimulationTroopPerks.cs" />
     <Compile Include="Simulation\SimulationWeaponModel.cs" />
     <Compile Include="Simulation\SimulationWoundedCapture.cs" />
     <Compile Include="UI\SimulationPanel\SimulationBattlePanelPatch.cs" />

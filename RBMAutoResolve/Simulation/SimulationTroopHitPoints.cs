@@ -85,6 +85,31 @@ namespace RBMAutoResolve
         /// </summary>
         internal const float LethalityHitPointScale = 1.25f;
 
+        /// <summary>
+        /// The pool a FIXED-SIZE hurt is measured against: the absolute per-blow cap (SimulationEquipmentPower's
+        /// simulationAbsoluteBlowCap x this) and a siege engine's wound (SimulationSiegeEngines.WoundOne, a share of
+        /// this). It is the plain trooper's pool -- native's hundred, widened by <see cref="LethalityHitPointScale"/> --
+        /// so a 100-HP troop with no perks and no perked commander gets exactly the numbers he always did.
+        ///
+        /// It used to be the struck man's OWN pool, and that quietly cancelled every hit-point perk there is. A stone
+        /// worth half of whatever pool it hits leaves a 140-HP man exactly as near death as a 125-HP one, and so does a
+        /// capped blow worth one and a half of it. A stone and an overkill blow are facts about the stone and the blow,
+        /// so they are sized against a reference man, and the extra hit points a troop, a hero or a commander's perks
+        /// give are then what they are on the field: more to get through before he falls.
+        /// </summary>
+        internal const float ReferenceWoundPool = 100f * LethalityHitPointScale;
+
+        /// <summary>
+        /// <see cref="ReferenceWoundPool"/> on the struck man's own scale. A HERO's pool is unscaled (see MaxHitPoints),
+        /// so his reference man is native's plain hundred: a 100-HP lord is capped and wounded exactly as he always
+        /// was, and only the hit points he has above that protect him. Measuring him against the trooper's widened
+        /// 125 would have hit every ordinary hero a quarter harder than before.
+        /// </summary>
+        internal static float ReferenceWoundPoolFor(CharacterObject troop)
+        {
+            return (troop != null && troop.IsHero) ? 100f : ReferenceWoundPool;
+        }
+
         private static readonly AccessTools.FieldRef<MapEventSide, CharacterObject> SelectedTroop =
             AccessTools.FieldRefAccess<MapEventSide, CharacterObject>("_selectedSimulationTroop");
 
@@ -171,10 +196,10 @@ namespace RBMAutoResolve
             }
 
             // A HERO keeps his OWN pool, UNSCALED. The lethality scale is a trooper knob (see above); a hero's pool is
-            // his own, and his Prefix excludes him from the wound trick entirely. But this method also feeds the
-            // absolute per-blow cap (SimulationEquipmentPower's simulationAbsoluteBlowCap x maxHitPoints) -- scaling
-            // him there would cap his blows against a pool he does not have, and a lord would die faster than the cap
-            // dial says. Leave his MaxHitPoints() as it stands.
+            // his own, and his Prefix excludes him from the wound trick entirely. (The absolute per-blow cap and the
+            // siege engines no longer read this: they are sized against ReferenceWoundPool, a fixed reference man, so
+            // that hit points -- a lord's included -- protect him rather than scaling the blow up with them.) Leave his
+            // MaxHitPoints() as it stands.
             if (troop.IsHero)
             {
                 int heroPoints = troop.MaxHitPoints();
@@ -245,6 +270,11 @@ namespace RBMAutoResolve
         /// him the foot perks, and so must we.
         ///
         /// Gated on the perk system, so the toggle that governs whether RBM prices perks at all governs this too.
+        ///
+        /// And underneath it all the TROOP's own hit-point perks (Well Built, Thick Hides, Unwavering Defense... the ones
+        /// RBM grants regular troops), which a map battle could not see -- see SimulationTroopPerks and the note in
+        /// BuildCommandedHealth. Because RBM Campaign's strategic power reads this same number (HealthFactorOf), they
+        /// reach the AI's sense of a party's strength too, and that is the only troop perk that does.
         /// </summary>
         /// <summary>
         /// (public rather than private only so StrategicTroopPower, in RBM Campaign, can price a man's staying power
@@ -453,6 +483,30 @@ namespace RBMAutoResolve
                 return stat;
             }
 
+            // HIS OWN PERKS FIRST. Off the map, troop.MaxHitPoints() is the bare hundred: the hit-point perks RBM grants a
+            // regular troop are only answered while a mission runs (TroopPerks.AppliesInMission), so a fought battle
+            // spawns him with them and a pressed button never did. SimulationTroopPerks adds them back -- the personal
+            // list of DefaultCharacterStatsModel.MaxHitpoints, rounded as MaxHitPoints() rounds it -- and they go on the
+            // BASE, ahead of his commander's, because that is where native has them (Agent.BaseHealthLimit, which
+            // GetEffectiveMaxHealth then builds on). Ahead of the leader check too: a bandit's own Well Built does not
+            // need a lord. On the battle path they fold into the base number, which the hourly cache already keys on
+            // (CommandKey.BaseHitPoints), so a troop with them and one without can never share an answer; on the log's
+            // path they are added as named lines, so the write-up shows them as the troop's and not the lord's. Unchanged
+            // for a hero, a troop with no perks, or with troop perks off. Read-only, so safe on the parallel AI ticks.
+            if (explain)
+            {
+                SimulationTroopPerks.AddHitPointLines(troop, ref stat);
+            }
+            else
+            {
+                int withTroopPerks = SimulationTroopPerks.HitPointsWithTroopPerks(troop, baseHitPoints);
+                if (withTroopPerks != baseHitPoints)
+                {
+                    baseHitPoints = withTroopPerks;
+                    stat = new ExplainedNumber(baseHitPoints, false);
+                }
+            }
+
             MobileParty mobileParty = (party != null) ? party.MobileParty : null;
             Hero leaderHero = (mobileParty != null) ? mobileParty.LeaderHero : null;
             if (leaderHero == null)
@@ -545,6 +599,10 @@ namespace RBMAutoResolve
             // CurrentBattleEnvironment, sea or land) -- and Land with no mobile party, as PartyBase reports for itself.
             BattleEnvironment environment = (mobileParty != null) ? mobileParty.CurrentBattleEnvironment : BattleEnvironment.Land;
             PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Riding.Veterinary, environment, rider, true, ref stat);
+            // That call pays a HERO's own Veterinary and, on the map, never a regular troop's: RBM's troop-perk grant is
+            // mission-only. So the troop's own is added here, at the same place, by the same rule (personal primary
+            // slot, its own AddFactor, the same environment). See SimulationTroopPerks.AddMountPerks.
+            SimulationTroopPerks.AddMountPerks(rider, environment, ref stat, explain);
             if (mobileParty != null)
             {
                 PerkHelper.AddPerkBonusForParty(DefaultPerks.Riding.Veterinary, mobileParty, false, ref stat);

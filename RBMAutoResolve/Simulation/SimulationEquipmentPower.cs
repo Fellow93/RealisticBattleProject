@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
@@ -262,6 +263,18 @@ namespace RBMAutoResolve
             /// </summary>
             public float RangedSkill;
 
+            /// <summary>
+            /// What his OWN perks do to him rather than to a weapon (SimulationTroopPerks.KitPerks): his armour on foot,
+            /// his charge, and what a charge, a missile or a blow on his shield costs him. All zero on a perk-free kit --
+            /// every baseline kit, and every troop with no troop perks -- so it then changes nothing. The per-weapon
+            /// perks ride on each WeaponProfile instead (WeaponProfile.Perks).
+            /// </summary>
+            public SimulationTroopPerks.KitPerks Perks;
+
+            /// <summary>The troop perks that changed a number in this kit, for the log only (null on a perk-free kit).
+            /// Read-only once the kit is cached. See SimulationTroopPerks.AppliedNames.</summary>
+            public HashSet<PerkObject> TroopPerksApplied;
+
             public bool IsValid;
         }
 
@@ -317,21 +330,32 @@ namespace RBMAutoResolve
 
             // LAND OR SEA, though, does ride here. A captain's perks are asked about the battle's environment (see
             // SimulationPerks.SkillOf), and one signature can mean two kits -- a naval-reduced perk pays half at sea.
-            // Pinned to Land when the signature is 0, where nothing is taught and the environment cannot matter, so
-            // the uncaptained kit stays one shared entry.
+            // The troop's own perks are asked about it too (SimulationTroopPerks.Grant: halved at sea, or nothing there).
+            // Pinned to Land when neither applies -- signature 0 and no troop perks -- where nothing is taught and the
+            // environment cannot matter, so the plain kit stays one shared entry.
             public readonly BattleEnvironment Environment;
 
-            public KitKey(CharacterObject troop, int captainSignature, BattleEnvironment environment)
+            // AND WHETHER HIS OWN PERKS ARE IN IT. A troop perk is a fact about the template, so it could almost live in
+            // the kit unkeyed -- except that the BASELINES must be built without it (a reference divided by itself
+            // measures nothing, exactly as for a captain), the switches that turn troop perks on can move mid-session,
+            // and the log's kit table prints the plain kit. So the same template is two entries: the perk-free one
+            // every baseline, reference table and gear question reads, and the perk kit a live blow fights out of. The
+            // bit is decided where the kit is fetched (SimulationTroopPerks.AppliesTo), never inside the build, so one
+            // key always names one kit. False for every troop without perks, who therefore keeps sharing the plain one.
+            public readonly bool TroopPerks;
+
+            public KitKey(CharacterObject troop, int captainSignature, BattleEnvironment environment, bool troopPerks)
             {
                 Troop = troop;
                 CaptainSignature = captainSignature;
-                Environment = (captainSignature != 0) ? environment : BattleEnvironment.Land;
+                TroopPerks = troopPerks;
+                Environment = (captainSignature != 0 || troopPerks) ? environment : BattleEnvironment.Land;
             }
 
             public bool Equals(KitKey other)
             {
                 return Troop == other.Troop && CaptainSignature == other.CaptainSignature
-                    && Environment == other.Environment;
+                    && Environment == other.Environment && TroopPerks == other.TroopPerks;
             }
 
             public override bool Equals(object obj)
@@ -342,7 +366,7 @@ namespace RBMAutoResolve
             public override int GetHashCode()
             {
                 int troopHash = (Troop != null) ? Troop.GetHashCode() : 0;
-                return (((troopHash * 397) ^ CaptainSignature) * 397) ^ (int)Environment;
+                return (((((troopHash * 397) ^ CaptainSignature) * 397) ^ (int)Environment) * 2) + (TroopPerks ? 1 : 0);
             }
         }
 
@@ -982,21 +1006,20 @@ namespace RBMAutoResolve
 
             // THE ABSOLUTE PER-BLOW CAP. In absolute mode the equipment ratio's [0.1,8] clamp is gone -- there is no
             // ratio to clamp -- so nothing else stops one freak kit pairing (a great axe through linen, say) landing
-            // a blow worth many times the man's pool. No single blow may exceed this share of the struck man's own
-            // hit points. This is the only place the man being struck AND the assembled blow are both in reach. Folded
+            // a blow worth many times the man's pool. No single blow may exceed this share of a REFERENCE man's pool
+            // (SimulationTroopHitPoints.ReferenceWoundPool -- the plain trooper's, so he is capped exactly as before).
+            // It was the struck man's own pool, and that cancelled his hit-point perks on every capped blow: a cap that
+            // grows with the pool always takes the same share of it. The cap's job is to bound a freak blow, which is a
+            // fact about the blow, so it is sized against the reference and a tougher man genuinely takes more to fell.
+            // This is the only place the man being struck AND the assembled blow are both in reach. Folded
             // back INTO the correction rather than applied to __result after it, so the log's vanilla x correction =
             // dealt identity holds and RecordHit (which recomputes the dealt figure from breakdown.Correction) stays
             // exact. A defended or zeroed blow (correction <= 0) is left alone. Ratio mode keeps its clamp and skips this.
             if (RBMConfig.RBMConfig.simulationAbsoluteDamage && correction > 0f
                 && RBMConfig.RBMConfig.simulationAbsoluteBlowCap > 0f && vanillaDamage > 0f)
             {
-                // His party, not null: the cap is a share of the struck man's OWN pool, and his pool now carries his
-                // commander's perks (see SimulationTroopHitPoints.CommandedHealth). Passing null here would cap the
-                // blow against a pool the man does not have -- tighter than the one his wound is actually spent
-                // against -- and the two must be the same number or the dial means something different at each end.
-                float pool = SimulationTroopHitPoints.MaxHitPoints(struckTroop, struckParty,
-                    state != null && state.Dismounted);
-                float maxBlow = RBMConfig.RBMConfig.simulationAbsoluteBlowCap * pool;
+                float maxBlow = RBMConfig.RBMConfig.simulationAbsoluteBlowCap
+                    * SimulationTroopHitPoints.ReferenceWoundPoolFor(struckTroop);
                 if (vanillaDamage * correction > maxBlow)
                 {
                     correction = maxBlow / vanillaDamage;
@@ -1385,8 +1408,16 @@ namespace RBMAutoResolve
             // battle to ask -- and then there is no captain either, so it changes nothing.
             BattleEnvironment environment = (state != null) ? state.Environment : BattleEnvironment.Land;
 
-            TroopKit striker = GetKit(strikerTroop, strikerCaptain, strikerSignature, environment);
-            TroopKit struck = GetKit(struckTroop, struckCaptain, struckSignature, environment);
+            // AND EACH MAN'S OWN PERKS -- the hero perks RBM hands to regular troops, which a fought battle pays through
+            // its mission-only GetPerkValue grant and a map battle never could -- and a HERO's own personal combat perks,
+            // which nothing else here read (SimulationTroopPerks.AppliesTo gates the two kinds of man each their own
+            // way). Asked here, per man, and carried into the
+            // kit's cache key (see KitKey.TroopPerks); unlike a captain they are a fact about the man, so the reference
+            // tables (no battle, Land) get them too. Only the baselines are built without them. See SimulationTroopPerks.
+            TroopKit striker = GetKit(strikerTroop, strikerCaptain, strikerSignature, environment,
+                SimulationTroopPerks.AppliesTo(strikerTroop));
+            TroopKit struck = GetKit(struckTroop, struckCaptain, struckSignature, environment,
+                SimulationTroopPerks.AppliesTo(struckTroop));
             if (!striker.IsValid || !struck.IsValid)
             {
                 return false;
@@ -1751,7 +1782,7 @@ namespace RBMAutoResolve
                 // still shape a stroke that lands on the mount.
                 armor = HorseArmor(struck);
                 actual = PhaseDamage(striker, struck, armor, rbmCombat, struckStillMounted,
-                    shooting, throwing, ZoneTorso, out drawn, out braced);
+                    shooting, throwing, ZoneTorso, strikerMounted, atHorse: true, out drawn, out braced);
                 zoneHit = ZoneHorse;
             }
             else if (charging)
@@ -1763,15 +1794,15 @@ namespace RBMAutoResolve
                 //
                 // The struck man is always on foot here -- a charge is only ever a horse against a standing man, and
                 // chargeEligible has already said so.
-                armor = ZoneArmor(struck, ZoneTorso, horsesAlive);
+                armor = ZoneArmor(struck, ZoneTorso, horsesAlive, struckStillMounted);
                 actual = PhaseDamage(striker, struck, armor, rbmCombat, struckStillMounted,
-                    shooting, throwing, ZoneTorso, out drawn, out braced);
+                    shooting, throwing, ZoneTorso, strikerMounted, atHorse: false, out drawn, out braced);
                 zoneHit = ZoneTorso;
             }
             else
             {
                 actual = Blow(striker, struck, rbmCombat, zones, horsesAlive, struckStillMounted,
-                    shooting, throwing, roll: spend, out zoneHit, out armor, out drawn, out braced);
+                    shooting, throwing, roll: spend, strikerMounted: strikerMounted, out zoneHit, out armor, out drawn, out braced);
             }
 
             // And the reference tables' half of the miss. A live shot already returned above if it went wide; this is
@@ -1877,7 +1908,12 @@ namespace RBMAutoResolve
             breakdown.ChargeBonus = 1f;
             if (chargeEligible)
             {
-                float chargeMagnitude = striker.ChargeDamage * ChargeStrengthFor(rbmCombat);
+                // The horse's own weight, and then what the two men's perks make of it: the rider's Full Speed amplifies
+                // the charge blow, the footman's Sure Footed / Braced reduce it (SimulationTroopPerks.ChargeFactor; 1 when
+                // neither has any). The animal's self-damage below is measured off the weight alone -- a perk changes what
+                // the charge does to the man, not how hard the horse hit him.
+                float chargeWeight = striker.ChargeDamage * ChargeStrengthFor(rbmCombat);
+                float chargeMagnitude = chargeWeight * SimulationTroopPerks.ChargeFactor(striker.Perks, struck.Perks);
                 if (spend)
                 {
                     // A live blow either carries the horse or it does not -- rolled up above `charging`, ahead of the
@@ -1896,7 +1932,7 @@ namespace RBMAutoResolve
                         // off a charging horse is worn only by the blows that find it.
                         if (rbmCombat && strikerState != null)
                         {
-                            float horseSelfDamage = ChargeSelfDamageBase * breakdown.ChargeBonus;
+                            float horseSelfDamage = ChargeSelfDamageBase * (1f + chargeWeight);
                             // A set spear rebounds the charge. The man setting it is on his own two feet by
                             // construction now -- a charge only ever happens against a standing man (chargeEligible) --
                             // so the polearm is the only question left to ask.
@@ -1986,6 +2022,38 @@ namespace RBMAutoResolve
                 breakdown.Evaded = true;
             }
 
+            // AND THE STRUCK MAN'S OWN TRAINING AGAINST WHAT IS FLYING AT HIM (his troop perks: Skirmish Phase Master,
+            // and Counter Fire / Skirmisher while the weapon they need is in his hand). Native reads the last two off his
+            // main hand; the model knows what he carries, whether he still has the ammunition for it, and whether the lines
+            // have met. Before they meet (the volley and the skirmish) a man with ammunition is holding the weapon that
+            // uses it; once they have met he is holding his sidearm, as the live crossbowman in a melee holds his sword.
+            // That is the expected-value reading, from the kit, the phase and the live pools. The reference tables (no
+            // battle) are never in an approach phase, so they never count either. It is only ever asked of a man who holds
+            // one of these perks: for everyone else both stay
+            // false and nothing here touches a pool (HasAmmo seeds a quiver on first ask). A shaft at his HORSE meets only
+            // Skirmish Phase Master, which native asks of the rider; the hand perks read the struck agent, and a horse has
+            // no hand. The same reductions answer for the board when it takes the shot (ShieldTakenFactor below).
+            bool crossbowInHand = false;
+            bool throwingInHand = false;
+            if (missile && !hitHorse && approaching)
+            {
+                if (struck.Perks.MissileTakenCrossbow != 0f)
+                {
+                    crossbowInHand = struck.Shot.IsValid && struck.Shot.Skill == DefaultSkills.Crossbow
+                        && SimulationBattleState.HasAmmo(state, struckState, struck.ShotPerMan, !strikerIsAttacker);
+                }
+                if (struck.Perks.MissileTakenThrowing != 0f)
+                {
+                    throwingInHand = (struck.Shot.IsValid && struck.Shot.Skill == DefaultSkills.Throwing
+                            && SimulationBattleState.HasAmmo(state, struckState, struck.ShotPerMan, !strikerIsAttacker))
+                        || (struck.Thrown.IsValid && SimulationBattleState.HasJavelins(state, struckState, struck.ThrownPerMan));
+                }
+            }
+            if (missile)
+            {
+                actual *= SimulationTroopPerks.MissileTakenFactor(struck.Perks, crossbowInHand, throwingInHand);
+            }
+
             // THE DEFENCE. However the blow was shaped -- charge, brace and evasion are all in it now -- the man it
             // is aimed at gets to answer it. What a shield can take is denominated in this same simulated damage;
             // see ShieldCapacityPerMan. A blow at the HORSE skips all of this: a shield on the rider's arm and a
@@ -2003,8 +2071,13 @@ namespace RBMAutoResolve
             if (!hitHorse && RBMConfig.RBMConfig.simulationDefenseSystem)
             {
                 // What a block would cost the shield -- the weapon's own toll on a board, NOT the damage it spares
-                // the man. Weapon-typed the way RBM's live combat types it (see ShieldDamageFromBlow).
-                float shieldDamage = ShieldDamageFromBlow(drawn, missile);
+                // the man. Weapon-typed the way RBM's live combat types it (see ShieldDamageFromBlow). Then the two men's
+                // troop perks on it, as native pays them on a blocked blow's (shield) damage: the striker's
+                // amplifications that are not gated on a body hit plus his shield-breaking perks, and the bearer's own
+                // reductions (Steel Core Shields, and the missile ones). Both exactly 1 without perks.
+                float shieldDamage = ShieldDamageFromBlow(drawn, missile)
+                    * SimulationTroopPerks.ShieldDamageFactor(drawn.Perks, strikerMounted)
+                    * SimulationTroopPerks.ShieldTakenFactor(struck.Perks, missile, crossbowInHand, throwingInHand);
                 string defense = "none";
 
                 if (missile)
@@ -2474,7 +2547,36 @@ namespace RBMAutoResolve
             return sb.ToString();
         }
 
-        internal static KitInfo ExplainKit(CharacterObject troop)
+        /// <summary>
+        /// The troop perks the simulation applied to this troop in <paramref name="environment"/>, by name -- for the log
+        /// alone. Read off the perk kit itself (what changed a number in it as it was built) plus his hit-point and
+        /// mount perks, so the log cannot name a perk the battle did not use. A hero's own personal perks are named the
+        /// same way. Empty with the system off or for a troop with no troop perks. Uncaptained: a captain changes skills,
+        /// never which perks a man has.
+        /// </summary>
+        /// <param name="dismounted">A battle with no horses in it (SimulationBattleState.IsDismountedBattle): the
+        /// horse-only perks are then left off the list, since they never fired.</param>
+        internal static List<string> TroopPerkNamesOf(CharacterObject troop, BattleEnvironment environment, bool dismounted)
+        {
+            if (!SimulationTroopPerks.AppliesTo(troop))
+            {
+                return new List<string>();
+            }
+            TroopKit kit = GetKit(troop, null, 0, environment, true);
+            return SimulationTroopPerks.AppliedNames(troop, kit.TroopPerksApplied, kit.HorseHealth > 0f, environment,
+                dismounted);
+        }
+
+        /// <summary>
+        /// A troop's kit as the log prints it -- the kit he FIGHTS out of, his own perks folded in (uncaptained: a
+        /// captain changes skills, which show up in the magnitudes of the blow-by-blow, not here). So the quiver and the
+        /// javelin bundle carry Deep Quivers and the like, and the armour columns carry Ignore Pain for a man on foot
+        /// (his template's mounted-ness decides, as the reference tables' own blows do). The percentage damage perks are
+        /// paid after armour and so are not in the printed magnitude. Tough Steed is in his horse's armour, which the table
+        /// has no column for. <paramref name="environment"/> is the battle's land or sea when the caller has a battle to
+        /// ask; the log's matchup table is priced on Land (it has no battle), so that is what it passes.
+        /// </summary>
+        internal static KitInfo ExplainKit(CharacterObject troop, BattleEnvironment environment)
         {
             KitInfo info = default(KitInfo);
             if (troop == null)
@@ -2482,13 +2584,14 @@ namespace RBMAutoResolve
                 return info;
             }
             EnsureBaselines();
-            TroopKit kit = GetKit(troop);
-            info.Head = kit.Head;
-            info.Neck = kit.Neck;
-            info.Torso = kit.Torso;
-            info.Shoulder = kit.Shoulder;
-            info.Arm = kit.Arm;
-            info.Leg = kit.Leg;
+            TroopKit kit = GetKit(troop, null, 0, environment, SimulationTroopPerks.AppliesTo(troop));
+            float footArmor = SimulationTroopPerks.FootArmorFactor(kit.Perks, kit.IsMounted);
+            info.Head = kit.Head * footArmor;
+            info.Neck = kit.Neck * footArmor;
+            info.Torso = kit.Torso * footArmor;
+            info.Shoulder = kit.Shoulder * footArmor;
+            info.Arm = kit.Arm * footArmor;
+            info.Leg = kit.Leg * footArmor;
             // What he shoots if he shoots, else the heaviest thing on his belt -- as a LABEL for his arsenal, with
             // the magnitude averaged across the whole of it. He does not fight with one weapon any more, so no one
             // weapon can be printed as his.
@@ -2753,6 +2856,15 @@ namespace RBMAutoResolve
             // be: a reference divided by itself measures nothing) never see a captain at all. Moving this setting
             // cannot skew anything, so nothing has to be rebuilt when it moves. See SimulationPerks.SkillOf, which
             // goes out of its way not to read the setting for exactly this reason.
+            //
+            // troopPerksEnabled is absent for the same reason, and so are simulationPerkSystem and rbmCombatEnabled in
+            // their second job as the troop-perk switches: a troop's OWN perks reach a kit only through the troop-perk
+            // bit in the cache key (KitKey.TroopPerks), the bit is decided where the kit is fetched and is false whenever
+            // any of those switches is off, and the baselines are built with it off (GetKit(troop) below) -- so they are
+            // perk-free by construction and a toggle only changes which entry a live blow reads. (rbmCombatEnabled is
+            // still watched, for its first job above.) The troop-perk map itself is only rebuilt when a campaign loads,
+            // and the kit cache is cleared at every session start (ResetForNewSession), so no kit outlives the map it
+            // was built from.
             bool rbmCombat = RBMConfig.RBMConfig.rbmCombatEnabled;
             float shieldBlockChance = RBMConfig.RBMConfig.simulationShieldBlockChance;
             float armorMultiplier = RBMConfig.RBMConfig.armorMultiplier;
@@ -2989,7 +3101,7 @@ namespace RBMAutoResolve
                         SimulationWeaponModel.WeaponProfile drawn;
                         bool braced;
                         sum += Blow(kit, typical[k], rbmCombat, zones, 1f, bucketMounted[k],
-                                    shooting, throwing: false, roll: false,
+                                    shooting, throwing: false, roll: false, strikerMounted: kit.IsMounted,
                                     zoneHit: out zoneHit, armorMet: out armor, drawn: out drawn, braced: out braced)
                              * (1f - blocked);
                     }
@@ -3181,10 +3293,13 @@ namespace RBMAutoResolve
         /// reference tables, and the gear questions that never touch a skill at all. It is signature 0, so all of
         /// them share the one cache entry, and that entry is byte-identical to what this model built before captains
         /// existed.
+        ///
+        /// And with none of his OWN perks either (the troop-perk bit off), for the same reason: the baselines are built
+        /// from this, and must stay the neutral reference a perk is measured against, never the perk itself.
         /// </summary>
         private static TroopKit GetKit(CharacterObject troop)
         {
-            return GetKit(troop, null, 0, BattleEnvironment.Land);
+            return GetKit(troop, null, 0, BattleEnvironment.Land, false);
         }
 
         /// <summary>
@@ -3196,9 +3311,11 @@ namespace RBMAutoResolve
         /// chain of command has not been built. <paramref name="captainSignature"/> is that captain's perk mask,
         /// passed in rather than recomputed because this is called twice per blow and a battle has thousands.
         /// <paramref name="environment"/> is the battle's land or sea, the one the signature was taken in.
+        /// <paramref name="troopPerks"/> folds the troop's own perks in (SimulationTroopPerks) -- the caller's answer to
+        /// SimulationTroopPerks.AppliesTo, so the cache key and the kit always agree.
         /// </summary>
         private static TroopKit GetKit(CharacterObject troop, CharacterObject captain, int captainSignature,
-            BattleEnvironment environment)
+            BattleEnvironment environment, bool troopPerks)
         {
             // A troop template's kit and training are fixed, so it is cached for good. A hero's are not -- he buys
             // gear and trains skills as the campaign runs -- but they do not change in the MIDDLE of a battle, and
@@ -3208,7 +3325,7 @@ namespace RBMAutoResolve
             //
             // The captain rides in the key rather than the value, so the same template under two different captains
             // is two entries and neither can be handed the other's training. See KitKey.
-            KitKey key = new KitKey(troop, captainSignature, environment);
+            KitKey key = new KitKey(troop, captainSignature, environment, troopPerks);
             TroopKit cached;
             if (_kitCache.TryGetValue(key, out cached))
             {
@@ -3216,6 +3333,10 @@ namespace RBMAutoResolve
             }
 
             bool rbmCombat = RBMConfig.RBMConfig.rbmCombatEnabled;
+
+            // HIS OWN PERKS, folded into this build alone. The key's environment, not the one passed in: with no captain
+            // and no perks it is pinned to Land, and this is null then anyway.
+            SimulationTroopPerks.Grant grant = troopPerks ? new SimulationTroopPerks.Grant(troop, key.Environment) : null;
 
             // A troop template usually lists several battle sets and each man rolls one at random, so no single
             // set speaks for the stack: average the armour over all of them, and pool every melee weapon in every
@@ -3252,7 +3373,7 @@ namespace RBMAutoResolve
                 {
                     float setShotCount;
                     List<SimulationWeaponModel.WeaponProfile> setShots = CollectShotProfiles(troop, set, rbmCombat, captain,
-                        environment, out setShotCount);
+                        environment, grant, out setShotCount);
                     shotPerMan += setShotCount;
                     if (setShots.Count > 0)
                     {
@@ -3276,7 +3397,7 @@ namespace RBMAutoResolve
                 // brace of javelins or throwing axes, and they are for the closing, not for the line.
                 float setThrownPerMan;
                 SimulationWeaponModel.WeaponProfile setThrown = GetThrownProfile(troop, set, rbmCombat, captain, environment,
-                    out setThrownPerMan);
+                    grant, out setThrownPerMan);
 
                 // The COUNT is averaged over all his sets, because that dilution is real: a man who carries javelins
                 // in two sets of four is half a skirmisher, and half his stack throws nothing.
@@ -3300,7 +3421,7 @@ namespace RBMAutoResolve
                 // holds one weapon at a time, so the weapons WITHIN a set share that set's share of the stack --
                 // otherwise a soldier issued three blades would out-fight the same soldier issued one.
                 List<SimulationWeaponModel.WeaponProfile> setMelee = CollectMeleeProfiles(troop, set, rbmCombat, captain,
-                    environment);
+                    environment, grant);
                 if (setMelee.Count > 0)
                 {
                     float share = 1f / setMelee.Count;
@@ -3338,6 +3459,15 @@ namespace RBMAutoResolve
                 {
                     setHorseLeg += harness.ArmorComponent.BodyArmor * 0.5f;
                     setHorseBody += harness.ArmorComponent.BodyArmor * 0.2f;
+
+                    // Riding.ToughSteed, his own: RBM scales the whole of a HARNESSED horse's armour by the perk's ratio
+                    // (an unharnessed one keeps its own figure -- see SimulationTroopPerks.Grant.HorseArmorFactor).
+                    if (grant != null && horse != null && horse.HorseComponent != null)
+                    {
+                        float toughSteed = grant.HorseArmorFactor();
+                        setHorseLeg *= toughSteed;
+                        setHorseBody *= toughSteed;
+                    }
                 }
 
                 head += setHead;
@@ -3428,6 +3558,18 @@ namespace RBMAutoResolve
 
                 // A man is worth pricing if he can hit anything at all -- with a bow, or with what is on his belt.
                 kit.IsValid = (kit.Shot.IsValid && kit.Shot.Magnitude > 0f) || kit.Melee.Length > 0;
+
+                // And what his own perks do to HIM -- his armour on foot, his charge, and what a charge, a missile or a
+                // blow on his board costs him. Asked against what he carries, so a perk he has nothing to use with is
+                // not credited (a crossbow perk without a crossbow). The weapon perks were folded into each profile above.
+                if (grant != null)
+                {
+                    bool shootsCrossbow = kit.Shot.IsValid && kit.Shot.Skill == DefaultSkills.Crossbow;
+                    bool usesThrowing = (kit.Shot.IsValid && kit.Shot.Skill == DefaultSkills.Throwing)
+                        || (kit.Thrown.IsValid && kit.Thrown.Skill == DefaultSkills.Throwing);
+                    kit.Perks = grant.BuildKitPerks(kit.ChargeDamage > 0f, kit.ShieldQuality > 0f, shootsCrossbow, usesThrowing);
+                    kit.TroopPerksApplied = (grant.Applied.Count > 0) ? grant.Applied : null;
+                }
             }
 
             _kitCache[key] = kit;
@@ -3771,18 +3913,22 @@ namespace RBMAutoResolve
         /// resolved apart from this. The horsesAlive argument is thus vestigial on this path and kept only so the
         /// callers need not change; it still governs whether the man is mounted at all, upstream.
         /// </summary>
-        private static float ZoneArmor(TroopKit struck, int zone, float horsesAlive)
+        /// <param name="struckMounted">Whether he is on a horse for THIS blow -- his own Athletics.IgnorePain (a troop perk)
+        /// thickens his armour on foot only, as native's `!agent.HasMount` has it. Changes nothing without the perk.</param>
+        private static float ZoneArmor(TroopKit struck, int zone, float horsesAlive, bool struckMounted)
         {
+            float armor;
             switch (zone)
             {
-                case ZoneHead: return struck.Head;
-                case ZoneNeck: return struck.Neck;
-                case ZoneTorso: return struck.Torso;
-                case ZoneShoulder: return struck.Shoulder;
-                case ZoneArm: return struck.Arm;
-                case ZoneLeg: return struck.Leg;
+                case ZoneHead: armor = struck.Head; break;
+                case ZoneNeck: armor = struck.Neck; break;
+                case ZoneTorso: armor = struck.Torso; break;
+                case ZoneShoulder: armor = struck.Shoulder; break;
+                case ZoneArm: armor = struck.Arm; break;
+                case ZoneLeg: armor = struck.Leg; break;
                 default: return 0f;
             }
+            return armor * SimulationTroopPerks.FootArmorFactor(struck.Perks, struckMounted);
         }
 
         /// <summary>
@@ -3853,8 +3999,11 @@ namespace RBMAutoResolve
         }
 
         /// <summary>What the blow is, once we know where it landed: the shot, the throw, or what he drew from his belt.</summary>
+        /// <param name="strikerMounted">Whether the striker is on a horse for this blow, and <paramref name="atHorse"/>
+        /// whether the blow found the struck man's horse -- two of the conditions the striker's troop perks are paid on
+        /// (see ExpectedDamage). Neither changes a perk-free blow.</param>
         private static float PhaseDamage(TroopKit striker, TroopKit struck, float armor, bool rbmCombat,
-            bool struckStillMounted, bool shooting, bool throwing, int zone,
+            bool struckStillMounted, bool shooting, bool throwing, int zone, bool strikerMounted, bool atHorse,
             out SimulationWeaponModel.WeaponProfile drawn, out bool braced)
         {
             drawn = default(SimulationWeaponModel.WeaponProfile);
@@ -3863,14 +4012,15 @@ namespace RBMAutoResolve
             if (shooting)
             {
                 drawn = striker.Shot;
-                return ShotDamage(striker, armor, struck.Material, rbmCombat, zone);
+                return ShotDamage(striker, armor, struck.Material, rbmCombat, zone, strikerMounted, atHorse);
             }
             if (throwing)
             {
                 drawn = striker.Thrown;
-                return ExpectedDamage(striker.Thrown, armor, struck.Material, rbmCombat, zone);
+                return ExpectedDamage(striker.Thrown, armor, struck.Material, rbmCombat, zone, strikerMounted, atHorse);
             }
-            return MeleeDamage(striker, armor, struck.Material, rbmCombat, struckStillMounted, zone, out drawn, out braced);
+            return MeleeDamage(striker, armor, struck.Material, rbmCombat, struckStillMounted, zone, strikerMounted, atHorse,
+                out drawn, out braced);
         }
 
         /// <summary>
@@ -3888,15 +4038,15 @@ namespace RBMAutoResolve
         /// nowhere, on a man who is the mean of himself.
         /// </summary>
         private static float Blow(TroopKit striker, TroopKit struck, bool rbmCombat, HitZones zones,
-            float horsesAlive, bool struckStillMounted, bool shooting, bool throwing, bool roll,
+            float horsesAlive, bool struckStillMounted, bool shooting, bool throwing, bool roll, bool strikerMounted,
             out int zoneHit, out float armorMet, out SimulationWeaponModel.WeaponProfile drawn, out bool braced)
         {
             if (roll)
             {
                 zoneHit = RollZone(zones);
-                armorMet = ZoneArmor(struck, zoneHit, horsesAlive);
+                armorMet = ZoneArmor(struck, zoneHit, horsesAlive, struckStillMounted);
                 return PhaseDamage(striker, struck, armorMet, rbmCombat, struckStillMounted, shooting, throwing,
-                    zoneHit, out drawn, out braced);
+                    zoneHit, strikerMounted, false, out drawn, out braced);
             }
 
             zoneHit = -1;
@@ -3912,13 +4062,13 @@ namespace RBMAutoResolve
                 {
                     continue;
                 }
-                float zoneArmor = ZoneArmor(struck, z, horsesAlive);
+                float zoneArmor = ZoneArmor(struck, z, horsesAlive, struckStillMounted);
                 armorMet += share * zoneArmor;
 
                 SimulationWeaponModel.WeaponProfile zoneDrawn;
                 bool zoneBraced;
                 damage += share * PhaseDamage(striker, struck, zoneArmor, rbmCombat, struckStillMounted,
-                    shooting, throwing, z, out zoneDrawn, out zoneBraced);
+                    shooting, throwing, z, strikerMounted, false, out zoneDrawn, out zoneBraced);
 
                 // The weapon he drew and whether he braced are facts about the man and his enemy, not about which
                 // shin the blow found -- so any zone answers them.
@@ -3935,11 +4085,11 @@ namespace RBMAutoResolve
         /// not.
         /// </summary>
         private static float ShotDamage(TroopKit kit, float armor, ArmorComponent.ArmorMaterialTypes victimMaterial,
-            bool rbmCombat, int zone)
+            bool rbmCombat, int zone, bool strikerMounted, bool atHorse)
         {
             if (kit.Shots == null || kit.Shots.Length == 0)
             {
-                return ExpectedDamage(kit.Shot, armor, victimMaterial, rbmCombat, zone);
+                return ExpectedDamage(kit.Shot, armor, victimMaterial, rbmCombat, zone, strikerMounted, atHorse);
             }
 
             float damage = 0f;
@@ -3947,7 +4097,8 @@ namespace RBMAutoResolve
             for (int i = 0; i < kit.Shots.Length; i++)
             {
                 ShotOption option = kit.Shots[i];
-                damage += ExpectedDamage(option.Profile, armor, victimMaterial, rbmCombat, zone) * option.Weight;
+                damage += ExpectedDamage(option.Profile, armor, victimMaterial, rbmCombat, zone, strikerMounted, atHorse)
+                    * option.Weight;
                 weight += option.Weight;
             }
 
@@ -3968,7 +4119,8 @@ namespace RBMAutoResolve
         /// exactly the condition for setting a spear against a horse, so the caller need not test the weapon twice.
         /// </summary>
         private static float MeleeDamage(TroopKit kit, float armor, ArmorComponent.ArmorMaterialTypes victimMaterial, bool rbmCombat,
-            bool targetMounted, int zone, out SimulationWeaponModel.WeaponProfile shown, out bool braced)
+            bool targetMounted, int zone, bool strikerMounted, bool atHorse,
+            out SimulationWeaponModel.WeaponProfile shown, out bool braced)
         {
             shown = default(SimulationWeaponModel.WeaponProfile);
             braced = false;
@@ -3991,7 +4143,8 @@ namespace RBMAutoResolve
                 {
                     continue;
                 }
-                damage += ExpectedDamage(option.Profile, armor, victimMaterial, rbmCombat, zone) * option.Weight;
+                damage += ExpectedDamage(option.Profile, armor, victimMaterial, rbmCombat, zone, strikerMounted, atHorse)
+                    * option.Weight;
                 weight += option.Weight;
 
                 // The weapon shown in the log is the heaviest of the pool actually drawn from -- a label for the
@@ -4027,8 +4180,11 @@ namespace RBMAutoResolve
         ///
         /// Each arrow is priced on its own terms and the average is taken afterwards, in ShotDamage.
         /// </summary>
+        /// <param name="grant">The troop's own perks for this kit, or null for a perk-free one: they reach each shot
+        /// (SimulationTroopPerks.Grant.ApplyTo) and each quiver's count (AmmoBonus, per stack, as native adds them).</param>
         private static List<SimulationWeaponModel.WeaponProfile> CollectShotProfiles(CharacterObject troop, Equipment set,
-            bool rbmCombat, CharacterObject captain, BattleEnvironment environment, out float shotCount)
+            bool rbmCombat, CharacterObject captain, BattleEnvironment environment, SimulationTroopPerks.Grant grant,
+            out float shotCount)
         {
             // The COUNT of shafts he carries in this set, summed across his quivers -- a man with two quivers of
             // thirty carries sixty and shoots twice as long as the same man with one, which is exactly how the
@@ -4087,8 +4243,14 @@ namespace RBMAutoResolve
 
                 if (bestForThisAmmo.IsValid && bestForThisAmmo.Magnitude > 0f)
                 {
+                    float stack = MathF.Max((float)ammo.MaxDataValue, 1f);
+                    if (grant != null)
+                    {
+                        grant.ApplyTo(ref bestForThisAmmo);
+                        stack += grant.AmmoBonus(ammo.RelevantSkill, troop.IsMounted);
+                    }
                     profiles.Add(bestForThisAmmo);
-                    shotCount += MathF.Max((float)ammo.MaxDataValue, 1f);
+                    shotCount += stack;
                 }
             }
 
@@ -4103,11 +4265,14 @@ namespace RBMAutoResolve
         /// whole reason the throwing phase ends: he runs out. That is exactly how it should feel. A skirmisher is
         /// terrifying for twenty seconds and then he is a man with a knife.
         /// </summary>
+        /// <param name="grant">The troop's own perks for this kit, or null: they reach the throw and the bundle's count.</param>
         private static SimulationWeaponModel.WeaponProfile GetThrownProfile(CharacterObject troop, Equipment set,
-            bool rbmCombat, CharacterObject captain, BattleEnvironment environment, out float perMan)
+            bool rbmCombat, CharacterObject captain, BattleEnvironment environment, SimulationTroopPerks.Grant grant,
+            out float perMan)
         {
             SimulationWeaponModel.WeaponProfile best = default(SimulationWeaponModel.WeaponProfile);
             perMan = 0f;
+            SkillObject bestSkill = null;
 
             for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
             {
@@ -4133,7 +4298,16 @@ namespace RBMAutoResolve
                 {
                     best = profile;
                     perMan = MathF.Max((float)weapon.MaxDataValue, 1f);
+                    bestSkill = weapon.RelevantSkill;
                 }
+            }
+
+            // His own perks reach the bundle he actually throws, once it is chosen -- so the log never credits a perk
+            // to a bundle he set aside for a better one.
+            if (grant != null && best.IsValid)
+            {
+                grant.ApplyTo(ref best);
+                perMan += grant.AmmoBonus(bestSkill, troop.IsMounted);
             }
 
             return best;
@@ -4177,8 +4351,9 @@ namespace RBMAutoResolve
         /// AND carried a thrust type of Invalid, since a throwing axe is never thrust with, which fed an unset
         /// damage type straight into the armour equation.
         /// </summary>
+        /// <param name="grant">The troop's own perks for this kit, or null: they reach each weapon's blows.</param>
         private static List<SimulationWeaponModel.WeaponProfile> CollectMeleeProfiles(CharacterObject troop, Equipment set,
-            bool rbmCombat, CharacterObject captain, BattleEnvironment environment)
+            bool rbmCombat, CharacterObject captain, BattleEnvironment environment, SimulationTroopPerks.Grant grant)
         {
             List<SimulationWeaponModel.WeaponProfile> profiles = new List<SimulationWeaponModel.WeaponProfile>();
 
@@ -4208,6 +4383,10 @@ namespace RBMAutoResolve
 
                 if (got && profile.IsValid && profile.Magnitude > 0f)
                 {
+                    if (grant != null)
+                    {
+                        grant.ApplyTo(ref profile);
+                    }
                     profiles.Add(profile);
                 }
             }
@@ -4621,13 +4800,23 @@ namespace RBMAutoResolve
         /// used at all under RBM (a blow is its class and its wielder's training), and the weapon's quality shows
         /// itself as PENETRATION, dividing the armour threshold, rather than as force.
         /// </summary>
+        /// <param name="strikerMounted">Whether the striker is on a horse, and <paramref name="atHorse"/> whether the blow
+        /// found the struck man's horse -- read only by the striker's troop perks (profile.Perks).</param>
         private static float ExpectedDamage(SimulationWeaponModel.WeaponProfile profile, float armor,
-            ArmorComponent.ArmorMaterialTypes victimMaterial, bool rbmCombat, int zone)
+            ArmorComponent.ArmorMaterialTypes victimMaterial, bool rbmCombat, int zone, bool strikerMounted, bool atHorse)
         {
             if (!profile.IsValid || profile.Magnitude <= 0f)
             {
                 return 0f;
             }
+
+            // THE STRIKER'S OWN PERKS, at the two places native pays them. The armour-penetration perks first, on the
+            // armour itself -- RBM's live blow hands its equation the armour CalculateAdjustedArmorForBlow returns (as the
+            // adjusted/raw ratio), so this is the same armour met the same way. Then, after the armour and the body part,
+            // the percentage damage perks, which Mission.GetAttackCollisionResults pays on the post-armour damage through
+            // CalculateDamage. A perk-free profile passes both untouched. See SimulationTroopPerks.
+            armor = SimulationTroopPerks.ArmorAgainst(profile.Perks, armor);
+
             float damage = rbmCombat
                 ? SimulationWeaponModel.RbmDamage(profile, armor, victimMaterial)
                 : SimulationWeaponModel.VanillaDamage(profile.Magnitude, armor, profile.DamageType);
@@ -4636,9 +4825,11 @@ namespace RBMAutoResolve
             // it pays them by DAMAGE TYPE -- so this has to be inside the per-weapon loop, where the type is known.
             // A pool of a mace and a spear does not share one multiplier any more than it shares one armour rule.
             // And it is the LIVE combat model's table: with RBM Combat off, native's own bone multipliers.
-            return damage * (rbmCombat
+            damage *= rbmCombat
                 ? BodyPartMultiplier(zone, profile.DamageType)
-                : VanillaBodyPartMultiplier(zone, profile.DamageType, profile.IsMissile));
+                : VanillaBodyPartMultiplier(zone, profile.DamageType, profile.IsMissile);
+
+            return damage * SimulationTroopPerks.DamageFactor(profile.Perks, zone == ZoneHead, strikerMounted, atHorse);
         }
     }
 }

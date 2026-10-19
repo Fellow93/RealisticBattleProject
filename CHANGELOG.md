@@ -15,6 +15,20 @@
   - A charging shield wall walks only within about 30 m of the enemy. Its men further back, such as a fresh reinforcement wave, move at full charge speed instead of walking the whole way at half speed.
   - A spread-out shield wall or square advancing in formation now moves at half the running speed of its slower men instead of 0.3 of it, which was a crawl of about 1 m/s.
 
+### Auto-resolve
+- **Troop perks now count in battle auto-resolve.** They used to work only in battles you fight, so auto-resolve misjudged troops that have them. Each perk uses its own value from the game, applied as it is in a fought battle:
+  - Extra hit points (Well Built, Thick Hides, Unwavering Defense and the other hit point perks), also counted in the strength of parties on the campaign map. Extra horse hit points (Veterinary).
+  - Extra arrows, bolts and throwing weapons (Deep Quivers, Fletcher, Resourceful, Well Prepared, Saddlebags for mounted troops).
+  - More damage, by weapon type, on horseback, against horses, on head hits and against shields (such as Powerful, Blade Master, Clean Thrust, Strong Bows, Mounted Warrior, Horse Archer, Beast Slayer, Guards, Dead Aim, Shield Breaker). Like in battle, it is added after armor.
+  - Ignoring part of the target's armor (Bodkin, Puncture, Weak Spot, Vandal, Chink in the Armor, Piercer).
+  - Stronger horse charges (Full Speed), more armor on foot (Ignore Pain) and for armored horses (Tough Steed).
+  - Less damage taken from missiles, from horse charges and on the shield (Skirmish Phase Master, Counter Fire, Skirmisher, Sure Footed, Steel Core Shields).
+  - The War Sails perks, at sea only.
+  - Perks for reload, draw, aim and weapon handling speed, accuracy, horse handling, Shield Wall and the perks that depend on how hurt the fighter is are not counted: auto-resolve has nothing they could change.
+  - Follows the Troop Perks setting (and needs RBM Combat, like troop perks in battle) and auto-resolve's own perk setting.
+- **Lords' and companions' own combat perks now count in auto-resolve too** (the same perks as above: damage, armor penetration, ammo, armor, damage taken). Until now only their hit points and their perks as captains counted. Needs auto-resolve's perk setting.
+- **Extra hit points now protect against siege engines and very heavy blows in auto-resolve.** A ballista bolt, a fire pot and the cap on a single blow took the same share of every man's health, so a man with more hit points (from his perks, his commander's perks or a lord's own) was left just as close to death. They now do a fixed amount of damage, the same as before for an ordinary soldier or lord, so a tougher man has more left.
+
 ## v4.7.0 (changes since v4.6.0)
 
 ### Combat

@@ -203,8 +203,9 @@ namespace RBMAutoResolve
 
             AppendSiege(sb, siege);
 
-            AppendPerks(sb, "attacker", attackerCommand, snapshot.AttackerParties);
-            AppendPerks(sb, "defender", defenderCommand, snapshot.DefenderParties);
+            bool dismountedBattle = SimulationBattleState.IsDismountedBattle(mapEvent);
+            AppendPerks(sb, "attacker", attackerCommand, snapshot.AttackerParties, snapshot.AttackerTroops, dismountedBattle);
+            AppendPerks(sb, "defender", defenderCommand, snapshot.DefenderParties, snapshot.DefenderTroops, dismountedBattle);
             sb.Append("\n");
 
             // How it ended. The game's own verdict, on the only battle there is.
@@ -273,10 +274,16 @@ namespace RBMAutoResolve
         ///   printed against them deliberately: this number is what the side LOST, the captains' line is what it got
         ///   back, and whether the trade is sane is the whole calibration question.
         ///
+        ///   THE TROOPS' OWN. Every troop type on the side that fought with troop perks (RBM's hero perks for regular
+        ///   troops), and which of them the simulation actually applied in this battle's environment -- read off the
+        ///   perk kit it fought out of (SimulationEquipmentPower.TroopPerkNamesOf), so a listed perk the model cannot
+        ///   carry, or one with nothing to act on in his kit, is not named. Their hit points also show, by name and
+        ///   marked "(troop)", in the commanders' line above, since that pool is where they land.
+        ///
         /// Prints nothing at all when the perk system is off.
         /// </summary>
         private static void AppendPerks(StringBuilder sb, string label, SimulationCommandStructure.SideCommand command,
-            List<SimulationBattleSnapshot.PartyLine> parties)
+            List<SimulationBattleSnapshot.PartyLine> parties, Dictionary<CharacterObject, int> troops, bool dismounted)
         {
             if (command == null || !SimulationPerks.Enabled)
             {
@@ -319,6 +326,21 @@ namespace RBMAutoResolve
             if (captains.Length > 0)
             {
                 body.Add("      " + "captains".PadRight(34) + captains);
+            }
+
+            // The troops' own perks, one troop type a line -- heroes' own personal perks included (TroopPerkNamesOf asks
+            // SimulationTroopPerks.AppliesTo, which gates troops and heroes each their own way).
+            if (troops != null)
+            {
+                foreach (KeyValuePair<CharacterObject, int> entry in troops)
+                {
+                    List<string> perks = SimulationEquipmentPower.TroopPerkNamesOf(entry.Key, command.Environment, dismounted);
+                    if (perks.Count > 0)
+                    {
+                        body.Add("      " + Clip("troop perks: " + Name(entry.Key), 34).PadRight(34)
+                            + string.Join(", ", perks.ToArray()));
+                    }
+                }
             }
 
             // And what vanilla's proxy was worth before it was taken away.
@@ -744,7 +766,8 @@ namespace RBMAutoResolve
 
         private static void AppendKit(StringBuilder sb, CharacterObject troop, string side)
         {
-            SimulationEquipmentPower.KitInfo k = SimulationEquipmentPower.ExplainKit(troop);
+            // Land: the matchup rows below this table are priced with no battle, and so on land (see ExplainKit).
+            SimulationEquipmentPower.KitInfo k = SimulationEquipmentPower.ExplainKit(troop, BattleEnvironment.Land);
             string arm = k.IsMounted ? (k.IsRanged ? "HA " : "cav") : (k.IsRanged ? "arc" : "inf");
             // A hero's Tier is 0 -- he has none -- but vanilla still prices him on a tier, taken from his level.
             // Printing the 0 made every lord in the log look like a peasant.
@@ -783,6 +806,18 @@ namespace RBMAutoResolve
             if (!string.IsNullOrEmpty(items))
             {
                 sb.Append("        ").Append(items).Append("\n");
+            }
+
+            // The kit row above is his PERK kit on land (no captain) -- what the matchup rows below fight out of -- so
+            // name the perks in it. Gated like the rest of the perk logging; TroopPerkNamesOf applies the troop and hero
+            // gates (SimulationTroopPerks.AppliesTo).
+            if (SimulationPerks.Enabled)
+            {
+                List<string> perks = SimulationEquipmentPower.TroopPerkNamesOf(troop, BattleEnvironment.Land, false);
+                if (perks.Count > 0)
+                {
+                    sb.Append("        troop perks: ").Append(string.Join(", ", perks.ToArray())).Append("\n");
+                }
             }
         }
 
