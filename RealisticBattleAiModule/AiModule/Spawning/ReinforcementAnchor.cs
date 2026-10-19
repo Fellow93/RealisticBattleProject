@@ -61,7 +61,14 @@ namespace RBMAI.AiModule
         /// <summary>The gathering point of this formation class's latest wave, if the wave is at most <paramref name="maxAge"/> seconds old.</summary>
         internal static bool TryGetRecentRallyPoint(Team team, FormationClass formationClass, float maxAge, out Vec2 position)
         {
+            return TryGetRecentRallyPoint(team, formationClass, maxAge, out position, out _);
+        }
+
+        /// <summary>As above, plus the mission time the wave was placed.</summary>
+        internal static bool TryGetRecentRallyPoint(Team team, FormationClass formationClass, float maxAge, out Vec2 position, out float placedAt)
+        {
             position = Vec2.Invalid;
+            placedAt = float.MinValue;
             Mission mission = Mission.Current;
             if (team == null || mission == null || mission != _mission)
             {
@@ -74,6 +81,7 @@ namespace RBMAI.AiModule
                 return false;
             }
             position = point.Position;
+            placedAt = point.Time;
             return true;
         }
 

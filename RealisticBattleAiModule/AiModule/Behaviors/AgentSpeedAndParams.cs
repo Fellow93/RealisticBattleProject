@@ -94,7 +94,10 @@ namespace RBMAI
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge))
             {
                 float currentTime = MBCommon.GetTotalMissionTime();
-                if (agent.Formation.ArrangementOrder.OrderType == OrderType.ArrangementCloseOrder && !isFormationUnderRangedAttack)
+                // The shield wall's walk-in only near the enemy: a man still far from the fight (a fresh
+                // reinforcement wave, a straggler) used to walk the whole way at half speed.
+                if (agent.Formation.ArrangementOrder.OrderType == OrderType.ArrangementCloseOrder && !isFormationUnderRangedAttack
+                    && IsNearEnemy(agent))
                 {
                     if (limitIsMultiplier && desiredSpeed > 0.5f)
                     {
@@ -124,6 +127,23 @@ namespace RBMAI
                 }
             }
             return true;
+        }
+
+        private const float ShieldWallWalkDistance = 30f;
+
+        // Movement worker thread: the formation's cached closest enemy and the agent's own target, nothing that
+        // re-evaluates a query.
+        private static bool IsNearEnemy(Agent agent)
+        {
+            Vec2 position = agent.Position.AsVec2;
+            float limitSquared = ShieldWallWalkDistance * ShieldWallWalkDistance;
+            Agent target = agent.GetTargetAgent();
+            if (target != null && target.IsActive() && position.DistanceSquared(target.Position.AsVec2) < limitSquared)
+            {
+                return true;
+            }
+            Agent closest = agent.Formation.QuerySystem.ClosestEnemyAgentReadOnly;
+            return closest != null && closest.IsActive() && position.DistanceSquared(closest.Position.AsVec2) < limitSquared;
         }
     }
 

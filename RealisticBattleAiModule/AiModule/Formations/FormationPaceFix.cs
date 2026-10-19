@@ -17,7 +17,7 @@ namespace RBMAI
     //   * per-unit effective speed = GetMaximumForwardUnlimitedSpeed() * AgentDrivenProperties.MaxSpeedMultiplier
     //   * take the 20th percentile (the slow tail, i.e. the men actually holding the line back),
     //     min'd with the mean as a safety net
-    //   * multiply by the arrangement run restriction while the line is ragged; a tight line gets it
+    //   * multiply by the arrangement run restriction (at least 0.5) while the line is ragged; a tight line gets it
     //     relaxed (doubled, capped at 1), with hysteresis -- the inverse of native's direction on purpose
     //
     // Call site is main-thread only (Formation.TickOccasionally timer), so the shared scratch list is safe.
@@ -37,6 +37,7 @@ namespace RBMAI
         // re-forming ones at 3-10 m).
         private const float TightDeviation = 1.5f;
         private const float RaggedDeviation = 3.5f;
+        private const float RaggedRestrictionFloor = 0.5f;
 
         // Cleared per mission by MissionStartReset.
         internal static readonly Dictionary<Formation, bool> tightState = new Dictionary<Formation, bool>();
@@ -96,6 +97,11 @@ namespace RBMAI
                 // Formed line: Line 0.8 / Loose 0.9 / Circle 0.5 -> 1.0, ShieldWall & Square 0.3 -> 0.6.
                 float relaxed = restriction * 2f;
                 restriction = (relaxed > 1f) ? 1f : relaxed;
+            }
+            else if (restriction < RaggedRestrictionFloor)
+            {
+                // A spread-out ShieldWall/Square at native 0.3 crawled at ~1 m/s, too slow for its own men to close.
+                restriction = RaggedRestrictionFloor;
             }
 
             _speedScratch.Clear();

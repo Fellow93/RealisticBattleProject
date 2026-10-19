@@ -18,8 +18,14 @@ namespace RBMAI
     // 2026-09-16 14:56: at t=228 the survivors were 200-250 m ahead of their slots, Advance kept the line
     // moving, Charge fired at t=272 with them still 120-170 m out).
     //
-    // "Far" is measured along the facing direction from the MEDIAN position (median sits in the big cluster,
-    // the average does not), so flank width never counts and a normal advancing block flags nobody.
+    // "Far" is measured along the facing direction from the MEDIAN of the men's forward positions (the median
+    // sits in the big cluster, the average does not), so flank width never counts and a normal advancing block
+    // flags nobody. Not Formation.CachedMedianPosition: that is the agent nearest the AVERAGE, which with a big
+    // enough remnant lands in the remnant and makes the fresh wave the "far" group.
+    //
+    // Far men in melee (a blow dealt or taken within EngagedSeconds) cannot come back. When enough of them are
+    // fighting there is no rally -- pulling the rest back abandoned the fight and left the engaged men to die
+    // alone -- and they never count toward the start/end fractions, so a rally ends when the free men arrive.
     //
     // Main thread only: reads slots, swaps grid cells. Called from behavior weight/tick patches, which all run
     // inside Formation.Tick -> FormationAI.Tick (the serial team tick), never from the parallel agent job.
@@ -38,6 +44,15 @@ namespace RBMAI
 
         /// <summary>No rally when the closest enemy formation's centre is within this of the main body -- fight instead.</summary>
         private const float EnemyStandoff = 45f;
+
+        /// <summary>A far man who dealt or took a melee blow this recently is engaged (same test as FormationFightingInMelee).</summary>
+        private const float EngagedSeconds = 6f;
+
+        /// <summary>No rally (and a running one ends) once at least this many far men are engaged...</summary>
+        private const int EngagedFarMaxCount = 4;
+
+        /// <summary>...or at least this fraction of the far men.</summary>
+        private const float EngagedFarMaxFraction = 0.25f;
 
         /// <summary>Regroup weight while rallying. Advance/Charge factors sit at 1-1.75, so this wins outright.</summary>
         internal const float RallyWeight = 3f;
@@ -74,12 +89,16 @@ namespace RBMAI
             public float NextSwap;
             public bool Rallying;
             public int FarCount;
+            public int EngagedFarCount;
             public int TotalCount;
             public int LastTotalCount;
             public float ReinforcedUntil;
             public float RallyStartedAt;
             public float NoRallyUntil;
             public Vec2 MainBodyCenter = Vec2.Invalid;
+
+            /// <summary>The median forward position as a point (last Evaluate); PullFarMenToNearestCells measures from it.</summary>
+            public Vec2 MedianPoint = Vec2.Invalid;
 
             /// <summary>Fixed hold point for the current rally. A formation ordered onto its own live centroid
             /// pushes that centroid around (front ranks step back, the average creeps), so the point is
@@ -108,6 +127,18 @@ namespace RBMAI
         private static readonly List<Agent> _nearScratch = new List<Agent>(512);
 
         private static readonly List<Vec2> _nearSlotScratch = new List<Vec2>(512);
+
+        // Evaluate's per-call scratch: value types only, so nothing Agent-keyed outlives the call.
+        private struct UnitSample
+        {
+            public Vec2 Position;
+            public float Forward;
+            public bool Engaged;
+        }
+
+        private static readonly List<UnitSample> _sampleScratch = new List<UnitSample>(512);
+
+        private static readonly List<float> _forwardScratch = new List<float>(512);
 
         private static State GetState(Formation formation)
         {
@@ -160,6 +191,12 @@ namespace RBMAI
             return states.TryGetValue(formation, out state) ? state.FarCount : 0;
         }
 
+        public static int EngagedFarCount(Formation formation)
+        {
+            State state;
+            return states.TryGetValue(formation, out state) ? state.EngagedFarCount : 0;
+        }
+
         public static bool IsRallying(Formation formation)
         {
             State state;
@@ -182,42 +219,85 @@ namespace RBMAI
 
         private static void Evaluate(Formation formation, State state)
         {
-            WorldPosition median = formation.CachedMedianPosition;
+            Vec2 origin = formation.CachedAveragePosition;
+            if (!origin.IsValid && formation.CachedMedianPosition.IsValid)
+            {
+                origin = formation.CachedMedianPosition.AsVec2;
+            }
             Vec2 dir = formation.Direction;
-            if (!median.IsValid || !dir.IsValid || dir.LengthSquared < 0.01f)
+            if (!origin.IsValid || !dir.IsValid || dir.LengthSquared < 0.01f)
             {
                 state.Rallying = false;
                 state.Anchor = Vec2.Invalid;
                 state.FarCount = 0;
+                state.EngagedFarCount = 0;
+                state.MedianPoint = Vec2.Invalid;
                 return;
             }
-            Vec2 medianVec = median.AsVec2;
             float farDistance = FarForwardMargin + formation.Depth;
+            // RBM's UpdateLastAttackAndHitTimesFix stamps the melee times on this clock, not Mission.CurrentTime.
+            float meleeNow = MBCommon.GetTotalMissionTime();
 
             int far = 0;
+            int engagedFar = 0;
             int near = 0;
             Vec2 nearSum = Vec2.Zero;
-            foreach (Agent agent in formation.GetUnitsWithoutDetachedOnes())
+            Vec2 medianVec = origin;
+            try
             {
-                if (agent == null || !agent.IsActive() || !agent.IsHuman)
+                // Pass 1: each man's forward position along the facing, relative to the average (any origin
+                // works, only the differences matter).
+                foreach (Agent agent in formation.GetUnitsWithoutDetachedOnes())
                 {
-                    continue;
+                    if (agent == null || !agent.IsActive() || !agent.IsHuman)
+                    {
+                        continue;
+                    }
+                    UnitSample sample;
+                    sample.Position = agent.Position.AsVec2;
+                    sample.Forward = (sample.Position - origin).DotProduct(dir);
+                    sample.Engaged = meleeNow - agent.LastMeleeHitTime < EngagedSeconds
+                        || meleeNow - agent.LastRecievedMeleeHitTime < EngagedSeconds;
+                    _sampleScratch.Add(sample);
+                    _forwardScratch.Add(sample.Forward);
                 }
-                Vec2 pos = agent.Position.AsVec2;
-                float forward = (pos - medianVec).DotProduct(dir);
-                if (MathF.Abs(forward) > farDistance)
+
+                // Pass 2: far = more than farDistance from the median forward position.
+                float medianForward = 0f;
+                if (_forwardScratch.Count > 0)
                 {
-                    far++;
+                    _forwardScratch.Sort();
+                    medianForward = _forwardScratch[_forwardScratch.Count / 2];
                 }
-                else
+                medianVec = origin + dir * medianForward;
+                for (int i = 0; i < _sampleScratch.Count; i++)
                 {
-                    near++;
-                    nearSum += pos;
+                    UnitSample sample = _sampleScratch[i];
+                    if (MathF.Abs(sample.Forward - medianForward) > farDistance)
+                    {
+                        far++;
+                        if (sample.Engaged)
+                        {
+                            engagedFar++;
+                        }
+                    }
+                    else
+                    {
+                        near++;
+                        nearSum += sample.Position;
+                    }
                 }
+            }
+            finally
+            {
+                _sampleScratch.Clear();
+                _forwardScratch.Clear();
             }
             int total = far + near;
             state.FarCount = far;
+            state.EngagedFarCount = engagedFar;
             state.TotalCount = total;
+            state.MedianPoint = medianVec;
             state.MainBodyCenter = (near > 0) ? nearSum * (1f / near) : medianVec;
 
             // A jump in unit count is a reinforcement wave landing: open the regroup-biased window.
@@ -228,6 +308,18 @@ namespace RBMAI
             if (previous > 0 && jump >= ReinforcementMinCount && jump >= previous * ReinforcementMinFraction)
             {
                 state.ReinforcedUntil = now + ReinforcedWindow;
+            }
+            // So does a wave of this class placed by ReinforcementAnchor (field battles), counted from when it was
+            // placed. The count jump alone misses waves that land while the formation is charge-locked: this is
+            // only evaluated while Regroup is weighted, so LastTotalCount is stale from before the charge and a
+            // wave that refills the formation to its old size shows no jump.
+            Vec2 wavePoint;
+            float wavePlacedAt;
+            if (AiModule.ReinforcementAnchor.TryGetRecentRallyPoint(formation.Team, formation.FormationIndex,
+                    ReinforcedWindow, out wavePoint, out wavePlacedAt)
+                && wavePlacedAt + ReinforcedWindow > state.ReinforcedUntil)
+            {
+                state.ReinforcedUntil = wavePlacedAt + ReinforcedWindow;
             }
             bool reinforced = now < state.ReinforcedUntil;
             float thresholdScale = reinforced ? ReinforcedThresholdScale : 1f;
@@ -252,17 +344,25 @@ namespace RBMAI
                 }
             }
 
-            float fraction = far / (float)total;
+            // Engaged far men are left out of both fractions: they cannot come back, so the rally is decided by,
+            // and ends with, the free men.
+            int freeFar = far - engagedFar;
+            int freeTotal = total - engagedFar;
+            float fraction = (freeTotal > 0) ? freeFar / (float)freeTotal : 0f;
+            // Enough of the far men in melee: the fight is out there, so no rally (a running one ends).
+            bool farMenFighting = engagedFar > 0
+                && (engagedFar >= EngagedFarMaxCount || engagedFar >= far * EngagedFarMaxFraction);
             bool wasRallying = state.Rallying;
             if (state.Rallying)
             {
-                state.Rallying = fraction >= EndFraction * thresholdScale && far >= 2;
+                state.Rallying = !farMenFighting && fraction >= EndFraction * thresholdScale && freeFar >= 2;
             }
             else
             {
                 state.Rallying = now >= state.NoRallyUntil
+                    && !farMenFighting
                     && fraction >= StartFraction * thresholdScale
-                    && far >= MathF.Max(2, (int)(StartCount * thresholdScale));
+                    && freeFar >= MathF.Max(2, (int)(StartCount * thresholdScale));
                 if (state.Rallying)
                 {
                     state.RallyStartedAt = now;
@@ -327,13 +427,14 @@ namespace RBMAI
             }
             state.NextSwap = now + SwapInterval;
 
-            WorldPosition median = formation.CachedMedianPosition;
+            // Same "far" as Evaluate: measured from its median forward position (only ever called while rallying,
+            // i.e. after an Evaluate).
+            Vec2 medianVec = state.MedianPoint;
             Vec2 dir = formation.Direction;
-            if (!median.IsValid || !dir.IsValid)
+            if (!medianVec.IsValid || !dir.IsValid)
             {
                 return;
             }
-            Vec2 medianVec = median.AsVec2;
             float farDistance = FarForwardMargin + formation.Depth;
 
             try

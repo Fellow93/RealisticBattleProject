@@ -777,6 +777,7 @@ namespace RBMAI
             sb.Append('\t').Append("d=").Append(SafeFloat(() => formation.Depth));
             sb.Append('\t').Append("rally=").Append(Safe(() =>
                 (RallyLogic.IsRallying(formation) ? "1" : "0") + "/" + RallyLogic.FarCount(formation)
+                + "/" + RallyLogic.EngagedFarCount(formation)
                 + (RallyLogic.RecentlyReinforced(formation) ? "/reinf" : "")
                 + (RallyLogic.IsAnchoredAtSpawn(formation) ? "/spawn" : "")));
             sb.Append('\t').Append("spd=").Append(SafeFloat(() => formation.CachedMovementSpeed));
@@ -1054,7 +1055,8 @@ namespace RBMAI
             sb.Append("#          w  d  rally  spd  spdMax  dev  idealDisp  avg  order  distToOrder  distToEnemy  weights").Append("\n");
             sb.Append("#             state       = Formation.GetMovementState()").Append("\n");
             sb.Append("#             arr/form    = ArrangementOrder / FormOrder enum").Append("\n");
-            sb.Append("#             rally       = <1 while RallyLogic holds the formation for its far men>/<far men>[/reinf in the").Append("\n");
+            sb.Append("#             rally       = <1 while RallyLogic holds the formation for its far men>/<far men>/<far men in").Append("\n");
+            sb.Append("#                           melee, which block the rally at 4 or 25% of the far men>[/reinf in the").Append("\n");
             sb.Append("#                           30s after a reinforcement wave][/spawn when holding at the wave's spawn point]").Append("\n");
             sb.Append("#             spd/spdMax  = CachedMovementSpeed / QuerySystem.MovementSpeedMaximum").Append("\n");
             sb.Append("#             dev         = DeviationOfPositionsExcludeFarAgents (how ragged the line is)").Append("\n");

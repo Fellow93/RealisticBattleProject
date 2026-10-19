@@ -5,6 +5,16 @@
 ### Performance
 - Better battle performance, especially in large battles: fewer stutters when armies deploy and reinforcements arrive, at first contact and at the first volleys, and less work every frame in a big melee.
 
+### AI
+- **Reinforcements link up with the men already fighting:**
+  - The rally after a reinforcement wave no longer pulls back men who are still in melee, and no longer turns the rest of them away from the fight to run back toward the wave. A formation whose survivors are still fighting doesn't rally at all.
+  - A rally now ends once the men who aren't fighting have closed up, instead of always running its full 45 seconds.
+  - The rally now always gathers on the bulk of the formation (usually the fresh wave). A large group of survivors could be mistaken for the main body, so the wave was sent forward to them, or the formation switched back and forth between the two.
+  - The rally's short window right after a wave, in which a smaller gap is enough to start a rally, now opens for every wave. A wave that landed while the formation was charging used to miss it.
+- **Shield walls move faster:**
+  - A charging shield wall walks only within about 30 m of the enemy. Its men further back, such as a fresh reinforcement wave, move at full charge speed instead of walking the whole way at half speed.
+  - A spread-out shield wall or square advancing in formation now moves at half the running speed of its slower men instead of 0.3 of it, which was a crawl of about 1 m/s.
+
 ## v4.7.0 (changes since v4.6.0)
 
 ### Combat
