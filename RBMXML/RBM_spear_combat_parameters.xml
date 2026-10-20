@@ -2093,7 +2093,7 @@
 -->
     <combat_parameter id="couched_lance_params"
                       vertical_rot_limit_multiplier_up="couched_lance_vertical_rot_limit"
-                      vertical_rot_limit_multiplier_down="0.27"
+                      vertical_rot_limit_multiplier_down="0.09"
                       left_rider_rot_limit="couched_lance_rider_rot_limit_left"
                       left_rider_min_rot_limit="couched_lance_min_rider_rot_limit_left"
                       right_rider_rot_limit="couched_lance_rider_rot_limit_right"
@@ -2107,7 +2107,7 @@
 
 
     <combat_parameter id="polearm_brace"
-                      vertical_rot_limit_multiplier_up="0.20"
+                      vertical_rot_limit_multiplier_up="0.05"
                       vertical_rot_limit_multiplier_down="0.25"
                       collision_check_starting_percent="0"
                       collision_check_ending_percent="1"
