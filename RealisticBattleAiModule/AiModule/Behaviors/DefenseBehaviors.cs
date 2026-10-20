@@ -11,7 +11,8 @@ using static TaleWorlds.MountAndBlade.ArrangementOrder;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
 namespace RBMAI
 {
-    /// <summary>Facing of a holding infantry line (Defend, HoldHighGround, Regroup). Their target comes from
+    /// <summary>Facing of a holding infantry line (Defend, HoldHighGround, Regroup; other formations are left
+    /// alone). Their target comes from
     /// FindSignificantEnemy without cavalry, so the line kept facing the enemy foot while horsemen rode round
     /// behind it. While nothing is in contact with that front, a closer melee cavalry formation takes over.</summary>
     internal static class HoldFacing
@@ -21,6 +22,11 @@ namespace RBMAI
 
         public static Vec2 Direction(Formation formation, Formation frontEnemy, Vec2 frontDirection)
         {
+            // Infantry only: archers and cavalry also run Defend/HoldHighGround and keep their old facing.
+            if (!formation.QuerySystem.IsInfantryFormation)
+            {
+                return frontDirection;
+            }
             float frontDistance = RBMAI.Utilities.GetFormationDistance(formation, frontEnemy);
             if (frontDistance < (formation.Depth + frontEnemy.Depth) * 0.5f + FrontContactMargin)
             {
