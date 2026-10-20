@@ -326,6 +326,7 @@ namespace RBMConfig
             aiKickBashEnabled = ReadOrCreate("/Config/RBMAI", "AiKickBashEnabled", "1").Equals("1");
             formationShoutsEnabled = ReadOrCreate("/Config/RBMAI", "FormationShoutsEnabled", "1").Equals("1");
             orderReactionDelayEnabled = ReadOrCreate("/Config/RBMAI", "OrderReactionDelayEnabled", "0").Equals("1");
+            deepWaterNavBlockEnabled = ReadOrCreate("/Config/RBMAI", "DeepWaterNavBlockEnabled", "1").Equals("1");
             // A share of the formation (0-1). Clamped so a hand-edited value cannot switch the shield wall off (above 1)
             // or put every formation in it (at or below the 0.1 hold margin).
             shieldWallShare = Math.Max(0.15f, Math.Min(1f, ParseFloat(ReadOrCreate("/Config/RBMAI", "ShieldWallShare", "0.6"))));
@@ -341,6 +342,7 @@ namespace RBMConfig
             frontlineFindAllyWeight = float.Parse(ReadOrCreate("/Config/RBMAI", "FrontlineFindAllyWeight", "1"), CultureInfo.InvariantCulture);
             frontlineFlankWeight = float.Parse(ReadOrCreate("/Config/RBMAI", "FrontlineFlankWeight", "1"), CultureInfo.InvariantCulture);
             aiBehaviorLogEnabled = ReadOrCreate("/Config/RBMAI", "AiBehaviorLogEnabled", "0").Equals("1");
+            deepWaterNavLoggingEnabled = ReadOrCreate("/Config/RBMAI", "DeepWaterNavLoggingEnabled", "0").Equals("1");
             switch (ReadOrCreate("/Config/RBMAI", "PlayerPostureMultiplier", "0"))
             {
                 case "1": playerPostureMultiplier = 1.5f; break;
@@ -572,6 +574,7 @@ namespace RBMConfig
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/AiKickBashEnabled"), aiKickBashEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/FormationShoutsEnabled"), formationShoutsEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/OrderReactionDelayEnabled"), orderReactionDelayEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/DeepWaterNavBlockEnabled"), deepWaterNavBlockEnabled);
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/ShieldWallShare"), shieldWallShare.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureGUIEnabled"), postureGUIEnabled);
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/PostureVerticalBarsEnabled"), postureVerticalBarsEnabled);
@@ -585,6 +588,7 @@ namespace RBMConfig
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/FrontlineFindAllyWeight"), frontlineFindAllyWeight.ToString(CultureInfo.InvariantCulture));
             setInnerText(xmlConfig.SelectSingleNode("/Config/RBMAI/FrontlineFlankWeight"), frontlineFlankWeight.ToString(CultureInfo.InvariantCulture));
             setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/AiBehaviorLogEnabled"), aiBehaviorLogEnabled);
+            setInnerTextBoolean(xmlConfig.SelectSingleNode("/Config/RBMAI/DeepWaterNavLoggingEnabled"), deepWaterNavLoggingEnabled);
             switch (playerPostureMultiplier)
             {
                 case 1f:

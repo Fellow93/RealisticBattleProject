@@ -788,6 +788,12 @@ is pushed exactly once, and its layers are finalized with it. Facts that make it
   (`SuggestedWidth/Height="0"`, `IsHidden="@IsHidden"`), with the visible child placed by
   `PositionXOffset/YOffset`. The offset moves the widget's **top-left corner**, so subtract half the
   size to centre it. Pool the item VMs (never resize the list per frame); hide the unused tail.
+  For many moving dots (RBMAI `NavigableDebugOverlay`, ~1250 per frame) build the pool once at full size
+  and raise `OnPropertyChangedWithValue(value, "Name")` in the setters, as `RangedAimArcVM` does — the plain
+  `OnPropertyChanged("Name")` (`FrontlineDebugVM`) makes the view read the property back. A debug overlay
+  that is off by default can create its `GauntletLayer` on the hotkey and remove it again on the next press,
+  so it costs nothing until used. `TaleWorlds.Engine.Screen.RealScreenResolutionWidth/Height` are the real
+  pixel bounds `WorldToScreen`'s x/y are in (skip points outside them).
 - `Sprite="BlankWhiteCircle"` (a round dot) and `BlankWhiteSquare_9` are native sprites already used
   by mission HUD prefabs, so they are loaded in missions. `Color="@..."` tints, `AlphaFactor="@..."`
   (a plain `float` on `Widget`) fades.

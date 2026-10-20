@@ -1,0 +1,72 @@
+<!--
+  RBMAI NavigableDebugOverlay (AiModule/Terrain/NavigableDebugOverlay.cs), toggled in mission with Ctrl+Shift+W:
+  one dot per sampled grid point, coloured by how the AI sees it (deep-water grid first, then the navmesh), white dots
+  along the deep-water blocker's AI wall, plus a readout panel with a legend.
+  Dots: zero-sized ItemTemplate roots so the ListPanel stack contributes no advance; each dot places itself absolutely
+  via PositionXOffset/PositionYOffset (same trick as RBMFrontlineDebug.xml / RBMRangedAimArc.xml). BlankWhiteCircle
+  and BlankWhiteSquare_9 are native ui_group1 sprites, always loaded. The legend colours match ClassColors in the C#.
+-->
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="true" IsVisible="@IsActive">
+      <Children>
+        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DataSource="{Dots}">
+          <ItemTemplate>
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="0" SuggestedHeight="0" IsHidden="@IsHidden">
+              <Children>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                        SuggestedWidth="@Size" SuggestedHeight="@Size"
+                        PositionXOffset="@ScreenX" PositionYOffset="@ScreenY"
+                        Sprite="BlankWhiteCircle" Color="@DotColor" AlphaFactor="@Alpha" />
+              </Children>
+            </Widget>
+          </ItemTemplate>
+        </ListPanel>
+
+        <Widget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Left" VerticalAlignment="Top"
+                MarginLeft="40" MarginTop="380" Sprite="BlankWhiteSquare_9" Color="#000000A6">
+          <Children>
+            <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="10" MarginRight="10" MarginTop="6" MarginBottom="6"
+                       StackLayout.LayoutMethod="VerticalTopToBottom">
+              <Children>
+                <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" Brush="EnemyName" Text="@Readout" />
+
+                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginTop="6" StackLayout.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="14" VerticalAlignment="Center" Sprite="BlankWhiteCircle" Color="#30D040FF" />
+                    <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="6" MarginRight="16" Brush="EnemyName" Text="navigable" />
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="14" VerticalAlignment="Center" Sprite="BlankWhiteCircle" Color="#30C8F0FF" />
+                    <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="6" MarginRight="16" Brush="EnemyName" Text="navigable, wet" />
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="14" VerticalAlignment="Center" Sprite="BlankWhiteCircle" Color="#E02828FF" />
+                    <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="6" MarginRight="16" Brush="EnemyName" Text="deep water: walled off, no slots" />
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="14" VerticalAlignment="Center" Sprite="BlankWhiteCircle" Color="#FFFFFFFF" />
+                    <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="6" MarginRight="16" Brush="EnemyName" Text="wall" />
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="14" VerticalAlignment="Center" Sprite="BlankWhiteCircle" Color="#FFE030FF" />
+                    <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="6" Brush="EnemyName" Text="open gate" />
+                  </Children>
+                </ListPanel>
+
+                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginTop="4" StackLayout.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="14" VerticalAlignment="Center" Sprite="BlankWhiteCircle" Color="#801818FF" />
+                    <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="6" MarginRight="16" Brush="EnemyName" Text="face off for paths (RBM)" />
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="14" VerticalAlignment="Center" Sprite="BlankWhiteCircle" Color="#F0A020FF" />
+                    <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="6" MarginRight="16" Brush="EnemyName" Text="blocked by the scene" />
+                  </Children>
+                </ListPanel>
+
+                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginTop="4" StackLayout.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="14" SuggestedHeight="14" VerticalAlignment="Center" Sprite="BlankWhiteCircle" Color="#E040E0FF" />
+                    <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" MarginLeft="6" MarginRight="16" Brush="EnemyName" Text="would be deep (feature off or reverted)" />
+                    <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="EnemyName" Text="no dot = no navmesh" />
+                  </Children>
+                </ListPanel>
+              </Children>
+            </ListPanel>
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

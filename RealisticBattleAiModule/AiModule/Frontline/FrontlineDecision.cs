@@ -213,6 +213,28 @@ namespace RBMAI
             // The search radius (1.5/3/20 m) the cached ally was found in.
             public float stepAllyRadius = 0f;
             public float stepAllyExpiry = float.MinValue;
+
+            // Static-obstacle step gate (OverrideFormation.IsStepBlocked / IsPressingAgainstObstacle). Same threading
+            // rules as the memos above: written by the worker ticking this agent (a stray main-thread logger call can
+            // at worst cost one extra probe or one stale verdict).
+            // Navmesh reachability verdict of the last probe, reused while the decision holds and the man has not
+            // moved or turned much (bounded engine cost, see the Reach* constants).
+            public bool reachBlocked = false;
+            public Vec2 reachOrigin = Vec2.Invalid;
+            public Vec2 reachDirection = Vec2.Invalid;
+            public AIMindset.AIDecision reachDecision = AIMindset.AIDecision.Attack;
+            public float reachTime = float.MinValue;
+            // Pressing detection: where/when the current run of step pins in one direction started, and when the
+            // last one was seen (a gap restarts the window).
+            public Vec2 pressAnchor = Vec2.Invalid;
+            public Vec2 pressDirection = Vec2.Invalid;
+            public AIMindset.AIDecision pressDecision = AIMindset.AIDecision.Attack;
+            public float pressAnchorTime = float.MinValue;
+            public float pressLastSeen = float.MinValue;
+            // After a release: no step pin of that decision near that spot until pressReleaseUntil.
+            public AIMindset.AIDecision pressReleaseDecision = AIMindset.AIDecision.Attack;
+            public Vec2 pressReleasePosition = Vec2.Invalid;
+            public float pressReleaseUntil = float.MinValue;
         }
 
         // Returns this agent's melee/charge target, reusing the cached one while it is fresh and still alive.

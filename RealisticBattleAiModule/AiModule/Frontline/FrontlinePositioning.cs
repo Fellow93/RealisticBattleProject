@@ -15,6 +15,22 @@ namespace RBMAI
 {
     public static partial class Frontline
     {
+        // Static-obstacle step gate counters (OverrideFormation.IsStepBlocked / IsPressingAgainstObstacle), written
+        // with Interlocked on the movement workers, read by the AI behaviour log's AGENTS line, reset per mission in
+        // MissionStartReset. Rejects count step FRAMES turned into a hold/fallback; probes count engine queries.
+        internal static long ObstacleUnreachableRejects;
+        internal static long ObstacleDeepWaterRejects;
+        internal static long ObstacleProbeQueries;
+        internal static long ObstaclePressReleases;
+
+        internal static void ResetObstacleCounters()
+        {
+            System.Threading.Interlocked.Exchange(ref ObstacleUnreachableRejects, 0L);
+            System.Threading.Interlocked.Exchange(ref ObstacleDeepWaterRejects, 0L);
+            System.Threading.Interlocked.Exchange(ref ObstacleProbeQueries, 0L);
+            System.Threading.Interlocked.Exchange(ref ObstaclePressReleases, 0L);
+        }
+
         [HarmonyPatch(typeof(Formation))]
         private class OverrideFormation
         {
@@ -324,7 +340,11 @@ namespace RBMAI
                 // so only side paths (the AI log's slot sampling) reach here for him, and the pin they set is released
                 // only by the clear above on the NEXT call -- which for a swimmer may never come. Seen 2026-10-04: a
                 // group that swam into a river stood frozen there after a charge order.
-                if (unit.IsRunningAway || (unit.CommonAIComponent != null && unit.CommonAIComponent.IsRetreating) || !unit.IsOnLand())
+                // Nor a man the deep-water blocker is driving out of deep water (a scripted move; he may be wading, so
+                // IsOnLand does not cover him): a pin is a movement lock and would hold him in the water. Concurrent
+                // index-set read only (DeepWaterSlots.IsForcedExit), safe on this worker thread.
+                if (unit.IsRunningAway || (unit.CommonAIComponent != null && unit.CommonAIComponent.IsRetreating) || !unit.IsOnLand()
+                    || DeepWaterSlots.IsForcedExit(unit.Index))
                 {
                     return true;
                 }
@@ -419,11 +439,21 @@ namespace RBMAI
                                         {
                                             WorldPosition targetPosition = unit.GetWorldPosition();
                                             Vec2 targetVec2 = unitPosition + direction * MBRandom.RandomFloatRanged(0.15f, 0.5f);
+                                            // A rock, wall or walled-off deep water in the way: no step, native's own
+                                            // (path-found) charge on his target instead, as when this case does not apply.
+                                            if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.Attack, unitPosition, targetVec2))
+                                            {
+                                                return true;
+                                            }
                                             if (IsPositionOccupied(mission, targetVec2, unit))
                                             {
                                                 __result = unit.GetWorldPosition();
                                                 unit.SetTargetPosition(unitPosition);
                                                 return false;
+                                            }
+                                            if (IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.Attack, unitPosition, targetVec2))
+                                            {
+                                                return true;
                                             }
                                             targetPosition.SetVec2MT(targetVec2);
                                             __result = targetAgent.GetWorldPosition();
@@ -437,7 +467,11 @@ namespace RBMAI
                                 {
                                     WorldPosition backPosition = unit.GetWorldPosition();
                                     Vec2 backVec2 = unitPosition - ((direction + __instance.Direction) / 2f) * MBRandom.RandomFloatRanged(0, 0.3f);
-                                    if (IsPositionOccupied(mission, backVec2, unit))
+                                    // Backed against a rock, wall or deep water (or pressing without getting anywhere):
+                                    // hold where he stands, as for an occupied spot.
+                                    if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.BackStep, unitPosition, backVec2)
+                                        || IsPositionOccupied(mission, backVec2, unit)
+                                        || IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.BackStep, unitPosition, backVec2))
                                     {
                                         __result = unit.GetWorldPosition();
                                         unit.SetTargetPosition(unitPosition);
@@ -452,11 +486,20 @@ namespace RBMAI
                                 {
                                     WorldPosition allyPosition = GetStepTowardNearbyAlly(mission, unitPosition, unit);
                                     Vec2 allyVec2 = allyPosition.AsVec2;
+                                    // Obstacle in the way: no step, back to his place in the formation (native frame).
+                                    if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.FindAlly, unitPosition, allyVec2))
+                                    {
+                                        return true;
+                                    }
                                     if (IsPositionOccupied(mission, allyVec2, unit))
                                     {
                                         __result = unit.GetWorldPosition();
                                         unit.SetTargetPosition(unitPosition);
                                         return false;
+                                    }
+                                    if (IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.FindAlly, unitPosition, allyVec2))
+                                    {
+                                        return true;
                                     }
                                     __result = allyPosition;
                                     unit.SetTargetPosition(allyVec2);
@@ -466,11 +509,19 @@ namespace RBMAI
                                 {
                                     WorldPosition leftPosition = unit.GetWorldPosition();
                                     Vec2 leftTargetVec2 = unitPosition + leftVec * MBRandom.RandomFloatRanged(0.15f, 0.3f);
+                                    if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.FlankAllyLeft, unitPosition, leftTargetVec2))
+                                    {
+                                        return true;
+                                    }
                                     if (IsPositionOccupied(mission, leftTargetVec2, unit))
                                     {
                                         __result = unit.GetWorldPosition();
                                         unit.SetTargetPosition(unitPosition);
                                         return false;
+                                    }
+                                    if (IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.FlankAllyLeft, unitPosition, leftTargetVec2))
+                                    {
+                                        return true;
                                     }
                                     leftPosition.SetVec2MT(leftTargetVec2);
                                     __result = leftPosition;
@@ -481,11 +532,19 @@ namespace RBMAI
                                 {
                                     WorldPosition rightPosition = unit.GetWorldPosition();
                                     Vec2 rightTargetVec2 = unitPosition + rightVec * MBRandom.RandomFloatRanged(0.15f, 0.3f);
+                                    if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.FlankAllyRight, unitPosition, rightTargetVec2))
+                                    {
+                                        return true;
+                                    }
                                     if (IsPositionOccupied(mission, rightTargetVec2, unit))
                                     {
                                         __result = unit.GetWorldPosition();
                                         unit.SetTargetPosition(unitPosition);
                                         return false;
+                                    }
+                                    if (IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.FlankAllyRight, unitPosition, rightTargetVec2))
+                                    {
+                                        return true;
                                     }
                                     rightPosition.SetVec2MT(rightTargetVec2);
                                     __result = rightPosition;
@@ -579,8 +638,11 @@ namespace RBMAI
                 float findAlly = (alliesFrontCount * 0.5f) + (enemiesFrontCount) - alliesRightCount - alliesLeftCount + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
                 float fallback = (alliesFrontCount) + enemiesFrontCount;
                 float attack = -(alliesFrontCount * 0.5f) + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier))
-                float flankAllyLeft = (alliesFrontCount * 1.25f) + (alliesRightCount) - (alliesLeftCount) - enemiesFrontCount;
-                float flankAllyRight = (alliesFrontCount * 1.25f) + (alliesLeftCount) - (alliesRightCount) - enemiesFrontCount;
+                // The side a man would flank toward counts twice (2026-10-20): with "other side - own side" the two
+                // cancelled for a man hemmed in on both sides, so the crowded-front term made flanking the top choice
+                // deep inside a pile, where there is no room to step sideways. Edge men (own side empty) are unchanged.
+                float flankAllyLeft = (alliesFrontCount * 1.25f) + (alliesRightCount) - (2f * alliesLeftCount) - enemiesFrontCount;
+                float flankAllyRight = (alliesFrontCount * 1.25f) + (alliesLeftCount) - (2f * alliesRightCount) - enemiesFrontCount;
 
                 if (isBannerBearer)
                 {
@@ -886,6 +948,13 @@ namespace RBMAI
 
             public static bool IsPositionOccupied(Mission mission, Vec2 position, Agent self)
             {
+                // Deep-water gate (DeepWaterNavBlocker): every frontline pin target goes through here, and "occupied"
+                // makes the caller pin the man where he stands instead, so no pin lands in walled-off water. Grid
+                // read only (DeepWaterSlots.LiveGrid, immutable); false whenever the blocker is not live.
+                if (DeepWaterSlots.IsBlocked(position))
+                {
+                    return true;
+                }
                 // No decision state: the plain query, as before the memo.
                 if (!aiDecisionCooldownDict.TryGetValue(self, out AIDecisionState memo) || memo == null
                     || position.DistanceSquared(self.Position.AsVec2) < OccupancyMemoMinStep * OccupancyMemoMinStep)
@@ -937,6 +1006,194 @@ namespace RBMAI
                     }
                 }
                 return false;
+            }
+
+            // ---- Static obstacles: rocks, walls, fences, RBM's deep-water walls ----
+            // Every step branch re-pins the man 0.15-0.5 m ahead of where he stands, every frame, so the pin is a
+            // carrot that keeps moving with him: with a rock, wall or invisible deep-water wall in that direction he
+            // pressed into it for as long as the decision held (reported 2026-10-20). Three gates, cheapest first:
+            //  (b) deep water: the line to a probe point StepProbeLength ahead crosses a deep cell of the live grid
+            //      (DeepWaterSteering.CrossesDeepWater; immutable grid reads only).
+            //  (a) navmesh: the probe point is not reachable from the man's own position within a short path budget
+            //      (Mission.IsFormationUnitPositionAvailableMT: no navmesh there -- a rock/wall hole -- or no short path).
+            //      That is the one spatial query native itself makes from this parallel job: Formation.GetOrderPositionOfUnit
+            //      -> GetOrderPositionOfUnitAux (Hold state, unpositioned unit) calls it from Agent.GetBaseFormationFrame
+            //      inside HumanAIComponent.ParallelUpdateFormationMovement; it validates both positions through the MT
+            //      (Scene.PhysicsAndRayCastLock read-locked) WorldPosition path and runs the engine check under the same
+            //      read lock. Our positions are fresh LOCAL WorldPosition copies (never a formation's cached order
+            //      position), so no native cache sees a per-tick Vec2. Memoised per agent (Reach* constants).
+            //  (c) pressing: obstacles the navmesh does not cut out (small rocks, props, the deep-water quads' physics):
+            //      a run of step pins in one direction that has moved him less than PressMinProgress in PressWindow
+            //      releases the step, and that decision cannot step again near that spot for PressReleaseCooldown.
+            //      Positions and the mission clock only, no engine query.
+            private const float StepProbeLength = 0.6f;
+            private const float StepProbeSlack = 0.5f;
+            private const float ReachReuseMin = 0.35f;
+            private const float ReachReuseJitter = 0.15f;
+            private const float ReachReuseMaxAge = 1.5f;
+            private const float ReachReuseMaxDrift = 0.4f;
+            private const float ReachReuseMinDot = 0.9f;
+            private const float PressWindow = 2f;
+            private const float PressMinProgress = 0.15f;
+            private const float PressMaxGap = 0.3f;
+            private const float PressMinDot = 0.7f;
+            private const float PressReleaseCooldown = 2.5f;
+            private const float PressReleaseRadius = 1.5f;
+
+            // True when the step from unitPosition to stepTarget must not be taken: a press-release cooldown for this
+            // decision near here, deep water on the line, or no navmesh reachability. A step shorter than
+            // OccupancyMemoMinStep is a hold, never blocked. Never throws (worker thread).
+            private static bool IsStepBlocked(Mission mission, Agent unit, AIDecisionState state, AIMindset.AIDecision decision, Vec2 unitPosition, Vec2 stepTarget)
+            {
+                if (state == null)
+                {
+                    return false;
+                }
+                try
+                {
+                    Vec2 delta = stepTarget - unitPosition;
+                    float length = delta.Length;
+                    if (!(length >= OccupancyMemoMinStep))
+                    {
+                        return false;
+                    }
+                    Vec2 direction = delta * (1f / length);
+                    float now = mission.CurrentTime;
+
+                    if (now < state.pressReleaseUntil && state.pressReleaseDecision == decision && state.pressReleasePosition.IsValid
+                        && unitPosition.DistanceSquared(state.pressReleasePosition) <= PressReleaseRadius * PressReleaseRadius)
+                    {
+                        return true;
+                    }
+
+                    Vec2 probe = unitPosition + direction * StepProbeLength;
+                    DeepWaterGrid grid = DeepWaterSlots.LiveGrid;
+                    if (grid != null && DeepWaterSteering.CrossesDeepWater(grid, unitPosition, probe))
+                    {
+                        System.Threading.Interlocked.Increment(ref ObstacleDeepWaterRejects);
+                        return true;
+                    }
+
+                    if (IsStepUnreachable(mission, unit, state, decision, unitPosition, direction, probe, now))
+                    {
+                        System.Threading.Interlocked.Increment(ref ObstacleUnreachableRejects);
+                        return true;
+                    }
+                }
+                catch
+                {
+                }
+                return false;
+            }
+
+            // The navmesh verdict for a step in `direction`, reused for the same decision while it is younger than a
+            // jittered ReachReuseMin, or younger than ReachReuseMaxAge with the man within ReachReuseMaxDrift of where
+            // it was taken and facing within ReachReuseMinDot of the same way. So at most ~3 queries a second for a
+            // stepping man (one per ~0.35-0.5 s), typically one per decision or per 0.4 m walked.
+            private static bool IsStepUnreachable(Mission mission, Agent unit, AIDecisionState state, AIMindset.AIDecision decision, Vec2 unitPosition, Vec2 direction, Vec2 probe, float now)
+            {
+                if (state.reachOrigin.IsValid && state.reachDecision == decision && now >= state.reachTime)
+                {
+                    float age = now - state.reachTime;
+                    if (age < ReachReuseMin + ReachReuseJitter * IndexJitter(unit.Index))
+                    {
+                        return state.reachBlocked;
+                    }
+                    if (age < ReachReuseMaxAge
+                        && state.reachOrigin.DistanceSquared(unitPosition) <= ReachReuseMaxDrift * ReachReuseMaxDrift
+                        && state.reachDirection.DotProduct(direction) >= ReachReuseMinDot)
+                    {
+                        return state.reachBlocked;
+                    }
+                }
+                bool blocked = QueryStepUnreachable(mission, unit, probe);
+                state.reachBlocked = blocked;
+                state.reachOrigin = unitPosition;
+                state.reachDirection = direction;
+                state.reachDecision = decision;
+                state.reachTime = now;
+                return blocked;
+            }
+
+            // One engine check: is `probe` reachable from the man's own navmesh position within a path budget barely
+            // above the straight distance? Fails open (false = not blocked) when his own position has no navmesh or
+            // anything throws, so a query problem can only cost the old behaviour, never pin anyone.
+            private static bool QueryStepUnreachable(Mission mission, Agent unit, Vec2 probe)
+            {
+                System.Threading.Interlocked.Increment(ref ObstacleProbeQueries);
+                try
+                {
+                    WorldPosition from = unit.GetWorldPosition();
+                    if (!from.IsValid || from.GetNavMeshMT() == UIntPtr.Zero)
+                    {
+                        return false;
+                    }
+                    Vec2 origin = from.AsVec2;
+                    WorldPosition to = from;
+                    to.SetVec2MT(probe);
+                    WorldPosition nearest = WorldPosition.Invalid;
+                    float manhattan = MathF.Abs(probe.x - origin.x) + MathF.Abs(probe.y - origin.y) + StepProbeSlack;
+                    return !mission.IsFormationUnitPositionAvailableMT(ref from, ref to, ref nearest, manhattan, unit.Team);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            // Called on a frame a step pin is about to be set (after the blocked and occupied gates passed). True =
+            // he has been pinned this way for PressWindow without getting PressMinProgress further: drop the step and
+            // start the cooldown. Never throws (worker thread).
+            private static bool IsPressingAgainstObstacle(Mission mission, Agent unit, AIDecisionState state, AIMindset.AIDecision decision, Vec2 unitPosition, Vec2 stepTarget)
+            {
+                if (state == null)
+                {
+                    return false;
+                }
+                try
+                {
+                    Vec2 delta = stepTarget - unitPosition;
+                    float length = delta.Length;
+                    if (!(length >= OccupancyMemoMinStep))
+                    {
+                        return false;
+                    }
+                    Vec2 direction = delta * (1f / length);
+                    float now = mission.CurrentTime;
+                    if (!state.pressAnchor.IsValid || state.pressDecision != decision || now < state.pressAnchorTime
+                        || now - state.pressLastSeen > PressMaxGap || state.pressDirection.DotProduct(direction) < PressMinDot)
+                    {
+                        state.pressAnchor = unitPosition;
+                        state.pressDirection = direction;
+                        state.pressDecision = decision;
+                        state.pressAnchorTime = now;
+                        state.pressLastSeen = now;
+                        return false;
+                    }
+                    state.pressLastSeen = now;
+                    if (now - state.pressAnchorTime < PressWindow)
+                    {
+                        return false;
+                    }
+                    float progress = (unitPosition - state.pressAnchor).DotProduct(state.pressDirection);
+                    state.pressAnchor = unitPosition;
+                    state.pressDirection = direction;
+                    state.pressAnchorTime = now;
+                    if (progress >= PressMinProgress)
+                    {
+                        return false;
+                    }
+                    state.pressAnchor = Vec2.Invalid;
+                    state.pressReleaseDecision = decision;
+                    state.pressReleasePosition = unitPosition;
+                    state.pressReleaseUntil = now + PressReleaseCooldown;
+                    System.Threading.Interlocked.Increment(ref ObstaclePressReleases);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
             }
         }
     }

@@ -372,6 +372,18 @@ namespace RBM
                     // Hosts both toggles; each feature also checks its own toggle at runtime.
                     mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.FormationShoutsLogic());
                 }
+                if (RBMConfig.RBMConfig.deepWaterNavBlockEnabled)
+                {
+                    // Prototype: switches off swimming-deep navmesh faces in its EarlyStart (land field battles only,
+                    // before spawn and before any AI tick); hosts its own log (deepWaterNavLoggingEnabled).
+                    mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.DeepWaterNavBlocker());
+                }
+                if (RBMConfig.RBMConfig.deepWaterNavBlockEnabled || RBMConfig.RBMConfig.deepWaterNavLoggingEnabled)
+                {
+                    // Debug view of navigable / blocked ground (also with the blocker off, to preview it). Inert until
+                    // toggled in-mission with Ctrl+Shift+W.
+                    mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.NavigableDebugOverlay());
+                }
                 if (RBMConfig.RBMConfig.frontlineEnabled)
                 {
                     // Inert until toggled in-mission with Ctrl+Shift+F.

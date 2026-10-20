@@ -196,6 +196,9 @@
     <Compile Include="AiModule\Diagnostics\BattleStatsLogic.cs" />
     <Compile Include="AiModule\Diagnostics\BattleStatsVM.cs" />
     <Compile Include="AiModule\Voices\FormationShoutsLogic.cs" />
+    <Compile Include="AiModule\Terrain\DeepWaterNavBlocker.cs" />
+    <Compile Include="AiModule\Terrain\DeepWaterSlotPatches.cs" />
+    <Compile Include="AiModule\Terrain\NavigableDebugOverlay.cs" />
     <Compile Include="AiModule\Frontline\AgentPanicFix.cs" />
     <Compile Include="AiModule\Frontline\FrontlineDebugOverlay.cs" />
     <Compile Include="AiModule\Frontline\FrontlineDecision.cs" />

@@ -39,6 +39,9 @@ namespace RBMConfig
         public TextViewModel OrderReactionDelayEnabledText { get; }
         public SelectorVM<SelectorItemVM> OrderReactionDelayEnabled { get; }
 
+        public TextViewModel DeepWaterNavBlockEnabledText { get; }
+        public SelectorVM<SelectorItemVM> DeepWaterNavBlockEnabled { get; }
+
         public TextViewModel ShieldWallShareText { get; }
         public SelectorVM<SelectorItemVM> ShieldWallShare { get; }
 
@@ -515,6 +518,18 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel OrderReactionDelayHint { get; } = Hint("{=RBM_CON_158}When a formation is given a new order, yours or the AI's, each soldier starts to carry it out after his own short delay, longer the further he stands from whoever gave it, instead of the whole formation moving at once. Charges and retreats are not held back. Experimental. Needs RBM AI on. Default on.");
+
+        [DataSourceProperty]
+        public string DeepWaterNavBlockt
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_DEEPWATER_001}Deep water blocks AI paths").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel DeepWaterNavBlockHint { get; } = Hint("{=RBM_CON_DEEPWATER_002}In field battles, water about 1 m deep or deeper gets a solid invisible wall at its edge that nobody can pass, you included, and AI formations form up around it instead of standing in it. AI soldiers who still end up on the water side are walked or swum back out to the nearest shore. Arrows and other missiles fly over it. Shallow fords and bridges stay open. If it would cut the two armies off from each other it is switched back off for that battle. Needs RBM AI on. Takes effect from the next battle. Default on.");
 
         [DataSourceProperty]
         public string ShieldWallSharet

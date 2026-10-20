@@ -16,6 +16,12 @@ namespace RBMConfig
         // delegated team, running the same code, do not do the same thing.
         public static bool aiBehaviorLogEnabled = false;
 
+        // Writes the deep-water nav blocker (RBMAI AiModule/Terrain/DeepWaterNavBlocker.cs) to logs/deepwater, one file
+        // per land field battle: faces blocked and their depth spread, the sides' connectivity check, the water depth
+        // where men start and stop swimming, and men stuck in water. Kept under /Config/RBMAI with the AI log. No
+        // effect unless rbmAiEnabled and deepWaterNavBlockEnabled are on.
+        public static bool deepWaterNavLoggingEnabled = false;
+
         // Prints the blunt trauma and armor penetration of every blow the player deals or takes to the message log.
         public static bool armorPenetrationMessage = false;
 

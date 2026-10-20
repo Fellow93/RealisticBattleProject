@@ -575,7 +575,11 @@ namespace RBMAI
             sb.Append('\t').Append("pfxCalls=").Append(OverrideParallelFormationMovement.CallCount);
             sb.Append('\t').Append("pfxSet=").Append(OverrideParallelFormationMovement.SetCount);
             sb.Append('\t').Append("devCaps=").Append(FormationCatchUpGate.CapCount);
-            sb.Append('\t').Append("retreating=").Append(retreating);
+            // Frontline static-obstacle step gate, mission totals (see the header).
+            sb.Append('\t').Append("flUnreach=").Append(System.Threading.Interlocked.Read(ref Frontline.ObstacleUnreachableRejects));
+            sb.Append('\t').Append("flDeep=").Append(System.Threading.Interlocked.Read(ref Frontline.ObstacleDeepWaterRejects));
+            sb.Append('\t').Append("flProbes=").Append(System.Threading.Interlocked.Read(ref Frontline.ObstacleProbeQueries));
+            sb.Append('\t').Append("flPress=").Append(System.Threading.Interlocked.Read(ref Frontline.ObstaclePressReleases));            sb.Append('\t').Append("retreating=").Append(retreating);
             sb.Append('\t').Append("runAway=").Append(runningAway);
             sb.Append('\t').Append("walk=").Append(walk);
             sb.Append('\t').Append("frameDis=").Append(frameDisabled);
@@ -1078,7 +1082,10 @@ namespace RBMAI
             sb.Append("#             noSlot      = men whose slot WorldPosition came back invalid").Append("\n");
             sb.Append("#             detached    = Agent.IsDetachedFromFormation").Append("\n");
             sb.Append("#             catchUp     = HumanAIComponent.ShouldCatchUpWithFormation").Append("\n");
-            sb.Append("#             retreating  = Agent.IsRetreating()   runAway = Agent.IsRunningAway").Append("\n");
+            sb.Append("#             flUnreach/flDeep = mission totals of Frontline step FRAMES dropped because the step had no").Append("\n");
+            sb.Append("#                           navmesh path (rock/wall) / crossed walled-off deep water; flProbes = engine").Append("\n");
+            sb.Append("#                           reachability queries behind flUnreach; flPress = step pins released because the").Append("\n");
+            sb.Append("#                           man pressed against something for 2 s without moving 0.15 m").Append("\n");            sb.Append("#             retreating  = Agent.IsRetreating()   runAway = Agent.IsRunningAway").Append("\n");
             sb.Append("#             walk        = Agent.WalkMode (walking, not running)").Append("\n");
             sb.Append("#             frameDis    = !Agent.IsFormationFrameEnabled (SetFormationFrameDisabled fired)").Append("\n");
             sb.Append("#             alarmed/cautious = Agent.AIStateFlags & AlarmStateMask (a state, not free bits)").Append("\n");

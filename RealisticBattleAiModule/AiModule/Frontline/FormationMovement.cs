@@ -97,7 +97,9 @@ namespace RBMAI
                     // shielded man in a mostly-missile formation holds his slot and everyone else drifts
                     // toward whichever agent he is targeting. RBM wants every moving unit to hold slot --
                     // a Move order should march the formation, not smear it toward enemy individuals.
-                    ___Agent.SetFormationIntegrityData(currentGlobalPositionOfUnit, ___Agent.Formation.CurrentDirection, formationIntegrityData.AverageVelocityExcludeFarAgents, formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents, formationIntegrityData.DeviationOfPositionsExcludeFarAgents, true);
+                    // Through DeepWaterSteering (same call, same arguments): it zeroes the position when it, or the
+                    // straight line to it, lies in deep water while the deep-water blocker is live; inert otherwise.
+                    DeepWaterSteering.SetFormationIntegrityData(___Agent, currentGlobalPositionOfUnit, ___Agent.Formation.CurrentDirection, formationIntegrityData.AverageVelocityExcludeFarAgents, formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents, formationIntegrityData.DeviationOfPositionsExcludeFarAgents, true);
                 }
             }
             if (orderType == MovementOrder.MovementOrderEnum.Charge || orderType == MovementOrder.MovementOrderEnum.ChargeToTarget)

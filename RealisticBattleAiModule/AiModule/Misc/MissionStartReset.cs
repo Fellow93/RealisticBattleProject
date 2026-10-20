@@ -67,6 +67,9 @@ namespace RBMAI
             // battles, so town, arena and other missions without it kept the last battle's agents alive.
             // Also drops the Agents its states hold (cachedTarget, cachedHeadingTarget, stepAllyCached).
             Frontline.aiDecisionCooldownDict.Clear();
+            // Not Agent-keyed: the static-obstacle step gate's per-mission counters (its per-agent state lives in the
+            // AIDecisionState entries cleared above).
+            Frontline.ResetObstacleCounters();
             Tactics.agentDamage.Clear();
             AgentAi.OnTickPatch.itemPickupDistanceStorage.Clear();
             AgentAi.OnTickPatch.bannerBearersWithHeldTarget.Clear();
@@ -87,6 +90,9 @@ namespace RBMAI
             AgentAi.AmmoPickupSafety.dangerSnapshots.Clear();
             AgentAi.ChargeDamageCallbackPatch.lastSyntheticKnockback.Clear();
             OrderReactionHold.Clear();
+            // Not Agent-keyed, but holds the last battle's deep-water grid for worker-thread readers; the blocker sets
+            // it again in its EarlyStart when it applies. Also clears its forced-exit agent-index set (Frontline's guard).
+            DeepWaterSlots.Clear();
             // The posture/stamina statics are RBMStance's own (RBMStance.StanceReset), reset from the same SubModule hook.
         }
     }

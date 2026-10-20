@@ -28,6 +28,11 @@ namespace RBMConfig
         // Staggered order reaction (same file): player orders reach each man after a random, distance-scaled delay
         // through the engine's own decide time. Experimental; off = vanilla's near-instant reaction.
         public static bool orderReactionDelayEnabled = false;
+        // Deep water blocks AI paths (RBMAI AiModule/Terrain/DeepWaterNavBlocker.cs): in land field battles swim-deep
+        // water gets a hard invisible wall (everyone, the player too; gaps open for trapped AI men), no formation slots in it, and its navmesh
+        // faces switched off for paths, all set up once before anyone spawns. Reverted in the battle if it
+        // cuts the two sides apart. Needs rbmAiEnabled.
+        public static bool deepWaterNavBlockEnabled = true;
         // Shield wall share (RBMAI Utilities/Utilities.Formations.cs DecideArrangementOrderForFormation): the share of
         // an AI formation that must be shield-wall soldiers (a large shield in hand, no throwing weapon) before it forms
         // a shield wall; it is held until the share drops 0.1 below this. Settings screen offers 0.4-0.9.
