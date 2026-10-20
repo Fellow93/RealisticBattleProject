@@ -26,6 +26,19 @@ namespace RBMCombat
             }
         }
 
+        // Custom battle twin of the above (NavalDLC's custom battle model wraps this one): vanilla gives a raised
+        // shield a 0.3 missile catch box, the "magnet shield". Lost in 2023 when the old UpdateAgentStats postfix
+        // was turned into the horse-only UpdateHorseStats one.
+        [HarmonyPatch(typeof(CustomBattleAgentStatCalculateModel))]
+        [HarmonyPatch("UpdateHumanStats")]
+        private class CustomBattleAgentUpdateHumanStats
+        {
+            private static void Postfix(Agent agent, ref AgentDrivenProperties agentDrivenProperties)
+            {
+                agentDrivenProperties.AttributeShieldMissileCollisionBodySizeAdder = 0.01f;
+            }
+        }
+
         [HarmonyPatch(typeof(BattleAgentLogic))]
         [HarmonyPatch("OnAgentHit")]
         private class OnAgentHitPatch

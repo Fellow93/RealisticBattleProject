@@ -5,6 +5,9 @@
 ### Performance
 - Better battle performance, especially in large battles: fewer stutters when armies deploy and reinforcements arrive, at first contact and at the first volleys, and less work every frame in a big melee.
 
+### Combat
+- **No more "magnet" shields in custom battles:** in custom battles a raised shield caught arrows and other missiles in a large invisible zone around it (the base game's catch size), so missiles that would have missed were pulled into it. It now catches only what actually hits it, as in the campaign.
+
 ### AI
 - **Reinforcements link up with the men already fighting:**
   - The rally after a reinforcement wave no longer pulls back men who are still in melee, and no longer turns the rest of them away from the fight to run back toward the wave. A formation whose survivors are still fighting doesn't rally at all.
