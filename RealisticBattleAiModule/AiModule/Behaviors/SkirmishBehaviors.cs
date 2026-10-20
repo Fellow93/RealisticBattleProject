@@ -418,11 +418,15 @@ namespace RBMAI
                 && CavalryFear(formation, enemy) < WeakerFearBelow;
         }
 
-        // Weaker enemy horse archers within HuntRange (centre to centre) and nearer than the foot target become the
-        // orbit's target: the horse archers circle and shoot them instead of only ever circling foot formations, to
-        // which every enemy horse archer formation was something to keep clear of. The one already hunted is kept
-        // out to HuntRange * HuntKeepFactor, so the target does not flicker at the edge.
-        private const float HuntRange = 150f;
+        // Clearly weaker enemy horse archers (CavalryFear below HuntFearBelow) within HuntRange (centre to centre) and
+        // much nearer than the foot target (HuntFootRatio of its distance) become the orbit's target: the horse
+        // archers circle and shoot them instead of only ever circling foot formations, to which every enemy horse
+        // archer formation was something to keep clear of. Foot formations stay the main target: a first version
+        // (fear < 1, 150 m, merely nearer than the foot) had them chasing enemy horse archers most of the battle.
+        // The one already hunted is kept out to HuntKeepFactor times each limit, so the target does not flicker.
+        private const float HuntFearBelow = 0.7f;
+        private const float HuntRange = 100f;
+        private const float HuntFootRatio = 0.6f;
         private const float HuntKeepFactor = 1.3f;
 
         private static Formation FindHuntableHorseArchers(Formation formation, Formation footTarget)
@@ -446,8 +450,8 @@ namespace RBMAI
                     }
                     float keep = enemy == previous ? HuntKeepFactor : 1f;
                     float distance = center.Distance(RBMAI.Utilities.GetFormationCenter(enemy));
-                    if (distance > HuntRange * keep || distance > footDistance * keep || distance >= bestDistance
-                        || CavalryFear(formation, enemy) >= WeakerFearBelow)
+                    if (distance > HuntRange * keep || distance > footDistance * HuntFootRatio * keep || distance >= bestDistance
+                        || CavalryFear(formation, enemy) >= HuntFearBelow * keep)
                     {
                         continue;
                     }
