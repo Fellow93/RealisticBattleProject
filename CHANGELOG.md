@@ -17,6 +17,10 @@
 - **Shield walls move faster:**
   - A charging shield wall walks only within about 30 m of the enemy. Its men further back, such as a fresh reinforcement wave, move at full charge speed instead of walking the whole way at half speed.
   - A spread-out shield wall or square advancing in formation now moves at half the running speed of its slower men instead of 0.3 of it, which was a crawl of about 1 m/s.
+- **Holding infantry turns to face cavalry:**
+  - AI infantry that stands in a shield wall against cavalry instead of charging (for example when only enemy cavalry is left, or your own infantry under delegated command) now turns to keep facing the cavalry as it rides around. Before, the line stayed facing the way it was when it stopped, so cavalry could simply ride around behind it.
+  - When it stops holding, it goes back to facing the enemy instead of staying locked on the cavalry's last direction.
+  - AI infantry holding a defensive position kept facing the enemy's infantry and archers, even when enemy cavalry rode around behind it. While nothing is fighting its front, it now turns toward an enemy cavalry formation that is closer than the enemy foot. Horse archers are still ignored there, so circling horse archers don't keep the line turning.
 
 ### Campaign
 - **Towns and castles raise and pay for their own patrols.** In the base game only a town with a Guard House had a patrol, it cost nothing, and its men were replaced for free whenever it went home; under RBM its men even drew a full day's wage into their spoils out of thin air. Now:

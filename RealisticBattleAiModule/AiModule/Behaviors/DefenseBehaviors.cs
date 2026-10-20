@@ -11,6 +11,52 @@ using static TaleWorlds.MountAndBlade.ArrangementOrder;
 using static TaleWorlds.MountAndBlade.HumanAIComponent;
 namespace RBMAI
 {
+    /// <summary>Facing of a holding infantry line (Defend, HoldHighGround, Regroup). Their target comes from
+    /// FindSignificantEnemy without cavalry, so the line kept facing the enemy foot while horsemen rode round
+    /// behind it. While nothing is in contact with that front, a closer melee cavalry formation takes over.</summary>
+    internal static class HoldFacing
+    {
+        /// <summary>Gap (m) between the two formations' edges that still counts as the front being in contact.</summary>
+        private const float FrontContactMargin = 10f;
+
+        public static Vec2 Direction(Formation formation, Formation frontEnemy, Vec2 frontDirection)
+        {
+            float frontDistance = RBMAI.Utilities.GetFormationDistance(formation, frontEnemy);
+            if (frontDistance < (formation.Depth + frontEnemy.Depth) * 0.5f + FrontContactMargin)
+            {
+                return frontDirection;
+            }
+            Formation closestCavalry = null;
+            float closestDistance = frontDistance;
+            foreach (Team team in Mission.Current.Teams)
+            {
+                if (!team.IsEnemyOf(formation.Team))
+                {
+                    continue;
+                }
+                foreach (Formation enemy in team.FormationsIncludingEmpty)
+                {
+                    if (enemy == frontEnemy || enemy.CountOfUnits <= 0 || !enemy.QuerySystem.IsCavalryFormation || enemy.QuerySystem.IsRangedCavalryFormation)
+                    {
+                        continue;
+                    }
+                    float distance = RBMAI.Utilities.GetFormationDistance(formation, enemy);
+                    if (distance < closestDistance)
+                    {
+                        closestCavalry = enemy;
+                        closestDistance = distance;
+                    }
+                }
+            }
+            if (closestCavalry == null)
+            {
+                return frontDirection;
+            }
+            Vec2 direction = RBMAI.Utilities.GetFormationCenter(closestCavalry) - RBMAI.Utilities.GetFormationCenter(formation);
+            return direction.IsNonZero() ? direction.Normalized() : frontDirection;
+        }
+    }
+
     [HarmonyPatch(typeof(BehaviorDefend))]
     internal class OverrideBehaviorDefend
     {
@@ -30,6 +76,7 @@ namespace RBMAI
                 {
                     Vec2 enemyDirection = RBMAI.Utilities.GetFormationCenter(significantEnemy) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                     float distance = enemyDirection.Normalize();
+                    enemyDirection = HoldFacing.Direction(__instance.Formation, significantEnemy, enemyDirection);
                     if (distance < (200f))
                     {
                         WorldPosition newPosition = WorldPosition.Invalid;
@@ -81,6 +128,7 @@ namespace RBMAI
                 {
                     Vec2 enemyDirection = RBMAI.Utilities.GetFormationCenter(significantEnemy) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                     float distance = enemyDirection.Normalize();
+                    enemyDirection = HoldFacing.Direction(__instance.Formation, significantEnemy, enemyDirection);
 
                     if (distance < (200f))
                     {
@@ -238,6 +286,7 @@ namespace RBMAI
                     ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
                     Vec2 direction = (RBMAI.Utilities.GetFormationCenter(significantEnemy) - RBMAI.Utilities.GetFormationCenter(__instance.Formation)).Normalized();
+                    direction = HoldFacing.Direction(__instance.Formation, significantEnemy, direction);
                     ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(direction);
 
                     return false;

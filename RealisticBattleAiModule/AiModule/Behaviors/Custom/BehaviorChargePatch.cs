@@ -24,6 +24,17 @@ namespace RBMAI.AiModule.RbmBehaviors
 
         public static ArrangementOrder ArrangementOrderLine { get; private set; }
 
+        // Vanilla BehaviorCharge.TickOccasionally applies only the movement order, never CurrentFacingOrder, so the
+        // cavalry hold sets the formation's facing itself. When the hold ends, hand the facing back to the enemy
+        // instead of leaving the line locked on the last direction the cavalry was in.
+        private static void EndCavalryHold(Formation formation, bool isActiveBehavior)
+        {
+            if (cavHoldPositions.Remove(formation) && isActiveBehavior)
+            {
+                formation.SetFacingOrder(FacingOrder.FacingOrderLookAtEnemy);
+            }
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
         private static bool PrefixCalculateCurrentOrder(ref BehaviorCharge __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
@@ -127,6 +138,10 @@ namespace RBMAI.AiModule.RbmBehaviors
                             if (isActiveBehavior)
                             {
                                 __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                                if (cavDist > 10f)
+                                {
+                                    __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
+                                }
                             }
                             return false;
                         }
@@ -176,11 +191,15 @@ namespace RBMAI.AiModule.RbmBehaviors
                                 if (isActiveBehavior)
                                 {
                                     __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                                    if (cavDist > 10f)
+                                    {
+                                        __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
+                                    }
                                 }
                                 return false;
                             }
                         }
-                        cavHoldPositions.Remove(__instance.Formation);
+                        EndCavalryHold(__instance.Formation, isActiveBehavior);
                     }
                     else if (significantEnemy != null && !significantEnemy.QuerySystem.IsRangedFormation && signDist < 50f && RBMAI.Utilities.FormationActiveSkirmishersRatio(__instance.Formation, 0.38f))
                     {
@@ -201,7 +220,7 @@ namespace RBMAI.AiModule.RbmBehaviors
                         }
                         return false;
                     }
-                    cavHoldPositions.Remove(__instance.Formation);
+                    EndCavalryHold(__instance.Formation, isActiveBehavior);
                     skirmisherRetreatPositions.Remove(__instance.Formation);
                 }
 
