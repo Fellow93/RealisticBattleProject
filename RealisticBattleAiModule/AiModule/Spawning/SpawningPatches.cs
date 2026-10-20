@@ -392,6 +392,85 @@ namespace RBMAI.AiModule
             }
         }
 
+        // Stops a reinforcement wave from leaving a handful of the player's men in a new formation.
+        // Vanilla classifies each formation from a snapshot plus the men already given to it in this
+        // batch, and once one class passes 50% it forgets every other class there. So when cavalry of
+        // the wave tip a mixed horse formation over 50%, the rest of the wave's horse archers rank it
+        // below an empty slot and open a new formation of ~5 men (bigger RBM waves make it more common).
+        // AI teams are re-sorted by ManageFormationCounts; a commanding player's formations never are.
+        // A man vanilla sends to an EMPTY formation of the player's team goes instead to the player's
+        // formation holding the most men of his troop class, if that class is >= 25% of it (vanilla's
+        // Common threshold, so a lone archer in an infantry line does not pull the archers in).
+        // Troop class, not physical class, so horse archers out of ammo still count as horse archers.
+        [HarmonyPatch(typeof(MissionReinforcementsHelper), nameof(MissionReinforcementsHelper.GetReinforcementAssignments))]
+        private class PlayerReinforcementNoStrayFormationPatch
+        {
+            private const float MinClassShare = 0.25f;
+
+            private static void Postfix(BattleSideEnum battleSide, List<(IAgentOriginBase origin, int formationIndex)> __result)
+            {
+                Mission mission = Mission.Current;
+                Team playerTeam = mission?.PlayerTeam;
+                if (__result == null || __result.Count == 0 || playerTeam == null || playerTeam.Side != battleSide)
+                {
+                    return;
+                }
+                try
+                {
+                    // One target per (troop class, empty formation), so the men stay together.
+                    var redirects = new Dictionary<(FormationClass, int), int>();
+                    for (int i = 0; i < __result.Count; i++)
+                    {
+                        var (origin, formationIndex) = __result[i];
+                        if (origin?.Troop == null || Mission.GetAgentTeam(origin, true) != playerTeam)
+                        {
+                            continue;
+                        }
+                        if (playerTeam.GetFormation((FormationClass)formationIndex).CountOfUnits > 0)
+                        {
+                            continue;
+                        }
+                        FormationClass troopClass = mission.GetAgentTroopClass(battleSide, origin.Troop).FallbackClass();
+                        if (!redirects.TryGetValue((troopClass, formationIndex), out int target))
+                        {
+                            target = FindHomeFormation(mission, playerTeam, battleSide, troopClass);
+                            redirects[(troopClass, formationIndex)] = target;
+                        }
+                        if (target >= 0)
+                        {
+                            __result[i] = (origin, target);
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    // Keep vanilla's assignments on any surprise.
+                }
+            }
+
+            private static int FindHomeFormation(Mission mission, Team team, BattleSideEnum side, FormationClass troopClass)
+            {
+                int best = -1;
+                int bestCount = 0;
+                foreach (Formation formation in team.FormationsIncludingEmpty)
+                {
+                    int total = formation.CountOfUnits;
+                    if (total == 0 || formation.GetReadonlyMovementOrderReference().OrderEnum == MovementOrder.MovementOrderEnum.Retreat)
+                    {
+                        continue;
+                    }
+                    int count = formation.GetCountOfUnitsWithCondition(agent =>
+                        agent.Character != null && mission.GetAgentTroopClass(side, agent.Character).FallbackClass() == troopClass);
+                    if (count > bestCount && count >= total * MinClassShare)
+                    {
+                        best = (int)formation.FormationIndex;
+                        bestCount = count;
+                    }
+                }
+                return best;
+            }
+        }
+
         [HarmonyPatch(typeof(SandBoxSiegeMissionSpawnHandler))]
         private class OverrideSandBoxSiegeMissionSpawnHandler
         {

@@ -17,6 +17,7 @@
 - **Shield walls move faster:**
   - A charging shield wall walks only within about 30 m of the enemy. Its men further back, such as a fresh reinforcement wave, move at full charge speed instead of walking the whole way at half speed.
   - A spread-out shield wall or square advancing in formation now moves at half the running speed of its slower men instead of 0.3 of it, which was a crawl of about 1 m/s.
+- **No more stray reinforcement formations:** your reinforcements no longer leave a handful of men (often ~5 horse archers) in a new formation of their own when you already have a formation of their type. They now join your existing formation that holds the most men of their troop type (when that type is at least a quarter of it). A brand-new formation still opens only when none of yours holds that troop type. This was a vanilla quirk that RBM's larger waves made more common.
 - **Holding infantry turns to face cavalry:**
   - AI infantry that stands in a shield wall against cavalry instead of charging (for example when only enemy cavalry is left, or your own infantry under delegated command) now turns to keep facing the cavalry as it rides around. Before, the line stayed facing the way it was when it stopped, so cavalry could simply ride around behind it.
   - When it stops holding, it goes back to facing the enemy instead of staying locked on the cavalry's last direction.
