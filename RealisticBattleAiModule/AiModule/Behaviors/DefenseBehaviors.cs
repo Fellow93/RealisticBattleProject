@@ -12,9 +12,9 @@ using static TaleWorlds.MountAndBlade.HumanAIComponent;
 namespace RBMAI
 {
     /// <summary>Facing of a holding infantry line (Defend, HoldHighGround, Regroup; other formations are left
-    /// alone). Their target comes from
-    /// FindSignificantEnemy without cavalry, so the line kept facing the enemy foot while horsemen rode round
-    /// behind it. While nothing is in contact with that front, a closer melee cavalry formation takes over.</summary>
+    /// alone). A defending side's infantry faces the enemy's main infantry as it approaches. Otherwise the target
+    /// comes from FindSignificantEnemy without cavalry, so the line kept facing the enemy foot while horsemen rode
+    /// round behind it; while nothing is in contact with that front, a closer melee cavalry formation takes over.</summary>
     internal static class HoldFacing
     {
         /// <summary>Gap (m) between the two formations' edges that still counts as the front being in contact.</summary>
@@ -26,6 +26,15 @@ namespace RBMAI
             if (!formation.QuerySystem.IsInfantryFormation)
             {
                 return frontDirection;
+            }
+            if (formation.Team.Side == BattleSideEnum.Defender)
+            {
+                Formation mainInfantry = FindEnemyMainInfantry(formation);
+                if (mainInfantry != null)
+                {
+                    Vec2 toMain = RBMAI.Utilities.GetFormationCenter(mainInfantry) - RBMAI.Utilities.GetFormationCenter(formation);
+                    return toMain.IsNonZero() ? toMain.Normalized() : frontDirection;
+                }
             }
             float frontDistance = RBMAI.Utilities.GetFormationDistance(formation, frontEnemy);
             if (frontDistance < (formation.Depth + frontEnemy.Depth) * 0.5f + FrontContactMargin)
@@ -60,6 +69,35 @@ namespace RBMAI
             }
             Vec2 direction = RBMAI.Utilities.GetFormationCenter(closestCavalry) - RBMAI.Utilities.GetFormationCenter(formation);
             return direction.IsNonZero() ? direction.Normalized() : frontDirection;
+        }
+
+        // The enemy's main infantry: its AI main formation if that is infantry, else its largest infantry formation.
+        private static Formation FindEnemyMainInfantry(Formation formation)
+        {
+            Formation largest = null;
+            foreach (Team team in Mission.Current.Teams)
+            {
+                if (!team.IsEnemyOf(formation.Team))
+                {
+                    continue;
+                }
+                foreach (Formation enemy in team.FormationsIncludingEmpty)
+                {
+                    if (enemy.CountOfUnits <= 0 || !enemy.QuerySystem.IsInfantryFormation)
+                    {
+                        continue;
+                    }
+                    if (enemy.AI != null && enemy.AI.IsMainFormation)
+                    {
+                        return enemy;
+                    }
+                    if (largest == null || enemy.CountOfUnits > largest.CountOfUnits)
+                    {
+                        largest = enemy;
+                    }
+                }
+            }
+            return largest;
         }
     }
 
