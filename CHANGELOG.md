@@ -9,6 +9,13 @@
 - **No more "magnet" shields in custom battles:** in custom battles a raised shield caught arrows and other missiles in a large invisible zone around it (the base game's catch size), so missiles that would have missed were pulled into it. It now catches only what actually hits it, as in the campaign.
 
 ### AI
+- **Small infantry forces no longer split into tiny groups:**
+  - The AI only splits off infantry flank guards when it has at least 100 melee infantry. With fewer, all of them stay in the main line. Before, even 8 infantry were split into 6 plus two one-man "flank guards" that wandered off alone.
+  - Fixed defending infantry standing still in a crowd (also your own infantry under delegated command, F6): with 3 to 11 infantry the defending AI split them, merged the lone flank men straight back, and then split them again every second, so the line never got going.
+  - When a mounted commander or the last cavalry died, the infantry that the game moved into the empty cavalry formation became a fourth group of its own, still acting on the old cavalry orders. Those men are now dealt into the main line and the flanks like the rest of the infantry.
+- **Less weapon swapping for troops with a polearm and throwing weapons:**
+  - AI soldiers on foot who carry throwing weapons no longer have their spear pushed on them while their target is at throwing distance (6–25 m), so they throw and then close in. Before, they swapped spear and throwing weapon back and forth every second and hardly ever threw.
+  - A soldier with a shield now only switches from his polearm to a one-handed sidearm in close combat. A two-handed weapon (like a berserker's two-handed axe next to his spear) no longer counts as his sidearm, so he no longer puts his shield away to switch to it.
 - **Reinforcements link up with the men already fighting:**
   - The rally after a reinforcement wave no longer pulls back men who are still in melee, and no longer turns the rest of them away from the fight to run back toward the wave. A formation whose survivors are still fighting doesn't rally at all.
   - A rally now ends once the men who aren't fighting have closed up, instead of always running its full 45 seconds.

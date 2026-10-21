@@ -54,6 +54,7 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
                     leftSlot.ApplyActionOnEachUnitViaBackupList((Agent a) => allInfantry.Add(a));
                 if (rightSlot.CountOfUnits > 0)
                     rightSlot.ApplyActionOnEachUnitViaBackupList((Agent a) => allInfantry.Add(a));
+                List<Formation> strayFormations = CollectStrayInfantry(flankingSlots, leftSlot, rightSlot, allInfantry);
                 int infCount = allInfantry.Count;
 
                 // Classify: 2H axe/polearm wielders are flankers, rest are main line
@@ -74,12 +75,14 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
                 bool doReassign = !RBMAI.Tactics.IsFormationReshufflingUnsafe || !_membershipSplitDone;
                 if (doReassign)
                 {
+                    int leftEnd = ShouldSplit(infCount) ? infCount / 6 : 0;
+                    int rightEnd = ShouldSplit(infCount) ? infCount / 3 : 0;
                     int j = 0;
                     foreach (Agent agent in flankersList)
                     {
-                        if (j < infCount / 6)
+                        if (j < leftEnd)
                             agent.Formation = leftSlot;
-                        else if (j < infCount / 3)
+                        else if (j < rightEnd)
                             agent.Formation = rightSlot;
                         else
                             agent.Formation = _mainInfantry;
@@ -87,9 +90,9 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
                     }
                     foreach (Agent agent in mainList)
                     {
-                        if (j < infCount / 6)
+                        if (j < leftEnd)
                             agent.Formation = leftSlot;
-                        else if (j < infCount / 3)
+                        else if (j < rightEnd)
                             agent.Formation = rightSlot;
                         else
                             agent.Formation = _mainInfantry;
@@ -118,6 +121,8 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
                     this.Team.TriggerOnFormationsChanged(leftSlot);
                     this.Team.TriggerOnFormationsChanged(rightSlot);
                     this.Team.TriggerOnFormationsChanged(_mainInfantry);
+                    foreach (Formation stray in strayFormations)
+                        this.Team.TriggerOnFormationsChanged(stray);
                 }
             }
         }
@@ -150,6 +155,40 @@ public class RBMTacticAttackSplitInfantry : TacticComponent
         _rangedCavalry = ChooseAndSortByPriority(nonEmptyFormations, (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 
         IsTacticReapplyNeeded = true;
+    }
+
+    // With fewer melee infantry than this there are no flank guards: everyone stays in the main line (USER RULE
+    // 2026-10-21). With 8 infantry the split made two one-man guards, which wandered off alone (attack); the
+    // defending split's singleton merge then emptied them at once, so the tactic saw an empty flank and re-split
+    // the whole infantry every tick.
+    internal const int MinInfantryToSplit = 100;
+
+    internal static bool ShouldSplit(int infCount)
+    {
+        return infCount >= MinInfantryToSplit;
+    }
+
+    // Native ManageFormationCounts fills ANY formation that reads as infantry, an empty one included (e.g. the slot
+    // of a cavalry commander who died), but the split only re-deals the main and the two flank slots. Such a third
+    // infantry slot kept its men and its old behavior weights for the rest of the battle: a fourth group of its own.
+    // Its foot men are added to the split. A formation the player ordered to dismount stays together.
+    internal static List<Formation> CollectStrayInfantry(List<Formation> flankingSlots, Formation leftSlot, Formation rightSlot, List<Agent> allInfantry)
+    {
+        List<Formation> strays = new List<Formation>();
+        foreach (Formation f in flankingSlots)
+        {
+            if (f == leftSlot || f == rightSlot || f.CountOfUnits == 0 || f.RidingOrder.OrderEnum == RidingOrder.RidingOrderEnum.Dismount)
+            {
+                continue;
+            }
+            f.ApplyActionOnEachUnitViaBackupList((Agent a) =>
+            {
+                if (!a.HasMount)
+                    allInfantry.Add(a);
+            });
+            strays.Add(f);
+        }
+        return strays;
     }
 
     // An EMPTY formation reads as infantry (every unit ratio is 0, and IsInfantryFormation is ratio >= ratio),

@@ -59,6 +59,7 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
                     leftSlot.ApplyActionOnEachUnitViaBackupList((Agent a) => allInfantry.Add(a));
                 if (rightSlot.CountOfUnits > 0)
                     rightSlot.ApplyActionOnEachUnitViaBackupList((Agent a) => allInfantry.Add(a));
+                List<Formation> strayFormations = RBMTacticAttackSplitInfantry.CollectStrayInfantry(flankingSlots, leftSlot, rightSlot, allInfantry);
                 int infCount = allInfantry.Count;
 
                 // Classify: 2H axe/polearm wielders are flankers, rest are main line
@@ -76,12 +77,15 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
 
                 if (doReassign)
                 {
+                    bool split = RBMTacticAttackSplitInfantry.ShouldSplit(infCount);
+                    int leftEnd = split ? infCount / 6 : 0;
+                    int rightEnd = split ? infCount / 3 : 0;
                     int j = 0;
                     foreach (Agent agent in flankersList)
                     {
-                        if (j < infCount / 6)
+                        if (j < leftEnd)
                             agent.Formation = leftSlot;
-                        else if (j < infCount / 3)
+                        else if (j < rightEnd)
                             agent.Formation = rightSlot;
                         else
                             agent.Formation = _mainInfantry;
@@ -89,9 +93,9 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
                     }
                     foreach (Agent agent in mainList)
                     {
-                        if (j < infCount / 6)
+                        if (j < leftEnd)
                             agent.Formation = leftSlot;
-                        else if (j < infCount / 3)
+                        else if (j < rightEnd)
                             agent.Formation = rightSlot;
                         else
                             agent.Formation = _mainInfantry;
@@ -120,6 +124,8 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
                     this.Team.TriggerOnFormationsChanged(leftSlot);
                     this.Team.TriggerOnFormationsChanged(rightSlot);
                     this.Team.TriggerOnFormationsChanged(_mainInfantry);
+                    foreach (Formation stray in strayFormations)
+                        this.Team.TriggerOnFormationsChanged(stray);
                 }
             }
         }
@@ -165,6 +171,16 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
                     });
                 }
             }
+        }
+        // A flank the merge above just emptied is no flank: kept, CheckAndSetAvailableFormationsChanged saw it empty
+        // and re-split the infantry on every tick.
+        if (_leftFlankingInfantry != null && _leftFlankingInfantry.CountOfUnits == 0)
+        {
+            _leftFlankingInfantry = null;
+        }
+        if (_rightFlankingInfantry != null && _rightFlankingInfantry.CountOfUnits == 0)
+        {
+            _rightFlankingInfantry = null;
         }
 
         IsTacticReapplyNeeded = true;

@@ -44,6 +44,12 @@ namespace RBMAI
             // Agent -> CarriesPolearmAndSidearm, valid while the four weapon slots hold the same items. Walking every
             // usage of every carried item was most of this check's cost, and the slots only change on a pickup or drop.
             public static readonly Dictionary<Agent, LoadoutCache> loadoutCache = new Dictionary<Agent, LoadoutCache>();
+            // Agents on foot whose target is at throwing distance while they carry throwing weapons: no polearm favour
+            // for them, so the engine's own choice (throw, then close in) stands. With the favour on, the AI swapped
+            // spear <-> throwing axe every second from 190 m down to 5 m and hardly ever threw.
+            public static readonly HashSet<Agent> throwWindow = new HashSet<Agent>();
+            private const float ThrowWindowMin = 6f;
+            private const float ThrowWindowMax = 25f;
 
             public struct LoadoutCache
             {
@@ -81,19 +87,33 @@ namespace RBMAI
                 return false;
             }
 
+            // A shield carrier's sidearm must be usable one-handed: favouring a two-hander (a berserker's 2H axe next
+            // to his spear) made him put the shield away to fight, and the engine then kept swapping back to it.
             private static bool CarriesPolearmAndSidearm(Agent agent)
             {
                 bool polearm = false;
                 bool sidearm = false;
+                bool oneHandedSidearm = false;
+                bool shield = false;
                 for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.ExtraWeaponSlot; i++)
                 {
                     MissionWeapon weapon = agent.Equipment[i];
-                    if (weapon.IsEmpty || weapon.Item == null || IsThrowable(weapon.Item))
+                    if (weapon.IsEmpty || weapon.Item == null)
+                    {
+                        continue;
+                    }
+                    if (weapon.Item.ItemType == ItemObject.ItemTypeEnum.Shield)
+                    {
+                        shield = true;
+                        continue;
+                    }
+                    if (IsThrowable(weapon.Item))
                     {
                         continue;
                     }
                     bool itemIsPolearm = false;
                     bool itemIsMelee = false;
+                    bool itemIsOneHanded = false;
                     foreach (WeaponComponentData usage in weapon.Item.Weapons)
                     {
                         if (usage.IsMeleeWeapon)
@@ -103,12 +123,47 @@ namespace RBMAI
                             {
                                 itemIsPolearm = true;
                             }
+                            if (usage.IsOneHanded)
+                            {
+                                itemIsOneHanded = true;
+                            }
                         }
                     }
                     polearm |= itemIsPolearm;
                     sidearm |= itemIsMelee && !itemIsPolearm;
+                    oneHandedSidearm |= itemIsMelee && !itemIsPolearm && itemIsOneHanded;
                 }
-                return polearm && sidearm;
+                return polearm && (shield ? oneHandedSidearm : sidearm);
+            }
+
+            // A thrown weapon with something left to throw.
+            private static bool CarriesThrowingAmmo(Agent agent)
+            {
+                for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.ExtraWeaponSlot; i++)
+                {
+                    MissionWeapon weapon = agent.Equipment[i];
+                    if (!weapon.IsEmpty && weapon.Amount > 0 && SignatureWeaponGrip.IsThrowingWeapon(weapon.Item))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // On foot, with throwing weapons and his target at throwing distance (SignatureWeaponGrip's window).
+            private static bool IsInThrowWindow(Agent agent)
+            {
+                if (agent.HasMount || !CarriesThrowingAmmo(agent))
+                {
+                    return false;
+                }
+                Agent target = agent.GetTargetAgent();
+                if (target == null || !target.IsActive())
+                {
+                    return false;
+                }
+                float distance = agent.Position.Distance(target.Position);
+                return distance >= ThrowWindowMin && distance <= ThrowWindowMax;
             }
 
             private static ItemObject SlotItem(Agent agent, EquipmentIndex index)
@@ -168,6 +223,7 @@ namespace RBMAI
                 {
                     enemyCloseSince.Remove(agent);
                     lastEnemyCloseTime.Remove(agent);
+                    throwWindow.Remove(agent);
                     if (enemyClose.Remove(agent))
                     {
                         agent.UpdateAgentProperties();
@@ -200,7 +256,9 @@ namespace RBMAI
                 {
                     close = enemyCloseSince.TryGetValue(agent, out float since) && currentTime - since >= SidearmDelay;
                 }
-                if (!enemyClose.ContainsKey(agent) || wasClose != close)
+                bool inThrowWindow = !close && IsInThrowWindow(agent);
+                bool throwWindowChanged = inThrowWindow ? throwWindow.Add(agent) : throwWindow.Remove(agent);
+                if (!enemyClose.ContainsKey(agent) || wasClose != close || throwWindowChanged)
                 {
                     enemyClose[agent] = close;
                     agent.UpdateAgentProperties();
@@ -217,7 +275,7 @@ namespace RBMAI
                 {
                     agentDrivenProperties.AiWeaponFavorMultiplierMelee = SidearmFavor;
                 }
-                else
+                else if (!throwWindow.Contains(agent))
                 {
                     agentDrivenProperties.AiWeaponFavorMultiplierPolearm = PolearmFavor;
                 }

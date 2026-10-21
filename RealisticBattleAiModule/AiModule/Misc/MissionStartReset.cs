@@ -80,6 +80,7 @@ namespace RBMAI
             AgentAi.WeaponPreference.nextCheck.Clear();
             AgentAi.WeaponPreference.enemyCloseSince.Clear();
             AgentAi.WeaponPreference.lastEnemyCloseTime.Clear();
+            AgentAi.WeaponPreference.throwWindow.Clear();
             AgentAi.RangedReachGate.holding.Clear();
             AgentAi.RangedReachGate.nextCheck.Clear();
             AgentAi.RangedReachGate.checkedTarget.Clear();
