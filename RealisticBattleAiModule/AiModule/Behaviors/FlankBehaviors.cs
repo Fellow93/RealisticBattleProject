@@ -21,25 +21,12 @@ namespace RBMAI
             Returning
         }
 
-        // Cavalry flank guard sorties. The guard used to charge the closest enemy formation of any kind (or anything
-        // at all once arrows landed) with a plain ChargeToTarget and only came back when the formation's AVERAGE
-        // position was 80 m from its post. A charge order scatters riders onto individual targets and the average of
-        // a scattered formation stays near the middle, so before the main lines even met the riders were chasing
-        // cavalry and infantry over the whole field, then charged again the moment they got back. Now a sortie is
-        // bounded:
-        //  - Trigger: enemy melee cavalry within CavThreatDistance of the hold point, or any enemy formation within
-        //    CloseThreatDistance. Horse archers and ranged fire no longer pull them out at range (under fire the hold
-        //    point already tucks in beside the main line, see CalculateCurrentOrder).
-        //  - Recall: the target is gone or has left ReleaseDistance, the formation centre is past SortieLeash, more
-        //    than ScatterRecallRatio of the riders are past it, or MaxSortieSeconds ran out.
-        //  - Returning ends once ReturnGatherRatio of the riders are back at the post (or ReturnTimeoutSeconds), then
-        //    ReengageCooldownSeconds of holding before the next sortie, unless an enemy is right on top of them.
-        // Guarding the post alone left the foot it is there to cover open: enemy cavalry and horse archers working the
-        // infantry from the front or the far end of the line never came near the post. So a rested guard also sorties
-        // against enemy melee cavalry within HarassCavDistance, or horse archers within HarassHorseArcherDistance, of
-        // the edge of any friendly foot formation (on its own side of the main line when the other flank is guarded).
-        // Such a sortie is leashed to the formation it protects as well as to the post, and is recalled once the
-        // harasser is HarassReleaseDistance clear of it.
+        // Cavalry flank guard sorties, bounded:
+        //  - Trigger: enemy melee cavalry within CavThreatDistance of the hold point, or any enemy formation within CloseThreatDistance.
+        //  - Recall: target gone / beyond ReleaseDistance, centre past SortieLeash, > ScatterRecallRatio of riders past it, or MaxSortieSeconds.
+        //  - Return ends at ReturnGatherRatio back at the post (or ReturnTimeoutSeconds), then ReengageCooldownSeconds of holding.
+        //  - A rested guard also sorties at harassers (melee cavalry / horse archers) near any friendly foot formation's edge,
+        //    leashed to that formation and the post, recalled at HarassReleaseDistance.
         private const float CavThreatDistance = 70f;
         private const float CloseThreatDistance = 35f;
         private const float ReleaseDistance = 100f;
@@ -54,6 +41,7 @@ namespace RBMAI
         private const float HarassHorseArcherDistance = 90f;
         private const float HarassReleaseDistance = 110f;
         private const float ProtectLeash = 50f;
+        private const float InfantryGuardMeleeRatio = 0.15f;
 
         internal class FlankSortieState
         {
@@ -66,6 +54,26 @@ namespace RBMAI
         }
 
         internal static readonly Dictionary<Formation, FlankSortieState> sortieStates = new Dictionary<Formation, FlankSortieState>();
+
+        // the close post under fire is held: the hit ratio rises and falls over its 10 s window, which flipped the post every ~10 s
+        private const float UnderFireEnter = 0.1f;
+        private const float UnderFireLeave = 0.02f;
+        private const float UnderFireHoldSeconds = 30f;
+
+        internal static readonly Dictionary<Formation, float> closePostUntil = new Dictionary<Formation, float>();
+
+        private static bool HoldsClosePost(Formation formation)
+        {
+            float now = Mission.Current.CurrentTime;
+            float ratio = formation.QuerySystem.UnderRangedAttackRatio;
+            closePostUntil.TryGetValue(formation, out float until);
+            if (ratio > UnderFireEnter || (ratio >= UnderFireLeave && now < until))
+            {
+                until = now + UnderFireHoldSeconds;
+                closePostUntil[formation] = until;
+            }
+            return now < until;
+        }
 
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
@@ -95,7 +103,8 @@ namespace RBMAI
             else
             {
                 Vec2 direction = ____mainFormation.Direction;
-                Vec2 v = (__instance.Formation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - RBMAI.Utilities.GetFormationCenter(____mainFormation)).Normalized();
+                bool closePost = HoldsClosePost(__instance.Formation);
+                Vec2 v =(__instance.Formation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - RBMAI.Utilities.GetFormationCenter(____mainFormation)).Normalized();
                 Vec2 vec;
                 if (____behaviorSide == FormationAI.BehaviorSide.Right || ___FlankSide == FormationAI.BehaviorSide.Right)
                 {
@@ -103,7 +112,7 @@ namespace RBMAI
                     vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                     vec += ____mainFormation.Direction * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + distanceOffsetFromMainFormation);
                     position.SetVec2(vec);
-                    if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec) || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
+                    if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec) || closePost)
                     {
                         vec = ____mainFormation.CurrentPosition + v.RightVec().Normalized() * (____mainFormation.Width / 2f + __instance.Formation.Width / 2f + closerDistanceFromMainFormation);
                         vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
@@ -123,7 +132,7 @@ namespace RBMAI
                     vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
                     vec += ____mainFormation.Direction * (____mainFormation.Depth / 2f + __instance.Formation.Depth / 2f + distanceOffsetFromMainFormation);
                     position.SetVec2(vec);
-                    if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec) || __instance.Formation.QuerySystem.UnderRangedAttackRatio > 0.1f)
+                    if (position.GetNavMesh() == UIntPtr.Zero || !Mission.Current.IsPositionInsideBoundaries(vec) || closePost)
                     {
                         vec = ____mainFormation.CurrentPosition + v.LeftVec().Normalized() * (____mainFormation.Width / 2f + __instance.Formation.Width / 2f + closerDistanceFromMainFormation);
                         vec -= v * (____mainFormation.Depth + __instance.Formation.Depth);
@@ -142,8 +151,16 @@ namespace RBMAI
                     vec = ____mainFormation.CurrentPosition + v * ((____mainFormation.Depth + __instance.Formation.Depth) * 0.5f + 10f);
                     position.SetVec2(vec);
                 }
-                // Recomputed while charging too, so the sortie leash follows the main line as it advances; only a
-                // holding or returning guard takes it as its order.
+                // user rule: an infantry guard's place stays within the cohesion limit of its main line (FormationCohesion.ClampGuard; not while charging / in melee); cavalry guards ride wider
+                if (__instance.Formation.QuerySystem.IsInfantryFormation)
+                {
+                    Vec2 pulled;
+                    if (FormationCohesion.ClampGuard(__instance.Formation, ____mainFormation, position.AsVec2, direction, out pulled))
+                    {
+                        position.SetVec2(pulled);
+                    }
+                }
+                // recomputed while charging too (the sortie leash follows the main line); only a holding/returning guard takes it as its order
                 ____movementOrder = MovementOrder.MovementOrderMove(position);
                 if (____protectFlankState != BehaviorState.Charging)
                 {
@@ -170,13 +187,22 @@ namespace RBMAI
                                 FormationQuerySystem closestFormation = __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
                                 if (closestFormation != null && closestFormation.Formation != null && (closestFormation.Formation.QuerySystem.IsInfantryFormation || closestFormation.Formation.QuerySystem.IsRangedFormation || closestFormation.Formation.QuerySystem.IsCavalryFormation))
                                 {
-                                    //float changeToChargeDistance = 30f + (__instance.Formation.Depth + closestFormation.Formation.Depth) / 2f;
-                                    //if (closestFormation.Formation.QuerySystem.Formation.CachedMedianPosition.AsVec2.DistanceSquared(position) < changeToChargeDistance * changeToChargeDistance)
-                                    //{
-                                    //    ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(closestFormation.Formation);
-                                    //    ____currentOrder = ____chargeToTargetOrder;
-                                    //    ____protectFlankState = BehaviorState.Charging;
-                                    //}
+                                    // infantry guard charges the closest enemy at InfantryGuardMeleeRatio in melee or significant enemy foot within CloseThreatDistance; Charging recalls it past 40 m from its post
+                                    Formation guard = __instance.Formation;
+                                    Formation enemy = closestFormation.Formation;
+                                    bool melee = RBMAI.Utilities.FormationFightingInMelee(guard, InfantryGuardMeleeRatio);
+                                    bool footClose = false;
+                                    if (!melee && !enemy.QuerySystem.IsCavalryFormation && !enemy.QuerySystem.IsRangedCavalryFormation
+                                        && ThreatSignificance.IsSignificant(guard, enemy))
+                                    {
+                                        footClose = FormationGeometry.Gap(guard, FootprintMode.Current, enemy, FootprintMode.ScatterAware) < CloseThreatDistance;
+                                    }
+                                    if (melee || footClose)
+                                    {
+                                        ____chargeToTargetOrder = MovementOrder.MovementOrderChargeToTarget(enemy);
+                                        ____currentOrder = ____chargeToTargetOrder;
+                                        ____protectFlankState = BehaviorState.Charging;
+                                    }
                                 }
                                 break;
                             }
@@ -225,12 +251,13 @@ namespace RBMAI
                                 FormationQuerySystem closestFormation = formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation;
                                 if (closestFormation != null && closestFormation.Formation != null)
                                 {
-                                    float depths = (formation.Depth + closestFormation.Formation.Depth) / 2f;
-                                    float distanceSq = RBMAI.Utilities.GetFormationCenter(closestFormation.Formation).DistanceSquared(position);
-                                    float closeDistance = CloseThreatDistance + depths;
-                                    float cavDistance = CavThreatDistance + depths;
-                                    bool closeThreat = distanceSq < closeDistance * closeDistance;
-                                    bool cavThreat = closestFormation.IsCavalryFormation && distanceSq < cavDistance * cavDistance;
+                                    // the guard's footprint at its post (the order position is its front-centre)
+                                    Footprint post = FormationGeometry.AtFront(formation, position, formation.Direction);
+                                    Footprint enemyShape;
+                                    float gap = FormationGeometry.TryGet(closestFormation.Formation, FootprintMode.ScatterAware, out enemyShape)
+                                        ? FormationGeometry.Gap(post, enemyShape) : float.MaxValue;
+                                    bool closeThreat = gap < CloseThreatDistance;
+                                    bool cavThreat = closestFormation.IsCavalryFormation && gap < CavThreatDistance;
                                     if (closeThreat || (cavThreat && rested))
                                     {
                                         target = closestFormation.Formation;
@@ -279,8 +306,7 @@ namespace RBMAI
             return true;
         }
 
-        // A guard found already Charging/Returning with no record (behavior re-activated, state left over from an
-        // earlier activation) gets a fresh record: no target, so a stale charge is recalled on the spot.
+        // a guard found Charging/Returning with no record gets a fresh one (no target: a stale charge is recalled at once)
         private static FlankSortieState GetSortieState(Formation formation, float now)
         {
             if (!sortieStates.TryGetValue(formation, out FlankSortieState sortie))
@@ -326,8 +352,7 @@ namespace RBMAI
             return 1f - RiderRatioWithin(formation, holdPoint, leash, protectedFormation, protectLeash) > ScatterRecallRatio;
         }
 
-        // Counted over every rider rather than read off the average position, which a scattered formation keeps
-        // near the middle. A rider within protectRadius of the protected formation's edge counts as near too.
+        // counted over every rider (the average position of a scattered formation stays mid-field); within protectRadius of the protected edge counts as near
         private static float RiderRatioWithin(Formation formation, Vec2 point, float radius, Formation protectedFormation = null, float protectRadius = 0f)
         {
             float radiusSq = radius * radius;
@@ -349,9 +374,7 @@ namespace RBMAI
             return total > 0 ? (float)near / total : 1f;
         }
 
-        // The enemy cavalry or horse archer formation closest to the guard that is working a friendly foot formation.
-        // With sideSign set (+1 right, -1 left of the main line facing the enemy), harassers clearly on the far side
-        // of the main line are left to the other flank's guard, if there is one.
+        // closest enemy cavalry / horse archer formation working a friendly foot formation; with sideSign (+1 right, -1 left) harassers clearly on the far side are left to the other guard
         private static Formation FindHarasser(Formation guard, Formation mainFormation, int sideSign, out Formation protectedFormation)
         {
             protectedFormation = null;
@@ -434,15 +457,11 @@ namespace RBMAI
             return false;
         }
 
-        // Distance from a point to the formation's footprint (0 inside it), so a long line is threatened along its
-        // whole length rather than only near its centre.
+        // distance from a point to the formation's footprint (0 inside it)
         private static float DistanceToFormationBox(Formation formation, Vec2 point)
         {
-            Vec2 local = point - RBMAI.Utilities.GetFormationCenter(formation);
-            Vec2 direction = formation.Direction;
-            float across = Math.Max(0f, Math.Abs(local.DotProduct(direction.RightVec())) - formation.Width * 0.5f);
-            float along = Math.Max(0f, Math.Abs(local.DotProduct(direction)) - formation.Depth * 0.5f);
-            return (float)Math.Sqrt(across * across + along * along);
+            Footprint shape;
+            return FormationGeometry.TryGet(formation, FootprintMode.Current, out shape) ? FormationGeometry.GapToPoint(shape, point) : float.MaxValue;
         }
 
         [HarmonyPostfix]

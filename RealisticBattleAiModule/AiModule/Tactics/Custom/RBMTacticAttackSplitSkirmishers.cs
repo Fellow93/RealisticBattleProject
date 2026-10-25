@@ -12,15 +12,13 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
     private int side = MBRandom.RandomInt(2);
     private int waitCountMainFormation = 0;
     private int waitCountMainFormationMax = 25;
-    // A man counts as a skirmisher while he holds MORE than this many javelins. Shared by the
-    // tactic weight and the split so the tactic is only chosen for men it will actually split off.
+    // A man is a skirmisher while he holds MORE than this many javelins (shared by tactic weight and split).
     private const float SkirmisherJavelinThreshold = 2f;
 
     protected void AssignTacticFormations()
     {
         ManageFormationCounts(2, 1, 2, 1);
 
-        // Materialize immediately — lazy re-evaluation after agent moves gives inconsistent results
         List<Formation> nonEmptyFormations = FormationsIncludingEmpty
             .Where((Formation f) => f.CountOfUnits > 0).ToList();
 
@@ -32,25 +30,18 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             _mainInfantry.AI.IsMainFormation = true;
             _mainInfantry.AI.Side = FormationAI.BehaviorSide.Middle;
 
-            // ManageFormationCounts(2,...) reserves two infantry slots (indices 0 and 1).
-            // The second slot is often empty (all units share FormationClass.Infantry and land in slot 0).
-            // We must search FormationsIncludingEmpty — not just non-empty formations — to find it.
+            // The second reserved infantry slot is often empty: search FormationsIncludingEmpty to find it.
             Formation skirmisherSlot = FormationsIncludingEmpty.FirstOrDefault((Formation f) => f != _mainInfantry && f.IsAIControlled && f.QuerySystem.IsInfantryFormation);
 
-            // ChooseAndSortByPriority only PREFERS AI-controlled formations, it does not exclude
-            // player-controlled ones — never reshuffle men the player commands.
+            // ChooseAndSortByPriority only prefers AI formations: never reshuffle player-commanded men.
             if (skirmisherSlot != null && _mainInfantry.IsAIControlled)
             {
-                // Collect agents from the two known infantry slots directly.
-                // Avoid IsInfantryFormation check — QuerySystem can be stale right after
-                // ManageFormationCounts, causing the main slot to be skipped and giving a
-                // near-empty allInfantry list (which shrinks skirmTarget to 1–2).
+                // Read the two infantry slots directly: QuerySystem can be stale right after ManageFormationCounts.
                 List<Agent> allInfantry = new List<Agent>();
                 _mainInfantry.ApplyActionOnEachUnitViaBackupList((Agent a) => allInfantry.Add(a));
                 if (skirmisherSlot.CountOfUnits > 0)
                     skirmisherSlot.ApplyActionOnEachUnitViaBackupList((Agent a) => allInfantry.Add(a));
 
-                // Separate actual skirmishers (javelin users) from melee
                 List<Agent> skirmishersList = new List<Agent>();
                 List<Agent> meleeList = new List<Agent>();
                 foreach (Agent agent in allInfantry)
@@ -61,15 +52,11 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
                         meleeList.Add(agent);
                 }
 
-                // Skirmisher slot gets actual skirmishers (javelin users), capped at 20% of all
-                // infantry; the rest (and all melee) stay in the main infantry formation.
-                // Weakest first, so the strongest javelineers are the ones kept in the main line
-                // once the cap is reached.
+                // Skirmisher slot: javelin users capped at 20% of infantry, weakest first.
                 int skirmCap = Math.Max(1, (int)(allInfantry.Count * 0.2f));
                 skirmishersList = skirmishersList.OrderBy((Agent o) => o.CharacterPowerCached).ToList();
 
-                // Under BattleMiniMap (IsFormationReshufflingUnsafe) the physical agent moves are done
-                // ONCE; afterwards we keep refreshing refs/weights but never reshuffle again.
+                // Under BattleMiniMap (IsFormationReshufflingUnsafe) the agent moves happen once, never again.
                 bool doReassign = !RBMAI.Tactics.IsFormationReshufflingUnsafe || !_membershipSplitDone;
                 if (doReassign)
                 {
@@ -99,10 +86,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
                     _membershipSplitDone = true;
                 }
 
-                // Behaviors are only added to a formation when it receives its first unit
-                // (TeamAIGeneral.OnUnitAddedToFormationForTheFirstTime). A slot that never got a
-                // javelineer (none found, or the split was skipped) has an empty behavior list,
-                // and SetBehaviorWeight on it throws "Behavior weight could not be set."
+                // A slot that never got a unit has no behaviors, and SetBehaviorWeight on it throws.
                 if (skirmisherSlot.CountOfUnits > 0)
                 {
                     _skirmishers = skirmisherSlot;
@@ -111,13 +95,10 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             }
         }
 
-        // Re-query after agent moves so cavalry/archer picks reflect current state
         nonEmptyFormations = FormationsIncludingEmpty
             .Where((Formation f) => f.CountOfUnits > 0).ToList();
 
-        // Exclude the skirmisher slot: a javelin formation reports IsRangedFormation == true,
-        // so it can be aliased as _archers. Once the skirmishers throw their javelins the flag
-        // flips false, CheckAndSetAvailableFormationsChanged() then re-splits every tick (lag).
+        // Exclude the skirmisher slot: a javelin formation reads as ranged until the javelins are thrown, which would re-split every tick.
         _archers = ChooseAndSortByPriority(nonEmptyFormations, (Formation f) => f.QuerySystem.IsRangedFormation && f != _skirmishers, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
         List<Formation> list = ChooseAndSortByPriority(nonEmptyFormations, (Formation f) => f.QuerySystem.IsCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower);
         if (list.Count > 0)
@@ -168,7 +149,9 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             _skirmishers.AI.ResetBehaviorWeights();
             //TacticComponent.SetDefaultBehaviorWeights(_skirmishers);
             //_skirmishers.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
-            if (side == 0)
+            // The random side gives way to TerrainFlankPlan.AttackSide.
+            FormationAI.BehaviorSide skirmishSide = TerrainFlankPlan.SkirmishSide(this, (side == 0) ? FormationAI.BehaviorSide.Left : FormationAI.BehaviorSide.Right);
+            if (skirmishSide == FormationAI.BehaviorSide.Left)
             {
                 _skirmishers.AI.Side = FormationAI.BehaviorSide.Left;
                 _skirmishers.AI.SetBehaviorWeight<RBMAI.RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Left;
@@ -178,6 +161,8 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
                 _skirmishers.AI.Side = FormationAI.BehaviorSide.Right;
                 _skirmishers.AI.SetBehaviorWeight<RBMAI.RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Right;
             }
+            // Spent skirmishers (ForwardSkirmish weighs 0) advance with the main line.
+            _skirmishers.AI.SetBehaviorWeight<BehaviorAdvance>(0.2f);
         }
         if (_mainInfantry != null)
         {
@@ -208,14 +193,14 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
         {
             _leftCavalry.AI.ResetBehaviorWeights();
             //TacticComponent.SetDefaultBehaviorWeights(_leftCavalry);
-            _leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
+            _leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = TerrainFlankPlan.CavalrySide(this, _leftCavalry, FormationAI.BehaviorSide.Left, _rightCavalry == null);
             _leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
         }
         if (_rightCavalry != null)
         {
             _rightCavalry.AI.ResetBehaviorWeights();
             //TacticComponent.SetDefaultBehaviorWeights(_rightCavalry);
-            _rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+            _rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = TerrainFlankPlan.CavalrySide(this, _rightCavalry, FormationAI.BehaviorSide.Right, false);
             _rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
         }
         if (_rangedCavalry != null)
@@ -283,7 +268,7 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
 
     private bool HasBattleBeenJoined()
     {
-        return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined, 85f);
+        return RBMAI.Utilities.HasAttackBeenJoined(_mainInfantry, Team, _hasBattleBeenJoined, 85f);
     }
 
     protected override bool CheckAndSetAvailableFormationsChanged()
@@ -361,7 +346,6 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
         float enemyInfantryPower = 0f;
         int allyInfCount = 0;
 
-        // Single pass over all teams — avoids two separate ToList() allocations
         foreach (Team team in Mission.Current.Teams)
         {
             bool isEnemy = team.IsEnemyOf(base.Team);
@@ -387,8 +371,6 @@ public class RBMTacticAttackSplitSkirmishers : TacticComponent
             return 0.01f;
         }
 
-        // Count skirmishers by iterating infantry formations only — avoids allocating
-        // Team.ActiveAgents.ToList() (large copy) and checking IsInfantryFormation per agent.
         foreach (Formation formation in base.Team.FormationsIncludingEmpty)
         {
             if (formation.CountOfUnits > 0 && formation.QuerySystem.IsInfantryFormation)

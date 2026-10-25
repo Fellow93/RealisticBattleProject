@@ -8,15 +8,27 @@ namespace RBMAI
     {
         [HarmonyPrefix]
         [HarmonyPatch("HasBattleBeenJoined")]
-        private static bool PrefixHasBattleBeenJoined(Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
+        private static bool PrefixHasBattleBeenJoined(TacticDefensiveEngagement __instance, Formation ____mainInfantry, bool ____hasBattleBeenJoined, ref bool __result)
         {
-            __result = RBMAI.Utilities.HasBattleBeenJoined(____mainInfantry, ____hasBattleBeenJoined);
+            // While the battle position's line (RBMBehaviorHoldPosition) holds, only its own latched engage.
+            __result = RBMBehaviorHoldPosition.BattleJoinedFor(____mainInfantry, __instance, ____hasBattleBeenJoined);
             return false;
+        }
+
+        /// <summary>Re-applies Defend when the battle position appears or moves.</summary>
+        [HarmonyPrefix]
+        [HarmonyPatch("TickOccasionally")]
+        private static void PrefixTickOccasionally(TacticDefensiveEngagement __instance, ref bool ___IsTacticReapplyNeeded)
+        {
+            if (TerrainBattlePosition.NeedsReapply(__instance))
+            {
+                ___IsTacticReapplyNeeded = true;
+            }
         }
 
         [HarmonyPostfix]
         [HarmonyPatch("Defend")]
-        private static void PostfixDefend(ref Formation ____archers, ref Formation ____mainInfantry, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
+        private static void PostfixDefend(TacticDefensiveEngagement __instance, ref Formation ____archers, ref Formation ____mainInfantry, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
         {
             if (____archers != null)
             {
@@ -32,12 +44,13 @@ namespace RBMAI
             if (____rightCavalry != null)
             {
                 ____rightCavalry.AI.ResetBehaviorWeights();
-                ____rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+                // Off a flank TerrainFlankPlan covers.
+                ____rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = TerrainFlankPlan.CavalrySide(__instance, ____rightCavalry, FormationAI.BehaviorSide.Right, false);
             }
             if (____leftCavalry != null)
             {
                 ____leftCavalry.AI.ResetBehaviorWeights();
-                ____leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
+                ____leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = TerrainFlankPlan.CavalrySide(__instance, ____leftCavalry, FormationAI.BehaviorSide.Left, ____rightCavalry == null);
             }
             if (____rangedCavalry != null)
             {
@@ -45,6 +58,16 @@ namespace RBMAI
                 TacticFullScaleAttack.SetDefaultBehaviorWeights(____rangedCavalry);
                 ____rangedCavalry.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
                 ____rangedCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+            }
+            // The defender's battle position (needs a published plan): infantry holds the line, archers their place, cavalry reserves when both ends are covered.
+            if (RBMBehaviorHoldPosition.TryAssign(____mainInfantry, __instance, 0, RBMBehaviorHoldPosition.Role.Line))
+            {
+                RBMBehaviorHoldPosition.TryAssign(____archers, __instance, 0, RBMBehaviorHoldPosition.Role.Archers);
+                if (TerrainBattlePosition.ReserveWanted(__instance.Team))
+                {
+                    RBMBehaviorHoldPosition.TryAssign(____leftCavalry, __instance, 0, RBMBehaviorHoldPosition.Role.Reserve);
+                    RBMBehaviorHoldPosition.TryAssign(____rightCavalry, __instance, 0, RBMBehaviorHoldPosition.Role.Reserve);
+                }
             }
         }
 

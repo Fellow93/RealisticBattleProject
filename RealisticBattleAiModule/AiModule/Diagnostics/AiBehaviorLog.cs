@@ -2,23 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
-using System.Threading;
+using RBMConfig.Logging;
 using RC = RBMConfig.RBMConfig;
 
 namespace RBMAI
 {
-    /// <summary>
-    /// The file sink behind <see cref="AiBehaviorLogic"/>: one file per mission, under logs/ai, next to the
-    /// combat module's logs/battles.
-    ///
-    /// It exists to answer one question that cannot be answered by watching a battle: why the enemy team's
-    /// infantry does one thing and the player's delegated team does another. Both are the same code path with
-    /// different inputs -- a different tactic, a different behavior winning the weight contest, a different
-    /// movement order landing on the formation. None of that is visible on screen. All of it is written here.
-    ///
-    /// Lines are buffered and flushed on the second, because a per-line append would be felt in the frame time.
-    /// </summary>
+    /// <summary>File sink behind <see cref="AiBehaviorLogic"/>: one file per mission under logs/ai, buffered, flushed each second.</summary>
     internal static class AiBehaviorLog
     {
         private static readonly object _fileLock = new object();
@@ -26,8 +15,8 @@ namespace RBMAI
 
         private static bool _fileLogFailed;
         private static string _filePath;
+        private static BufferedLogWriter _writer;
 
-        /// <summary>How many AI logs the folder keeps. The rest are deleted as a new one opens.</summary>
         private const int MaxFiles = 10;
 
         public static bool IsEnabled
@@ -40,7 +29,6 @@ namespace RBMAI
             get { return Path.Combine(RBMConfig.Utilities.GetConfigFolderPath(), "logs", "ai"); }
         }
 
-        /// <summary>The path of the file currently open, or null. Only for the header line the logic prints.</summary>
         public static string CurrentFilePath
         {
             get { return _filePath; }
@@ -50,6 +38,7 @@ namespace RBMAI
         {
             lock (_fileLock)
             {
+                CloseWriter();
                 _pending.Clear();
                 _fileLogFailed = false;
                 _filePath = null;
@@ -65,10 +54,16 @@ namespace RBMAI
                     PruneOldest();
                     _filePath = Path.Combine(LogFolderPath,
                         "ai_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".log");
-                    File.WriteAllText(_filePath, header);
+                    _writer = BufferedLogWriter.Open(_filePath);
+                    if (!_writer.Write(header))
+                    {
+                        throw new IOException("header write failed");
+                    }
+                    _writer.Flush();
                 }
                 catch
                 {
+                    CloseWriter();
                     _fileLogFailed = true;
                     _filePath = null;
                 }
@@ -87,7 +82,6 @@ namespace RBMAI
             }
         }
 
-        /// <summary>Everything held goes to the file. Called once a second by the logic, and at mission end.</summary>
         public static void Flush()
         {
             lock (_fileLock)
@@ -105,44 +99,41 @@ namespace RBMAI
                     _pending.Add(footer);
                 }
                 FlushLocked();
+                CloseWriter();
                 _filePath = null;
             }
         }
 
         private static void FlushLocked()
         {
-            if (_fileLogFailed || _filePath == null || _pending.Count == 0)
+            if (_fileLogFailed || _writer == null || _pending.Count == 0)
             {
                 return;
             }
 
-            StringBuilder sb = new StringBuilder();
             foreach (string line in _pending)
             {
-                sb.Append(line).Append(Environment.NewLine);
-            }
-            _pending.Clear();
-
-            for (int attempt = 0; attempt < 5; attempt++)
-            {
-                try
-                {
-                    File.AppendAllText(_filePath, sb.ToString());
-                    return;
-                }
-                catch (IOException)
-                {
-                    Thread.Sleep(2);
-                }
-                catch
+                if (!_writer.WriteLine(line))
                 {
                     _fileLogFailed = true;
-                    return;
+                    break;
                 }
+            }
+            _pending.Clear();
+            _writer.Flush();
+        }
+
+        // Caller holds _fileLock.
+        private static void CloseWriter()
+        {
+            if (_writer != null)
+            {
+                _writer.Close();
+                _writer = null;
             }
         }
 
-        /// <summary>Housekeeping is never a reason to lose a log: every failure here is swallowed.</summary>
+        // Failures swallowed.
         private static void PruneOldest()
         {
             try

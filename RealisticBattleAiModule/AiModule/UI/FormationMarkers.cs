@@ -16,6 +16,12 @@ namespace RBMAI
 {
     internal static class FormationMarkerPatches
     {
+        /// <summary>MissionStartReset: drops the smoothing cache's static Formations and Mission. Main thread.</summary>
+        internal static void Clear()
+        {
+            OverrideMarkerPositions.ClearSmoothing();
+        }
+
         [HarmonyPatch(typeof(MissionFormationMarkerTargetVM))]
         [HarmonyPatch("Refresh")]
         private class OverrideRefresh
@@ -54,29 +60,19 @@ namespace RBMAI
             }
         }
 
-        // Stabilizes the in-battle formation banner marker. Vanilla anchors each marker to
-        // Formation.CachedMedianPosition -- the world position of whichever single soldier is
-        // currently closest to the formation's centroid (GetMedianAgent). As units shuffle that
-        // "median" soldier flips, so the banner snaps erratically from man to man; the cached
-        // position also only refreshes on a ~75-125ms timer, which makes it step. We re-anchor
-        // to our own smoothed centroid, so it neither jumps between soldiers nor steps. The engine's
-        // SmoothedAverageUnitPosition lerps at only dt*3 toward a timer-cached average, which trails
-        // a charging cavalry formation by several metres; we instead extrapolate the cached average
-        // with the cached velocity over the cache's age and lerp toward that much faster. The engine
-        // field is left untouched because AI code reads it. The median is still used as the navmesh
-        // carrier for the ground height, matching the idiom native uses in FormationQuerySystem.
-        // Distance/DistanceText and the count are left to native.
+        // Stabilizes the formation banner marker. Vanilla anchors it to CachedMedianPosition (the single soldier nearest the
+        // centroid, flips as units shuffle, refreshed on a ~100 ms timer). We re-anchor to our own smoothed centroid, extrapolating
+        // the cached average with the cached velocity. The engine's SmoothedAverageUnitPosition is left untouched (AI code reads it);
+        // the median stays the navmesh carrier for ground height. Distance/DistanceText and the count are left to native.
         [HarmonyPatch(typeof(MissionGauntletFormationMarker))]
         [HarmonyPatch("UpdateMarkerPositions")]
         private class OverrideMarkerPositions
         {
             private static readonly Vec3 heightOffset = new Vec3(0f, 0f, 3f, -1f);
 
-            // per-second lerp rate toward the predicted centroid (engine uses 3)
-            private const float SmoothingRate = 12f;
-            // cap on how far ahead the cached velocity is extrapolated
-            private const float MaxExtrapolation = 0.25f;
-            // jumps larger than this snap instead of gliding (e.g. formation reassignment)
+            private const float SmoothingRate = 12f; // per second (engine uses 3)
+            private const float MaxExtrapolation = 0.25f; // s of cached velocity
+            // Larger jumps snap instead of gliding (e.g. formation reassignment).
             private const float SnapDistanceSq = 40f * 40f;
 
             private static readonly AccessTools.FieldRef<Formation, float> lastCacheTime =
@@ -85,6 +81,13 @@ namespace RBMAI
             private static readonly Dictionary<Formation, Vec2> smoothed = new Dictionary<Formation, Vec2>();
             private static Mission smoothedMission;
             private static float lastTickTime;
+
+            // Main thread (MissionStartReset).
+            internal static void ClearSmoothing()
+            {
+                smoothed.Clear();
+                smoothedMission = null;
+            }
 
             private static Vec2 GetMarkerAnchor(Formation f, float now, float dt)
             {

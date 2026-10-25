@@ -22,6 +22,12 @@ namespace RBMConfig
         // effect unless rbmAiEnabled and deepWaterNavBlockEnabled are on.
         public static bool deepWaterNavLoggingEnabled = false;
 
+        // Writes the battlefield terrain read (RBMAI AiModule/Terrain/BattleTerrainLogic.cs) to logs/terrain, one file
+        // per land field battle: the TERRAIN line and its TERRAIN_* companions, once after deployment. The read itself
+        // runs in every field battle with RBM AI on (BattleTerrain.Current); this only prints it. Kept under
+        // /Config/RBMAI with the AI log. No effect unless rbmAiEnabled is on.
+        public static bool battleTerrainLoggingEnabled = false;
+
         // Prints the blunt trauma and armor penetration of every blow the player deals or takes to the message log.
         public static bool armorPenetrationMessage = false;
 

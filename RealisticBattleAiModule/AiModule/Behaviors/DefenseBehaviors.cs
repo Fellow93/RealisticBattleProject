@@ -110,6 +110,14 @@ namespace RBMAI
         [HarmonyPatch("CalculateCurrentOrder")]
         private static void PostfixCalculateCurrentOrder(ref BehaviorDefend __instance, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref FacingOrder ___CurrentFacingOrder)
         {
+            // Gap fix 2026-10-22 (as OverrideBehaviorHoldHighGround): the stored point is committed per activation - dropped
+            // while Defend is not the active behavior and stored only by the active one - so an activation with the enemy
+            // already under 200 m no longer moves to (0,0) (no entry) or to a stale point from an earlier activation.
+            bool active = __instance.Formation != null && __instance.Formation.AI != null && __instance.Formation.AI.ActiveBehavior == __instance;
+            if (!active && __instance.Formation != null)
+            {
+                positionsStorage.Remove(__instance.Formation);
+            }
             if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
             {
                 WorldPosition medianPositionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
@@ -123,8 +131,16 @@ namespace RBMAI
                     enemyDirection = HoldFacing.Direction(__instance.Formation, significantEnemy, enemyDirection);
                     if (distance < (200f))
                     {
-                        WorldPosition newPosition = WorldPosition.Invalid;
-                        positionsStorage.TryGetValue(__instance.Formation, out newPosition);
+                        WorldPosition newPosition;
+                        if (!positionsStorage.TryGetValue(__instance.Formation, out newPosition) || !newPosition.IsValid)
+                        {
+                            // No point committed this activation (the enemy was already near): stand where it is.
+                            newPosition = medianPositionNew;
+                            if (active)
+                            {
+                                positionsStorage[__instance.Formation] = newPosition;
+                            }
+                        }
                         ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
                         ___IsCurrentOrderChanged = true;
                         ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
@@ -136,7 +152,10 @@ namespace RBMAI
                             WorldPosition newPosition = __instance.DefensePosition;
                             newPosition.SetVec2(newPosition.AsVec2 + __instance.Formation.Direction * 10f);
                             ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
-                            positionsStorage[__instance.Formation] = newPosition;
+                            if (active)
+                            {
+                                positionsStorage[__instance.Formation] = newPosition;
+                            }
 
                             ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                         }
@@ -144,7 +163,10 @@ namespace RBMAI
                         {
                             WorldPosition newPosition = medianPositionNew;
                             newPosition.SetVec2(newPosition.AsVec2 + __instance.Formation.Direction * 10f);
-                            positionsStorage[__instance.Formation] = newPosition;
+                            if (active)
+                            {
+                                positionsStorage[__instance.Formation] = newPosition;
+                            }
                             ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
                         }
                     }
@@ -153,67 +175,123 @@ namespace RBMAI
         }
     }
 
+    /// <summary>Hold high ground commits to ONE spot. Native re-picks its spot (QuerySystem.HighGroundCloseToForeseenBattleGround)
+    /// every 10 s from a square centred on the formation's CURRENT position, half the distance to the enemy wide, sloping
+    /// toward the enemy's moving median formation, and only stops once an enemy is inside archer range. A line walking to
+    /// its spot therefore moved the next search with it: the 2026-10-20 21:56 log shows the defender's target jump
+    /// 150-230 m four times in 60 s (once straight back the way it came) while the enemy closed from 540 m.
+    /// Now the spot is picked when the behavior becomes active and kept; it is picked again only while the enemy is still
+    /// at least <see cref="RepickMinEnemyDistance"/> away and has swung more than 45 degrees off the bearing it had at the pick.
+    /// A spot the line cannot reach well before the enemy does is given up for the ground it stands on.
+    /// The old code went to a stored position under 200 m, which was never stored if the behavior started with the enemy
+    /// already that close (or the line spent the approach 70-100 m from the map edge): Move to (0,0).</summary>
     [HarmonyPatch(typeof(BehaviorHoldHighGround))]
     internal class OverrideBehaviorHoldHighGround
     {
-        public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
+        internal sealed class HighGroundCommit
+        {
+            public WorldPosition Position;
+            public Vec2 EnemyBearing;
+            public float PickedAt;
+        }
+
+        /// <summary>The committed spot of each formation whose HoldHighGround is ACTIVE; dropped when it stops being active,
+        /// so the next activation picks fresh. Only the AI tick touches it (CalculateCurrentOrder also runs from
+        /// FormationAI.FindBestBehavior's PrecalculateMovementOrder, same thread).</summary>
+        public static Dictionary<Formation, HighGroundCommit> commits = new Dictionary<Formation, HighGroundCommit> { };
+
+        /// <summary>Under this (centre to centre, to the significant enemy) the spot is never picked again.</summary>
+        private const float RepickMinEnemyDistance = 200f;
+        /// <summary>cos 45 degrees: the enemy bearing swing that allows a re-pick while it is still far.</summary>
+        private const float RepickBearingCos = 0.707f;
+        /// <summary>No re-pick sooner than this after the last pick (the significant enemy can alternate between two
+        /// formations on different bearings).</summary>
+        private const float RepickMinSeconds = 20f;
+        /// <summary>The spot is kept only while the line gets there in under this share of the enemy's time to arrive.</summary>
+        private const float ReachTimeShare = 0.6f;
+        /// <summary>Within this of its spot the line has arrived (no more reach checks).</summary>
+        private const float ArrivedDistance = 10f;
 
         [HarmonyPostfix]
         [HarmonyPatch("CalculateCurrentOrder")]
         private static void PostfixCalculateCurrentOrder(ref BehaviorHoldHighGround __instance, ref MovementOrder ____currentOrder, ref Boolean ___IsCurrentOrderChanged, ref FacingOrder ___CurrentFacingOrder)
         {
-            if (__instance.Formation != null && __instance.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
+            Formation formation = __instance.Formation;
+            if (formation == null)
             {
-                WorldPosition medianPositionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
+                return;
+            }
+            bool active = formation.AI.ActiveBehavior == __instance;
+            commits.TryGetValue(formation, out HighGroundCommit commit);
+            if (!active && commit != null)
+            {
+                // The behavior stopped being active (charge, regroup, tactic change): its next activation picks again.
+                commits.Remove(formation);
+                commit = null;
+            }
+            if (formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null)
+            {
+                return;
+            }
+            Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(formation, true, true, false, false, false, true);
+            if (significantEnemy == null)
+            {
+                return;
+            }
+            WorldPosition center = RBMAI.Utilities.GetFormationCenterWorldPosition(formation);
+            Vec2 bearing = RBMAI.Utilities.GetFormationCenter(significantEnemy) - center.AsVec2;
+            float distance = bearing.Normalize();
+            Vec2 enemyDirection = HoldFacing.Direction(formation, significantEnemy, bearing);
 
-                Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
-
-                if (significantEnemy != null)
+            float now = Mission.Current.CurrentTime;
+            if (commit != null && distance >= RepickMinEnemyDistance && now - commit.PickedAt >= RepickMinSeconds
+                && commit.EnemyBearing.DotProduct(bearing) < RepickBearingCos)
+            {
+                commit = null;
+            }
+            if (commit == null)
+            {
+                commit = new HighGroundCommit
                 {
-                    Vec2 enemyDirection = RBMAI.Utilities.GetFormationCenter(significantEnemy) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
-                    float distance = enemyDirection.Normalize();
-                    enemyDirection = HoldFacing.Direction(__instance.Formation, significantEnemy, enemyDirection);
-
-                    if (distance < (200f))
-                    {
-                        WorldPosition newPosition = WorldPosition.Invalid;
-                        positionsStorage.TryGetValue(__instance.Formation, out newPosition);
-                        Vec2 posVec2 = newPosition.AsVec2;
-                        Vec2 closestBoundary = Mission.Current.GetClosestBoundaryPosition(posVec2);
-                        float distFromBoundary = closestBoundary.Distance(posVec2);
-                        if (distFromBoundary <= 70f)
-                        {
-                            Vec2 awayFromBoundary = (posVec2 - closestBoundary).Normalized();
-                            newPosition.SetVec2(posVec2 + awayFromBoundary * (100f - distFromBoundary));
-                            positionsStorage[__instance.Formation] = newPosition;
-                        }
-                        ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
-                        ___IsCurrentOrderChanged = true;
-                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
-                    }
-                    else
-                    {
-                        WorldPosition newPosition = medianPositionNew;
-                        newPosition.SetVec2(newPosition.AsVec2 + __instance.Formation.Direction * 10f);
-                        Vec2 posVec2 = newPosition.AsVec2;
-                        Vec2 closestBoundary = Mission.Current.GetClosestBoundaryPosition(posVec2);
-                        float distFromBoundary = closestBoundary.Distance(posVec2);
-                        if (distFromBoundary <= 70f)
-                        {
-                            Vec2 awayFromBoundary = (posVec2 - closestBoundary).Normalized();
-                            newPosition.SetVec2(posVec2 + awayFromBoundary * (100f - distFromBoundary));
-                            ____currentOrder = MovementOrder.MovementOrderMove(newPosition);
-                            ___IsCurrentOrderChanged = true;
-                            positionsStorage[__instance.Formation] = newPosition;
-                        }
-                        else if (distFromBoundary > 100f)
-                        {
-                            positionsStorage[__instance.Formation] = newPosition;
-                        }
-                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
-                    }
+                    Position = distance >= RepickMinEnemyDistance ? PickSpot(formation, center) : center,
+                    EnemyBearing = bearing,
+                    PickedAt = now
+                };
+                if (active)
+                {
+                    commits[formation] = commit;
                 }
             }
+            float distanceToSpot = center.AsVec2.Distance(commit.Position.AsVec2);
+            if (distanceToSpot > ArrivedDistance)
+            {
+                float timeToSpot = distanceToSpot / Math.Max(formation.QuerySystem.MovementSpeedMaximum, 0.5f);
+                float timeToEnemy = distance / Math.Max(significantEnemy.QuerySystem.MovementSpeedMaximum, 1f);
+                if (timeToSpot > timeToEnemy * ReachTimeShare)
+                {
+                    // Out of reach, or caught on the march: stand here instead (a later bearing re-pick may still move it).
+                    commit.Position = center;
+                }
+            }
+            ____currentOrder = MovementOrder.MovementOrderMove(commit.Position);
+            ___IsCurrentOrderChanged = true;
+            ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+        }
+
+        /// <summary>Native's high-ground pick (searched around where the line stands now), kept 100 m clear of the map edge.</summary>
+        private static WorldPosition PickSpot(Formation formation, WorldPosition center)
+        {
+            WorldPosition spot = center;
+            spot.SetVec2(formation.QuerySystem.HighGroundCloseToForeseenBattleGround);
+            Vec2 posVec2 = spot.AsVec2;
+            Vec2 closestBoundary = Mission.Current.GetClosestBoundaryPosition(posVec2);
+            float distFromBoundary = closestBoundary.Distance(posVec2);
+            if (distFromBoundary <= 70f)
+            {
+                Vec2 awayFromBoundary = (posVec2 - closestBoundary).Normalized();
+                spot.SetVec2(posVec2 + awayFromBoundary * (100f - distFromBoundary));
+            }
+            return spot;
         }
     }
 
@@ -231,6 +309,79 @@ namespace RBMAI
 
         /// <summary>FormationAI.ActiveBehavior's setter stamps PreserveExpireTime = now + this on activation (its only writer).</summary>
         private const float NativePreserveSeconds = 10f;
+
+        /// <summary>A Regroup tick this long (s) after its last one is a new regroup: its hold point is taken again.</summary>
+        private const float RegroupHoldResetSeconds = 2f;
+
+        /// <summary>Where an active Regroup holds: the formation's FRONT-centre when the regroup began, fixed for it. A Move
+        /// order's point is the front-centre (native lays the ranks out behind it), so holding at the formation's own centre,
+        /// re-read every tick, walked the whole block backwards (2026-10-22 logs: attacker infantry 47-54 m back during its
+        /// opening regroup). Keyed on the behavior instance (dies with the mission, no reset needed); AI thread only.</summary>
+        private sealed class RegroupHold
+        {
+            public WorldPosition Hold = WorldPosition.Invalid;
+            public float LastTick = float.MinValue;
+        }
+
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<BehaviorRegroup, RegroupHold> RegroupHolds =
+            new System.Runtime.CompilerServices.ConditionalWeakTable<BehaviorRegroup, RegroupHold>();
+
+        /// <summary>AI thread: the formation's front-centre (centre + facing x half its depth) on a copy of the cached median,
+        /// moved once (the AdvanceBehavior.FrontHoldPosition rule).</summary>
+        private static WorldPosition FrontHoldPosition(Formation formation)
+        {
+            WorldPosition hold = formation.CachedMedianPosition;
+            Vec2 centre = RBMAI.Utilities.GetFormationCenter(formation);
+            Vec2 facing = formation.Direction;
+            if (!hold.IsValid || !centre.IsValid)
+            {
+                return hold;
+            }
+            if (facing.IsValid && facing.LengthSquared > 0.01f)
+            {
+                centre += facing.Normalized() * (formation.Depth * 0.5f);
+            }
+            hold.SetVec2(centre);
+            return hold;
+        }
+
+        /// <summary>The hold point: fixed while Regroup is the active behavior, taken again after a break; a mere candidate
+        /// (FindBestBehavior) gets a fresh one and drops the stored point.</summary>
+        private static WorldPosition RegroupHoldPosition(BehaviorRegroup regroup)
+        {
+            Formation formation = regroup.Formation;
+            RegroupHold state = RegroupHolds.GetOrCreateValue(regroup);
+            if (formation.AI == null || formation.AI.ActiveBehavior != regroup)
+            {
+                state.Hold = WorldPosition.Invalid;
+                state.LastTick = float.MinValue;
+                return FrontHoldPosition(formation);
+            }
+            float now = Mission.Current.CurrentTime;
+            if (!state.Hold.IsValid || now - state.LastTick > RegroupHoldResetSeconds)
+            {
+                state.Hold = FrontHoldPosition(formation);
+            }
+            state.LastTick = now;
+            return state.Hold;
+        }
+
+        /// <summary>Regroup tidies a formation into Line, but only what it must change: never a player-led or ranged formation
+        /// (USER RULE 2026-10-21, IsRangedForArrangement), a shield wall or a Loose one (TerrainShape's broken-ground Loose,
+        /// the missile-fire Loose) - forcing Line there flipped it back and forth with the advance every interlude.</summary>
+        private static void ApplyRegroupArrangement(Formation formation)
+        {
+            if (formation == null || !formation.IsAIControlled || RBMAI.Utilities.IsRangedForArrangement(formation))
+            {
+                return;
+            }
+            ArrangementOrder.ArrangementOrderEnum current = formation.ArrangementOrder.OrderEnum;
+            if (current == ArrangementOrder.ArrangementOrderEnum.ShieldWall || current == ArrangementOrder.ArrangementOrderEnum.Loose)
+            {
+                return;
+            }
+            formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+        }
 
         // Advance phase = a forward behavior is weighted. The split tactics' deliberate opening waits weight only
         // Charge + Regroup, and the attack phase (FixCharge) zeroes Regroup, so neither is touched.
@@ -311,21 +462,24 @@ namespace RBMAI
                 // Once active, the TickOccasionally postfix below sets Line every tick anyway.
                 if (__instance.Formation.AI != null && __instance.Formation.AI.ActiveBehavior == __instance)
                 {
-                    __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+                    ApplyRegroupArrangement(__instance.Formation);
                 }
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
                 if (significantEnemy != null)
                 {
-                    WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
-                    if (RallyLogic.IsRallying(__instance.Formation))
+                    WorldPosition medianPosition;
+                    Vec2 mainBody = RallyLogic.IsRallying(__instance.Formation) ? RallyLogic.MainBodyCenter(__instance.Formation) : Vec2.Invalid;
+                    if (mainBody.IsValid)
                     {
                         // Hold at the rally anchor -- the wave's spawn point after reinforcements, else the MAIN
                         // BODY -- not the average (which the far men drag toward the enemy).
-                        Vec2 mainBody = RallyLogic.MainBodyCenter(__instance.Formation);
-                        if (mainBody.IsValid)
-                        {
-                            medianPosition.SetVec2(mainBody);
-                        }
+                        medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
+                        medianPosition.SetVec2(mainBody);
+                    }
+                    else
+                    {
+                        // Hold at the front-centre fixed when the regroup began (RegroupHold), not the own centre.
+                        medianPosition = RegroupHoldPosition(__instance);
                     }
                     ____currentOrder = MovementOrder.MovementOrderMove(medianPosition);
 
@@ -343,7 +497,7 @@ namespace RBMAI
         [HarmonyPatch("TickOccasionally")]
         private static void PrefixTickOccasionally(ref BehaviorRegroup __instance)
         {
-            __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
+            ApplyRegroupArrangement(__instance.Formation);
             if (RallyLogic.NeedsRally(__instance.Formation))
             {
                 // Give each far man the nearest cell so he runs straight at the body, not a flank diagonal.

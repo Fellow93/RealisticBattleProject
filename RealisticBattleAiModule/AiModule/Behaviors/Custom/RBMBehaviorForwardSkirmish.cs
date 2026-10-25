@@ -27,6 +27,8 @@ namespace RBMAI
 
         private bool _isEnemyReachable = true;
 
+        private const float MaxAheadOfAnchor = 120f; // m
+
         public RBMBehaviorForwardSkirmish(Formation formation)
             : base(formation)
         {
@@ -59,7 +61,8 @@ namespace RBMAI
                         countOfSkirmishers++;
                     }
                 });
-                if (countOfSkirmishers / base.Formation.CountOfUnits > 0.6f)
+                int countOfUnits = base.Formation.CountOfUnits;
+                if (countOfUnits > 0 && (float)countOfSkirmishers / countOfUnits > 0.6f)
                 {
                     return 5f;
                 }
@@ -105,7 +108,9 @@ namespace RBMAI
                 float flankRange = 25f;
 
                 Formation enemyFormation = base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation;
-                Formation allyFormation = RBMAI.Utilities.FindSignificantAlly(base.Formation, true, true, false, false, false);
+                // anchor = main melee infantry (AI- or player-led), else the nearest other own infantry; never itself
+                Formation allyFormation = FormationCohesion.MainInfantry(base.Formation)
+                    ?? RBMAI.Utilities.FindSignificantAlly(base.Formation, true, false, false, false, false);
 
                 if (base.Formation != null && base.Formation.QuerySystem.IsInfantryFormation)
                 {
@@ -249,20 +254,20 @@ namespace RBMAI
                                     position = medianTargetFormationPosition;
                                     Vec2 calcPosition = position.AsVec2 - enemyDirection * (skirmishRange - (10f + base.Formation.Depth * 0.5f));
                                     calcPosition = calcPosition + enemyFormation.Direction.LeftVec().Normalized() * (enemyFormation.Width / 2f) * mobilityModifier;
-                                    position.SetVec2(calcPosition);
+                                    position.SetVec2(CapAheadOfAnchor(calcPosition, allyFormation, enemyDirection));
                                 }
                                 else if (_behaviorSide == FormationAI.BehaviorSide.Left || FlankSide == FormationAI.BehaviorSide.Left)
                                 {
                                     position = medianTargetFormationPosition;
                                     Vec2 calcPosition = position.AsVec2 - enemyDirection * (skirmishRange - (10f + base.Formation.Depth * 0.5f));
                                     calcPosition = calcPosition + enemyFormation.Direction.RightVec().Normalized() * (enemyFormation.Width / 2f) * mobilityModifier;
-                                    position.SetVec2(calcPosition);
+                                    position.SetVec2(CapAheadOfAnchor(calcPosition, allyFormation, enemyDirection));
                                 }
                                 else
                                 {
                                     position = medianTargetFormationPosition;
                                     Vec2 calcPosition = position.AsVec2 - enemyDirection * (skirmishRange - (10f + base.Formation.Depth * 0.5f));
-                                    position.SetVec2(calcPosition);
+                                    position.SetVec2(CapAheadOfAnchor(calcPosition, allyFormation, enemyDirection));
                                 }
                             }
                             else
@@ -274,6 +279,23 @@ namespace RBMAI
                 }
             }
             base.CurrentOrder = MovementOrder.MovementOrderMove(position);
+        }
+
+        /// <summary>The Attack point pulled back to MaxAheadOfAnchor m ahead of the anchor's front when farther; unchanged without an anchor.</summary>
+        private static Vec2 CapAheadOfAnchor(Vec2 point, Formation anchor, Vec2 enemyDirection)
+        {
+            if (anchor == null || !point.IsValid || !enemyDirection.IsValid || enemyDirection.LengthSquared < 0.01f)
+            {
+                return point;
+            }
+            Vec2 centre = RBMAI.Utilities.GetFormationCenter(anchor);
+            if (!centre.IsValid)
+            {
+                return point;
+            }
+            Vec2 dir = enemyDirection.Normalized();
+            float ahead = (point - centre).DotProduct(dir) - anchor.Depth * 0.5f;
+            return (ahead > MaxAheadOfAnchor) ? point - dir * (ahead - MaxAheadOfAnchor) : point;
         }
 
         public override void TickOccasionally()

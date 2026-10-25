@@ -317,7 +317,17 @@ namespace RBM
         {
             // Unconditional: turning the AI module off mid-session must still release the previous mission's
             // formations, or Formation._simulationFormationTemp outlives its scene.
-            MissionStartReset.Reset();
+            // Runs with RBM AI off too, so it must never take the mission start down with it (a game update renaming a
+            // field one of the cleared classes reads by name would throw here): logged, and the mission starts.
+            try
+            {
+                MissionStartReset.Reset();
+            }
+            catch (Exception e)
+            {
+                AiTickGuard.Report("MissionStartReset", e, null);
+                AiTickGuard.Flush();
+            }
             // Same for RBM Stance's agent-holding statics (posture store, drop queues, kick/bash scratch list).
             StanceReset.Reset();
             // Likewise unconditional: a mission that ended without OnEndMission must not leave the troop perk
@@ -333,6 +343,8 @@ namespace RBM
             if (RBMConfig.RBMConfig.rbmAiEnabled && RBMConfig.RBMConfig.developerMode)
             {
                 mission.AddMissionBehavior((MissionBehavior)(object)new BattleStatsLogic());
+                // The battle terrain's feature map drawn on the battlefield. Inert until toggled in-mission with Ctrl+Shift+D.
+                mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.TerrainFeatureOverlay());
             }
             if (RBMConfig.RBMConfig.rbmCombatEnabled)
             {
@@ -384,6 +396,9 @@ namespace RBM
                     // toggled in-mission with Ctrl+Shift+W.
                     mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.NavigableDebugOverlay());
                 }
+                // Battlefield terrain (field battles only): grid at mission load, read after deployment, published as
+                // RBMAI.BattleTerrain.Current; hosts its own log (battleTerrainLoggingEnabled).
+                mission.AddMissionBehavior((MissionBehavior)(object)new RBMAI.BattleTerrainLogic());
                 if (RBMConfig.RBMConfig.frontlineEnabled)
                 {
                     // Inert until toggled in-mission with Ctrl+Shift+F.
@@ -513,6 +528,13 @@ namespace RBM
         public override void EarlyStart()
         {
             RBMAiPatcher.DoPatching();
+        }
+
+        public override void OnMissionTick(float dt)
+        {
+            // Main thread: writes what the AI tick guard caught on any thread (rgl log, AI behavior log); returns at once
+            // when nothing is queued.
+            AiTickGuard.Flush();
         }
     }
 }

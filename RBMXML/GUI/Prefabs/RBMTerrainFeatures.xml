@@ -1,0 +1,103 @@
+<!--
+  RBMAI TerrainFeatureOverlay (AiModule/Terrain/TerrainFeatureOverlay.cs), Developer Mode, toggled in mission with
+  Ctrl+Shift+D: the battle terrain's feature map (hills, crests, chokes, open fields, flank ends, woods, rough, water,
+  fords, each army's centre, archer spots) as labels on the battlefield, plus small dots (crest width, army attack-side
+  arrows, lines from archer groups to the spot they hold). Pressed again it adds, then shows alone, the decision layer
+  (DecisionLabels / DecisionDots: each AI formation's behavior choice and order, each AI team's tactic ranking).
+  Labels and dots: zero-sized ItemTemplate roots so the ListPanel stack contributes no advance; each item places itself
+  absolutely via PositionXOffset/PositionYOffset (same trick as RBMNavigableDebug.xml). A CoverChildren TextWidget with
+  no MaxWidth measures unconstrained (TextLayout), so the label does not wrap inside its zero-sized root. Text colour:
+  Brush.FontColor bound to a "#RRGGBBAA" string, as native nameplates do. BlankWhiteCircle / BlankWhiteSquare_9 are
+  native ui_group1 sprites, always loaded.
+-->
+<Prefab>
+  <Window>
+    <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DoNotAcceptEvents="true" DoNotPassEventsToChildren="true" IsVisible="@IsActive">
+      <Children>
+        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DataSource="{Dots}">
+          <ItemTemplate>
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="0" SuggestedHeight="0" IsHidden="@IsHidden">
+              <Children>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                        SuggestedWidth="@Size" SuggestedHeight="@Size"
+                        PositionXOffset="@ScreenX" PositionYOffset="@ScreenY"
+                        Sprite="BlankWhiteCircle" Color="@DotColor" AlphaFactor="@Alpha" />
+              </Children>
+            </Widget>
+          </ItemTemplate>
+        </ListPanel>
+
+        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DataSource="{Labels}">
+          <ItemTemplate>
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="0" SuggestedHeight="0" IsHidden="@IsHidden">
+              <Children>
+                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
+                           PositionXOffset="@ScreenX" PositionYOffset="@ScreenY"
+                           StackLayout.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="10" SuggestedHeight="10" VerticalAlignment="Center"
+                            Sprite="BlankWhiteCircle" Color="@DotColor" />
+                    <Widget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="3" VerticalAlignment="Center"
+                            Sprite="BlankWhiteSquare_9" Color="#0000008C">
+                      <Children>
+                        <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="4" MarginRight="4" MarginTop="1" MarginBottom="1"
+                                    Brush="EnemyName" Brush.FontSize="14" Brush.FontColor="@TextColor" Brush.TextHorizontalAlignment="Left" Text="@Text" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </ListPanel>
+              </Children>
+            </Widget>
+          </ItemTemplate>
+        </ListPanel>
+
+        <!-- Decision layer (TerrainFeatureOverlay.Decisions.cs): order-line dots, then formation / team labels (multi-line
+             text: a plain TextWidget breaks lines at "\n"), drawn over the terrain layer. Same item templates as above. -->
+        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DataSource="{DecisionDots}">
+          <ItemTemplate>
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="0" SuggestedHeight="0" IsHidden="@IsHidden">
+              <Children>
+                <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed"
+                        SuggestedWidth="@Size" SuggestedHeight="@Size"
+                        PositionXOffset="@ScreenX" PositionYOffset="@ScreenY"
+                        Sprite="BlankWhiteCircle" Color="@DotColor" AlphaFactor="@Alpha" />
+              </Children>
+            </Widget>
+          </ItemTemplate>
+        </ListPanel>
+
+        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" DataSource="{DecisionLabels}">
+          <ItemTemplate>
+            <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="0" SuggestedHeight="0" IsHidden="@IsHidden">
+              <Children>
+                <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren"
+                           PositionXOffset="@ScreenX" PositionYOffset="@ScreenY"
+                           StackLayout.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="10" SuggestedHeight="10" VerticalAlignment="Top" MarginTop="5"
+                            Sprite="BlankWhiteCircle" Color="@DotColor" />
+                    <Widget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="3" VerticalAlignment="Top"
+                            Sprite="BlankWhiteSquare_9" Color="#000000A6">
+                      <Children>
+                        <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="4" MarginRight="4" MarginTop="1" MarginBottom="1"
+                                    Brush="EnemyName" Brush.FontSize="14" Brush.FontColor="@TextColor" Brush.TextHorizontalAlignment="Left" Text="@Text" />
+                      </Children>
+                    </Widget>
+                  </Children>
+                </ListPanel>
+              </Children>
+            </Widget>
+          </ItemTemplate>
+        </ListPanel>
+
+        <Widget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Top"
+                MarginTop="60" Sprite="BlankWhiteSquare_9" Color="#000000A6">
+          <Children>
+            <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="10" MarginRight="10" MarginTop="4" MarginBottom="4"
+                        Brush="EnemyName" Brush.FontSize="15" Text="@Legend" />
+          </Children>
+        </Widget>
+      </Children>
+    </Widget>
+  </Window>
+</Prefab>

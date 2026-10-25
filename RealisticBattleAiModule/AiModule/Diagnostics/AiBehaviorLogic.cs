@@ -12,38 +12,16 @@ using TaleWorlds.MountAndBlade;
 namespace RBMAI
 {
     /// <summary>
-    /// Writes down, second by second, what every team's AI has decided and what every formation is actually doing.
-    ///
-    /// The reason it exists: the enemy team's infantry and the player's delegated team run the same code, and yet
-    /// they do not behave the same. Everything that could explain the difference is invisible during a battle --
-    /// which tactic the team AI picked, whether that tactic thinks the battle has been joined, which behavior won
-    /// the weight contest inside each formation, what movement order came out of it, how far the formation is from
-    /// the position it was ordered to. This log makes all of it a column.
-    ///
-    /// Four kinds of line are written. A periodic snapshot every second, so the whole battle can be read as a
-    /// timeline; an immediate CHANGE line the moment a tactic, a behavior or a movement order flips, so the
-    /// exact instant of a decision is not lost between two snapshots; and, every five seconds, an AGENTS/LAG
-    /// pair for each infantry formation.
-    ///
-    /// The AGENTS pair was added after the first log answered the formation-level question and replaced it with
-    /// a harder one: both teams ran the same tactic, the same behavior, the same cached movement speed and the
-    /// same distance to their order, and yet one line stayed 15m ragged while the other closed to 3m. Nothing at
-    /// the formation level can explain that, so AGENTS measures every man against the slot his own formation
-    /// assigned him -- and LAG names the eight furthest behind, with the speed, mode and state flags that would
-    /// explain why.
-    ///
-    /// Everything reflective is wrapped: a field that moved in a game update makes a column say "?" and never
-    /// takes the mission down with it.
+    /// AI behavior log: per-second snapshot of each team's tactic and each formation's behavior/order, immediate CHANGE
+    /// lines on flips, and a 5 s AGENTS/LAG pair per infantry formation. Reflection is wrapped: a moved field prints "?".
     /// </summary>
     public class AiBehaviorLogic : MissionLogic
     {
-        /// <summary>How often the full snapshot is written.</summary>
         private const float SnapshotInterval = 1f;
 
-        /// <summary>How often the per-agent AGENTS/LAG pair is written. Rarer: it walks every man in the line.</summary>
+        // AGENTS/LAG walks every man.
         private const float AgentsInterval = 5f;
 
-        /// <summary>How many stragglers the LAG line names.</summary>
         private const int LagCount = 8;
 
         private bool _logging;
@@ -52,33 +30,20 @@ namespace RBMAI
 
         private float _nextAgents;
 
-        /// <summary>Last-seen tactic type per team, so a change can be caught the frame it happens.</summary>
         private readonly Dictionary<Team, string> _lastTactic = new Dictionary<Team, string>();
 
-        /// <summary>Last-seen behavior type and movement order per formation, for the same reason.</summary>
         private readonly Dictionary<Formation, string> _lastBehavior = new Dictionary<Formation, string>();
 
         private readonly Dictionary<Formation, string> _lastOrder = new Dictionary<Formation, string>();
 
-        /// <summary>The reflection misses already reported. A broken field says so once, not sixty times a second.</summary>
         private readonly HashSet<string> _reportedFailures = new HashSet<string>();
 
-        // ---- reflection handles, resolved once ----
-
-        private static readonly FieldInfo _fCurrentTactic =
-            AccessTools.Field(typeof(TeamAIComponent), "_currentTactic");
+        // ---- reflection handles, resolved once (the team AI's tactic state: TacticWeightProbe) ----
 
         private static readonly FieldInfo _fReapplyNeeded =
             AccessTools.Field(typeof(TacticComponent), "IsTacticReapplyNeeded");
 
-        private static readonly FieldInfo _fAvailableTactics =
-            AccessTools.Field(typeof(TeamAIComponent), "_availableTactics");
-
-        /// <summary>protected internal virtual; Invoke dispatches to the override and through RBM's Harmony patches.</summary>
-        private static readonly MethodInfo _mGetTacticWeight =
-            AccessTools.Method(typeof(TacticComponent), "GetTacticWeight");
-
-        /// <summary>_hasBattleBeenJoined is declared per concrete tactic, so it is looked up per type and cached.</summary>
+        /// <summary>_hasBattleBeenJoined is declared per concrete tactic: looked up per type, cached.</summary>
         private static readonly Dictionary<Type, FieldInfo> _fBattleJoined = new Dictionary<Type, FieldInfo>();
 
         public override void AfterStart()
@@ -91,8 +56,25 @@ namespace RBMAI
             _logging = true;
 
             AiBehaviorLog.StartMission(Header());
+            DecisionTrace.Start();
             _nextSnapshot = 0f;
             _nextAgents = 0f;
+
+            try
+            {
+                foreach (Team team in Mission.Current.Teams)
+                {
+                    string selection = TacticSelection.DescribeTeam(team);
+                    if (selection != null)
+                    {
+                        AiBehaviorLog.Write("t=" + AiBehaviorLog.Fmt(Mission.Current.CurrentTime) + "\tSELECT\t" + TeamName(team) + "\t" + selection);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ReportOnce("tacticSelection", e);
+            }
         }
 
         public override void OnMissionTick(float dt)
@@ -105,6 +87,24 @@ namespace RBMAI
             float now = Mission.Current.CurrentTime;
             bool snapshot = now >= _nextSnapshot;
             bool agentsSnapshot = now >= _nextAgents;
+
+            Team routedTeam;
+            float routTime;
+            float routRemaining;
+            while (TacticSelection.TryDequeueRout(out routedTeam, out routTime, out routRemaining))
+            {
+                AiBehaviorLog.Write("t=" + AiBehaviorLog.Fmt(routTime) + "\tROUT\t" + TeamName(routedTeam)
+                    + "\tremaining=" + AiBehaviorLog.Fmt(routRemaining));
+            }
+
+            try
+            {
+                DecisionTrace.Drain(now);
+            }
+            catch (Exception e)
+            {
+                ReportOnce("decisionTrace", e);
+            }
 
             foreach (Team team in Mission.Current.Teams)
             {
@@ -141,20 +141,23 @@ namespace RBMAI
             {
                 return;
             }
+            try
+            {
+                DecisionTrace.Drain((Mission.Current != null) ? Mission.Current.CurrentTime : 0f, true);
+            }
+            catch (Exception e)
+            {
+                ReportOnce("decisionTrace", e);
+            }
+            DecisionTrace.Clear();
             AiBehaviorLog.EndMission("# mission ended at t=" + AiBehaviorLog.Fmt(
                 (Mission.Current != null) ? Mission.Current.CurrentTime : 0f));
             _logging = false;
         }
 
-        // ------------------------------------------------------------------
-
         private void TickTeam(Team team, float now, bool snapshot, bool agentsSnapshot)
         {
-            TacticComponent tactic = null;
-            if (_fCurrentTactic != null)
-            {
-                tactic = _fCurrentTactic.GetValue(team.TeamAI) as TacticComponent;
-            }
+            TacticComponent tactic = TacticWeightProbe.CurrentTactic(team);
             string tacticName = (tactic != null) ? tactic.GetType().Name : "-";
 
             string previous;
@@ -162,12 +165,12 @@ namespace RBMAI
             if (tacticChanged)
             {
                 _lastTactic[team] = tacticName;
-                // The very first sighting of a team is not a change worth a CHANGE line unless it is mid-battle.
                 if (previous != null)
                 {
                     AiBehaviorLog.Write("t=" + AiBehaviorLog.Fmt(now) + "\tCHANGE\tTACTIC\t" + TeamName(team)
                         + "\t" + previous + " -> " + tacticName + "\tjoined=" + BattleJoined(tactic)
-                        + "\toptions=" + TacticOptions(team, tactic));
+                        + "\toptions=" + TacticOptions(team, tactic)
+                        + "\tcomp=" + TacticSelection.DescribeComposition(team));
                 }
             }
 
@@ -256,17 +259,17 @@ namespace RBMAI
             }
         }
 
-        // ---------------- per-agent snapshot ------------------------------
+        /// <summary>Per-agent snapshot, main thread, every 5 s (the slot lookup is a navmesh query per man).</summary>
+        // AGENTS packed= counts men whose nearest formation-mate is closer than this (centre to centre).
+        private const float PackedDistance = 0.7f;
 
-        /// <summary>
-        /// The formation-level columns say the two teams are given the same orders; the per-agent ones say whether
-        /// the men obey them. Everything here is read off the agent itself, on the main thread, once every five
-        /// seconds -- the slot lookup alone is a navmesh query per man, so it is not something to do per frame.
-        /// </summary>
         private struct AgentSample
         {
             public Agent Agent;
             public float SlotDist;      // negative = no slot could be read
+            public float AheadOfSlot;   // metres in front of his current slot along the formation's facing (RUN line)
+            public float AheadOfAverage; // metres in front of the men's average position along the facing
+            public bool HasAhead;
             public float MaxSpeedMul;
             public float MaxSpeedLimit;
             public float FwdUnlimited;
@@ -333,6 +336,11 @@ namespace RBMAI
 
             AiBehaviorLog.Write(AgentsLine(team, formation, samples, now));
             AiBehaviorLog.Write(LagLine(team, formation, samples, now));
+            string run = RunLine(team, formation, samples, now);
+            if (run != null)
+            {
+                AiBehaviorLog.Write(run);
+            }
         }
 
         private AgentSample Sample(Formation formation, Agent agent)
@@ -340,7 +348,6 @@ namespace RBMAI
             AgentSample s = new AgentSample();
             s.Agent = agent;
 
-            // Slot: the world position the formation currently wants this man to stand on.
             s.SlotDist = -1f;
             try
             {
@@ -353,6 +360,22 @@ namespace RBMAI
             catch (Exception e)
             {
                 ReportOnce("slotPosition", e);
+            }
+
+            try
+            {
+                Vec2 direction = formation.CurrentDirection;
+                if (!agent.IsDetachedFromFormation && direction.IsValid && direction.LengthSquared > 0.01f)
+                {
+                    Vec2 position = agent.Position.AsVec2;
+                    s.AheadOfSlot = (position - formation.GetCurrentGlobalPositionOfUnit(agent, true)).DotProduct(direction);
+                    s.AheadOfAverage = (position - formation.CachedAveragePosition).DotProduct(direction);
+                    s.HasAhead = true;
+                }
+            }
+            catch (Exception e)
+            {
+                ReportOnce("aheadOfSlot", e);
             }
 
             try
@@ -456,7 +479,7 @@ namespace RBMAI
 
             try
             {
-                // SetFormationFrameDisabled() clears IsFormationFrameEnabled; there is no separate getter.
+                // SetFormationFrameDisabled() clears IsFormationFrameEnabled; no separate getter.
                 s.FrameDisabled = !agent.IsFormationFrameEnabled;
             }
             catch (Exception e)
@@ -467,8 +490,7 @@ namespace RBMAI
             try
             {
                 Agent.AIStateFlag flags = agent.AIStateFlags;
-                // The low two bits are an alarm *state*, not independent bits: Alarmed is 3, which is
-                // Cautious|PatrollingCautious. Mask first, then compare, or every alarmed man reads as cautious.
+                // Low two bits are an alarm state (Alarmed = 3 = Cautious|PatrollingCautious): mask first, then compare.
                 Agent.AIStateFlag alarm = flags & Agent.AIStateFlag.AlarmStateMask;
                 s.Alarmed = alarm == Agent.AIStateFlag.Alarmed;
                 s.Cautious = alarm == Agent.AIStateFlag.Cautious || alarm == Agent.AIStateFlag.PatrollingCautious;
@@ -558,6 +580,69 @@ namespace RBMAI
 
             dists.Sort();
 
+            // Frontline decision is written on movement workers; a stale enum read is fine for a log.
+            int[] flDecisions = new int[6];
+            int flNone = 0;
+            int flCloseUp = 0;
+            List<Vec2> positions = new List<Vec2>(samples.Count);
+            foreach (AgentSample s in samples)
+            {
+                try
+                {
+                    if (s.Agent.IsActive())
+                    {
+                        positions.Add(s.Agent.Position.AsVec2);
+                    }
+                    if (Frontline.aiDecisionCooldownDict.TryGetValue(s.Agent, out Frontline.AIDecisionState state) && state != null)
+                    {
+                        int d = (int)state.AIMindset.currentDecision;
+                        if (d >= 0 && d < flDecisions.Length)
+                        {
+                            flDecisions[d]++;
+                        }
+                        if (state.AIMindset.currentDecision == Frontline.AIMindset.AIDecision.Attack && state.AIMindset.aheadAlly != null)
+                        {
+                            flCloseUp++;
+                        }
+                    }
+                    else
+                    {
+                        flNone++;
+                    }
+                }
+                catch (Exception e)
+                {
+                    ReportOnce("frontlineDecision", e);
+                }
+            }
+            List<float> nearest = new List<float>(positions.Count);
+            int packed = 0;
+            for (int i = 0; i < positions.Count; i++)
+            {
+                float best = float.MaxValue;
+                for (int j = 0; j < positions.Count; j++)
+                {
+                    if (i != j)
+                    {
+                        float d2 = positions[i].DistanceSquared(positions[j]);
+                        if (d2 < best)
+                        {
+                            best = d2;
+                        }
+                    }
+                }
+                if (best < float.MaxValue)
+                {
+                    float d = (float)Math.Sqrt(best);
+                    nearest.Add(d);
+                    if (d < PackedDistance)
+                    {
+                        packed++;
+                    }
+                }
+            }
+            nearest.Sort();
+
             StringBuilder sb = new StringBuilder();
             sb.Append("t=").Append(AiBehaviorLog.Fmt(now)).Append("\tAGENTS");
             sb.Append('\t').Append(TeamName(team));
@@ -570,16 +655,27 @@ namespace RBMAI
             sb.Append('\t').Append("noSlot=").Append(noSlot);
             sb.Append('\t').Append("detached=").Append(detached);
             sb.Append('\t').Append("catchUp=").Append(catchUp);
-            // Global counters from the worker-thread postfix: how many times it ran / asserted catch-up
-            // since mission start. If both stay 0 the patch is not live (stale DLL or the MissionLibrary early-out).
+            // Worker-thread postfix counters; both 0 = patch not live.
             sb.Append('\t').Append("pfxCalls=").Append(OverrideParallelFormationMovement.CallCount);
             sb.Append('\t').Append("pfxSet=").Append(OverrideParallelFormationMovement.SetCount);
             sb.Append('\t').Append("devCaps=").Append(FormationCatchUpGate.CapCount);
-            // Frontline static-obstacle step gate, mission totals (see the header).
             sb.Append('\t').Append("flUnreach=").Append(System.Threading.Interlocked.Read(ref Frontline.ObstacleUnreachableRejects));
             sb.Append('\t').Append("flDeep=").Append(System.Threading.Interlocked.Read(ref Frontline.ObstacleDeepWaterRejects));
             sb.Append('\t').Append("flProbes=").Append(System.Threading.Interlocked.Read(ref Frontline.ObstacleProbeQueries));
-            sb.Append('\t').Append("flPress=").Append(System.Threading.Interlocked.Read(ref Frontline.ObstaclePressReleases));            sb.Append('\t').Append("retreating=").Append(retreating);
+            sb.Append('\t').Append("flPress=").Append(System.Threading.Interlocked.Read(ref Frontline.ObstaclePressReleases));
+            sb.Append('\t').Append("flDec=A").Append(flDecisions[(int)Frontline.AIMindset.AIDecision.Attack])
+              .Append("/B").Append(flDecisions[(int)Frontline.AIMindset.AIDecision.BackStep])
+              .Append("/F").Append(flDecisions[(int)Frontline.AIMindset.AIDecision.FindAlly])
+              .Append("/L").Append(flDecisions[(int)Frontline.AIMindset.AIDecision.FlankAllyLeft])
+              .Append("/R").Append(flDecisions[(int)Frontline.AIMindset.AIDecision.FlankAllyRight])
+              .Append("/rest").Append(flDecisions[(int)Frontline.AIMindset.AIDecision.Rest])
+              .Append("/none").Append(flNone)
+              .Append("/closeUp").Append(flCloseUp);
+            sb.Append('\t').Append("nnMean=").Append(Mean(nearest));
+            sb.Append('\t').Append("nnP10=").Append(Percentile(nearest, 0.1f));
+            sb.Append('\t').Append("nnP50=").Append(Percentile(nearest, 0.5f));
+            sb.Append('\t').Append("packed=").Append(packed);
+            sb.Append('\t').Append("rangedArr=").Append(RBMAI.Utilities.DescribeRangedArrangementChanges());            sb.Append('\t').Append("retreating=").Append(retreating);
             sb.Append('\t').Append("runAway=").Append(runningAway);
             sb.Append('\t').Append("walk=").Append(walk);
             sb.Append('\t').Append("frameDis=").Append(frameDisabled);
@@ -626,6 +722,36 @@ namespace RBMAI
             return sb.ToString();
         }
 
+        private string RunLine(Team team, Formation formation, List<AgentSample> samples, float now)
+        {
+            List<AgentSample> ahead = samples.FindAll(s => s.HasAhead && s.AheadOfSlot > RunAheadMin);
+            if (ahead.Count == 0)
+            {
+                return null;
+            }
+            ahead.Sort((a, b) => b.AheadOfSlot.CompareTo(a.AheadOfSlot));
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("t=").Append(AiBehaviorLog.Fmt(now)).Append("\tRUN");
+            sb.Append('\t').Append(TeamName(team));
+            sb.Append('\t').Append(formation.FormationIndex);
+            sb.Append('\t').Append("count=").Append(ahead.Count);
+            for (int i = 0; i < ahead.Count && i < LagCount; i++)
+            {
+                AgentSample s = ahead[i];
+                sb.Append('\t').Append(AgentId(s.Agent));
+                sb.Append('|').Append("slot+").Append(AiBehaviorLog.Fmt(s.AheadOfSlot));
+                sb.Append('|').Append("avg+").Append(AiBehaviorLog.Fmt(s.AheadOfAverage));
+                sb.Append('|').Append("lim").Append(s.HasMaxSpeedLimit ? AiBehaviorLog.Fmt(s.MaxSpeedLimit) : "-");
+                sb.Append('|').Append("v").Append(s.HasSpeed ? AiBehaviorLog.Fmt(s.Speed) : "-");
+                sb.Append('|').Append("catch").Append(s.CatchUp ? "1" : "0");
+                sb.Append('|').Append(s.Action ?? "-");
+            }
+            return sb.ToString();
+        }
+
+        private const float RunAheadMin = 3f;
+
         private string AgentId(Agent agent)
         {
             try
@@ -663,7 +789,7 @@ namespace RBMAI
             return AiBehaviorLog.Fmt(sum / sorted.Count);
         }
 
-        /// <summary>Nearest-rank on an already sorted list. Good enough for a diagnostic, and allocation free.</summary>
+        /// <summary>Nearest-rank percentile on a sorted list.</summary>
         private static string Percentile(List<float> sorted, float q)
         {
             if (sorted.Count == 0)
@@ -675,8 +801,6 @@ namespace RBMAI
             if (index >= sorted.Count) index = sorted.Count - 1;
             return AiBehaviorLog.Fmt(sorted[index]);
         }
-
-        // ------------------------------------------------------------------
 
         private string TeamLine(Team team, TacticComponent tactic, string tacticName, float now)
         {
@@ -695,35 +819,24 @@ namespace RBMAI
             sb.Append('\t').Append("aiForms=").Append(SafeInt(team.GetAIControlledFormationCount));
             sb.Append('\t').Append(Flag("allowAiTicking", Mission.Current.AllowAiTicking));
             sb.Append('\t').Append("options=").Append(TacticOptions(team, tactic));
+            sb.Append('\t').Append("comp=").Append(TacticSelection.DescribeComposition(team));
             return sb.ToString();
         }
 
-        /// <summary>
-        /// Every tactic the team may pick, with its current weight, the active one starred. TeamAIComponent switches
-        /// when another option outweighs the active one x1.5, so this column shows why a switch happened.
-        /// TacticCoordinatedRetreat is not asked: RBM's prefix always returns 0, but it also zeroes the team's morale
-        /// as a side effect, which a logger must not do.
-        /// </summary>
+        /// <summary>Every tactic the team may pick with its weight, the active one starred; (xM tF) = TacticSelection multiplier and terrain factor when not 1.</summary>
         private string TacticOptions(Team team, TacticComponent active)
         {
-            if (team.TeamAI == null || _fAvailableTactics == null || _mGetTacticWeight == null)
-            {
-                return "-";
-            }
             try
             {
-                List<TacticComponent> options = _fAvailableTactics.GetValue(team.TeamAI) as List<TacticComponent>;
-                if (options == null || options.Count == 0)
+                List<KeyValuePair<TacticComponent, float>> weights = TacticWeightProbe.Evaluate(team);
+                if (weights == null || weights.Count == 0)
                 {
                     return "-";
                 }
                 StringBuilder sb = new StringBuilder();
-                foreach (TacticComponent option in options)
+                foreach (KeyValuePair<TacticComponent, float> entry in weights)
                 {
-                    if (option == null)
-                    {
-                        continue;
-                    }
+                    TacticComponent option = entry.Key;
                     if (sb.Length > 0)
                     {
                         sb.Append(' ');
@@ -733,23 +846,20 @@ namespace RBMAI
                         sb.Append('*');
                     }
                     sb.Append(option.GetType().Name).Append(':');
-                    if (option is TacticCoordinatedRetreat)
+                    sb.Append(AiBehaviorLog.Fmt(entry.Value));
+                    float multiplier;
+                    if (TacticSelection.TryGetMultiplier(option, out multiplier))
                     {
-                        sb.Append("0");
-                        continue;
+                        sb.Append("(x").Append(AiBehaviorLog.Fmt(multiplier));
+                        float terrain = TacticSelection.TerrainFactorFor(option);
+                        if (terrain != 1f)
+                        {
+                            sb.Append(" t").Append(AiBehaviorLog.Fmt(terrain));
+                        }
+                        sb.Append(')');
                     }
-                    float weight;
-                    try
-                    {
-                        weight = (float)_mGetTacticWeight.Invoke(option, null);
-                    }
-                    catch
-                    {
-                        weight = float.NaN;
-                    }
-                    sb.Append(AiBehaviorLog.Fmt(weight));
                 }
-                return (sb.Length > 0) ? sb.ToString() : "-";
+                return sb.ToString();
             }
             catch (Exception e)
             {
@@ -818,15 +928,16 @@ namespace RBMAI
                 float sq = formation.CachedClosestEnemyFormationDistanceSquared;
                 return (sq > 0f) ? (float)Math.Sqrt(sq) : 0f;
             }));
+            sb.Append('\t').Append("dir=").Append(Safe(() =>
+            {
+                Vec2 dir = formation.Direction;
+                return dir.IsValid ? AiBehaviorLog.Fmt(dir.x) + "," + AiBehaviorLog.Fmt(dir.y) : "-";
+            }));
             sb.Append('\t').Append("weights=").Append(BehaviorWeights(formation));
             return sb.ToString();
         }
 
-        /// <summary>
-        /// The three behaviors currently bidding highest inside the formation. FormationAI exposes its list through
-        /// BehaviorCount / GetBehaviorAtIndex, so nothing here has to reach into a private field. GetAIWeight is the
-        /// same call the AI itself makes twice a second; asking once more per second changes nothing it decides.
-        /// </summary>
+        /// <summary>The three highest-bidding behaviors inside the formation.</summary>
         private string BehaviorWeights(Formation formation)
         {
             if (formation.AI == null)
@@ -880,8 +991,6 @@ namespace RBMAI
             }
             return (sb.Length > 0) ? sb.ToString() : "-";
         }
-
-        // ------------------------------------------------------------------
 
         private string BattleJoined(TacticComponent tactic)
         {
@@ -990,7 +1099,6 @@ namespace RBMAI
             }
         }
 
-        /// <summary>A miss is written down once and then never again: a log that repeats itself is unreadable.</summary>
         private void ReportOnce(string key, Exception e)
         {
             if (_reportedFailures.Contains(key))
@@ -1022,7 +1130,6 @@ namespace RBMAI
                   .Append("  (log opened ").Append(System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")).Append(")").Append("\n");
             }
             catch { }
-            // Is the worker-thread formation-movement postfix actually installed? (pfxCalls=0 on 2026-09-09.)
             try
             {
                 sb.Append("# IsFormationReshufflingUnsafe=").Append(RBMAI.Tactics.IsFormationReshufflingUnsafe).Append("\n");
@@ -1046,31 +1153,49 @@ namespace RBMAI
             sb.Append("# Tab separated. Three line kinds:").Append("\n");
             sb.Append("#").Append("\n");
             sb.Append("#   TEAM   t  TEAM  team  side  playerTeam  playerGeneral  playerSergeant  playerAlly").Append("\n");
-            sb.Append("#          teamAIType  tacticType  joined  reapply  aiForms  allowAiTicking  options").Append("\n");
+            sb.Append("#          teamAIType  tacticType  joined  reapply  aiForms  allowAiTicking  options  comp").Append("\n");
             sb.Append("#             joined  = the tactic's own _hasBattleBeenJoined (n/a if that tactic has none);").Append("\n");
             sb.Append("#                       0 = advance phase, 1 = attack phase").Append("\n");
             sb.Append("#             options = every tactic the team may pick as Name:GetTacticWeight, active one starred").Append("\n");
-            sb.Append("#                       (a switch needs another option to beat the active one x1.5)").Append("\n");
+            sb.Append("#                       (a switch needs another option to beat the active one x1.5); (xM) = the").Append("\n");
+            sb.Append("#                       TacticSelection multiplier already inside that weight; (xM tF) = also the").Append("\n");
+            sb.Append("#                       terrain factor F inside it (terrainTacticsEnabled, after the terrain publish)").Append("\n");
             sb.Append("#             reapply = TacticComponent.IsTacticReapplyNeeded").Append("\n");
             sb.Append("#             aiForms = Team.GetAIControlledFormationCount()").Append("\n");
+            sb.Append("#             comp    = what the RBM tactics grade (TacticSelection.DescribeComposition): men own/enemy,").Append("\n");
+            sb.Append("#                       inf share(own vs enemy infantry), splitInf = superiority t 0..1 or unfit,").Append("\n");
+            sb.Append("#                       rng share(count), splitArch = archer fit 0..1 or unfit, cav, ha = horse-archer").Append("\n");
+            sb.Append("#                       share, wedgeRiders/barded = the wedge's last count, rem = remaining power,").Append("\n");
+            sb.Append("#                       defApplicable (defenders) = native gate for the defensive tactics (0 = they weigh 0)").Append("\n");
+            sb.Append("#                       CHANGE TACTIC lines carry the same column.").Append("\n");
+            sb.Append("#").Append("\n");
+            sb.Append("#   ROUT   t  ROUT  team  remaining  -- a side under 10% power with nobody on foot was routed at once").Append("\n");
+            sb.Append("#          (TacticSelection's MakeDecision prefix); once per team.").Append("\n");
+            sb.Append("#").Append("\n");
+            sb.Append("#   (The battlefield terrain read -- TERRAIN and TERRAIN_* -- and the log-only terrain tactic prediction --").Append("\n");
+            sb.Append("#   PREDICT, TACTIC, TACTICSUMMARY -- are their own log: logs/terrain, BattleTerrainLogic.)").Append("\n");
+            sb.Append("#").Append("\n");
+            sb.Append("#   SELECT t  SELECT  team  culture  commander  valor  calculating  tactics  options").Append("\n");
+            sb.Append("#          once at battle start, field battles: the side's culture and commander (traits -2..2,").Append("\n");
+            sb.Append("#          Tactics skill), then per option Name:c<culture>/v<valor>/k<calculating>/s<skill>/j<jitter>=x<total>").Append("\n");
             sb.Append("#").Append("\n");
             sb.Append("#   FORM   t  FORM  team  formationIndex  primaryClass  units  aiControlled  playerIn").Append("\n");
             sb.Append("#          playerLed  activeBehavior  side  movementOrder  state  arr  form").Append("\n");
-            sb.Append("#          w  d  rally  spd  spdMax  dev  idealDisp  avg  order  distToOrder  distToEnemy  weights").Append("\n");
+            sb.Append("#          w  d  rally  spd  spdMax  dev  idealDisp  avg  order  distToOrder  distToEnemy  dir  weights").Append("\n");
             sb.Append("#             state       = Formation.GetMovementState()").Append("\n");
             sb.Append("#             arr/form    = ArrangementOrder / FormOrder enum").Append("\n");
             sb.Append("#             rally       = <1 while RallyLogic holds the formation for its far men>/<far men>/<far men in").Append("\n");
             sb.Append("#                           melee, which block the rally at 4 or 25% of the far men>[/reinf in the").Append("\n");
-            sb.Append("#                           30s after a reinforcement wave][/spawn when holding at the wave's spawn point]").Append("\n");
-            sb.Append("#             spd/spdMax  = CachedMovementSpeed / QuerySystem.MovementSpeedMaximum").Append("\n");
+            sb.Append("#                           30s after a reinforcement wave][/spawn when holding at the wave's spawn point]").Append("\n");            sb.Append("#             spd/spdMax  = CachedMovementSpeed / QuerySystem.MovementSpeedMaximum").Append("\n");
             sb.Append("#             dev         = DeviationOfPositionsExcludeFarAgents (how ragged the line is)").Append("\n");
             sb.Append("#             idealDisp   = QuerySystem.IdealAverageDisplacement").Append("\n");
             sb.Append("#             avg/order   = CachedAveragePosition / OrderPosition, as x,y").Append("\n");
             sb.Append("#             distToEnemy = sqrt(CachedClosestEnemyFormationDistanceSquared)").Append("\n");
+            sb.Append("#             dir         = Formation.Direction (the facing), as x,y").Append("\n");
             sb.Append("#             weights     = top 3 behaviors as Name:aiWeight*weightFactor/cCoherence").Append("\n");
             sb.Append("#").Append("\n");
             sb.Append("#   CHANGE t  CHANGE  TACTIC|BEHAVIOR|ORDER  team  [formation]  old -> new").Append("\n");
-            sb.Append("#          TACTIC also carries the new tactic's joined flag and the options column.").Append("\n");
+            sb.Append("#          TACTIC also carries the new tactic's joined flag and the options/comp columns.").Append("\n");
             sb.Append("#          written the frame it happens, not on the next snapshot.").Append("\n");
             sb.Append("#").Append("\n");
             sb.Append("#   AGENTS t  AGENTS  team  formationIndex  units  then the columns below.").Append("\n");
@@ -1085,7 +1210,16 @@ namespace RBMAI
             sb.Append("#             flUnreach/flDeep = mission totals of Frontline step FRAMES dropped because the step had no").Append("\n");
             sb.Append("#                           navmesh path (rock/wall) / crossed walled-off deep water; flProbes = engine").Append("\n");
             sb.Append("#                           reachability queries behind flUnreach; flPress = step pins released because the").Append("\n");
-            sb.Append("#                           man pressed against something for 2 s without moving 0.15 m").Append("\n");            sb.Append("#             retreating  = Agent.IsRetreating()   runAway = Agent.IsRunningAway").Append("\n");
+            sb.Append("#                           man pressed against something for 2 s without moving 0.15 m").Append("\n");
+            sb.Append("#             flDec       = men by current Frontline decision: Attack/BackStep/FindAlly/FlankLeft/FlankRight/").Append("\n");
+            sb.Append("#                           Rest/none (no decision state); closeUp = of the Attack ones, those walking up behind an").Append("\n");
+            sb.Append("#                           ally in their lane instead of charging through. Only acted on under a charge (frameDis)").Append("\n");
+            sb.Append("#             nnMean/nnP10/nnP50 = distance (m) from each man to his nearest formation-mate; packed = men").Append("\n");
+            sb.Append("#                           with one closer than 0.7 m (bunching)").Append("\n");
+            sb.Append("#             rangedArr   = mission totals of RBM's ranged Line/Loose/loose-Circle changes by reason").Append("\n");
+            sb.Append("#                           (default/post/ground/fire/cavalry/heavyFire, surrounded/ring = loose circle,").Append("\n");
+            sb.Append("#                           Utilities.ChooseRangedArrangement); spacingFix = loose-circle spacings found").Append("\n");
+            sb.Append("#                           reset and set again").Append("\n");            sb.Append("#             retreating  = Agent.IsRetreating()   runAway = Agent.IsRunningAway").Append("\n");
             sb.Append("#             walk        = Agent.WalkMode (walking, not running)").Append("\n");
             sb.Append("#             frameDis    = !Agent.IsFormationFrameEnabled (SetFormationFrameDisabled fired)").Append("\n");
             sb.Append("#             alarmed/cautious = Agent.AIStateFlags & AlarmStateMask (a state, not free bits)").Append("\n");
@@ -1100,6 +1234,34 @@ namespace RBMAI
             sb.Append("#             charStringId#agentIndex | slotDist | maxSpeedMultiplier | maximumSpeedLimit").Append("\n");
             sb.Append("#             | fwdUnlimitedSpeed | wWalkMode | vVelocity | detDetached | catchCatchUp").Append("\n");
             sb.Append("#             | fdFrameDisabled | aiStateFlags | currentActionType(0) | sameFormFlag").Append("\n");
+            sb.Append("#").Append("\n");
+            sb.Append("#   RUN    t  RUN  team  formationIndex  count=N  then up to ").Append(LagCount).Append(" men more than ")
+                .Append(AiBehaviorLog.Fmt(RunAheadMin)).Append(" m IN FRONT of their slot").Append("\n");
+            sb.Append("#          (GetCurrentGlobalPositionOfUnit, along CurrentDirection), furthest first; only written when N > 0:").Append("\n");
+            sb.Append("#             charStringId#agentIndex | slot+metres ahead of slot | avg+metres ahead of the men's average").Append("\n");
+            sb.Append("#             | limMaximumSpeedLimit | vVelocity | catchCatchUp | currentActionType(0)").Append("\n");
+            sb.Append("#").Append("\n");
+            sb.Append("#   DECISION t  DECISION  team  formationIndex  mainClass  men=N  tactic=X  beh=Y  ai=0|1  chain=...  notes=...").Append("\n");
+            sb.Append("#          WHO changed the formation (DecisionTrace, observation only), at most one line per formation per 0.5 s,").Append("\n");
+            sb.Append("#          everything since its last DECISION line. chain = ' | '-separated  field:writer before->after @t").Append("\n");
+            sb.Append("#             field  = move (order kind changed, Move point > 5 m from the last recorded, new ChargeToTarget target;").Append("\n");
+            sb.Append("#                      ' asked=K' = the order before ChargeGuard rewrote it, ' raw=Charge' = before the Charge ->").Append("\n");
+            sb.Append("#                      ChargeToTarget conversion) | facing (kind, or turned > 15 deg; swept after each scope, the").Append("\n");
+            sb.Append("#                      setter is JIT-inlined) | arr (ArrangementOrder) | width (FormOrder: kind, or Custom width > 10 %)").Append("\n");
+            sb.Append("#                      | beh (FindBestBehavior switched the active behavior) | tactic (the team's tactic changed in").Append("\n");
+            sb.Append("#                      MakeDecision, written on every formation of the team)").Append("\n");
+            sb.Append("#             writer = formAI:<active behavior>[@fN:Class when ordering another formation] (FormationAI.TickOccasionally)").Append("\n");
+            sb.Append("#                      | tactic:<current tactic> (TeamAIComponent.TickOccasionally) | decide:<tactic> (MakeDecision,").Append("\n");
+            sb.Append("#                      RBM re-picks included) | chargeGuard (its Formation.Tick re-apply; '<writer>>chargeGuard' = the").Append("\n");
+            sb.Append("#                      writer's charge turned into ChargeGuard's advance Move or re-aimed) | react (ReactionMonitor check)").Append("\n");
+            sb.Append("#                      | player (player-controlled formation, no scope) | other (no scope); a trailing ~ = arr/width").Append("\n");
+            sb.Append("#                      seen by the after-scope sweep, not by its setter hook").Append("\n");
+            sb.Append("#             notes  = the formation's BEHAVIOR / REACT events in between (Behavior what why @t; older than 30 s dropped)").Append("\n");
+            sb.Append("#").Append("\n");
+            sb.Append("#   FLIP   t  FLIP  team  formationIndex  mainClass  field=move|order|arr|beh  count=N/30s  writers=W xN,...  seq=v@t>...").Append("\n");
+            sb.Append("#          a formation that keeps changing its mind: Move point jumping > 20 m back against its previous jump more than").Append("\n");
+            sb.Append("#          3 times (writers 'previous/this'), or order kind / arrangement / behavior changing more than 2 times, in 30 s;").Append("\n");
+            sb.Append("#          once per field per 30 s. The writers named are the rules that fight.").Append("\n");
             sb.Append("#").Append("\n");
             sb.Append("# Snapshots every ").Append(AiBehaviorLog.Fmt(SnapshotInterval)).Append("s; AGENTS/LAG every ")
                 .Append(AiBehaviorLog.Fmt(AgentsInterval)).Append("s.").Append("\n");

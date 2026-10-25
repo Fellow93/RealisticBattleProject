@@ -14,19 +14,53 @@ namespace RBMAI.AiModule.RbmBehaviors
     {
         public static Dictionary<Formation, WorldPosition> cavHoldPositions = new Dictionary<Formation, WorldPosition> { };
         public static Dictionary<Formation, WorldPosition> skirmisherRetreatPositions = new Dictionary<Formation, WorldPosition> { };
-        // Formation -> mission time enemy cavalry last charged it (the brace condition below last held).
+        // Formation -> mission time enemy cavalry last charged it
         public static Dictionary<Formation, float> braceLastThreatTime = new Dictionary<Formation, float> { };
 
-        // Bracing outlasts the charge order by this long. RBMBehaviorCavalryCharge alternates ChargeWithTarget with a
-        // Move to pull clear and reform, so bracing only on the charge order flipped the infantry between shieldwall
-        // + hold and its own arrangement + charge every cycle, and each arrangement flip re-lays the whole formation.
+        // Bracing outlasts the charge order by this long (CavalryCharge alternates ChargeWithTarget with a reform Move; each arrangement flip re-lays the formation)
         private const float BraceHoldSeconds = 8f;
+
+        // A brace episode lasts at most this long, then no bracing for BraceCooldownSeconds (repeated charge orders must not freeze the line)
+        private const float BraceMaxSeconds = 25f;
+        private const float BraceCooldownSeconds = 15f;
+        private const float BraceGapSeconds = 2f;
+
+        private sealed class BraceEpisode
+        {
+            public float Start = float.NaN;
+            public float Last = float.NaN;
+            public float CooldownUntil = float.MinValue;
+        }
+
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<BehaviorCharge, BraceEpisode> BraceEpisodes =
+            new System.Runtime.CompilerServices.ConditionalWeakTable<BehaviorCharge, BraceEpisode>();
+
+        private static bool BraceCoolingDown(BehaviorCharge behavior, float now)
+        {
+            return now < BraceEpisodes.GetOrCreateValue(behavior).CooldownUntil;
+        }
+
+        /// <summary>False (and the cooldown starts) once the episode ran BraceMaxSeconds.</summary>
+        private static bool BraceStillAllowed(BehaviorCharge behavior, float now)
+        {
+            BraceEpisode episode = BraceEpisodes.GetOrCreateValue(behavior);
+            if (float.IsNaN(episode.Start) || float.IsNaN(episode.Last) || now - episode.Last > BraceGapSeconds)
+            {
+                episode.Start = now;
+            }
+            episode.Last = now;
+            if (now - episode.Start > BraceMaxSeconds)
+            {
+                episode.Start = float.NaN;
+                episode.CooldownUntil = now + BraceCooldownSeconds;
+                return false;
+            }
+            return true;
+        }
 
         public static ArrangementOrder ArrangementOrderLine { get; private set; }
 
-        // Vanilla BehaviorCharge.TickOccasionally applies only the movement order, never CurrentFacingOrder, so the
-        // cavalry hold sets the formation's facing itself. When the hold ends, hand the facing back to the enemy
-        // instead of leaving the line locked on the last direction the cavalry was in.
+        // Vanilla applies only the movement order, never CurrentFacingOrder: the hold sets facing itself and hands it back to the enemy when it ends
         private static void EndCavalryHold(Formation formation, bool isActiveBehavior)
         {
             if (cavHoldPositions.Remove(formation) && isActiveBehavior)
@@ -39,10 +73,7 @@ namespace RBMAI.AiModule.RbmBehaviors
         [HarmonyPatch("CalculateCurrentOrder")]
         private static bool PrefixCalculateCurrentOrder(ref BehaviorCharge __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
-            // FormationAI.FindBestBehavior calls CalculateCurrentOrder (via PrecalculateMovementOrder) on every
-            // weighted behavior of EVERY formation, including one the player leads as a non-general captain.
-            // The branches below write orders straight onto the formation, so for a player-owned formation they
-            // overrode the player's shieldwall/square with charge + line. Vanilla's version is side-effect free.
+            // FindBestBehavior runs CalculateCurrentOrder on every formation incl. player-led ones; the branches below write orders onto the formation
             if (__instance.Formation != null && !__instance.Formation.IsAIControlled)
             {
                 return true;
@@ -65,13 +96,7 @@ namespace RBMAI.AiModule.RbmBehaviors
             {
                 Formation significantEnemy = RBMAI.Utilities.FindSignificantEnemy(__instance.Formation, true, true, false, false, false, true);
 
-                // FindBestBehavior (via PrecalculateMovementOrder) and the BehaviorCharge constructor also run this
-                // on a charge that is only a candidate. Writing shieldwall/firing/arrangement onto the formation then
-                // flipped it to charge settings and back whenever another behaviour won, and every flip re-applies
-                // behaviour values to all its agents (a visible hitch). So the formation is only touched while
-                // Charge is the active behaviour; the order itself is always computed, it is the behaviour's answer.
-                // The movement order needs no write here: once active, BehaviorCharge.TickOccasionally runs this
-                // and then applies CurrentOrder itself.
+                // also runs on a candidate charge: touch the formation only while Charge is active (each flip re-applies behaviour values to all agents)
                 bool isActiveBehavior = __instance.Formation.AI != null && __instance.Formation.AI.ActiveBehavior == __instance;
 
                 if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle && __instance.Formation.QuerySystem.IsInfantryFormation && !RBMAI.Utilities.FormationFightingInMelee(__instance.Formation, 0.5f))
@@ -98,10 +123,10 @@ namespace RBMAI.AiModule.RbmBehaviors
                         cavDist = cavDirection.Normalize();
                     }
                     bool isOnlyCavRemaining = RBMAI.Utilities.CheckIfOnlyCavRemaining(__instance.Formation);
-                    // Still within BraceHoldSeconds of the last charge at us: keep bracing while that cavalry is near,
-                    // even if it is reforming on a Move order or has drifted behind the infantry it supports.
+                    // within BraceHoldSeconds of the last charge at us: keep bracing while that cavalry is near
                     float currentTime = Mission.Current.CurrentTime;
-                    bool braceHeld = enemyCav != null && cavDist < 150f &&
+                    bool braceCooldown = BraceCoolingDown(__instance, currentTime);
+                    bool braceHeld = !braceCooldown && enemyCav != null && cavDist < 150f &&
                         braceLastThreatTime.TryGetValue(__instance.Formation, out float lastThreat) && currentTime - lastThreat < BraceHoldSeconds;
                     if (braceHeld || ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && ((signDist > 35f || significantEnemy == enemyCav) || isOnlyCavRemaining)))
                     {
@@ -137,7 +162,11 @@ namespace RBMAI.AiModule.RbmBehaviors
                             }
                             if (isActiveBehavior)
                             {
-                                __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                                // never a ranged formation (user rule)
+                                if (!RBMAI.Utilities.IsRangedForArrangement(__instance.Formation))
+                                {
+                                    __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                                }
                                 if (cavDist > 10f)
                                 {
                                     __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
@@ -147,18 +176,21 @@ namespace RBMAI.AiModule.RbmBehaviors
                         }
                         else
                         {
-                            // TargetFormation is sticky (vanilla never clears it after a targeted order), so on its own
-                            // it braced us against cavalry parked on a Move/Stop order for the whole battle -- a stronger
-                            // attacker would never leave its spawn against a handful of idle horse. Brace only while that
-                            // cavalry is actually charging us and close enough to matter, as BehaviorAdvance already does.
+                            // TargetFormation is sticky: brace only while that cavalry is actually charging us and close
                             OrderType enemyCavOrder = enemyCav.GetReadonlyMovementOrderReference().OrderType;
                             bool enemyCavCharging = enemyCavOrder == OrderType.ChargeWithTarget || enemyCavOrder == OrderType.Charge;
                             bool chargedAt = !(__instance.Formation.AI?.Side == FormationAI.BehaviorSide.Left || __instance.Formation.AI?.Side == FormationAI.BehaviorSide.Right) && enemyCav.TargetFormation == __instance.Formation && enemyCavCharging && cavDist < 150f;
-                            if (chargedAt)
+                            if (chargedAt && !braceCooldown)
                             {
                                 braceLastThreatTime[__instance.Formation] = currentTime;
                             }
-                            if (chargedAt || braceHeld)
+                            if ((chargedAt || braceHeld) && !braceCooldown && !BraceStillAllowed(__instance, currentTime))
+                            {
+                                // episode ran out: charge as normal for the cooldown
+                                braceLastThreatTime.Remove(__instance.Formation);
+                                braceCooldown = true;
+                            }
+                            if ((chargedAt || braceHeld) && !braceCooldown)
                             {
                                 Vec2 vec = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                                 WorldPosition positionNew = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
@@ -190,7 +222,10 @@ namespace RBMAI.AiModule.RbmBehaviors
                                 }
                                 if (isActiveBehavior)
                                 {
-                                    __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                                    if (!RBMAI.Utilities.IsRangedForArrangement(__instance.Formation))
+                                    {
+                                        __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
+                                    }
                                     if (cavDist > 10f)
                                     {
                                         __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
@@ -226,6 +261,9 @@ namespace RBMAI.AiModule.RbmBehaviors
 
                 if (significantEnemy != null && __instance.Formation.QuerySystem.IsInfantryFormation && __instance.Formation.CountOfUnitsWithoutDetachedOnes >= 30)
                 {
+                    // Riders that clearly outweigh the foot target are charged instead.
+                    Formation current = ____currentOrder != null && ____currentOrder.OrderEnum == MovementOrder.MovementOrderEnum.ChargeToTarget ? ____currentOrder.TargetFormation : null;
+                    significantEnemy = ChargeTargetChoice.Prefer(__instance.Formation, significantEnemy, current);
                     ____currentOrder = MovementOrder.MovementOrderChargeToTarget(significantEnemy);
                     if (isActiveBehavior)
                     {

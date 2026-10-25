@@ -12,23 +12,37 @@ RBM AI too, and has its own page: [Posture & Stamina](posture.md). Settings are 
 
 ## Tactics by culture
 
-In field battles, RBM gives each side a set of tactics based on its leader's culture:
+In field battles, every side can use every tactic of its role, whatever its culture. Each culture has a
+signature tactic, which gets a bonus:
 
-| Side | Culture | Special tactic |
-|---|---|---|
-| Attacker | Empire | **Embolon**: heavy cavalry forms a wedge in front of the infantry |
-| Attacker | Aserai | **Split Skirmishers**: javelin troops form a separate screen |
-| Attacker | Sturgia | **Split Infantry**: the infantry splits into a center and two flanks |
-| Attacker | Battania | **Split Archers**: archers deploy on both flanks |
-| Attacker | Khuzait | **Ranged Harassment** (from the base game) |
-| Defender | Battania | Split Archers (defensive version) |
-| Defender | Sturgia | Split Infantry (defensive version) |
+| Side | Tactic | Signature culture | Picked when the army has |
+|---|---|---|---|
+| Attacker | **Embolon**: heavy cavalry forms a wedge in front of the infantry | Empire | a cavalry wing of 20+ riders, at least 10% of the army (best from 30%), mostly barded heavy horse |
+| Attacker | **Split Skirmishers**: javelin troops form a separate screen | Aserai | a strong infantry force (60+ men, 25% stronger than the enemy's) with enough javelin men |
+| Attacker | **Split Infantry**: the infantry splits into a center and two flanks | Sturgia | 45+ infantry, at least 35% of the army, best when it outnumbers the enemy's infantry |
+| Attacker | **Split Archers**: archers deploy on both flanks | Battania | 30+ archers, at least 12% of the army (best from 35%) |
+| Attacker | **Ranged Harassment** (from the base game) | Khuzait | a large share of archers and horse archers, more than the enemy's |
+| Attacker | Full-scale attack | none | infantry |
+| Defender | Split Archers (defensive version) | Battania | as above |
+| Defender | Split Infantry (defensive version) | Sturgia | as above |
+| Defender | Defensive line, defensive engagement, full-scale attack | none | (base game rules) |
 
-Every side can also use a full-scale attack, and defenders can use a defensive line and defensive engagement.
-A culture's special tactic is only picked when the army suits it: Embolon needs a large share of heavy cavalry,
-Split Archers needs a good share of archers, Split Infantry needs an army that is mostly infantry, and Split
-Skirmishers needs a strong infantry force with enough javelin men. Several base-game tactics, such as the
-all-out charge and the defensive ring, are not used in field battles.
+Each tactic is rated by how well the army suits it, and the best one is used. That rating is then adjusted:
+
+- **Culture:** a culture's signature tactic counts 1.5 times as much; a signature tactic of another culture
+  counts 0.8 times. So an army usually uses its own culture's tactic when it suits it, and another culture's
+  only when the army is clearly built for it. Full-scale attack and the two defensive tactics have no signature
+  culture.
+- **Commander** (campaign lords only): Valor makes attacking tactics (full-scale attack, Embolon) more likely
+  and defensive ones less likely, by 10% per trait level; a cowardly lord the other way. Calculating makes the
+  manoeuvring tactics (Embolon, the split tactics, Ranged Harassment) 10% more likely per level. A high Tactics
+  skill favours the manoeuvring tactics too: from 85% at skill 0 to 115% at 250.
+- **Variation:** each battle, every tactic gets a random ±10%, so the same two armies don't always fight the
+  same way.
+
+Defenders whose army is almost all infantry (over 90%) always go for a full-scale attack. A side down to under
+10% of its strength with only mounted men left routs. Several base-game tactics, such as the all-out charge,
+the defensive ring and the coordinated retreat, are not used in field battles.
 
 **Split Infantry** puts about a sixth of the infantry on each flank, filled first with men carrying two-handed
 axes and polearms. **Split Skirmishers** puts up to a fifth of the infantry, the lower-tier javelin troops, in a
@@ -47,6 +61,57 @@ forward (6 m every 4 seconds) while its archers shoot, or simply advances if it 
 **Battle joined.** The tactic switches to attack once the infantry lines are close (around 70 to 95 m depending
 on the tactic), once a good part of the main infantry is already fighting in melee, or once the enemy has only
 cavalry left. From then on the infantry charges, archers skirmish on their own, and cavalry charge.
+
+**Reacting to the battle** (setting "AI reacts to the battle", on by default). Through both phases each AI army
+checks the fight once a second and can give one free formation a short job on top of its plan:
+
+- **Help.** One of its formations is attacked in melee, or an enemy group closes in on it (its archers, a flank
+  group, the hidden reserve). The nearest free infantry walks over and joins the fight, or free cavalry rides to the
+  attacker's flank or rear and charges. A defending line holding its position that will come to help by itself is
+  given about 3 seconds to do so first. The main line's head-on fight with your main line does not count.
+- **Cut off cavalry.** Your cavalry rides round its line, at its archers or at its rear. Free cavalry rides out to
+  stand between them and charges your riders before they arrive.
+- **Hit an opening.** One of your formations is stuck in melee with one of its own and nothing else of yours guards
+  its flank or rear. Free cavalry rides round and charges it from the side or behind.
+- **Hunt your archers.** Your archers keep landing arrows on one of its formations, or have stood within about
+  200 m of its main line for 20 seconds while it has little to shoot back with. Free cavalry rides to their side or
+  rear (about 30 m out) and charges; infantry goes only when it is within about 80 m of them. The archers actually
+  shooting are hunted first. It does not go when your infantry stands within about 60 m of the archers, when your
+  cavalry waits near them or near the hunters, or when the way passes close to your infantry or in front of your
+  main line, and it gives up when your infantry comes up to cover them or they keep running away. Infantry never
+  chases horse archers, and cavalry goes after them only while they stand still. Horse archers riding about while
+  they shoot get a screen instead: cavalry stands between them and the formation they shoot at and charges only when
+  they come within about 40 m, then rides back to its place once they pull away (no chase). One hunt at a time; the
+  same archers are not hunted again for a minute.
+- **Screen parked cavalry.** Your cavalry or horse archers wait beside or behind its line, within about 250 m of its
+  archers or a flank, for 8 seconds. Free cavalry (or infantry) takes up a screen between them and the likely target
+  and charges only when they come in.
+- **Change plans when the battle turns.** When the balance has shifted a lot since the army chose its battle plan
+  (the strength of one side against the other moved by about a third, your cavalry or archers are almost gone, or it
+  lost half its own archers or cavalry) and stays that way for a few seconds, the army weighs its plans again and
+  takes the best one if it is clearly better, for example dropping the hedgehog once your cavalry is gone. At most
+  once every 45 seconds and four times a battle; a defending line that is already fighting is only pulled out when
+  the battle turned very sharply (one side's strength doubled against the other's).
+- **Turn to face you.** A defending line holding its position turns in place toward where most of your army is
+  (your infantry counts most) when you move more than about 35° round it and it is not fighting; its archers face
+  the same way. A line holding a choke point turns only within about 60° of the pass.
+- **Give up a bypassed choke point.** When your main force goes round a held choke point (behind its line, or beside
+  it within about 300 m where the pass's sides are open), the defender drops the choke after about 8 seconds, picks
+  a new plan at once and looks for a new position from where you actually stand.
+- **Use the time you give it.** When you pull your army back, the defender looks for a better position again. It
+  moves only when it can get there and form up well before you could arrive, never while its line is fighting or you
+  are within about 200 m; a long pull-back lets it move again even after its usual two moves (at most five a battle).
+
+A job ends when the threat is gone or beaten, after about a minute (a minute and a half in melee), when the
+formation would be drawn too far from its army or chases without getting closer, or when it is threatened itself;
+the formation then goes back to its plan. Small groups are ignored, at most two such jobs run at a time (plus one
+"opening" attack, one archer hunt and one screen), and a formation that has just finished one rests for 20 seconds
+(not when the enemy simply turned away, so a feint does not tire it out; a screen even keeps its place while your
+riders stay near). Your own formations are never moved, but an allied AI army defends them as it does its own. A
+big line still gets help against a group a fifth of its size (it judges as if it had at most 100 men). In a small
+army with no free formation, the main line may step out to help its own archers when they are attacked right next to
+it and no other enemy infantry is near, and goes back to its place soon after. Formations holding a choke point or a
+hedgehog and the hidden reserve keep their jobs.
 
 ## Infantry
 

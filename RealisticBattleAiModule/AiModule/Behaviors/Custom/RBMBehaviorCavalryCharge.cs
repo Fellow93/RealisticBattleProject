@@ -9,49 +9,19 @@ using TaleWorlds.MountAndBlade;
 /// <summary>
 /// Cavalry charge as a four-state loop: Undetermined -> Charging -> ChargingPast -> Reforming -> Charging ...
 ///
-/// Undetermined: no enemy in reach; plain charge order until the closest enemy is within
-///   StartChargeTimeToContactSeconds at full speed.
-/// Charging: pick a target (AcquireTarget: type, distance and power weighted, per the Charge* flags; picked only
-///   when a charge starts, never switched mid-charge), form up to its width and
-///   ChargeToTarget. The charge is "through" once the target centre is behind us (dot product of the initial
-///   charge direction flips); ChargeThroughGraceSeconds later we go to ChargingPast. If the wedge is in
-///   contact with the target for ChargeContactTimeoutSeconds without ever passing through (bogged down in the
-///   melee), it goes to ChargingPast anyway so it pulls out instead of dying in place. That clock starts on real
-///   fighting (ContactMeleeMinRatio of riders landed or took a melee blow within ContactMeleeRecentSeconds), not
-///   on the centre-distance contact test alone, which is met 25-30 m out against a wide line.
-/// ChargingPast: ride on to a reform point ChargeStopDistance + target depth beyond the enemy, along the
-///   initial charge direction, so a wedge that stalled on the near side rides on through instead of turning
-///   back the way it came. If the wedge is already cohesive (ReformCohesionMinRatio of riders within
-///   ReformCohesionRadius of the centre) with RechargeMinRunUpDistance of room, skip the reform and charge
-///   straight away; otherwise switch to Reforming on arrival or after ChargingPastTimeoutSeconds.
-/// Reforming: hold the reform point only until the wedge is cohesive with enough run-up, or
-///   ReformTimeoutSeconds runs out, then charge again. Idle time here is kept as short as possible.
-///   Cohesion is counted over all riders, not the native "exclude far agents" deviation, which reads a
-///   scattered wedge with a few bunched riders as tight.
+/// Undetermined: plain charge order until the closest enemy is within StartChargeTimeToContactSeconds.
+/// Charging: pick a target once per charge (AcquireTarget; only significant formations while any exist, chase-timeout
+///   exclusions), form up to its width, ChargeToTarget. "Through" once the target centre is behind us, then
+///   ChargingPast after ChargeThroughGraceSeconds; real melee contact for ChargeContactTimeoutSeconds also ends it.
+/// ChargingPast: ride on to a reform point; a cohesive wedge with enough run-up skips the reform and charges again.
+/// Reforming: hold the reform point until the wedge is cohesive (counted over all riders) or ReformTimeoutSeconds.
 ///
-/// Two overrides apply:
-///  - While pulling clear or reforming, the reform point is resolved every tick (ResolveReformDestination).
-///    If it lies inside any formation's footprint, or off navmesh / outside the map, a ring search around it
-///    finds the nearest clear, reachable point that is not closer to the target; if none exists the reform is
-///    skipped and the wedge charges again.
-///  - While reforming only, any enemy formation within ReformThreatDistance, or within
-///    ReformApproachDistanceFactor times that and moving toward us (IsEnemyClosingIn), ends the reform
-///    immediately and triggers a new charge. It is not checked while pulling clear, where every enemy is
-///    close by definition.
+/// Reform point: CavalryReform picks it from the live situation (through / left / right / back, enemies and friends first),
+/// re-checked every 2 s; none usable = skip the reform. While reforming only, an enemy within ReformThreatDistance (or
+/// closing, IsEnemyClosingIn) ends the reform.
 ///
-/// Normal charge: 8 lancers vs a 40-man bandit line at 200 m. Time to contact drops under 5 s -> Charging.
-/// They hit the line, the bandit centre passes behind them, 3 s later -> ChargingPast toward a point ~145 m
-/// past the bandits. If they come out still together, they turn and charge again as soon as they are 100 m
-/// clear; if scattered they ride on to the reform point -> Reforming, gather within 20 m -> Charging again
-/// from the far side. Repeat until one side is gone.
-///
-/// Interrupted charge: same lancers, but a second bandit group is standing where the reform point lands.
-/// ResolveReformDestination finds the point contested, ring-searches around it and moves the reform 40 m
-/// aside; the lancers reform there instead. While they reform, the first bandit line turns and walks after
-/// them. At 70 m and closing IsEnemyClosingIn fires -> Charging immediately, ignoring the reform timer.
-/// If instead the whole area around the reform point were blocked (formations on all sides, map edge, no
-/// navmesh), ResolveReformDestination returns Invalid and TickReformMovement re-enters Charging, dropping the
-/// reform entirely: new target, ChargeToTarget, no standing still.
+/// Terrain (TerrainCavalry, terrainTacticsEnabled): moves only the target scoring and the lane approach, never states or
+/// timers: bad-ground targets x3, lane targets x0.85; a lane's run-up point is ridden to before the charge (TickLaneApproach).
 /// </summary>
 public class RBMBehaviorCavalryCharge : BehaviorComponent
 {
@@ -63,6 +33,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         Reforming
     }
 
+    private const float MinChargeWidth = 20f; // m; the charge copies the target's width
     private const float ChargeStopDistance = 140f;
     private const float ChargeStopDistanceEmbolon = 70f;
     private const float ChargeCoherence = 0.5f;
@@ -72,20 +43,20 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
     private const float ChargeContactTimeoutSeconds = 8f;
     private const float ContactMeleeRecentSeconds = 3f;
     private const float ContactMeleeMinRatio = 0.2f;
-    // Target pick (AcquireTarget): lowest distance / (type weight * power weight) wins. Enemy cavalry is the
-    // preferred target, then horse archers, then archers, then infantry.
+    // Target pick (AcquireTarget): lowest distance / (type weight * power weight) wins; cavalry, then horse archers, archers, infantry.
     private const float TargetWeightCavalry = 4f;
     private const float TargetWeightHorseArchers = 2f;
     private const float TargetWeightArchers = 1f;
     private const float TargetWeightInfantry = 0.5f;
-    // Power weight = sqrt(enemy FormationPower / own FormationPower), clamped: a handful of stragglers or levies
-    // is not worth the ride and a strong block is worth a somewhat longer one, without power outweighing type
-    // and distance.
+    // Power weight = sqrt(enemy / own FormationPower), clamped
     private const float TargetPowerWeightMin = 0.3f;
     private const float TargetPowerWeightMax = 1.25f;
-    // Facing weight for foot formations (infantry and archers): 1 when they face us, 1 + TargetRearBonus when
-    // they face directly away, linear in between (1 + bonus/2 side-on). Riders don't get it, they turn fast.
+    // Facing weight for foot formations: 1 facing us, 1 + TargetRearBonus facing away, linear between. Riders don't get it.
     private const float TargetRearBonus = 1f;
+    // Chase = no contact for ChaseTimeoutSeconds and no closing by ChaseMinClosing; the target is excluded for ChaseExcludeSeconds (taken anyway when the only one).
+    private const float ChaseTimeoutSeconds = 20f;
+    private const float ChaseMinClosing = 30f; // m
+    private const float ChaseExcludeSeconds = 20f;
     private const float ChargingPastTimeoutSeconds = 19f;
     private const float ReformTimeoutSeconds = 10f;
     private const float ReformCohesionRadius = 20f;
@@ -96,10 +67,6 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
     private const float ReformApproachDistanceFactor = 2f;
     private const float ReformApproachMinSpeedSq = 1f;
     private const float ReformApproachMinDot = 0.7f;
-    private const float ReformClearanceMargin = 20f;
-    private static readonly float[] ReformSearchRadii = { 20f, 40f, 60f, 90f, 130f };
-    private const int ReformSearchDirections = 12;
-    private const int ReformPushMaxPasses = 3;
 
     private ChargeState _chargeState;
 
@@ -111,7 +78,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
     private bool _hasNewTarget;
 
-    private WorldPosition _lastReformDestination;
+    private readonly RBMAI.CavalryReform _reform = new RBMAI.CavalryReform();
 
     private Timer _chargingPastTimer;
 
@@ -120,6 +87,28 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
     private Timer _chargeTimer;
 
     private Timer _contactTimer;
+
+    private bool _laneApproach;
+
+    private float _chaseSince = float.NaN;
+    private float _chaseDistance;
+
+    // Exclusion is per target and escalates (doubled per timeout up to ChaseExcludeMaxSeconds); after two timeouts within
+    // ChaseFootOnlyWindow s only foot targets for ChaseFootOnlySeconds (filters dropped if they would leave nothing). AI thread.
+    private sealed class ChaseExclusion
+    {
+        public float Until;
+        public int Count;
+    }
+
+    private readonly Dictionary<Formation, ChaseExclusion> _chaseExclusions = new Dictionary<Formation, ChaseExclusion>();
+    private float _lastChaseTimeoutAt = float.NaN;
+    private float _footOnlyUntil = float.NaN;
+    private const float ChaseExcludeMaxSeconds = 80f;
+    private const float ChaseFootOnlyWindow = 60f;
+    private const float ChaseFootOnlySeconds = 60f;
+
+    private const string TerrainBehaviorName = "CavalryCharge";
 
     private static readonly PropertyInfo CurrentTacticProperty = typeof(TeamAIComponent).GetProperty("CurrentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
     private static readonly FieldInfo CurrentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -145,6 +134,15 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
     public override float NavmeshlessTargetPositionPenalty => 1f;
 
     private float ChargeStopDistanceForTactic => _isEmbolonTactic ? ChargeStopDistanceEmbolon : ChargeStopDistance;
+
+    /// <summary>The formation it charges / last charged (ReactionMonitor: "already answering", R4 skip), or null. AI thread.</summary>
+    internal Formation TargetFormation => _lastTarget?.Formation;
+
+    /// <summary>Reforming or without a decided charge: free for a ReactionMonitor task whatever its target. AI thread.</summary>
+    internal bool IsReformingOrIdle => _chargeState == ChargeState.Reforming || _chargeState == ChargeState.Undetermined;
+
+    /// <summary>The reform point's kind (through / left / right / back) while riding to or holding one, else null (map label).</summary>
+    internal string ReformKindName => (_chargeState == ChargeState.ChargingPast || _chargeState == ChargeState.Reforming) ? _reform.KindName : null;
 
     public RBMBehaviorCavalryCharge(Formation formation)
         : base(formation)
@@ -200,7 +198,12 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                             _hasNewTarget = true;
                             break;
                         }
-                        Vec2 toTarget = RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation);
+                        if (_laneApproach)
+                        {
+                            // still riding to the lane's run-up point: the charge has not started
+                            break;
+                        }
+                        Vec2 toTarget =RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation);
                         bool passedThrough = _initialChargeDirection.DotProduct(toTarget) <= 0f;
                         bool inContact = toTarget.Length <= ContactDistance(_lastTarget.Formation);
                         if (passedThrough && _chargeTimer == null)
@@ -216,6 +219,11 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                         if (chargeOver || stalledInMelee)
                         {
                             result = ChargeState.ChargingPast;
+                            break;
+                        }
+                        if (IsChaseTimedOut(toTarget.Length, inContact || _contactTimer != null || _chargeTimer != null))
+                        {
+                            _hasNewTarget = true;
                         }
                         break;
                     }
@@ -237,7 +245,6 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
                         }
                         else if (_chargingPastTimer.Check(Mission.Current.CurrentTime))
                         {
-                            _lastReformDestination = ComputeReformDestination();
                             result = ChargeState.Reforming;
                         }
                         break;
@@ -267,13 +274,81 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         return _lastTarget?.Formation == null || _lastTarget.Formation.CountOfUnits == 0;
     }
 
+    private void ResetChase()
+    {
+        _chaseSince = Mission.Current.CurrentTime;
+        _chaseDistance = _lastTarget?.Formation != null
+            ? (RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)).Length
+            : 0f;
+    }
+
+    // True = timed out, target excluded; contact or closing restarts the window.
+    private bool IsChaseTimedOut(float distance, bool engaged)
+    {
+        float now = Mission.Current.CurrentTime;
+        if (float.IsNaN(_chaseSince) || engaged)
+        {
+            _chaseSince = now;
+            _chaseDistance = distance;
+            return false;
+        }
+        if (now - _chaseSince < ChaseTimeoutSeconds)
+        {
+            return false;
+        }
+        if (_chaseDistance - distance >= ChaseMinClosing)
+        {
+            _chaseSince = now;
+            _chaseDistance = distance;
+            return false;
+        }
+        Formation excluded = _lastTarget?.Formation;
+        float excludeSeconds = ChaseExcludeSeconds;
+        int count = 1;
+        if (excluded != null)
+        {
+            ChaseExclusion exclusion;
+            if (!_chaseExclusions.TryGetValue(excluded, out exclusion))
+            {
+                exclusion = new ChaseExclusion();
+                _chaseExclusions[excluded] = exclusion;
+            }
+            exclusion.Count++;
+            count = exclusion.Count;
+            int doublings = (count > 3) ? 2 : count - 1;
+            excludeSeconds = MathF.Min(ChaseExcludeMaxSeconds, ChaseExcludeSeconds * (1 << doublings));
+            exclusion.Until = now + excludeSeconds;
+        }
+        bool footOnly = !float.IsNaN(_lastChaseTimeoutAt) && now - _lastChaseTimeoutAt <= ChaseFootOnlyWindow;
+        _lastChaseTimeoutAt = now;
+        if (footOnly)
+        {
+            _footOnlyUntil = now + ChaseFootOnlySeconds;
+        }
+        RBMAI.TerrainCavalry.NoteEvent(this, TerrainBehaviorName, "chaseTimeout", RBMAI.TerrainCavalry.FormationName(excluded)
+            + " " + RBMAI.TerrainCavalry.Fmt0(now - _chaseSince) + "s dist " + RBMAI.TerrainCavalry.Fmt0(_chaseDistance) + "->" + RBMAI.TerrainCavalry.Fmt0(distance)
+            + " excluded " + RBMAI.TerrainCavalry.Fmt0(excludeSeconds) + "s (x" + count + ")"
+            + (footOnly ? " footOnly " + RBMAI.TerrainCavalry.Fmt0(ChaseFootOnlySeconds) + "s" : ""));
+        _chaseSince = float.NaN;
+        return true;
+    }
+
+    private bool IsChaseExcluded(Formation candidate, float now, bool footOnly)
+    {
+        if (footOnly && (candidate.QuerySystem.IsCavalryFormation || candidate.QuerySystem.IsRangedCavalryFormation))
+        {
+            return true;
+        }
+        ChaseExclusion exclusion;
+        return _chaseExclusions.TryGetValue(candidate, out exclusion) && now < exclusion.Until;
+    }
+
     private float ContactDistance(Formation target)
     {
         return (target.Width + target.Depth + base.Formation.Depth) * 0.5f;
     }
 
-    // LastMeleeHitTime / LastRecievedMeleeHitTime are only set when a blow lands (Agent.UpdateLastAttackAndHitTimes),
-    // so this is riders actually trading blows, not riders still closing in.
+    // LastMeleeHitTime / LastRecievedMeleeHitTime are set only when a blow lands: riders actually trading blows
     private bool IsFightingInMelee()
     {
         float now = Mission.Current.CurrentTime;
@@ -317,9 +392,6 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         return total > 0 && near >= total * ReformCohesionMinRatio;
     }
 
-    // One pass over every enemy formation, scored by type, distance and power. This used to take infantry
-    // whenever any existed and only look at archers when none did, so the charge went for the infantry even
-    // with archers much closer.
     private void AcquireTarget()
     {
         Formation enemy = null;
@@ -328,21 +400,83 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         {
             float ownPower = MathF.Max(0.01f, base.Formation.QuerySystem.FormationPower);
             float bestScore = float.MaxValue;
+            // the pick without the terrain factor, to log when the ground changed it
+            Formation plain = null;
+            float plainScore = float.MaxValue;
+            string pickNote = null;
+            string plainNote = null;
+            // filters (each dropped when it would leave nothing): chase-timeout targets, then formations not significant to us
+            float now = mission.CurrentTime;
+            // chase-timeout targets and, in a foot-only window, every mounted one
+            bool footOnly = !float.IsNaN(_footOnlyUntil) && now < _footOnlyUntil;
+            bool useExclusions = true;
+            bool anyOther = false;
+            bool anySignificant = false;
+            foreach (Formation candidate in OtherFormations(mission, enemiesOnly: true))
+            {
+                if (TargetTypeWeight(candidate.QuerySystem) <= 0f || IsChaseExcluded(candidate, now, footOnly))
+                {
+                    continue;
+                }
+                anyOther = true;
+                if (RBMAI.ThreatSignificance.IsSignificant(base.Formation, candidate))
+                {
+                    anySignificant = true;
+                }
+            }
+            if (!anyOther)
+            {
+                useExclusions = false;
+                foreach (Formation candidate in OtherFormations(mission, enemiesOnly: true))
+                {
+                    if (TargetTypeWeight(candidate.QuerySystem) > 0f && RBMAI.ThreatSignificance.IsSignificant(base.Formation, candidate))
+                    {
+                        anySignificant = true;
+                        break;
+                    }
+                }
+            }
             foreach (Formation candidate in OtherFormations(mission, enemiesOnly: true))
             {
                 float typeWeight = TargetTypeWeight(candidate.QuerySystem);
-                if (typeWeight <= 0f)
+                if (typeWeight <= 0f || (useExclusions && IsChaseExcluded(candidate, now, footOnly)))
                 {
+                    continue;
+                }
+                if (anySignificant && !RBMAI.ThreatSignificance.IsSignificant(base.Formation, candidate))
+                {
+                    RBMAI.TerrainCavalry.NoteTarget(this, TerrainBehaviorName, "insignificant", RBMAI.TerrainCavalry.FormationName(candidate) + " skipped");
                     continue;
                 }
                 float powerWeight = MBMath.ClampFloat(MathF.Sqrt(candidate.QuerySystem.FormationPower / ownPower), TargetPowerWeightMin, TargetPowerWeightMax);
                 float facingWeight = TargetFacingWeight(candidate);
                 float score = RBMAI.Utilities.GetFormationDistance(base.Formation, candidate) / (typeWeight * powerWeight * facingWeight);
+                // terrain (1 with the toggle off): bad ground scores worse, a lane target better
+                string note;
+                float terrainFactor = RBMAI.TerrainCavalry.TargetFactor(base.Formation.Team, candidate, out note);
+                if (score < plainScore)
+                {
+                    plainScore = score;
+                    plain = candidate;
+                    plainNote = note;
+                }
+                if (note != null && note.StartsWith("badGround"))
+                {
+                    RBMAI.TerrainCavalry.NoteTarget(this, TerrainBehaviorName, "badGroundTarget", RBMAI.TerrainCavalry.FormationName(candidate)
+                        + " score x" + RBMAI.TerrainCavalry.Fmt1(terrainFactor));
+                }
+                score *= terrainFactor;
                 if (score < bestScore)
                 {
                     bestScore = score;
                     enemy = candidate;
+                    pickNote = note;
                 }
+            }
+            if (enemy != plain && enemy != null && plain != null)
+            {
+                RBMAI.TerrainCavalry.NoteTarget(this, TerrainBehaviorName, "target", "pick=" + RBMAI.TerrainCavalry.FormationName(enemy) + "(" + (pickNote ?? "-")
+                    + ") instead of " + RBMAI.TerrainCavalry.FormationName(plain) + "(" + (plainNote ?? "-") + ")");
             }
         }
 
@@ -354,8 +488,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         }
     }
 
-    // Formation.Direction is the facing its facing order sets, so a line fighting someone else or marching away
-    // reads as turned away from us.
+    // Formation.Direction is the facing its facing order sets
     private float TargetFacingWeight(Formation enemy)
     {
         FormationQuerySystem query = enemy.QuerySystem;
@@ -373,7 +506,7 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         return 1f + TargetRearBonus * (1f - dot) * 0.5f;
     }
 
-    // 0 = not a charge target (its Charge* flag is off, or it fits no class).
+    // 0 = not a charge target (Charge* flag off, or no class)
     private float TargetTypeWeight(FormationQuerySystem enemy)
     {
         if (enemy.IsRangedCavalryFormation)
@@ -395,23 +528,6 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         return 0f;
     }
 
-    private WorldPosition ComputeReformDestination()
-    {
-        if (_lastTarget?.Formation == null)
-        {
-            return WorldPosition.Invalid;
-        }
-        Vec2 enemyCenter = RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation);
-        // Beyond the target along the way we charged in. "Away from the target from where we are now" put the
-        // point back on the approach side whenever the wedge pulled out of a stalled melee before getting through.
-        Vec2 awayDir = _initialChargeDirection.LengthSquared > 0.01f
-            ? _initialChargeDirection.Normalized()
-            : (RBMAI.Utilities.GetFormationCenter(base.Formation) - enemyCenter).Normalized();
-        WorldPosition dest = RBMAI.Utilities.GetFormationCenterWorldPosition(_lastTarget.Formation);
-        dest.SetVec2(enemyCenter + awayDir * (ChargeStopDistanceForTactic + _lastTarget.Formation.Depth));
-        return dest;
-    }
-
     protected override void CalculateCurrentOrder()
     {
         if (base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation == null)
@@ -424,6 +540,11 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         if (nextState != _chargeState || _hasNewTarget)
         {
             EnterState(nextState);
+        }
+
+        if (_chargeState == ChargeState.Charging && _laneApproach)
+        {
+            TickLaneApproach();
         }
 
         if (_chargeState == ChargeState.ChargingPast || _chargeState == ChargeState.Reforming)
@@ -455,6 +576,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
     private void EnterUndetermined()
     {
+        _laneApproach = false;
+        RBMAI.TerrainCavalry.Release(this, "undetermined");
+        _reform.Release(this, TerrainBehaviorName, "undetermined");
         base.CurrentOrder = MovementOrder.MovementOrderCharge;
         CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
     }
@@ -463,28 +587,73 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
     {
         _chargeTimer = null;
         _contactTimer = null;
-        _lastReformDestination = WorldPosition.Invalid;
+        // a new charge gives up any reform point / lane
+        _reform.Release(this, TerrainBehaviorName, "newCharge");
+        _laneApproach = false;
+        RBMAI.TerrainCavalry.Release(this, "newCharge");
         AcquireTarget();
+        ResetChase();
         if (_lastTarget?.Formation == null)
         {
             base.CurrentOrder = MovementOrder.MovementOrderCharge;
             CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
             return;
         }
-        // Reached from CalculateCurrentOrder, which also runs for player-led formations.
+        // also reached for player-led formations (CalculateCurrentOrder)
         if (base.Formation.IsAIControlled)
         {
-            base.Formation.SetFormOrder(FormOrder.FormOrderCustom(_lastTarget.Formation.Width));
+            // never narrower than MinChargeWidth (a tiny target would pack the cavalry into a deep block)
+            base.Formation.SetFormOrder(FormOrder.FormOrderCustom(MathF.Max(MinChargeWidth, _lastTarget.Formation.Width)));
         }
         Vec2 chargeDirection = (RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation) - RBMAI.Utilities.GetFormationCenter(base.Formation)).Normalized();
+        // terrain: ride to a lane's run-up point first (TickLaneApproach)
+        RBMAI.TerrainCavalry.Lane lane;
+        RBMAI.TerrainCavalry.LaneEntry entry;
+        if (base.Formation.IsAIControlled && RBMAI.TerrainCavalry.TryTakeLane(this, TerrainBehaviorName, _lastTarget.Formation, out lane, out entry))
+        {
+            _laneApproach = true;
+            base.CurrentOrder = MovementOrder.MovementOrderMove(entry.World);
+            CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(chargeDirection);
+            return;
+        }
         base.CurrentOrder = MovementOrder.MovementOrderChargeToTarget(_lastTarget.Formation);
         CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(chargeDirection);
+    }
+
+    // Each lane-approach tick: keep riding, or (arrived, timed out, melee, enemy close, target off the lane, inactive) charge from here with a fresh direction.
+    private void TickLaneApproach()
+    {
+        Formation target = _lastTarget?.Formation;
+        RBMAI.TerrainCavalry.Hold hold = RBMAI.TerrainCavalry.HeldBy(this, RBMAI.TerrainCavalry.HoldKind.Lane);
+        if (hold != null && hold.Entry != null && RBMAI.TerrainCavalry.CheckLaneApproach(this, target, IsFightingInMelee()))
+        {
+            // read again: a re-plan may have moved the hold during the check
+            hold = RBMAI.TerrainCavalry.HeldBy(this, RBMAI.TerrainCavalry.HoldKind.Lane) ?? hold;
+            if (hold.Entry != null)
+            {
+                base.CurrentOrder = MovementOrder.MovementOrderMove(hold.Entry.World);
+                return;
+            }
+        }
+        _laneApproach = false;
+        RBMAI.TerrainCavalry.Release(this, "lost");
+        if (target == null || target.CountOfUnits == 0)
+        {
+            base.CurrentOrder = MovementOrder.MovementOrderCharge;
+            CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
+            return;
+        }
+        _chargeTimer = null;
+        _contactTimer = null;
+        ResetChase();
+        _initialChargeDirection = RBMAI.Utilities.GetFormationCenter(target) - RBMAI.Utilities.GetFormationCenter(base.Formation);
+        base.CurrentOrder = MovementOrder.MovementOrderChargeToTarget(target);
+        CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(_initialChargeDirection.Normalized());
     }
 
     private void EnterChargingPast()
     {
         _chargingPastTimer = new Timer(Mission.Current.CurrentTime, ChargingPastTimeoutSeconds);
-        _lastReformDestination = ComputeReformDestination();
         CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
     }
 
@@ -496,14 +665,13 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
 
     private void TickReformMovement()
     {
-        WorldPosition resolved = _lastReformDestination.IsValid ? ResolveReformDestination(_lastReformDestination) : WorldPosition.Invalid;
-        if (!resolved.IsValid)
+        WorldPosition point;
+        if (!_reform.Tick(this, TerrainBehaviorName, _lastTarget?.Formation, _initialChargeDirection, out point))
         {
             EnterState(ChargeState.Charging);
             return;
         }
-        _lastReformDestination = resolved;
-        base.CurrentOrder = MovementOrder.MovementOrderMove(_lastReformDestination);
+        base.CurrentOrder = MovementOrder.MovementOrderMove(point);
         CurrentFacingOrder = FacingOrder.FacingOrderLookAtEnemy;
     }
 
@@ -535,85 +703,6 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         return false;
     }
 
-    private WorldPosition ResolveReformDestination(WorldPosition dest)
-    {
-        Mission mission = Mission.Current;
-        if (mission == null || base.Formation == null)
-        {
-            return dest;
-        }
-        Vec2 origin = dest.AsVec2;
-        if (IsReformPointAcceptable(mission, dest))
-        {
-            return dest;
-        }
-
-        Vec2 enemyCenter = Vec2.Zero;
-        bool hasEnemy = _lastTarget != null && _lastTarget.Formation != null;
-        float minEnemyDistSq = 0f;
-        if (hasEnemy)
-        {
-            enemyCenter = RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation);
-            minEnemyDistSq = origin.DistanceSquared(enemyCenter);
-        }
-
-        WorldPosition best = WorldPosition.Invalid;
-        float bestDistSq = float.MaxValue;
-        float step = MathF.PI * 2f / ReformSearchDirections;
-        foreach (float radius in ReformSearchRadii)
-        {
-            for (int i = 0; i < ReformSearchDirections; i++)
-            {
-                float angle = i * step;
-                Vec2 candidate = origin + new Vec2(MathF.Cos(angle), MathF.Sin(angle)) * radius;
-                if (hasEnemy && candidate.DistanceSquared(enemyCenter) < minEnemyDistSq)
-                {
-                    continue;
-                }
-                WorldPosition candidatePos = dest;
-                candidatePos.SetVec2(candidate);
-                if (!IsReformPointAcceptable(mission, candidatePos))
-                {
-                    continue;
-                }
-                float distSq = candidate.DistanceSquared(origin);
-                if (distSq < bestDistSq)
-                {
-                    bestDistSq = distSq;
-                    best = candidatePos;
-                }
-            }
-            if (best.IsValid)
-            {
-                break;
-            }
-        }
-        if (best.IsValid)
-        {
-            return best;
-        }
-        WorldPosition pushed = PushClearSingleDirection(mission, dest);
-        return IsReformPointAcceptable(mission, pushed) ? pushed : WorldPosition.Invalid;
-    }
-
-    private bool IsReformPointAcceptable(Mission mission, WorldPosition pos)
-    {
-        if (!pos.IsValid || pos.GetNavMesh() == System.UIntPtr.Zero || !mission.IsPositionInsideBoundaries(pos.AsVec2))
-        {
-            return false;
-        }
-        Vec2 point = pos.AsVec2;
-        foreach (Formation other in OtherFormations(mission))
-        {
-            float clearance = ClearanceRadius(other);
-            if (point.DistanceSquared(RBMAI.Utilities.GetFormationCenter(other)) < clearance * clearance)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private IEnumerable<Formation> OtherFormations(Mission mission, bool enemiesOnly = false)
     {
         foreach (Team team in mission.Teams)
@@ -632,57 +721,9 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         }
     }
 
-    private float ClearanceRadius(Formation other)
-    {
-        return other.Width * 0.5f + other.Depth * 0.5f + base.Formation.Width * 0.5f + ReformClearanceMargin;
-    }
-
-    private WorldPosition PushClearSingleDirection(Mission mission, WorldPosition dest)
-    {
-        Vec2 point = dest.AsVec2;
-        Vec2 fallbackDir = Vec2.Zero;
-        if (_lastTarget != null && _lastTarget.Formation != null)
-        {
-            fallbackDir = (point - RBMAI.Utilities.GetFormationCenter(_lastTarget.Formation)).Normalized();
-        }
-        bool moved = false;
-        for (int pass = 0; pass < ReformPushMaxPasses; pass++)
-        {
-            bool movedThisPass = false;
-            foreach (Formation other in OtherFormations(mission))
-            {
-                Vec2 otherCenter = RBMAI.Utilities.GetFormationCenter(other);
-                float clearance = ClearanceRadius(other);
-                Vec2 offset = point - otherCenter;
-                float dist = offset.Length;
-                if (dist >= clearance)
-                {
-                    continue;
-                }
-                Vec2 pushDir = dist > 1f ? offset / dist : (fallbackDir.LengthSquared > 0.01f ? fallbackDir : Vec2.Forward);
-                point = otherCenter + pushDir * clearance;
-                movedThisPass = true;
-                moved = true;
-            }
-            if (!movedThisPass)
-            {
-                break;
-            }
-        }
-        if (!moved)
-        {
-            return dest;
-        }
-        WorldPosition result = dest;
-        result.SetVec2(point);
-        return result;
-    }
-
     protected override void OnBehaviorActivatedAux()
     {
-        // Start a fresh charge. The state machine and its timers survive deactivation (and CalculateCurrentOrder
-        // keeps running while inactive, via PrecalculateMovementOrder), so a formation put back on the charge
-        // could otherwise go straight to ChargingPast on an old, expired timer.
+        // start a fresh charge: timers survive deactivation, an old expired one would send it straight to ChargingPast
         EnterState(ChargeState.Charging);
         CalculateCurrentOrder();
         base.Formation.SetMovementOrder(base.CurrentOrder);
@@ -690,6 +731,14 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         base.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine);
         base.Formation.SetFiringOrder(FiringOrder.FiringOrderFireAtWill);
         base.Formation.SetFormOrder( FormOrder.FormOrderWide);
+    }
+
+    public override void OnBehaviorCanceled()
+    {
+        _laneApproach = false;
+        RBMAI.TerrainCavalry.Release(this, "behaviorEnded");
+        _reform.Release(this, TerrainBehaviorName, "behaviorEnded");
+        base.OnBehaviorCanceled();
     }
 
     public override TextObject GetBehaviorString()
@@ -732,14 +781,11 @@ public class RBMBehaviorCavalryCharge : BehaviorComponent
         if (timeToContact <= 4f)
         {
             float length = (RBMAI.Utilities.GetFormationCenter(querySystem.Formation) - RBMAI.Utilities.GetFormationCenter(enemy.Formation)).Length;
-            // Coincident formation centres divide by zero and GetNavMeshZ returns NaN off the navmesh; either
-            // one poisons the slope term, and a NaN weight loses every behaviour comparison silently, so the
-            // charge would just stop being picked rather than fail loudly. Fall back to the neutral 1f.
+            // coincident centres divide by zero / GetNavMeshZ NaN off the navmesh: a NaN weight silently loses every comparison; fall back to 1f
             if (length > float.Epsilon)
             {
                 WorldPosition medianPosition = RBMAI.Utilities.GetFormationCenterWorldPosition(querySystem.Formation);
-                // Sample the enemy's height off the raw median: it already carries a valid Z, so it costs no navmesh
-                // query, and for a slope estimate one soldier's ground height is as good as the centre's.
+                // enemy height from the raw median (valid Z, no navmesh query)
                 float slope = (medianPosition.GetNavMeshZ() - enemy.Formation.CachedMedianPosition.GetNavMeshZ()) / length;
                 if (!float.IsNaN(slope))
                 {

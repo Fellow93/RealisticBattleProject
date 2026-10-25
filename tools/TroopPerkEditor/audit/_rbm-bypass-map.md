@@ -82,7 +82,7 @@ that assigns a result/ref field wholesale; **rewrite-arg** = prefix that returns
 | `RangedSiegeWeapon.ShootProjectileAux` / `GetTargetReleaseAngle`, `Mangonel.OnTick` | `RangedRework.Siege.cs:21-119` | skip (ballista/trebuchet) | `MissionSiegeEngineCalculationModel` calls (reload speed, Naval damage) are elsewhere and untouched. |
 | `DefaultCombatXpModel.GetXpMultiplierFromShotDifficulty`, `StoryModeGenericXpModel.GetXpMultiplier` | `CampaignChanges.Xp.cs:26-50` | skip | No perks. |
 | `GeneralsAndCaptainsAssignmentLogic.CanTeamHaveGeneralsFormation` | `Misc/GeneralsAndCaptainsAssignmentLogicPatch.cs:6-14` | skip, always false | No general's bodyguard formation; changes which formation a hero captains (affects where captain perks reach), no perk check removed. |
-| `TacticCoordinatedRetreat.GetTacticWeight` | `Tactics/TacticOverrides.cs:19-76` | skip | When a side is down to <10% power and cavalry only, `SetMorale(0)` on all its agents (bypasses morale perks for that endgame rout only). |
+| `TeamAIComponent.MakeDecision` | `Tactics/TacticSelection.cs` (`MakeDecisionPatch`) | prefix | When a side is down to <10% power and cavalry only, `SetMorale(0)` on all its agents (bypasses morale perks for that endgame rout only). |
 | `DefaultPartyMoraleModel.GetEffectivePartyMorale` | `RBMCampaign/Settlements/GarrisonMorale.cs:24` | campaign | Party (map) morale, feeds initial battle morale; not a troop perk. |
 
 ## RBM's own perk checks

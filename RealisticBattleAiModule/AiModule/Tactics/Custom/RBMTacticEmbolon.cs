@@ -1,6 +1,7 @@
 ﻿using RBMAI;
 using System.Linq;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 public class RBMTacticEmbolon : TacticComponent
@@ -8,6 +9,13 @@ public class RBMTacticEmbolon : TacticComponent
     private Formation _cavalry;
 
     private bool _hasBattleBeenJoined;
+
+    /// <summary>Inputs of the last GetTacticWeight, for the AI behavior log. Plain floats: written on the AI thread, read on the main one.</summary>
+    internal float LastCavCount;
+    internal float LastHeavyShare;
+
+    /// <summary>The wedge cavalry (ReactionMonitor never sends it elsewhere).</summary>
+    internal Formation Wedge => _cavalry;
 
     public RBMTacticEmbolon(Team team)
         : base(team)
@@ -79,7 +87,8 @@ public class RBMTacticEmbolon : TacticComponent
         {
             _cavalry.AI.ResetBehaviorWeights();
             SetDefaultBehaviorWeights(_cavalry);
-            //_cavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
+            // RBM's charge loop (charge through, pull clear, reform): native defaults alone leave the wedge stuck in the melee.
+            _cavalry.AI.SetBehaviorWeight<RBMBehaviorCavalryCharge>(1f);
         }
         if (_rangedCavalry != null)
         {
@@ -91,7 +100,7 @@ public class RBMTacticEmbolon : TacticComponent
 
     private bool HasBattleBeenJoined()
     {
-        return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined, 95f);
+        return RBMAI.Utilities.HasAttackBeenJoined(_mainInfantry, Team, _hasBattleBeenJoined, 95f);
     }
 
     protected override bool CheckAndSetAvailableFormationsChanged()
@@ -163,8 +172,6 @@ public class RBMTacticEmbolon : TacticComponent
         float heavyCavCount = 0;
         float cavCount = 0;
 
-        // Iterate cavalry formations only — avoids allocating Team.ActiveAgents.ToList()
-        // (full copy of all agents) and checking formation type per agent.
         if (Team != null)
         {
             foreach (Formation formation in Team.FormationsIncludingEmpty)
@@ -191,9 +198,16 @@ public class RBMTacticEmbolon : TacticComponent
             }
         }
 
-        if (cavCount > 0 && Team.QuerySystem.CavalryRatio > 0.2f && heavyCavCount / cavCount >= 0.6f)
-            return 5f;
-        else
+        // Graded on the native scale: needs a real, mostly barded cavalry wing; TacticSelection applies culture/commander/jitter on top.
+        LastCavCount = cavCount;
+        LastHeavyShare = (cavCount > 0f) ? heavyCavCount / cavCount : 0f;
+        if (cavCount < 20f)
+        {
             return 0.01f;
+        }
+        float heavyShare = heavyCavCount / cavCount;
+        float cavalryFit = MBMath.ClampFloat((Team.QuerySystem.CavalryRatio - 0.1f) / 0.2f, 0f, 1f);
+        float heavyFit = MBMath.ClampFloat((heavyShare - 0.3f) / 0.4f, 0f, 1f);
+        return MathF.Max(0.01f, cavalryFit * heavyFit * MathF.Sqrt(Team.QuerySystem.RemainingPowerRatio));
     }
 }

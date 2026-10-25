@@ -4,35 +4,36 @@ using TaleWorlds.MountAndBlade;
 
 namespace RBMAI
 {
-    // Per-mission reset of every RBMAI static that holds an Agent or a Formation.
-    //
-    // Called from RBM.SubModule.OnBeforeMissionBehaviorInitialize, which native invokes at the very top of
-    // Mission.AfterStart: on the main thread, before any behavior's EarlyStart, before the first agent spawns and
-    // before any AI tick, so none of these collections can be read on a worker thread while they are cleared.
-    // It is deliberately NOT a Harmony prefix on Mission.AfterStart: RBMAI's PatchAll only runs from
-    // RBMAIPatchLogic.EarlyStart (inside AfterStart), and RBMAiPatcher.FirstPatch unpatches everything on game
-    // start/load, so a prefix would miss the first mission after every load.
-    //
-    // Why it matters: an Agent or Formation left in a static pins its whole mission (Formation -> Team -> Mission,
-    // Agent -> Mission) for the rest of the session, and a pinned Formation never runs its finalizer, which is
-    // the only thing that drops Formation._simulationFormationTemp (see below).
+    // Per-mission reset of every RBMAI static that holds an Agent or a Formation (a static pins its whole mission).
+    // Called from RBM.SubModule.OnBeforeMissionBehaviorInitialize: main thread, top of Mission.AfterStart, before any
+    // spawn or AI tick. NOT a Harmony prefix: RBMAI's PatchAll runs only inside AfterStart and FirstPatch unpatches on
+    // game start/load, so a prefix would miss the first mission after every load.
     public static class MissionStartReset
     {
-        // Native keeps one static scratch formation, Formation._simulationFormationTemp, for spawn-frame and
-        // order-preview maths (GetUnitPositionWithIndexAccordingToNewOrder). It is only rebuilt when the formation
-        // index changes, and only dropped from a real Formation's finalizer, so it survives into the next mission
-        // whenever the previous mission's formations have not been garbage-collected yet.
-        //
-        // The survivor still holds an _orderPosition from the destroyed scene. The first spawn of the next mission
-        // runs ResetForSimulation -> SetPositioning(null, Vec2.Forward, 1) -> BatchUnitPositions on that stale
-        // WorldPosition, whose navmesh pointer is non-zero but dangling, and BatchFormationUnitPositions throws an
-        // AccessViolationException (crash report 2026-09-28: Radagos' hideout re-entered after a lost duel and a reload).
-        // Nulling it here makes native build a fresh one inside the current scene.
+        // Native's static scratch Formation._simulationFormationTemp is only dropped by a real Formation's finalizer, so it can
+        // survive into the next mission holding a dangling _orderPosition from the destroyed scene; the first spawn then
+        // throws an AccessViolationException in BatchFormationUnitPositions. Nulling it makes native build a fresh one.
         private static readonly FieldInfo SimulationFormationTemp =
             AccessTools.Field(typeof(Formation), "_simulationFormationTemp");
 
+        // A class reading a game member by name in its static initializer throws TypeInitializationException once a game update
+        // renames it; Reset runs in EVERY mission, so those clears go through Guarded (logged, the rest still runs).
+        private static void Guarded(string step, System.Action clear)
+        {
+            try
+            {
+                clear();
+            }
+            catch (System.Exception e)
+            {
+                AiTickGuard.Report("MissionStartReset " + step, e, null);
+            }
+        }
+
         public static void Reset()
         {
+            // AI tick guard failure counts (writes the last mission's totals to the rgl log first).
+            AiTickGuard.Clear();
             SimulationFormationTemp?.SetValue(null, null);
 
             // Formation-keyed behavior state.
@@ -42,6 +43,7 @@ namespace RBMAI
             OverrideBehaviorAdvance.advanceScaleStartStorage.Clear();
             OverrideBehaviorAdvance.advanceLastTickStorage.Clear();
             OverrideBehaviorAdvance.archerWaitStartStorage.Clear();
+            OverrideBehaviorAdvance.archerWaitHoldStorage.Clear();
             OverrideBehaviorAdvance.lastDispersalStorage.Clear();
             OverrideBehaviorCautiousAdvance.waitCountShootingStorage.Clear();
             OverrideBehaviorCautiousAdvance.waitCountApproachingStorage.Clear();
@@ -50,9 +52,13 @@ namespace RBMAI
             OverrideBehaviorMountedSkirmish.rotationDirectionDictionary.Clear();
             OverrideBehaviorMountedSkirmish.orbitTargetStorage.Clear();
             OverrideBehaviorMountedSkirmish.velocityCache.Clear();
+            OverrideBehaviorMountedSkirmish.mountedThreatCache.Clear();
             OverrideBehaviorDefend.positionsStorage.Clear();
             OverrideBehaviorProtectFlank.sortieStates.Clear();
-            OverrideBehaviorHoldHighGround.positionsStorage.Clear();
+            OverrideBehaviorProtectFlank.closePostUntil.Clear();
+            // Flank guards' cohesion-pull log latch.
+            FormationCohesion.Clear();
+            OverrideBehaviorHoldHighGround.commits.Clear();
             OverrideMovementOrder.positionsStorage.Clear();
             AiModule.RbmBehaviors.OverrideBehaviorCharge.cavHoldPositions.Clear();
             AiModule.RbmBehaviors.OverrideBehaviorCharge.skirmisherRetreatPositions.Clear();
@@ -62,17 +68,23 @@ namespace RBMAI
             AiModule.ReinforcementAnchor.Reset();
             Utilities.significantFormationsCache.Clear();
             Utilities.formationUnitSnapshots.Clear();
+            Utilities.fightingInMeleeCache.Clear();
+            HoldLateCharge.ClearMeleeShareCache();
+            Utilities.ClearRangedArrangement();
+            Utilities.ClearAttackJoinLatches();
 
-            // Agent-keyed state. Some of these were only cleared from MissionCombatantsLogic.EarlyStart, i.e. field
-            // battles, so town, arena and other missions without it kept the last battle's agents alive.
-            // Also drops the Agents its states hold (cachedTarget, cachedHeadingTarget, stepAllyCached).
+            // Agent-keyed state (also drops the Agents its states hold). Cleared here, not only in field battles' EarlyStart.
             Frontline.aiDecisionCooldownDict.Clear();
-            // Not Agent-keyed: the static-obstacle step gate's per-mission counters (its per-agent state lives in the
-            // AIDecisionState entries cleared above).
+            // Step-gate per-mission counters (per-agent state is in the AIDecisionState entries cleared above).
             Frontline.ResetObstacleCounters();
             Tactics.agentDamage.Clear();
+            // Tactic- and Team-keyed: per-battle tactic multipliers, registered teams.
+            Guarded("TacticSelection", TacticSelection.Clear);
+            // Latched army scale and bandit-leader flags (set in EarlyStart, after this).
+            ArmyScale.Clear();
+            // Team-keyed (a Team pins its Mission too).
+            Tactics.TacticDwell.tacticSince.Clear();
             AgentAi.OnTickPatch.itemPickupDistanceStorage.Clear();
-            AgentAi.OnTickPatch.bannerBearersWithHeldTarget.Clear();
             AgentAi.OnTickPatch.chargeRoutedAgents.Clear();
             AgentAi.OnTickPatch.meleePickupNextScan.Clear();
             AgentAi.OnTickPatch.riderCrowdStates.Clear();
@@ -91,9 +103,29 @@ namespace RBMAI
             AgentAi.AmmoPickupSafety.dangerSnapshots.Clear();
             AgentAi.ChargeDamageCallbackPatch.lastSyntheticKnockback.Clear();
             OrderReactionHold.Clear();
-            // Not Agent-keyed, but holds the last battle's deep-water grid for worker-thread readers; the blocker sets
-            // it again in its EarlyStart when it applies. Also clears its forced-exit agent-index set (Frontline's guard).
+            ChargeGuard.Clear();
+            // Off until AiBehaviorLogic.AfterStart reopens the log.
+            DecisionTrace.Clear();
+            // Worker-thread readers; the blocker sets the grid again in EarlyStart.
             DeepWaterSlots.Clear();
+            // AI-thread readers; republished after deployment.
+            BattleTerrain.Clear();
+            TerrainTacticFactors.Clear();
+            Guarded("TerrainFlankPlan", TerrainFlankPlan.Clear);
+            TerrainSpots.Clear();
+            TerrainCavalry.Clear();
+            TerrainShape.Clear();
+            TerrainChokeHold.Clear();
+            TerrainBattlePosition.Clear();
+            TerrainHedgehog.Clear();
+            TerrainApproach.Clear();
+            Guarded("ReactionMonitor", ReactionMonitor.Clear);
+            // Formation marker smoothing cache (holds the Mission). Guarded: its patch class reads a Formation field by name.
+            Guarded("FormationMarkers", FormationMarkerPatches.Clear);
+            // Per-battle diagnostic counters of the AGENTS lines.
+            System.Threading.Interlocked.Exchange(ref OverrideParallelFormationMovement.CallCount, 0L);
+            System.Threading.Interlocked.Exchange(ref OverrideParallelFormationMovement.SetCount, 0L);
+            System.Threading.Interlocked.Exchange(ref FormationCatchUpGate.CapCount, 0L);
             // The posture/stamina statics are RBMStance's own (RBMStance.StanceReset), reset from the same SubModule hook.
         }
     }

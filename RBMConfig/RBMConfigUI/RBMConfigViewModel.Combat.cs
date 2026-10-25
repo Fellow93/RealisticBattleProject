@@ -42,6 +42,12 @@ namespace RBMConfig
         public TextViewModel DeepWaterNavBlockEnabledText { get; }
         public SelectorVM<SelectorItemVM> DeepWaterNavBlockEnabled { get; }
 
+        public TextViewModel TerrainTacticsEnabledText { get; }
+        public SelectorVM<SelectorItemVM> TerrainTacticsEnabled { get; }
+
+        public TextViewModel AiReactionsEnabledText { get; }
+        public SelectorVM<SelectorItemVM> AiReactionsEnabled { get; }
+
         public TextViewModel ShieldWallShareText { get; }
         public SelectorVM<SelectorItemVM> ShieldWallShare { get; }
 
@@ -530,6 +536,30 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel DeepWaterNavBlockHint { get; } = Hint("{=RBM_CON_DEEPWATER_002}In field battles, water about 1 m deep or deeper gets a solid invisible wall at its edge that nobody can pass, you included, and AI formations form up around it instead of standing in it. AI soldiers who still end up on the water side are walked or swum back out to the nearest shore. Arrows and other missiles fly over it. Shallow fords and bridges stay open. If it would cut the two armies off from each other it is switched back off for that battle. Needs RBM AI on. Takes effect from the next battle. Default on.");
+
+        [DataSourceProperty]
+        public string TerrainTacticst
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_TERRAINTACTICS_001}Terrain-aware battle plans").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel TerrainTacticsHint { get; } = Hint("{=RBM_CON_TERRAINTACTICS_002}AI armies weigh the battlefield (room to manoeuvre, flank routes, height, water, charge run-up, fields of fire) when choosing a battle plan. Off = culture, commander and army make-up only. Needs RBM AI on. Default on.");
+
+        [DataSourceProperty]
+        public string AiReactionst
+        {
+            get
+            {
+                return new TextObject("{=RBM_CON_AIREACTIONS_001}AI reacts to the battle").ToString();
+            }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel AiReactionsHint { get; } = Hint("{=RBM_CON_AIREACTIONS_002}In field battles AI armies watch the fight and answer what happens: a free formation goes to help one of theirs that is attacked, cavalry rides out to meet enemy cavalry going round a flank or at the archers, and free cavalry hits the flank or rear of an enemy formation stuck in melee when the way is open. Off = the battle plan's own moves only. Needs RBM AI on. Default on.");
 
         [DataSourceProperty]
         public string ShieldWallSharet

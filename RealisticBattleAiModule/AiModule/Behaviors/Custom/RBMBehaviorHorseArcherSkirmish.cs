@@ -209,7 +209,9 @@ namespace RBMAI
                         countOfSkirmishers++;
                     }
                 });
-                if (countOfSkirmishers / base.Formation.CountOfUnits > 0.6f)
+                // Float division: the int one was only true for a formation of nothing but skirmishers.
+                int countOfUnits = base.Formation.CountOfUnits;
+                if (countOfUnits > 0 && (float)countOfSkirmishers / countOfUnits > 0.6f)
                 {
                     return 1f;
                 }

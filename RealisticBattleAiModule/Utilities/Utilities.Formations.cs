@@ -18,35 +18,11 @@ namespace RBMAI
 {
     public static partial class Utilities
     {
-        // Where a formation "is", for AI reasoning.
-        //
-        // Formation.CachedMedianPosition is the position of ONE soldier -- GetMedianAgent returns whichever unit
-        // currently sits closest to the centroid -- so it hops from man to man as the ranks shuffle, and it only
-        // refreshes on a ~75-125ms timer, so it steps as well as hops. Comparing distances against it makes
-        // near-equidistant choices flip and thresholds flap. SmoothedAverageUnitPosition is the engine's own
-        // answer: Formation.Tick lerps it toward the true centroid every tick (dt-correct), so it neither hops
-        // nor steps. Native itself treats the average as the formation's centre and keeps the median only as a
-        // navmesh carrier (see the Vec3(CachedAveragePosition, CachedMedianPosition.GetNavMeshZ()) idiom
-        // throughout FormationQuerySystem).
-        //
-        // Use these for distance/threshold reasoning. Note the centre is notional: unlike the median it is not
-        // guaranteed to be a spot a soldier can stand on, so for a movement DESTINATION use
-        // GetFormationCenterWorldPosition, which keeps the median's navmesh face.
-        //
-        // DELIBERATELY NOT SmoothedAverageUnitPosition, even though that is the smoothest centre and is what the
-        // HUD marker uses. Order positions derived from this feed MovementOrder.CreateNewOrderWorldPositionMT,
-        // which caches on EXACT Vec2 equality:
-        //     if (_getPositionFirstSectionCache.AsVec2 != orderPosition.AsVec2) { ...navmesh queries... }
-        // CachedAveragePosition and CachedMedianPosition are cached fields, refreshed only when the formation's
-        // ~75-125ms position timer fires, so the same Vec2 recurs for several frames and native takes the cheap
-        // cached path. SmoothedAverageUnitPosition is re-lerped EVERY tick and so is never exactly equal twice:
-        // it misses that cache every frame for every formation, firing navmesh queries (and possibly the
-        // GetAlternatePositionForNavmeshless... search) inside the parallel movement job. That froze the game and
-        // crashed it -- a native worker-thread use-after-free -- once another mod (RTSCamera.CommandSystem) was
-        // concurrently mutating formation geometry.
-        //
-        // CachedAveragePosition gives us what we actually wanted -- a centre that does not hop from soldier to
-        // soldier like the median -- while keeping native's cache-hit rate exactly as it was.
+        // Where a formation "is", for AI reasoning: CachedAveragePosition (not the median, which is ONE soldier and hops as ranks shuffle).
+        // The centre is notional (may not be standable); for a movement DESTINATION use GetFormationCenterWorldPosition.
+        // DELIBERATELY NOT SmoothedAverageUnitPosition: order positions feed MovementOrder.CreateNewOrderWorldPositionMT, which caches on
+        // EXACT Vec2 equality; that field is re-lerped every tick, so it would fire navmesh queries per formation inside the parallel
+        // movement job (froze/crashed the game: native worker use-after-free with another mod mutating formation geometry).
         public static Vec2 GetFormationCenter(Formation formation)
         {
             if (formation == null)
@@ -60,21 +36,10 @@ namespace RBMAI
             return formation.CachedMedianPosition.AsVec2;
         }
 
-        // The formation centre as a WorldPosition, for movement orders. Rides the centre XY on the median
-        // agent's navmesh face -- the same trick FormationQuerySystem does at its "formation centre" idiom --
-        // so the Z re-resolves off the navmesh when the position is actually consumed.
-        //
-        // MUST stay free of native calls. This runs on worker threads: MovementOrder.GetPositionAux is invoked
-        // from CreateNewOrderWorldPositionMT (the parallel per-formation movement job), as is
-        // Formation.GetOrderPositionOfUnit. Copying the median and SetVec2-ing it is pure struct work -- SetVec2
-        // on an already-valid position only marks Z invalid -- but anything that forces Z validation
-        // (GetNavMesh/GetGroundVec3/GetNavMeshZ) fires a native navmesh query. Off the main thread that is both
-        // a hard crash and, run per formation per tick, a stall. Native ships SetVec2MT/ValidateZMT precisely
-        // because the plain calls are not concurrency-safe; a navmesh guard here froze and crashed the game.
-        //
-        // So there is deliberately no off-navmesh guard: callers that need one already apply it themselves on
-        // the main thread (see the IsPositionInsideBoundaries / GetNavMesh checks in Behaviours.cs), which is
-        // also what unpatched RBM and native both do.
+        // The formation centre as a WorldPosition for movement orders: centre XY on the median agent's navmesh face (Z re-resolves on use).
+        // MUST stay free of native calls: runs on worker threads (CreateNewOrderWorldPositionMT, GetOrderPositionOfUnit). SetVec2 on a valid
+        // position only marks Z invalid, but GetNavMesh/GetGroundVec3/GetNavMeshZ force a native navmesh query (crash/stall off the main thread).
+        // So deliberately no off-navmesh guard: callers apply it on the main thread.
         public static WorldPosition GetFormationCenterWorldPosition(Formation formation)
         {
             WorldPosition median = formation.CachedMedianPosition;
@@ -87,21 +52,17 @@ namespace RBMAI
             return median;
         }
 
-        // Centre-to-centre distance between two formations.
         public static float GetFormationDistance(Formation formation, Formation otherFormation)
         {
             return GetFormationCenter(formation).Distance(GetFormationCenter(otherFormation));
         }
 
-        // Distance from a point to a formation's centre.
         public static float GetDistanceToFormation(Vec2 position, Formation formation)
         {
             return position.Distance(GetFormationCenter(formation));
         }
 
-        // A "banner" can reach the game as either WeaponClass.Banner (vanilla / decorative banners) or as a regular
-        // melee weapon class such as TwoHandedPolearm (Raise Your Banner's "spear banner" variants). Checking
-        // WeaponClass alone misses the polearm variants, so every banner item is also matched by item_usage="banner".
+        // A banner is either WeaponClass.Banner or a melee class (Raise Your Banner "spear banner" variants), so also match item_usage="banner".
         public static bool IsBannerWeapon(MissionWeapon weapon)
         {
             if (weapon.IsEmpty || weapon.CurrentUsageItem == null)
@@ -117,8 +78,7 @@ namespace RBMAI
             {
                 return true;
             }
-            // Bulletproof fallback: every Raise Your Banner item id begins with "RYB_" (StringId == the XML item id),
-            // including the TwoHandedPolearm "spear banner" variants that share no banner WeaponClass.
+            // Fallback: every Raise Your Banner item id begins with "RYB_" (incl. spear banner variants with no banner WeaponClass).
             ItemObject item = weapon.Item;
             return item != null && item.StringId != null && item.StringId.StartsWith("RYB_", StringComparison.Ordinal);
         }
@@ -171,9 +131,7 @@ namespace RBMAI
                 if (agent.IsActive())
                 {
                     countOfAgents++;
-                    // Judged by the weapon in hand, not the kit: a man with a large shield counts unless he is holding a
-                    // throwing weapon right now. Counting thrown weapons left in the kit kept every pila/javelin-carrying
-                    // formation out of the shield wall until it had thrown them all.
+                    // Judged by the weapon in hand, not the kit: a large-shield man counts unless holding a throwing weapon now.
                     if (!agent.WieldedOffhandWeapon.IsEmpty && agent.WieldedWeapon.CurrentUsageItem != null && agent.WieldedOffhandWeapon.CurrentUsageItem.WeaponClass == WeaponClass.LargeShield
                         && !agent.WieldedWeapon.IsAnyConsumable())
                     {
@@ -185,16 +143,30 @@ namespace RBMAI
             return result;
         }
 
+        /// <summary>
+        /// User rule: RBM never puts a RANGED formation in a Square, Circle or ShieldWall. True for a ranged / horse-archer formation or
+        /// one at least half missile men. Only ChooseRangedArrangement may give one a (loose) Circle; the game's own behaviors are not filtered.
+        /// Query-system reads only (AI-thread safe).
+        /// </summary>
+        public static bool IsRangedForArrangement(Formation formation)
+        {
+            if (formation == null || formation.CountOfUnits <= 0)
+            {
+                return false;
+            }
+            FormationQuerySystem q = formation.QuerySystem;
+            return q.IsRangedFormation || q.IsRangedCavalryFormation || q.RangedUnitRatio + q.RangedCavalryUnitRatio >= 0.5f;
+        }
+
         public static void DecideArrangementOrderForFormation(Formation formation)
         {
-            // Hysteresis: a formation already in an arrangement keeps it until the ratio drops clearly below the bar
-            // that put it there. A ratio hovering at the bar (weapon swaps, casualties) flipped the arrangement every
-            // tick, and every flip re-shapes the line (an n^2 dispersal in the advance, see OverrideBehaviorAdvance).
-            // The shield wall is entered above the "Shield wall share" setting and held while above it minus 0.1.
+            // Hysteresis: the shield wall is entered above the "Shield wall share" setting and held while above it minus 0.1
+            // (every flip re-shapes the line). Never for a ranged formation (IsRangedForArrangement).
             ArrangementOrder.ArrangementOrderEnum current = formation.ArrangementOrder.OrderEnum;
             bool isShock = FormationRatioWieldingShockWeapons(formation) > (current == ArrangementOrder.ArrangementOrderEnum.Loose ? 0.4f : 0.5f);
             float shieldWallShare = RBMConfig.RBMConfig.shieldWallShare;
-            bool isShieldWallEligible = FormationRatioShieldWallEligible(formation) > (current == ArrangementOrder.ArrangementOrderEnum.ShieldWall ? shieldWallShare - 0.1f : shieldWallShare);
+            bool isShieldWallEligible = !IsRangedForArrangement(formation)
+                && FormationRatioShieldWallEligible(formation) > (current == ArrangementOrder.ArrangementOrderEnum.ShieldWall ? shieldWallShare - 0.1f : shieldWallShare);
             if (isShieldWallEligible)
             {
                 formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
@@ -212,10 +184,7 @@ namespace RBMAI
         private static readonly PropertyInfo _lineFileCount =
             typeof(LineFormation).GetProperty("FileCount", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
 
-        // Bounds-checked slot lookup. Native Formation.GetOrderPositionOfUnit indexes LineFormation._units2D with
-        // the unit's FormationFileIndex/RankIndex and nothing else; an agent that has just left the formation, or
-        // whose grid shrank under him, still carries the old indices and native throws IndexOutOfRange.
-        // Main thread only.
+        // Bounds-checked slot lookup (native indexes _units2D unchecked; a stale file/rank index throws IndexOutOfRange). Main thread only.
         public static bool TryGetUnitSlot(Formation formation, Agent agent, out WorldPosition slot)
         {
             slot = WorldPosition.Invalid;
@@ -264,14 +233,7 @@ namespace RBMAI
                     Formation enemyForamtion = RBMAI.Utilities.FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
                     if (enemyForamtion != null)
                     {
-                        // Edge-to-edge gap: the front ranks meet when the centre distance has shrunk to the sum
-                        // of the half depths, so those are SUBTRACTED. (Adding them, as before, made deep
-                        // formations join later, the opposite of what depth means here.)
-                        float edgeGap = GetFormationDistance(mainInfantry, enemyForamtion) - mainInfantry.Depth / 2f - enemyForamtion.Depth / 2f;
-                        if (edgeGap < 0f)
-                        {
-                            edgeGap = 0f;
-                        }
+                        float edgeGap = FormationGeometry.Gap(mainInfantry, FootprintMode.ScatterAware, enemyForamtion, FootprintMode.ScatterAware);
                         return (edgeGap <= (battleJoinRange + (hasBattleBeenJoined ? 10f : 0f)));
                     }
                 }
@@ -279,19 +241,116 @@ namespace RBMAI
             return true;
         }
 
-        // Advancing lines must be wider than they are deep: the file count ("width ranks") has to exceed the
-        // rank count (depth) by at least 2. A line that advances deeper than it is wide presents a narrow face
-        // to the enemy, gets enveloped, and wastes its rear ranks.
-        //
-        // Engine formula (decompiled/TaleWorlds.MountAndBlade/LineFormation.cs:196-199 GetFileCountFromWidth,
-        // mirrored by Formation.SetFormOrder's _desiredFileCount at Formation.cs:782-787):
-        //     files f = floor((width - UnitDiameter) / (Interval + UnitDiameter)) + 1
-        // inverse (LineFormation.cs:115 FlankWidth getter):
-        //     width  = (f - 1) * (Interval + UnitDiameter) + UnitDiameter
-        // ranks r = ceil(n / f), with n = CountOfUnitsWithoutDetachedOnes.
-        //
-        // Only ever call this from a main-thread behavior/tactic tick (TickOccasionally / OnBehaviorActivated),
-        // never from the movement worker job -- it touches QuerySystem-backed formation properties.
+        private sealed class AttackJoinLatch
+        {
+            public bool Joined;
+            public float JoinedAt = float.NaN;
+            public float QuietSince = float.NaN;
+        }
+
+        private static readonly ConcurrentDictionary<Team, AttackJoinLatch> _attackJoinLatches = new ConcurrentDictionary<Team, AttackJoinLatch>();
+
+        private const float AttackJoinHoldSeconds = 20f;
+
+        // Unjoin only after the edge gap to the significant enemy stayed above this (m), with under AttackUnjoinMelee in melee, for AttackUnjoinSeconds.
+        private const float AttackUnjoinGap = 120f;
+
+        private const float AttackUnjoinMelee = 0.1f;
+
+        private const float AttackUnjoinSeconds = 10f;
+
+        /// <summary>The main infantry is fighting in melee, or a significant enemy formation exists for it to join.</summary>
+        private static bool HasEnemyToJoin(Formation mainInfantry)
+        {
+            if (mainInfantry == null || mainInfantry.CountOfUnits <= 0)
+            {
+                return false;
+            }
+            return FormationFightingInMelee(mainInfantry, 0.35f)
+                || FindSignificantEnemy(mainInfantry, true, true, false, false, false, true) != null;
+        }
+
+        internal static void ClearAttackJoinLatches()
+        {
+            _attackJoinLatches.Clear();
+        }
+
+        /// <summary>
+        /// HasBattleBeenJoined latched per team for the attack tactics (the plain test's +10 m hysteresis flipped the army on kiting skirmishers).
+        /// Stays joined for AttackJoinHoldSeconds, then until the edge gap exceeds AttackUnjoinGap with under 10 % in melee for AttackUnjoinSeconds.
+        /// Team tick thread; one latch per team, written only by that team's tactic.
+        /// </summary>
+        public static bool HasAttackBeenJoined(Formation mainInfantry, Team team, bool hasBattleBeenJoined, float battleJoinRange = 75f)
+        {
+            Mission mission = Mission.Current;
+            if (team == null || mission == null)
+            {
+                return HasBattleBeenJoined(mainInfantry, hasBattleBeenJoined, battleJoinRange);
+            }
+            AttackJoinLatch latch = _attackJoinLatches.GetOrAdd(team, t => new AttackJoinLatch());
+            float now = mission.CurrentTime;
+            if (HasBattleBeenJoined(mainInfantry, hasBattleBeenJoined || latch.Joined, battleJoinRange))
+            {
+                // HasBattleBeenJoined is also true with no enemy formation (team's first decision, before spawn): only a join against a real enemy latches.
+                if (!latch.Joined && !HasEnemyToJoin(mainInfantry))
+                {
+                    return true;
+                }
+                if (!latch.Joined)
+                {
+                    latch.Joined = true;
+                    latch.JoinedAt = now;
+                }
+                latch.QuietSince = float.NaN;
+                return true;
+            }
+            if (!latch.Joined)
+            {
+                return false;
+            }
+            if (now - latch.JoinedAt < AttackJoinHoldSeconds)
+            {
+                return true;
+            }
+            bool quiet = true;
+            if (mainInfantry != null && mainInfantry.CountOfUnits > 0)
+            {
+                if (FormationFightingInMelee(mainInfantry, AttackUnjoinMelee))
+                {
+                    quiet = false;
+                }
+                else
+                {
+                    Formation enemy = FindSignificantEnemy(mainInfantry, true, true, false, false, false, true);
+                    if (enemy != null)
+                    {
+                        quiet = FormationGeometry.Gap(mainInfantry, FootprintMode.ScatterAware, enemy, FootprintMode.ScatterAware) > AttackUnjoinGap;
+                    }
+                }
+            }
+            if (!quiet)
+            {
+                latch.QuietSince = float.NaN;
+                return true;
+            }
+            if (float.IsNaN(latch.QuietSince))
+            {
+                latch.QuietSince = now;
+            }
+            if (now - latch.QuietSince < AttackUnjoinSeconds)
+            {
+                return true;
+            }
+            latch.Joined = false;
+            latch.JoinedAt = float.NaN;
+            latch.QuietSince = float.NaN;
+            return false;
+        }
+
+        // Advancing lines must be wider than deep: files must exceed ranks by at least 2.
+        // Engine formula (LineFormation.GetFileCountFromWidth): files f = floor((width - UnitDiameter) / (Interval + UnitDiameter)) + 1;
+        // inverse: width = (f - 1) * (Interval + UnitDiameter) + UnitDiameter; ranks r = ceil(n / f), n = CountOfUnitsWithoutDetachedOnes.
+        // Main-thread behavior/tactic ticks only, never the movement worker job (QuerySystem-backed properties).
         public static float EnforceMinFileWidth(Formation formation, float desiredWidth)
         {
             if (formation == null || desiredWidth <= 0f)
@@ -339,7 +398,7 @@ namespace RBMAI
                 return desiredWidth;
             }
 
-            // Smallest file count that satisfies f >= ceil(n / f) + 2. n is small, so just walk upward.
+            // Smallest file count with f >= ceil(n / f) + 2.
             int fixedFiles = files;
             while (fixedFiles < n && fixedFiles < MathF.Ceiling(n / (float)fixedFiles) + 2)
             {
@@ -454,16 +513,11 @@ namespace RBMAI
                 }
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
-                    //float currentTime = agent.Mission.CurrentTime;
                     float currentTime = MBCommon.GetTotalMissionTime();
                     if (agent.LastRangedHitTime > 0f && currentTime > agent.LastRangedHitTime && (currentTime - agent.LastRangedHitTime) < (lastAttackTimeTreshold + (20f * ratioOfCrossbowmen)))
                     {
                         countOfShooting++;
                     }
-                    //else
-                    //{
-                    //    agent.ClearTargetFrame();
-                    //}
                     ratio = (float)countOfShooting / (float)formation.CountOfUnits;
                 });
                 if (ratio > desiredRatio)
@@ -482,14 +536,8 @@ namespace RBMAI
             {
                 formation.ApplyActionOnEachUnitViaBackupList(delegate (Agent agent)
                 {
-                    //float currentTime = MBCommon.TimeType.Mission.GetTime();
-                    //if (currentTime - agent.LastRangedHitTime < 6f)
-                    //{
-                    //    countOfSkirmishers++;
-                    //}
                     bool isActiveSkrimisher = false;
                     float countedUnits = 0f;
-                    //float currentTime = Mission.Current.CurrentTime;
                     float currentTime = MBCommon.GetTotalMissionTime();
                     if (agent.LastRangedHitTime > 0f && currentTime - agent.LastRangedHitTime < 6f && currentTime > agent.LastRangedHitTime && ratio <= desiredRatio && ((float)countedUnits / (float)formation.CountOfUnits) <= desiredRatio)
                     {
@@ -520,10 +568,39 @@ namespace RBMAI
             return false;
         }
 
+        // One FormationFightingInMelee answer per formation and ratio per mission-time stamp, reused only at the exact same time and
+        // unit count. Immutable entries replaced whole (AI and main thread). Cleared in MissionStartReset.
+        internal sealed class MeleeTestEntry
+        {
+            public readonly float Time;
+            public readonly int Count;
+            public readonly bool Result;
+
+            public MeleeTestEntry(float time, int count, bool result)
+            {
+                Time = time;
+                Count = count;
+                Result = result;
+            }
+        }
+
+        internal static readonly ConcurrentDictionary<(Formation, float), MeleeTestEntry> fightingInMeleeCache = new ConcurrentDictionary<(Formation, float), MeleeTestEntry>();
+
         public static bool FormationFightingInMelee(Formation formation, float desiredRatio)
         {
-            //float currentTime = Mission.Current.CurrentTime;
             float currentTime = MBCommon.GetTotalMissionTime();
+            int count = formation.CountOfUnits;
+            if (fightingInMeleeCache.TryGetValue((formation, desiredRatio), out MeleeTestEntry cached) && cached.Time == currentTime && cached.Count == count)
+            {
+                return cached.Result;
+            }
+            bool result = FormationFightingInMeleeWalk(formation, desiredRatio, currentTime);
+            fightingInMeleeCache[(formation, desiredRatio)] = new MeleeTestEntry(currentTime, count, result);
+            return result;
+        }
+
+        private static bool FormationFightingInMeleeWalk(Formation formation, float desiredRatio, float currentTime)
+        {
             float countedUnits = 0;
             float ratio = 0f;
             float countOfUnitsFightingInMelee = 0;
@@ -550,17 +627,25 @@ namespace RBMAI
         public static List<Formation> FindSignificantFormations(Formation formation, bool includeCavalry = false)
         {
             List<Formation> formations = new List<Formation>();
-            foreach (Team team in Mission.Current.Teams.ToList())
+            Mission.TeamCollection teams = Mission.Current.Teams;
+            for (int t = 0; t < teams.Count; t++)
             {
+                Team team = teams[t];
                 if (team.IsEnemyOf(formation.Team))
                 {
-                    if (team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList().Count == 1)
+                    if (CountFormationsWithUnits(team, out Formation only) == 1)
                     {
-                        formations.Add(team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0]);
+                        formations.Add(only);
                         return formations;
                     }
-                    foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+                    MBList<Formation> teamFormations = team.FormationsIncludingEmpty;
+                    for (int i = 0; i < teamFormations.Count; i++)
                     {
+                        Formation enemyFormation = teamFormations[i];
+                        if (enemyFormation.CountOfUnits <= 0)
+                        {
+                            continue;
+                        }
                         if (enemyFormation.QuerySystem.IsInfantryFormation)
                         {
                             formations.Add(enemyFormation);
@@ -579,10 +664,44 @@ namespace RBMAI
             return formations;
         }
 
-        // GetCorrectTarget asks for this per charging agent, from the parallel movement job, and every agent of a
-        // formation gets the same answer within a frame -- so build it once per formation per frame. An entry is
-        // never mutated after it is published, only replaced whole, so a worker never reads a list mid-fill; two
-        // workers racing on the same frame both build it, which is harmless. Cleared in MissionStartReset.
+        // Count of the team's formations with men and the first of them (null with none). Plain loop; the list is filled once at team
+        // creation, so index reads are safe off the main thread.
+        private static int CountFormationsWithUnits(Team team, out Formation first)
+        {
+            first = null;
+            int count = 0;
+            MBList<Formation> teamFormations = team.FormationsIncludingEmpty;
+            for (int i = 0; i < teamFormations.Count; i++)
+            {
+                Formation f = teamFormations[i];
+                if (f.CountOfUnits > 0)
+                {
+                    if (count == 0)
+                    {
+                        first = f;
+                    }
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        // Appends the team's formations with men to `into`, in FormationsIncludingEmpty order.
+        private static void AddFormationsWithUnits(Team team, List<Formation> into)
+        {
+            MBList<Formation> teamFormations = team.FormationsIncludingEmpty;
+            for (int i = 0; i < teamFormations.Count; i++)
+            {
+                Formation f = teamFormations[i];
+                if (f.CountOfUnits > 0)
+                {
+                    into.Add(f);
+                }
+            }
+        }
+
+        // GetCorrectTarget asks per charging agent from the parallel movement job: built once per formation per frame. Entries are
+        // replaced whole, never mutated (a racing double build is harmless). Cleared in MissionStartReset.
         internal sealed class SignificantFormationsEntry
         {
             public readonly float Time;
@@ -597,8 +716,7 @@ namespace RBMAI
 
         internal static readonly ConcurrentDictionary<Formation, SignificantFormationsEntry> significantFormationsCache = new ConcurrentDictionary<Formation, SignificantFormationsEntry>();
 
-        // Same as FindSignificantFormations(formation) (no cavalry), cached for the current frame. The returned
-        // list is shared between callers: read it, never modify it.
+        // FindSignificantFormations(formation) (no cavalry), cached per frame. The list is shared: read only.
         public static List<Formation> FindSignificantFormationsCached(Formation formation)
         {
             Mission mission = Mission.Current;
@@ -621,17 +739,21 @@ namespace RBMAI
             List<Formation> formations = new List<Formation>();
             if (formation != null)
             {
-                foreach (Team team in Mission.Current.Teams.ToList())
+                Mission.TeamCollection teams = Mission.Current.Teams;
+                for (int t = 0; t < teams.Count; t++)
                 {
+                    Team team = teams[t];
                     if (team.IsEnemyOf(formation.Team))
                     {
-                        if (team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList().Count == 1)
+                        if (CountFormationsWithUnits(team, out Formation only) == 1)
                         {
-                            formations.Add(team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0]);
+                            formations.Add(only);
                             return formations;
                         }
-                        foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+                        MBList<Formation> teamFormations = team.FormationsIncludingEmpty;
+                        for (int i = 0; i < teamFormations.Count; i++)
                         {
+                            Formation enemyFormation = teamFormations[i];
                             if (formation != null && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
                             {
                                 formations.Add(enemyFormation);
@@ -653,24 +775,23 @@ namespace RBMAI
 
             if (formation != null)
             {
-                foreach (Team team in Mission.Current.Teams.ToList())
+                Mission.TeamCollection teams = Mission.Current.Teams;
+                for (int t = 0; t < teams.Count; t++)
                 {
+                    Team team = teams[t];
                     if (team.IsEnemyOf(formation.Team))
                     {
-                        foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
-                        {
-                            allEnemyFormations.Add(enemyFormation);
-                        }
+                        AddFormationsWithUnits(team, allEnemyFormations);
                     }
                 }
 
-                if (allEnemyFormations.ToList().Count == 1)
+                if (allEnemyFormations.Count == 1)
                 {
                     significantEnemy = allEnemyFormations[0];
                     return significantEnemy;
                 }
 
-                foreach (Formation enemyFormation in allEnemyFormations.ToList())
+                foreach (Formation enemyFormation in allEnemyFormations)
                 {
                     if (withSide)
                     {
@@ -715,33 +836,6 @@ namespace RBMAI
                             }
                         }
                     }
-                    //if (formation != null && includeCavalry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation && !CheckIfMountedSkirmishFormation(enemyFormation) && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
-                    //{
-                    //    float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
-                    //    if (newDist < dist)
-                    //    {
-                    //        significantEnemy = enemyFormation;
-                    //        dist = newDist;
-                    //    }
-                    //}
-                    //if (formation != null && includeMountedSkirmishers && enemyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(enemyFormation))
-                    //{
-                    //    float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
-                    //    if (newDist < dist)
-                    //    {
-                    //        significantEnemy = enemyFormation;
-                    //        dist = newDist;
-                    //    }
-                    //}
-                    //if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
-                    //{
-                    //    float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
-                    //    if (newDist < dist)
-                    //    {
-                    //        significantEnemy = enemyFormation;
-                    //        dist = newDist;
-                    //    }
-                    //}
                 }
 
                 if (unitCountMatters)
@@ -804,34 +898,26 @@ namespace RBMAI
 
             if (formation != null)
             {
-                foreach (Team team in Mission.Current.Teams.ToList())
+                Mission.TeamCollection teams = Mission.Current.Teams;
+                for (int t = 0; t < teams.Count; t++)
                 {
+                    Team team = teams[t];
                     if (team.IsEnemyOf(formation.Team))
                     {
-                        foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
-                        {
-                            allEnemyFormations.Add(enemyFormation);
-                        }
+                        AddFormationsWithUnits(team, allEnemyFormations);
                     }
                 }
 
-                if (allEnemyFormations.ToList().Count == 1)
+                if (allEnemyFormations.Count == 1)
                 {
                     significantEnemy = allEnemyFormations[0];
                     return significantEnemy;
                 }
 
-                foreach (Formation enemyFormation in allEnemyFormations.ToList())
+                foreach (Formation enemyFormation in allEnemyFormations)
                 {
                     if (formation != null && includeInfantry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsInfantryFormation)
                     {
-                        //float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
-                        //if (newDist < dist)
-                        //{
-                        //    significantEnemy = enemyFormation;
-                        //    dist = newDist;
-                        //}
-
                         if (unitCountMatters)
                         {
                             significantFormations.Add(enemyFormation);
@@ -839,13 +925,6 @@ namespace RBMAI
                     }
                     if (formation != null && includeRanged && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedFormation)
                     {
-                        //float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
-                        //if (newDist < dist)
-                        //{
-                        //    significantEnemy = enemyFormation;
-                        //    dist = newDist;
-                        //}
-
                         if (unitCountMatters)
                         {
                             significantFormations.Add(enemyFormation);
@@ -853,36 +932,13 @@ namespace RBMAI
                     }
                     if (formation != null && includeCavalry && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsCavalryFormation && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
                     {
-                        //float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
-                        //if (newDist < dist)
-                        //{
-                        //    significantEnemy = enemyFormation;
-                        //    dist = newDist;
-                        //}
-
                         if (unitCountMatters)
                         {
                             significantFormations.Add(enemyFormation);
                         }
                     }
-                    //if (formation != null && includeMountedSkirmishers && enemyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(enemyFormation))
-                    //{
-                    //    float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
-                    //    if (newDist < dist)
-                    //    {
-                    //        significantEnemy = enemyFormation;
-                    //        dist = newDist;
-                    //    }
-                    //}
                     if (formation != null && includeHorseArchers && enemyFormation.CountOfUnits > 0 && enemyFormation.QuerySystem.IsRangedCavalryFormation)
                     {
-                        //float newDist = formation.CachedMedianPosition.AsVec2.Distance(enemyFormation.CachedMedianPosition.AsVec2);
-                        //if (newDist < dist)
-                        //{
-                        //    significantEnemy = enemyFormation;
-                        //    dist = newDist;
-                        //}
-
                         if (unitCountMatters)
                         {
                             significantFormations.Add(enemyFormation);
@@ -894,7 +950,6 @@ namespace RBMAI
                 {
                     if (significantFormations.Count > 0)
                     {
-                        //float unitCount = 0;
                         float formationWeight = 10000f;
                         foreach (Formation significantFormation in significantFormations)
                         {
@@ -987,18 +1042,17 @@ namespace RBMAI
             {
                 if (formation != null)
                 {
-                    foreach (Team team in Mission.Current.Teams.ToList())
+                    Mission.TeamCollection teams = Mission.Current.Teams;
+                    for (int t = 0; t < teams.Count; t++)
                     {
+                        Team team = teams[t];
                         if (team.IsEnemyOf(formation.Team))
                         {
-                            foreach (Formation enemyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
-                            {
-                                allEnemyFormations.Add(enemyFormation);
-                            }
+                            AddFormationsWithUnits(team, allEnemyFormations);
                         }
                     }
 
-                    foreach (Formation enemyFormation in allEnemyFormations.ToList())
+                    foreach (Formation enemyFormation in allEnemyFormations)
                     {
                         if (!enemyFormation.QuerySystem.IsCavalryFormation && !enemyFormation.QuerySystem.IsRangedCavalryFormation)
                         {
@@ -1014,27 +1068,28 @@ namespace RBMAI
             return result;
         }
 
+        // The nearest (or, unitCountMatters, the largest) formation of the asked classes in the asker's OWN team, never the asker
+        // itself. Null when there is none.
         public static Formation FindSignificantAlly(Formation formation, bool includeInfantry, bool includeRanged, bool includeCavalry, bool includeMountedSkirmishers, bool includeHorseArchers, bool unitCountMatters = false)
         {
             Formation significantAlly = null;
             float dist = 10000f;
-            List<Formation> significantFormations = new List<Formation>();
-            if (formation != null)
+            if (formation != null && formation.Team != null)
             {
-                foreach (Team team in Mission.Current.Teams.ToList())
+                Team team = formation.Team;
                 {
-                    if (!team.IsEnemyOf(formation.Team))
                     {
-                        if (team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList().Count == 1)
-                        {
-                            significantAlly = team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList()[0];
-                            return significantAlly;
-                        }
                         if (unitCountMatters)
                         {
                             int unitCount = -1;
-                            foreach (Formation allyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+                            MBList<Formation> teamFormations = team.FormationsIncludingEmpty;
+                            for (int i = 0; i < teamFormations.Count; i++)
                             {
+                                Formation allyFormation = teamFormations[i];
+                                if (allyFormation.CountOfUnits <= 0 || allyFormation == formation)
+                                {
+                                    continue;
+                                }
                                 if (formation != null && includeInfantry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsInfantryFormation)
                                 {
                                     if (allyFormation.CountOfUnits > unitCount)
@@ -1063,8 +1118,14 @@ namespace RBMAI
                         }
                         else
                         {
-                            foreach (Formation allyFormation in team.FormationsIncludingEmpty.Where((Formation f) => f.CountOfUnits > 0).ToList())
+                            MBList<Formation> teamFormations = team.FormationsIncludingEmpty;
+                            for (int i = 0; i < teamFormations.Count; i++)
                             {
+                                Formation allyFormation = teamFormations[i];
+                                if (allyFormation.CountOfUnits <= 0 || allyFormation == formation)
+                                {
+                                    continue;
+                                }
                                 if (formation != null && includeInfantry && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsInfantryFormation)
                                 {
                                     float newDist = GetFormationDistance(formation, allyFormation);
@@ -1092,24 +1153,6 @@ namespace RBMAI
                                         dist = newDist;
                                     }
                                 }
-                                //if (formation != null && includeMountedSkirmishers && allyFormation.CountOfUnits > 0 && CheckIfMountedSkirmishFormation(allyFormation))
-                                //{
-                                //    float newDist = formation.CachedMedianPosition.AsVec2.Distance(allyFormation.CachedMedianPosition.AsVec2);
-                                //    if (newDist < dist)
-                                //    {
-                                //        significantEnemy = allyFormation;
-                                //        dist = newDist;
-                                //    }
-                                //}
-                                //if (formation != null && includeHorseArchers && allyFormation.CountOfUnits > 0 && allyFormation.QuerySystem.IsRangedCavalryFormation)
-                                //{
-                                //    float newDist = formation.CachedMedianPosition.AsVec2.Distance(allyFormation.CachedMedianPosition.AsVec2);
-                                //    if (newDist < dist)
-                                //    {
-                                //        significantEnemy = allyFormation;
-                                //        dist = newDist;
-                                //    }
-                                //}
                             }
                         }
                     }
@@ -1217,11 +1260,9 @@ namespace RBMAI
 
             if (formation.Team.HasTeamAi)
             {
-                FieldInfo field = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
-                field.DeclaringType.GetField("_currentTactic");
-                TacticComponent currentTactic = (TacticComponent)field.GetValue(formation.Team.TeamAI);
+                TacticComponent currentTactic = TacticSelection.CurrentTacticRef(formation.Team.TeamAI);
 
-                if (currentTactic != null && (currentTactic is RBMTacticAttackSplitInfantry || currentTactic is RBMTacticAttackSplitInfantry))
+                if (currentTactic != null && (currentTactic is RBMTacticAttackSplitInfantry || currentTactic is RBMTacticDefendSplitInfantry))
                 {
                     return false;
                 }

@@ -21,6 +21,63 @@
         private string shieldparries = "";
         private string shieldwrongside = "";
         private string meleehits = "";
+        private MBBindingList<BattleStatsTacticTeamVM> tacticTeams = new MBBindingList<BattleStatsTacticTeamVM>();
+        private string terrainMapLine = "";
+        private string terrainFeatureLine = "";
+
+        [DataSourceProperty]
+        public string TerrainMapLine
+        {
+            get
+            {
+                return terrainMapLine;
+            }
+            set
+            {
+                if (terrainMapLine == value)
+                {
+                    return;
+                }
+                terrainMapLine = value;
+                OnPropertyChangedWithValue(value, "TerrainMapLine");
+            }
+        }
+
+        [DataSourceProperty]
+        public string TerrainFeatureLine
+        {
+            get
+            {
+                return terrainFeatureLine;
+            }
+            set
+            {
+                if (terrainFeatureLine == value)
+                {
+                    return;
+                }
+                terrainFeatureLine = value;
+                OnPropertyChangedWithValue(value, "TerrainFeatureLine");
+            }
+        }
+
+        [DataSourceProperty]
+        public MBBindingList<BattleStatsTacticTeamVM> TacticTeams
+        {
+            get
+            {
+                return tacticTeams;
+            }
+            set
+            {
+                if (tacticTeams == value)
+                {
+                    return;
+                }
+                    tacticTeams = value;
+                    OnPropertyChangedWithValue(value, "TacticTeams");
+            }
+        }
 
         [DataSourceProperty]
         public string Atkarc

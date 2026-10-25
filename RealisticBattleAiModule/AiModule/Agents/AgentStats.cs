@@ -19,6 +19,10 @@ namespace RBMAI
 {
     public static partial class AgentAi
     {
+        // Share of a rider's maximum missile range within which the AI shoots from horseback; the horse archers'
+        // orbit is sized from it (OverrideBehaviorMountedSkirmish.OrbitRing).
+        internal static float HorsebackMissileRangeShare => RBMConfig.RBMConfig.rbmCombatEnabled ? 0.35f : 0.235f;
+
         [HarmonyPatch(typeof(AgentStatCalculateModel))]
         [HarmonyPatch("SetAiRelatedProperties")]
         private class OverrideSetAiRelatedProperties
@@ -135,14 +139,7 @@ namespace RBMAI
                         agentDrivenProperties.AIAttackOnDecideChance = 0.5f;//MBMath.ClampFloat(0.23f * CalculateAIAttackOnDecideMaxValue() * (3f - agent.Defensiveness), 0.05f, 1f); //0.05-1f, 0.66-line, 0.44 - shield wall - aggressiveness / chance of attack instead of anything else / when set to 0 AI never attacks on its own
                     }
                 }
-                if (RBMConfig.RBMConfig.rbmCombatEnabled)
-                {
-                    agentDrivenProperties.AiRangedHorsebackMissileRange = 0.35f; // percentage of maximum range is used, range of HA circle
-                }
-                else
-                {
-                    agentDrivenProperties.AiRangedHorsebackMissileRange = 0.235f; // percentage of maximum range is used, range of HA circle
-                }
+                agentDrivenProperties.AiRangedHorsebackMissileRange = HorsebackMissileRangeShare; // percentage of maximum range is used, range of HA circle
                 agentDrivenProperties.AiUseShieldAgainstEnemyMissileProbability = 0.95f;
                 //agentDrivenProperties.AiFlyingMissileCheckRadius = 250f;
 

@@ -16,14 +16,50 @@ namespace RBMAI
 {
     public static partial class Tactics
     {
+        /// <summary>Merges unreferenced AI formations (stray reinforcements, leftover slots) into the referenced one of their kind; never under IsFormationReshufflingUnsafe, a dismount order or player formations.</summary>
+        internal static void MergeStrayFormations(Team team, Formation main, Formation archers, Formation cavalry, Formation rangedCavalry, params Formation[] alsoReferenced)
+        {
+            if (team == null || IsFormationReshufflingUnsafe)
+            {
+                return;
+            }
+            foreach (Formation f in team.FormationsIncludingEmpty.ToList())
+            {
+                if (f == null || f.CountOfUnits <= 0 || !f.IsAIControlled || f.RidingOrder.OrderEnum == RidingOrder.RidingOrderEnum.Dismount
+                    || f == main || f == archers || f == cavalry || f == rangedCavalry || (alsoReferenced != null && alsoReferenced.Contains(f)))
+                {
+                    continue;
+                }
+                List<Formation> targets = new List<Formation>();
+                f.ApplyActionOnEachUnitViaBackupList((Agent a) =>
+                {
+                    Formation target = a.HasMount
+                        ? (a.IsRangedCached ? (rangedCavalry ?? cavalry) : (cavalry ?? rangedCavalry))
+                        : (a.IsRangedCached ? (archers ?? main) : (main ?? archers));
+                    if (target != null && target != f && target.IsAIControlled)
+                    {
+                        a.Formation = target;
+                        if (!targets.Contains(target))
+                        {
+                            targets.Add(target);
+                        }
+                    }
+                });
+                if (targets.Count > 0)
+                {
+                    team.TriggerOnFormationsChanged(f);
+                    foreach (Formation target in targets)
+                    {
+                        team.TriggerOnFormationsChanged(target);
+                    }
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(TacticComponent))]
         private class ManageFormationCountsPatch
         {
-            // Ranged = carries a bow/crossbow/sling with more than 5 rounds left for it. Judged by the launcher's
-            // slot, NOT the wielded one: the old test read the ammo of whatever was in hand, so an archer who had
-            // drawn his sidearm counted as 0 ammo and was moved to Infantry, and moving him back (on the next call,
-            // which the emptied or reclassified formation itself triggers) re-laid-out both formations each time.
-            // Native classes him by what he carries, so this also stops the two disagreeing.
+            // Ranged = carries a launcher with more than 5 rounds left, judged by the launcher's slot, not the wielded weapon (a drawn sidearm must not reclassify an archer).
             private static bool HasLauncherWithAmmo(Agent agent)
             {
                 for (EquipmentIndex i = EquipmentIndex.WeaponItemBeginSlot; i < EquipmentIndex.NumAllWeaponSlots; i++)
@@ -48,17 +84,13 @@ namespace RBMAI
             [HarmonyPatch("ManageFormationCounts", new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) })]
             private static bool PrefixSetDefaultBehaviorWeights(ref TacticComponent __instance, ref int infantryCount, ref int rangedCount, ref int cavalryCount, ref int rangedCavalryCount)
             {
-                // Every reassignment below needs AI-controlled formations on both ends, so a team with none (the
-                // player's, when he commands) would only pay for the scan. And like every other RBM reshuffle it
-                // stays off when an RTS/minimap mod drives the parallel formation path (IsFormationReshufflingUnsafe);
-                // the TacticsState docs always said this prefix did, but the check was never added here.
+                // Needs AI formations on both ends; off under IsFormationReshufflingUnsafe (RTS/minimap mods).
                 if (Mission.Current != null && Mission.Current.IsFieldBattle && !IsFormationReshufflingUnsafe
                     && __instance.Team != null && __instance.Team.GetAIControlledFormationCount() > 0)
                 {
                     foreach (Agent agent in __instance.Team.ActiveAgents)
                     {
-                        // A formation the player ordered to dismount stays together after he delegates it: sorting by
-                        // HasMount would send its dismounted horse archers to the archers and the rest to the infantry.
+                        // A formation the player ordered to dismount stays together (sorting by HasMount would split it).
                         if (agent != null && agent.IsHuman && !agent.IsRunningAway
                             && agent.Formation?.RidingOrder.OrderEnum != RidingOrder.RidingOrderEnum.Dismount)
                         {

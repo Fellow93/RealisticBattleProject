@@ -23,11 +23,18 @@ namespace RBMAI
 
             public Boolean shouldClearTargetFrame = false;
 
-            // Frames since the last decision whose SetValue updates were skipped; the next decision replays
-            // them (GetOrderPositionOfUnitCore only scores on decision frames). The cap only bounds a stall or
-            // a very large frontlineDecisionTimerMax -- the scores have long settled by then.
+            // Frames since the last decision whose SetValue updates were skipped; the next decision replays them (capped).
             public int pendingScoreUpdates = 0;
             public const int MaxPendingScoreUpdates = 240;
+
+            // Nearest ally in the unit's lane 1-8 m ahead (set on an Attack decision), or null; the Attack branch walks up behind him.
+            // Written and read by the worker ticking this agent; the AI log reads it stale-tolerantly.
+            public Agent aheadAlly = null;
+            // Close-up hysteresis: walking up until CloseUpGap, waiting until CloseUpResumeGap.
+            public bool closingUp = false;
+            // Close-up patience: wait start (float.MinValue = not waiting) and end of the current shove (user rule: push a little, not mindlessly).
+            public float closeUpWaitSince = float.MinValue;
+            public float closeUpShoveUntil = float.MinValue;
 
             public enum AIDecision
             {
@@ -137,9 +144,7 @@ namespace RBMAI
                 }
             }
 
-            // Runs per agent per tick, so it avoids allocating. The strict > comparisons keep the
-            // tie-break order Attack > BackStep > FindAlly > FlankAllyLeft > FlankAllyRight, which is
-            // what the previous Dictionary + Aggregate produced by walking insertion order.
+            // Per agent per tick: no allocation. Strict > keeps the tie-break order Attack > BackStep > FindAlly > FlankAllyLeft > FlankAllyRight.
             public void getDecision(out AIDecision decisionType)
             {
                 decisionType = AIDecision.Attack;
@@ -170,75 +175,54 @@ namespace RBMAI
         {
             public AIMindset AIMindset = new AIMindset();
 
-            // Utilities.GetCorrectTarget walks every enemy formation's roster (ToArray per call), so calling
-            // it per agent per tick from the parallel movement job is O(n^2) plus an allocation storm.
-            // Cache it per agent for a randomised 0.5-1s so the recomputes spread across ticks instead of
-            // all landing on the same one.
+            // GetCorrectTarget walks every enemy roster (O(n^2) from the parallel job): cached per agent for a random 0.5-1 s.
             public Agent cachedTarget = null;
             public float cachedTargetExpiry = float.MinValue;
-            // True when cachedTarget is a "no target" answer taken under ChargeWithTarget (see GetCachedCorrectTarget).
             public bool cachedTargetIsNullUnderCharge = false;
 
-            // RBM-side stand-in for the old forged write to Agent.LastRangedHitTime: records when the
-            // >50s "archer has stalled" reset fired, so the 20s/50s logic keeps its effect without
-            // reflecting into engine state from a worker thread.
+            // RBM-side stand-in for writing Agent.LastRangedHitTime: when the >50 s "archer stalled" reset fired (no engine writes from a worker).
             public float stallResetTime = float.MinValue;
 
-            // Cavalry free-charge verdict ("enemy riders or foot close enough to break ranks"), re-queried only
-            // when it expires: the two proximity queries behind it take Mission's global agent-query lock, and
-            // every AI rider ran them every frame from the parallel movement job.
+            // Cavalry free-charge verdict, re-queried only on expiry (its proximity queries take Mission's global agent-query lock).
             public bool cavalryEnemyClose = false;
             public float cavalryEnemyCloseExpiry = float.MinValue;
 
-            // Under ChargeWithTarget a rider more than 60 m from his target heads for an aim point built off the
-            // target's WorldPosition (OverrideFormation.ChargeHeading); resolving it is an engine call, so it is
-            // reused until it expires or the target changes.
+            // ChargeWithTarget aim point (ChargeHeading); resolving it is an engine call, so reused until expiry or target change.
             public Agent cachedHeadingTarget = null;
             public WorldPosition cachedHeadingPosition = WorldPosition.Invalid;
             public float cachedHeadingExpiry = float.MinValue;
 
-            // Step-branch memos (OverrideFormation.IsPositionOccupied / GetStepTowardNearbyAlly): each step branch
-            // ran a 1.2 m all-agents query every frame, FindAlly 1-3 more, all behind Mission's global agent-query
-            // lock. The occupied/free verdict is reused for 0.1-0.15 s while the decision (the same decision frame,
-            // tracked by its AIDecisionTimer) holds and the probed spot stays near the one it was taken for; the
-            // nearest ally for 0.25-0.4 s while he is alive and within reach. Only the worker ticking this agent
-            // touches them in a frame; a stray main-thread caller (the AI behaviour log's slot sampling) can at worst
-            // read or write one memo a frame early or late, which only means one fresh or one reused query.
+            // Step-branch memos (IsPositionOccupied / GetStepTowardNearbyAlly) avoid per-frame all-agents queries behind Mission's
+            // global lock: occupied verdict reused 0.1-0.15 s within one decision, nearest ally 0.25-0.4 s. Only the worker
+            // ticking this agent touches them; a stray main-thread caller (AI log) at worst costs one fresh/reused query.
             public bool occupancyVerdict = false;
             public Vec2 occupancyPosition = Vec2.Invalid;
             public AIMindset.AIDecision occupancyDecision = AIMindset.AIDecision.Attack;
             public Timer occupancyDecisionTimer = null;
             public float occupancyExpiry = float.MinValue;
             public Agent stepAllyCached = null;
-            // The search radius (1.5/3/20 m) the cached ally was found in.
             public float stepAllyRadius = 0f;
             public float stepAllyExpiry = float.MinValue;
 
-            // Static-obstacle step gate (OverrideFormation.IsStepBlocked / IsPressingAgainstObstacle). Same threading
-            // rules as the memos above: written by the worker ticking this agent (a stray main-thread logger call can
-            // at worst cost one extra probe or one stale verdict).
-            // Navmesh reachability verdict of the last probe, reused while the decision holds and the man has not
-            // moved or turned much (bounded engine cost, see the Reach* constants).
+            // Static-obstacle step gate (IsStepBlocked / IsPressingAgainstObstacle); same threading as the memos above.
+            // Navmesh reachability verdict of the last probe, reused while the decision holds and he has not moved/turned much.
             public bool reachBlocked = false;
             public Vec2 reachOrigin = Vec2.Invalid;
             public Vec2 reachDirection = Vec2.Invalid;
             public AIMindset.AIDecision reachDecision = AIMindset.AIDecision.Attack;
             public float reachTime = float.MinValue;
-            // Pressing detection: where/when the current run of step pins in one direction started, and when the
-            // last one was seen (a gap restarts the window).
+            // Pressing detection: current run of step pins in one direction.
             public Vec2 pressAnchor = Vec2.Invalid;
             public Vec2 pressDirection = Vec2.Invalid;
             public AIMindset.AIDecision pressDecision = AIMindset.AIDecision.Attack;
             public float pressAnchorTime = float.MinValue;
             public float pressLastSeen = float.MinValue;
-            // After a release: no step pin of that decision near that spot until pressReleaseUntil.
             public AIMindset.AIDecision pressReleaseDecision = AIMindset.AIDecision.Attack;
             public Vec2 pressReleasePosition = Vec2.Invalid;
             public float pressReleaseUntil = float.MinValue;
         }
 
-        // Returns this agent's melee/charge target, reusing the cached one while it is fresh and still alive.
-        // Behaviour matches a direct Utilities.GetCorrectTarget call apart from up to ~1s of staleness.
+        // This agent's melee/charge target, cached (up to ~1 s stale vs Utilities.GetCorrectTarget).
         public static Agent GetCachedCorrectTarget(Agent unit, AIDecisionState state)
         {
             if (unit == null)
@@ -256,10 +240,8 @@ namespace RBMAI
             {
                 return cached;
             }
-            // A null is reused too, but only one found under ChargeWithTarget and only while the formation is
-            // still on it: that is GetCorrectTarget's expensive path (no significant enemy formation), which
-            // otherwise reran every frame. Under any other order it returns null at its first check, and caching
-            // that would delay target pickup by up to 1s right after a charge is ordered.
+            // A null is reused only if found under ChargeWithTarget and the formation is still on it (GetCorrectTarget's
+            // expensive path); under other orders caching null would delay target pickup after a charge is ordered.
             bool isChargeWithTarget = IsOnChargeWithTarget(unit);
             if (cached == null && state.cachedTargetIsNullUnderCharge && now < state.cachedTargetExpiry && isChargeWithTarget)
             {

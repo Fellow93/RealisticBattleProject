@@ -15,9 +15,7 @@ namespace RBMAI
 {
     public static partial class Frontline
     {
-        // Static-obstacle step gate counters (OverrideFormation.IsStepBlocked / IsPressingAgainstObstacle), written
-        // with Interlocked on the movement workers, read by the AI behaviour log's AGENTS line, reset per mission in
-        // MissionStartReset. Rejects count step FRAMES turned into a hold/fallback; probes count engine queries.
+        // Step-gate counters: Interlocked on the movement workers, reset in MissionStartReset. Rejects = step frames turned into a hold; probes = engine queries.
         internal static long ObstacleUnreachableRejects;
         internal static long ObstacleDeepWaterRejects;
         internal static long ObstacleProbeQueries;
@@ -34,11 +32,8 @@ namespace RBMAI
         [HarmonyPatch(typeof(Formation))]
         private class OverrideFormation
         {
-            // Mission.GetNearby*Agents clears the list it is handed before filling it (verified against
-            // TaleWorlds.MountAndBlade.Mission), so these scratch buffers can be reused instead of allocating a
-            // fresh MBList per query -- this prefix ran 4-7 allocations per agent per tick.
-            // [ThreadStatic] is load-bearing: the prefix runs on the parallel formation-movement job, so a single
-            // shared buffer would be torn between worker threads. Each worker gets its own, lazily created.
+            // Mission.GetNearby*Agents clears the list it is handed, so scratch buffers are reused.
+            // [ThreadStatic] is load-bearing: the prefix runs on the parallel movement job; a shared buffer would be torn.
             [ThreadStatic] private static MBList<Agent> _scratchAlliesFront;
             [ThreadStatic] private static MBList<Agent> _scratchAlliesLeft;
             [ThreadStatic] private static MBList<Agent> _scratchAlliesRight;
@@ -46,6 +41,7 @@ namespace RBMAI
             [ThreadStatic] private static MBList<Agent> _scratchEnemyQuery;
             [ThreadStatic] private static MBList<Agent> _scratchOccupancy;
             [ThreadStatic] private static MBList<Agent> _scratchNearbyAllies;
+            [ThreadStatic] private static MBList<Agent> _scratchClumpAhead;
 
             private static MBList<Agent> ScratchAlliesFront => _scratchAlliesFront ?? (_scratchAlliesFront = new MBList<Agent>());
             private static MBList<Agent> ScratchAlliesLeft => _scratchAlliesLeft ?? (_scratchAlliesLeft = new MBList<Agent>());
@@ -54,6 +50,7 @@ namespace RBMAI
             private static MBList<Agent> ScratchEnemyQuery => _scratchEnemyQuery ?? (_scratchEnemyQuery = new MBList<Agent>());
             private static MBList<Agent> ScratchOccupancy => _scratchOccupancy ?? (_scratchOccupancy = new MBList<Agent>());
             private static MBList<Agent> ScratchNearbyAllies => _scratchNearbyAllies ?? (_scratchNearbyAllies = new MBList<Agent>());
+            private static MBList<Agent> ScratchClumpAhead => _scratchClumpAhead ?? (_scratchClumpAhead = new MBList<Agent>());
 
             [HarmonyPostfix]
             [HarmonyPatch("GetDirectionOfUnit")]
@@ -67,7 +64,7 @@ namespace RBMAI
                         return;
                     }
                     MovementOrder order = __instance.GetReadonlyMovementOrderReference();
-                    // Frontline facing only applies under charge orders, matching the mindset block below.
+                    // Facing only applies under charge orders, like the mindset block below.
                     if (order.OrderType != OrderType.Charge && order.OrderType != OrderType.ChargeWithTarget)
                     {
                         return;
@@ -87,12 +84,9 @@ namespace RBMAI
                 }
             }
 
-            // Where a rider more than 60 m out steers under ChargeWithTarget: his target soldier, pulled part of the
-            // way toward the target formation's centre and led by that formation's velocity over the rider's time to
-            // get there. Steering at the soldier himself ran the outer riders of a wide wedge at the near corner and
-            // chased a moving line along a pursuit curve, so the charge glanced down its flank instead of hitting it.
-            // Parallel movement job: cached formation fields only, and one SetVec2MT on a fresh copy (no navmesh query;
-            // native re-validates a Z-invalid position itself).
+            // Where a rider > 60 m out steers under ChargeWithTarget: his target soldier pulled toward the target formation's
+            // centre and led by its velocity (steering at the soldier chased a moving line along a pursuit curve).
+            // Parallel movement job: cached formation fields only, one SetVec2MT on a fresh copy (no navmesh query).
             private const float ChargeAimCentrePull = 0.3f;
             private const float ChargeAimClosingSpeed = 11f;
             private const float ChargeAimMaxLeadSeconds = 4f;
@@ -126,9 +120,7 @@ namespace RBMAI
                 return heading;
             }
 
-            // This prefix runs on the parallel formation-movement job. An escaping exception there does not
-            // surface as a managed error -- it tears down the worker. Mirror the sibling GetDirectionOfUnit
-            // postfix and swallow, falling through to native with __result untouched.
+            // Parallel movement job: an escaping exception tears down the worker. Swallow and fall through to native, __result untouched.
             [HarmonyPrefix]
             [HarmonyPatch("GetOrderPositionOfUnit")]
             private static bool PrefixGetOrderPositionOfUnit(Formation __instance, ref WorldPosition ____orderPosition, ref IFormationArrangement ____arrangement, ref Agent unit, List<Agent> ____detachedUnits, ref WorldPosition __result)
@@ -153,18 +145,14 @@ namespace RBMAI
                 {
                     return true;
                 }
-                // Release a pending frontline pin before ANY early return. SetTargetPosition leaves the agent
-                // PositionLocked until ClearTargetFrame; this clear used to sit below the siege/cavalry/ranged gates,
-                // so an agent pinned while charging who then met one of them (e.g. an archer with an enemy at arm's
-                // length) stayed rooted to the spot for as long as it held. TryGetValue: units never pinned (most
-                // cavalry) get no decision state.
+                // Release a pending frontline pin before ANY early return (SetTargetPosition leaves the agent PositionLocked
+                // until ClearTargetFrame). TryGetValue: units never pinned get no decision state.
                 if (aiDecisionCooldownDict.TryGetValue(unit, out AIDecisionState pendingClear) && pendingClear != null && pendingClear.AIMindset.shouldClearTargetFrame)
                 {
                     unit.ClearTargetFrame();
                     pendingClear.AIMindset.shouldClearTargetFrame = false;
                 }
-                // Vanilla's own early returns: the unit a Follow order follows, detached units (siege engine crews,
-                // task forces) and units the navmesh can't reach. None of the branches below may override them.
+                // Vanilla's own early returns (Follow target, detached units, unreachable units); the branches below must not override them.
                 MovementOrder movementOrder = __instance.GetReadonlyMovementOrderReference();
                 if ((movementOrder.OrderEnum == MovementOrder.MovementOrderEnum.Follow && movementOrder._targetAgent == unit)
                     || unit.IsDetachedFromFormation
@@ -172,15 +160,12 @@ namespace RBMAI
                 {
                     return true;
                 }
-                // Every branch below feeds unit.Team into Mission.GetNearby*Agents, which dereferences it.
-                // A teamless agent (spawning, or just detached) would NRE on the worker thread.
+                // Branches below pass unit.Team to Mission.GetNearby*Agents, which dereferences it: a teamless agent would NRE on the worker.
                 if (unit.Team == null)
                 {
                     return true;
                 }
-                // Only AI formations, and never out of a shieldwall/square/circle: releasing every man with an enemy
-                // within reach dissolved a player's gate shieldwall into a chase and pulled wall defenders off their
-                // posts after skirmishers. Player formations hold as vanilla does; AI formations still brawl.
+                // Only AI formations, never out of a shieldwall/square/circle; player formations hold as vanilla does.
                 ArrangementOrder.ArrangementOrderEnum siegeArrangement = __instance.ArrangementOrder.OrderEnum;
                 if (mission.IsSiegeBattle && __instance.IsAIControlled
                     && siegeArrangement != ArrangementOrder.ArrangementOrderEnum.ShieldWall
@@ -191,7 +176,6 @@ namespace RBMAI
                     {
                         return true;
                     }
-                    //everyone charge if close to enemy in siege battle
                     MBList<Agent> enemiesCloseBy = ScratchEnemyQuery;
                     mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 2.25f, unit.Team, enemiesCloseBy);
                     if (enemiesCloseBy.Count > 0)
@@ -200,27 +184,20 @@ namespace RBMAI
                         return false;
                     }
                 }
-                //for cavalry
-                // Skipped for a formation ordered to dismount (only the player issues that; it survives delegating
-                // command to the AI): its first men off would lose their slot below and charge the nearest enemy.
-                // The class flags are read through the *ReadOnly getters on this worker path, as native's own
-                // ParallelUpdateFormationMovement does: the plain getters re-evaluate the whole unit-ratio sync group
-                // when stale, from every worker at once. These flags are re-evaluated on every unit add/remove
-                // (FormationQuerySystem.ExpireAfterUnitAddRemove) and refreshed by the main-thread AI's reads otherwise.
+                // Skipped for a formation ordered to dismount (its first men off would lose their slot and charge).
+                // Class flags use the *ReadOnly getters on this worker path (as native does): the plain getters re-evaluate
+                // the whole unit-ratio sync group from every worker at once.
                 if (mission != null && mission.IsFieldBattle && unit != null && __instance.IsAIControlled
                     && __instance.RidingOrder.OrderEnum != RidingOrder.RidingOrderEnum.Dismount
                     && (__instance.QuerySystem.IsCavalryFormationReadOnly || __instance.QuerySystem.IsRangedCavalryFormationReadOnly))
                 {
-                    //cav cahrge if no mount
                     if (unit != null && unit.MountAgent == null)
                     {
                         __result = WorldPosition.Invalid;
                         return false;
                     }
-                    // The two proximity queries take Mission's global agent-query lock and ran for every AI rider every
-                    // frame, serialising the movement workers. They are skipped outright while no enemy formation's
-                    // units can be inside the larger radius, and otherwise their verdict is reused for 0.25-0.5 s
-                    // (jittered so riders do not all re-query on the same frame).
+                    // The proximity queries take Mission's global agent-query lock: skipped while no enemy can be in range,
+                    // else the verdict is reused for 0.25-0.5 s (jittered).
                     if (IsEnemyFormationWithin(mission, unit, CavalryEnemyCloseRadius + CavalryEnemyCloseGateMargin))
                     {
                         AIDecisionState cavalryState = GetOrCreateDecisionState(unit);
@@ -250,8 +227,7 @@ namespace RBMAI
                         float distance = (targetAgent.Position - unit.Position).Length;
                         if (distance > 60f)
                         {
-                            // GetWorldPosition resolves the navmesh face (an engine call). Beyond 60 m a heading up to
-                            // 0.5 s old steers the same, so it is reused until it expires or the target changes.
+                            // GetWorldPosition is an engine call; beyond 60 m a heading up to 0.5 s old steers the same, so it is reused.
                             float now = mission.CurrentTime;
                             if (headingState == null)
                             {
@@ -271,10 +247,8 @@ namespace RBMAI
                         }
                     }
                 }
-                //for range
                 if (mission != null && unit != null && __instance.IsAIControlled && mission.IsFieldBattle && __instance.QuerySystem.IsRangedFormationReadOnly)
                 {
-                    //ranged charge if close to enemy
                     MBList<Agent> enemiesCloseBy = ScratchEnemyQuery;
                     mission.GetNearbyEnemyAgents(unit.Position.AsVec2, 2.5f, unit.Team, enemiesCloseBy);
                     if (enemiesCloseBy.Count > 0)
@@ -283,13 +257,8 @@ namespace RBMAI
                         return false;
                     }
                     //ranged charge if they are skirmishing but not attacking
-                    // Engagement-range gate: the stall test below only knows "this man has not shot for a
-                    // while and has nobody next to him", which is also exactly true of an archer walking a
-                    // long reposition/advance toward a distant enemy (his shots are out of range, so the
-                    // clock runs). Granting the free charge there sends individuals sprinting the whole
-                    // gap while the formation is still marching in ranks -- the reported "one or two men
-                    // run to the front". Only let it fire once the formation itself is in contact range of
-                    // the enemy, so the charge it grants is a few metres, not a hundred.
+                    // Engagement-range gate: the stall test is also true of an archer marching toward a distant enemy, which
+                    // would send individuals sprinting the whole gap. Only fire once the formation is in contact range.
                     if (__instance.AI != null && __instance.AI.ActiveBehavior != null && IsFormationInEngagementRange(__instance, 30f))
                     {
                         if (unit.LastRangedHitTime > 0)
@@ -303,11 +272,8 @@ namespace RBMAI
                                 float currentTime = MBCommon.GetTotalMissionTime();
                                 if (currentTime - unit.LastMeleeHitTime > 10f && currentTime - unit.LastRecievedMeleeHitTime > 10f)
                                 {
-                                    // The old code forged Agent.LastRangedHitTime through reflection to
-                                    // "restart the clock" once a unit had gone 50s without shooting. Writing
-                                    // engine state from the parallel movement job is unsafe, so the same clock
-                                    // is now kept RBM-side: the effective last-shot time is whichever of the
-                                    // engine's value and our own reset stamp is later.
+                                    // Engine state is not written from the parallel job: the 50 s clock is kept RBM-side
+                                    // (effective last-shot time = later of the engine's value and our reset stamp).
                                     AIDecisionState rangedState = GetOrCreateDecisionState(unit);
                                     float lastRangedTime = unit.LastRangedHitTime;
                                     if (rangedState != null && rangedState.stallResetTime > lastRangedTime)
@@ -333,16 +299,10 @@ namespace RBMAI
                     }
                 }
 
-                // Never pin a man who is getting away. A charge rout retreats him but keeps him in his formation (so
-                // the rally can bring him back), so he still reaches the mindset block below, which would lock him
-                // in place mid-flight: the "router stands still" bug again.
-                // Nor a man in the water: native asks for a swimmer's slot only on land (Agent.GetBaseFormationFrame),
-                // so only side paths (the AI log's slot sampling) reach here for him, and the pin they set is released
-                // only by the clear above on the NEXT call -- which for a swimmer may never come. Seen 2026-10-04: a
-                // group that swam into a river stood frozen there after a charge order.
-                // Nor a man the deep-water blocker is driving out of deep water (a scripted move; he may be wading, so
-                // IsOnLand does not cover him): a pin is a movement lock and would hold him in the water. Concurrent
-                // index-set read only (DeepWaterSlots.IsForcedExit), safe on this worker thread.
+                // Never pin a man who is getting away (a charge rout keeps him in his formation, and a pin would lock him mid-flight).
+                // Nor a man in the water: native asks for a swimmer's slot only on land, so a pin set via a side path would never be released.
+                // Nor a man the deep-water blocker is driving out (scripted move; may be wading, IsOnLand misses him): a pin is a
+                // movement lock. Concurrent index-set read only (DeepWaterSlots.IsForcedExit), safe on this worker thread.
                 if (unit.IsRunningAway || (unit.CommonAIComponent != null && unit.CommonAIComponent.IsRetreating) || !unit.IsOnLand()
                     || DeepWaterSlots.IsForcedExit(unit.Index))
                 {
@@ -351,17 +311,13 @@ namespace RBMAI
 
                 AIDecisionState aiDecision = GetOrCreateDecisionState(unit);
 
-                // The mindset/decision block below is the configurable "frontline system". The cavalry and
-                // ranged free-charge gates above, and the GetDirectionOfUnit facing postfix, stay on
-                // regardless -- they are not part of what frontlineEnabled turns off.
+                // Only the mindset/decision block below is switched off by frontlineEnabled; the free-charge gates above stay on.
                 if (!RBMConfig.RBMConfig.frontlineEnabled)
                 {
                     return true;
                 }
 
-                // Below this size the system does nothing, so don't build decision state for the unit.
-                // The pending clear above still runs first: formations shrink as they take casualties, so
-                // a unit can fall under the threshold still owing a frame clear from an earlier tick.
+                // Below this size the system does nothing (the pending clear above still runs first).
                 if (__instance.CountOfUnitsWithoutDetachedOnes <= RBMConfig.RBMConfig.frontlineMinFormationSize)
                 {
                     return true;
@@ -399,10 +355,8 @@ namespace RBMAI
                         Vec2 leftVec = direction.LeftVec();
                         Vec2 rightVec = direction.RightVec();
 
-                        // The scores only matter on the frame a new decision is taken, so the four proximity
-                        // queries (each behind Mission's global agent-query lock) and the scoring run then and
-                        // not every frame. Frames in between only count themselves, and the decision frame
-                        // replays that many score updates (see DecideMindset).
+                        // Scores matter only on decision frames, so the four proximity queries (global agent-query lock) run then;
+                        // skipped frames are counted and replayed (see DecideMindset).
                         if (aiDecision.AIMindset.AIDecisionTimer == null)
                         {
                             DecideMindset(mission, __instance, unit, aiDecision.AIMindset, unitPosition, direction, leftVec, rightVec);
@@ -439,8 +393,7 @@ namespace RBMAI
                                         {
                                             WorldPosition targetPosition = unit.GetWorldPosition();
                                             Vec2 targetVec2 = unitPosition + direction * MBRandom.RandomFloatRanged(0.15f, 0.5f);
-                                            // A rock, wall or walled-off deep water in the way: no step, native's own
-                                            // (path-found) charge on his target instead, as when this case does not apply.
+                                            // Rock, wall or deep water in the way: no step, native's own charge instead.
                                             if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.Attack, unitPosition, targetVec2))
                                             {
                                                 return true;
@@ -461,14 +414,83 @@ namespace RBMAI
                                             return false;
                                         }
                                     }
+                                    // Ally in his lane nearer than his target: walk up behind him and wait (native's charge runs through him).
+                                    // Walks straight ahead along his own line (keeps his lateral place), hysteresis + per-man stop gap.
+                                    AIMindset closeUpMindset = aiDecision.AIMindset;
+                                    Agent aheadAlly = closeUpMindset.aheadAlly;
+                                    if (aheadAlly != null && targetAgent != null)
+                                    {
+                                        if (!aheadAlly.IsActive())
+                                        {
+                                            closeUpMindset.aheadAlly = null;
+                                            closeUpMindset.closingUp = false;
+                                            closeUpMindset.closeUpWaitSince = float.MinValue;
+                                            return true;
+                                        }
+                                        Vec2 toAlly = aheadAlly.Position.AsVec2 - unitPosition;
+                                        float allyDistance = toAlly.Length;
+                                        float forwardGap = toAlly.DotProduct(direction);
+                                        if (allyDistance <= CloseUpMaxRange
+                                            && forwardGap >= allyDistance * CloseUpMinCos
+                                            && allyDistance * allyDistance < targetAgent.Position.AsVec2.DistanceSquared(unitPosition))
+                                        {
+                                            float now = mission.CurrentTime;
+                                            // Impatience: a shove presses 0.5 m forward into the man ahead; only walls / deep water stop it.
+                                            if (now < closeUpMindset.closeUpShoveUntil)
+                                            {
+                                                Vec2 shoveVec2 = unitPosition + direction * CloseUpStep;
+                                                if (!IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.Attack, unitPosition, shoveVec2))
+                                                {
+                                                    closeUpMindset.closingUp = false;
+                                                    WorldPosition shovePosition = unit.GetWorldPosition();
+                                                    shovePosition.SetVec2MT(shoveVec2);
+                                                    __result = shovePosition;
+                                                    unit.SetTargetPosition(shoveVec2);
+                                                    return false;
+                                                }
+                                                closeUpMindset.closeUpShoveUntil = float.MinValue;
+                                            }
+                                            float stopGap = CloseUpGap + CloseUpGapJitter * IndexJitter(unit.Index);
+                                            // An ally ahead who started moving is followed at once (no resume margin).
+                                            PaceThresholds(aheadAlly, out float allyStill, out float allyMoving);
+                                            bool allyAdvancing = aheadAlly.AverageVelocity.AsVec2.DotProduct(direction) >= allyStill;
+                                            if (forwardGap <= stopGap
+                                                || (!closeUpMindset.closingUp && !allyAdvancing && forwardGap <= stopGap + CloseUpResumeExtra))
+                                            {
+                                                closeUpMindset.closingUp = false;
+                                                TickCloseUpPatience(closeUpMindset, now, unit.Index);
+                                                __result = unit.GetWorldPosition();
+                                                unit.SetTargetPosition(unitPosition);
+                                                return false;
+                                            }
+                                            Vec2 closeUpVec2 = unitPosition + direction * MathF.Min(CloseUpStep, forwardGap - stopGap);
+                                            if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.Attack, unitPosition, closeUpVec2)
+                                                || IsPositionOccupied(mission, closeUpVec2, unit)
+                                                || IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.Attack, unitPosition, closeUpVec2))
+                                            {
+                                                closeUpMindset.closingUp = false;
+                                                TickCloseUpPatience(closeUpMindset, now, unit.Index);
+                                                __result = unit.GetWorldPosition();
+                                                unit.SetTargetPosition(unitPosition);
+                                                return false;
+                                            }
+                                            closeUpMindset.closeUpWaitSince = float.MinValue;
+                                            closeUpMindset.closingUp = true;
+                                            WorldPosition closeUpPosition = unit.GetWorldPosition();
+                                            closeUpPosition.SetVec2MT(closeUpVec2);
+                                            __result = closeUpPosition;
+                                            unit.SetTargetPosition(closeUpVec2);
+                                            return false;
+                                        }
+                                    }
+                                    closeUpMindset.closingUp = false;
                                     return true;
                                 }
                             case AIMindset.AIDecision.BackStep:
                                 {
                                     WorldPosition backPosition = unit.GetWorldPosition();
                                     Vec2 backVec2 = unitPosition - ((direction + __instance.Direction) / 2f) * MBRandom.RandomFloatRanged(0, 0.3f);
-                                    // Backed against a rock, wall or deep water (or pressing without getting anywhere):
-                                    // hold where he stands, as for an occupied spot.
+                                    // Backed against an obstacle (or pressing): hold where he stands, as for an occupied spot.
                                     if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.BackStep, unitPosition, backVec2)
                                         || IsPositionOccupied(mission, backVec2, unit)
                                         || IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.BackStep, unitPosition, backVec2))
@@ -486,20 +508,14 @@ namespace RBMAI
                                 {
                                     WorldPosition allyPosition = GetStepTowardNearbyAlly(mission, unitPosition, unit);
                                     Vec2 allyVec2 = allyPosition.AsVec2;
-                                    // Obstacle in the way: no step, back to his place in the formation (native frame).
-                                    if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.FindAlly, unitPosition, allyVec2))
-                                    {
-                                        return true;
-                                    }
-                                    if (IsPositionOccupied(mission, allyVec2, unit))
+                                    // Obstacle or pressing: hold where he stands. Not native's frame (under a charge it walks him through the men in front).
+                                    if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.FindAlly, unitPosition, allyVec2)
+                                        || IsPositionOccupied(mission, allyVec2, unit)
+                                        || IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.FindAlly, unitPosition, allyVec2))
                                     {
                                         __result = unit.GetWorldPosition();
                                         unit.SetTargetPosition(unitPosition);
                                         return false;
-                                    }
-                                    if (IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.FindAlly, unitPosition, allyVec2))
-                                    {
-                                        return true;
                                     }
                                     __result = allyPosition;
                                     unit.SetTargetPosition(allyVec2);
@@ -509,19 +525,14 @@ namespace RBMAI
                                 {
                                     WorldPosition leftPosition = unit.GetWorldPosition();
                                     Vec2 leftTargetVec2 = unitPosition + leftVec * MBRandom.RandomFloatRanged(0.15f, 0.3f);
-                                    if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.FlankAllyLeft, unitPosition, leftTargetVec2))
-                                    {
-                                        return true;
-                                    }
-                                    if (IsPositionOccupied(mission, leftTargetVec2, unit))
+                                    // Blocked, occupied or pressing: hold (see FindAlly).
+                                    if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.FlankAllyLeft, unitPosition, leftTargetVec2)
+                                        || IsPositionOccupied(mission, leftTargetVec2, unit)
+                                        || IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.FlankAllyLeft, unitPosition, leftTargetVec2))
                                     {
                                         __result = unit.GetWorldPosition();
                                         unit.SetTargetPosition(unitPosition);
                                         return false;
-                                    }
-                                    if (IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.FlankAllyLeft, unitPosition, leftTargetVec2))
-                                    {
-                                        return true;
                                     }
                                     leftPosition.SetVec2MT(leftTargetVec2);
                                     __result = leftPosition;
@@ -532,19 +543,14 @@ namespace RBMAI
                                 {
                                     WorldPosition rightPosition = unit.GetWorldPosition();
                                     Vec2 rightTargetVec2 = unitPosition + rightVec * MBRandom.RandomFloatRanged(0.15f, 0.3f);
-                                    if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.FlankAllyRight, unitPosition, rightTargetVec2))
-                                    {
-                                        return true;
-                                    }
-                                    if (IsPositionOccupied(mission, rightTargetVec2, unit))
+                                    // Blocked, occupied or pressing: hold (see FindAlly).
+                                    if (IsStepBlocked(mission, unit, aiDecision, AIMindset.AIDecision.FlankAllyRight, unitPosition, rightTargetVec2)
+                                        || IsPositionOccupied(mission, rightTargetVec2, unit)
+                                        || IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.FlankAllyRight, unitPosition, rightTargetVec2))
                                     {
                                         __result = unit.GetWorldPosition();
                                         unit.SetTargetPosition(unitPosition);
                                         return false;
-                                    }
-                                    if (IsPressingAgainstObstacle(mission, unit, aiDecision, AIMindset.AIDecision.FlankAllyRight, unitPosition, rightTargetVec2))
-                                    {
-                                        return true;
                                     }
                                     rightPosition.SetVec2MT(rightTargetVec2);
                                     __result = rightPosition;
@@ -558,16 +564,11 @@ namespace RBMAI
                 return true;
             }
 
-            // Scores the unit's surroundings and picks its next frontline decision. Called only on the frame a
-            // decision is taken (AIDecisionTimer == null).
-            // AIMindset.SetValue is not a plain assignment: each call nudges the stored score toward the new
-            // input and decays it toward its base, so the scores are integrated over the per-frame calls the
-            // block used to make. To keep that, the frames skipped since the last decision are replayed here
-            // with this frame's inputs (the integration settles within ~20 steps, so the decision is dominated
-            // by recent, near-identical inputs either way).
+            // Scores the surroundings and picks the next frontline decision; only on a decision frame (AIDecisionTimer == null).
+            // AIMindset.SetValue integrates (nudges toward the input, decays toward base), so skipped frames are replayed here.
             private static void DecideMindset(Mission mission, Formation formation, Agent unit, AIMindset mindset, Vec2 unitPosition, Vec2 direction, Vec2 leftVec, Vec2 rightVec)
             {
-                // These four must be distinct buffers: every Count below is read after all four are filled.
+                // Four distinct buffers: every Count below is read after all are filled.
                 MBList<Agent> alliesFront = ScratchAlliesFront;
                 MBList<Agent> alliesLeft = ScratchAlliesLeft;
                 MBList<Agent> alliesRight = ScratchAlliesRight;
@@ -588,8 +589,7 @@ namespace RBMAI
                     {
                         AgentStances.values.TryGetValue(unit, out stance);
                     }
-                    // A zero max (Stance.InitializePosture/InitializeStamina) would put NaN into every
-                    // decision score; the modifier then stays at its neutral 1f.
+                    // A zero max would put NaN into every decision score; the modifier stays neutral.
                     if (stance != null)
                     {
                         if (stance.maxPosture > 0f)
@@ -606,7 +606,23 @@ namespace RBMAI
                 float healthModifier = MathF.Lerp(0.33f, 1f, unit.Health / unit.HealthLimit);
                 bool isSoldier = unit.Character.IsSoldier;
 
-                float alliesFrontCount = MathF.Min(10f, CountFrontBlockers(alliesFront, unit, direction));
+                // Allies ahead running forward count less (CountFrontBlockers) so rear ranks follow an advance, unless a clump
+                // stands just beyond them (IsClumpStandingAhead): then the front has stopped and all count in full.
+                // The look-ahead query (ScanAhead) runs only when the discount lowered the count or the decision is Attack.
+                float alliesFrontCount = LimitCount(alliesFront.Count, 10);
+                float discountedFrontCount = MathF.Min(10f, CountFrontBlockers(alliesFront, unit, direction));
+                bool scannedAhead = false;
+                int standingAhead = 0;
+                Agent nearestAhead = null;
+                if (discountedFrontCount < alliesFrontCount)
+                {
+                    ScanAhead(mission, unit, unitPosition, direction, out standingAhead, out nearestAhead);
+                    scannedAhead = true;
+                    if (standingAhead < ClumpMinStanding)
+                    {
+                        alliesFrontCount = discountedFrontCount;
+                    }
+                }
                 int alliesLeftCount = LimitCount(alliesLeft.Count, 5);
                 int alliesRightCount = LimitCount(alliesRight.Count, 5);
                 int enemiesFrontCount = LimitCount(enemiesFront.Count, 10);
@@ -638,9 +654,7 @@ namespace RBMAI
                 float findAlly = (alliesFrontCount * 0.5f) + (enemiesFrontCount) - alliesRightCount - alliesLeftCount + (enemiesFrontCount > 0 && (alliesRightCount < 2 || alliesLeftCount < 2) ? 3 : 0);
                 float fallback = (alliesFrontCount) + enemiesFrontCount;
                 float attack = -(alliesFrontCount * 0.5f) + alliesLeftCount + alliesRightCount - enemiesFrontCount + (isSoldier ? 0 : 2) + (isHero ? -3 : 0);//+ Math.Max(0, 3 - (unitTier))
-                // The side a man would flank toward counts twice (2026-10-20): with "other side - own side" the two
-                // cancelled for a man hemmed in on both sides, so the crowded-front term made flanking the top choice
-                // deep inside a pile, where there is no room to step sideways. Edge men (own side empty) are unchanged.
+                // The side a man would flank toward counts twice, so a man hemmed in on both sides does not pick flanking inside a pile.
                 float flankAllyLeft = (alliesFrontCount * 1.25f) + (alliesRightCount) - (2f * alliesLeftCount) - enemiesFrontCount;
                 float flankAllyRight = (alliesFrontCount * 1.25f) + (alliesLeftCount) - (2f * alliesRightCount) - enemiesFrontCount;
 
@@ -672,9 +686,7 @@ namespace RBMAI
 
                 attack = attack > 0 ? (attack * staminaModifier) : attack;
 
-                // The per-decision config weights are applied last, to the finished score, so a weight
-                // of 1 reproduces the old hard-coded behaviour exactly. Both flank directions share
-                // one weight -- steering left and right apart would bias the whole line sideways.
+                // Config weights are applied last, to the finished score. Both flank directions share one weight (else the line drifts sideways).
                 float attackValue = (attack > 0 ? attack * (postureModifier * healthModifier) : attack) * RBMConfig.RBMConfig.frontlineAttackWeight;
                 float backStepValue = (fallback > 0 ? (fallback * (2 - postureModifier)) : fallback) * RBMConfig.RBMConfig.frontlineBackStepWeight;
                 float findAllyValue = (findAlly > 0 ? (findAlly * (2 - postureModifier)) : findAlly) * RBMConfig.RBMConfig.frontlineFindAllyWeight;
@@ -701,22 +713,37 @@ namespace RBMAI
                 {
                     mindset.getDecision(out mindset.currentDecision);
                 }
+
+                // Attack = native's charge; remember the nearest ally in his lane so the Attack branch closes up behind him instead.
+                if (mindset.currentDecision == AIMindset.AIDecision.Attack)
+                {
+                    if (!scannedAhead)
+                    {
+                        ScanAhead(mission, unit, unitPosition, direction, out standingAhead, out nearestAhead);
+                    }
+                    mindset.aheadAlly = nearestAhead;
+                }
+                else
+                {
+                    mindset.aheadAlly = null;
+                    mindset.closingUp = false;
+                    mindset.closeUpWaitSince = float.MinValue;
+                    mindset.closeUpShoveUntil = float.MinValue;
+                }
             }
 
             private const float StepAllyReuseMin = 0.25f;
             private const float StepAllyReuseJitter = 0.15f;
             private const float StepAllyReuseMaxRange = 3f;
 
-            // Returns a finished target position -- a short step toward the nearest ally, not the ally's own
-            // position. Callers must use it as-is; scaling it again shrinks the step to nothing.
+            // Returns a finished target position (a short step toward the nearest ally); use as-is, do not scale it again.
             public static WorldPosition GetStepTowardNearbyAlly(Mission mission, Vec2 unitPosition, Agent unit)
             {
                 Agent nearestAlly = null;
                 float nearestDistance = 10000f;
 
-                // The nearest ally is remembered for 0.25-0.4 s (AIDecisionState.stepAlly*) and reused while he is
-                // alive and still inside the radius he was found in, capped at StepAllyReuseMaxRange, so the reused
-                // man is one the same query tier would still return. Direction and distance stay live.
+                // Nearest ally remembered 0.25-0.4 s and reused while alive and inside the radius he was found in (capped at
+                // StepAllyReuseMaxRange). Direction and distance stay live.
                 aiDecisionCooldownDict.TryGetValue(unit, out AIDecisionState memo);
                 float now = mission.CurrentTime;
                 if (memo != null)
@@ -764,7 +791,6 @@ namespace RBMAI
                         }
                     }
 
-                    // A "nobody found" answer is not remembered: the next frame queries again, as before.
                     if (memo != null && nearestAlly != null)
                     {
                         memo.stepAllyCached = nearestAlly;
@@ -778,9 +804,7 @@ namespace RBMAI
                 {
                     return result;
                 }
-                // Already close enough -- hold rather than push into them. Roughly aligned with
-                // IsPositionOccupied: a max step (0.3m) toward an ally nearer than ~1.0m would land inside its
-                // 0.7m probe and be vetoed anyway, so attempting it only burned the decision window in place.
+                // Already close enough: hold rather than push into them (aligned with IsPositionOccupied's 0.7 m probe).
                 if (nearestDistance <= 0.9f)
                 {
                     result.SetVec2MT(unitPosition);
@@ -792,11 +816,8 @@ namespace RBMAI
                 return result;
             }
 
-            // True when the formation as a whole is already within `range` of its nearest enemy formation.
-            // Reads only cached per-tick formation state (CachedAveragePosition / CachedClosestEnemyFormation /
-            // CachedMedianPosition) -- all three are read by native's own ParallelUpdateFormationMovement and
-            // GetDesiredSpeedInFormation, so they are safe from the movement worker. Fails closed (false) when
-            // there is no enemy formation to measure against: no enemy means no reason to break ranks.
+            // True when the formation is within `range` of its nearest enemy formation. Cached per-tick state only (the same
+            // fields native reads on the movement worker). Fails closed (false) with no enemy formation.
             private static bool IsFormationInEngagementRange(Formation formation, float range)
             {
                 if (formation == null)
@@ -812,14 +833,11 @@ namespace RBMAI
                 return distance <= range;
             }
 
-            // The larger of the two cavalry free-charge radii (the enemy-rider one; the enemy-foot one is 7 m).
-            private const float CavalryEnemyCloseRadius = 15f;
-            // Slack for the engine's query seeing positions a hair different from the managed ones read here.
+            private const float CavalryEnemyCloseRadius = 15f; // riders; foot is 7 m
+            // Slack for engine vs managed position differences.
             private const float CavalryEnemyCloseGateMargin = 2f;
 
-            // The cavalry free-charge test: more than two enemy riders within 15 m, or more than two enemy foot
-            // within 7 m. Both outcomes are the same, so the rider query runs first and the foot query is skipped
-            // when it already fires; that also lets both share one buffer.
+            // Cavalry free-charge test: > 2 enemy riders within 15 m or > 2 enemy foot within 7 m (rider query first, shares one buffer).
             private static bool AreEnemiesCloseToRider(Mission mission, Agent unit)
             {
                 MBList<Agent> enemiesCloseBy = ScratchEnemyQuery;
@@ -832,11 +850,8 @@ namespace RBMAI
                 return CountByMounted(enemiesCloseBy, false) > 2;
             }
 
-            // False only when no unit of any enemy formation can be within `radius` of the unit: the distance to an
-            // enemy formation's bounding box (built from its units' actual positions at most SnapshotMaxAge = 0.1 s
-            // ago, see Utilities.GetFormationUnitSnapshot; a rider covers ~1 m in that, inside the caller's 2 m gate
-            // margin) is a lower bound on the distance to each of its men, scattered or not. Enemies outside every formation are not counted: on their own they could only trip the >2 tests
-            // above as three or more formation-less men close together, which field battles practically never have.
+            // False only when no unit of any enemy formation can be within `radius`: the distance to a formation's bounding box
+            // (from unit positions at most 0.1 s old) is a lower bound for each of its men. Formation-less enemies are not counted.
             private static bool IsEnemyFormationWithin(Mission mission, Agent unit, float radius)
             {
                 Team ownTeam = unit.Team;
@@ -868,20 +883,110 @@ namespace RBMAI
                 return false;
             }
 
-            // A friend walking toward the enemy at least this fast (m/s along the unit's direction) only counts
-            // as FrontMovingBlockerWeight of a blocker; below FrontStillSpeed he is a full one, linear in between.
-            private const float FrontStillSpeed = 0.3f;
-            private const float FrontMovingSpeed = 1f;
+            // Approach discount: a friend moving toward the enemy at >= FrontMovingSpeed counts as FrontMovingBlockerWeight of a
+            // blocker; below FrontStillSpeed a full one, linear between. Not applied while a clump stands ahead (ScanAhead).
+            // Thresholds scale with the ally formation's run restriction (ShieldWall/Square 0.3, Circle 0.5, Line 0.8, Loose 0.9);
+            // FrontStillFloor / FrontMovingMinSpan keep pile shoving reading as standing and the ramp from collapsing.
+            private const float FrontStillSpeed = 1f;
+            private const float FrontMovingSpeed = 2.5f;
+            private const float FrontStillFloor = 0.5f;
+            private const float FrontMovingMinSpan = 0.5f;
             private const float FrontMovingBlockerWeight = 0.25f;
 
-            // Allies ahead weighted by how much they actually block: a man in front who is advancing the same way
-            // opens the space as fast as the unit would fill it, so counting him in full made the rear ranks of an
-            // advancing line pick BackStep/Flank instead of following. Once he stops (engaged, or holding) he
-            // counts in full again, so the ranks still don't pile into a front that has met the enemy. Kept as a
-            // residual weight rather than zero so a dense moving crowd still spreads a little.
-            // AverageVelocity is the engine's smoothed world-space velocity; the raw one jitters in melee and would
-            // flip the count every decision. The unit itself (the query's circle reaches back to him) keeps its
-            // old full count.
+            // Still / moving speed thresholds for this ally, scaled by his formation's run restriction. Managed reads only (worker-safe).
+            private static void PaceThresholds(Agent ally, out float still, out float moving)
+            {
+                float pace = 1f;
+                Formation allyFormation = ally.Formation;
+                if (allyFormation != null)
+                {
+                    allyFormation.ArrangementOrder.GetMovementSpeedRestriction(out float? runRestriction, out float? walkRestriction);
+                    pace = MathF.Clamp(runRestriction ?? 1f, 0.1f, 1f);
+                }
+                still = MathF.Max(FrontStillFloor, FrontStillSpeed * pace);
+                moving = MathF.Max(still + FrontMovingMinSpan, FrontMovingSpeed * pace);
+            }
+            // Look-ahead probe: circle around the point ahead (reaches 1-8 m).
+            private const float AheadProbeDistance = 4.5f;
+            private const float AheadProbeRadius = 3.5f;
+            // Standing clump: >= ClumpMinStanding foot allies 1+ m ahead within ClumpHalfWidth, slower than FrontStillSpeed (no discount).
+            private const float ClumpMinAhead = 1f;
+            private const float ClumpHalfWidth = 3f;
+            private const int ClumpMinStanding = 4;
+            // Close-up (Attack branch): nearest foot ally CloseUpMinAhead+ m ahead within CloseUpLaneHalfWidth of his line to the target.
+            // Walks straight ahead until the ally is CloseUpGap (+ jitter) ahead, waits until the gap opens CloseUpResumeExtra more,
+            // while the ally is within CloseUpMaxRange, ahead (cos >= CloseUpMinCos) and nearer than the target.
+            private const float CloseUpMinAhead = 0.5f;
+            private const float CloseUpLaneHalfWidth = 1.1f;
+            private const float CloseUpMaxRange = 9f;
+            private const float CloseUpMinCos = 0.7f;
+            private const float CloseUpGap = 0.8f;
+            private const float CloseUpGapJitter = 0.4f;
+            private const float CloseUpResumeExtra = 1f;
+            private const float CloseUpStep = 0.5f;
+            // Impatience: after waiting CloseUpPatience (+ jitter), presses forward for CloseUpShoveSeconds, then waits again.
+            private const float CloseUpPatience = 3f;
+            private const float CloseUpPatienceJitter = 3f;
+            private const float CloseUpShoveSeconds = 1.5f;
+
+            // A close-up frame spent waiting: starts the wait clock, and a shove once his patience has run out.
+            private static void TickCloseUpPatience(AIMindset mindset, float now, int index)
+            {
+                if (mindset.closeUpWaitSince == float.MinValue || now < mindset.closeUpWaitSince)
+                {
+                    mindset.closeUpWaitSince = now;
+                }
+                else if (now - mindset.closeUpWaitSince >= CloseUpPatience + CloseUpPatienceJitter * IndexJitter(index * 7 + 3))
+                {
+                    mindset.closeUpWaitSince = float.MinValue;
+                    mindset.closeUpShoveUntil = now + CloseUpShoveSeconds;
+                }
+            }
+
+            // One proximity query (global agent-query lock), only on decision frames when the discount applies or the decision is Attack:
+            // standing allies ahead (clump test) and the nearest ally in his lane (close-up target).
+            private static void ScanAhead(Mission mission, Agent unit, Vec2 unitPosition, Vec2 direction, out int standing, out Agent nearestInLane)
+            {
+                standing = 0;
+                nearestInLane = null;
+                float nearestDistanceSquared = float.MaxValue;
+                Vec2 left = direction.LeftVec();
+                MBList<Agent> ahead = ScratchClumpAhead;
+                mission.GetNearbyAllyAgents(unitPosition + direction * AheadProbeDistance, AheadProbeRadius, unit.Team, ahead);
+                for (int i = 0; i < ahead.Count; i++)
+                {
+                    Agent ally = ahead[i];
+                    if (ally == unit || ally.HasMount || !ally.IsActive())
+                    {
+                        continue;
+                    }
+                    Vec2 offset = ally.Position.AsVec2 - unitPosition;
+                    float forward = offset.DotProduct(direction);
+                    float lateral = MathF.Abs(offset.DotProduct(left));
+                    if (forward >= ClumpMinAhead && lateral <= ClumpHalfWidth)
+                    {
+                        PaceThresholds(ally, out float still, out float moving);
+                        if (ally.AverageVelocity.AsVec2.DotProduct(direction) < still)
+                        {
+                            standing++;
+                        }
+                    }
+                    if (forward >= CloseUpMinAhead && lateral <= CloseUpLaneHalfWidth)
+                    {
+                        float distanceSquared = offset.LengthSquared;
+                        if (distanceSquared < nearestDistanceSquared)
+                        {
+                            nearestDistanceSquared = distanceSquared;
+                            nearestInLane = ally;
+                        }
+                    }
+                }
+                // Don't keep agents reachable from a thread-static between frames.
+                ahead.Clear();
+            }
+
+            // Allies ahead weighted by how much they block: an ally advancing the same way opens the space as fast as the unit fills it.
+            // Uses AverageVelocity (smoothed; the raw one jitters). The unit itself keeps its full count.
             private static float CountFrontBlockers(MBList<Agent> alliesFront, Agent unit, Vec2 direction)
             {
                 float count = 0f;
@@ -894,7 +999,8 @@ namespace RBMAI
                         continue;
                     }
                     float forwardSpeed = ally.AverageVelocity.AsVec2.DotProduct(direction);
-                    float moving = MathF.Clamp((forwardSpeed - FrontStillSpeed) / (FrontMovingSpeed - FrontStillSpeed), 0f, 1f);
+                    PaceThresholds(ally, out float stillSpeed, out float movingSpeed);
+                    float moving = MathF.Clamp((forwardSpeed - stillSpeed) / (movingSpeed - stillSpeed), 0f, 1f);
                     count += MathF.Lerp(1f, FrontMovingBlockerWeight, moving);
                 }
                 return count;
@@ -913,34 +1019,22 @@ namespace RBMAI
                 return count;
             }
 
-            // The steps this system takes (0.15-0.5m) are far shorter than the 0.7m probe, so a plain
-            // "is anyone near the destination" test re-detects the neighbours the unit is already standing
-            // next to -- in a formation at ~1m spacing that is always true, and every branch collapsed to
-            // stand-still. Judge the step against the status quo instead: a neighbour the unit is already
-            // pressed against does not block a step that keeps or widens the gap to them.
-            // Everyone (friend or enemy) is judged where he will be OccupancyLookahead from now rather than
-            // where he stands: a man walking out of the spot no longer blocks it, and one walking into it does.
-            // The shift is capped at OccupancyMaxShift and the query widened by the same amount, so every agent
-            // whose predicted spot can fall inside the probe is found, and a fast rider is not projected metres
-            // away. AverageVelocity is the engine's smoothed world-space velocity (see CountFrontBlockers).
+            // Steps (0.15-0.5 m) are shorter than the 0.7 m probe, so a plain "anyone near the destination" test always fires in
+            // a ~1 m-spaced formation. Judge against the status quo: a neighbour already pressed against does not block a step
+            // that keeps or widens the gap. Agents are judged where they will be OccupancyLookahead from now (shift capped at
+            // OccupancyMaxShift, query widened by the same amount); AverageVelocity is smoothed, the raw one jitters in melee.
             private const float OccupancyProbeRadius = 0.7f;
             private const float OccupancyLookahead = 0.5f;
             private const float OccupancyMaxShift = 0.5f;
 
-            // Verdict reuse (AIDecisionState.occupancy*): 0.1-0.15 s, jittered by agent index. Within one decision
-            // the probed spot only moves with the random step length (up to 0.35 m) and the man's own walk; it jumps
-            // further when the step direction swings (a new target or nearest ally, up to ~1 m in the Attack branch),
-            // so a spot more than OccupancyReuseMaxDrift from the one the verdict was taken for is probed afresh.
+            // Verdict reuse: 0.1-0.15 s, jittered by agent index; a spot more than OccupancyReuseMaxDrift from the one the verdict was taken for is probed afresh.
             private const float OccupancyReuseMin = 0.1f;
             private const float OccupancyReuseJitter = 0.05f;
             private const float OccupancyReuseMaxDrift = 0.5f;
-            // A probe this close to the man's own spot (FindAlly's hold, a near-zero BackStep) is never "occupied":
-            // nobody can be nearer to it than to him. Such a verdict says nothing about his neighbours, so it is
-            // neither cached nor reused for a real step; it is queried as before.
+            // A probe this close to the man's own spot says nothing about his neighbours: neither cached nor reused for a real step.
             private const float OccupancyMemoMinStep = 0.1f;
 
-            // Deterministic per-agent value in [0, 1) for spreading memo expiries: MBRandom is not thread-safe and
-            // this runs on the movement workers.
+            // Deterministic per-agent value in [0, 1) for spreading memo expiries (MBRandom is not thread-safe; movement workers).
             private static float IndexJitter(int index)
             {
                 return unchecked(((uint)index * 2654435761u) >> 16) * (1f / 65536f);
@@ -948,14 +1042,13 @@ namespace RBMAI
 
             public static bool IsPositionOccupied(Mission mission, Vec2 position, Agent self)
             {
-                // Deep-water gate (DeepWaterNavBlocker): every frontline pin target goes through here, and "occupied"
-                // makes the caller pin the man where he stands instead, so no pin lands in walled-off water. Grid
-                // read only (DeepWaterSlots.LiveGrid, immutable); false whenever the blocker is not live.
+                // Deep-water gate: "occupied" makes the caller pin the man where he stands, so no pin lands in walled-off water.
+                // Immutable grid read only (DeepWaterSlots.LiveGrid); false whenever the blocker is not live.
                 if (DeepWaterSlots.IsBlocked(position))
                 {
                     return true;
                 }
-                // No decision state: the plain query, as before the memo.
+                // No decision state: the plain query.
                 if (!aiDecisionCooldownDict.TryGetValue(self, out AIDecisionState memo) || memo == null
                     || position.DistanceSquared(self.Position.AsVec2) < OccupancyMemoMinStep * OccupancyMemoMinStep)
                 {
@@ -1009,23 +1102,14 @@ namespace RBMAI
             }
 
             // ---- Static obstacles: rocks, walls, fences, RBM's deep-water walls ----
-            // Every step branch re-pins the man 0.15-0.5 m ahead of where he stands, every frame, so the pin is a
-            // carrot that keeps moving with him: with a rock, wall or invisible deep-water wall in that direction he
-            // pressed into it for as long as the decision held (reported 2026-10-20). Three gates, cheapest first:
-            //  (b) deep water: the line to a probe point StepProbeLength ahead crosses a deep cell of the live grid
-            //      (DeepWaterSteering.CrossesDeepWater; immutable grid reads only).
-            //  (a) navmesh: the probe point is not reachable from the man's own position within a short path budget
-            //      (Mission.IsFormationUnitPositionAvailableMT: no navmesh there -- a rock/wall hole -- or no short path).
-            //      That is the one spatial query native itself makes from this parallel job: Formation.GetOrderPositionOfUnit
-            //      -> GetOrderPositionOfUnitAux (Hold state, unpositioned unit) calls it from Agent.GetBaseFormationFrame
-            //      inside HumanAIComponent.ParallelUpdateFormationMovement; it validates both positions through the MT
-            //      (Scene.PhysicsAndRayCastLock read-locked) WorldPosition path and runs the engine check under the same
-            //      read lock. Our positions are fresh LOCAL WorldPosition copies (never a formation's cached order
-            //      position), so no native cache sees a per-tick Vec2. Memoised per agent (Reach* constants).
-            //  (c) pressing: obstacles the navmesh does not cut out (small rocks, props, the deep-water quads' physics):
-            //      a run of step pins in one direction that has moved him less than PressMinProgress in PressWindow
-            //      releases the step, and that decision cannot step again near that spot for PressReleaseCooldown.
-            //      Positions and the mission clock only, no engine query.
+            // Every step branch re-pins the man 0.15-0.5 m ahead every frame (a moving carrot), so an obstacle in that direction
+            // would be pressed into for the whole decision. Three gates, cheapest first:
+            //  (b) deep water: the line to a probe point StepProbeLength ahead crosses a deep cell (immutable grid reads only).
+            //  (a) navmesh: probe point not reachable within a short path budget (Mission.IsFormationUnitPositionAvailableMT,
+            //      the one spatial query native itself makes from this parallel job; read-locked). Positions are fresh LOCAL
+            //      WorldPosition copies (never a formation's cached order position). Memoised per agent (Reach* constants).
+            //  (c) pressing: obstacles the navmesh does not cut out: a run of step pins that moved him less than PressMinProgress
+            //      in PressWindow releases the step, with a PressReleaseCooldown. Positions and mission clock only.
             private const float StepProbeLength = 0.6f;
             private const float StepProbeSlack = 0.5f;
             private const float ReachReuseMin = 0.35f;
@@ -1040,9 +1124,8 @@ namespace RBMAI
             private const float PressReleaseCooldown = 2.5f;
             private const float PressReleaseRadius = 1.5f;
 
-            // True when the step from unitPosition to stepTarget must not be taken: a press-release cooldown for this
-            // decision near here, deep water on the line, or no navmesh reachability. A step shorter than
-            // OccupancyMemoMinStep is a hold, never blocked. Never throws (worker thread).
+            // True when the step must not be taken (press-release cooldown, deep water on the line, or no navmesh reachability).
+            // A step shorter than OccupancyMemoMinStep is a hold, never blocked. Never throws (worker thread).
             private static bool IsStepBlocked(Mission mission, Agent unit, AIDecisionState state, AIMindset.AIDecision decision, Vec2 unitPosition, Vec2 stepTarget)
             {
                 if (state == null)
@@ -1086,10 +1169,8 @@ namespace RBMAI
                 return false;
             }
 
-            // The navmesh verdict for a step in `direction`, reused for the same decision while it is younger than a
-            // jittered ReachReuseMin, or younger than ReachReuseMaxAge with the man within ReachReuseMaxDrift of where
-            // it was taken and facing within ReachReuseMinDot of the same way. So at most ~3 queries a second for a
-            // stepping man (one per ~0.35-0.5 s), typically one per decision or per 0.4 m walked.
+            // Navmesh verdict for a step, reused within a decision while younger than a jittered ReachReuseMin, or younger than
+            // ReachReuseMaxAge with the man within ReachReuseMaxDrift and facing within ReachReuseMinDot. ~3 queries/s at most.
             private static bool IsStepUnreachable(Mission mission, Agent unit, AIDecisionState state, AIMindset.AIDecision decision, Vec2 unitPosition, Vec2 direction, Vec2 probe, float now)
             {
                 if (state.reachOrigin.IsValid && state.reachDecision == decision && now >= state.reachTime)
@@ -1115,9 +1196,8 @@ namespace RBMAI
                 return blocked;
             }
 
-            // One engine check: is `probe` reachable from the man's own navmesh position within a path budget barely
-            // above the straight distance? Fails open (false = not blocked) when his own position has no navmesh or
-            // anything throws, so a query problem can only cost the old behaviour, never pin anyone.
+            // One engine check: is `probe` reachable within a path budget barely above the straight distance? Fails open
+            // (false = not blocked) when his position has no navmesh or anything throws.
             private static bool QueryStepUnreachable(Mission mission, Agent unit, Vec2 probe)
             {
                 System.Threading.Interlocked.Increment(ref ObstacleProbeQueries);
@@ -1141,9 +1221,8 @@ namespace RBMAI
                 }
             }
 
-            // Called on a frame a step pin is about to be set (after the blocked and occupied gates passed). True =
-            // he has been pinned this way for PressWindow without getting PressMinProgress further: drop the step and
-            // start the cooldown. Never throws (worker thread).
+            // Called when a step pin is about to be set. True = pinned this way for PressWindow without PressMinProgress: drop the
+            // step and start the cooldown. Never throws (worker thread).
             private static bool IsPressingAgainstObstacle(Mission mission, Agent unit, AIDecisionState state, AIMindset.AIDecision decision, Vec2 unitPosition, Vec2 stepTarget)
             {
                 if (state == null)

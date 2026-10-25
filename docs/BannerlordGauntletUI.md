@@ -794,6 +794,15 @@ is pushed exactly once, and its layers are finalized with it. Facts that make it
   that is off by default can create its `GauntletLayer` on the hotkey and remove it again on the next press,
   so it costs nothing until used. `TaleWorlds.Engine.Screen.RealScreenResolutionWidth/Height` are the real
   pixel bounds `WorldToScreen`'s x/y are in (skip points outside them).
+- **Text labels** in the same zero-sized root (RBMAI `TerrainFeatureOverlay`, `RBMTerrainFeatures.xml`): a
+  `CoverChildren` `TextWidget` with no `MaxWidth` measures its text unconstrained (`TextLayout.MeasureChildren`
+  passes `fixedWidth = false`), so it does not wrap to the root's zero width. Per-label text colour: bind
+  `Brush.FontColor="@TextColor"` (after `Brush=`) to a `"#RRGGBBAA"` string, as native nameplates do
+  (`PartyNameplateItem.xml`, `Brush.FontColor="@FactionColor"`); a string bound to a `Color` property goes through
+  `Color.ConvertStringToColor` (`WidgetExtensions.ConvertObject`). Multi-line labels: a plain `TextWidget` breaks
+  lines at `"\n"` in its `Text` (`TaleWorlds.TwoDimension.TextParser` turns `'\n'` into a `NewLine` token), so one
+  `CoverChildren` label can carry a short table (the map view's decision layer, `TerrainFeatureOverlay.Decisions.cs`);
+  top-align the marker dot then, since the band grows downward from the placed corner.
 - `Sprite="BlankWhiteCircle"` (a round dot) and `BlankWhiteSquare_9` are native sprites already used
   by mission HUD prefabs, so they are loaded in missions. `Color="@..."` tints, `AlphaFactor="@..."`
   (a plain `float` on `Widget`) fades.

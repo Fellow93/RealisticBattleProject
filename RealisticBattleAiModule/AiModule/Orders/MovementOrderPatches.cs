@@ -22,7 +22,7 @@ namespace RBMAI
             {
                 if (formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                 {
-                    __result = MovementOrder.MovementOrderChargeToTarget(formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                    __result = MovementOrder.MovementOrderChargeToTarget(ChargeTargetFor(formation));
                 }
                 else
                 {
@@ -32,6 +32,49 @@ namespace RBMAI
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Native's closest significantly large enemy formation; when that one is mounted, an AI foot formation charges the nearest
+        /// significant enemy FOOT formation unless riders clearly outweigh it (ChargeTargetChoice). Cached formation data only (AI thread).
+        /// </summary>
+        internal static Formation ChargeTargetFor(Formation formation)
+        {
+            Formation closest = formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation?.Formation;
+            FormationQuerySystem own = formation.QuerySystem;
+            if (closest == null || !formation.IsAIControlled || own.IsCavalryFormation || own.IsRangedCavalryFormation || formation.Team == null)
+            {
+                return closest;
+            }
+            if (!ChargeTargetChoice.IsMounted(closest))
+            {
+                return ChargeTargetChoice.Prefer(formation, closest, null);
+            }
+            Vec2 centre = RBMAI.Utilities.GetFormationCenter(formation);
+            Formation best = null;
+            float bestDistance = float.MaxValue;
+            foreach (Team team in Mission.Current.Teams)
+            {
+                if (team == null || !team.IsEnemyOf(formation.Team))
+                {
+                    continue;
+                }
+                foreach (Formation enemy in team.FormationsIncludingSpecialAndEmpty)
+                {
+                    if (enemy == null || enemy.CountOfUnits <= 0 || enemy.QuerySystem.IsCavalryFormation || enemy.QuerySystem.IsRangedCavalryFormation
+                        || !ThreatSignificance.IsSignificant(formation, enemy))
+                    {
+                        continue;
+                    }
+                    float distance = centre.DistanceSquared(RBMAI.Utilities.GetFormationCenter(enemy));
+                    if (distance < bestDistance)
+                    {
+                        bestDistance = distance;
+                        best = enemy;
+                    }
+                }
+            }
+            return ChargeTargetChoice.Prefer(formation, best, null) ?? closest;
         }
 
         public static Dictionary<Formation, WorldPosition> positionsStorage = new Dictionary<Formation, WorldPosition> { };
@@ -78,8 +121,7 @@ namespace RBMAI
                     __result = f.CreateNewOrderWorldPosition(worldPositionEnforcedCache);
                     return;
                 }
-                // This runs on a worker thread (CreateNewOrderWorldPositionMT). Give each WorldPosition exactly
-                // one SetVec2 off a freshly-copied median: a second SetVec2 can trigger native Z validation.
+                // Worker thread (CreateNewOrderWorldPositionMT): exactly one SetVec2 per WorldPosition, off a fresh copy (a second triggers native Z validation).
                 Vec2 enemyCenter = RBMAI.Utilities.GetFormationCenter(enemyQuerySystem.Formation);
                 WorldPosition oldPosition = enemyQuerySystem.Formation.CachedMedianPosition;
                 oldPosition.SetVec2(enemyCenter);
@@ -148,7 +190,9 @@ namespace RBMAI
     [HarmonyPatch(typeof(Formation))]
     internal class OverrideSetMovementOrder
     {
+        // Priority.First: OrderReactionHold's stamp prefix must see the order really applied (ChargeGuard may turn a charge into a Move).
         [HarmonyPrefix]
+        [HarmonyPriority(Priority.First)]
         [HarmonyPatch("SetMovementOrder")]
         private static bool PrefixSetOrder(Formation __instance, ref MovementOrder input)
         {
@@ -163,27 +207,42 @@ namespace RBMAI
                 {
                     return true;
                 }
+                MovementOrder original = input;
                 if (Mission.Current.IsFieldBattle && input.OrderType == OrderType.Charge)
                 {
                     if (__instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null)
                     {
-                        input = MovementOrder.MovementOrderChargeToTarget(__instance.QuerySystem.ClosestSignificantlyLargeEnemyFormation.Formation);
+                        input = MovementOrder.MovementOrderChargeToTarget(OverrideMovementOrder.ChargeTargetFor(__instance));
                     }
+                }
+                // DecisionTrace (observation only): what the caller asked before ChargeGuard.
+                bool trace = DecisionTrace.Active;
+                MovementOrder.MovementOrderEnum askedKind = input.OrderEnum;
+                Formation askedTarget = trace ? input.TargetFormation : null;
+                if (trace)
+                {
+                    DecisionTrace.Sweep(__instance, null, false);
+                }
+                // User rule: an AI foot formation charges only within 50 m of its target (ChargeGuard).
+                ChargeGuard.Apply(__instance, ref input, original);
+                if (trace)
+                {
+                    DecisionTrace.Sweep(__instance, "chargeGuard", false);
+                    DecisionTrace.OnMovementOrder(__instance, original.OrderEnum, askedKind, askedTarget, ref input);
                 }
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                // The order goes through as given; counted and logged (AiTickGuard).
+                AiTickGuard.Report("SetMovementOrder prefix (ChargeGuard)", e, null);
                 return true;
             }
         }
 
-        // A player's "charge that formation" order is SetMovementOrder(Charge) followed by SetTargetFormation(pick)
-        // (OrderController.SetOrderWithFormation). The prefix above has already turned that Charge into a charge at
-        // the NEAREST large enemy formation, and SetMovementOrder clears the target at its end, so the pick only
-        // landed in Formation.TargetFormation while the movement order kept chasing the nearest formation -- the
-        // player's cavalry rode for the enemy infantry whatever he selected. Once the pick arrives, re-issue the
-        // charge at it. Player-controlled formations only; AI formations keep choosing for themselves.
+        // A player's "charge that formation" order is SetMovementOrder(Charge) then SetTargetFormation(pick). The prefix above already
+        // turned the Charge into a charge at the NEAREST large enemy formation, so once the pick arrives re-issue the charge at it.
+        // Player-controlled formations only.
         [HarmonyPostfix]
         [HarmonyPatch("SetTargetFormation")]
         private static void PostfixSetTargetFormation(Formation __instance, Formation targetFormation)
@@ -195,12 +254,14 @@ namespace RBMAI
                     return;
                 }
                 MovementOrder current = __instance.GetReadonlyMovementOrderReference();
-                if (current.OrderType != OrderType.ChargeWithTarget || current.TargetFormation == targetFormation || targetFormation.CountOfUnits <= 0)
+                // A far charge is walked as ChargeGuard's Move: its aim is the guard's target.
+                bool advancing = ChargeGuard.IsAdvancingToCharge(__instance);
+                Formation aimedAt = advancing ? ChargeGuard.AdvanceTarget(__instance) : current.TargetFormation;
+                if ((!advancing && current.OrderType != OrderType.ChargeWithTarget) || aimedAt == targetFormation || targetFormation.CountOfUnits <= 0)
                 {
                     return;
                 }
-                // SetMovementOrder ends by clearing the target (Formation.cs), so set the pick again after it. That
-                // nested SetTargetFormation lands here with the order already aimed at the pick and returns above.
+                // SetMovementOrder ends by clearing the target, so set the pick again (the nested call returns above).
                 __instance.SetMovementOrder(MovementOrder.MovementOrderChargeToTarget(targetFormation));
                 __instance.SetTargetFormation(targetFormation);
             }

@@ -300,6 +300,14 @@ namespace RBMConfig
             DeepWaterNavBlockEnabledText = new TextViewModel(new TextObject("{=RBM_CON_DEEPWATER_001}Deep water blocks AI paths"));
             DeepWaterNavBlockEnabled = new SelectorVM<SelectorItemVM>(deepWaterNavBlockOptions, 0, null);
 
+            List<string> terrainTacticsOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            TerrainTacticsEnabledText = new TextViewModel(new TextObject("{=RBM_CON_TERRAINTACTICS_001}Terrain-aware battle plans"));
+            TerrainTacticsEnabled = new SelectorVM<SelectorItemVM>(terrainTacticsOptions, 0, null);
+
+            List<string> aiReactionsOptions = new List<string> { new TextObject("{=1JlzQIXE}Disabled").ToString(), new TextObject("{=tsPjK1Ke}Enabled").ToString() + " (" + new TextObject("{=fMSYE6Ii}Default").ToString() + ")" };
+            AiReactionsEnabledText = new TextViewModel(new TextObject("{=RBM_CON_AIREACTIONS_001}AI reacts to the battle"));
+            AiReactionsEnabled = new SelectorVM<SelectorItemVM>(aiReactionsOptions, 0, null);
+
             List<string> shieldWallShareOptions = new List<string>();
             for (int s = 0; s < shieldWallShareValues.Length; s++)
             {
@@ -370,6 +378,8 @@ namespace RBMConfig
             FormationShoutsEnabled.SelectedIndex = RBMConfig.formationShoutsEnabled ? 1 : 0;
             OrderReactionDelayEnabled.SelectedIndex = RBMConfig.orderReactionDelayEnabled ? 1 : 0;
             DeepWaterNavBlockEnabled.SelectedIndex = RBMConfig.deepWaterNavBlockEnabled ? 1 : 0;
+            TerrainTacticsEnabled.SelectedIndex = RBMConfig.terrainTacticsEnabled ? 1 : 0;
+            AiReactionsEnabled.SelectedIndex = RBMConfig.aiReactionsEnabled ? 1 : 0;
 
             if (RBMConfig.postureGUIEnabled)
             {
@@ -511,6 +521,8 @@ namespace RBMConfig
             AiBehaviorLogEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.aiBehaviorLogEnabled ? 1 : 0, null);
             DeepWaterNavLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_DBG_DEEPWATER_LOG}Deep Water Path Logging"));
             DeepWaterNavLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.deepWaterNavLoggingEnabled ? 1 : 0, null);
+            BattleTerrainLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_DBG_TERRAIN_LOG}Battle Terrain Logging"));
+            BattleTerrainLoggingEnabled = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.battleTerrainLoggingEnabled ? 1 : 0, null);
             ArmorPenetrationMessageText = new TextViewModel(new TextObject("{=RBM_DBG_006}Armor Penetration Messages"));
             ArmorPenetrationMessage = new SelectorVM<SelectorItemVM>(debugToggleOptions, RBMConfig.armorPenetrationMessage ? 1 : 0, null);
             SimulationLoggingEnabledText = new TextViewModel(new TextObject("{=RBM_CON_094}Detailed Auto Resolve Logging"));
@@ -735,6 +747,8 @@ namespace RBMConfig
             RBMConfig.formationShoutsEnabled = FormationShoutsEnabled.SelectedIndex == 1;
             RBMConfig.orderReactionDelayEnabled = OrderReactionDelayEnabled.SelectedIndex == 1;
             RBMConfig.deepWaterNavBlockEnabled = DeepWaterNavBlockEnabled.SelectedIndex == 1;
+            RBMConfig.terrainTacticsEnabled = TerrainTacticsEnabled.SelectedIndex == 1;
+            RBMConfig.aiReactionsEnabled = AiReactionsEnabled.SelectedIndex == 1;
             if (ShieldWallShare.SelectedIndex >= 0 && ShieldWallShare.SelectedIndex < shieldWallShareValues.Length)
             {
                 RBMConfig.shieldWallShare = shieldWallShareValues[ShieldWallShare.SelectedIndex];
@@ -875,6 +889,7 @@ namespace RBMConfig
             RBMConfig.troopPerkLoggingEnabled = TroopPerkLoggingEnabled.SelectedIndex == 1;
             RBMConfig.aiBehaviorLogEnabled = AiBehaviorLogEnabled.SelectedIndex == 1;
             RBMConfig.deepWaterNavLoggingEnabled = DeepWaterNavLoggingEnabled.SelectedIndex == 1;
+            RBMConfig.battleTerrainLoggingEnabled = BattleTerrainLoggingEnabled.SelectedIndex == 1;
             RBMConfig.armorPenetrationMessage = ArmorPenetrationMessage.SelectedIndex == 1;
             RBMConfig.simulationLoggingEnabled = SimulationLoggingEnabled.SelectedIndex == 1;
             RBMConfig.simulationLogHits = SimulationLogHits.SelectedIndex == 1;
@@ -948,6 +963,8 @@ namespace RBMConfig
             FormationShoutsEnabled.SelectedIndex = 1;
             OrderReactionDelayEnabled.SelectedIndex = 0;
             DeepWaterNavBlockEnabled.SelectedIndex = 1;
+            TerrainTacticsEnabled.SelectedIndex = 1;
+            AiReactionsEnabled.SelectedIndex = 1;
             ShieldWallShare.SelectedIndex = ShieldWallShareDefaultIndex;
             HitStopEnabled.SelectedIndex = 1;
             RBMAIEnabled.SelectedIndex = 1;
@@ -1011,6 +1028,7 @@ namespace RBMConfig
             TroopPerkLoggingEnabled.SelectedIndex = 0;
             AiBehaviorLogEnabled.SelectedIndex = 0;
             DeepWaterNavLoggingEnabled.SelectedIndex = 0;
+            BattleTerrainLoggingEnabled.SelectedIndex = 0;
             ArmorPenetrationMessage.SelectedIndex = 0;
             SimulationLoggingEnabled.SelectedIndex = 0;
             SimulationLogHits.SelectedIndex = 0;

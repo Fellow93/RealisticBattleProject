@@ -16,65 +16,6 @@ namespace RBMAI
 {
     public static partial class Tactics
     {
-        [HarmonyPatch(typeof(TacticCoordinatedRetreat))]
-        private class OverrideTacticCoordinatedRetreat
-        {
-            [HarmonyPrefix]
-            [HarmonyPatch("GetTacticWeight")]
-            private static bool PrefixGetTacticWeight(ref TacticCoordinatedRetreat __instance, ref float __result)
-            {
-                bool defenderHasOnlyCavalry = true;
-                bool attackerHasOnlyCavalry = true;
-                if (Mission.Current != null)
-                {
-                    foreach (Team team in Mission.Current.Teams)
-                    {
-                        if (team.IsDefender && team.ActiveAgents.Any(a => !a.HasMount))
-                        {
-                            defenderHasOnlyCavalry = false;
-                        }
-                        if (team.IsAttacker && team.ActiveAgents.Any(a => !a.HasMount))
-                        {
-                            attackerHasOnlyCavalry = false;
-                        }
-                    }
-                }
-                if (__instance.Team.IsDefender)
-                {
-                    if (__instance.Team.IsDefender && __instance.Team.QuerySystem.RemainingPowerRatio < 0.1f && defenderHasOnlyCavalry)
-                    {
-                        foreach (Team team in Mission.Current.Teams)
-                        {
-                            if (!team.IsDefender) continue;
-                            foreach (Agent agent in team.ActiveAgents)
-                            {
-                                agent.SetMorale(0f);
-                            }
-                        }
-                        __result = 0f;
-                        return false;
-                    }
-                }
-                else
-                {
-                    if (__instance.Team.IsAttacker && __instance.Team.QuerySystem.RemainingPowerRatio < 0.1f && attackerHasOnlyCavalry)
-                    {
-                        foreach (Team team in Mission.Current.Teams)
-                        {
-                            if (!team.IsAttacker) continue;
-                            foreach (Agent agent in team.ActiveAgents)
-                            {
-                                agent.SetMorale(0f);
-                            }
-                        }
-                        __result = 0f;
-                        return false;
-                    }
-                }
-                __result = 0f;
-                return false;
-            }
-        }
 
         [HarmonyPatch(typeof(TacticFrontalCavalryCharge))]
         private class OverrideTacticFrontalCavalryCharge
@@ -131,22 +72,23 @@ namespace RBMAI
         {
             [HarmonyPostfix]
             [HarmonyPatch("Advance")]
-            private static void PostfixAdvance(ref Formation ____archers, ref Formation ____mainInfantry, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
+            private static void PostfixAdvance(TacticRangedHarrassmentOffensive __instance, ref Formation ____archers, ref Formation ____mainInfantry, ref Formation ____rightCavalry, ref Formation ____leftCavalry, ref Formation ____rangedCavalry)
             {
                 if (____mainInfantry != null)
                 {
-                    // Native leaves Regroup at 0 here, which also locks RallyLogic out. Same weight as the other tactics.
+                    // Native leaves Regroup at 0, which also locks RallyLogic out.
                     ____mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
                 }
                 if (____rightCavalry != null)
                 {
                     ____rightCavalry.AI.ResetBehaviorWeights();
-                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+                    // Off a flank TerrainFlankPlan covers.
+                    ____rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = TerrainFlankPlan.CavalrySide(__instance, ____rightCavalry, FormationAI.BehaviorSide.Right, false);
                 }
                 if (____leftCavalry != null)
                 {
                     ____leftCavalry.AI.ResetBehaviorWeights();
-                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
+                    ____leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = TerrainFlankPlan.CavalrySide(__instance, ____leftCavalry, FormationAI.BehaviorSide.Left, ____rightCavalry == null);
                 }
                 if (____rangedCavalry != null)
                 {
@@ -243,18 +185,12 @@ namespace RBMAI
                 }
             }
 
+            // Culture comes from TacticSelection (khuzait x1.5, others x0.8).
             [HarmonyPostfix]
             [HarmonyPatch("GetTacticWeight")]
-            private static void PostfixGetTacticWeight(ref TacticRangedHarrassmentOffensive __instance, ref float __result)
+            private static void PostfixGetTacticWeight(ref float __result)
             {
-                if (__instance.Team?.Leader?.Character?.Culture?.StringId == "khuzait")
-                {
-                    __result *= 1.1f;
-                }
-                else
-                {
-                    __result *= 0.6f;
-                }
+                __result *= 0.75f;
             }
         }
 

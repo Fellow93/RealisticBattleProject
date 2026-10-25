@@ -29,25 +29,18 @@ namespace RBMAI
                 return true;
             }
 
-            // A dismounting formation keeps vanilla pacing, which slows riders into their slots so they can get off.
-            // *ReadOnly class flags: AdjustSpeedLimit is called from ParallelUpdateFormationMovement on the movement
-            // workers, where the plain getters re-evaluate the unit-ratio group from several threads at once. Native
-            // re-evaluates these flags on every unit add/remove and the main-thread AI reads refresh them otherwise.
+            // a dismounting formation keeps vanilla pacing
+            // *ReadOnly flags: movement worker threads; the plain getters re-evaluate the unit-ratio group from several threads
             if ((agent.Formation.QuerySystem.IsRangedCavalryFormationReadOnly || agent.Formation.QuerySystem.IsCavalryFormationReadOnly)
                 && agent.Formation.RidingOrder.OrderEnum != RidingOrder.RidingOrderEnum.Dismount)
             {
-                // desiredSpeed < 0 is the "clear the limit" call (OnRetreating passes -1): let vanilla lift it
-                // instead of pinning a fleeing rider to MountSpeed. A dying/removed mount goes to vanilla too.
+                // desiredSpeed < 0 = "clear the limit" call: leave it to vanilla; so does a dying mount
                 if (agent.MountAgent != null && agent.MountAgent.IsActive() && desiredSpeed >= 0f)
                 {
                     float speed = agent.MountAgent.AgentDrivenProperties.MountSpeed;
                     ___Agent.SetMaximumSpeedLimit(speed, false);
                     agent.MountAgent.SetMaximumSpeedLimit(speed, false);
                     return false;
-                    //if (limitIsMultiplier && desiredSpeed < 0.95f)
-                    //{
-                    //    desiredSpeed = 0.95f;
-                    //}
                 }
             }
             if (agent.Formation?.AI?.ActiveBehavior == null)
@@ -55,6 +48,12 @@ namespace RBMAI
                 return true;
             }
             bool isFormationUnderRangedAttack = agent.Formation.QuerySystem?.UnderRangedAttackRatio >= 0.33f;
+
+            // the floors lift native's pace, but a man ahead of his slot keeps native's low value (else the fastest walk out in front). Charge is left alone.
+            if (limitIsMultiplier && agent.Formation.AI.ActiveBehavior.GetType() != typeof(BehaviorCharge) && IsAheadOfSlot(agent))
+            {
+                return true;
+            }
 
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorForwardSkirmish) ||
                 agent.Formation.AI.ActiveBehavior.GetType() == typeof(RBMBehaviorInfantryAttackFlank))
@@ -83,9 +82,7 @@ namespace RBMAI
             }
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorRegroup))
             {
-                // Regrouping men run flat out: the point of a regroup is to close up before the enemy
-                // arrives, and a paced regroup (native applies the line's cached pace here too) is what let
-                // a pursuing line catch stragglers. Full personal max, no formation pacing.
+                // regrouping men run flat out, no formation pacing
                 if (limitIsMultiplier)
                 {
                     desiredSpeed = 1f;
@@ -94,8 +91,7 @@ namespace RBMAI
             if (agent.Formation.AI.ActiveBehavior.GetType() == typeof(BehaviorCharge))
             {
                 float currentTime = MBCommon.GetTotalMissionTime();
-                // The shield wall's walk-in only near the enemy: a man still far from the fight (a fresh
-                // reinforcement wave, a straggler) used to walk the whole way at half speed.
+                // shield wall walk-in only near the enemy
                 if (agent.Formation.ArrangementOrder.OrderType == OrderType.ArrangementCloseOrder && !isFormationUnderRangedAttack
                     && IsNearEnemy(agent))
                 {
@@ -129,10 +125,28 @@ namespace RBMAI
             return true;
         }
 
-        private const float ShieldWallWalkDistance = 30f;
+        private const float ShieldWallWalkDistance = 30f; // m
 
-        // Movement worker thread: the formation's cached closest enemy and the agent's own target, nothing that
-        // re-evaluates a query.
+        private const float AheadOfSlotSlack = 1.5f; // m past his slot along the facing before the floors stop lifting his pace
+
+        // movement worker thread: same read native's GetDesiredSpeedInFormation does on this job
+        private static bool IsAheadOfSlot(Agent agent)
+        {
+            Formation formation = agent.Formation;
+            if (formation.Arrangement is ColumnFormation || agent.IsDetachedFromFormation)
+            {
+                return false;
+            }
+            Vec2 direction = formation.CurrentDirection;
+            if (!direction.IsValid || direction.LengthSquared < 0.01f)
+            {
+                return false;
+            }
+            Vec2 slot = formation.GetCurrentGlobalPositionOfUnit(agent, true);
+            return (agent.Position.AsVec2 - slot).DotProduct(direction) > AheadOfSlotSlack;
+        }
+
+        // movement worker thread: cached closest enemy and the agent's own target only
         private static bool IsNearEnemy(Agent agent)
         {
             Vec2 position = agent.Position.AsVec2;
@@ -151,7 +165,6 @@ namespace RBMAI
     internal class OverrideHumanAIComponent
     {
         // AISimpleBehaviorKind., zero range / point blank (invisible), weight, range , weight , range, weight, infinity range (invisible)
-        //nulte (neviditelne cislo) = vzdialenost 0, prve cislo = vaha akcie, druhe cislo = vzdialenost, tretie cislo = vaha akcie, stvrte cislo = vzdialenostny treshold, piate cislo = vaha akcie, sieste neviditlene cislo = vzdialenost nekonecno
         [HarmonyPostfix]
         [HarmonyPatch("SetBehaviorValueSet")]
         private static void SetBehaviorValueSet(HumanAIComponent __instance, BehaviorValueSet behaviorValueSet, Agent ___Agent)
@@ -160,10 +173,7 @@ namespace RBMAI
             {
                 if (___Agent != null && ___Agent.Equipment != null && ___Agent.IsRangedCached)
                 {
-                    // Siege shooters draw a sidearm only for a man actually on them. Melee used to fade out at 15m,
-                    // and attackers at a ladder's foot are about that far from the wall walk once height is counted,
-                    // so defenders dropped their bows after the first shot. Now melee holds within 3m and is gone by
-                    // 6m: a climber topping the wall, not the crowd below it.
+                    // siege shooters draw a sidearm only for a man actually on them (melee within 3 m, gone by 6 m)
                     __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 8f, 3f, 5f, 6f, 0.01f);
                     __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0.02f, 3f, 0.04f, 6f, 0.03f);
                     return;
@@ -242,9 +252,7 @@ namespace RBMAI
                 }
                 if (behaviorValueSet == BehaviorValueSet.Follow)
                 {
-                    // AI only: Column arrangement maps to Follow, and Melee 35 / ChargeHorseback 8 peel a player's
-                    // horse archers out of column at any nearby enemy. Player-held formations keep vanilla Follow
-                    // (ChargeHorseback 0).
+                    // AI only: player-held formations keep vanilla Follow (ChargeHorseback 0)
                     if (___Agent.Formation.IsAIControlled && ___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                     {
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 35f, 4f, 20f, 6f, 0.55f);
@@ -262,12 +270,8 @@ namespace RBMAI
                 }
                 if (behaviorValueSet == BehaviorValueSet.DefaultMove)
                 {
-                    // Player-held Move/Stop: mounted archers hold their slot. Decided per agent as well as per formation,
-                    // because IsRangedCavalryFormation is a 5s cached ratio that flips to IsCavalryFormation once enough
-                    // quivers run dry (or javelin riders are mixed in), and that fell through to vanilla DefaultMove,
-                    // whose ChargeHorseback 100 breaks the rider out of formation at any enemy within ~8m.
-                    // HasMount on both sides: a rider who has lost his horse is foot, and the zero Melee weight below
-                    // would leave him holding his bow while infantry cut him down.
+                    // player-held Move/Stop: mounted archers hold their slot; decided per agent too (IsRangedCavalryFormation is a 5 s cached ratio)
+                    // HasMount on both sides: an unhorsed rider is foot
                     if (!___Agent.Formation.IsAIControlled && ___Agent.HasMount && (___Agent.Formation.QuerySystem.IsRangedCavalryFormation || ___Agent.IsRangedCached))
                     {
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
@@ -276,14 +280,7 @@ namespace RBMAI
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.RangedHorseback, 1f, 15f, 0.065f, 30f, 0.065f);
                         return;
                     }
-                    // AI mounted skirmishers with something left to shoot: horse archers with ammo, and javelin riders
-                    // while their formation skirmishes (BehaviorMountedSkirmish; such a formation counts as cavalry and
-                    // used to fall through to vanilla DefaultMove, ChargeHorseback 100 within ~8 m). They keep the bow
-                    // and only defend themselves with the sword when an enemy is on top of them: Melee and
-                    // ChargeHorseback overtake RangedHorseback (~7.4 there) at about 3.5 m and 3 m. The block below
-                    // used to give every rider with no or medium-plus horse armor a ChargeHorseback rising 5 -> 30
-                    // over 0-20 m, which beat the bow everywhere from ~3.5 m to 20 m, so skirmishers rode down any
-                    // enemy that came within 20 m. Riders out of ammo or unhorsed still get the fighting weights below.
+                    // AI mounted skirmishers with ammo keep the bow; the sword only when an enemy is on top of them (~3.5 m)
                     if (___Agent.Formation.IsAIControlled && ___Agent.HasMount
                         && ((___Agent.IsRangedCached && ___Agent.Formation.QuerySystem.IsRangedCavalryFormation)
                             || (___Agent.HasAnyRangedWeaponCached && ___Agent.Formation.AI.ActiveBehavior is BehaviorMountedSkirmish)))
@@ -299,12 +296,7 @@ namespace RBMAI
                     {
                         if (___Agent.Formation.IsAIControlled)
                         {
-                            // Reached only by riders out of ammo or unhorsed (see above): they fight.
-                            // AI horse archers ride the formation's orbit (BehaviorMountedSkirmish) in their slots and
-                            // shoot from it. RangedHorseback used to peak at 30 and only fall under GoToPos (3-5) about
-                            // 100 m out, and ChargeHorseback about 23 m out, so within bow range of anything every rider
-                            // left his slot to circle or ride down his own target and the formation dissolved. Now solo
-                            // horse archery only takes over to evade an enemy within ~15 m, and the sword within ~5 m.
+                            // riders out of ammo or unhorsed fight; AI horse archers shoot from the formation's orbit, solo archery only to evade within ~15 m
                             __instance.OverrideBehaviorParams(AISimpleBehaviorKind.GoToPos, 3f, 15f, 5f, 20f, 5f);
                             __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 50f, 4f, 20f, 6f, 0.55f);
                             __instance.OverrideBehaviorParams(AISimpleBehaviorKind.ChargeHorseback, 6f, 4f, 3f, 10f, 0.01f);
@@ -327,20 +319,15 @@ namespace RBMAI
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Melee, 5.5f, 5f, 4f, 10f, 0.01f);
                         __instance.OverrideBehaviorParams(AISimpleBehaviorKind.Ranged, 0f, 3f, 5f, 200f, 1f);
                     }
-                    // Everything else keeps vanilla DefaultMove (Melee 8,7,5,20,0.01). The tighter infantry melee curves
-                    // that used to follow here sat behind an unconditional return and never ran; 3746497e dropped the
-                    // return instead of the block and made archers step toward any enemy within ~20 m.
+                    // everything else keeps vanilla DefaultMove
                     return;
                 }
             }
         }
     }
 
-    // The SetBehaviorValueSet postfix above picks AI or player weights from Formation.IsAIControlled, but vanilla only
-    // refreshes behavior values when an order is applied or a unit joins, never when control changes hands. So weights
-    // chosen while AI-controlled (before the player takes command, after delegating and taking back, or in sergeant
-    // mode) outlived the handover. Re-issuing Stop can't clear them either, since Stop->Stop is "practically the same"
-    // order and skips OnApply. Refresh on every change, mapping the order the same way MovementOrder.OnApply does.
+    // Vanilla refreshes behavior values only on an order or a unit join, not when control changes hands (and Stop->Stop skips OnApply):
+    // refresh on every control change, mapping the order as MovementOrder.OnApply does.
     [HarmonyPatch(typeof(Formation))]
     [HarmonyPatch("SetControlledByAI")]
     internal class RefreshBehaviorValuesOnControlChange

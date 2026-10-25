@@ -15,339 +15,180 @@ using RC = RBMConfig.RBMConfig;
 namespace RBMAI
 {
     /// <summary>
-    /// Deep water blocks AI paths (deepWaterNavBlockEnabled, default on; logging default off). In a land field battle, water deep enough to
-    /// swim in is made a no-go area "like a big rock" (user's words): a HARD invisible wall that stops walking, pushed
-    /// and knocked-back men and horses, the player included (user's requirement, 2026-10-20, reversing an earlier
-    /// AI-only version). Missiles and the camera pass. Logged (deepWaterNavLoggingEnabled) to logs/deepwater.
+    /// Deep water blocks AI paths (deepWaterNavBlockEnabled; log deepWaterNavLoggingEnabled to logs/deepwater). In a land
+    /// field battle, swim-deep water becomes a no-go area "like a big rock": a hard invisible wall that stops walking,
+    /// pushed and knocked-back men and horses, the player included (user rule). Missiles and the camera pass.
     ///
-    /// History: the AILimiter version (second log, 2026-10-20 13:59) stopped all swimming, but 147 AI men still ended
-    /// up inside deep cells and stayed trapped against the wall from the inside: their formation slots had been put in
-    /// deep water by the native slot batch (see DeepWaterBatchSlotPatch, which now closes that) and the front ranks
-    /// were shoved in. Hence the hard wall, the slot fix, and gates: the wall is cut into short pieces (one entity per
-    /// <see cref="PieceTile"/> m tile). The first gate rule (4-12 s open next to a trapped man, who had to walk out on
-    /// his own) became a DOOR in the fourth log (battle_terrain_034, 2026-10-20 15:07): a pikeman leaked through a seam
-    /// between pieces #281/#307, the gate opened for him and ~25 men of his formation walked in through it after him
-    /// (their path ran across the water), 8 swam and 7 stayed stuck 150+ s while the gate kept reopening. Hence
-    /// (user, 2026-10-20) the depth went down to 1.0 m, the wall got a second layer with overlapping ends, and men
-    /// inside are FORCED OUT (see FORCED EXIT below). The SEGMENT RULES BELOW about AILimiter are kept as the reason
-    /// that flag was dropped.
+    /// FORCED EXIT (user rule: "they should simply not be there"; for THIS feature it overrides the older "no scripted
+    /// swim-to-shore rescue" rule): every AI man (never the player) in a deep cell gets an exit point (BFS through blocked
+    /// cells to the nearest non-blocked cell with an enabled navmesh face) and is driven there with
+    /// Agent.SetScriptedPosition (precedent: NavalDLC AgentNavalAIComponent), released with DisableScriptedMovement once
+    /// out, on removal (no native call then: StopUsingGameObject only calls it while Active), on player control, revert and
+    /// mission end. The scripted move is re-issued when its GoToPosition flag is gone (ForcedFlagRecheck). A Frontline pin
+    /// (SetTargetPosition, a movement lock) would override it, so the pin is cleared and Frontline skips these men
+    /// (DeepWaterSlots.IsForcedExit, a concurrent set read on the worker thread).
+    /// The wall piece(s) his line to the exit crosses (his "gate") open ONLY while he is in a deep cell within
+    /// GateOpenReach of them and close once he is past, or after GateMaxOpenSeconds. A man OUTSIDE (the player counts)
+    /// moving toward or leaning on the piece makes the gate wait; after GateOutsiderWaitSeconds the man is re-routed, and
+    /// after GateOutsiderGiveUpSeconds in all the gate opens anyway. At most MaxForcedAtOnce men at once; an attempt times
+    /// out after ForcedTimeoutSeconds (or GateOpensPerAttempt openings) and is retried through another piece (FAILED).
     ///
-    /// FORCED EXIT -- USER RULE (2026-10-20, new): "they should simply not be there", "they should be forced to swim out
-    /// if that is possible". For THIS FEATURE ONLY it overrides the older rule "no scripted swim-to-shore rescue"
-    /// (memory swimming-agents-stuck / deep-water-nav-blocker). Every AI man (never the player) standing or swimming in a
-    /// deep cell gets an exit point -- the nearest non-blocked cell with an enabled navmesh face just outside the wall,
-    /// found by a BFS over the grid through blocked cells -- and is driven there with Agent.SetScriptedPosition
-    /// (GoToPosition), released with Agent.DisableScriptedMovement the moment he stands in a non-blocked cell, when he
-    /// is removed (no native call then: native StopUsingGameObject only calls it for State == Active), when he comes
-    /// under player control, on a revert and at mission end. Precedent: NavalDLC AgentNavalAIComponent.OnTick (naval
-    /// raid, men overboard swim to shore) calls SetScriptedPosition while Agent.IsInWater() and DisableScriptedMovement
-    /// once Agent.IsOnLand(), re-issuing it whenever the GoToPosition flag is gone -- the same is done here every
-    /// <see cref="ForcedFlagRecheck"/> s. Natively, formation members are put on scripted positions the same way
-    /// (LadderQueueManager), so the formation frame does not override it; a Frontline pin (Agent.SetTargetPosition,
-    /// a movement lock) would, so the pin is cleared at the start and Frontline skips these men
-    /// (DeepWaterSlots.IsForcedExit, a concurrent index set read on the worker thread).
-    /// The wall piece(s) his line to the exit crosses near the shore (his "gate") open ONLY while he is in a deep cell
-    /// within <see cref="GateOpenReach"/> m of them, and close the moment he is past (out of the deep cell and
-    /// <see cref="GateOpenReach"/> m clear) or after <see cref="GateMaxOpenSeconds"/> s at most. Before opening, a man
-    /// OUTSIDE (not forced, not in a deep cell; the player counts too) within <see cref="GateOutsiderRadius"/> m of the
-    /// piece and moving toward it or leaning on it makes the gate wait; after <see cref="GateOutsiderWaitSeconds"/> s
-    /// the man is re-routed through another piece, and once he has waited <see cref="GateOutsiderGiveUpSeconds"/> s in
-    /// all the gate opens anyway (men pressing along a bad path never clear). Pieces with nobody close outside are
-    /// preferred when choosing. Each DONE line splits his time: to the gate, waiting, first opening to out.
-    /// At most <see cref="MaxForcedAtOnce"/> men at once; each attempt times out after <see cref="ForcedTimeoutSeconds"/>
-    /// s (or <see cref="GateOpensPerAttempt"/> openings) and is retried through another piece (FAILED).
+    /// Three layers, all built once in EarlyStart on the main thread (disabling navmesh faces alone only changes path
+    /// searches; no runtime API removes single faces):
     ///
-    /// Why three layers: no runtime API removes single navmesh faces (Scene.ClearNavMesh wipes the whole mesh), and
-    /// the first in-game log (battle_terrain_034, 2026-10-20) showed that disabling faces only changes path searches:
-    /// 23 men stood on disabled faces, and most swimmers stood on ENABLED faces whose centre was shallower than the
-    /// threshold although the face reached deeper water (that scene has 5460 faces, so faces are huge), because their
-    /// formation slot was in the water. So, all built once in EarlyStart, main thread:
+    /// 1. GRID: the playable area (navmesh face bbox intersected with Mission.Boundaries, + BoundsMargin) sampled on a
+    ///    GridStepMin grid (raised until it fits MaxGridCells). A cell is deep when water level - terrain height >= WallDepth
+    ///    (the swim start is 1.34-1.39 m above the feet; a threshold on it flickered on a swamp floor at 1.30 m). Bridge
+    ///    check (ProbeCell): a deep cell is NOT deep when (a) Scene.GetHeightAtPoint with the agents' collision exclude
+    ///    flags finds a solid surface no lower than the water level - BridgeSurfaceTolerance and (b) the navmesh height
+    ///    there (WorldPosition.GetNavMeshZ, NaN when no face) is at that surface too. GetNavMeshFaceIndex is not used for
+    ///    this: faces are huge, a shore face straddling the cell would read as a bridge. The grid (DeepWaterGrid: deep +
+    ///    blocked = deep dilated by SlotMarginMeters) is immutable, published through a volatile field.
     ///
-    /// 1. GRID. The playable area (bbox of the navmesh face centres, intersected with Mission.Boundaries when it has
-    ///    points, both + <see cref="BoundsMargin"/>; the scene bbox there was 8 km wide) is sampled on a
-    ///    <see cref="GridStepMin"/> m grid (step raised until it fits <see cref="MaxGridCells"/>). A cell is deep when
-    ///    water level − terrain height ≥ <see cref="WallDepth"/> (1.0 m, user 2026-10-20: the swim start is 1.34–1.39 m
-    ///    above the feet, and 1.3 left the Calsean swamp floor at 1.30–1.31 m flickering between deep and not). Bridge check (<see cref="ProbeCell"/>): a deep cell is NOT deep when both
-    ///    (a) Scene.GetHeightAtPoint with the agents' collision exclude flags (so the water body itself and AILimiter
-    ///    walls do not count; the grid is built before the walls anyway) finds a solid surface no lower than the water level − <see cref="BridgeSurfaceTolerance"/>
-    ///    -- a bridge deck or a rock -- and (b) the navmesh height there is at that surface too: a WorldPosition made at
-    ///    water level + <see cref="BridgeQueryLift"/> with no valid z, resolved by GetNavMeshZ (WorldPositionValidateZ,
-    ///    native; NaN when no face is found, see WorldPosition.GetNavMeshZ). GetNavMeshFaceIndex's Vec3 overload is NOT
-    ///    used for this: it returns a face index, and with faces this big the face's centre height says nothing about
-    ///    the point (a shore face straddling the deep cell would read as a bridge and leave a hole in the wall).
-    ///    The grid is an immutable managed object (<see cref="DeepWaterGrid"/>: bool[] deep + bool[] blocked = deep
-    ///    dilated by <see cref="SlotMarginMeters"/>), published through a volatile field.
+    /// 2. WALL: invisible collision along the shoreline as a smooth curve (BuildWallCurves: marching squares over the deep
+    ///    grid, saddles resolved deep-connected -> closed polylines with deep water on the left -> Laplacian + Chaikin
+    ///    smoothing -> Douglas-Peucker -> moved WallDeepBias toward deep water so the wall never cuts into dry cells). Parts
+    ///    of deep shore cells lie OUTSIDE it (InsideWall: deep cell AND enclosed by the outer curve, even-odd ray test):
+    ///    men there are not DEEPCELL entries and not forced out. Each leg is TWO vertical quads (outer on the curve, inner
+    ///    WallLayerGap further in), split to WallMaxQuadLength, running from below the lowest terrain sample to
+    ///    WallAboveSurface above water/terrain (nothing to step onto). Both layers of an edge sit in the same piece: the
+    ///    quads of one PieceTile tile form one entity (one triangle-mesh body), so one toggle opens both as a gate.
+    ///    FLAGS: Moveable | AgentOnly | TwoSided. AgentOnly (0x200000) is NOT in CommonCollisionExcludeFlagsForAgent, so every
+    ///    agent collides with it, but it IS in the missile and camera exclude masks, so missiles and the camera pass. (The
+    ///    AILimiter flag was tried first: it is in the agent exclude mask - it acts like AI steering, not collision - and did
+    ///    not hold shoved men.) Built as NavalDLC ShipAttachmentMachine builds its barriers: GameEntity.CreateEmpty,
+    ///    ReplacePhysicsBodyWithQuadPhysicsBody (pinned buffers), removed with Remove(78).
+    ///    WINDING: TwoSided did NOT make the quads solid from both sides (crossings went through the back face along the
+    ///    (A_top, B_top, B_bottom) normal), so every quad carries both windings (12 indices).
+    ///    GATE TOGGLE: SetBodyFlags(BodyFlag | BodyFlags.Disabled) to open, clear Disabled + SetFrameChanged to close (as
+    ///    CastleGate switches its door colliders); SetPhysicsState left pieces effectively open.
+    ///    PIECE FRAME: each entity's frame sits at its piece with body vertices local to it (the NavalDLC pattern);
+    ///    mesh-less entities have a point bounding box, so it is set by hand (SetManualLocalBoundingBox).
     ///
-    /// 2. WALL: invisible collision along the SHORELINE AS A SMOOTH CURVE (user 2026-10-20: "make those walls around
-    ///    deep water a bit rounder so AI would not get stuck on them but at least slide a bit"; it used to follow the
-    ///    1 m cell edges, a staircase whose inner corners caught men). <see cref="BuildWallCurves"/>: marching squares
-    ///    over the deep grid (saddles resolved deep-connected, matching the 4-connected dry flood fill) -> closed
-    ///    polylines with deep water on the left -> <see cref="WallLaplacianPasses"/> Laplacian +
-    ///    <see cref="WallChaikinPasses"/> Chaikin passes (corners of roughly 2-3 m radius) -> Douglas-Peucker
-    ///    <see cref="WallSimplifyTolerance"/> m -> moved <see cref="WallDeepBias"/> m toward deep water (more where a
-    ///    vertex would still sit in a dry cell), so the wall never cuts into dry cells; parts of deep shore cells lie
-    ///    OUTSIDE it (InsideWall: deep cell AND enclosed by the outer curve, an even-odd ray test) -- men there are not
-    ///    DEEPCELL entries and are not forced out. Legs are split to <see cref="WallMaxQuadLength"/> m. Each leg is TWO
-    ///    vertical quads ("option #3", after a man walked through a seam): the outer layer on the curve and an inner one
-    ///    <see cref="WallLayerGap"/> m further toward deep water (same vertex normals, so it closes too). Consecutive
-    ///    quads of a polyline share their end points exactly; only where neighbours fall in different pieces do they
-    ///    overlap by <see cref="WallPieceSplitOverlap"/> m. Quads run from below the lowest terrain sample to
-    ///    <see cref="WallAboveSurface"/> above the water/terrain, so there is nothing to step onto (no HasSteps). Both
-    ///    layers of an edge sit in the same piece: the quads of one <see cref="PieceTile"/> m tile (by the edge's
-    ///    midpoint) form one entity (a "piece", one triangle-mesh body), so one toggle opens both layers as a gate.
-    ///    CURRENT FLAGS: Moveable | AgentOnly | TwoSided. AgentOnly (0x200000) is NOT in
-    ///    CommonCollisionExcludeFlagsForAgent (0x2051B189 = 0x20000000|0x400000|0x100000|0x1B189), so every agent
-    ///    collides with it, but it IS in CommonCollisionExcludeFlagsForMissile (0x2031B789, 0x300000 part) and
-    ///    CameraCollisionRayCastExludeFlags (0x2071B7C9, 0x700000 part), so missiles and the camera pass. NavalDLC
-    ///    uses Moveable | AgentOnly for its walkable plank bridge and v-fold quads (ShipAttachmentMachine).
-    ///    GATE TOGGLE (2026-10-20, second version): SetBodyFlags(BodyFlag | BodyFlags.Disabled) to open, clear Disabled +
-    ///    SetFrameChanged to close -- how CastleGate switches its extra door colliders (agent blockers) and NavalDLC its
-    ///    plank bridge body. It was SetPhysicsState(false/true, false) (the DestructableComponent state swap, which
-    ///    natively also calls SetFrameChanged on re-enable); the 16:09 log had crossings through pieces opened earlier,
-    ///    but also through never-opened ones. GATE lines log the body flags read back.
-    ///    PIECE FRAME: each entity's frame sits at its piece (origin = piece centre, lowest quad bottom) with the body's
-    ///    vertices local to it, as NavalDLC builds its runtime bodies; it used to be the identity frame at the world
-    ///    origin with world-space vertices. WALL logs triangle counts and whether each entity's global bounding box
-    ///    covers its wall; WALLTEST ray-casts across sample pieces; WALLLEAK describes every first crossing of a piece.
-    ///    Evidence for the original (AILimiter) approach (decompiled):
-    ///    - NavalDLC ShipAttachmentMachine.ArrangeBarrier builds its boarding-bridge side barriers exactly this way at
-    ///      run time: GameEntity.CreateEmpty(scene), then ReplacePhysicsBodyWithQuadPhysicsBody(pinned Vec3[] quad,
-    ///      4, material, BodyFlags.Moveable | BodyFlags.AILimiter, pinned int[] indices, 6), then SetGlobalFrame, and
-    ///      SetConnectionPhysicsEntitiesVisibility turns them on with SetVisibilityExcludeParents(true) +
-    ///      SetPhysicsStateOnlyVariable(true, false); removed with Remove(78). Those barriers keep AI crews on deck
-    ///      while the player can jump overboard -- the same split the user wants. The plank bridge in the same class
-    ///      passes many vertices and indices to the same call, so one call can carry a whole triangle mesh.
-    ///    - Former flags: Moveable | AILimiter | TwoSided. AILimiter (0x100, engine name "ai_limiter") is in
-    ///      CommonCollisionExcludeFlagsForAgent (0x2051B189), so ordinary agent collision -- the player's -- ignores
-    ///      it, and in CommonCollisionExcludeFlagsForMissile (0x2031B789) and CameraCollisionRayCastExludeFlags
-    ///      (0x2071B7C9), so missiles and the camera pass through. No managed code in TaleWorlds.MountAndBlade reads
-    ///      AILimiter: it is consumed natively by the AI movement (NavalDLC MissionShip hides Barrier/Barrier3D/
-    ///      AILimiter children because they are collision only; MissionShipRam excludes them from its ray casts).
-    ///      Moveable because every runtime-created agent-relevant body in the decompiled sources carries it (no static
-    ///      runtime example exists); TwoSided so the quad's back face collides too (the plank bridge uses it).
-    ///      AgentOnly (0x200000) was rejected: it is NOT in CommonCollisionExcludeFlagsForAgent, so it would stop the
-    ///      player too. Barrier (0x200) is a scene-border flag, also excluded for agents.
-    ///    - Answered by the second log: AILimiter did NOT hold shoved men (147 got in, none swam) -- it behaves like AI
-    ///      steering, not collision -- hence the switch to AgentOnly above.
+    /// 3. NO SLOTS IN DEEP WATER, two hooks: (a) DeepWaterBatchSlotPatch (DeepWaterSlotPatches.cs), a postfix on the native
+    ///    slot batch every LineFormation-derived arrangement uses (the main leak; reads DeepWaterSlots.LiveGrid); (b)
+    ///    Mission.IsFormationUnitPositionAvailable_AdditionalCondition, called on WORKER threads for every formation slot
+    ///    and by IsOrderPositionAvailable, returns false for a position in a blocked cell (SlotCondition reads only the
+    ///    immutable grid: no engine call, no allocation, Interlocked counters). It is a multicast Func: only the LAST
+    ///    subscriber's result counts; native subscribes only in SiegeDeploymentHandler.
     ///
-    /// 3. NO SLOTS IN DEEP WATER, two hooks: (a) DeepWaterBatchSlotPatch (DeepWaterSlotPatches.cs), a postfix on
-    ///    Mission.BatchFormationUnitPositions, the native batch every LineFormation-derived arrangement gets its slots
-    ///    from -- the main leak; it reads DeepWaterSlots.LiveGrid, which this logic sets while live; and
-    ///    (b) Mission.IsFormationUnitPositionAvailable_AdditionalCondition, called by
-    ///    Mission.IsFormationUnitPositionAvailableMT for every formation slot (on WORKER threads) and by
-    ///    IsOrderPositionAvailable, returns false for a position in a blocked cell. <see cref="SlotCondition"/> reads
-    ///    only the immutable grid: no engine call, no MBRandom, no allocation; rejections counted with Interlocked.
-    ///    It is a multicast Func: with several subscribers only the LAST one's result counts. Native code subscribes
-    ///    only in SiegeDeploymentHandler (sieges, which this logic never runs in); RBM has no other subscriber.
-    ///    The player's own order flag can be refused in deep water too -- his orders are for AI troops.
+    /// PATHS: a navmesh face is switched off when its centre is >= BlockDepth under water or in a deep cell, or when at
+    /// least FaceDeepShareBlock of its area near the water is deep (ComputeFaceDeepShares), so path searches route around.
+    /// SetAbilityOfFaceWithIndex returns whether the face WAS ENABLED before the call (disable returning true is ours to
+    /// record and undo). Faces are switched with updateIslandIndices false except the last. Known gap: a big face under the
+    /// share threshold stays enabled (WALLSTUCK lines show men held against the wall). Also NOT a path: during a move,
+    /// native HumanAIComponent.ParallelUpdateFormationMovement hands every man within ~22 m of his place in the MOVING block
+    /// (never filtered by slots) to Agent.SetFormationIntegrityData, which steers him there directly - a block sweeping a
+    /// swamp walks men at the wall. DeepWaterSteering (DeepWaterSlotPatches.cs) filters it: a transpiler swaps both native
+    /// call sites and RBM's Move-order call in Frontline/FormationMovement.cs calls it directly; a target in a blocked cell,
+    /// or a straight line to it through a deep cell, becomes Vec2.Zero ("not catching up").
     ///
-    /// 4. PATHS: a navmesh face is switched off when its centre is ≥ <see cref="BlockDepth"/> under water or lies in a
-    ///    deep cell, or (option #1, user 2026-10-20: "units should try to navigate more around those walls") when at
-    ///    least <see cref="FaceDeepShareBlock"/> of its area near the water is deep (<see cref="ComputeFaceDeepShares"/>:
-    ///    grid cells within <see cref="FaceShareRadius"/> m of deep water mapped to faces with GetNavMeshFaceIndex), so
-    ///    path searches route around. SetAbilityOfFaceWithIndex returns whether the face WAS ENABLED
-    ///    before the call (the first log: disable → true, then re-enable of the same face → false; Scene.
-    ///    GetPathBetweenAIFaces re-enables its excluded face only when the disable returned true, which fits).
-    ///    So a disable returning true is ours to record and undo, and a re-enable returning false undid one. All faces
-    ///    are switched with updateIslandIndices false except the LAST one, which passes true; the first log showed
-    ///    that one true call is enough (islands 1 → 4). Known gap: a big face whose deep share stays under the
-    ///    threshold remains enabled, so a path may still run into the wall; the WALLSTUCK lines show men held against
-    ///    it. Also NOT a path: during a move, native HumanAIComponent.ParallelUpdateFormationMovement hands every man
-    ///    within 2 × 3 × the formation's speed (~22 m) of his place in the MOVING block
-    ///    (Formation.GetCurrentGlobalPositionOfUnit = CurrentPosition + local offset, never filtered by slots) to the
-    ///    engine through Agent.SetFormationIntegrityData ("keep with the formation"), which steers him there directly.
-    ///    A block sweeping across a swamp walks its men straight at the wall (the 16:09 log: 547 crossings, all
-    ///    order=Move, slot=dry, 2-3 m/s). Filtered by DeepWaterSteering (DeepWaterSlotPatches.cs): a transpiler swaps
-    ///    both native call sites, and RBM's own Move-order call in Frontline/FormationMovement.cs calls it directly;
-    ///    a target in a blocked cell, or a straight line to it through a deep cell, becomes Vec2.Zero (native's
-    ///    "not catching up"), so the man follows his path-searched formation frame. END logs its counters.
+    /// Added under rbmAiEnabled &amp;&amp; deepWaterNavBlockEnabled; acts only when Mission.IsFieldBattle (custom field
+    /// battles included). Sieges, sally-outs, naval, raids and every NoTeamAI mission are left alone.
+    /// TIMING: EarlyStart, main thread - after MissionCombatantsLogic.EarlyStart (sets MissionTeamAIType), before any
+    /// AfterStart; troops spawn later and no AI tick has run yet.
     ///
-    /// WINDING (2026-10-20, the 16:59 log): BodyFlags.TwoSided did NOT make the quads solid from both sides. WALLTEST
-    /// (dry -> deep rays) hit 10 of 24 pieces, always the same ones, and all 27 quads crossed in the 12 WALLLEAK
-    /// lines were crossed in the direction of their (A_top, B_top, B_bottom) normal, i.e. through the back face. That
-    /// normal is fixed by the run direction while the deep side is either way, so about half the wall was open from the
-    /// dry side. Every quad now carries both windings (12 indices). The entity bounds were a point at the origin too
-    /// (a mesh-less entity), now set by hand with SetManualLocalBoundingBox; ray casts did hit pieces with the point
-    /// box, so the bounds were not what let men through.
+    /// SAFETY: a failure anywhere re-enables the faces, removes the walls and drops the slot condition. On the first tick
+    /// where both sides have active humans, one man per side is checked with DoesPathExistBetweenFaces (ignoreDisabled false
+    /// AND true) and a 4-connected flood fill over the grid's non-deep cells (the walls' own connectivity); if any says no,
+    /// everything is reverted (REVERTED). Walls and handles are removed at mission end.
     ///
-    /// Gate: added in RBM/SubModule.cs under rbmAiEnabled &amp;&amp; deepWaterNavBlockEnabled; acts only when
-    /// <see cref="Mission.IsFieldBattle"/> (custom field battles included). Sieges, sally-outs, naval battles, naval
-    /// raids and every NoTeamAI mission (hideouts, tournaments, arenas, towns) are left alone.
+    /// The player is labelled PLAYER; he counts in DEEPCELL but is never forced out, never opens a gate and is left out of the
+    /// STUCK / WALLSTUCK diagnostics. Swimmers outside deep cells are only logged (STUCK), never moved.
     ///
-    /// Timing: EarlyStart, main thread. Mission.AfterStart runs every behaviour's EarlyStart after the submodules'
-    /// OnMissionBehaviorInitialize (this logic is appended there, so it runs after MissionCombatantsLogic.EarlyStart,
-    /// which sets MissionTeamAIType) and before any AfterStart; troops spawn later, in
-    /// DefaultBattleMissionAgentSpawnLogic.OnMissionTick, and no AI tick has run yet.
-    ///
-    /// Safety: a failure anywhere re-enables the faces, removes the walls and drops the slot condition. On the first
-    /// tick where both sides have active humans, one man per side is checked with DoesPathExistBetweenFaces
-    /// (ignoreDisabled false AND true, as the flag's meaning is undocumented) AND with a 4-connected flood fill over
-    /// the grid's non-deep cells (the walls stand exactly on the deep/non-deep cell edges, so this is the walls' own
-    /// connectivity, which the face check cannot see); if any says no, everything is reverted (REVERTED), since the
-    /// armies could not meet otherwise. Walls and handles are removed at mission end.
-    ///
-    /// The player is labelled PLAYER; he counts in DEEPCELL like anyone (and separately, so the wall can be tested by
-    /// walking into it), but is never forced out, never opens a gate and is left out of the STUCK / WALLSTUCK AI
-    /// diagnostics. Swimmers outside deep cells are still only written down (STUCK), never moved.
-    ///
-    /// Leak audit (other ways a man gets a target in deep water): closed -- LineFormation-derived slots (batch
-    /// postfix), single-slot checks / GetOrderPositionOfUnitAux fallbacks / order positions (additional condition),
-    /// Frontline pins (FrontlinePositioning.IsPositionOccupied treats a blocked point as occupied). Left -- ColumnFormation
-    /// (no slot table: every man follows the one in front, IsUnitPositionAvailable is always true; the hard wall
-    /// stops the column), Charge (the target is the enemy man, not a slot; paths avoid the disabled faces and the wall
-    /// stops a straight run), OrderReactionHold (returns an earlier slot, itself filtered since mission start), and
-    /// LineFormation's _cachedOrderedAndAvailableUnitPositionIndices, rebuilt only when local positions are dirty
-    /// (spawn-time index lookups only).
-    /// All per-agent state is instance fields cleared at mission end; nothing Agent-keyed is static.
+    /// Leak audit: closed - LineFormation slots (batch postfix), single-slot checks / order positions (additional
+    /// condition), Frontline pins (IsPositionOccupied). Left - ColumnFormation (no slot table; the wall stops the column),
+    /// Charge (target is the enemy man), OrderReactionHold (returns an earlier, already filtered slot), and LineFormation's
+    /// cached unit position indices (spawn-time lookups only). All per-agent state is instance fields cleared at mission
+    /// end; nothing Agent-keyed is static.
     /// </summary>
     public class DeepWaterNavBlocker : MissionLogic
     {
-        // ---- tuning ----
+        internal const float BlockDepth = 1.0f; // m of water over a face centre; keep in step with WallDepth
 
-        /// <summary>Water depth over a FACE CENTRE (m) at or above which the face is switched off for paths. Kept in step
-        /// with <see cref="WallDepth"/>.</summary>
-        internal const float BlockDepth = 1.0f;
-
-        /// <summary>Water depth over the TERRAIN (m) at or above which a grid cell is deep: walled off, no slots.
-        /// 1.0 m (user, 2026-10-20: "water depth should be even less"), a good margin under the observed swim start
-        /// (1.34-1.39 m above the feet, battle_terrain_034). At 1.3 the swamp floor there (1.30-1.31 m) sat right on
-        /// the threshold, so men walked in and out of "deep" cells and leaked through. Was 1.2, then 1.3. Retune from
-        /// the SWIM ENTER depths and the DEEPCELL lines.</summary>
+        /// <summary>Water depth (m) over the terrain at which a grid cell is deep. Under the observed swim start (1.34-1.39 m); 1.3 flickered on swamp floors.</summary>
         internal const float WallDepth = 1.0f;
 
-        /// <summary>A navmesh face is also switched off for paths when at least this share of its sampled area is deep
-        /// (user 2026-10-20, "units should try to navigate more around those walls" -- "option #1"). Shares are taken
-        /// over grid cells within <see cref="FaceShareRadius"/> m of deep water, so a huge face is judged only on its
-        /// part near the water (its share there is an upper bound).</summary>
+        /// <summary>Faces are judged only on their part within FaceShareRadius of deep water, so a huge face is not diluted.</summary>
         private const float FaceDeepShareBlock = 0.25f;
         private const float FaceShareRadius = 40f;
-        /// <summary>The face-share pass samples every cell up to this many samples, then every 2nd / 3rd ... cell.</summary>
-        private const int FaceShareMaxSamples = 120000;
-        /// <summary>Reverted when more than this share of a side's men stand on faces this logic switched off.</summary>
+        private const int FaceShareMaxSamples = 120000; // then every 2nd / 3rd cell
         private const float MaxSideOnDisabledShare = 0.5f;
 
-        /// <summary>A solid surface (and the navmesh) within this of the water level counts as a bridge (m).</summary>
-        private const float BridgeSurfaceTolerance = 0.3f;
+        private const float BridgeSurfaceTolerance = 0.3f; // m
+        private const float BridgeQueryLift = 1f; // m above the water level
 
-        /// <summary>Height above the water level the bridge's navmesh is looked up from (m).</summary>
-        private const float BridgeQueryLift = 1f;
-
-        /// <summary>Finest grid step (m); raised by 25% steps until the grid fits <see cref="MaxGridCells"/>.</summary>
-        private const float GridStepMin = 1f;
+        private const float GridStepMin = 1f; // m; raised by 25% steps until the grid fits MaxGridCells
         private const int MaxGridCells = 600000;
 
-        /// <summary>Margin added around the navmesh / boundary bbox (m).</summary>
-        private const float BoundsMargin = 20f;
+        private const float BoundsMargin = 20f; // m
+        private const float SlotMarginMeters = 1f; // for the agent's radius
 
-        /// <summary>Formation slots this close to a deep cell are refused too (m), for the agent's radius.</summary>
-        private const float SlotMarginMeters = 1f;
+        private const float WallBelowGround = 0.5f; // m below the lower terrain end
+        private const float WallAboveSurface = 2.5f; // m above max(water, terrain)
 
-        /// <summary>Wall quad: from this far below the lower terrain end to this far above max(water, terrain).</summary>
-        private const float WallBelowGround = 0.5f;
-        private const float WallAboveSurface = 2.5f;
+        private const float MaxWallSegmentLength = 6f; // m
+        private const float PieceTile = 6f; // m; one tile = one piece / entity / gate
 
-        /// <summary>Longest merged wall segment (m), so a segment's height follows the terrain and stays in one piece.</summary>
-        private const float MaxWallSegmentLength = 6f;
+        private const float WallLayerGap = 0.3f; // m toward the deep side
+        private const float WallEndOverlap = 0.25f; // m past both cell-edge ends, so seams overlap
 
-        /// <summary>Side of the square tile (m) whose wall segments form one piece / one entity (one gate).</summary>
-        private const float PieceTile = 6f;
+        private const int IndicesPerQuad = 12; // both windings
 
-        /// <summary>Second wall layer: this far from the first, toward the deep side (m).</summary>
-        private const float WallLayerGap = 0.3f;
+        // wall curve (rounded so men slide instead of catching on staircase corners)
 
-        /// <summary>Both layers run this far past both ends of their cell edge (m), so seams and corners overlap.</summary>
-        private const float WallEndOverlap = 0.25f;
-
-        /// <summary>Two triangles per quad in each winding (both faces solid).</summary>
-        private const int IndicesPerQuad = 12;
-
-        // ---- wall curve (user 2026-10-20: "a bit rounder so AI would not get stuck on them but at least slide") ----
-
-        /// <summary>Laplacian smoothing passes on the marching-squares contour (about 1.6 point spacings of blur:
-        /// corners become curves of roughly 2-3 m radius).</summary>
-        private const int WallLaplacianPasses = 5;
-        /// <summary>Chaikin corner-cutting passes after that (open polylines keep their end points).</summary>
+        private const int WallLaplacianPasses = 5; // corners become ~2-3 m radius
         private const int WallChaikinPasses = 2;
-        /// <summary>Douglas-Peucker tolerance (m) for the smoothed curve.</summary>
-        private const float WallSimplifyTolerance = 0.15f;
-        /// <summary>The curve is moved this far toward deep water (m), so the wall stays out of dry cells.</summary>
-        private const float WallDeepBias = 0.4f;
-        /// <summary>A vertex still in a dry cell after the bias is pushed further, in 0.1 m steps, up to this (m).</summary>
-        private const float WallDryPushMax = 0.6f;
-        /// <summary>Longest quad (m): longer legs are split so the quad height follows the terrain.</summary>
-        private const float WallMaxQuadLength = 3f;
-        /// <summary>Overlap (m) where consecutive quads of one polyline fall in different pieces; elsewhere they share
-        /// their end points exactly.</summary>
-        private const float WallPieceSplitOverlap = 0.1f;
+        private const float WallSimplifyTolerance = 0.15f; // m, Douglas-Peucker
+        private const float WallDeepBias = 0.4f; // m toward deep water
+        private const float WallDryPushMax = 0.6f; // m, in 0.1 m steps
+        private const float WallMaxQuadLength = 3f; // m
+        private const float WallPieceSplitOverlap = 0.1f; // m where consecutive quads fall in different pieces
 
-        /// <summary>Deep regions smaller than this (cells) are dropped and non-deep holes inside deep water smaller than
-        /// this are filled, so a floor lying at about WallDepth does not become a maze of tiny walled pockets.</summary>
+        /// <summary>Smaller deep regions are dropped and smaller dry holes filled, so a floor at about WallDepth is not a maze of pockets.</summary>
         private const int MinDeepRegionCells = 16;
         private const int MinHoleCells = 16;
 
-        // ---- forced exit + gates ----
+        // forced exit + gates
 
-        /// <summary>How often AI men in deep cells are looked for (s). Men under forced exit are handled every frame.</summary>
         private const float ForcedScanInterval = 0.5f;
         private const int MaxForcedAtOnce = 80;
-        /// <summary>One attempt (one exit point / gate) is given up after this (s) and retried through another piece.</summary>
         private const float ForcedTimeoutSeconds = 30f;
-        /// <summary>One attempt is also given up after this many openings of its gate.</summary>
         private const int GateOpensPerAttempt = 4;
-        /// <summary>The scripted move is re-issued when its GoToPosition flag is gone, checked this often (s).</summary>
         private const float ForcedFlagRecheck = 0.5f;
-        /// <summary>Men in deep cells with no exit found are looked at again after this (s).</summary>
         private const float NoExitRetrySeconds = 5f;
-        /// <summary>The exit search (BFS through blocked cells) stops this far out (m) or after this many cells.</summary>
-        private const float ExitSearchRadius = 60f;
+        private const float ExitSearchRadius = 60f; // m, BFS through blocked cells
         private const int ExitSearchMaxCells = 40000;
-        /// <summary>Non-blocked cells collected by the search, and distinct gates compared among them.</summary>
         private const int ExitCandidateCells = 48;
         private const int ExitCandidateGates = 6;
-        /// <summary>The gate is the piece(s) crossed by the last this-many metres of his line to the exit point.</summary>
-        private const float GateApproachSpan = 3.5f;
-        /// <summary>Extra metres a gate with a man close outside costs when choosing.</summary>
-        private const float BusyGatePenalty = 4f;
-        /// <summary>A gate opens only while its man is in a deep cell within this of it (m); he is past it once out of the
-        /// deep cell and this clear of it.</summary>
-        private const float GateOpenReach = 0.6f;
+        private const float GateApproachSpan = 3.5f; // m of his line to the exit that picks the gate
+        private const float BusyGatePenalty = 4f; // m
+        private const float GateOpenReach = 0.6f; // m; he is past it once out of the deep cell and this clear
         private const float GateMaxOpenSeconds = 2f;
         private const float GateReopenCooldown = 1f;
-        /// <summary>Men outside within this of a piece (m), moving toward it or leaning on it, keep it shut.</summary>
-        private const float GateOutsiderRadius = 1.5f;
+        private const float GateOutsiderRadius = 1.5f; // m
         private const float GateLeaningDistance = 0.6f;
         private const float GateOutsiderMinSpeed = 0.2f;
-        /// <summary>After waiting this long (s) for men outside to clear, the forced man is re-routed elsewhere.</summary>
-        private const float GateOutsiderWaitSeconds = 2f;
-        /// <summary>Once a forced man has waited this long in all (s, over all his gates), his gate opens even with a man
-        /// outside: men pressing on the wall along a bad path never clear, and endless re-routing kept him inside (the
-        /// 16:09 log: 354 waits, 206 re-routes). Anyone who follows him in is forced out in turn.</summary>
+        private const float GateOutsiderWaitSeconds = 2f; // then the forced man is re-routed
+        /// <summary>Total wait over all his gates after which the gate opens even with a man outside: men pressing on the wall never clear.</summary>
         private const float GateOutsiderGiveUpSeconds = 6f;
 
-        // ---- wall diagnostics ----
+        // wall diagnostics
 
-        /// <summary>WALLLEAK lines: the first crossing of each closed piece, at most this many.</summary>
         private const int MaxWallLeakLines = 150;
-        /// <summary>WALLTEST: ray casts across this many pieces, on the first tick and then every WallTestInterval s.</summary>
         private const int WallTestPieces = 24;
         private const float WallTestInterval = 60f;
         private const int MaxOpenGates = 20;
         private const int MaxGateLines = 600;
         private const int MaxForcedLines = 600;
 
-        /// <summary>Positions kept per man for the DEEPCELL diagnostics, one per sampler tick (0.25 s).</summary>
-        private const int HistoryLength = 5;
+        private const int HistoryLength = 5; // one position per sampler tick (0.25 s)
 
-        /// <summary>The removal reason NavalDLC passes for its runtime barrier entities.</summary>
-        private const int WallRemoveReason = 78;
+        private const int WallRemoveReason = 78; // what NavalDLC passes for its barrier entities
 
-        /// <summary>Never disable more than this share of all faces / wall more than this share of the grid.</summary>
         private const float MaxDisabledShare = 0.6f;
 
-        /// <summary>Water levels beyond this magnitude (m) are treated as "no water".</summary>
-        private const float ImplausibleWaterLevel = 100000f;
-
-        // ---- probe results (ProbeCell) ----
+        private const float ImplausibleWaterLevel = 100000f; // m, beyond = "no water"
 
         internal const int ProbeNoData = 0;
         internal const int ProbeDry = 1;
@@ -355,8 +196,6 @@ namespace RBMAI
         internal const int ProbeDeep = 3;
         internal const int ProbeBridge = 4;
         internal const int ProbeDeepSurfaceNoNav = 5;
-
-        // ---- logging cadence and caps ----
 
         private const float SampleInterval = 0.25f;
         private const float WatchInterval = 1f;
@@ -402,7 +241,7 @@ namespace RBMAI
             public int HistCount;
             public int HistHead;
 
-            // Forced exit: no exit found until then (s), and the pieces his failed attempts went through.
+            // forced exit: no exit found until then (s), and the pieces his failed attempts went through
             public float NoExitUntil;
             public bool NoExitLogged;
             public bool CapRefusedCounted;
@@ -455,8 +294,7 @@ namespace RBMAI
             /// <summary>The body's local bounds, set as the entity's manual bounding box (re-applied after a toggle).</summary>
             public BoundingBox LocalBox;
 
-            // Rebuilt every forced-exit tick: a forced man in a deep cell within reach wants it open, and one just past
-            // it (out of the deep cell, not yet clear) is still in the doorway.
+            // rebuilt every forced-exit tick: a forced man in a deep cell within reach wants it open; one just past it is still in the doorway
             public ForcedExit WantedBy;
             public bool Doorway;
         }
@@ -481,8 +319,7 @@ namespace RBMAI
             public float NextFlagCheck;
             public string WaitingFor;
 
-            // Time split for the DONE line: first at his gate (in reach), seconds waited for men outside (all gates),
-            // first opening of a gate for him.
+            // time split for the DONE line: first at his gate, seconds waited for men outside, first opening of a gate for him
             public float FirstReachAt = -1f;
             public float WaitedTotal;
             public float FirstOpenAt = -1f;
@@ -499,7 +336,7 @@ namespace RBMAI
         private bool _connectivityDone;
         private bool _connectivityWaitLogged;
 
-        // Read by SlotCondition on worker threads: the grid is immutable once published, the flag is a plain bool.
+        // read by SlotCondition on worker threads: the grid is immutable once published, the flag is a plain bool
         private volatile DeepWaterGrid _grid;
         private volatile bool _slotConditionLive;
         private long _slotRejections;
@@ -561,14 +398,12 @@ namespace RBMAI
         private int _forcedInGateCount;
         private int _gatesOpenedDespiteOutsider;
 
-        // Wall diagnostics.
         private readonly HashSet<int> _leakLoggedPieces = new HashSet<int>();
         private int _wallLeakLines;
         private float _nextWallTest;
         private int _wallTestRuns;
         private int _wallTestLastHitsOurs = -1;
 
-        // Face deep-share pass (for the BLOCK line).
         private int _facesByDeepShare;
 
         private float _nextSample;
@@ -610,9 +445,7 @@ namespace RBMAI
         private int _lastWatchOnDisabled;
         private int _lastWatchInDeep;
 
-        // ------------------------------------------------------------------
         // read-only state for NavigableDebugOverlay (main thread only)
-        // ------------------------------------------------------------------
 
         /// <summary>True in a land field battle once EarlyStart ran (the pass may still have blocked nothing).</summary>
         internal bool IsActive => _active;
@@ -623,7 +456,6 @@ namespace RBMAI
         /// <summary>True once everything this logic did (faces, walls, slot condition) was undone.</summary>
         internal bool IsReverted => _reverted;
 
-        /// <summary>Faces this logic has switched off and not re-enabled.</summary>
         internal int DisabledFaceCount => _disabled.Count;
 
         /// <summary>True when this logic switched that navmesh face off (and has not re-enabled it).</summary>
@@ -650,7 +482,6 @@ namespace RBMAI
             return pieceId >= 0 && pieceId < _wallEntities.Count && _wallEntities[pieceId].IsOpen;
         }
 
-        /// <summary>AI men under forced exit right now.</summary>
         internal int ForcedExitCount => _forced.Count;
 
         /// <summary>Copies each forced man's position and his exit point (main thread); returns how many were copied.</summary>
@@ -670,10 +501,6 @@ namespace RBMAI
             }
             return n;
         }
-
-        // ------------------------------------------------------------------
-        // lifecycle
-        // ------------------------------------------------------------------
 
         public override void EarlyStart()
         {
@@ -723,7 +550,7 @@ namespace RBMAI
                 {
                     _connectivityDone = true;
                     ReportOnce("connectivity", e);
-                    // A check that cannot run cannot vouch for the blocked navmesh.
+                    // a check that cannot run cannot vouch for the blocked navmesh
                     RevertAll("connectivity check threw " + e.GetType().Name);
                 }
             }
@@ -828,8 +655,7 @@ namespace RBMAI
             ForcedExit forced;
             if (_forcedByAgent.TryGetValue(affectedAgent, out forced))
             {
-                // Killed / knocked out / fled the field: no DisableScriptedMovement on a removed agent (native
-                // StopUsingGameObject only calls it while State == Active); the tracking is dropped.
+                // removed agent: no DisableScriptedMovement (native StopUsingGameObject only calls it while Active); tracking is dropped
                 _forcedRemoved++;
                 EndForcedExit(forced, CurrentTime(), "REMOVED", "agent " + agentState, false);
             }
@@ -858,7 +684,6 @@ namespace RBMAI
 
         private void Finish()
         {
-            // Forced men get their scripted move back first, then the summary is written.
             ReleaseAllForced("mission end");
             if (_active)
             {
@@ -871,7 +696,6 @@ namespace RBMAI
                     ReportOnce("endSummary", e);
                 }
             }
-            // The mission is over: walls and the slot condition go, the faces die with the scene.
             UnsubscribeSlotCondition();
             RemoveWalls();
             if (_log != null)
@@ -992,9 +816,7 @@ namespace RBMAI
             _lastWatchInDeep = 0;
         }
 
-        // ------------------------------------------------------------------
         // the pass: faces scan -> grid -> walls -> slot condition -> face disabling
-        // ------------------------------------------------------------------
 
         private void RunPass(Mission mission)
         {
@@ -1002,13 +824,11 @@ namespace RBMAI
             long startTicks = DateTime.UtcNow.Ticks;
             try
             {
-                // 1. Face centres (and the old per-face histogram).
                 int faceCount = scene.GetNavMeshFaceCount();
                 Vec3[] centres = new Vec3[Math.Max(0, faceCount)];
                 float[] levels = new float[centres.Length];
                 ScanFaces(scene, centres, levels);
 
-                // 2. Grid.
                 DeepWaterGrid grid = null;
                 try
                 {
@@ -1028,20 +848,18 @@ namespace RBMAI
                         + Fmt(100f * MaxDisabledShare) + "% guard -- the water query is assumed wrong; no walls, no slot condition");
                 }
 
-                // 3. Walls.
                 if (wallOk)
                 {
                     BuildWalls(scene, grid);
                 }
 
-                // 4. Slot condition.
                 if (wallOk)
                 {
                     _slotCondition = SlotCondition;
                     mission.IsFormationUnitPositionAvailable_AdditionalCondition += _slotCondition;
                     _subscribedMission = mission;
                     _slotConditionLive = true;
-                    // The native slot batch (DeepWaterBatchSlotPatch) and Frontline's pin gate read this one.
+                    // read by the native slot batch patch and Frontline's pin gate
                     Interlocked.Exchange(ref DeepWaterSlots.PatchedUnavailable, 0L);
                     Interlocked.Exchange(ref DeepWaterSteering.Calls, 0L);
                     Interlocked.Exchange(ref DeepWaterSteering.Nulled, 0L);
@@ -1049,7 +867,6 @@ namespace RBMAI
                     Log("SLOTS\tcondition subscribed, batch slot patch live\tmargin=" + Fmt(SlotMarginMeters) + "m\tblockedCells=" + grid.BlockedCount);
                 }
 
-                // 5. Faces: centre deep, centre in a deep cell, or a big enough deep share of the face's area.
                 int[] shareTotal = null;
                 int[] shareDeep = null;
                 if (wallOk)
@@ -1147,14 +964,7 @@ namespace RBMAI
                 + "\t(the pass uses renderer+bodies)");
         }
 
-        // ------------------------------------------------------------------
-        // grid
-        // ------------------------------------------------------------------
-
-        /// <summary>
-        /// The deep-water rule for one point, shared by the grid and the NavigableDebugOverlay preview (main thread).
-        /// Returns a Probe* code; <paramref name="depth"/> is water level − terrain height (NaN without a reading).
-        /// </summary>
+        /// <summary>The deep-water rule for one point, shared by the grid and the NavigableDebugOverlay preview (main thread). Returns a Probe* code; depth = water level - terrain height (NaN without a reading).</summary>
         internal static int ProbeCell(Scene scene, Vec2 xy, out float depth)
         {
             depth = float.NaN;
@@ -1178,14 +988,14 @@ namespace RBMAI
                 return ProbeWet;
             }
 
-            // Bridge check, (a) a solid surface at the water line: a bridge deck or a rock.
+            // bridge check (a): a solid surface at the water line (deck or rock)
             float surface = float.NaN;
             bool hit = scene.GetHeightAtPoint(xy, BodyFlags.CommonCollisionExcludeFlagsForAgent, ref surface);
             if (!hit || !IsPlausible(surface) || surface < level - BridgeSurfaceTolerance)
             {
                 return ProbeDeep;
             }
-            // (b) the navmesh is up there too, so men are meant to walk on it.
+            // (b): the navmesh is up there too
             WorldPosition query = new WorldPosition(scene, UIntPtr.Zero, new Vec3(xy.x, xy.y, level + BridgeQueryLift, -1f), false);
             float navZ = query.GetNavMeshZ();
             if (IsPlausible(navZ) && navZ >= level - BridgeSurfaceTolerance)
@@ -1204,7 +1014,7 @@ namespace RBMAI
         {
             long startTicks = DateTime.UtcNow.Ticks;
 
-            // Bounds: the navmesh's face centres, intersected with the mission boundaries when they have points.
+            // bounds: navmesh face centres, intersected with the mission boundaries when they have points
             float minX = float.MaxValue, minY = float.MaxValue, maxX = float.MinValue, maxY = float.MinValue;
             for (int i = 0; i < centres.Length; i++)
             {
@@ -1284,6 +1094,8 @@ namespace RBMAI
             int ny = Math.Max(1, (int)Math.Ceiling(height / step));
 
             bool[] deep = new bool[nx * ny];
+            // bridge cells are kept for BattleTerrainRead.Build: its own probe runs in AfterStart, after this pass switched faces off, and misses them
+            bool[] bridge = new bool[nx * ny];
             int deepCount = 0, wet = 0, bridges = 0, surfaceNoNav = 0, noData = 0;
             for (int j = 0; j < ny; j++)
             {
@@ -1296,15 +1108,14 @@ namespace RBMAI
                     {
                         case ProbeNoData: noData++; break;
                         case ProbeWet: wet++; break;
-                        case ProbeBridge: bridges++; break;
+                        case ProbeBridge: bridges++; bridge[j * nx + i] = true; break;
                         case ProbeDeepSurfaceNoNav: surfaceNoNav++; deep[j * nx + i] = true; deepCount++; break;
                         case ProbeDeep: deep[j * nx + i] = true; deepCount++; break;
                     }
                 }
             }
 
-            // Clean-up: drop tiny deep pockets and fill tiny dry holes inside deep water. The second log's floor lay flat
-            // at about WallDepth (1.19-1.24 m), which turns the cell rule into noise and the wall into a maze of pockets.
+            // clean-up: drop tiny deep pockets and fill tiny dry holes (a floor lying flat at about WallDepth turns the cell rule into noise)
             int droppedRegions, droppedCells, filledHoles, filledCells;
             CleanSmallRegions(deep, nx, ny, true, MinDeepRegionCells, out droppedRegions, out droppedCells);
             CleanSmallRegions(deep, nx, ny, false, MinHoleCells, out filledHoles, out filledCells);
@@ -1346,12 +1157,11 @@ namespace RBMAI
                 }
             }
 
-            // What the clean-up left: dry islands enclosed by deep water (walled all round). A man whose slot is on one
-            // cannot walk there; a bridge cut into pieces would show up here too.
+            // dry islands enclosed by deep water (walled all round): a man whose slot is on one cannot walk there
             int islands, islandCells, largestIsland;
             CountEnclosedDryRegions(deep, nx, ny, out islands, out islandCells, out largestIsland);
 
-            DeepWaterGrid grid = new DeepWaterGrid(minX, minY, step, nx, ny, deep, blocked, deepCount, blockedCount);
+            DeepWaterGrid grid = new DeepWaterGrid(minX, minY, step, nx, ny, deep, blocked, deepCount, blockedCount, bridge, bridges);
             Log("GRID\tbounds=" + Fmt(minX) + "," + Fmt(minY) + " .. " + Fmt(maxX) + "," + Fmt(maxY) + " (" + boundsSource + ")"
                 + "\tstep=" + Fmt(step) + "m\tcells=" + nx + "x" + ny + "=" + (nx * ny)
                 + "\tdeep(>=" + Fmt(WallDepth) + "m)=" + deepCount
@@ -1414,11 +1224,7 @@ namespace RBMAI
             }
         }
 
-        /// <summary>
-        /// Flood-fills the 4-connected regions whose cells equal <paramref name="value"/> and flips every region smaller
-        /// than <paramref name="minCells"/>. For dry holes (value false) a region touching the grid border is kept: it is
-        /// the land around the water, not a hole in it.
-        /// </summary>
+        /// <summary>Flood-fills 4-connected regions whose cells equal value and flips every region smaller than minCells. For dry holes (value false) a region touching the grid border is kept: it is the land around the water.</summary>
         private static void CleanSmallRegions(bool[] deep, int nx, int ny, bool value, int minCells, out int regions, out int cells)
         {
             regions = 0;
@@ -1474,17 +1280,10 @@ namespace RBMAI
             }
         }
 
-        // ------------------------------------------------------------------
-        // walls
-        // ------------------------------------------------------------------
-
         private void BuildWalls(Scene scene, DeepWaterGrid g)
         {
             long startTicks = DateTime.UtcNow.Ticks;
-            // The wall follows the SHORELINE AS A CURVE (user 2026-10-20: "make those walls around deep water a bit
-            // rounder so AI would not get stuck on them but at least slide a bit"), no longer the 1 m cell-edge
-            // staircase whose inner corners caught men: marching squares over the deep grid -> polylines (deep on the
-            // left) -> smoothing -> simplification -> offset toward deep water -> quads of both layers.
+            // the wall follows the shoreline as a curve (not the cell-edge staircase whose corners caught men): marching squares -> polylines (deep on the left) -> smoothing -> simplification -> offset toward deep water -> quads of both layers
             WallContourStats stats = new WallContourStats();
             List<List<Vec2>> outerLines;
             List<List<Vec2>> innerLines;
@@ -1494,9 +1293,7 @@ namespace RBMAI
             _encB.Clear();
             _encBands.Clear();
 
-            // Each raw entry: outer A, outer B, inner A, inner B, deep side, (start overlap, end overlap). Long legs
-            // are split to WallMaxQuadLength so the quad height follows the terrain; a quad gets a small overlap only
-            // where its neighbour on the same polyline lies in another piece (the joint is otherwise exact).
+            // raw entry: outer A, outer B, inner A, inner B, deep side, (start overlap, end overlap); long legs are split to WallMaxQuadLength; overlap only where the neighbour lies in another piece
             List<Vec2[]> raw = new List<Vec2[]>();
             List<long> rawTile = new List<long>();
             float shortest = float.MaxValue;
@@ -1521,7 +1318,7 @@ namespace RBMAI
                     }
                     if (closed)
                     {
-                        // The enclosure test (InsideWall) runs on the exact outer polyline, never on overlapped quads.
+                        // the enclosure test (InsideWall) runs on the exact outer polyline, never on overlapped quads
                         AddEnclosureEdge(oa, ob);
                     }
                     int parts = Math.Max(1, (int)Math.Ceiling(length / WallMaxQuadLength));
@@ -1544,7 +1341,6 @@ namespace RBMAI
                         }
                     }
                 }
-                // Overlap at piece boundaries along this polyline.
                 int count = raw.Count - first;
                 for (int q = 0; q < count; q++)
                 {
@@ -1566,8 +1362,7 @@ namespace RBMAI
             float totalLength = 0f;
             float maxHeight = 0f;
             _wallEdges = 0;
-            // Segments grouped by the PieceTile tile of their outer quad's midpoint: one tile = one piece = one entity
-            // = one gate; both layers of a quad land in the same tile.
+            // segments grouped by the PieceTile tile of their outer quad's midpoint: one tile = one piece = one entity = one gate
             Dictionary<long, List<WallSegment>> byTile = new Dictionary<long, List<WallSegment>>();
             List<long> tileOrder = new List<long>();
             for (int r = 0; r < raw.Count; r++)
@@ -1646,10 +1441,7 @@ namespace RBMAI
                     minBottom = Math.Min(minBottom, tileSegments[q].Bottom);
                 }
                 centre *= 1f / count;
-                // The body's vertices are LOCAL to the entity, whose frame sits at the piece (NavalDLC builds its barrier,
-                // v-fold and plank bodies this way). Until 2026-10-20 the frame was the identity at the world origin with
-                // world-space vertices -- whether the engine's entity bounds (and so agent collision queries) followed the
-                // body hundreds of metres away was never checked; the 16:09 log had 547 men walk through closed pieces.
+                // the body's vertices are LOCAL to the entity, whose frame sits at the piece (as NavalDLC builds its bodies); a world-origin frame with world-space vertices let men through closed pieces
                 Vec3 origin = new Vec3(centre.x, centre.y, minBottom, -1f);
                 int firstSegment = _wallSegments.Count;
                 for (int q = 0; q < count; q++)
@@ -1657,16 +1449,12 @@ namespace RBMAI
                     WallSegment raw0 = tileSegments[q];
                     WallSegment s = new WallSegment(raw0.A, raw0.B, raw0.Bottom, raw0.Top, raw0.SurfaceZ, pieceId, raw0.DeepSide, raw0.Layer);
                     _wallSegments.Add(s);
-                    // Same corner order as NavalDLC's ArrangeBarrier: start top, end top, end bottom, start bottom.
+                    // corner order as NavalDLC's ArrangeBarrier: start top, end top, end bottom, start bottom
                     vertices[q * 4 + 0] = new Vec3(s.A.x - origin.x, s.A.y - origin.y, s.Top - origin.z, -1f);
                     vertices[q * 4 + 1] = new Vec3(s.B.x - origin.x, s.B.y - origin.y, s.Top - origin.z, -1f);
                     vertices[q * 4 + 2] = new Vec3(s.B.x - origin.x, s.B.y - origin.y, s.Bottom - origin.z, -1f);
                     vertices[q * 4 + 3] = new Vec3(s.A.x - origin.x, s.A.y - origin.y, s.Bottom - origin.z, -1f);
-                    // Both windings. The 16:59 log showed one-sided collision despite BodyFlags.TwoSided: WALLTEST rays
-                    // (always dry -> deep) hit 10 of 24 pieces, and every WALLLEAK crossing went in the direction of
-                    // the quad's (A_top, B_top, B_bottom) normal, i.e. through its back face. A quad's normal is fixed
-                    // by the run direction (+y for x-runs, -x for y-runs) while the deep side is either way, so about
-                    // half the edges faced the wrong way. Reversed triangles make every quad solid from both sides.
+                    // both windings: BodyFlags.TwoSided gave one-sided collision (crossings went through the back face of the (A_top, B_top, B_bottom) normal); reversed triangles make every quad solid from both sides
                     int v = q * 4;
                     int o = q * IndicesPerQuad;
                     indices[o + 0] = v;
@@ -1682,7 +1470,6 @@ namespace RBMAI
                     indices[o + 10] = v + 3;
                     indices[o + 11] = v + 2;
                 }
-                // The local bounds of the body, for the manual bounding box below.
                 BoundingBox localBox = default(BoundingBox);
                 localBox.BeginRelaxation();
                 for (int vi = 0; vi < vertices.Length; vi++)
@@ -1698,7 +1485,7 @@ namespace RBMAI
                 piece.Centre = centre;
                 piece.Origin = origin;
                 piece.LocalBox = localBox;
-                // Kept pinned until the entity is removed, as NavalDLC keeps its barrier buffers pinned.
+                // kept pinned until the entity is removed, as NavalDLC does
                 piece.Vertices = GCHandle.Alloc(vertices, GCHandleType.Pinned);
                 piece.Indices = GCHandle.Alloc(indices, GCHandleType.Pinned);
                 _wallEntities.Add(piece);
@@ -1718,9 +1505,7 @@ namespace RBMAI
                 entity.SetPhysicsState(true, false);
                 try
                 {
-                    // A mesh-less entity's own bounds are a point at its origin (RecomputeBoundingBox gave exactly that
-                    // in the 16:59 log). The body's box is set by hand, as NavalDLC's ShipOarMachine /
-                    // ShipUnmannedOar / RopePileBaked set theirs (SetManualLocalBoundingBox with a box they computed).
+                    // a mesh-less entity's own bounds are a point at its origin: set the body's box by hand, as NavalDLC's ShipOarMachine / RopePileBaked do
                     entity.SetFrameChanged();
                     entity.SetManualLocalBoundingBox(in localBox);
                 }
@@ -1744,7 +1529,7 @@ namespace RBMAI
                 Vec3 boxMax = entity.GlobalBoxMax;
                 if (!BoxCovers(boxMin, boxMax, wantMin, wantMax))
                 {
-                    // Second way, still native: the global variant of the same call.
+                    // fallback: the global variant of the same native call
                     try
                     {
                         entity.SetManualGlobalBoundingBox(wantMin, wantMax);
@@ -1793,10 +1578,6 @@ namespace RBMAI
             Log("WALL\tsample " + samplePiece);
         }
 
-        // ------------------------------------------------------------------
-        // wall curves: marching squares -> smoothing -> simplification -> offset
-        // ------------------------------------------------------------------
-
         private sealed class WallContourStats
         {
             public int Closed;
@@ -1813,26 +1594,14 @@ namespace RBMAI
             public float Ms;
         }
 
-        // Marching-squares segments per case (corner bits: 1 bl, 2 br, 4 tr, 8 tl), as pairs of square edges
-        // (0 bottom, 1 right, 2 top, 3 left). Saddles 5 and 10 are resolved DEEP-CONNECTED: the two dry corners are cut
-        // off, so diagonal dry cells stay apart, exactly as the 4-connected dry flood fill (GridConnected) treats them.
+        // marching-squares segments per case (corner bits: 1 bl, 2 br, 4 tr, 8 tl) as pairs of square edges (0 bottom, 1 right, 2 top, 3 left); saddles 5 and 10 are resolved DEEP-CONNECTED, as the 4-connected dry flood fill (GridConnected) treats them
         private static readonly int[][] ContourCases =
         {
             new int[0], new[] { 3, 0 }, new[] { 0, 1 }, new[] { 3, 1 }, new[] { 1, 2 }, new[] { 0, 1, 2, 3 }, new[] { 0, 2 }, new[] { 2, 3 },
             new[] { 2, 3 }, new[] { 0, 2 }, new[] { 3, 0, 1, 2 }, new[] { 1, 2 }, new[] { 3, 1 }, new[] { 0, 1 }, new[] { 3, 0 }, new int[0]
         };
 
-        /// <summary>
-        /// The wall's two layers as polylines. Marching squares over the cell centres (outside the grid counts as not
-        /// deep, so every curve closes) gives the shoreline through the cell-edge midpoints, each piece oriented with
-        /// deep water on its LEFT; pieces are chained by their shared edge midpoints. Each curve then gets
-        /// <see cref="WallLaplacianPasses"/> Laplacian passes (0.5 / 0.25 / 0.25, a Gaussian of about 1.5 point
-        /// spacings: corners become curves of roughly 2-3 m radius), <see cref="WallChaikinPasses"/> Chaikin
-        /// corner-cutting passes (open ends kept), Douglas-Peucker at <see cref="WallSimplifyTolerance"/> m, and is moved
-        /// <see cref="WallDeepBias"/> m along its vertex normals toward deep water -- further, in 0.1 m steps up to
-        /// <see cref="WallDryPushMax"/> m, where a vertex would still sit in a dry cell -- so the wall stays out of dry
-        /// cells. The inner layer is the same curve <see cref="WallLayerGap"/> m further in.
-        /// </summary>
+        /// <summary>The wall's two layers as polylines. Marching squares over the cell centres (outside the grid counts as not deep, so every curve closes), each piece oriented with deep water on its LEFT, chained by shared edge midpoints; then Laplacian (0.5 / 0.25 / 0.25) and Chaikin smoothing, Douglas-Peucker, and an offset along vertex normals toward deep water (further, in 0.1 m steps up to WallDryPushMax, where a vertex would still sit in a dry cell). The inner layer is the same curve WallLayerGap further in.</summary>
         private void BuildWallCurves(DeepWaterGrid g, WallContourStats stats, out List<List<Vec2>> outerLines,
             out List<List<Vec2>> innerLines, out List<bool> closedFlags)
         {
@@ -1844,7 +1613,6 @@ namespace RBMAI
             int ny = g.Ny;
             float s = g.Step;
 
-            // 1. Directed segments, keyed by their start edge midpoint.
             Dictionary<long, long> next = new Dictionary<long, long>();
             HashSet<long> hasIncoming = new HashSet<long>();
             for (int j = -1; j < ny; j++)
@@ -1868,7 +1636,7 @@ namespace RBMAI
                         int e2 = pairs[p + 1];
                         Vec2 p1 = EdgeMidpoint(g, i, j, e1);
                         Vec2 p2 = EdgeMidpoint(g, i, j, e2);
-                        // Orient so deep is on the left: test the corner the two edges share (or bl for opposite edges).
+                        // orient so deep is on the left: test the corner the two edges share (or bl for opposite edges)
                         int ci, cj;
                         ReferenceCorner(i, j, e1, e2, out ci, out cj);
                         Vec2 corner = new Vec2(g.MinX + (ci + 0.5f) * s, g.MinY + (cj + 0.5f) * s);
@@ -1888,8 +1656,7 @@ namespace RBMAI
                 }
             }
 
-            // 2. Chain: open chains first (a start with no incoming segment; none expected, the padding closes all),
-            //    then closed loops.
+            // chain: open chains first (none expected, the padding closes all), then closed loops
             HashSet<long> used = new HashSet<long>();
             List<List<long>> chains = new List<List<long>>();
             List<bool> chainClosed = new List<bool>();
@@ -1936,7 +1703,6 @@ namespace RBMAI
                 chainClosed.Add(k == start);
             }
 
-            // 3. Per chain: points, orientation check, smoothing, simplification, offset.
             for (int c = 0; c < chains.Count; c++)
             {
                 bool closed = chainClosed[c];
@@ -1952,7 +1718,7 @@ namespace RBMAI
                 }
                 stats.RawPoints += pts.Count;
 
-                // Orientation check (deep on the left), by sampling: flip the curve if most samples disagree.
+                // orientation check (deep on the left) by sampling: flip if most samples disagree
                 int agree = 0, disagree = 0;
                 int stride = Math.Max(1, pts.Count / 16);
                 for (int k = 0; k + 1 < pts.Count; k += stride)
@@ -2046,7 +1812,7 @@ namespace RBMAI
         /// <summary>Edge e (0 bottom, 1 right, 2 top, 3 left) of the square whose bottom-left corner is cell (i, j).</summary>
         private static long EdgeKey(DeepWaterGrid g, int i, int j, int e)
         {
-            // Horizontal edge midpoints H(i, j) between cells (i, j) and (i+1, j); vertical V(i, j) between (i, j) and (i, j+1).
+            // horizontal edge midpoints H(i, j) between cells (i, j) and (i+1, j); vertical V(i, j) between (i, j) and (i, j+1)
             switch (e)
             {
                 case 0: return PointKey(g, i, j, false);
@@ -2176,7 +1942,7 @@ namespace RBMAI
         /// <summary>Keeps the points between first and last (index last may be n = wraps to 0) farther than tolerance.</summary>
         private static void DouglasPeucker(List<Vec2> pts, int first, int last, float tolerance, bool[] keep, int n)
         {
-            // A List as the work stack (System.dll, home of Stack<T>, is not referenced by this project).
+            // a List as the work stack (System.dll, home of Stack<T>, is not referenced by this project)
             List<int[]> work = new List<int[]>();
             work.Add(new[] { first, last });
             while (work.Count > 0)
@@ -2247,9 +2013,7 @@ namespace RBMAI
             return sum.LengthSquared > 1e-8f ? sum.Normalized() : Vec2.Zero;
         }
 
-        // ------------------------------------------------------------------
         // enclosure: is a point on the deep side of the (closed) outer wall?
-        // ------------------------------------------------------------------
 
         private readonly List<Vec2> _encA = new List<Vec2>();
         private readonly List<Vec2> _encB = new List<Vec2>();
@@ -2300,11 +2064,7 @@ namespace RBMAI
             return inside;
         }
 
-        /// <summary>
-        /// "Inside the wall": a deep cell AND, while the wall stands, enclosed by it. Because the wall is biased toward
-        /// deep water, parts of deep shore cells lie OUTSIDE it (under about 1 m of water, on the dry side of the wall);
-        /// men there never crossed a wall, need no gate and are not forced out (main thread).
-        /// </summary>
+        /// <summary>"Inside the wall": a deep cell AND, while the wall stands, enclosed by it. The wall is biased toward deep water, so parts of deep shore cells lie OUTSIDE it: men there never crossed a wall and are not forced out (main thread).</summary>
         private bool InsideWall(DeepWaterGrid grid, Vec2 p)
         {
             if (grid == null || !grid.IsDeepAt(p.x, p.y))
@@ -2398,14 +2158,9 @@ namespace RBMAI
             _encBands.Clear();
         }
 
-        // ------------------------------------------------------------------
         // forced exit + gates -- main thread (scan every ForcedScanInterval s, forced men every frame)
-        // ------------------------------------------------------------------
 
-        /// <summary>
-        /// Starts a forced exit for every AI man (never the player) standing or swimming in a deep cell who has none, up
-        /// to <see cref="MaxForcedAtOnce"/> at once. See the class comment (FORCED EXIT) for the rules.
-        /// </summary>
+        /// <summary>Starts a forced exit for every AI man (never the player) in a deep cell who has none, up to MaxForcedAtOnce at once.</summary>
         private void ForcedExitScan(Mission mission, float now)
         {
             DeepWaterGrid grid = _grid;
@@ -2430,7 +2185,7 @@ namespace RBMAI
                 }
                 if (!InsideWall(grid, pos))
                 {
-                    // A deep shore cell, but on the dry side of the (deep-biased) wall: he can walk off himself.
+                    // a deep shore cell on the dry side of the (deep-biased) wall: he can walk off himself
                     _outsideWallDeepAgents.Add(agent.Index);
                     continue;
                 }
@@ -2494,7 +2249,7 @@ namespace RBMAI
                 _forcedAgentsStarted++;
             }
 
-            // A Frontline pin (Agent.SetTargetPosition) is a movement lock and would hold him in place.
+            // a Frontline pin (Agent.SetTargetPosition) is a movement lock and would hold him in place
             bool unlocked = false;
             if (agent.MovementLockedState != AgentMovementLockedState.None)
             {
@@ -2520,10 +2275,7 @@ namespace RBMAI
             return (f.Agent.GetScriptedFlags() & Agent.AIScriptedFrameFlags.GoToPosition) != 0;
         }
 
-        /// <summary>
-        /// Every frame while anybody is forced or a gate is open: release men who are out, time out attempts, and open
-        /// / close the gates (pieces) exactly while their men need them.
-        /// </summary>
+        /// <summary>Every frame while anybody is forced or a gate is open: release men who are out, time out attempts, and open / close the gates exactly while their men need them.</summary>
         private void ForcedExitTick(Mission mission, float now)
         {
             DeepWaterGrid grid = _grid;
@@ -2600,14 +2352,13 @@ namespace RBMAI
                     f.NextFlagCheck = now + ForcedFlagRecheck;
                     if ((agent.GetScriptedFlags() & Agent.AIScriptedFrameFlags.GoToPosition) == 0)
                     {
-                        // Something dropped it (NavalDLC re-issues the same way): drive him again.
+                        // something dropped it (NavalDLC re-issues the same way): drive him again
                         _forcedReissued++;
                         IssueScriptedMove(scene, f);
                     }
                 }
 
-                // Inside = a deep cell enclosed by the wall: once out through the gate he is outside even while still
-                // in a deep shore cell (the wall is biased into deep water).
+                // inside = a deep cell enclosed by the wall: once out through the gate he is outside even in a deep shore cell
                 bool inDeep = InsideWall(grid, pos);
                 float d = DistanceToPieces(f.GatePieces, pos);
                 if (inDeep && d <= GateOpenReach && f.FirstReachAt < 0f)
@@ -2676,7 +2427,7 @@ namespace RBMAI
                     float waitedNow = f.WaitingSince >= 0f ? now - f.WaitingSince : 0f;
                     if (f.WaitedTotal + waitedNow >= GateOutsiderGiveUpSeconds)
                     {
-                        // He has waited long enough in all: open anyway (see GateOutsiderGiveUpSeconds).
+                        // waited long enough in all: open anyway (GateOutsiderGiveUpSeconds)
                         _gatesOpenedDespiteOutsider++;
                         if (f.WaitingSince < 0f)
                         {
@@ -2711,7 +2462,6 @@ namespace RBMAI
             }
         }
 
-        /// <summary>Ends a wait for men outside, adding it to his total.</summary>
         private static void EndWait(ForcedExit f, float now)
         {
             if (f.WaitingSince >= 0f)
@@ -2737,7 +2487,7 @@ namespace RBMAI
             bool picked = PickExit(scene, agent, f.State.ExcludedPieces, f, out info);
             if (!picked && f.State.ExcludedPieces.Count > 0)
             {
-                // Every gate in reach failed once: start over with all of them.
+                // every gate in reach failed once: start over with all of them
                 f.State.ExcludedPieces.Clear();
                 picked = PickExit(scene, agent, f.State.ExcludedPieces, f, out info);
             }
@@ -2801,7 +2551,6 @@ namespace RBMAI
             }
         }
 
-        /// <summary>Releases every forced man (mission end, revert) and shuts every open gate.</summary>
         private void ReleaseAllForced(string reason)
         {
             float now = CurrentTime();
@@ -2819,12 +2568,7 @@ namespace RBMAI
             DeepWaterSlots.ClearForcedExits();
         }
 
-        /// <summary>
-        /// Finds his exit: a BFS (8 neighbours) from his cell through blocked cells collects the nearest non-blocked cells;
-        /// those with an enabled navmesh face are compared by distance (+ <see cref="BusyGatePenalty"/> when a man is close
-        /// outside the gate), one per distinct gate, skipping gates that failed for him. Fills f.Exit / GatePieces /
-        /// GatePoint and bumps f.Attempt (from -1 on a fresh record). Main thread.
-        /// </summary>
+        /// <summary>Finds his exit: a BFS from his cell through blocked cells collects the nearest non-blocked cells; those with an enabled navmesh face are compared by distance (+ BusyGatePenalty when a man is close outside the gate), one per distinct gate, skipping gates that failed for him. Fills f.Exit / GatePieces / GatePoint and bumps f.Attempt. Main thread.</summary>
         private bool PickExit(Scene scene, Agent agent, HashSet<int> excluded, ForcedExit f, out string info)
         {
             info = "";
@@ -3011,11 +2755,7 @@ namespace RBMAI
             return new Vec2(g.MinX + (k % g.Nx + 0.5f) * g.Step, g.MinY + (k / g.Nx + 0.5f) * g.Step);
         }
 
-        /// <summary>
-        /// The pieces crossed by the last <see cref="GateApproachSpan"/> m of the line from <paramref name="from"/> to the
-        /// exit point (both layers, and a seam neighbour when the line passes the overlap), or, when that line crosses no
-        /// wall, the piece nearest to the exit point. <paramref name="gatePoint"/> = where the line meets the wall.
-        /// </summary>
+        /// <summary>The pieces crossed by the last GateApproachSpan m of the line from `from` to the exit point (both layers, and a seam neighbour when it passes the overlap), or, when it crosses no wall, the piece nearest the exit point. gatePoint = where the line meets the wall.</summary>
         private void GatePiecesFor(Vec2 from, Vec2 exit, List<int> pieces, out Vec2 gatePoint)
         {
             pieces.Clear();
@@ -3059,7 +2799,7 @@ namespace RBMAI
             {
                 return;
             }
-            // No crossing (a diagonal past a corner): the piece whose wall is nearest to the exit point.
+            // no crossing (a diagonal past a corner): the piece whose wall is nearest the exit point
             float bestD = float.MaxValue;
             int best = -1;
             for (long dx = -1; dx <= 1; dx++)
@@ -3091,7 +2831,6 @@ namespace RBMAI
             }
         }
 
-        /// <summary>Distance from <paramref name="p"/> to the nearest wall segment of any of these pieces.</summary>
         private float DistanceToPieces(List<int> pieceIds, Vec2 p)
         {
             float best = float.MaxValue;
@@ -3111,11 +2850,7 @@ namespace RBMAI
             return best;
         }
 
-        /// <summary>
-        /// True when a man OUTSIDE (any human, the player too, not under forced exit and not in a deep cell) is within
-        /// <see cref="GateOutsiderRadius"/> m of the piece's wall and moving toward it, or leaning on it
-        /// (<see cref="GateLeaningDistance"/> m): he would walk in through the gap. Riders count for their horse.
-        /// </summary>
+        /// <summary>True when a man OUTSIDE (any human, the player too, not forced, not in a deep cell) is within GateOutsiderRadius of the piece's wall and moving toward it, or leaning on it (GateLeaningDistance): he would walk in through the gap. Riders count for their horse.</summary>
         private bool OutsiderNear(Mission mission, WallPiece piece, out string who)
         {
             who = null;
@@ -3231,9 +2966,7 @@ namespace RBMAI
             bool collidesAfter = true;
             try
             {
-                // The native toggle for an agent-blocking collider: CastleGate's extra door colliders and NavalDLC's
-                // plank bridge set / clear BodyFlags.Disabled (SetBodyFlags). Until 2026-10-20 this used SetPhysicsState
-                // (the DestructableComponent state swap, which natively also calls SetFrameChanged on re-enable).
+                // the native toggle for an agent-blocking collider: CastleGate's door colliders and NavalDLC's plank bridge set / clear BodyFlags.Disabled (SetBodyFlags)
                 piece.Entity.SetBodyFlags(piece.Entity.BodyFlag | BodyFlags.Disabled);
                 collidesAfter = (piece.Entity.BodyFlag & BodyFlags.Disabled) == 0;
             }
@@ -3274,16 +3007,14 @@ namespace RBMAI
             bool physicsState = false;
             try
             {
-                // Clear Disabled (CastleGate / NavalDLC plank bridge), keep the physics state on, and mark the frame
-                // changed as native does after re-enabling a collider (DestructableComponent: SetPhysicsState(true) +
-                // SetFrameChanged).
+                // clear Disabled, keep the physics state on, and mark the frame changed as native does after re-enabling a collider
                 piece.Entity.SetBodyFlags((BodyFlags)((uint)piece.Entity.BodyFlag & 0xFFFFFFFEu));
                 if (!piece.Entity.GetPhysicsState())
                 {
                     piece.Entity.SetPhysicsState(true, false);
                 }
                 piece.Entity.SetFrameChanged();
-                // Keep the hand-set bounds (a mesh-less entity's own are a point).
+                // keep the hand-set bounds (a mesh-less entity's own are a point)
                 piece.Entity.SetManualLocalBoundingBox(in piece.LocalBox);
                 collidesAfter = (piece.Entity.BodyFlag & BodyFlags.Disabled) == 0;
                 physicsState = piece.Entity.GetPhysicsState();
@@ -3311,15 +3042,9 @@ namespace RBMAI
             Log(line);
         }
 
-        // ------------------------------------------------------------------
         // slot condition (WORKER THREADS)
-        // ------------------------------------------------------------------
 
-        /// <summary>
-        /// Mission.IsFormationUnitPositionAvailable_AdditionalCondition. Runs on worker threads (from
-        /// IsFormationUnitPositionAvailableMT) and the main thread (IsOrderPositionAvailable): reads only the volatile,
-        /// immutable grid and the live flag; no engine call, no MBRandom, no allocation.
-        /// </summary>
+        /// <summary>Mission.IsFormationUnitPositionAvailable_AdditionalCondition. Runs on worker threads (IsFormationUnitPositionAvailableMT) and the main thread (IsOrderPositionAvailable): reads only the volatile immutable grid and the live flag; no engine call, no MBRandom, no allocation.</summary>
         private bool SlotCondition(WorldPosition position, Team team)
         {
             if (!_slotConditionLive)
@@ -3359,18 +3084,7 @@ namespace RBMAI
             _slotCondition = null;
         }
 
-        // ------------------------------------------------------------------
-        // faces
-        // ------------------------------------------------------------------
-
-        /// <summary>
-        /// Option #1 (user 2026-10-20: "units should try to navigate more around those walls"): which navmesh face each
-        /// grid cell near deep water lies on. Cells within <see cref="FaceShareRadius"/> m (Chebyshev) of a deep cell
-        /// are sampled -- every cell, or every 2nd/3rd one in both directions when there are more than
-        /// <see cref="FaceShareMaxSamples"/> -- with GetTerrainHeight + GetNavMeshFaceIndex (Vec3, terrain + 0.3 m,
-        /// checkIfDisabled false: the face whatever its state). total[f] / deep[f] count the samples per face. Main
-        /// thread, EarlyStart. Logged with call count and ms.
-        /// </summary>
+        /// <summary>Which navmesh face each grid cell near deep water lies on: cells within FaceShareRadius (Chebyshev) of a deep cell are sampled (every cell, or every 2nd/3rd when over FaceShareMaxSamples) with GetTerrainHeight + GetNavMeshFaceIndex (terrain + 0.3 m, checkIfDisabled false: the face whatever its state). total[f] / deep[f] count samples per face. Main thread, EarlyStart.</summary>
         private void ComputeFaceDeepShares(Scene scene, DeepWaterGrid g, int faceCount, out int[] total, out int[] deep)
         {
             long startTicks = DateTime.UtcNow.Ticks;
@@ -3380,7 +3094,7 @@ namespace RBMAI
             int ny = g.Ny;
             int r = Math.Max(1, (int)Math.Ceiling(FaceShareRadius / g.Step));
 
-            // Row pass then column pass of a "deep within r cells" test (distance to the last / next deep cell).
+            // row pass then column pass of a "deep within r cells" test
             bool[] rowNear = new bool[nx * ny];
             for (int j = 0; j < ny; j++)
             {
@@ -3533,8 +3247,7 @@ namespace RBMAI
                 return;
             }
 
-            // The return value is the face's enabled state BEFORE the call (see the class comment): true = we changed
-            // it. Island indices are refreshed by the last call only.
+            // the return value is the face's enabled state BEFORE the call: true = we changed it; island indices are refreshed by the last call only
             int alreadyDisabled = 0;
             for (int k = 0; k < candidates.Count; k++)
             {
@@ -3693,7 +3406,7 @@ namespace RBMAI
                 {
                     try
                     {
-                        // Returns the state before the call: false = it was disabled, so this call re-enabled it.
+                        // returns the state before the call: false = it was disabled, so this call re-enabled it
                         if (!scene.SetAbilityOfFaceWithIndex(_disabled[k], true, k == _disabled.Count - 1))
                         {
                             reEnabled++;
@@ -3717,10 +3430,6 @@ namespace RBMAI
                 + "\treason=" + reason);
             Flush();
         }
-
-        // ------------------------------------------------------------------
-        // connectivity check
-        // ------------------------------------------------------------------
 
         private void TryConnectivityCheck(Mission mission, float now)
         {
@@ -3762,7 +3471,7 @@ namespace RBMAI
 
             Scene scene = mission.Scene;
 
-            // Each side's spawn: men standing on faces we switched off cannot plan paths from there.
+            // each side's spawn: men standing on faces we switched off cannot plan paths from there
             if (_disabledSet.Count > 0)
             {
                 int attackersOff = CountOnDisabledFaces(scene, attackers);
@@ -3796,7 +3505,7 @@ namespace RBMAI
             bool pathIgnore = scene.DoesPathExistBetweenFaces(attackerFace, defenderFace, true);
             int attackerIsland = SafeIsland(scene, attackerFace);
             int defenderIsland = SafeIsland(scene, defenderFace);
-            // The walls: a flood fill over the non-deep cells (the walls stand exactly on their edges).
+            // the walls: a flood fill over the non-deep cells (the walls stand exactly on their edges)
             string gridResult = _wallEntities.Count > 0 ? GridConnected(attackerRep.Position.AsVec2, defenderRep.Position.AsVec2) : "no walls";
             bool gridOk = gridResult != "0";
             bool connected = pathRespect && pathIgnore && gridOk;
@@ -3815,11 +3524,7 @@ namespace RBMAI
             }
         }
 
-        /// <summary>
-        /// "1" when a 4-connected flood fill over the grid's non-deep cells gets from <paramref name="a"/> to
-        /// <paramref name="b"/>, "0" when it does not (the walls cut the field), anything else = could not check.
-        /// Main thread, one pass over at most the whole grid (a few ms).
-        /// </summary>
+        /// <summary>"1" when a 4-connected flood fill over the non-deep cells gets from a to b, "0" when it does not (the walls cut the field), anything else = could not check. Main thread, at most one pass over the grid.</summary>
         private string GridConnected(Vec2 a, Vec2 b)
         {
             DeepWaterGrid g = _grid;
@@ -3930,9 +3635,7 @@ namespace RBMAI
             }
         }
 
-        // ------------------------------------------------------------------
         // swim-depth sampler + deep-cell watch (logging only)
-        // ------------------------------------------------------------------
 
         private void SampleSwimmers(Mission mission, float now)
         {
@@ -3957,8 +3660,7 @@ namespace RBMAI
                     firstSeen = true;
                 }
 
-                // Deep cell INSIDE the wall: got past it (or was pushed / spawned there). Deep shore cells outside the
-                // deep-biased wall do not count -- he never crossed anything.
+                // deep cell INSIDE the wall: got past it (or was pushed / spawned there); deep shore cells outside the deep-biased wall do not count
                 Vec3 pos = agent.Position;
                 bool inDeep = InsideWall(grid, pos.AsVec2);
                 if (inDeep && !state.InDeepCell)
@@ -3989,8 +3691,7 @@ namespace RBMAI
                     state.AnchorPos = pos.AsVec2;
                     state.AnchorTime = now;
                     state.StuckLogged = false;
-                    // "Not on land" is mode & 3 != Land: WaterSurface/WaterDiving is real water, None is neither (see the
-                    // SWIM line's mode= field; the dry-ground "swims" of the fourth log were all 0.27 s long).
+                    // "not on land" is mode & 3 != Land: WaterSurface/WaterDiving is real water, None is neither (see the SWIM line's mode= field)
                     int modeBits = (int)(agent.MovementMode & AgentMovementMode.MovementModeMask);
                     if (modeBits == (int)AgentMovementMode.None)
                     {
@@ -4035,7 +3736,7 @@ namespace RBMAI
 
         private void WriteDeepCellLine(Scene scene, float now, Agent agent, bool mounted, bool player, Vec3 pos, AgentWaterState state)
         {
-            // The player counts like anyone (the wall is hard for him too) and separately, so it can be tested on foot.
+            // the player counts like anyone, and separately so the wall can be tested on foot
             _deepCellEntries++;
             if (mounted)
             {
@@ -4048,9 +3749,7 @@ namespace RBMAI
             }
             state.EverDeep = true;
 
-            // How did he get in? The move since the previous sample (0.25 s) against the wall pieces: through an open gate
-            // (expected), through a closed piece (a wall failure), or across no wall at all (spawned / teleported / a
-            // corner the grid edges do not cover).
+            // how did he get in? The move since the previous sample against the wall pieces: open gate (expected), closed piece (a wall failure), or no wall at all (spawned / teleported / a corner)
             Vec2 here = pos.AsVec2;
             Vec2 prev;
             float prevTime;
@@ -4100,7 +3799,7 @@ namespace RBMAI
             }
             _deepCellLines++;
 
-            // Shove or walk-through: friends within 1.5 m BEHIND him along his move.
+            // shove or walk-through: friends within 1.5 m BEHIND him along his move
             int alliesBehind = -1;
             if (hasPrev && agent.Team != null && Mission != null)
             {
@@ -4151,14 +3850,7 @@ namespace RBMAI
                 + "\torder=" + OrderName(agent.Formation));
         }
 
-        /// <summary>
-        /// WALLLEAK: the first crossing of a CLOSED piece, written so the next log tells a geometric gap from collision
-        /// that does not hold: the move, the piece's quads near it (layer, ends, bottom/top, distance, where along the
-        /// quad it crossed: within its span / past an end / in the end overlap), terrain and water there, the entity's
-        /// physics state, body flags, triangle count and global bounds, whether it was ever opened, a physics ray cast
-        /// along the move at knee and chest height (what it hits), and his slot (distance, CanMoveDirectlyToPosition --
-        /// whether the engine sees a straight line to it) plus the face under him (ours = switched off).
-        /// </summary>
+        /// <summary>WALLLEAK: the first crossing of a CLOSED piece, written so a log tells a geometric gap from collision that does not hold: the move, the piece's quads near it, terrain and water, the entity's physics state / flags / bounds, whether it was ever opened, ray casts along the move, and his slot plus the face under him.</summary>
         private void WriteWallLeak(Scene scene, float now, Agent agent, int pieceId, Vec2 prev, Vec2 here, float hereZ, AgentWaterState state)
         {
             _wallLeakLines++;
@@ -4169,7 +3861,6 @@ namespace RBMAI
                 .Append('\t').Append(agent.MountAgent != null ? "mounted" : "foot")
                 .Append("\tmove=").Append(Pos(prev)).Append(" -> ").Append(Pos(here)).Append(" (").Append(Fmt(prev.Distance(here))).Append("m)");
 
-            // Quads of the piece near the move.
             Vec2 move = here - prev;
             int listed = 0;
             for (int k = piece.FirstSegment; k < piece.FirstSegment + piece.SegmentCount && listed < 6; k++)
@@ -4183,7 +3874,7 @@ namespace RBMAI
                     continue;
                 }
                 listed++;
-                // Where the move line meets the quad's line, as a share along A->B (0..1 = within the span).
+                // where the move line meets the quad's line, as a share along A->B (0..1 = within the span)
                 string where = "parallel";
                 Vec2 ab = s.B - s.A;
                 float denom = move.x * ab.y - move.y * ab.x;
@@ -4209,8 +3900,7 @@ namespace RBMAI
                 sb.Append("\tquad[L").Append(s.Layer).Append(' ').Append(Pos(s.A)).Append("..").Append(Pos(s.B))
                     .Append(" z ").Append(Fmt(s.Bottom)).Append("..").Append(Fmt(s.Top))
                     .Append(" crossed=").Append(crossed ? "1" : "0").Append(" dist=").Append(Fmt(d)).Append(" ").Append(where)
-                    // The (A_top, B_top, B_bottom) triangle's normal is (-ab.y, ab.x): "along" = through its back face,
-                    // the side that leaked before both windings were built.
+                    // the (A_top, B_top, B_bottom) normal is (-ab.y, ab.x): "along" = through its back face
                     .Append(" move ").Append(Vec2.DotProduct(move, new Vec2(-ab.y, ab.x)) > 0f ? "along" : "against").Append(" quad normal")
                     .Append(']');
             }
@@ -4240,7 +3930,7 @@ namespace RBMAI
                 .Append(piece.TimesOpened > 0 ? " lastClosed " + Fmt(now - piece.ClosedAt) + "s ago" : "")
                 .Append(piece.IsOpen ? " OPEN NOW" : "");
 
-            // Physics ray casts along the move (agent collision exclude flags, so an AgentOnly body counts).
+            // physics ray casts along the move (agent collision exclude flags, so an AgentOnly body counts)
             float zPrev = IsPlausible(groundPrev) ? groundPrev : hereZ;
             sb.Append("\trayKnee=").Append(RayProbe(scene, new Vec3(prev.x, prev.y, zPrev + 0.5f, -1f), new Vec3(here.x, here.y, hereZ + 0.5f, -1f)));
             sb.Append("\trayChest=").Append(RayProbe(scene, new Vec3(prev.x, prev.y, zPrev + 1.2f, -1f), new Vec3(here.x, here.y, hereZ + 1.2f, -1f)));
@@ -4346,12 +4036,7 @@ namespace RBMAI
             return behind;
         }
 
-        /// <summary>
-        /// WALLTEST (logging only): for up to <see cref="WallTestPieces"/> pieces spread over the wall, a physics ray at
-        /// half height across the middle of their first quad, 1 m either side, with the agents' collision exclude
-        /// flags. Hits on our own entity mean the body is in the physics scene where it should be; misses mean it is
-        /// not (or ray casts do not see it). First tick, then every <see cref="WallTestInterval"/> s.
-        /// </summary>
+        /// <summary>WALLTEST (logging only): for up to WallTestPieces pieces spread over the wall, a physics ray at half height across the middle of their first quad (agents' exclude flags). Hits on our own entity mean the body is in the physics scene; misses mean it is not. First tick, then every WallTestInterval s.</summary>
         private void WallTest(Scene scene, float now)
         {
             int pieces = _wallEntities.Count;
@@ -4378,7 +4063,7 @@ namespace RBMAI
                 Vec3 a = new Vec3(mid.x - n.x, mid.y - n.y, z, -1f);
                 Vec3 b = new Vec3(mid.x + n.x, mid.y + n.y, z, -1f);
                 string result = RayProbe(scene, a, b);
-                // The other way too (deep -> dry): a one-sided body hits only one of the two.
+                // the other way too (deep -> dry): a one-sided body hits only one of the two
                 if (RayProbe(scene, b, a).StartsWith("ours", StringComparison.Ordinal))
                 {
                     reverseOurs++;
@@ -4450,11 +4135,7 @@ namespace RBMAI
                 _swimLinesDropped++;
                 return;
             }
-            // Swim-on-dry-ground diagnostics (only on transitions, so cheap): the raw movement mode (IsOnLand is
-            // "mode & 3 == Land", so None -- e.g. airborne -- reads as "in water" to the sampler), IsInWater, the
-            // terrain heightmap under him (a scene mesh standing on terrain that lies under the water level would show
-            // terrain < water < ground) and the other three water-query variants (a separate water body would show up
-            // in "bodies" only).
+            // swim-on-dry-ground diagnostics (transitions only): raw movement mode (IsOnLand is "mode & 3 == Land", so None, e.g. airborne, reads as "in water"), IsInWater, the terrain heightmap under him and the other water-query variants
             string modeText = "?";
             string isInWater = "?";
             try
@@ -4514,9 +4195,7 @@ namespace RBMAI
             }
         }
 
-        // ------------------------------------------------------------------
         // stuck watch (logging only -- never moves anybody)
-        // ------------------------------------------------------------------
 
         private void StuckWatch(Mission mission, float now)
         {
@@ -4575,7 +4254,7 @@ namespace RBMAI
                 float moved = pos.Distance(state.AnchorPos);
                 if (moved >= StuckMoveMeters)
                 {
-                    // Still swimming somewhere: restart the window from here, so a later stall is still caught.
+                    // still swimming somewhere: restart the window so a later stall is caught
                     state.AnchorPos = pos;
                     state.AnchorTime = now;
                     continue;
@@ -4665,8 +4344,7 @@ namespace RBMAI
             }
             state.WallStuckLogged = true;
             _wallStuckEpisodes++;
-            // Option #1 (block paths through faces with a large deep share) was not built; this counts the episodes it
-            // would be for: a man held at the wall whose own slot is on dry ground (his path runs into the wall).
+            // counts episodes of a man held at the wall whose own slot is on dry ground (his path runs into the wall)
             string slotState = SlotState(agent, grid);
             if (slotState == "dry")
             {
@@ -4698,10 +4376,6 @@ namespace RBMAI
                 return "?";
             }
         }
-
-        // ------------------------------------------------------------------
-        // log
-        // ------------------------------------------------------------------
 
         private static string LogFolderPath
         {
@@ -5006,8 +4680,15 @@ namespace RBMAI
         public readonly bool[] Blocked;
         public readonly int DeepCount;
         public readonly int BlockedCount;
+        /// <summary>
+        /// Cells ProbeCell called ProbeBridge (a bridge deck over deep water: the "bridgeExcluded" of the GRID line), as
+        /// probed in EarlyStart before any face was switched off; read by BattleTerrainRead.Build. Not used by the blocker.
+        /// </summary>
+        public readonly bool[] Bridge;
+        public readonly int BridgeCount;
 
-        public DeepWaterGrid(float minX, float minY, float step, int nx, int ny, bool[] deep, bool[] blocked, int deepCount, int blockedCount)
+        public DeepWaterGrid(float minX, float minY, float step, int nx, int ny, bool[] deep, bool[] blocked, int deepCount, int blockedCount,
+            bool[] bridge, int bridgeCount)
         {
             MinX = minX;
             MinY = minY;
@@ -5018,9 +4699,54 @@ namespace RBMAI
             Blocked = blocked;
             DeepCount = deepCount;
             BlockedCount = blockedCount;
+            Bridge = bridge;
+            BridgeCount = bridgeCount;
         }
 
         public int CellCount => Nx * Ny;
+
+        public bool Contains(float x, float y)
+        {
+            return IndexOf(x, y) >= 0;
+        }
+
+        /// <summary>
+        /// The bridge cells whose centre lies in the rectangle [minX, maxX) x [minY, maxY) (a coarser grid's cell): how many,
+        /// and the centre of the one nearest <paramref name="near"/> (Invalid with none). Array reads only.
+        /// </summary>
+        public int FindBridgeCells(float minX, float minY, float maxX, float maxY, Vec2 near, out Vec2 nearest)
+        {
+            nearest = Vec2.Invalid;
+            if (Bridge == null || BridgeCount == 0)
+            {
+                return 0;
+            }
+            int i0 = Math.Max(0, (int)Math.Ceiling((minX - MinX) / Step - 0.5f));
+            int j0 = Math.Max(0, (int)Math.Ceiling((minY - MinY) / Step - 0.5f));
+            int i1 = Math.Min(Nx - 1, (int)Math.Ceiling((maxX - MinX) / Step - 0.5f) - 1);
+            int j1 = Math.Min(Ny - 1, (int)Math.Ceiling((maxY - MinY) / Step - 0.5f) - 1);
+            int count = 0;
+            float best = float.MaxValue;
+            for (int j = j0; j <= j1; j++)
+            {
+                for (int i = i0; i <= i1; i++)
+                {
+                    if (!Bridge[j * Nx + i])
+                    {
+                        continue;
+                    }
+                    count++;
+                    Vec2 c = new Vec2(MinX + (i + 0.5f) * Step, MinY + (j + 0.5f) * Step);
+                    float d = c.DistanceSquared(near);
+                    if (d < best)
+                    {
+                        best = d;
+                        nearest = c;
+                    }
+                }
+            }
+            return count;
+        }
 
         private int IndexOf(float x, float y)
         {
@@ -5043,7 +4769,6 @@ namespace RBMAI
             return k >= 0 && Deep[k];
         }
 
-        /// <summary>The cell (i, j) holding the point; false outside the grid.</summary>
         public bool TryGetCell(float x, float y, out int i, out int j)
         {
             i = -1;
@@ -5125,7 +4850,6 @@ namespace RBMAI
             return p.Distance(closest);
         }
 
-        /// <summary>True when the move p0 -> p1 crosses this segment.</summary>
         public bool IsCrossedBy(Vec2 p0, Vec2 p1)
         {
             float d1 = Cross(B - A, p0 - A);

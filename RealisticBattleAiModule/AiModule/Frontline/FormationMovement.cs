@@ -15,14 +15,12 @@ namespace RBMAI
     [HarmonyPatch(typeof(HumanAIComponent))]
     internal class OverrideParallelFormationMovement
     {
-        // The setter is private. A compiled delegate rather than PropertyInfo.SetValue: this runs per agent per
-        // movement update, and SetValue boxed the bool and allocated an argument array on every call.
+        // Private setter via a compiled delegate (per agent per movement update: no boxing/arg-array allocation).
         private static readonly Action<HumanAIComponent, bool> SetShouldCatchUpWithFormation = CreateShouldCatchUpSetter();
 
         private static Action<HumanAIComponent, bool> CreateShouldCatchUpSetter()
         {
-            // Null (the patch then skips the write, as it did when the property lookup failed) rather than a type
-            // initializer exception that would take the whole patch class down after a game update.
+            // Null (patch skips the write) rather than a type-initializer exception that would take the class down.
             try
             {
                 MethodInfo setter = AccessTools.PropertySetter(typeof(HumanAIComponent), "ShouldCatchUpWithFormation");
@@ -34,7 +32,7 @@ namespace RBMAI
             }
         }
 
-        // Diagnostic counters read by AiBehaviorLogic (worker-thread increments, Interlocked).
+        // Diagnostic counters (worker-thread Interlocked increments).
         internal static long CallCount;
         internal static long SetCount;
 
@@ -42,11 +40,8 @@ namespace RBMAI
         [HarmonyPatch("ParallelUpdateFormationMovement")]
         private static void PostfixParallelUpdateFormationMovement(ref HumanAIComponent __instance, ref Agent ___Agent)
         {
-            // This runs on a native worker thread during the parallel formation-movement job and WRITES agent
-            // formation state (SetValue / SetFormationIntegrityData / SetFormationFrameDisabled). MissionLibrary mods
-            // (RTSCamera/CommandSystem/BattleMiniMap) also hook HumanAIComponent's parallel movement path; two mods
-            // mutating formation state on the same worker job races the native update -> use-after-free AVE. When one
-            // is present, stay off this path entirely and let native own it.
+            // Worker thread, WRITES agent formation state. MissionLibrary mods also hook this path; two writers on the
+            // same worker job race the native update (use-after-free AV), so stay off it when one is present.
             if (RBMAI.Tactics.IsFormationReshufflingUnsafe)
             {
                 return;
@@ -57,33 +52,21 @@ namespace RBMAI
             }
             System.Threading.Interlocked.Increment(ref CallCount);
             MovementOrder.MovementOrderEnum orderType = ___Agent.Formation.GetReadonlyMovementOrderReference().OrderEnum;
-            // Siege attackers keep native's slot rule: their wall-climb and gate-walk orders are Moves, and holding
-            // every man to his slot left them standing on the wall top while defenders cut them down.
+            // Siege attackers keep native's slot rule (their wall-climb/gate-walk orders are Moves).
             bool isSiegeAttacker = Mission.Current != null && Mission.Current.IsSiegeBattle && ___Agent.Team != null && ___Agent.Team.IsAttacker;
             if (___Agent.Controller == AgentControllerType.AI && orderType == MovementOrder.MovementOrderEnum.Move && !isSiegeAttacker && ___Agent.Formation.ArrangementOrder != ArrangementOrder.ArrangementOrderColumn)
             {
                 Vec2 currentGlobalPositionOfUnit = ___Agent.Formation.GetCurrentGlobalPositionOfUnit(___Agent, false);
                 FormationIntegrityDataGroup formationIntegrityData = ___Agent.Formation.CachedFormationIntegrityData;
 
-                // ShouldCatchUpWithFormation gates GetDesiredSpeedInFormation's cap (CachedMovementSpeed / own
-                // top speed, floored at 0.2). Native clears it for EVERY man once the formation's deviation exceeds
-                // ~3x average speed (~11 m), so a line that spawns ragged (16-22 m at 500 men) never paces at all:
-                // everyone runs flat out, the fast men outrun the slow, and the deviation never drops back under
-                // the gate. Logged 2026-09-09: enemy infantry sat at 15 m deviation with catchUp=0 on all 500 for
-                // the whole approach. Only the per-agent test matters: a man near his slot paces, a man far from
-                // it sprints to close. Charge orders are excluded above (Move only).
+                // Native clears ShouldCatchUpWithFormation for EVERY man once the formation deviation exceeds ~11 m, so a
+                // ragged line never paces. Only the per-agent test matters: near his slot paces, far sprints. Move only.
                 float catchUpThreshold = formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents * 3f;
                 bool unitFarFromSlot = ___Agent.Position.AsVec2.Distance(currentGlobalPositionOfUnit) >= catchUpThreshold * 2f;
 
-                // The "far from slot -> sprint" escape above (native's own rule, kept) assumes a man far from
-                // his slot is LAGGING and needs to close. Under RBM's advance that assumption breaks: the
-                // ordered position is placed 10-50 m + half a depth AHEAD of the formation's own centre
-                // (AdvanceBehavior.PrefixCalculateCurrentOrder), so every slot sits far in front of the line
-                // and the distance test trips for men who are already at the front. Their speed cap is then
-                // dropped and whoever has the highest unlimited speed (light gear / high athletics) walks out
-                // of the line toward the carrot -- the reported "one or two soldiers run ahead of the
-                // formation". Judge lagging by the line, not by the slot: a man behind the formation's average
-                // position may sprint, a man level with or ahead of it is paced regardless of slot distance.
+                // "Far from slot -> sprint" assumes the man is lagging, but under RBM's advance the ordered position sits
+                // 10-50 m ahead of the formation (AdvanceBehavior), so men already at the front trip it and run ahead.
+                // Judge lagging by the line, not the slot: behind the average position may sprint, level or ahead is paced.
                 Vec2 formationDirection = ___Agent.Formation.CurrentDirection;
                 bool unitBehindLine = (___Agent.Position.AsVec2 - ___Agent.Formation.CachedAveragePosition).DotProduct(formationDirection) < 0f;
 
@@ -92,13 +75,9 @@ namespace RBMAI
                     System.Threading.Interlocked.Increment(ref SetCount);
                     SetShouldCatchUpWithFormation(__instance, true);
 
-                    // shouldKeepWithFormationInsteadOfMovingToAgent is hard-set to true on purpose. Native
-                    // computes it as (shield in the offhand) && (formation is >=50% ranged), so only a
-                    // shielded man in a mostly-missile formation holds his slot and everyone else drifts
-                    // toward whichever agent he is targeting. RBM wants every moving unit to hold slot --
-                    // a Move order should march the formation, not smear it toward enemy individuals.
-                    // Through DeepWaterSteering (same call, same arguments): it zeroes the position when it, or the
-                    // straight line to it, lies in deep water while the deep-water blocker is live; inert otherwise.
+                    // shouldKeepWithFormationInsteadOfMovingToAgent is hard-set true on purpose: a Move order marches the
+                    // formation (native only holds slot for shielded men in mostly-missile formations).
+                    // Via DeepWaterSteering: zeroes the position when it or the line to it lies in deep water; inert otherwise.
                     DeepWaterSteering.SetFormationIntegrityData(___Agent, currentGlobalPositionOfUnit, ___Agent.Formation.CurrentDirection, formationIntegrityData.AverageVelocityExcludeFarAgents, formationIntegrityData.AverageMaxUnlimitedSpeedExcludeFarAgents, formationIntegrityData.DeviationOfPositionsExcludeFarAgents, true);
                 }
             }
@@ -120,15 +99,13 @@ namespace RBMAI
             StandGround
         }
 
-        // Formation.IsUnitDetachedForDebug (internal) is _detachedUnits.Contains(unit). Agent.IsDetachedFromFormation
-        // tests the agent's own detachment field instead, which native sets and clears at different points, so the
-        // same method is kept, called through a compiled delegate: the old MethodInfo.Invoke allocated an argument
-        // array per agent per movement update.
+        // Formation.IsUnitDetachedForDebug (internal) = _detachedUnits.Contains(unit); differs from Agent.IsDetachedFromFormation
+        // (set/cleared at other points). Compiled delegate: no per-call allocation.
         private static readonly Func<Formation, Agent, bool> IsUnitDetachedForDebug = CreateIsUnitDetachedDelegate();
 
         private static Func<Formation, Agent, bool> CreateIsUnitDetachedDelegate()
         {
-            // Null (the prefix then defers to native, as before) rather than a type initializer exception.
+            // Null (prefix defers to native) rather than a type-initializer exception.
             try
             {
                 MethodInfo method = AccessTools.Method(typeof(Formation), "IsUnitDetachedForDebug", new Type[] { typeof(Agent) });
@@ -140,18 +117,13 @@ namespace RBMAI
             }
         }
 
-        // NOT dead work, even though the sibling postfix disables the frame again for ChargeToTarget.
-        // Native's ChargeToTarget path goes through Agent.GetBaseFormationFrame and never calls the managed
-        // Formation.GetOrderPositionOfUnit, so this explicit call is the ONLY thing that runs RBM's frontline
-        // prefix (the mindset step + ClearTargetFrame side effect) for units under ChargeWithTarget.
-        // Removing it made ChargeWithTarget infantry run straight in instead of advancing as a line.
-        // The speed limit (isCharging: false -> CachedMovementSpeed) also survives the postfix.
+        // NOT dead work: native's ChargeToTarget path never calls the managed Formation.GetOrderPositionOfUnit, so this
+        // explicit call is the only thing running RBM's frontline prefix for ChargeWithTarget units.
         [HarmonyPrefix]
         [HarmonyPatch("GetFormationFrame")]
         private static bool PrefixGetFormationFrame(ref bool __result, ref Agent ___Agent, ref HumanAIComponent __instance, ref WorldPosition formationPosition, ref Vec2 formationDirection, ref float speedLimit, ref bool limitIsMultiplier)
         {
-            // Also on the parallel formation-movement worker path -- see PostfixParallelUpdateFormationMovement.
-            // Defer to native (return true = run original) when a MissionLibrary mod is present.
+            // Also on the parallel worker path. Defer to native (return true) when a MissionLibrary mod is present.
             if (RBMAI.Tactics.IsFormationReshufflingUnsafe || IsUnitDetachedForDebug == null)
             {
                 return true;
@@ -159,10 +131,8 @@ namespace RBMAI
             if (___Agent != null)
             {
                 var formation = ___Agent.Formation;
-                // Cheapest test first: everything below only matters under ChargeWithTarget, and the detached test is
-                // a list scan. All of these are side-effect free, so the order does not change the outcome.
-                // IsOnLand: vanilla GetBaseFormationFrame only queries an order position for agents on land; a swimmer
-                // (naval overboard) is left to native. *ReadOnly class flags: worker thread (see FrontlinePositioning).
+                // Cheapest test first (the detached test is a list scan); all side-effect free.
+                // IsOnLand: a swimmer is left to native. *ReadOnly class flags: worker thread (see FrontlinePositioning).
                 if (formation != null && formation.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget
                     && !___Agent.IsMount && ___Agent.IsOnLand()
                     && (formation.QuerySystem.IsCavalryFormationReadOnly || formation.QuerySystem.IsInfantryFormationReadOnly || formation.QuerySystem.IsRangedFormationReadOnly)
@@ -188,17 +158,10 @@ namespace RBMAI
             return true;
         }
 
-        // Breaks native's run-ahead latch under Move orders. GetFormationFrame's Hold case hands out
-        // speedLimit = -1 (no limit) whenever ShouldCatchUpWithFormation is false, and native only sets that
-        // flag true again once the man is back within ~22 m of his slot. A man who trips it while AHEAD of
-        // the line therefore runs at his own unlimited speed, pulls further ahead, and can never re-enter the
-        // window -- the "one or two soldiers sprint to the front and don't wait" on every advance (logged
-        // 2026-09-11: the captain and one ranker at limit -1 / catchUp 0 / 2-4 m/s while 498 men sat at 0.8).
-        //
-        // This postfix only rewrites the out value: no formation-grid or integrity-data writes, so it does
-        // NOT need the IsFormationReshufflingUnsafe guard the sibling patches carry -- which is the point,
-        // since with MissionLibrary loaded those patches never run and the latch was going unbroken.
-        // A man behind the line keeps his unlimited speed so he can genuinely catch up.
+        // Breaks native's run-ahead latch under Move orders: with ShouldCatchUpWithFormation false, GetFormationFrame's Hold case
+        // gives speedLimit = -1 and the flag only resets within ~22 m of the slot, so a man AHEAD of the line runs away.
+        // Only rewrites the out value (no grid / integrity-data writes), so it needs no IsFormationReshufflingUnsafe guard.
+        // A man behind the line keeps his unlimited speed so he can catch up.
         [HarmonyPostfix]
         [HarmonyPatch("GetFormationFrame")]
         private static void PostfixGetFormationFrame(ref Agent ___Agent, ref float speedLimit, ref bool limitIsMultiplier)
@@ -231,21 +194,25 @@ namespace RBMAI
                 float ahead = (agent.Position.AsVec2 - formation.CachedAveragePosition).DotProduct(direction);
                 if (ahead < 0f)
                 {
-                    return; // behind the line: let him sprint to catch up, as native intends
+                    return; // behind the line: let him catch up
                 }
                 float ownMax = agent.MountAgent != null ? agent.MountAgent.GetMaximumForwardUnlimitedSpeed() : agent.GetMaximumForwardUnlimitedSpeed();
                 if (ownMax <= 0.01f)
                 {
                     return;
                 }
-                // Same shape as GetDesiredSpeedInFormation's steady-state result: pace to the formation's
-                // cached movement speed, floored at 0.2 of own top speed.
-                speedLimit = MathF.Clamp(formation.CachedMovementSpeed / ownMax, 0.2f, 1f);
+                // GetDesiredSpeedInFormation's non-charging formula, slot term included: slows a man ahead of his slot
+                // (down to the 0.2 floor) until the line catches him; level or behind gets native's 1.1 x pace.
+                Vec2 slot = formation.GetCurrentGlobalPositionOfUnit(agent, true);
+                float aheadOfSlot = MathF.Clamp(-agent.AverageVelocity.AsVec2.DotProduct(slot - agent.Position.AsVec2), 0f, 100f);
+                float slotScale = (agent.MountAgent != null) ? 4f : 2f;
+                float slotFactor = 0.7f + 0.4f * ((ownMax - aheadOfSlot * slotScale) / (ownMax + aheadOfSlot * slotScale));
+                speedLimit = MathF.Clamp(slotFactor * formation.CachedMovementSpeed / ownMax, 0.2f, 1f);
                 limitIsMultiplier = true;
             }
             catch
             {
-                // Worker-thread path: never let an exception escape.
+                // Worker thread: never let an exception escape.
             }
         }
     }

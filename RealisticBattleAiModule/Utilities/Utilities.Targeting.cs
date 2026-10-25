@@ -32,6 +32,16 @@ namespace RBMAI
                     if ((formation.QuerySystem.IsInfantryFormationReadOnly || formation.QuerySystem.IsRangedFormationReadOnly) && (movementOrder.OrderType == OrderType.ChargeWithTarget))
                     {
                         formations = RBMAI.Utilities.FindSignificantFormationsCached(formation);
+                        // The formation picked its target by threat (riders included): the men follow it.
+                        Formation focus = movementOrder.TargetFormation;
+                        if (focus != null && focus.CountOfUnits > 0)
+                        {
+                            Agent focused = RBMAI.Utilities.NearestAgentFocused(agent.Position.AsVec2, formations, focus);
+                            if (focused != null)
+                            {
+                                return focused;
+                            }
+                        }
                         Formation priorityFormation = null;
                         if (movementOrder.OrderType == OrderType.ChargeWithTarget && movementOrder.TargetFormation != null && !formations.Contains(movementOrder.TargetFormation))
                         {
@@ -44,10 +54,7 @@ namespace RBMAI
                     }
                     if (formation.QuerySystem.IsCavalryFormationReadOnly && movementOrder.OrderType == OrderType.ChargeWithTarget)
                     {
-                        // A targeted cavalry charge rides at its target formation only. Picking the nearest man
-                        // across every significant formation (the target is normally one of them, so it got no
-                        // priority) sent riders at whatever stood closest -- skirmishers in front, the next block
-                        // over -- while the charge behavior measured contact and pass-through against its target.
+                        // A targeted cavalry charge rides at its target formation only (the charge behavior measures contact against it).
                         Formation chargeTarget = movementOrder.TargetFormation;
                         if (chargeTarget != null && chargeTarget.CountOfUnits > 0)
                         {
@@ -73,21 +80,15 @@ namespace RBMAI
             return null;
         }
 
-        // One formation's units as of one frame, shared by every caller in that frame. The nearest-agent scans below
-        // run per charging agent (GetCorrectTarget, every 0.5-1 s each, from the parallel movement job) and each used
-        // to walk every enemy formation's roster with a fresh ToArray; the cavalry free-charge gate in
-        // FrontlinePositioning reads the bounds every frame (and accepts one up to SnapshotMaxAge old). Same scheme as
-        // SignificantFormationsEntry: built at most once per formation per frame and never mutated after it is
-        // published, so workers only ever read a finished one; two workers racing on the same frame both build it,
-        // which is harmless. Cleared in MissionStartReset.
+        // One formation's units as of one frame, shared by every caller (per-charging-agent scans from the parallel movement job, and the
+        // cavalry free-charge gate, which accepts one up to SnapshotMaxAge old). Built at most once per formation per frame and never
+        // mutated after publishing (a racing double build is harmless). Cleared in MissionStartReset.
         internal sealed class FormationUnitSnapshot
         {
             public readonly float Time;
-            // Roster order of ApplyActionOnEachUnitViaBackupList (attached, then detached), so a distance tie
-            // resolves to the same agent the old per-call walk picked.
+            // Roster order of ApplyActionOnEachUnitViaBackupList (attached, then detached) so distance ties resolve the same.
             public readonly Agent[] Agents;
-            // Agent.Position is a direct read of the engine's position pointer; GetWorldPosition is an interop
-            // call (it also resolves the navmesh face). Only X/Y are compared, and they are the same.
+            // Agent.Position is a direct pointer read; GetWorldPosition is an interop call (resolves the navmesh face). Only X/Y are compared.
             public readonly Vec2[] Positions;
             // Who NearestAgentFromMultipleFormations may pick: a player-controlled unit always, an AI one unless routing.
             public readonly bool[] Selectable;
@@ -96,8 +97,14 @@ namespace RBMAI
             public readonly float MinY;
             public readonly float MaxX;
             public readonly float MaxY;
+            // FormationGeometry.RobustBox in the formation's facing frame (outliers, routing and far detached men left out); RobustCount 0 = none.
+            public readonly int RobustCount;
+            public readonly Vec2 RobustCentre;
+            public readonly Vec2 RobustDir;
+            public readonly float RobustHalfAlong;
+            public readonly float RobustHalfAcross;
 
-            public FormationUnitSnapshot(float time, Agent[] agents)
+            public FormationUnitSnapshot(float time, Agent[] agents, int attachedCount = -1, Vec2 frameDir = default(Vec2))
             {
                 Time = time;
                 Agents = agents;
@@ -122,6 +129,8 @@ namespace RBMAI
                 MinY = minY;
                 MaxX = maxX;
                 MaxY = maxY;
+                FormationGeometry.RobustBox(Positions, Selectable, attachedCount, frameDir, out RobustCentre, out RobustDir, out RobustHalfAlong,
+                    out RobustHalfAcross, out RobustCount);
             }
 
             // Squared distance from a point to the bounds; 0 inside them. Only valid when Agents is not empty.
@@ -135,20 +144,16 @@ namespace RBMAI
 
         internal static readonly ConcurrentDictionary<Formation, FormationUnitSnapshot> formationUnitSnapshots = new ConcurrentDictionary<Formation, FormationUnitSnapshot>();
 
-        // How old a snapshot the cavalry free-charge gate (FrontlinePositioning's IsEnemyFormationWithin, per AI rider
-        // per frame, bounds only) accepts. The target pickers below stay on this frame's snapshot: they also read
-        // Selectable (the routing flag), which must not lag.
+        // Max age of a snapshot the cavalry free-charge gate (bounds only) accepts; target pickers stay on this frame's (they read Selectable).
         internal const float SnapshotMaxAge = 0.1f;
 
-        // The returned snapshot is shared between callers: read it, never modify it. A unit can die after the snapshot
-        // was taken in the same frame, so pickers re-check IsActive (the live roster they replace never held the dead).
+        // The snapshot is shared: read only. A unit can die after it was taken, so pickers re-check IsActive.
         internal static FormationUnitSnapshot GetFormationUnitSnapshot(Formation formation)
         {
             return GetFormationUnitSnapshot(formation, 0f);
         }
 
-        // maxAge > 0 also accepts a snapshot from an earlier frame younger than maxAge, unless the formation has
-        // gained or lost a man since (its unit count no longer matches the snapshot's).
+        // maxAge > 0 also accepts an earlier-frame snapshot younger than maxAge, unless the unit count changed.
         internal static FormationUnitSnapshot GetFormationUnitSnapshot(Formation formation, float maxAge)
         {
             Mission mission = Mission.Current;
@@ -164,10 +169,8 @@ namespace RBMAI
                     return entry;
                 }
             }
-            // Same content and order as ApplyActionOnEachUnitViaBackupList (arrangement units, then detached ones),
-            // and like it each live list is copied with one ToArray first: this runs on the movement workers, and
-            // indexing a live list another thread shrinks could throw. The copies go straight into the snapshot's
-            // array instead of through a List and a second ToArray.
+            // Same content/order as ApplyActionOnEachUnitViaBackupList; each live list is copied with ToArray first (movement
+            // workers: indexing a live list another thread shrinks could throw).
             IFormationUnit[] attachedUnits = formation.Arrangement.GetAllUnits().ToArray();
             Agent[] detachedUnits = formation.DetachedUnits.ToArray();
             Agent[] units = new Agent[attachedUnits.Length + detachedUnits.Length];
@@ -176,7 +179,7 @@ namespace RBMAI
                 units[i] = (Agent)attachedUnits[i];
             }
             Array.Copy(detachedUnits, 0, units, attachedUnits.Length, detachedUnits.Length);
-            FormationUnitSnapshot snapshot = new FormationUnitSnapshot(now, units);
+            FormationUnitSnapshot snapshot = new FormationUnitSnapshot(now, units, attachedUnits.Length, formation.Direction);
             if (mission != null)
             {
                 formationUnitSnapshots[formation] = snapshot;
@@ -209,7 +212,10 @@ namespace RBMAI
             return targetAgent;
         }
 
-        // `formations` may be the shared FindSignificantFormationsCached list: it is only read here.
+        // m; a formation whose bounds lie this far beyond the best so far is skipped (margin covers float rounding).
+        private const float NearestBoundsSkipMargin = 0.01f;
+
+        // `formations` may be the shared cached list: read only.
         public static Agent NearestAgentFromMultipleFormations(Vec2 unitPosition, List<Formation> formations, Formation priorityFormation = null)
         {
             Agent targetAgent = null;
@@ -217,6 +223,11 @@ namespace RBMAI
             for (int f = 0; f < formations.Count; f++)
             {
                 FormationUnitSnapshot snapshot = GetFormationUnitSnapshot(formations[f]);
+                if (snapshot.Agents.Length > 0
+                    && MathF.Sqrt(snapshot.DistanceSquaredToBounds(unitPosition)) >= distance + NearestBoundsSkipMargin)
+                {
+                    continue;
+                }
                 for (int i = 0; i < snapshot.Agents.Length; i++)
                 {
                     if (!snapshot.Selectable[i])
@@ -246,6 +257,63 @@ namespace RBMAI
                 }
             }
             return targetAgent;
+        }
+
+        // A foot charge stays on its target formation: a man of another formation is taken only when he is this close, or this much nearer.
+        private const float TargetFocusCloseRange = 4f; // m
+        private const float TargetFocusSlack = 8f; // m
+
+        // `formations` may be the shared cached list: read only. Null when the focus has nobody selectable.
+        public static Agent NearestAgentFocused(Vec2 unitPosition, List<Formation> formations, Formation focus)
+        {
+            Agent focused = null;
+            float focusDistance = float.MaxValue;
+            FormationUnitSnapshot focusSnapshot = GetFormationUnitSnapshot(focus);
+            for (int i = 0; i < focusSnapshot.Agents.Length; i++)
+            {
+                if (!focusSnapshot.Selectable[i])
+                {
+                    continue;
+                }
+                float newDist = unitPosition.Distance(focusSnapshot.Positions[i]);
+                if (newDist < focusDistance && focusSnapshot.Agents[i].IsActive())
+                {
+                    focused = focusSnapshot.Agents[i];
+                    focusDistance = newDist;
+                }
+            }
+            if (focused == null)
+            {
+                return null;
+            }
+            float limit = MathF.Max(TargetFocusCloseRange, focusDistance - TargetFocusSlack);
+            Agent other = null;
+            for (int f = 0; f < formations.Count; f++)
+            {
+                if (formations[f] == focus)
+                {
+                    continue;
+                }
+                FormationUnitSnapshot snapshot = GetFormationUnitSnapshot(formations[f]);
+                if (snapshot.Agents.Length == 0 || MathF.Sqrt(snapshot.DistanceSquaredToBounds(unitPosition)) >= limit)
+                {
+                    continue;
+                }
+                for (int i = 0; i < snapshot.Agents.Length; i++)
+                {
+                    if (!snapshot.Selectable[i])
+                    {
+                        continue;
+                    }
+                    float newDist = unitPosition.Distance(snapshot.Positions[i]);
+                    if (newDist < limit && snapshot.Agents[i].IsActive())
+                    {
+                        other = snapshot.Agents[i];
+                        limit = newDist;
+                    }
+                }
+            }
+            return other ?? focused;
         }
 
         public static Agent NearestEnemyAgent(Agent unit)

@@ -1,4 +1,12 @@
 <Prefab>
+  <Constants>
+    <!-- Tactics panel columns (BattleStatsLogic.RefreshTactics). Row width = the sum. -->
+    <Constant Name="Tac.Rank" Value="34" />
+    <Constant Name="Tac.Name" Value="150" />
+    <Constant Name="Tac.Num" Value="58" />
+    <Constant Name="Tac.RowWidth" Value="416" />
+    <Constant Name="Tac.RowHeight" Value="15" />
+  </Constants>
   <Window>
     <Widget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "StretchToParent" IsVisible="true">
       <Children>
@@ -18,6 +26,62 @@
 		<TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="505"  Text="@Defha" />
 		<TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="520"  Text="@Defcav" />
 		<TextWidget Brush="EnemyName"  HorizontalAlignment="Left" VerticalAlignment="Bottom" SuggestedWidth="250" MarginBottom="535"  Text="@Definf" />
+
+        <!-- Tactics panel, top left above the counters: one block per team AI, options ranked by final weight.
+             Columns: rank (">" = current tactic, also on the amber band), tactic, final weight, army fit
+             (final / (cult*cmd * terrain)), culture x commander x jitter multiplier, applied terrain factor.
+             Above the blocks, once: the battle terrain's map summary and feature counts; in each block, under the
+             terrain line, the side's flank plan (covered / open own flanks, attack side). -->
+        <ListPanel HorizontalAlignment="Left" VerticalAlignment="Top" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="20" MarginTop="100" StackLayout.LayoutMethod="VerticalTopToBottom" DoNotAcceptEvents="true">
+          <Children>
+        <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginBottom="6" Sprite="BlankWhiteSquare_9" Color="#00000066" StackLayout.LayoutMethod="VerticalTopToBottom">
+          <Children>
+            <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="16" MarginLeft="4" MarginRight="4" Brush="EnemyName" Brush.FontSize="12" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@TerrainMapLine" />
+            <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="16" MarginLeft="4" MarginRight="4" Brush="EnemyName" Brush.FontSize="12" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@TerrainFeatureLine" />
+          </Children>
+        </ListPanel>
+        <ListPanel DataSource="{TacticTeams}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" StackLayout.LayoutMethod="VerticalTopToBottom">
+          <ItemTemplate>
+            <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginBottom="6" Sprite="BlankWhiteSquare_9" Color="#00000066" StackLayout.LayoutMethod="VerticalTopToBottom">
+              <Children>
+                <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="18" MarginLeft="4" MarginRight="4" Brush="EnemyName" Brush.FontSize="15" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@Title" />
+                <ListPanel WidthSizePolicy="Fixed" SuggestedWidth="!Tac.RowWidth" HeightSizePolicy="Fixed" SuggestedHeight="!Tac.RowHeight" MarginLeft="4" MarginRight="4" StackLayout.LayoutMethod="HorizontalLeftToRight">
+                  <Children>
+                    <TextWidget WidthSizePolicy="Fixed" SuggestedWidth="!Tac.Rank" HeightSizePolicy="StretchToParent" Brush="EnemyName" Brush.FontSize="12" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="#" />
+                    <TextWidget WidthSizePolicy="Fixed" SuggestedWidth="!Tac.Name" HeightSizePolicy="StretchToParent" Brush="EnemyName" Brush.FontSize="12" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="tactic" />
+                    <TextWidget WidthSizePolicy="Fixed" SuggestedWidth="!Tac.Num" HeightSizePolicy="StretchToParent" Brush="EnemyName" Brush.FontSize="12" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="final" />
+                    <TextWidget WidthSizePolicy="Fixed" SuggestedWidth="!Tac.Num" HeightSizePolicy="StretchToParent" Brush="EnemyName" Brush.FontSize="12" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="fit" />
+                    <TextWidget WidthSizePolicy="Fixed" SuggestedWidth="!Tac.Num" HeightSizePolicy="StretchToParent" Brush="EnemyName" Brush.FontSize="12" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="cult*cmd" />
+                    <TextWidget WidthSizePolicy="Fixed" SuggestedWidth="!Tac.Num" HeightSizePolicy="StretchToParent" Brush="EnemyName" Brush.FontSize="12" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="terrain" />
+                  </Children>
+                </ListPanel>
+                <ListPanel DataSource="{Rows}" WidthSizePolicy="CoverChildren" HeightSizePolicy="CoverChildren" MarginLeft="4" MarginRight="4" StackLayout.LayoutMethod="VerticalTopToBottom">
+                  <ItemTemplate>
+                    <Widget WidthSizePolicy="Fixed" SuggestedWidth="!Tac.RowWidth" HeightSizePolicy="Fixed" SuggestedHeight="!Tac.RowHeight">
+                      <Children>
+                        <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="BlankWhiteSquare_9" Color="#C8902866" IsVisible="@IsCurrent" />
+                        <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" StackLayout.LayoutMethod="HorizontalLeftToRight">
+                          <Children>
+                            <TextWidget WidthSizePolicy="Fixed" SuggestedWidth="!Tac.Rank" HeightSizePolicy="StretchToParent" Brush="EnemyName" Brush.FontSize="13" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@Rank" />
+                            <TextWidget WidthSizePolicy="Fixed" SuggestedWidth="!Tac.Name" HeightSizePolicy="StretchToParent" Brush="EnemyName" Brush.FontSize="13" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@Name" />
+                            <TextWidget WidthSizePolicy="Fixed" SuggestedWidth="!Tac.Num" HeightSizePolicy="StretchToParent" Brush="EnemyName" Brush.FontSize="13" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@Final" />
+                            <TextWidget WidthSizePolicy="Fixed" SuggestedWidth="!Tac.Num" HeightSizePolicy="StretchToParent" Brush="EnemyName" Brush.FontSize="13" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@Fit" />
+                            <TextWidget WidthSizePolicy="Fixed" SuggestedWidth="!Tac.Num" HeightSizePolicy="StretchToParent" Brush="EnemyName" Brush.FontSize="13" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@Multiplier" />
+                            <TextWidget WidthSizePolicy="Fixed" SuggestedWidth="!Tac.Num" HeightSizePolicy="StretchToParent" Brush="EnemyName" Brush.FontSize="13" Brush.TextHorizontalAlignment="Right" Brush.TextVerticalAlignment="Center" Text="@Terrain" />
+                          </Children>
+                        </ListPanel>
+                      </Children>
+                    </Widget>
+                  </ItemTemplate>
+                </ListPanel>
+                <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="16" MarginLeft="4" MarginRight="4" Brush="EnemyName" Brush.FontSize="12" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@TerrainLine" />
+                <TextWidget WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="16" MarginLeft="4" MarginRight="4" Brush="EnemyName" Brush.FontSize="12" Brush.TextHorizontalAlignment="Left" Brush.TextVerticalAlignment="Center" Text="@FlankLine" />
+              </Children>
+            </ListPanel>
+          </ItemTemplate>
+        </ListPanel>
+          </Children>
+        </ListPanel>
 	  </Children>
     </Widget>
   </Window>

@@ -25,7 +25,7 @@ namespace RBMAI
         {
             Vec2 direction;
             WorldPosition medianPosition;
-            if (_mainFormation != null)
+            if (_mainFormation != null && _mainFormation.CountOfUnits > 0)
             {
                 direction = _mainFormation.Direction;
                 Vec2 vec = (base.Formation.QuerySystem.Team.MedianTargetFormationPosition.AsVec2 - _mainFormation.CachedMedianPosition.AsVec2).Normalized();
@@ -53,14 +53,6 @@ namespace RBMAI
             CalculateCurrentOrder();
             base.Formation.SetMovementOrder(base.CurrentOrder);
             base.Formation.SetFacingOrder( CurrentFacingOrder);
-            //if (base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation != null && base.Formation.CachedAveragePosition.DistanceSquared(base.Formation.QuerySystem.ClosestSignificantlyLargeEnemyFormation.MedianPosition.AsVec2) > 1600f && base.Formation.QuerySystem.UnderRangedAttackRatio > 0.2f - ((base.Formation.ArrangementOrder.OrderEnum == ArrangementOrder.ArrangementOrderEnum.Loose) ? 0.1f : 0f))
-            //{
-            //	base.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLoose;
-            //}
-            //else
-            //{
-            //	base.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderLine;
-            //}
         }
 
         protected override void OnBehaviorActivatedAux()
@@ -88,7 +80,8 @@ namespace RBMAI
 
         protected override float GetAiWeight()
         {
-            if (_mainFormation == null || !_mainFormation.AI.IsMainFormation)
+            // an emptied main keeps its flag; re-read it (an empty formation's depth is negative)
+            if (_mainFormation == null || _mainFormation.CountOfUnits <= 0 || !_mainFormation.AI.IsMainFormation)
             {
                 _mainFormation = base.Formation.Team.FormationsIncludingEmpty.FirstOrDefaultQ((Formation f) => f.CountOfUnits > 0 && f.AI.IsMainFormation);
             }

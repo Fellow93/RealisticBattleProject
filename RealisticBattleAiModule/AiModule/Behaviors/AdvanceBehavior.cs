@@ -20,25 +20,81 @@ namespace RBMAI
         public static Dictionary<Formation, float> advanceScaleStartStorage = new Dictionary<Formation, float> { };
         public static Dictionary<Formation, float> advanceLastTickStorage = new Dictionary<Formation, float> { };
         public static Dictionary<Formation, float> archerWaitStartStorage = new Dictionary<Formation, float> { };
-        // Mission time of each formation's last re-shape dispersal (see ReshapeDispersalCooldown).
+        // FRONT-centre hold point fixed at the wait's start (a Move point is the front-centre; re-reading the centre walks the block back)
+        public static Dictionary<Formation, WorldPosition> archerWaitHoldStorage = new Dictionary<Formation, WorldPosition> { };
         public static Dictionary<Formation, float> lastDispersalStorage = new Dictionary<Formation, float> { };
         private const float MaxArcherWaitSeconds = 30f;
-        // Brace against charging cavalry only when it is this close (same as BehaviorChargePatch).
-        private const float BraceDistance = 150f;
-        // A width change bigger than this fraction is a re-shape (first advance tick: +78%); casualty drift is ~1-2%.
+        private const float ArcherWaitRearmSeconds = 90f;
+        private const float BraceDistance = 150f; // m, same as BehaviorChargePatch
         private const float ReshapeWidthFraction = 0.15f;
-        // At most one dispersal per formation in this many seconds. Re-shapes recur: every return from a Regroup
-        // interlude (native resets the width to FormOrderWide) and every Line/Loose/ShieldWall flip near the enemy,
-        // which could come every 0.5 s tick, each a multi-millisecond main-thread stall at a few hundred men.
-        private const float ReshapeDispersalCooldown = 10f;
+        private const float ReshapeDispersalCooldown = 10f; // s; dispersal is a multi-ms main-thread stall
         private static readonly MethodInfo CalculateCurrentOrderMethod = typeof(BehaviorAdvance).GetMethod("CalculateCurrentOrder", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        /// <summary>Per behavior: bracing now / on the previous tick (TickOccasionally leaves arrangement and width alone while bracing).</summary>
+        private sealed class BraceState
+        {
+            public bool Bracing;
+            public bool WasBracing;
+        }
+
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<BehaviorAdvance, BraceState> BraceStates =
+            new System.Runtime.CompilerServices.ConditionalWeakTable<BehaviorAdvance, BraceState>();
         private static readonly FieldInfo CurrentTacticField = typeof(TeamAIComponent).GetField("_currentTactic", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        private const float ParallelFacingDistance = 150f; // m, centre to centre
+        private const float ParallelFacingMaxDegrees = 45f;
+        private static readonly float ParallelFacingCos = MathF.Cos(ParallelFacingMaxDegrees * MathF.PI / 180f);
+        private static readonly float FacingDeadbandCos = MathF.Cos(5f * MathF.PI / 180f);
+
+        // far out face the way we walk; close in square up to the enemy line unless it stands obliquely to us
+        private static Vec2 ApproachFacing(Vec2 directionToEnemy, Vec2 enemyFacing, float enemyDistance)
+        {
+            Vec2 mirror = -enemyFacing;
+            if (enemyDistance > ParallelFacingDistance || !mirror.IsValid || mirror.LengthSquared < 0.01f)
+            {
+                return directionToEnemy;
+            }
+            mirror = mirror.Normalized();
+            return (mirror.DotProduct(directionToEnemy) >= ParallelFacingCos) ? mirror : directionToEnemy;
+        }
+
+        // native re-applies the facing every tick; ours used to only within 150 m, so the activation facing stuck for the whole approach
+        private static void ApplyFacing(Formation formation, FacingOrder facing)
+        {
+            FacingOrder current = formation.FacingOrder;
+            if (facing.OrderEnum == FacingOrder.FacingOrderEnum.LookAtDirection && current.OrderEnum == FacingOrder.FacingOrderEnum.LookAtDirection
+                && current.GetDirection(formation).DotProduct(facing.GetDirection(formation)) >= FacingDeadbandCos)
+            {
+                return;
+            }
+            formation.SetFacingOrder(facing);
+        }
+
+        /// <summary>AI thread: front-centre as a copy of the cached median moved ONCE; the caller stores it (native order-position cache).</summary>
+        private static WorldPosition FrontHoldPosition(Formation formation)
+        {
+            WorldPosition hold = formation.CachedMedianPosition;
+            Vec2 centre = RBMAI.Utilities.GetFormationCenter(formation);
+            Vec2 facing = formation.Direction;
+            if (!hold.IsValid || !centre.IsValid)
+            {
+                return hold;
+            }
+            if (facing.IsValid && facing.LengthSquared > 0.01f)
+            {
+                centre += facing.Normalized() * (formation.Depth * 0.5f);
+            }
+            hold.SetVec2(centre);
+            return hold;
+        }
 
         [HarmonyPrefix]
         [HarmonyPatch("CalculateCurrentOrder")]
         private static bool PrefixCalculateCurrentOrder(ref BehaviorAdvance __instance, ref MovementOrder ____currentOrder, ref FacingOrder ___CurrentFacingOrder)
         {
-            // Runs for player-led formations too (see OverrideBehaviorCharge) -- don't force ShieldWall onto them.
+            // runs for player-led formations too: don't force ShieldWall onto them
+            BraceState brace = BraceStates.GetOrCreateValue(__instance);
+            brace.Bracing = false;
             if (__instance.Formation != null && !__instance.Formation.IsAIControlled)
             {
                 return true;
@@ -55,7 +111,8 @@ namespace RBMAI
                         {
                             Formation allyArchers = Utilities.FindSignificantAlly(__instance.Formation, false, true, false, false, false);
                             bool archersLagging = false;
-                            if (allyArchers != null)
+                            // archers holding a terrain spot release it themselves: never wait for them
+                            if (allyArchers != null && !TerrainSpots.IsHolding(allyArchers))
                             {
                                 Vec2 dir = RBMAI.Utilities.GetFormationCenter(allyArchers) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                                 float allyArchersDist = dir.Normalize();
@@ -63,24 +120,31 @@ namespace RBMAI
                             }
                             if (archersLagging)
                             {
-                                // Wait for the archers to close up, but not forever: archers held back by their own
-                                // behaviour (or skirmishing a flank) never close the gap, and the infantry then sat at
-                                // its spawn for the whole battle. The clock resets once the archers catch up.
+                                // wait for archers to close up, but capped; the clock resets once they catch up
                                 float waitNow = Mission.Current.CurrentTime;
                                 if (!archerWaitStartStorage.TryGetValue(__instance.Formation, out float waitStart))
                                 {
                                     waitStart = waitNow;
                                     archerWaitStartStorage[__instance.Formation] = waitStart;
+                                    archerWaitHoldStorage[__instance.Formation] = FrontHoldPosition(__instance.Formation);
                                 }
                                 if (waitNow - waitStart < MaxArcherWaitSeconds)
                                 {
-                                    ____currentOrder = MovementOrder.MovementOrderMove(RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation));
+                                    if (!archerWaitHoldStorage.TryGetValue(__instance.Formation, out WorldPosition hold) || !hold.IsValid)
+                                    {
+                                        hold = FrontHoldPosition(__instance.Formation);
+                                        archerWaitHoldStorage[__instance.Formation] = hold;
+                                    }
+                                    ____currentOrder = MovementOrder.MovementOrderMove(hold);
                                     return false;
                                 }
                             }
-                            else
+                            else if (archerWaitStartStorage.TryGetValue(__instance.Formation, out float lastWaitStart)
+                                && Mission.Current.CurrentTime - lastWaitStart >= ArcherWaitRearmSeconds)
                             {
+                                // re-armed only ArcherWaitRearmSeconds after the last wait began
                                 archerWaitStartStorage.Remove(__instance.Formation);
+                                archerWaitHoldStorage.Remove(__instance.Formation);
                             }
                         }
                     }
@@ -108,8 +172,7 @@ namespace RBMAI
 
                     if ((enemyCav != null) && (cavDist <= signDist) && (enemyCav.CountOfUnits > __instance.Formation.CountOfUnits / 10) && (signDist > 35f))
                     {
-                        // Within BraceDistance only, as in BehaviorChargePatch: TargetFormation stays set after a plain
-                        // Charge order, so without a distance cap a far-off cavalry formation froze the advance indefinitely.
+                        // within BraceDistance only: TargetFormation stays set after a plain Charge order
                         if (cavDist < BraceDistance && enemyCav.TargetFormation == __instance.Formation && (enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.ChargeWithTarget || enemyCav.GetReadonlyMovementOrderReference().OrderType == OrderType.Charge))
                         {
                             Vec2 vec = RBMAI.Utilities.GetFormationCenter(enemyCav) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
@@ -131,13 +194,13 @@ namespace RBMAI
                             {
                                 ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(vec.Normalized());
                             }
-                            // Only while Advance is the active behaviour: FindBestBehavior also runs this on a mere
-                            // candidate, and the flip to shieldwall and back re-applied behaviour values to every
-                            // agent (see BehaviorChargePatch). Once active, PrefixTickOccasionally runs this again.
-                            if (__instance.Formation.AI != null && __instance.Formation.AI.ActiveBehavior == __instance)
+                            // only while Advance is active (FindBestBehavior also runs this on a candidate; the flip re-applies behaviour values to every agent)
+                            // never a ranged formation (user rule): it holds without the wall
+                            if (__instance.Formation.AI != null && __instance.Formation.AI.ActiveBehavior == __instance && !RBMAI.Utilities.IsRangedForArrangement(__instance.Formation))
                             {
                                 __instance.Formation.SetArrangementOrder(ArrangementOrder.ArrangementOrderShieldWall);
                             }
+                            brace.Bracing = true;
                             return false;
                         }
                         positionsStorage.Remove(__instance.Formation);
@@ -169,11 +232,9 @@ namespace RBMAI
 
                     Vec2 directionToEnemy = RBMAI.Utilities.GetFormationCenter(enemyQuerySystem.Formation) - RBMAI.Utilities.GetFormationCenter(__instance.Formation);
                     float enemyDistance = directionToEnemy.Normalize();
-                    Vec2 enemyDirection = -enemyQuerySystem.Formation.Direction;
 
                     float currentTime = Mission.Current.CurrentTime;
 
-                    // Detect if behavior was just (re)applied after being inactive
                     float lastTick;
                     advanceLastTickStorage.TryGetValue(__instance.Formation, out lastTick);
                     bool justApplied = currentTime - lastTick > 2f;
@@ -191,28 +252,19 @@ namespace RBMAI
                     {
                         if (currentTime - invalidDetectedTime < 20f)
                         {
-                            ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+                            ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(ApproachFacing(directionToEnemy, enemyQuerySystem.Formation.Direction, enemyDistance));
                             return false;
                         }
                         advanceTimerStorage.Remove(__instance.Formation);
-                        // Restart scale ramp after the fallback timer expires
                         scaleStartTime = currentTime;
                         advanceScaleStartStorage[__instance.Formation] = scaleStartTime;
                     }
 
                     float scaleT = MBMath.ClampFloat((currentTime - scaleStartTime) / 10f, 0f, 1f);
-                    // Keep the ordered position ahead of our own centre at ALL times. The ramp eases only the
-                    // extra reach (0.5x -> 1x over 10s); it must never scale the whole offset down to ~0.
-                    // Advance re-activates after every Regroup interlude (Regroup out-weighs Advance while the
-                    // line is spread), which resets scaleT to 0. If the offset went to 0 the order became
-                    // "move onto our own centroid", collapsing the leading ranks backwards -- the line then
-                    // accordions back and forth instead of advancing. Flooring the offset keeps it pressing forward.
+                    // keep the order ahead of our centre at all times; the ramp may only ease the extra reach (offset ~0 collapses the leading ranks)
                     float baseOffset = MBMath.ClampFloat(enemyDistance * 0.3f, 10f, 50f) + __instance.Formation.Depth * 0.5f;
                     float advanceOffset = baseOffset * MBMath.Lerp(0.5f, 1f, scaleT);
-                    // Converge the carrot: never order past the enemy. Without this the target sits a
-                    // fixed distance ahead of our own moving centroid forever, so the frame keeps
-                    // sprinting and the line strings out. Leave a small standoff margin so contact is
-                    // still made by the charge, not by walking into them.
+                    // never order past the enemy; small standoff so contact is made by the charge
                     float maxOffset = enemyDistance - 5f;
                     if (advanceOffset > maxOffset)
                     {
@@ -221,6 +273,13 @@ namespace RBMAI
                     if (advanceOffset < 3f)
                     {
                         advanceOffset = 3f;
+                    }
+                    // attacker's main infantry on a terrain approach route: same reach, along the route's leg
+                    if (TerrainApproach.TryLeg(__instance, __instance.Formation, advanceOffset, out WorldPosition legTarget, out Vec2 legFacing, out bool lastLeg))
+                    {
+                        ____currentOrder = MovementOrder.MovementOrderMove(legTarget);
+                        ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(lastLeg ? directionToEnemy : legFacing);
+                        return false;
                     }
                     Vec2 advanceVec2 = RBMAI.Utilities.GetFormationCenter(__instance.Formation) + directionToEnemy * advanceOffset;
                     WorldPosition advancePosition = RBMAI.Utilities.GetFormationCenterWorldPosition(__instance.Formation);
@@ -237,7 +296,7 @@ namespace RBMAI
                         advanceTimerStorage[__instance.Formation] = currentTime;
                         ____currentOrder = MovementOrder.MovementOrderMove(enemyPosition);
                     }
-                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(enemyDirection);
+                    ___CurrentFacingOrder = FacingOrder.FacingOrderLookAtDirection(ApproachFacing(directionToEnemy, enemyQuerySystem.Formation.Direction, enemyDistance));
 
                     return false;
                 }
@@ -253,37 +312,53 @@ namespace RBMAI
             CalculateCurrentOrderMethod.Invoke(__instance, new object[] { });
 
             __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
+            BraceState brace = BraceStates.GetOrCreateValue(__instance);
+            if (!brace.Bracing && __instance.Formation.IsAIControlled)
+            {
+                ApplyFacing(__instance.Formation, ___CurrentFacingOrder);
+            }
+            if (brace.Bracing && __instance.Formation.QuerySystem.IsInfantryFormation)
+            {
+                // bracing against charging cavalry: no width/shape/arrangement decision this tick
+                brace.WasBracing = true;
+                __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
+                return false;
+            }
+            bool braceEnded = brace.WasBracing;
+            brace.WasBracing = false;
             if (__instance.Formation.QuerySystem.IsInfantryFormation)
             {
+                if (braceEnded && __instance.Formation.IsAIControlled && !TerrainShape.DecideArrangementInstead(__instance.Formation))
+                {
+                    // brace over: one arrangement decision before the width is picked
+                    Utilities.DecideArrangementOrderForFormation(__instance.Formation);
+                }
                 float widthBefore = __instance.Formation.Width;
+                // TerrainShape: Loose on broken ground, narrower width on narrow ground (before the width is picked)
+                TerrainShape.Tick(__instance.Formation, "Advance");
+                TerrainShape.ApplyArrangement(__instance.Formation);
                 switch (__instance.Formation.ArrangementOrder.OrderType)
                 {
                     case OrderType.ArrangementLine:
                         {
-                            // Divisor is effectively the rank count (width in metres = units / ranks). Lower = wider
-                            // line, fewer ranks. Widen the advancing line a touch (4.5 -> 4.0 ranks).
-                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 4.0f)), true);
+                            // divisor = rank count (width m = units / ranks)
+                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(TerrainShape.AdjustWidth(__instance.Formation, RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 4.0f))), true);
                             break;
                         }
                     case OrderType.ArrangementLoose:
                         {
-                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 2.75f)), true);
+                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(TerrainShape.AdjustWidth(__instance.Formation, RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 2.75f))), true);
                             break;
                         }
                     case OrderType.ArrangementCloseOrder:
                         {
-                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 7f)), true);
+                            __instance.Formation.SetFormOrder(FormOrder.FormOrderCustom(TerrainShape.AdjustWidth(__instance.Formation, RBMAI.Utilities.EnforceMinFileWidth(__instance.Formation, __instance.Formation.CountOfUnitsWithoutDetachedOnes / 7f))), true);
                             break;
                         }
                 }
 
-                // Widening the line (e.g. 41x13 -> 73x7 on the first advance tick) re-lays the grid BY INDEX, so
-                // men from the deep middle ranks are handed cells on the far flanks, ~100 m diagonally from where
-                // they stand, and lag the line for the whole advance. Native's dispersal routine reassigns every
-                // cell to the closest man, which is exactly what a re-shaped line needs. Main thread.
-                // NOT cheap: it is n^2 Agent.Position engine calls (~125k at 500 men) plus a forced cache update
-                // and a grid reshuffle for every man. The width above is units/4 m, so it drops a file every few
-                // casualties or detachments -- only a real re-shape may disperse, never that per-file drift.
+                // widening re-lays the grid BY INDEX (men get far-flank cells); native dispersal reassigns cells to the closest man. Main thread.
+                // NOT cheap (n^2 Agent.Position calls): only a real re-shape may disperse, never per-file drift
                 if (MathF.Abs(__instance.Formation.Width - widthBefore) > widthBefore * ReshapeWidthFraction)
                 {
                     float now = Mission.Current.CurrentTime;
@@ -301,10 +376,21 @@ namespace RBMAI
                     if (num < 150f && __instance.Formation.CountOfUnitsWithoutDetachedOnes >= 30)
                     {
                         __instance.Formation.SetFacingOrder(___CurrentFacingOrder);
-                        Utilities.DecideArrangementOrderForFormation(__instance.Formation);
+                        // broken ground: stays Loose (a shield wall still wins)
+                        if (!TerrainShape.DecideArrangementInstead(__instance.Formation))
+                        {
+                            Utilities.DecideArrangementOrderForFormation(__instance.Formation);
+                        }
                         __instance.Formation.SetMovementOrder(____currentOrder);
                     }
                 }
+            }
+            else if (!__instance.Formation.QuerySystem.IsCavalryFormation && !__instance.Formation.QuerySystem.IsRangedCavalryFormation)
+            {
+                // foot archers: only the ground's loose / narrow adjustment
+                TerrainShape.Tick(__instance.Formation, "Advance");
+                TerrainShape.ApplyArrangement(__instance.Formation);
+                TerrainShape.ApplyFormWidth(__instance.Formation);
             }
             __instance.Formation.SetMovementOrder(__instance.CurrentOrder);
             return false;

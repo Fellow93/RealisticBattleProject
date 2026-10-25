@@ -24,8 +24,7 @@ namespace RBMAI
             private static void PostfixOnUnitAddedToFormationForTheFirstTime(Formation formation)
             {
                 formation.QuerySystem.Expire();
-                // This hook fires on every 0 -> >0 unit transition, not just the first, and
-                // behaviors are never removed. Vanilla guards its own set the same way.
+                // Fires on every 0 -> >0 unit transition and behaviors are never removed: guard against duplicates.
                 if (formation.AI.GetBehavior<RBMBehaviorArcherSkirmish>() != null)
                 {
                     return;
@@ -37,22 +36,24 @@ namespace RBMAI
                 formation.AI.AddAiBehavior(new RBMBehaviorEmbolon(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorArcherFlank(formation));
                 formation.AI.AddAiBehavior(new RBMBehaviorHorseArcherSkirmish(formation));
-            }
+                formation.AI.AddAiBehavior(new RBMBehaviorHoldChoke(formation));
+                formation.AI.AddAiBehavior(new RBMBehaviorHoldPosition(formation));
+                formation.AI.AddAiBehavior(new RBMBehaviorReservePlug(formation));
+                formation.AI.AddAiBehavior(new RBMBehaviorHedgehog(formation));
+                // Dormant (WeightFactor 0) until the team's ReactionMonitor gives the formation a task.
+                formation.AI.AddAiBehavior(new RBMBehaviorReact(formation));            }
         }
 
         //private static float originalDefenderPower = 0f;
         //private static float originalAttackerPower = 0f;
 
-        // Per-mission static state is cleared in MissionStartReset, which runs before this.
+        // Every tactic is offered to every culture; TacticSelection applies culture x commander x jitter. The all-cavalry-remnant rout lives in TacticSelection.
         [HarmonyPatch(typeof(MissionCombatantsLogic))]
         [HarmonyPatch("EarlyStart")]
         public class EarlyStartPatch
         {
             public static void Postfix(ref IBattleCombatant ___AttackerLeaderBattleCombatant, ref IBattleCombatant ___DefenderLeaderBattleCombatant)
             {
-                //RBMAiPatcher.DoPatching();
-                //originalDefenderPower = 0f;
-                //originalAttackerPower = 0f;
                 if (Mission.Current.Teams.Any())
                 {
                     if (Mission.Current.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
@@ -61,57 +62,39 @@ namespace RBMAI
                         {
                             if (team.Side == BattleSideEnum.Attacker)
                             {
+                                IBattleCombatant leader = ___AttackerLeaderBattleCombatant;
                                 team.ClearTacticOptions();
-                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "empire")
-                                {
-                                    team.AddTacticOption(new RBMTacticEmbolon(team));
-                                }
-                                else
-                                {
-                                    //team.AddTacticOption(new TacticFrontalCavalryCharge(team));
-                                }
-                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "aserai" || ___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "darshi")
-                                {
-                                    team.AddTacticOption(new RBMTacticAttackSplitSkirmishers(team));
-                                }
-                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "sturgia" || ___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "nord")
-                                {
-                                    team.AddTacticOption(new RBMTacticAttackSplitInfantry(team));
-                                }
-                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "battania")
-                                {
-                                    team.AddTacticOption(new RBMTacticAttackSplitArchers(team));
-                                }
-                                if (___AttackerLeaderBattleCombatant?.BasicCulture?.StringId == "khuzait")
-                                {
-                                    team.AddTacticOption(new TacticRangedHarrassmentOffensive(team));
-                                }
-                                //if (___AttackerLeaderBattleCombatant?.BasicCulture?.Id.ToString() == "vlandia")
-                                //{
-                                //    team.AddTacticOption(new TacticFrontalCavalryCharge(team));
-                                //}
-                                team.AddTacticOption(new TacticFullScaleAttack(team));
-                                team.AddTacticOption(new TacticCoordinatedRetreat(team));
+                                AddTacticOption(team, new RBMTacticEmbolon(team), leader);
+                                AddTacticOption(team, new RBMTacticAttackSplitSkirmishers(team), leader);
+                                AddTacticOption(team, new RBMTacticAttackSplitInfantry(team), leader);
+                                AddTacticOption(team, new RBMTacticAttackSplitArchers(team), leader);
+                                AddTacticOption(team, new TacticRangedHarrassmentOffensive(team), leader);
+                                AddTacticOption(team, new TacticFullScaleAttack(team), leader);
                             }
                             if (team.Side == BattleSideEnum.Defender)
                             {
+                                IBattleCombatant leader = ___DefenderLeaderBattleCombatant;
                                 team.ClearTacticOptions();
-                                if (___DefenderLeaderBattleCombatant?.BasicCulture?.StringId == "battania")
-                                {
-                                    team.AddTacticOption(new RBMTacticDefendSplitArchers(team));
-                                }
-                                team.AddTacticOption(new TacticDefensiveEngagement(team));
-                                team.AddTacticOption(new TacticDefensiveLine(team));
-                                if (___DefenderLeaderBattleCombatant?.BasicCulture?.StringId == "sturgia" || ___DefenderLeaderBattleCombatant?.BasicCulture?.StringId == "nord")
-                                {
-                                    team.AddTacticOption(new RBMTacticDefendSplitInfantry(team));
-                                }
-                                team.AddTacticOption(new TacticFullScaleAttack(team));
-                                team.AddTacticOption(new TacticCoordinatedRetreat(team));
+                                AddTacticOption(team, new RBMTacticDefendSplitArchers(team), leader);
+                                AddTacticOption(team, new TacticDefensiveEngagement(team), leader);
+                                AddTacticOption(team, new TacticDefensiveLine(team), leader);
+                                AddTacticOption(team, new RBMTacticDefendSplitInfantry(team), leader);
+                                AddTacticOption(team, new RBMTacticHoldChoke(team), leader);
+                                AddTacticOption(team, new RBMTacticReservePlug(team), leader);
+                                AddTacticOption(team, new RBMTacticHedgehog(team), leader);
+                                AddTacticOption(team, new TacticFullScaleAttack(team), leader);
                             }
                         }
                     }
                 }
+            }
+
+            private static void AddTacticOption(Team team, TacticComponent tactic, IBattleCombatant leader)
+            {
+                // A bandit leader party switches the side's terrain plans off (ArmyScale).
+                ArmyScale.NoteLeader(team.Side, leader);
+                team.AddTacticOption(tactic);
+                TacticSelection.Register(team, tactic, leader);
             }
         }
     }

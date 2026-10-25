@@ -30,6 +30,10 @@ namespace RBMConfig
         public TextViewModel DeepWaterNavLoggingEnabledText { get; }
         public SelectorVM<SelectorItemVM> DeepWaterNavLoggingEnabled { get; }
 
+        // Battlefield terrain read log (logs/terrain). The read runs anyway with RBM AI on; this only writes it down.
+        public TextViewModel BattleTerrainLoggingEnabledText { get; }
+        public SelectorVM<SelectorItemVM> BattleTerrainLoggingEnabled { get; }
+
         // Blunt trauma / penetration of the player's blows, printed to the message log.
         public TextViewModel ArmorPenetrationMessageText { get; }
         public SelectorVM<SelectorItemVM> ArmorPenetrationMessage { get; }
@@ -131,6 +135,15 @@ namespace RBMConfig
 
         [DataSourceProperty]
         public BasicTooltipViewModel DeepWaterNavLoggingEnabledHint { get; } = Hint("{=RBM_DBG_DEEPWATER_LOG_HINT}For each field battle, writes to logs/deepwater next to the config how much of the map was blocked as deep water and how deep it was, whether the two armies could still reach each other, the water depth where soldiers started and stopped swimming, and any soldier stuck in the water. For tuning Deep water blocks AI paths. Needs that setting and RBM AI on. Takes effect from the next battle. Default off.");
+
+        [DataSourceProperty]
+        public string BattleTerrainLoggingt
+        {
+            get { return new TextObject("{=RBM_DBG_TERRAIN_LOG}Battle Terrain Logging").ToString(); }
+        }
+
+        [DataSourceProperty]
+        public BasicTooltipViewModel BattleTerrainLoggingEnabledHint { get; } = Hint("{=RBM_DBG_TERRAIN_LOG_HINT}For each field battle, writes to logs/terrain next to the config how the AI reads the battlefield once the armies are deployed: heights and slopes between the armies, frontages, open ground and obstacles, narrow gaps, flanking routes, hills, charge run-ups, fields of fire, weather and a label for the kind of ground. Needs RBM AI on. Takes effect from the next battle. Default off.");
 
         [DataSourceProperty]
         public string ArmorPenetrationMessaget

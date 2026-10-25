@@ -6,6 +6,13 @@
 	<string id="str_formation_ai_behavior_text.RBMBehaviorCavalryCharge" text="{=dyY3hkH1}{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} are charging at {?IS_PLURAL}different enemy formations{?}an enemy formation{\?}." />
 	<string id="str_formation_ai_behavior_text.RBMBehaviorArcherFlank" text="{=RBM_STR_003}Archers are skirmishing from flanks." />
 	<string id="str_formation_ai_behavior_text.RBMBehaviorEmbolon" text="{=RBM_STR_004}Cavalry is forming a flying wedge in front of infantry." />
+	<string id="str_formation_ai_behavior_text.RBMBehaviorReact" text="{=RBM_STR_015}{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} are reacting to the enemy." />
+	<string id="str_formation_ai_behavior_text.RBMBehaviorHoldPosition" text="{=RBM_STR_016}{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} are holding the position." />
+	<string id="str_formation_ai_behavior_text.RBMBehaviorHoldChoke" text="{=RBM_STR_017}{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} are holding the pass." />
+	<string id="str_formation_ai_behavior_text.RBMBehaviorHedgehog" text="{=RBM_STR_018}{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} are forming a hedgehog." />
+	<string id="str_formation_ai_behavior_text.RBMBehaviorReservePlug" text="{=RBM_STR_019}{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} are waiting in reserve." />
+	<string id="str_formation_ai_behavior_text.RBMBehaviorHorseArcherSkirmish" text="{=RBM_STR_021}{TROOP_NAMES_BEGIN}{?IS_PLURAL} and {?}{\?}{TROOP_NAMES_END} are circling and shooting." />
+	<string id="str_formation_ai_sergeant_instruction_behavior_text.RBMBehaviorHorseArcherSkirmish" text="{=RBM_STR_022}Circle the enemy and shoot" />
 	<string id="str_formation_ai_sergeant_instruction_behavior_text.RBMBehaviorArcherSkirmish" text="{=RBM_STR_005}Skirmish" />
 	<string id="str_formation_ai_sergeant_instruction_behavior_text.RBMBehaviorForwardSkirmish" text="{=RBM_STR_006}Do hit and run on enemy." />
 	<string id="str_formation_ai_sergeant_instruction_behavior_text.RBMBehaviorInfantryAttackFlank" text="{=8UFjXbbW}Flank{?IS_GENERAL_SIDE}{?} from {SIDE_STRING} side{\?}" />
@@ -17,4 +24,8 @@
 	<string id="str_team_ai_tactic_text.RBMTacticAttackSplitSkirmishers" text="{=RBM_STR_012}Our plan is to bait them with skirmishers then crush them with full force." />
 	<string id="str_team_ai_tactic_text.RBMTacticDefendSplitArchers" text="{=RBM_STR_013}Our plan is to form a defensive line with archers on flanks." />
 	<string id="str_team_ai_tactic_text.RBMTacticEmbolon" text="{=RBM_STR_014}Our plan is to charge head-on with our cavalry then crush disorganized formations." />
+	<string id="str_team_ai_tactic_text.RBMTacticDefendSplitInfantry" text="{=RBM_STR_023}Our plan is to hold a defensive line with infantry guarding its flanks." />
+	<string id="str_team_ai_tactic_text.RBMTacticHoldChoke" text="{=RBM_STR_024}Our plan is to hold the pass and let them come to us." />
+	<string id="str_team_ai_tactic_text.RBMTacticReservePlug" text="{=RBM_STR_025}Our plan is to hold the line and keep our best men in reserve for where it breaks." />
+	<string id="str_team_ai_tactic_text.RBMTacticHedgehog" text="{=RBM_STR_026}Our plan is to form a hedgehog and let their cavalry break on our spears." />
 </strings>

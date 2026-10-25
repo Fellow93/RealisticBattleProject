@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System;
 using TaleWorlds.MountAndBlade;
 
 namespace RBMAI
@@ -11,12 +12,30 @@ namespace RBMAI
         public static void DoPatching()
         {
             var harmony = new Harmony("com.rbmai");
-            //if (!patched)
-            //{
             harmony.UnpatchAll(harmony.Id);
-            harmony.PatchAll();
-            //    patched = true;
-            //}
+            // PatchAll equivalent, one class at a time: PatchAll stops at the first failing class (renamed target or ___field) and
+            // throws out of EarlyStart, leaving every later class unpatched. Now only that class is skipped and logged (AiTickGuard).
+            int failed = 0;
+            foreach (Type type in AccessTools.GetTypesFromAssembly(typeof(RBMAiPatcher).Assembly))
+            {
+                if (!type.HasHarmonyAttribute())
+                {
+                    continue;
+                }
+                try
+                {
+                    harmony.CreateClassProcessor(type).Patch();
+                }
+                catch (Exception e)
+                {
+                    failed++;
+                    AiTickGuard.Report("patch " + type.FullName, e, null);
+                }
+            }
+            if (failed > 0)
+            {
+                AiTickGuard.Flush();
+            }
         }
 
         public static void FirstPatch(ref Harmony rbmaiHarmony)
@@ -26,8 +45,6 @@ namespace RBMAI
             var original = AccessTools.Method(typeof(MissionCombatantsLogic), "EarlyStart");
             var postfix = AccessTools.Method(typeof(Tactics.EarlyStartPatch), nameof(Tactics.EarlyStartPatch.Postfix));
             harmony.Patch(original, null, new HarmonyMethod(postfix));
-
-            //harmony.Patch(original, postfix: new HarmonyMethod(postfix));
         }
     }
 }

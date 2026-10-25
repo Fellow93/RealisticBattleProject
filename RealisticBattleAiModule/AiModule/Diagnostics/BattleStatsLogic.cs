@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using TaleWorlds.Core;
 using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.Library;
@@ -25,23 +26,20 @@ namespace RBMAI
             }
         }
 
-        // Melee blocks of this battle, both sides together, indexed by MeleeBlockKind.
         private readonly int[] _blocks = new int[RBMConfig.MeleeBlock.KindCount];
 
-        // Direct melee hits of this battle, both sides together: a weapon (or fist) landing on a man,
-        // not a horse charge, kick or bash. The battle hit log's "melee" rows count the same thing.
+        // Direct melee hits (weapon or fist on a man; not charge, kick or bash).
         private int _meleeHits;
 
         public override void AfterStart()
         {
-            // The kick/bash counters are per battle.
             RBMStance.KickBash.AiKickBash.ResetCounters();
             System.Array.Clear(_blocks, 0, _blocks.Length);
             _meleeHits = 0;
             _missionScreen = TaleWorlds.ScreenSystem.ScreenManager.TopScreen as MissionScreen;
             if (_missionScreen == null)
             {
-                // No mission screen (headless/spectator/teardown) - run without any UI.
+                // No mission screen (headless/spectator/teardown): run without UI.
                 return;
             }
             _dataSource = new BattleStatsVM();
@@ -58,6 +56,8 @@ namespace RBMAI
             }
             _gauntletLayer = null;
             _missionScreen = null;
+            _tacticTeams.Clear();
+            _eligibleTeams.Clear();
             if (_dataSource != null)
             {
                 _dataSource.OnFinalize();
@@ -66,15 +66,11 @@ namespace RBMAI
             base.OnRemoveBehavior();
         }
 
-        // The aggregation below is a full walk of the damage dictionary plus eight TextObject
-        // allocations, so it runs on a 1s timer instead of on every single hit. Nothing per-hit is
-        // kept here: Tactics.CustomBattleAgentLogicOnAgentHitPatch already records each blow into
-        // agentDamage a frame later, which is what this reads.
+        // The aggregation walks the whole damage dictionary, so it runs on a 1 s timer, not per hit.
         private const float RefreshInterval = 1f;
         private float _timeSinceRefresh = RefreshInterval;
 
-        // A blocked melee blow registers no Blow, so it never reaches OnAgentHit; the melee
-        // collision is the only place it is seen. Just a counter bump; the text is built on the timer.
+        // A blocked melee blow registers no Blow (never reaches OnAgentHit); the collision is the only place it is seen.
         public override void OnMeleeHit(Agent attacker, Agent victim, bool isCanceled, AttackCollisionData collisionData)
         {
             if (attacker == null || victim == null || !attacker.IsHuman || !victim.IsHuman || !attacker.IsEnemyOf(victim))
@@ -90,7 +86,7 @@ namespace RBMAI
 
         public override void OnAgentHit(Agent affectedAgent, Agent affectorAgent, in MissionWeapon affectorWeapon, in Blow blow, in AttackCollisionData attackCollisionData)
         {
-            // A horse as the affector is a charge or trample, so a human striker is required.
+            // A horse as the affector is a charge/trample: require a human striker.
             if (affectedAgent == null || affectorAgent == null || !affectedAgent.IsHuman || !affectorAgent.IsHuman
                 || !affectorAgent.IsEnemyOf(affectedAgent))
             {
@@ -123,6 +119,230 @@ namespace RBMAI
             }
             _timeSinceRefresh = 0f;
             RefreshStats();
+            RefreshTactics();
+        }
+
+        // ---- tactics panel (main thread, 1 s timer) ----
+
+        private sealed class TacticPanelTeam
+        {
+            public Team Team;
+            public BattleStatsTacticTeamVM Vm;
+            // null until read
+            public string Culture;
+            public TacticComponent LastTactic;
+            public float LastTacticSince;
+        }
+
+        private readonly List<TacticPanelTeam> _tacticTeams = new List<TacticPanelTeam>();
+        private readonly List<Team> _eligibleTeams = new List<Team>();
+
+        private void RefreshTactics()
+        {
+            if (Mission == null)
+            {
+                return;
+            }
+            _eligibleTeams.Clear();
+            foreach (Team team in Mission.Teams)
+            {
+                if (team != null && team.TeamAI != null
+                    && (team.Side == BattleSideEnum.Attacker || team.Side == BattleSideEnum.Defender))
+                {
+                    _eligibleTeams.Add(team);
+                }
+            }
+            bool same = _eligibleTeams.Count == _tacticTeams.Count;
+            for (int i = 0; same && i < _eligibleTeams.Count; i++)
+            {
+                same = _eligibleTeams[i] == _tacticTeams[i].Team;
+            }
+            if (!same)
+            {
+                _tacticTeams.Clear();
+                _dataSource.TacticTeams.Clear();
+                foreach (Team team in _eligibleTeams)
+                {
+                    TacticPanelTeam entry = new TacticPanelTeam();
+                    entry.Team = team;
+                    entry.Vm = new BattleStatsTacticTeamVM();
+                    _tacticTeams.Add(entry);
+                    _dataSource.TacticTeams.Add(entry.Vm);
+                }
+            }
+            float now = Mission.CurrentTime;
+            foreach (TacticPanelTeam entry in _tacticTeams)
+            {
+                RefreshTacticTeam(entry, now);
+            }
+            RefreshTerrainMap();
+        }
+
+        private void RefreshTerrainMap()
+        {
+            BattleTerrain terrain = BattleTerrain.Current;
+            if (terrain == null)
+            {
+                _dataSource.TerrainMapLine = "map: not read yet (land field battles, a few frames after deployment)";
+                _dataSource.TerrainFeatureLine = "features: -  (on the map: Ctrl+Shift+D)";
+                return;
+            }
+            BattleTerrain.OpenInfo open = terrain.Open;
+            bool mid = !float.IsNaN(open.MidCorridorWidth);
+            _dataSource.TerrainMapLine = "map: " + (mid ? "mid corridor " : "corridor ")
+                + TerrainFeatureOverlay.Fmt0(mid ? open.MidCorridorWidth : open.CorridorWidth)
+                + " m = " + TerrainFeatureOverlay.Fmt1(mid ? open.MidCorridorFront : open.CorridorFront) + "x wider frontage";
+
+            string features = "features: " + Count(terrain.Hills.Count, "hill", "hills")
+                + ", " + Count(terrain.Crests.Count, "crest", "crests")
+                + ", " + Count(terrain.Chokes.Count, "choke", "chokes")
+                + ", " + Count(terrain.OpenFields.Count, "open field", "open fields")
+                + ", " + Count(terrain.Woods.Count, "woods", "woods")
+                + ", " + Count(terrain.Rough.Count, "rough", "rough")
+                + ", " + Count(terrain.Waters.Count, "water", "waters")
+                + ", " + Count(terrain.Fords.Count, "ford", "fords");
+            if (terrain.FeatureMap.Error != null)
+            {
+                features += " (errors: " + terrain.FeatureMap.Error + ")";
+            }
+            _dataSource.TerrainFeatureLine = features + "  (on the map: Ctrl+Shift+D)";
+        }
+
+        private static string Count(int count, string singular, string plural)
+        {
+            return count + " " + (count == 1 ? singular : plural);
+        }
+
+        private static string FlankLine(Team team)
+        {
+            if (!RBMConfig.RBMConfig.terrainTacticsEnabled)
+            {
+                return "flank plan: off";
+            }
+            TerrainFlankPlan.SidePlan plan = TerrainFlankPlan.ForSide(team.Side);
+            BattleTerrain terrain = BattleTerrain.Current;
+            if (plan == null || terrain == null)
+            {
+                return "flank plan: not read yet";
+            }
+            BattleTerrain.ArmySet own = (team.Side == BattleSideEnum.Attacker) ? BattleTerrain.ArmySet.Attacker : BattleTerrain.ArmySet.Defender;
+            BattleTerrain.ArmySet enemy = (own == BattleTerrain.ArmySet.Attacker) ? BattleTerrain.ArmySet.Defender : BattleTerrain.ArmySet.Attacker;
+            string line = "flanks: left " + FlankSideText(plan.OwnLeftCovered, plan.OwnLeftReason, TerrainFeatureOverlay.FindFlank(terrain, own, true))
+                + " | right " + FlankSideText(plan.OwnRightCovered, plan.OwnRightReason, TerrainFeatureOverlay.FindFlank(terrain, own, false));
+            if (plan.HasAttackSide)
+            {
+                bool left = plan.AttackSide == FormationAI.BehaviorSide.Left;
+                // Our right goes round the enemy's own left (it faces us).
+                BattleTerrain.FlankFeature target = TerrainFeatureOverlay.FindFlank(terrain, enemy, !left);
+                float seconds = (target != null && target.EnemyRoute != null) ? target.EnemyRoute.Seconds : float.NaN;
+                line += " - attack: " + (left ? "left" : "right") + " (route " + TerrainFeatureOverlay.Fmt0(seconds) + " s, " + plan.AttackReason + ")";
+            }
+            else
+            {
+                line += " - attack: none (" + plan.AttackReason + ")";
+            }
+            return line;
+        }
+
+        private static string FlankSideText(bool covered, string reason, BattleTerrain.FlankFeature flank)
+        {
+            string text = (covered ? "covered (" : "open (") + reason;
+            if (flank != null && !float.IsNaN(flank.EndDistance))
+            {
+                text += ", end " + TerrainFeatureOverlay.Fmt0(flank.EndDistance) + " m";
+            }
+            return text + ")";
+        }
+
+        private void RefreshTacticTeam(TacticPanelTeam entry, float now)
+        {
+            Team team = entry.Team;
+            TacticComponent current = TacticWeightProbe.CurrentTactic(team);
+            if (current != entry.LastTactic)
+            {
+                entry.LastTactic = current;
+                entry.LastTacticSince = now;
+            }
+            if (entry.Culture == null)
+            {
+                entry.Culture = ReadCulture(team);
+            }
+
+            string title = team.Side.ToString();
+            if (!string.IsNullOrEmpty(entry.Culture))
+            {
+                title += " (" + entry.Culture + ")";
+            }
+            if (team.IsPlayerTeam)
+            {
+                title += " [player team]";
+            }
+            title += " - " + ShortTacticName(current);
+            if (current != null)
+            {
+                title += " for " + (int)(now - entry.LastTacticSince) + "s";
+            }
+            entry.Vm.Title = title;
+            entry.Vm.TerrainLine = TerrainLine(team, current);
+            entry.Vm.FlankLine = FlankLine(team);
+
+            List<TacticWeightProbe.RankedTactic> ranked = TacticWeightProbe.Rank(team);
+            if (ranked == null)
+            {
+                entry.Vm.SetRowCount(0);
+                entry.Vm.Title = title + " - no options";
+                return;
+            }
+            entry.Vm.SetRowCount(ranked.Count);
+            for (int i = 0; i < ranked.Count; i++)
+            {
+                TacticWeightProbe.RankedTactic option = ranked[i];
+                BattleStatsTacticRowVM row = entry.Vm.Rows[i];
+                bool isCurrent = option.Tactic == current;
+                row.IsCurrent = isCurrent;
+                row.Rank = (isCurrent ? "> " : "") + (i + 1);
+                row.Name = ShortTacticName(option.Tactic);
+                row.Final = float.IsNaN(option.Final) ? "err" : FormatWeight(option.Final);
+                row.Multiplier = option.Registered ? FormatWeight(option.Multiplier) : "-";
+                row.Terrain = FormatWeight(option.Terrain);
+                // Army fit: composition grade before culture/commander/jitter and terrain.
+                row.Fit = float.IsNaN(option.Fit) ? "-" : FormatWeight(option.Fit);
+            }
+        }
+
+        private static string ReadCulture(Team team)
+        {
+            return TacticWeightProbe.ReadCulture(team);
+        }
+
+        private static string TerrainLine(Team team, TacticComponent current)
+        {
+            if (!RBMConfig.RBMConfig.terrainTacticsEnabled)
+            {
+                return "terrain: off";
+            }
+            TerrainTacticFactors.SideFactors factors = TerrainTacticFactors.ForSide(team.Side);
+            if (factors == null)
+            {
+                return "terrain: not read yet";
+            }
+            TerrainTacticFactors.Factor factor = (current != null) ? factors.Get(current.GetType()) : null;
+            if (factor == null)
+            {
+                return "terrain: applied";
+            }
+            return "terrain: applied - " + ShortTacticName(current) + " " + factor.DescribeTerms()
+                + " (raw " + FormatWeight(factor.Raw) + ")";
+        }
+
+        private static string ShortTacticName(TacticComponent tactic)
+        {
+            return TacticWeightProbe.ShortName(tactic);
+        }
+
+        private static string FormatWeight(float value)
+        {
+            return TacticWeightProbe.FormatWeight(value);
         }
 
         private void RefreshStats()

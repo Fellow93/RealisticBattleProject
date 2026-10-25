@@ -1,23 +1,31 @@
 ﻿using RBMAI;
 using System.Collections.Generic;
 using System.Linq;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 public class RBMTacticDefendSplitArchers : TacticComponent
 {
-    private const float DefendersAdvantage = 1.1f;
     private Formation leftArchers;
     private Formation rightArchers;
     private bool _hasBattleBeenJoined;
-    // Note: this tactic never reassigns agent.Formation (it only aliases existing ranged formations),
-    // so it needs no one-time-split latch and is already safe under BattleMiniMap (Tactics.IsFormationReshufflingUnsafe).
+    // Never reassigns agent.Formation, so no one-time-split latch is needed.
 
     private int waitCountMainFormation = 0;
     private int waitCountMainFormationMax = 25;
 
+    /// <summary>Bumped on every OnApply: the battle position's hold (RBMBehaviorHoldPosition) starts again on a new application.</summary>
+    private int _applyGeneration;
+
     public RBMTacticDefendSplitArchers(Team team)
         : base(team)
     {
+    }
+
+    protected override void OnApply()
+    {
+        base.OnApply();
+        _applyGeneration++;
     }
 
     protected void AssignTacticFormations()
@@ -98,6 +106,8 @@ public class RBMTacticDefendSplitArchers : TacticComponent
             else
             {
                 _mainInfantry.AI.SetBehaviorWeight<BehaviorHoldHighGround>(1f);
+                // The defender's battle position (needs a published plan; outweighs the high ground); no plan sets nothing.
+                RBMBehaviorHoldPosition.TryAssign(_mainInfantry, this, _applyGeneration, RBMBehaviorHoldPosition.Role.Line);
                 IsTacticReapplyNeeded = false;
             }
         }
@@ -117,13 +127,19 @@ public class RBMTacticDefendSplitArchers : TacticComponent
         {
             _leftCavalry.AI.ResetBehaviorWeights();
             TacticComponent.SetDefaultBehaviorWeights(_leftCavalry);
-            _leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
+            _leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = TerrainFlankPlan.CavalrySide(this, _leftCavalry, FormationAI.BehaviorSide.Left, _rightCavalry == null);
         }
         if (_rightCavalry != null)
         {
             _rightCavalry.AI.ResetBehaviorWeights();
             TacticComponent.SetDefaultBehaviorWeights(_rightCavalry);
-            _rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+            _rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = TerrainFlankPlan.CavalrySide(this, _rightCavalry, FormationAI.BehaviorSide.Right, false);
+        }
+        // Both line ends covered: the cavalry waits in reserve behind it.
+        if (TerrainBattlePosition.ReserveWanted(Team))
+        {
+            RBMBehaviorHoldPosition.TryAssign(_leftCavalry, this, _applyGeneration, RBMBehaviorHoldPosition.Role.Reserve);
+            RBMBehaviorHoldPosition.TryAssign(_rightCavalry, this, _applyGeneration, RBMBehaviorHoldPosition.Role.Reserve);
         }
         if (_rangedCavalry != null)
         {
@@ -176,7 +192,8 @@ public class RBMTacticDefendSplitArchers : TacticComponent
 
     private bool HasBattleBeenJoined()
     {
-        return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined);
+        // While the battle position's line holds, only its own latched engage; otherwise the usual rule.
+        return RBMBehaviorHoldPosition.BattleJoinedFor(_mainInfantry, this, _hasBattleBeenJoined);
     }
 
     protected override bool CheckAndSetAvailableFormationsChanged()
@@ -213,6 +230,11 @@ public class RBMTacticDefendSplitArchers : TacticComponent
         {
             return;
         }
+        // Re-apply when the battle position appears or moves.
+        if (TerrainBattlePosition.NeedsReapply(this))
+        {
+            IsTacticReapplyNeeded = true;
+        }
         bool flag = HasBattleBeenJoined();
         if (CheckAndSetAvailableFormationsChanged())
         {
@@ -244,19 +266,14 @@ public class RBMTacticDefendSplitArchers : TacticComponent
         base.TickOccasionally();
     }
 
+    // Graded on the native scale by the army's archer share (grows as our side weakens); TacticSelection applies culture/commander/jitter on top.
     protected override float GetTacticWeight()
     {
-        if (Mission.Current != null && !Mission.Current.IsTeleportingAgents && Team.TeamAI.IsCurrentTactic(this) && Team.QuerySystem.RangedRatio > 0.05f)
+        float fit;
+        if (!TacticSelection.TryGetArcherFit(Team, out fit))
         {
-            return 10f;
+            return TacticSelection.UnfitWeight;
         }
-        if (Team.QuerySystem.RangedRatio > 0.2f)
-        {
-            return 10f;
-        }
-        else
-        {
-            return 0.2f;
-        }
+        return fit * 1.1f / MathF.Sqrt(MathF.Max(Team.QuerySystem.RemainingPowerRatio, 0.05f));
     }
 }

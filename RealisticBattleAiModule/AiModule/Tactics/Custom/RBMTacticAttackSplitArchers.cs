@@ -1,6 +1,7 @@
 ﻿using RBMAI;
 using System.Collections.Generic;
 using System.Linq;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 public class RBMTacticAttackSplitArchers : TacticComponent
@@ -8,8 +9,7 @@ public class RBMTacticAttackSplitArchers : TacticComponent
     private Formation leftArchers;
     private Formation rightArchers;
     private bool _hasBattleBeenJoined;
-    // Note: this tactic never reassigns agent.Formation (it only aliases existing ranged formations),
-    // so it needs no one-time-split latch and is already safe under BattleMiniMap (Tactics.IsFormationReshufflingUnsafe).
+    // Never reassigns agent.Formation, so no one-time-split latch is needed.
 
     private int waitCountMainFormation = 0;
     private int waitCountMainFormationMax = 30;
@@ -116,15 +116,17 @@ public class RBMTacticAttackSplitArchers : TacticComponent
         {
             _leftCavalry.AI.ResetBehaviorWeights();
             //SetDefaultBehaviorWeights(_leftCavalry);
-            _leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
-            _leftCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Left;
+            FormationAI.BehaviorSide leftCavalrySide = TerrainFlankPlan.CavalrySide(this, _leftCavalry, FormationAI.BehaviorSide.Left, _rightCavalry == null);
+            _leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = leftCavalrySide;
+            _leftCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = leftCavalrySide;
         }
         if (_rightCavalry != null)
         {
             _rightCavalry.AI.ResetBehaviorWeights();
             //SetDefaultBehaviorWeights(_rightCavalry);
-            _rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
-            _rightCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+            FormationAI.BehaviorSide rightCavalrySide = TerrainFlankPlan.CavalrySide(this, _rightCavalry, FormationAI.BehaviorSide.Right, false);
+            _rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = rightCavalrySide;
+            _rightCavalry.AI.SetBehaviorWeight<RBMBehaviorForwardSkirmish>(1f).FlankSide = rightCavalrySide;
         }
         if (_rangedCavalry != null)
         {
@@ -177,12 +179,13 @@ public class RBMTacticAttackSplitArchers : TacticComponent
 
     private bool HasBattleBeenJoined()
     {
-        return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined);
+        return RBMAI.Utilities.HasAttackBeenJoined(_mainInfantry, Team, _hasBattleBeenJoined);
     }
 
     protected override bool CheckAndSetAvailableFormationsChanged()
     {
-        int num = base.FormationsIncludingEmpty.Count((Formation f) => f.IsAIControlled);
+        // Non-empty formations only: a stray reinforcement formation in an empty slot must be noticed.
+        int num = base.FormationsIncludingEmpty.Count((Formation f) => f.CountOfUnits > 0 && f.IsAIControlled);
         bool hasChanged = num != _AIControlledFormationCount;
         if (hasChanged)
         {
@@ -245,21 +248,14 @@ public class RBMTacticAttackSplitArchers : TacticComponent
         base.TickOccasionally();
     }
 
+    // Graded on the native scale by the army's archer share; TacticSelection applies culture/commander/jitter on top.
     protected override float GetTacticWeight()
     {
-        if (Mission.Current != null && !Mission.Current.IsTeleportingAgents && Team.TeamAI.IsCurrentTactic(this) && Team.QuerySystem.RangedRatio > 0.05f)
+        float fit;
+        if (!TacticSelection.TryGetArcherFit(Team, out fit))
         {
-            return 10f;
+            return TacticSelection.UnfitWeight;
         }
-        if (Team.QuerySystem.RangedRatio > 0.2f)
-        {
-            return 10f;
-        }
-        else
-        {
-            return 0.2f;
-        }
-        //float num = team.QuerySystem.RangedCavalryRatio * (float)team.QuerySystem.MemberCount;
-        //return team.QuerySystem.InfantryRatio * (float)team.QuerySystem.MemberCount / ((float)team.QuerySystem.MemberCount - num) * MathF.Sqrt(team.QuerySystem.RemainingPowerRatio);
+        return fit * 0.9f * MathF.Sqrt(Team.QuerySystem.RemainingPowerRatio);
     }
 }

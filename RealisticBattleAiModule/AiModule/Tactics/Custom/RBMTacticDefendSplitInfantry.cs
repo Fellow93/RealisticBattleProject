@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 
 public class RBMTacticDefendSplitInfantry : TacticComponent
@@ -11,17 +12,18 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
     protected Formation _rightFlankingInfantry = null;
     private bool _membershipSplitDone;
     private int side = MBRandom.RandomInt(2);
+    // The flank plan the last split read (null before the terrain publish); a re-apply after the publish re-splits.
+    private TerrainFlankPlan.SidePlan _splitPlan;
 
     protected void AssignTacticFormations()
     {
-        // Under BattleMiniMap (IsFormationReshufflingUnsafe) the physical agent moves are done ONCE;
-        // afterwards we keep refreshing refs/weights but never reshuffle again. Computed once at
-        // the top so both the main split and the straggler-cleanup below share the same gate.
+        _splitPlan = TerrainFlankPlan.ForTeam(Team);
+
+        // Under BattleMiniMap (IsFormationReshufflingUnsafe) the agent moves happen once, never again.
         bool doReassign = !RBMAI.Tactics.IsFormationReshufflingUnsafe || !_membershipSplitDone;
 
         ManageFormationCounts(3, 1, 2, 1);
 
-        // Materialize immediately — lazy re-evaluation after agent moves gives inconsistent results
         List<Formation> nonEmptyFormations = FormationsIncludingEmpty
             .Where((Formation f) => f.CountOfUnits > 0).ToList();
 
@@ -41,18 +43,14 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
             .Where((Formation f) => f != _mainInfantry && f.IsAIControlled && f.QuerySystem.IsInfantryFormation)
             .ToList();
 
-            // ChooseAndSortByPriority only PREFERS AI-controlled formations, it does not exclude
-            // player-controlled ones — never reshuffle men the player commands.
+            // ChooseAndSortByPriority only prefers AI formations: never reshuffle player-commanded men.
             if (_mainInfantry.IsAIControlled && flankingSlots.Count >= 2)
             {
                 Formation leftSlot;
                 Formation rightSlot;
                 RBMTacticAttackSplitInfantry.PickFlankSlots(flankingSlots, previousLeft, previousRight, out leftSlot, out rightSlot);
 
-                // Collect from the three known infantry slots directly.
-                // Avoid IsInfantryFormation check — QuerySystem can be stale right after
-                // ManageFormationCounts, causing the main slot to be skipped (giving a tiny
-                // infCount and therefore wrong thresholds like infCount/6 = 0 or 1).
+                // Read the three infantry slots directly: QuerySystem can be stale right after ManageFormationCounts.
                 List<Agent> allInfantry = new List<Agent>();
                 _mainInfantry.ApplyActionOnEachUnitViaBackupList((Agent a) => allInfantry.Add(a));
                 if (leftSlot.CountOfUnits > 0)
@@ -62,7 +60,6 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
                 List<Formation> strayFormations = RBMTacticAttackSplitInfantry.CollectStrayInfantry(flankingSlots, leftSlot, rightSlot, allInfantry);
                 int infCount = allInfantry.Count;
 
-                // Classify: 2H axe/polearm wielders are flankers, rest are main line
                 List<Agent> flankersList = new List<Agent>();
                 List<Agent> mainList = new List<Agent>();
                 foreach (Agent agent in allInfantry)
@@ -77,9 +74,10 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
 
                 if (doReassign)
                 {
+                    // No guards under MinInfantryToSplit or on a flank TerrainFlankPlan covers.
                     bool split = RBMTacticAttackSplitInfantry.ShouldSplit(infCount);
-                    int leftEnd = split ? infCount / 6 : 0;
-                    int rightEnd = split ? infCount / 3 : 0;
+                    int leftEnd = (!split || TerrainFlankPlan.GuardSkipped(this, FormationAI.BehaviorSide.Left, true)) ? 0 : infCount / 6;
+                    int rightEnd = leftEnd + ((!split || TerrainFlankPlan.GuardSkipped(this, FormationAI.BehaviorSide.Right, true)) ? 0 : infCount / 3 - infCount / 6);
                     int j = 0;
                     foreach (Agent agent in flankersList)
                     {
@@ -107,7 +105,6 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
                     _membershipSplitDone = true;
                 }
 
-                // Set refs directly from slot objects — stable regardless of post-move ordering changes
                 if (leftSlot.CountOfUnits > 0)
                 {
                     _leftFlankingInfantry = leftSlot;
@@ -130,7 +127,6 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
             }
         }
 
-        // Re-query after agent moves so cavalry/archer picks reflect current state
         nonEmptyFormations = FormationsIncludingEmpty
             .Where((Formation f) => f.CountOfUnits > 0).ToList();
 
@@ -157,7 +153,6 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
         }
         _rangedCavalry = ChooseAndSortByPriority(nonEmptyFormations, (Formation f) => f.QuerySystem.IsRangedCavalryFormation, (Formation f) => f.IsAIControlled, (Formation f) => f.QuerySystem.FormationPower).FirstOrDefault();
 
-        // Move lone infantry stragglers into the main formation
         if (doReassign)
         {
             foreach (Formation formation in nonEmptyFormations)
@@ -172,8 +167,7 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
                 }
             }
         }
-        // A flank the merge above just emptied is no flank: kept, CheckAndSetAvailableFormationsChanged saw it empty
-        // and re-split the infantry on every tick.
+        // A flank the merge just emptied is dropped, else the empty flank re-splits the infantry every tick.
         if (_leftFlankingInfantry != null && _leftFlankingInfantry.CountOfUnits == 0)
         {
             _leftFlankingInfantry = null;
@@ -188,10 +182,19 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
 
     private bool _hasBattleBeenJoined;
 
+    /// <summary>Bumped on every OnApply: the battle position's hold (RBMBehaviorHoldPosition) starts again on a new application.</summary>
+    private int _applyGeneration;
+
     public RBMTacticDefendSplitInfantry(Team team)
         : base(team)
     {
         _hasBattleBeenJoined = false;
+    }
+
+    protected override void OnApply()
+    {
+        base.OnApply();
+        _applyGeneration++;
     }
 
     protected override void ManageFormationCounts()
@@ -222,13 +225,30 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
         if (_leftFlankingInfantry != null)
         {
             _leftFlankingInfantry.AI.ResetBehaviorWeights();
-            _leftFlankingInfantry.AI.SetBehaviorWeight<BehaviorProtectFlank>(5f).FlankSide = FormationAI.BehaviorSide.Left;
+            // A guard left on a covered flank holds with the main line.
+            if (TerrainFlankPlan.GuardSkipped(this, FormationAI.BehaviorSide.Left, false))
+            {
+                _leftFlankingInfantry.AI.SetBehaviorWeight<BehaviorHoldHighGround>(1f);
+                _leftFlankingInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+            }
+            else
+            {
+                _leftFlankingInfantry.AI.SetBehaviorWeight<BehaviorProtectFlank>(5f).FlankSide = FormationAI.BehaviorSide.Left;
+            }
             _leftFlankingInfantry.AI.Side = FormationAI.BehaviorSide.Left;
         }
         if (_rightFlankingInfantry != null)
         {
             _rightFlankingInfantry.AI.ResetBehaviorWeights();
-            _rightFlankingInfantry.AI.SetBehaviorWeight<BehaviorProtectFlank>(5f).FlankSide = FormationAI.BehaviorSide.Right;
+            if (TerrainFlankPlan.GuardSkipped(this, FormationAI.BehaviorSide.Right, false))
+            {
+                _rightFlankingInfantry.AI.SetBehaviorWeight<BehaviorHoldHighGround>(1f);
+                _rightFlankingInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+            }
+            else
+            {
+                _rightFlankingInfantry.AI.SetBehaviorWeight<BehaviorProtectFlank>(5f).FlankSide = FormationAI.BehaviorSide.Right;
+            }
             _rightFlankingInfantry.AI.Side = FormationAI.BehaviorSide.Right;
         }
         if (_mainInfantry != null)
@@ -236,6 +256,8 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
             _mainInfantry.AI.ResetBehaviorWeights();
             _mainInfantry.AI.SetBehaviorWeight<BehaviorHoldHighGround>(1f);
             _mainInfantry.AI.SetBehaviorWeight<BehaviorRegroup>(1.75f);
+            // The defender's battle position (needs a published plan; outweighs both, they are its fallback); no plan sets nothing.
+            RBMBehaviorHoldPosition.TryAssign(_mainInfantry, this, _applyGeneration, RBMBehaviorHoldPosition.Role.Line);
         }
         if (_archers != null)
         {
@@ -245,20 +267,27 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
             _archers.AI.SetBehaviorWeight<BehaviorSkirmish>(0f);
             _archers.AI.SetBehaviorWeight<BehaviorScreenedSkirmish>(1f);
             _archers.AI.SetBehaviorWeight<BehaviorRegroup>(1.25f);
+            RBMBehaviorHoldPosition.TryAssign(_archers, this, _applyGeneration, RBMBehaviorHoldPosition.Role.Archers);
         }
         if (_leftCavalry != null)
         {
             _leftCavalry.AI.ResetBehaviorWeights();
             TacticComponent.SetDefaultBehaviorWeights(_leftCavalry);
-            _leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Left;
+            _leftCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = TerrainFlankPlan.CavalrySide(this, _leftCavalry, FormationAI.BehaviorSide.Left, _rightCavalry == null);
             //_leftCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
         }
         if (_rightCavalry != null)
         {
             _rightCavalry.AI.ResetBehaviorWeights();
             TacticComponent.SetDefaultBehaviorWeights(_rightCavalry);
-            _rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = FormationAI.BehaviorSide.Right;
+            _rightCavalry.AI.SetBehaviorWeight<BehaviorProtectFlank>(1f).FlankSide = TerrainFlankPlan.CavalrySide(this, _rightCavalry, FormationAI.BehaviorSide.Right, false);
             //_rightCavalry.AI.SetBehaviorWeight<BehaviorMountedSkirmish>(1f);
+        }
+        // Both line ends covered: the cavalry waits in reserve behind it.
+        if (TerrainBattlePosition.ReserveWanted(Team))
+        {
+            RBMBehaviorHoldPosition.TryAssign(_leftCavalry, this, _applyGeneration, RBMBehaviorHoldPosition.Role.Reserve);
+            RBMBehaviorHoldPosition.TryAssign(_rightCavalry, this, _applyGeneration, RBMBehaviorHoldPosition.Role.Reserve);
         }
         if (_rangedCavalry != null)
         {
@@ -328,7 +357,8 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
 
     private bool HasBattleBeenJoined()
     {
-        return RBMAI.Utilities.HasBattleBeenJoined(_mainInfantry, _hasBattleBeenJoined);
+        // While the battle position's line holds, only its own latched engage; otherwise the usual rule.
+        return RBMBehaviorHoldPosition.BattleJoinedFor(_mainInfantry, this, _hasBattleBeenJoined);
     }
 
     protected override bool CheckAndSetAvailableFormationsChanged()
@@ -370,7 +400,8 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
         {
             return;
         }
-        if (CheckAndSetAvailableFormationsChanged())
+        // A re-apply after a changed flank plan re-splits so a guard on a covered flank rejoins the main line.
+        if (CheckAndSetAvailableFormationsChanged() || (IsTacticReapplyNeeded && TerrainFlankPlan.ForTeam(Team) != _splitPlan))
         {
             ManageFormationCounts();
             if (_hasBattleBeenJoined)
@@ -382,6 +413,11 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
                 Defend();
             }
             IsTacticReapplyNeeded = false;
+        }
+        // Re-apply when the battle position appears or moves.
+        if (TerrainBattlePosition.NeedsReapply(this))
+        {
+            IsTacticReapplyNeeded = true;
         }
         bool flag = HasBattleBeenJoined();
         if (flag != _hasBattleBeenJoined || IsTacticReapplyNeeded)
@@ -400,19 +436,14 @@ public class RBMTacticDefendSplitInfantry : TacticComponent
         base.TickOccasionally();
     }
 
+    // Graded on the native scale by how far our infantry outnumbers the enemy's (grows as our side weakens); TacticSelection applies culture/commander/jitter on top.
     protected override float GetTacticWeight()
     {
-        if (Mission.Current != null && !Mission.Current.IsTeleportingAgents && Team.TeamAI.IsCurrentTactic(this) && Team.QuerySystem.InfantryRatio > 0.3f)
+        float t;
+        if (!TacticSelection.TryGetInfantrySuperiority(Team, out t))
         {
-            return 10f;
+            return TacticSelection.UnfitWeight;
         }
-        if (Team.QuerySystem.InfantryRatio > 0.5f)
-        {
-            return 5f;
-        }
-        else
-        {
-            return 0.2f;
-        }
+        return MBMath.Lerp(0.6f, 1.3f, t) / MathF.Sqrt(MathF.Max(Team.QuerySystem.RemainingPowerRatio, 0.05f));
     }
 }
