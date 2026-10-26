@@ -11,6 +11,18 @@ namespace RBMCombat
 {
     internal partial class HorseChanges
     {
+        // Mass of the mount itself for MountChargeDamage. The mount item's weight differs per horse, like the one the speed
+        // formula uses; the animal type's (Monster) weight is the same for every horse, camel and mule.
+        private static float GetMountWeight(Agent agent)
+        {
+            EquipmentElement mountElement = agent.SpawnEquipment[EquipmentIndex.ArmorItemEndSlot];
+            if (mountElement.Item != null && mountElement.Weight > 0f)
+            {
+                return mountElement.Weight;
+            }
+            return agent.Monster.Weight;
+        }
+
         [HarmonyPatch(typeof(SandboxAgentStatCalculateModel))]
         [HarmonyPatch("UpdateHorseStats")]
         private class SandboxAgentStatCalculateModelUpdateHorseStatsPatch
@@ -108,13 +120,13 @@ namespace RBMCombat
                     weightOfHorseAndRaider += (float)agent.RiderAgent.Monster.Weight;
                     weightOfHorseAndRaider += agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: true);
                     weightOfHorseAndRaider += equipment.GetTotalWeightOfWeapons();
-                    weightOfHorseAndRaider += (float)agent.Monster.Weight;
+                    weightOfHorseAndRaider += GetMountWeight(agent);
                     weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
                     weightOfHorseAndRaider += 100f;
                 }
                 else
                 {
-                    weightOfHorseAndRaider += (float)agent.Monster.Weight;
+                    weightOfHorseAndRaider += GetMountWeight(agent);
                     weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
                     weightOfHorseAndRaider += 100f;
                 }
@@ -209,12 +221,12 @@ namespace RBMCombat
                     weightOfHorseAndRaider += (float)agent.RiderAgent.Monster.Weight;
                     weightOfHorseAndRaider += agent.RiderAgent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: true);
                     weightOfHorseAndRaider += equipment.GetTotalWeightOfWeapons();
-                    weightOfHorseAndRaider += (float)agent.Monster.Weight;
+                    weightOfHorseAndRaider += GetMountWeight(agent);
                     weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
                 }
                 else
                 {
-                    weightOfHorseAndRaider += (float)agent.Monster.Weight;
+                    weightOfHorseAndRaider += GetMountWeight(agent);
                     weightOfHorseAndRaider += agent.SpawnEquipment.GetTotalWeightOfArmor(forHuman: false);
                 }
                 agentDrivenProperties.MountChargeDamage = weightOfHorseAndRaider;

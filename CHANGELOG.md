@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Combat
+- Heavier horses now hit harder with a charge. The charge counted every horse, camel and mule as 400 kg, so light, fast horses charged hardest; it now uses each mount's own weight, the same one that already slows heavy horses down. A War Camel or Destrier hits about a quarter to a third harder, a Hunter a little less, and pack animals much less.
+
 ## v4.5.4 (changes since v4.5.3)
 
 ### Combat
