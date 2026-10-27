@@ -25,6 +25,8 @@ namespace RBMStance
             }
         }
 
+        public const int KilledDisplayTime = 200;
+
         public bool IsEnabled
         {
             get
@@ -42,6 +44,16 @@ namespace RBMStance
             {
                 return;
             }
+            // The killing blow's posture visual re-arms the full display time after the kill, so a dead or knocked-out
+            // target is cut back to the short post-kill time here.
+            if (affectedAgent != null && !affectedAgent.IsActive())
+            {
+                _dataSource.EnemyHealth = 0;
+                if (timer > KilledDisplayTime)
+                {
+                    timer = KilledDisplayTime;
+                }
+            }
             if (timer == 0)
             {
                 // Only write on the transition; the setter is guarded too, but this avoids the
@@ -50,6 +62,8 @@ namespace RBMStance
                 {
                     _dataSource.ShowEnemyStatus = false;
                 }
+                affectedAgent = null;
+                PlayerTarger = null;
             }
             else
             {
@@ -104,7 +118,7 @@ namespace RBMStance
             {
                 if (affectedAgent.Health == 0f)
                 {
-                    timer = 200;
+                    timer = KilledDisplayTime;
                 }
                 else
                 {

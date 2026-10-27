@@ -12,6 +12,7 @@
 ### Combat
 - Horse charges now depend on the horse's weight. The charge counted every horse, camel and mule as 400 kg, so light, fast horses charged hardest; it now uses each mount's own weight, the same one that already slows heavy horses down. An average troop horse charges as hard as before: War Camels, Cossians and Destriers hit harder, light horses like the Hunter less, and pack animals much less. (Thanks to Unknown-Won.)
 - Shields in custom battles no longer pull in missiles that would have missed; they only catch what actually hits them, as in the campaign.
+- The enemy health/posture/stamina panel at the top of the screen now goes away a few seconds after you kill or knock out that enemy, name included. Before, the enemy's name stayed on screen, or the whole panel stayed up with an empty health bar for about ten seconds. (Thanks to JZ0907.)
 
 ### AI
 - **Fewer crashes:** an error in RBM's battle AI no longer crashes the game; only that formation skips its decision for a moment. A game update that breaks part of RBM AI only switches that part off.

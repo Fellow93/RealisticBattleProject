@@ -51,7 +51,7 @@
   <Window>
     <Widget WidthSizePolicy = "StretchToParent" HeightSizePolicy = "StretchToParent" IsVisible="true">
       <Children>
-        <TextWidget Brush="EnemyName"  HorizontalAlignment="Center" VerticalAlignment="Top" SuggestedWidth="250" MarginTop="25"  Text="@EnemyName" />
+        <TextWidget Brush="EnemyName"  HorizontalAlignment="Center" VerticalAlignment="Top" SuggestedWidth="250" MarginTop="25"  Text="@EnemyName" IsVisible="@ShowEnemyStatus" />
         
 		<Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="220" SuggestedHeight="18" HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="35" PositionYOffset="-5" Sprite="HintBG@2x_9" IsVisible="@ShowEnemyStatus" />
         <FillBar WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="210" SuggestedHeight="8"   HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="35"  Brush="EnemyHealthBarBrush" InitialAmount="@EnemyHealth"  MaxAmount="@EnemyHealthMax" IsVertical="false" IsVisible="@ShowEnemyStatus" />
