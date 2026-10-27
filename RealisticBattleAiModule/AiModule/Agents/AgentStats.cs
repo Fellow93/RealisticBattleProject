@@ -53,12 +53,12 @@ namespace RBMAI
 
                 BattleEnvironment battleEnvironment = agent.CurrentBattleEnvironment;
                 ExplainedNumber bonuses = new ExplainedNumber(1f);
-                PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Throwing.PerfectTechnique, battleEnvironment, agentCharacter, true, ref bonuses);
+                PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Throwing.PerfectTechnique, agentCharacter, true, ref bonuses, battleEnvironment);
                 if (captain != null)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.PerfectTechnique, battleEnvironment, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.PerfectTechnique, captain, ref bonuses, battleEnvironment);
                 }
-                PerkHelper.AddEpicPerkBonusForCharacter(DefaultPerks.Throwing.UnstoppableForce, battleEnvironment, agentCharacter, DefaultSkills.Throwing, true, ref bonuses,Campaign.Current.Models.CharacterDevelopmentModel.MinSkillRequiredForEpicPerkBonus);
+                PerkHelper.AddEpicPerkBonusForCharacter(DefaultPerks.Throwing.UnstoppableForce, agentCharacter, DefaultSkills.Throwing, true, ref bonuses, Campaign.Current.Models.CharacterDevelopmentModel.MinSkillRequiredForEpicPerkBonus, battleEnvironment: battleEnvironment);
                 return bonuses.ResultNumber;
             }
 

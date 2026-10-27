@@ -272,11 +272,9 @@ namespace RBMCombat
             sb.Append("  duration  ").Append(BattleHitLog.Clock(mission.CurrentTime)).Append(" (mission time)\n");
             sb.Append("\n");
             sb.Append("  GRANTED                  the game asked and RBM answered yes: the perk took effect (x = times asked)\n");
-            sb.Append("  QUERIED-NOT-APPLICABLE   asked with a battle environment, but this effect does not apply there\n");
-            sb.Append("                           (e.g. a land-only effect at sea), so the answer was no\n");
             sb.Append("  NEVER QUERIED            nothing asked about this perk for this troop: it had no effect in this mission\n");
+            sb.Append("                           (land/sea applicability is checked by the caller after a GRANTED answer)\n");
             sb.Append("  plain                    GetPerkValue(perk)\n");
-            sb.Append("  Land primary             GetPerkValue(perk, Land, isPrimaryEffect true, out value); secondary = false\n");
             sb.Append("  callers                  the first methods above the perk check (PerkHelper and the patch skipped),\n");
             sb.Append("                           innermost first, as seen the first time that exact question was asked\n");
             sb.Append("  [no personal effect]     the perk has no personal half, so a troop can never benefit from it\n");

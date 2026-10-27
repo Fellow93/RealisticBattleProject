@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.Core;
@@ -39,8 +40,8 @@ namespace RBMAutoResolve
     /// SimulationPerks.Enabled anyway. The party-role perks DefaultCombatSimulationModel leaves in the blow are all
     /// Tactics/Scouting PartyLeader slots, none of them ported here.
     ///
-    /// NOTHING HERE IS A NUMBER OF OURS. Every bonus is the perk's own (GetPrimaryBonus / GetSecondaryBonus of the
-    /// battle's environment, after ApplicableInEnvironment), read from the SAME slot and folded in by the SAME rule as
+    /// NOTHING HERE IS A NUMBER OF OURS. Every bonus is the perk's own (PerkHelper.TryGetPerkEffectBonus for the
+    /// battle's environment), read from the SAME slot and folded in by the SAME rule as
     /// the native call it stands in for: PerkHelper.AddPerkBonusForCharacter (Personal role on that slot, Add vs
     /// AddFactor by the slot's increment type) where native calls that, the raw effect value where native reads
     /// GetPerkValue's `out effectValue` directly. The call sites are:
@@ -380,17 +381,16 @@ namespace RBMAutoResolve
             }
 
             /// <summary>
-            /// A perk whose number native reads straight off GetPerkValue's `out effectValue` (no role test, no increment
-            /// type -- the value is used as it comes): RBM's live grant fills it from GetPrimaryBonus(environment) once the
-            /// environment test passes, so that is what is read here.
+            /// A perk whose number native uses as it comes (no role test, no increment type): GetPerkValue, then
+            /// PerkHelper.TryGetPerkEffectBonus's primary value for the environment, so that is what is read here.
             /// </summary>
             private float Value(PerkObject perk)
             {
-                if (perk == null || !perk.ApplicableInEnvironment(_environment, true) || !Owns(_troop, perk))
+                if (perk == null || !Owns(_troop, perk)
+                    || !PerkHelper.TryGetPerkEffectBonus(perk, true, out float value, _environment))
                 {
                     return 0f;
                 }
-                float value = perk.GetPrimaryBonus(_environment);
                 if (value != 0f)
                 {
                     Applied.Add(perk);
@@ -825,24 +825,25 @@ namespace RBMAutoResolve
 
         /// <summary>
         /// PerkHelper.AddPerkBonusForCharacter's test, asked of the troop-perk map instead of GetPerkValue: the slot works
-        /// in this environment, its role is Personal, and the troop has the perk. The bonus is CalculateContextualPerkData's
-        /// (the slot's bonus, halved at sea for a NavalReduced slot -- which is what GetPrimary/SecondaryBonus return).
+        /// in this environment, its role is Personal, and the troop has the perk. The bonus is TryGetPerkEffectBonus's
+        /// (the slot's bonus, halved at sea for a NavalReduced slot).
         /// </summary>
         private static bool Grants(CharacterObject troop, PerkObject perk, BattleEnvironment environment, bool primary,
             out float bonus, out EffectIncrementType type)
         {
             bonus = 0f;
             type = EffectIncrementType.Invalid;
-            if (perk == null || troop == null || !perk.ApplicableInEnvironment(environment, primary))
+            if (perk == null || troop == null || !PerkHelper.TryGetPerkEffectBonus(perk, primary, out bonus, environment))
             {
+                bonus = 0f;
                 return false;
             }
             PartyRole role = primary ? perk.PrimaryRole : perk.SecondaryRole;
             if (role != PartyRole.Personal || !Owns(troop, perk))
             {
+                bonus = 0f;
                 return false;
             }
-            bonus = primary ? perk.GetPrimaryBonus(environment) : perk.GetSecondaryBonus(environment);
             type = primary ? perk.PrimaryIncrementType : perk.SecondaryIncrementType;
             return true;
         }

@@ -598,7 +598,7 @@ namespace RBMAutoResolve
             // The rider's own environment, read the way the two party calls beside it read theirs (the party's
             // CurrentBattleEnvironment, sea or land) -- and Land with no mobile party, as PartyBase reports for itself.
             BattleEnvironment environment = (mobileParty != null) ? mobileParty.CurrentBattleEnvironment : BattleEnvironment.Land;
-            PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Riding.Veterinary, environment, rider, true, ref stat);
+            PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Riding.Veterinary, rider, true, ref stat, environment);
             // That call pays a HERO's own Veterinary and, on the map, never a regular troop's: RBM's troop-perk grant is
             // mission-only. So the troop's own is added here, at the same place, by the same rule (personal primary
             // slot, its own AddFactor, the same environment). See SimulationTroopPerks.AddMountPerks.

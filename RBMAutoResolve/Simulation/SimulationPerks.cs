@@ -161,7 +161,7 @@ namespace RBMAutoResolve
         /// </summary>
         private static bool AppliesAsCaptain(PerkObject perk, BattleEnvironment environment)
         {
-            return perk.ApplicableInEnvironment(environment, perk.PrimaryRole == PartyRole.Captain);
+            return PerkHelper.TryGetPerkEffectBonus(perk, perk.PrimaryRole == PartyRole.Captain, out _, environment);
         }
 
         /// <summary>
@@ -232,25 +232,25 @@ namespace RBMAutoResolve
             bool meleeSkill = (skill == DefaultSkills.OneHanded || skill == DefaultSkills.TwoHanded || skill == DefaultSkills.Polearm);
             if ((troop.IsInfantry && rangedSkill) || (troop.IsRanged && meleeSkill))
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.FlexibleFighter, environment, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.FlexibleFighter, captain, ref bonuses, environment);
             }
 
             if (skill == DefaultSkills.Bow)
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.DeadAim, environment, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.DeadAim, captain, ref bonuses, environment);
                 if (mounted)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.HorseMaster, environment, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Bow.HorseMaster, captain, ref bonuses, environment);
                 }
             }
             else if (skill == DefaultSkills.Throwing)
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Athletics.StrongArms, environment, captain, ref bonuses);
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.RunningThrow, environment, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Athletics.StrongArms, captain, ref bonuses, environment);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Throwing.RunningThrow, captain, ref bonuses, environment);
             }
             else if (skill == DefaultSkills.Crossbow)
             {
-                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Crossbow.DonkeysSwiftness, environment, captain, ref bonuses);
+                PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Crossbow.DonkeysSwiftness, captain, ref bonuses, environment);
             }
 
             // AND THE MELEE PERKS REACH A FOOT TROOP ONLY. This is not a simplification -- it is where native puts
@@ -263,16 +263,16 @@ namespace RBMAutoResolve
             {
                 if (skill == DefaultSkills.OneHanded)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.OneHanded.WrappedHandles, environment, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.OneHanded.WrappedHandles, captain, ref bonuses, environment);
                 }
                 else if (skill == DefaultSkills.TwoHanded)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.TwoHanded.StrongGrip, environment, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.TwoHanded.StrongGrip, captain, ref bonuses, environment);
                 }
                 else if (skill == DefaultSkills.Polearm)
                 {
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.CleanThrust, environment, captain, ref bonuses);
-                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.CounterWeight, environment, captain, ref bonuses);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.CleanThrust, captain, ref bonuses, environment);
+                    PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Polearm.CounterWeight, captain, ref bonuses, environment);
                 }
             }
 

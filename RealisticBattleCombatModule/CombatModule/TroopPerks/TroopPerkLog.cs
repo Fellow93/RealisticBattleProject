@@ -40,7 +40,7 @@ namespace RBMCombat
             public readonly CharacterObject Troop;
             public readonly PerkObject Perk;
 
-            /// <summary>False: GetPerkValue(perk). True: GetPerkValue(perk, environment, isPrimaryEffect, out value).</summary>
+            /// <summary>False: GetPerkValue(perk). True: the pre-1.5.6 environment overload (no longer exists).</summary>
             public readonly bool WithEnvironment;
 
             public readonly BattleEnvironment Environment;
@@ -54,7 +54,7 @@ namespace RBMCombat
                 Troop = troop;
                 Perk = perk;
                 WithEnvironment = withEnvironment;
-                Environment = withEnvironment ? environment : BattleEnvironment.None;
+                Environment = withEnvironment ? environment : BattleEnvironment.Any;
                 IsPrimary = withEnvironment && isPrimary;
                 Granted = granted;
             }

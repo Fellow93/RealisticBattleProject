@@ -363,23 +363,23 @@ namespace RBMStance
                     ExplainedNumber handling = new ExplainedNumber(1f);
                     if (onFoot)
                     {
-                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Athletics.Fury, battleEnvironment, character, true, ref handling);
+                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Athletics.Fury, character, true, ref handling, battleEnvironment);
                         if (captain != null)
                         {
-                            PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Athletics.Fury, battleEnvironment, captain, ref handling);
+                            PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.Athletics.Fury, captain, ref handling, battleEnvironment);
                         }
                     }
                     if (wielded.RelevantSkill == DefaultSkills.OneHanded)
                     {
-                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.OneHanded.WrappedHandles, battleEnvironment, character, true, ref handling);
+                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.OneHanded.WrappedHandles, character, true, ref handling, battleEnvironment);
                     }
                     else if (wielded.RelevantSkill == DefaultSkills.TwoHanded)
                     {
-                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.TwoHanded.StrongGrip, battleEnvironment, character, true, ref handling);
+                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.TwoHanded.StrongGrip, character, true, ref handling, battleEnvironment);
                     }
                     else if (wielded.RelevantSkill == DefaultSkills.Polearm && wielded.SwingDamageType != DamageTypes.Invalid)
                     {
-                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Polearm.CounterWeight, battleEnvironment, character, true, ref handling);
+                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Polearm.CounterWeight, character, true, ref handling, battleEnvironment);
                     }
                     if (handling.ResultNumber > 0f)
                     {
@@ -394,20 +394,20 @@ namespace RBMStance
                 {
                     float shieldBase = factor;
                     ExplainedNumber shieldHp = new ExplainedNumber(1f);
-                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Engineering.Scaffolds, battleEnvironment, character, false, ref shieldHp);
+                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Engineering.Scaffolds, character, false, ref shieldHp, battleEnvironment);
                     if (shieldHp.ResultNumber > 0f)
                     {
                         shieldBase /= shieldHp.ResultNumber;
                     }
 
                     ExplainedNumber shieldDamage = new ExplainedNumber(1f);
-                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.OneHanded.SteelCoreShields, battleEnvironment, character, true, ref shieldDamage);
+                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.OneHanded.SteelCoreShields, character, true, ref shieldDamage, battleEnvironment);
                     if (onFoot && captain != null)
                     {
-                        PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.OneHanded.SteelCoreShields, battleEnvironment, captain, ref shieldDamage);
+                        PerkHelper.AddPerkBonusFromCaptain(DefaultPerks.OneHanded.SteelCoreShields, captain, ref shieldDamage, battleEnvironment);
                     }
                     ExplainedNumber shieldDamageIncorrect = shieldDamage;
-                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.OneHanded.ShieldWall, battleEnvironment, character, true, ref shieldDamageIncorrect);
+                    PerkHelper.AddPerkBonusForCharacter(DefaultPerks.OneHanded.ShieldWall, character, true, ref shieldDamageIncorrect, battleEnvironment);
 
                     shieldFactor = shieldBase * Math.Max(0f, shieldDamage.ResultNumber);
                     shieldIncorrectFactor = shieldBase * Math.Max(0f, shieldDamageIncorrect.ResultNumber);

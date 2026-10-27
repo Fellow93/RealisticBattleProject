@@ -10,9 +10,9 @@ namespace RBMAI
     // game start/load, so a prefix would miss the first mission after every load.
     public static class MissionStartReset
     {
-        // Native's static scratch Formation._simulationFormationTemp is only dropped by a real Formation's finalizer, so it can
-        // survive into the next mission holding a dangling _orderPosition from the destroyed scene; the first spawn then
-        // throws an AccessViolationException in BatchFormationUnitPositions. Nulling it makes native build a fresh one.
+        // Native's static scratch Formation._simulationFormationTemp could survive into the next mission holding a dangling
+        // _orderPosition from the destroyed scene; the first spawn then threw an AccessViolationException in
+        // BatchFormationUnitPositions. v1.5.6 clears it in Mission.OnMissionStateFinalize; kept as a belt-and-braces reset.
         private static readonly FieldInfo SimulationFormationTemp =
             AccessTools.Field(typeof(Formation), "_simulationFormationTemp");
 

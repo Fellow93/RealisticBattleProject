@@ -15,9 +15,9 @@ namespace RBMCombat
     /// model ever sees a troop perk. Gated on rbmCombatEnabled (this module is only patched when it is on) and
     /// troopPerksEnabled.
     ///
-    /// Both overloads are patched: v1.5 added GetPerkValue(perk, environment, isPrimaryEffect, out effectValue),
-    /// which most of the agent stat model now calls, and which also checks that the effect applies in the agent's
-    /// battle environment (land or sea). The postfix mirrors Hero.GetPerkValue's version of that.
+    /// v1.5.6 removed the GetPerkValue(perk, environment, isPrimaryEffect, out effectValue) overload: every caller
+    /// now asks GetPerkValue(perk) and then PerkHelper.TryGetPerkEffectBonus for the land/sea rule, so this one
+    /// postfix covers environment-aware checks too.
     ///
     /// Inlining: GetPerkValue(PerkObject) is a tiny non-virtual method, the kind the JIT may inline into a caller,
     /// which would bypass the detour for that caller. Harmony 2.4's MonoMod core disables inlining of a method it
@@ -49,42 +49,8 @@ namespace RBMCombat
                     __result = true;
                     if (TroopPerkLog.Recording)
                     {
-                        TroopPerkLog.Record(__instance, perk, false, BattleEnvironment.None, false, true);
+                        TroopPerkLog.Record(__instance, perk, false, BattleEnvironment.Any, false, true);
                     }
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(CharacterObject), nameof(CharacterObject.GetPerkValue),
-            new[] { typeof(PerkObject), typeof(BattleEnvironment), typeof(bool), typeof(float) },
-            new[] { ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Out })]
-        private class GetPerkValueWithEffectPatch
-        {
-            private static void Postfix(CharacterObject __instance, PerkObject perk, BattleEnvironment environment,
-                bool isPrimaryEffect, ref float effectValue, ref bool __result)
-            {
-                if (__result || !RBMConfig.TroopPerks.HasAny)
-                {
-                    return;
-                }
-                if (!RBMConfig.TroopPerks.AppliesInMission(__instance, perk))
-                {
-                    return;
-                }
-                if (!perk.ApplicableInEnvironment(environment, isPrimaryEffect))
-                {
-                    // A listed pair asked about where its effect does not apply: logged as such, answered no.
-                    if (TroopPerkLog.Recording)
-                    {
-                        TroopPerkLog.Record(__instance, perk, true, environment, isPrimaryEffect, false);
-                    }
-                    return;
-                }
-                effectValue = isPrimaryEffect ? perk.GetPrimaryBonus(environment) : perk.GetSecondaryBonus(environment);
-                __result = true;
-                if (TroopPerkLog.Recording)
-                {
-                    TroopPerkLog.Record(__instance, perk, true, environment, isPrimaryEffect, true);
                 }
             }
         }

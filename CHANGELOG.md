@@ -2,6 +2,9 @@
 
 ## v4.7.1 (changes since v4.7.0)
 
+### Compatibility
+- Updated for Bannerlord v1.5.6: fixed a crash on game start and perks (troop perks, Arrow Catcher, captain and party perks in battles and auto-resolve) after the game's perk changes. This build needs v1.5.6 or newer.
+
 ### Performance
 - Better performance in large battles: fewer stutters at deployment, when reinforcements arrive and at first contact, and less work every frame in a big melee.
 - Better frame rate in large battles: soldiers pick their melee target faster and the battle AI checks each formation's fighting state once per frame instead of several times, with no change to how the AI fights.

@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.Core;
@@ -23,7 +24,7 @@ namespace RBMConfig
     /// the shield holder's own CharacterObject is full strength (half at sea); the captain half (secondary,
     /// LandOnly) from his formation's captain, when that is someone else (SandboxAgentStatCalculateModel.
     /// SetPerkAndBannerEffectsOnAgent's captain rule), adds <see cref="CaptainStrength"/>. Capped at 1. Both checks
-    /// go through CharacterObject.GetPerkValue(perk, environment, isPrimaryEffect, out value), so troops given the
+    /// go through CharacterObject.GetPerkValue(perk) + PerkHelper.TryGetPerkEffectBonus, so troops given the
     /// perk in rbm_troop_perks.xml get it too (RBMCombat TroopPerkEffects).
     ///
     /// Main thread only (the missile-hit callbacks); never call it from an AI thread.
@@ -55,14 +56,16 @@ namespace RBMConfig
             float strength = 0f;
             CharacterObject character = agent.Character as CharacterObject;
             if (character != null && perk.PrimaryRole == PartyRole.Personal
-                && character.GetPerkValue(perk, environment, true, out float personalValue))
+                && character.GetPerkValue(perk)
+                && PerkHelper.TryGetPerkEffectBonus(perk, true, out float personalValue, environment))
             {
                 strength += perk.PrimaryBonus > 0f ? personalValue / perk.PrimaryBonus : 1f;
             }
             Agent captainAgent = agent.Formation?.Captain;
             CharacterObject captain = captainAgent != null && captainAgent != agent ? captainAgent.Character as CharacterObject : null;
             if (captain != null && perk.SecondaryRole == PartyRole.Captain
-                && captain.GetPerkValue(perk, environment, false, out float captainValue))
+                && captain.GetPerkValue(perk)
+                && PerkHelper.TryGetPerkEffectBonus(perk, false, out float captainValue, environment))
             {
                 strength += CaptainStrength * (perk.SecondaryBonus > 0f ? captainValue / perk.SecondaryBonus : 1f);
             }

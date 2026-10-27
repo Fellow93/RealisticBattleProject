@@ -39,7 +39,7 @@ namespace RBMCombat
                 {
                     MobileParty mobileParty = party.MobileParty;
                     SkillHelper.AddSkillBonusForParty(DefaultSkillEffects.SurgeonSurvivalBonus, mobileParty, ref stat);
-                    if (enemyParty?.MobileParty != null && enemyParty.MobileParty.HasPerk(DefaultPerks.Medicine.DoctorsOath, out _))
+                    if (enemyParty?.MobileParty != null && enemyParty.MobileParty.HasPerk(DefaultPerks.Medicine.DoctorsOath))
                     {
                         SkillHelper.AddSkillBonusForParty(DefaultSkillEffects.SurgeonSurvivalBonus, enemyParty.MobileParty, ref stat);
                         // vanilla's Medicine XP for the perk holder's surgeon (lost when this override was written)
@@ -61,7 +61,7 @@ namespace RBMCombat
                     ExplainedNumber stat2 = new ExplainedNumber(1f / stat.ResultNumber);
                     if (character.IsHero)
                     {
-                        if (party.IsMobile && party.MobileParty.HasPerk(DefaultPerks.Medicine.CheatDeath, out _, checkSecondaryRole: true))
+                        if (party.IsMobile && party.MobileParty.HasPerk(DefaultPerks.Medicine.CheatDeath, checkSecondaryRole: true))
                         {
                             stat2.AddFactor(DefaultPerks.Medicine.CheatDeath.SecondaryBonus, DefaultPerks.Medicine.CheatDeath.Name);
                         }

@@ -81,7 +81,7 @@ namespace RBMCombat
                     }
                     if (rider.Character is CharacterObject riderCharacter)
                     {
-                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Riding.SweepingWind, rider.CurrentBattleEnvironment, riderCharacter, true, ref mountStatSpeedEN);
+                        PerkHelper.AddPerkBonusForCharacter(DefaultPerks.Riding.SweepingWind, riderCharacter, true, ref mountStatSpeedEN, rider.CurrentBattleEnvironment);
                     }
 
                     if (harness.Item == null)
