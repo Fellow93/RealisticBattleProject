@@ -10,6 +10,7 @@
 - Better frame rate in large battles: soldiers pick their melee target faster and the battle AI checks each formation's fighting state once per frame instead of several times, with no change to how the AI fights.
 
 ### Combat
+- Horse charges now depend on the horse's weight. The charge counted every horse, camel and mule as 400 kg, so light, fast horses charged hardest; it now uses each mount's own weight, the same one that already slows heavy horses down. An average troop horse charges as hard as before: War Camels, Cossians and Destriers hit harder, light horses like the Hunter less, and pack animals much less. (Thanks to Unknown-Won.)
 - Shields in custom battles no longer pull in missiles that would have missed; they only catch what actually hits them, as in the campaign.
 
 ### AI

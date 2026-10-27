@@ -108,7 +108,7 @@ namespace RBMCombat
                 float num = ChargeDamageDotProduct(victimAgentPosition, chargerMovementDirection, acd.CollisionGlobalPosition);
                 float num2 = vec2.Length * num;
                 //baseMagnitude = (num2 * num2 * attackInformation.AttackerAgentMountChargeDamageProperty * 0.5f) / 520f; // default kinetic energy setting
-                baseMagnitude = (num2 * attackInformation.AttackerAgentMountChargeDamageProperty) / 70f; // momentum experiment
+                baseMagnitude = (num2 * attackInformation.AttackerAgentMountChargeDamageProperty) / 81.5f; // momentum experiment; 81.5 (was 70) keeps the average charge with the mount item's weight (troop horses ~490 kg) in place of Monster.Weight (400 kg)
                 specialMagnitude = baseMagnitude;
 
                 return false;
