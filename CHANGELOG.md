@@ -1,6 +1,6 @@
 # Changelog
 
-## v4.7.1 (changes since v4.7.0)
+## v4.8.0 (changes since v4.7.0)
 
 ### Compatibility
 - Updated for Bannerlord v1.5.6: fixed a crash on game start and perks (troop perks, Arrow Catcher, captain and party perks in battles and auto-resolve) after the game's perk changes. This build needs v1.5.6 or newer.

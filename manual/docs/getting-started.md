@@ -7,7 +7,7 @@ This page covers installing RBM, turning it on in the launcher, what it does abo
 | | |
 |---|---|
 | Game version | Mount & Blade II: Bannerlord **v1.5.4** or newer |
-| RBM version | v4.7.1 |
+| RBM version | v4.8.0 |
 | Required modules | Native, SandBoxCore, Sandbox, StoryMode, CustomBattle |
 | Optional modules RBM knows about | BirthAndDeath, RTS Camera, RTS Camera Command System |
 | War Sails (Naval) DLC | Supported through a separate RBM submodule (see [War Sails](#war-sails-naval-dlc)) |
