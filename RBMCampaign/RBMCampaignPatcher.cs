@@ -47,6 +47,7 @@ namespace RBMCampaign
                 }
                 rbmcampaignHarmony.CreateClassProcessor(type).Patch();
             }
+            SpoilsPool.RegisterWageBiller(PatrolUpkeep.WageBiller);
             RBMTroopSpoilsBarWidget.RegisterWidgetType();
             RBMTroopHoverTooltipWidget.RegisterWidgetType();
             UpgradeLimitWidgets.RegisterWidgetTypes();

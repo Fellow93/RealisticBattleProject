@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Party;
@@ -13,6 +14,44 @@ namespace RBMCampaign
     /// </summary>
     public static partial class SpoilsPool
     {
+        /// <summary>
+        /// A party whose stacks' wage someone else pays (a settlement patrol: its home fief), so the wage pass
+        /// hands each stack's wage to the biller instead of banking it from nothing.
+        /// </summary>
+        internal interface IWageBiller
+        {
+            bool Bills(MobileParty party);
+            void BillStack(MobileParty party, CharacterObject character, int number, int wage);
+            void FinishParty(MobileParty party);
+        }
+
+        private static readonly List<IWageBiller> _wageBillers = new List<IWageBiller>();
+
+        /// <summary>Registers a biller once; called from <see cref="RBMCampaignPatcher.DoPatching"/>.</summary>
+        internal static void RegisterWageBiller(IWageBiller biller)
+        {
+            if (biller != null && !_wageBillers.Contains(biller))
+            {
+                _wageBillers.Add(biller);
+            }
+        }
+
+        private static IWageBiller WageBillerFor(MobileParty party)
+        {
+            if (party == null)
+            {
+                return null;
+            }
+            for (int i = 0; i < _wageBillers.Count; i++)
+            {
+                if (_wageBillers[i].Bills(party))
+                {
+                    return _wageBillers[i];
+                }
+            }
+            return null;
+        }
+
         /// <summary>
         /// A stack's wage is not all pay: part of it is what the men lay out on their own kit, mending
         /// what the last march wore through and replacing what they cannot mend. That part comes back
@@ -66,11 +105,9 @@ namespace RBMCampaign
             // maintenance pass never touches it and nothing is charged twice.
             PartyWageModel wageModel = Campaign.Current.Models.PartyWageModel;
             bool isMilitia = party?.MobileParty != null && party.MobileParty.IsMilitia;
-            // A settlement patrol, land or naval, is paid by its home fief out of the fief's funds (see
-            // PatrolUpkeep), exactly as a militia is -- so, like a militia's, its wage is billed rather than
-            // banked from nothing here. With the patrol rework off, patrols keep the plain deposit below.
-            bool isPatrol = !isMilitia && party?.MobileParty != null && party.MobileParty.IsPatrolParty
-                && PatrolUpkeep.IsEnabled;
+            // A party someone else pays (a settlement patrol: its home fief, see PatrolUpkeep) has its wage
+            // billed rather than banked from nothing here. With no biller for it, the plain deposit below.
+            IWageBiller biller = isMilitia ? null : WageBillerFor(party?.MobileParty);
             // A mercenary company's men are kept at double pay while the contract holds, so a stack under it
             // banks twice its wage into spoils. This is the second wage the company is charged for through the
             // finance model (see MercenaryContractPay) and the crown then reimburses, so the extra deposit is
@@ -105,10 +142,9 @@ namespace RBMCampaign
                     MilitiaUpkeep.PayMilitiaUpkeep(party.MobileParty, element.Character, element.Number, wage);
                     continue;
                 }
-                if (isPatrol)
+                if (biller != null)
                 {
-                    // A full field wage and full maintenance, the home fief paying (see PatrolUpkeep).
-                    PatrolUpkeep.PayPatrolUpkeep(party.MobileParty, element.Character, element.Number, wage);
+                    biller.BillStack(party.MobileParty, element.Character, element.Number, wage);
                     continue;
                 }
                 // The men skim their whole day's wage into their purse, cap or no cap. Spoils are a
@@ -136,10 +172,9 @@ namespace RBMCampaign
                 stacksPaid++;
             }
 
-            // The patrol's one pay line for the day, its stacks all billed.
-            if (isPatrol)
+            if (biller != null)
             {
-                PatrolUpkeep.FlushPayLog(party.MobileParty);
+                biller.FinishParty(party.MobileParty);
             }
 
             // The party-level line, always: the day's wage-into-spoils, without naming stacks.

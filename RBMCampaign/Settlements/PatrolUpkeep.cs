@@ -1845,6 +1845,27 @@ namespace RBMCampaign
 
         // ------------------------------------------------------------------ daily pay
 
+        /// <summary>The spoils wage pass's hook for patrols: each stack billed by <see cref="PayPatrolUpkeep"/>.</summary>
+        internal static readonly SpoilsPool.IWageBiller WageBiller = new PatrolWageBiller();
+
+        private sealed class PatrolWageBiller : SpoilsPool.IWageBiller
+        {
+            public bool Bills(MobileParty party)
+            {
+                return party.IsPatrolParty && IsEnabled;
+            }
+
+            public void BillStack(MobileParty party, CharacterObject character, int number, int wage)
+            {
+                PayPatrolUpkeep(party, character, number, wage);
+            }
+
+            public void FinishParty(MobileParty party)
+            {
+                FlushPayLog(party);
+            }
+        }
+
         /// <summary>
         /// Pays a patrol stack's daily upkeep the way a field troop's is met -- a full wage into the men's purses,
         /// then kit-value maintenance out of them and the fief's pot -- with the home settlement standing in for a

@@ -171,7 +171,9 @@ Garrisons bank their wage like any troop (the fief pays it, `GarrisonUpkeep`). M
 purse — town 0.25, castle 0.10, village 0 of a soldier's wage (`MilitiaWageFactor*`) — and their kit
 maintenance is met from that purse first. Settlement patrol stacks (land and naval, while
 `settlementPatrolsEnabled`) go to `PatrolUpkeep.PayPatrolUpkeep` the same way, at a field troop's full
-wage and maintenance, the home fief's pot paying; with the toggle off they keep the plain deposit.
+wage and maintenance, the home fief's pot paying; with the toggle off they keep the plain deposit. The
+wage pass reaches patrols only through `SpoilsPool.IWageBiller` (`PatrolUpkeep.WageBiller`, registered by
+`RBMCampaignPatcher.DoPatching`), so `Spoils/` holds no call into `PatrolUpkeep`.
 
 A stack recruited from a village or town is seeded `recruitMaintenanceDays` (20) days of maintenance
 (`OnTroopRecruited` for the AI, `OnUnitRecruited` for the player; the two events are disjoint).
@@ -731,7 +733,7 @@ billed.
 - **Speed** (`DefaultPartySpeedCalculatingModel.CalculateBaseSpeed` postfix → `AddSpeedBonus`): land patrols
   +0.5 (`SpeedBonus`) on the base, labelled "Patrol remounts" on the speed tooltip; it sits in the base number,
   so terrain/night/weather factors scale it. NavalDLC's speed model calls the default one for parties on land.
-- **Pay** (`PayPatrolUpkeep`, from `SpoilsPool.DepositWageSpoils`, land and naval): wage pot → purse (only what
+- **Pay** (`PayPatrolUpkeep`, from `SpoilsPool.DepositWageSpoils` through the `WageBiller` hook, land and naval): wage pot → purse (only what
   was paid is banked), maintenance purse then pot, all of it to the mending market (`TroopMarketFeedback`;
   the town itself, or the nearest friendly town for a castle). Ledger sources `Patrol` / `PatrolRecruit`.
   `DailyBill` is added to `GarrisonRecruitCost.FullDailyBill`, so garrison growth leaves the patrol's money.
