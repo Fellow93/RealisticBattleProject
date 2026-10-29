@@ -47,9 +47,6 @@ namespace RBMCampaign
                 }
                 rbmcampaignHarmony.CreateClassProcessor(type).Patch();
             }
-            // Militia first: the wage pass bills a party through the first biller that claims it.
-            SpoilsPool.RegisterWageBiller(MilitiaUpkeep.WageBiller);
-            SpoilsPool.RegisterWageBiller(PatrolUpkeep.WageBiller);
             RBMTroopSpoilsBarWidget.RegisterWidgetType();
             RBMTroopHoverTooltipWidget.RegisterWidgetType();
             UpgradeLimitWidgets.RegisterWidgetTypes();

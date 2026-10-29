@@ -63,6 +63,12 @@ namespace RBMCampaign
             // identity; clear it so a departed campaign's parties and towns are not held for the life
             // of the process.
             UpgradeSupply.ResetForNewSession();
+
+            // Here, not in RBMCampaignPatcher: MilitiaUpkeep's static initializer reads GameTexts, which some patch
+            // passes run without (module load, the main menu after a game). A session always has them, and the
+            // wage pass only runs inside one. Militia first: a party is billed by the first biller that claims it.
+            SpoilsPool.RegisterWageBiller(MilitiaUpkeep.WageBiller);
+            SpoilsPool.RegisterWageBiller(PatrolUpkeep.WageBiller);
         }
     }
 }

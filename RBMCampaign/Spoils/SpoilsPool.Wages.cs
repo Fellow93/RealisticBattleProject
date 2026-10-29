@@ -27,7 +27,7 @@ namespace RBMCampaign
 
         private static readonly List<IWageBiller> _wageBillers = new List<IWageBiller>();
 
-        /// <summary>Registers a biller once; called from <see cref="RBMCampaignPatcher.DoPatching"/>.</summary>
+        /// <summary>Registers a biller once; called from <see cref="RBMCampaignSessionBehavior"/> at session launch.</summary>
         internal static void RegisterWageBiller(IWageBiller biller)
         {
             if (biller != null && !_wageBillers.Contains(biller))
