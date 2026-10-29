@@ -4,8 +4,13 @@ Executable specifications for RBMCampaign formulas that run without the game: th
 curve (`RBMMarketPrices.ScarcityFactor` / `SignalFactor`), the spoils share upgrading men carry
 (`SpoilsPool.GetCarriedSpoils`), the wage table (`TierBasedWageModel.WageForTier`) and the
 battle-loot rules: which kit a man notices, what he can carry, and how equal-rank stacks split a heap
-(`SpoilsPool.GetNoticedPieces` / `GetCarryCapacity` / `SplitAmongPeers`). The loot rules are
-`internal`; RBMCampaign's `AssemblyInfo.cs` grants this project access with `InternalsVisibleTo`.
+(`SpoilsPool.GetNoticedPieces` / `GetCarryCapacity` / `SplitAmongPeers`), and the settlement patrol
+rules: boost, template level, size, keep and raise reserves, the buy-a-man check, the garrison floor and
+the 7-day pot average (`PatrolUpkeep`'s pure overloads of `Boost`, `TemplateLevel`, `MaxSize`,
+`SizeAtPot`, `KeepFloor`, `HoldsKeepReserve`, `HoldsRaiseReserve`, `CanAffordMan`, `GarrisonSpare`,
+`StepAveragePot`). The pure helpers are `internal`; RBMCampaign's `AssemblyInfo.cs` grants this
+project access with `InternalsVisibleTo`. The project references `TaleWorlds.CampaignSystem` at compile
+time only (not copied), because overloads of these helpers take a `Settlement`.
 Settings and random rolls are passed in as parameters. The game-side caller reads `RBMConfig` and
 `MBRandom` and passes their values in.
 

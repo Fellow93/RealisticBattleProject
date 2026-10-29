@@ -21,6 +21,14 @@
     <ProjectReference Include="..\RBMCampaign\RBMCampaign.csproj" AdditionalProperties="SolutionDir=$(MSBuildThisFileDirectory)..\" />
   </ItemGroup>
 
+  <!-- Compile-time only: overload resolution sees the game-side overloads (e.g. PatrolUpkeep.Boost(Settlement)). -->
+  <ItemGroup>
+    <Reference Include="TaleWorlds.CampaignSystem">
+      <HintPath>$(GameBin)TaleWorlds.CampaignSystem.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
   <!-- The game's assemblies are never copied here; GameAssemblies resolves them from these folders. -->
   <ItemGroup>
     <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">

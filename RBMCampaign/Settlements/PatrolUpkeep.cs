@@ -394,8 +394,12 @@ namespace RBMCampaign
             {
                 return false;
             }
-            int floor = KeepFloor(settlement);
-            return floor > 0 && AveragePot(settlement) >= floor;
+            return HoldsKeepReserve(AveragePot(settlement), KeepFloor(settlement));
+        }
+
+        internal static bool HoldsKeepReserve(long averagePot, int keepFloor)
+        {
+            return keepFloor > 0 && averagePot >= keepFloor;
         }
 
         /// <summary>
@@ -425,9 +429,18 @@ namespace RBMCampaign
             int size = PatrolSize(settlement);
             FillResult plan = Fill(settlement, null, TargetRoster(TemplateFor(settlement), size), size, false);
             shortOfMen = plan.PoolShort > 0;
-            int kitMult = settlement.IsCastle ? CastleSpawnKitReserveMult : SpawnKitReserveMult;
             return plan.Short == 0
-                && AveragePot(settlement) >= (long)KeepFloor(settlement) * SpawnKeepFloorMult + (long)plan.Paid * kitMult;
+                && HoldsRaiseReserve(AveragePot(settlement), KeepFloor(settlement), plan.Paid, settlement.IsCastle);
+        }
+
+        /// <summary>
+        /// The raise reserve: <see cref="SpawnKeepFloorMult"/> keep reserves plus <see cref="SpawnKitReserveMult"/>
+        /// (a castle <see cref="CastleSpawnKitReserveMult"/>) times the kit of the men it has to buy.
+        /// </summary>
+        internal static bool HoldsRaiseReserve(long averagePot, int keepFloor, long kitPaid, bool isCastle)
+        {
+            int kitMult = isCastle ? CastleSpawnKitReserveMult : SpawnKitReserveMult;
+            return averagePot >= (long)keepFloor * SpawnKeepFloorMult + kitPaid * kitMult;
         }
 
         /// <summary>The healthy (unwounded, non-hero) men in the fief's garrison; 0 without one.</summary>
@@ -460,7 +473,18 @@ namespace RBMCampaign
         /// <summary>A minimal patrol's keep for <see cref="KeepDays"/> days -- the reserve the pot must hold to keep one.</summary>
         public static int KeepFloor(Settlement settlement)
         {
-            return MinSize * PerManDaily(settlement) * KeepDays;
+            return KeepFloor(PerManDaily(settlement));
+        }
+
+        internal static int KeepFloor(int perManDaily)
+        {
+            return MinSize * perManDaily * KeepDays;
+        }
+
+        /// <summary>Healthy garrison men a patrol may take: those above <see cref="GarrisonKeepFloorMen"/>.</summary>
+        internal static int GarrisonSpare(int healthy)
+        {
+            return MathF.Max(0, healthy - GarrisonKeepFloorMen);
         }
 
         // ------------------------------------------------------------------ boost
@@ -518,12 +542,17 @@ namespace RBMCampaign
         /// <summary>The fief's patrol boost B -- see the class summary.</summary>
         public static float Boost(Settlement settlement)
         {
-            float boost = 1f + GuardHouseBoostPerLevel * GuardHouseLevel(settlement);
-            if (HasCoastalEdict(settlement))
+            return Boost(GuardHouseLevel(settlement), HasCoastalEdict(settlement), HasPatrolsPerk(settlement));
+        }
+
+        internal static float Boost(int guardHouseLevel, bool coastalEdict, bool patrolsPerk)
+        {
+            float boost = 1f + GuardHouseBoostPerLevel * guardHouseLevel;
+            if (coastalEdict)
             {
                 boost += CoastalEdictBoost;
             }
-            if (HasPatrolsPerk(settlement))
+            if (patrolsPerk)
             {
                 boost += PatrolsPerkBoost;
             }
@@ -533,8 +562,13 @@ namespace RBMCampaign
         /// <summary>The template level the boost buys: <c>1 + floor((B − 1) / 0.5)</c>, clamped to 1..<see cref="MaxTemplateLevel"/>.</summary>
         public static int TemplateLevel(Settlement settlement)
         {
+            return TemplateLevel(Boost(settlement));
+        }
+
+        internal static int TemplateLevel(float boost)
+        {
             // The epsilon keeps 1.5 / 0.5 from landing a hair under 1 after float addition.
-            int level = 1 + (int)((Boost(settlement) - 1f) / TemplateLevelStep + 0.0001f);
+            int level = 1 + (int)((boost - 1f) / TemplateLevelStep + 0.0001f);
             return MathF.Max(1, MathF.Min(MaxTemplateLevel, level));
         }
 
@@ -576,13 +610,18 @@ namespace RBMCampaign
             int pot = FundingPot(settlement);
             if (_averagePot.TryGetValue(settlement.StringId, out int average))
             {
-                double next = average + (pot - (double)average) / PotAverageDays;
-                _averagePot[settlement.StringId] = (int)System.Math.Round(next);
+                _averagePot[settlement.StringId] = StepAveragePot(average, pot);
             }
             else
             {
                 _averagePot[settlement.StringId] = pot;
             }
+        }
+
+        internal static int StepAveragePot(int average, int livePot)
+        {
+            double next = average + (livePot - (double)average) / PotAverageDays;
+            return (int)System.Math.Round(next);
         }
 
         /// <summary>
@@ -723,7 +762,12 @@ namespace RBMCampaign
         /// <summary>The size ceiling: min(<see cref="MaxSizeCap"/>, 20 × B), never under <see cref="MinSize"/>.</summary>
         public static int MaxSize(Settlement settlement)
         {
-            int max = MathF.Min(MaxSizeCap, MathF.Round(MaxSizePerBoost * Boost(settlement)));
+            return MaxSize(Boost(settlement));
+        }
+
+        internal static int MaxSize(float boost)
+        {
+            int max = MathF.Min(MaxSizeCap, MathF.Round(MaxSizePerBoost * boost));
             return MathF.Max(MinSize, max);
         }
 
@@ -734,14 +778,28 @@ namespace RBMCampaign
         /// price would shrink the patrol below the head count he joins -- the money spent on kit is money the size
         /// was worked from, and buying past that point only had the surplus trimmed back the same day.
         /// </summary>
-        private static int SizeAtPot(Settlement settlement, long pot, int perMan)
+        internal static int SizeAtPot(long pot, float budgetFraction, float boost, int perMan)
         {
             if (perMan <= 0)
             {
                 return MinSize;
             }
-            int men = (int)(pot * BudgetFraction * Boost(settlement) / perMan);
-            return MathF.Max(MinSize, MathF.Min(MaxSize(settlement), men));
+            int men = (int)(pot * budgetFraction * boost / perMan);
+            return MathF.Max(MinSize, MathF.Min(MaxSize(boost), men));
+        }
+
+        /// <summary>
+        /// Whether <see cref="Fill"/> may buy one more man at <paramref name="cost"/>: the pot holds
+        /// <see cref="GarrisonRecruitCost.GarrisonSpawnReserveMult"/> times his price, stays at the keep reserve after
+        /// it, and the size left once his kit is paid (<paramref name="sizeAfterPrice"/>) still covers the
+        /// <paramref name="headCount"/> he makes -- otherwise the next trim sends him (or another man) home.
+        /// </summary>
+        internal static bool CanAffordMan(long pot, int cost, int keepFloor, int sizeAfterPrice, int headCount)
+        {
+            return cost > 0
+                && pot >= (long)cost * GarrisonRecruitCost.GarrisonSpawnReserveMult
+                && pot - cost >= keepFloor
+                && sizeAfterPrice >= headCount;
         }
 
         /// <summary>The patrol the fief's funds can keep, in men. Read off <see cref="ExplainSize"/> so the number and its tooltip never differ.</summary>
@@ -1059,7 +1117,7 @@ namespace RBMCampaign
                     healthy += men;
                 }
                 garrisonOrder.Sort((a, b) => garrisonHealthy[b].CompareTo(garrisonHealthy[a]));
-                spare = MathF.Max(0, healthy - GarrisonKeepFloor(settlement));
+                spare = GarrisonSpare(healthy);
                 result.GarrisonHealthy = healthy;
                 result.GarrisonSpare = spare;
             }
@@ -1069,6 +1127,7 @@ namespace RBMCampaign
             int planPool = RecruitPool.GarrisonAvailable(settlement);
             int keepFloor = KeepFloor(settlement);
             int perMan = PerManDaily(settlement);
+            float boost = Boost(settlement);
             // The men already in the patrol before this fill (none for a fresh raise, whose template men are
             // cleared first), so the size each purchase leaves can be checked against the head count it makes.
             int startMen = patrolParty != null && patrolParty.MemberRoster != null ? patrolParty.MemberRoster.TotalManCount : 0;
@@ -1136,8 +1195,7 @@ namespace RBMCampaign
                         // The pot must afford him, and still pay for a patrol of the size he makes once his kit is
                         // paid for -- otherwise the fief would trim him (or another man) straight back.
                         int headCount = startMen + result.FromGarrison + result.Bought + bought + 1;
-                        if (cost <= 0 || pot < (long)cost * GarrisonRecruitCost.GarrisonSpawnReserveMult || pot - cost < keepFloor
-                            || SizeAtPot(settlement, sizePot - cost, perMan) < headCount)
+                        if (!CanAffordMan(pot, cost, keepFloor, SizeAtPot(sizePot - cost, BudgetFraction, boost, perMan), headCount))
                         {
                             fundsOut = true;
                             break;
@@ -2009,7 +2067,7 @@ namespace RBMCampaign
                 return;
             }
             int garrisonHealthy = GarrisonHealthyMen(settlement);
-            int garrisonSpare = MathF.Max(0, garrisonHealthy - GarrisonKeepFloor(settlement));
+            int garrisonSpare = GarrisonSpare(garrisonHealthy);
             string patrolText = state.HasPatrol
                 ? ("patrol " + settlement.PatrolParty.MobileParty.MemberRoster.TotalManCount + "/" + state.Size)
                 : (state.CanRaise ? "no patrol, can raise"
