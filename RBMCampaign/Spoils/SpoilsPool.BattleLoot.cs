@@ -34,7 +34,12 @@ namespace RBMCampaign
         /// </summary>
         private static int GetTierGap(int itemTier, CharacterObject character)
         {
-            return (character.Tier - 1) - itemTier;
+            return GetTierGap(itemTier, character.Tier);
+        }
+
+        internal static int GetTierGap(int itemTier, int troopTier)
+        {
+            return (troopTier - 1) - itemTier;
         }
 
         /// <summary>
@@ -50,26 +55,26 @@ namespace RBMCampaign
         /// himself alone on the field. An overlook chance of 1 is the exception: then a troop sees
         /// nothing at all beneath his own tier, which is how this worked before.
         /// </remarks>
-        private static float GetNoticeFraction(int tierGap)
+        internal static float GetNoticeFraction(int tierGap, float overlookChancePerTier)
         {
             if (tierGap <= 0)
             {
                 return 1f;
             }
-            float overlook = MathF.Clamp(RBMConfig.RBMConfig.troopLootOverlookChancePerTier, 0f, 1f);
+            float overlook = MathF.Clamp(overlookChancePerTier, 0f, 1f);
             return MathF.Pow(1f - overlook, tierGap);
         }
 
         /// <summary>
         /// Of <paramref name="available"/> pieces lying at a troop's feet, how many he sees. The
         /// fractional piece is rolled for rather than dropped, so a lone piece a veteran would notice
-        /// a quarter of the time is not silently unlootable.
+        /// a quarter of the time is not silently unlootable. <paramref name="roll"/> is uniform in [0, 1).
         /// </summary>
-        private static long GetNoticedPieces(long available, int tierGap)
+        internal static long GetNoticedPieces(long available, int tierGap, float overlookChancePerTier, float roll)
         {
-            float exact = available * GetNoticeFraction(tierGap);
+            float exact = available * GetNoticeFraction(tierGap, overlookChancePerTier);
             long whole = (long)exact;
-            return whole + ((MBRandom.RandomFloat < exact - whole) ? 1L : 0L);
+            return whole + ((roll < exact - whole) ? 1L : 0L);
         }
 
         /// <summary>
@@ -117,9 +122,9 @@ namespace RBMCampaign
         }
 
         /// <summary>Pieces of kit one man will carry off a field, however much of it he sees.</summary>
-        private static int GetCarryCapacity(int menInStack)
+        internal static int GetCarryCapacity(int menInStack, int piecesPerMan)
         {
-            return MathF.Max(0, RBMConfig.RBMConfig.troopLootPiecesPerMan) * menInStack;
+            return MathF.Max(0, piecesPerMan) * menInStack;
         }
 
         /// <summary>Every party on a battle side, names comma-joined, for the loot header line.</summary>
@@ -472,7 +477,8 @@ namespace RBMCampaign
                 }
                 // What this rank of troops sees of what is still lying there. The rest they walk past.
                 int gap = GetTierGap(itemTier, claimants[groupStart].Character);
-                int noticed = (int)MathF.Min(GetNoticedPieces(remaining, gap), (long)remaining);
+                int noticed = (int)MathF.Min(GetNoticedPieces(remaining, gap,
+                    RBMConfig.RBMConfig.troopLootOverlookChancePerTier, MBRandom.RandomFloat), (long)remaining);
                 remaining -= GrantToTierGroup(party, carried, claimants, groupStart, groupEnd, noticed, itemTier, valuePerPiece, ref granted, payee, ref companionGold);
                 groupStart = groupEnd;
             }
@@ -491,7 +497,7 @@ namespace RBMCampaign
         {
             int taken;
             carried.TryGetValue(element.Character, out taken);
-            return MathF.Max(0, GetCarryCapacity(element.Number) - taken);
+            return MathF.Max(0, GetCarryCapacity(element.Number, RBMConfig.RBMConfig.troopLootPiecesPerMan) - taken);
         }
 
         /// <summary>
@@ -511,24 +517,14 @@ namespace RBMCampaign
                 return 0;
             }
 
-            int[] shares = new int[end - start];
-            int allocated = 0;
+            int[] men = new int[end - start];
+            int[] room = new int[end - start];
             for (int i = start; i < end; i++)
             {
-                int proportional = (int)((long)available * claimants[i].Number / groupMen);
-                shares[i - start] = MathF.Min(GetCarryRoom(carried, claimants[i]), proportional);
-                allocated += shares[i - start];
+                men[i - start] = claimants[i].Number;
+                room[i - start] = GetCarryRoom(carried, claimants[i]);
             }
-
-            // Hand what the full-handed stacks left behind to their peers before it cascades down.
-            int leftover = available - allocated;
-            for (int i = start; i < end && leftover > 0; i++)
-            {
-                int room = GetCarryRoom(carried, claimants[i]) - shares[i - start];
-                int extra = MathF.Min(leftover, room);
-                shares[i - start] += extra;
-                leftover -= extra;
-            }
+            int[] shares = SplitAmongPeers(available, men, room);
 
             int consumed = 0;
             for (int i = start; i < end; i++)
@@ -573,6 +569,41 @@ namespace RBMCampaign
                 consumed += taken;
             }
             return consumed;
+        }
+
+        /// <summary>
+        /// Pieces each stack of one rank takes from <paramref name="available"/>: by head count, never
+        /// past its <paramref name="room"/>, and what a full-handed stack leaves goes to its peers in order.
+        /// </summary>
+        internal static int[] SplitAmongPeers(int available, int[] men, int[] room)
+        {
+            int[] shares = new int[men.Length];
+            long groupMen = 0L;
+            for (int i = 0; i < men.Length; i++)
+            {
+                groupMen += men[i];
+            }
+            if (groupMen <= 0L || available <= 0)
+            {
+                return shares;
+            }
+
+            int allocated = 0;
+            for (int i = 0; i < men.Length; i++)
+            {
+                int proportional = (int)((long)available * men[i] / groupMen);
+                shares[i] = MathF.Min(room[i], proportional);
+                allocated += shares[i];
+            }
+
+            int leftover = available - allocated;
+            for (int i = 0; i < men.Length && leftover > 0; i++)
+            {
+                int extra = MathF.Min(leftover, room[i] - shares[i]);
+                shares[i] += extra;
+                leftover -= extra;
+            }
+            return shares;
         }
     }
 }

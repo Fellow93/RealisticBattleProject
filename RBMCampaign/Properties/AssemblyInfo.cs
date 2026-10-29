@@ -1,5 +1,8 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+[assembly: InternalsVisibleTo("RBMCampaign.Tests")]
 
 [assembly: AssemblyTitle("RBMCampaign")]
 [assembly: AssemblyDescription("")]

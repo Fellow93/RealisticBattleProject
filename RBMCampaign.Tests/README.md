@@ -2,7 +2,12 @@
 
 Executable specifications for RBMCampaign formulas that run without the game: the market price
 curve (`RBMMarketPrices.ScarcityFactor` / `SignalFactor`), the spoils share upgrading men carry
-(`SpoilsPool.GetCarriedSpoils`) and the wage table (`TierBasedWageModel.WageForTier`).
+(`SpoilsPool.GetCarriedSpoils`), the wage table (`TierBasedWageModel.WageForTier`) and the
+battle-loot rules: which kit a man notices, what he can carry, and how equal-rank stacks split a heap
+(`SpoilsPool.GetNoticedPieces` / `GetCarryCapacity` / `SplitAmongPeers`). The loot rules are
+`internal`; RBMCampaign's `AssemblyInfo.cs` grants this project access with `InternalsVisibleTo`.
+Settings and random rolls are passed in as parameters. The game-side caller reads `RBMConfig` and
+`MBRandom` and passes their values in.
 
 Test names describe behaviour in campaign terms. Only formulas that take plain numbers can be tested
 here. Calling into `Campaign.Current`, settlements or parties needs the running game. To add a spec
