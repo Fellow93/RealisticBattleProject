@@ -29,7 +29,7 @@ Single-project build (from memory — MSBuild path is under VS `18\Community`, a
 
 **Debug launch:** Bannerlord.exe with `/singleplayer _MODULES_*Native*SandBoxCore*SandBox*StoryMode*CustomBattle*RBM*_MODULES_`
 
-No test suite exists — testing is manual via in-game verification.
+Testing is mostly manual, in game. The one exception is `RBMCampaign.Tests/` (NUnit, net472, not in the sln; build/run commands in its README). It holds executable specs for RBMCampaign's game-free formulas: market price curve, spoils carried on upgrade, wage table. When you change one of those formulas, run it. To add a spec for a campaign rule, first move the rule's math into a pure function that takes plain values.
 
 ## Architecture
 
