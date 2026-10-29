@@ -15,7 +15,7 @@ namespace RBMCampaign
     public static partial class SpoilsPool
     {
         /// <summary>
-        /// A party whose stacks' wage someone else pays (a settlement patrol: its home fief), so the wage pass
+        /// A party whose stacks' wage someone else pays (militia, a settlement patrol: their settlement), so the wage pass
         /// hands each stack's wage to the biller instead of banking it from nothing.
         /// </summary>
         internal interface IWageBiller
@@ -104,16 +104,16 @@ namespace RBMCampaign
             // (GarrisonUpkeep.ChargeMaintenance); the garrison is no WarPartyComponent, so the clan
             // maintenance pass never touches it and nothing is charged twice.
             PartyWageModel wageModel = Campaign.Current.Models.PartyWageModel;
-            bool isMilitia = party?.MobileParty != null && party.MobileParty.IsMilitia;
-            // A party someone else pays (a settlement patrol: its home fief, see PatrolUpkeep) has its wage
-            // billed rather than banked from nothing here. With no biller for it, the plain deposit below.
-            IWageBiller biller = isMilitia ? null : WageBillerFor(party?.MobileParty);
+            // A party its settlement pays (militia: MilitiaUpkeep; a settlement patrol: its home fief, see
+            // PatrolUpkeep) has its wage billed rather than banked from nothing here. With no biller, the
+            // plain deposit below.
+            IWageBiller biller = WageBillerFor(party?.MobileParty);
             // A mercenary company's men are kept at double pay while the contract holds, so a stack under it
             // banks twice its wage into spoils. This is the second wage the company is charged for through the
             // finance model (see MercenaryContractPay) and the crown then reimburses, so the extra deposit is
             // backed by real coin, not minted. Player and AI mercenaries alike; read the payee clan off the
             // same chain the spoils are paid to.
-            bool mercDouble = !isMilitia
+            bool mercDouble = biller == null
                 && MercenaryContractPay.CountsForMercWage(party?.MobileParty)
                 && MercenaryContractPay.IsMercenaryClan(GetPartyPayee(party)?.Clan);
             // An idle mercenary company pays its men half wages (the cut is made on the party's total wage, which
@@ -133,14 +133,6 @@ namespace RBMCampaign
                 if (companyWageFactor < 1f)
                 {
                     wage = MathF.Round(wage * companyWageFactor);
-                }
-                if (isMilitia)
-                {
-                    // Militia are billed like a field troop -- a reduced wage into the purse, then kit-value
-                    // maintenance out of it -- but the settlement is the payer, not the leader, so the whole
-                    // of it happens inside MilitiaUpkeep rather than being banked by the caller here.
-                    MilitiaUpkeep.PayMilitiaUpkeep(party.MobileParty, element.Character, element.Number, wage);
-                    continue;
                 }
                 if (biller != null)
                 {

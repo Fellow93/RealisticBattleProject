@@ -172,8 +172,9 @@ purse — town 0.25, castle 0.10, village 0 of a soldier's wage (`MilitiaWageFac
 maintenance is met from that purse first. Settlement patrol stacks (land and naval, while
 `settlementPatrolsEnabled`) go to `PatrolUpkeep.PayPatrolUpkeep` the same way, at a field troop's full
 wage and maintenance, the home fief's pot paying; with the toggle off they keep the plain deposit. The
-wage pass reaches patrols only through `SpoilsPool.IWageBiller` (`PatrolUpkeep.WageBiller`, registered by
-`RBMCampaignPatcher.DoPatching`), so `Spoils/` holds no call into `PatrolUpkeep`.
+wage pass reaches militia and patrols only through `SpoilsPool.IWageBiller` (`MilitiaUpkeep.WageBiller`,
+then `PatrolUpkeep.WageBiller`, registered in that order by `RBMCampaignPatcher.DoPatching`; the first
+biller that claims a party pays it), so the wage pass holds no call into either.
 
 A stack recruited from a village or town is seeded `recruitMaintenanceDays` (20) days of maintenance
 (`OnTroopRecruited` for the AI, `OnUnitRecruited` for the player; the two events are disjoint).

@@ -1236,6 +1236,26 @@ namespace RBMCampaign
             }
         }
 
+        /// <summary>The spoils wage pass's hook for militia: each stack billed by <see cref="PayMilitiaUpkeep"/>.</summary>
+        internal static readonly SpoilsPool.IWageBiller WageBiller = new MilitiaWageBiller();
+
+        private sealed class MilitiaWageBiller : SpoilsPool.IWageBiller
+        {
+            public bool Bills(MobileParty party)
+            {
+                return party.IsMilitia;
+            }
+
+            public void BillStack(MobileParty party, CharacterObject character, int number, int wage)
+            {
+                PayMilitiaUpkeep(party, character, number, wage);
+            }
+
+            public void FinishParty(MobileParty party)
+            {
+            }
+        }
+
         /// <summary>
         /// Pays a militia stack's daily upkeep the way a field troop's is met -- a wage, then kit-value
         /// maintenance -- with the settlement standing in for the party leader as the payer. Called once
