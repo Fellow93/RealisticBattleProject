@@ -1,5 +1,10 @@
 # Changelog
 
+## v4.8.1 (changes since v4.8.0)
+
+### Campaign
+- Fixed: your caravans' income was stuck at 0. They pay out from the first day again and no longer sink all their money into cargo, and RBM's supply caravans are no longer listed among your caravans.
+
 ## v4.8.0 (changes since v4.7.0)
 
 ### Compatibility

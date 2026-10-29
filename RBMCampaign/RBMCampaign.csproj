@@ -295,6 +295,7 @@
     <Compile Include="Caravans\RBMCaravanArrival.cs" />
     <Compile Include="Caravans\RBMCaravanInvestment.cs" />
     <Compile Include="Caravans\RBMCaravanBehavior.cs" />
+    <Compile Include="Caravans\SupplyCaravanClanListPatch.cs" />
     <Compile Include="AI\RBMGarrisonRefillBehavior.cs" />
     <Compile Include="AI\RBMRecruitBiasBehavior.cs" />
     <Compile Include="AI\RBMDeserterRaiderBehavior.cs" />

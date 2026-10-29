@@ -60,14 +60,14 @@ namespace RBMCampaign
         [HarmonyPatch(typeof(DefaultCaravanModel), "GetMaxGoldToSpendOnOneItemCategory")]
         private static class MaxGoldPerCategoryPatch
         {
-            private static void Postfix(ref int __result)
+            private static void Postfix(MobileParty caravan, ItemCategory itemCategory, ref int __result)
             {
                 if (!RBMConfig.RBMConfig.rbmCampaignEnabled)
                 {
                     return;
                 }
 
-                __result = LandCategoryBudget;
+                __result = CaravanCapital.LimitToPayoutFloat(caravan, itemCategory, LandCategoryBudget);
             }
         }
 
@@ -196,7 +196,7 @@ namespace RBMCampaign
                 // where the land patch has already set the figure.
                 if (caravan.HasNavalNavigationCapability)
                 {
-                    __result = NavalCategoryBudget;
+                    __result = CaravanCapital.LimitToPayoutFloat(caravan, itemCategory, NavalCategoryBudget);
                 }
             }
         }

@@ -4,6 +4,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.Core;
 
 namespace RBMCampaign
 {
@@ -133,6 +134,47 @@ namespace RBMCampaign
         private const string NavalCaravanModelTypeName = "NavalDLC.GameComponents.NavalDLCCaravanModel";
 
         /// <summary>
+        /// Vanilla's hardcoded 10,000 float for clan-owned caravans, scaled like the seed. Not the owner's
+        /// seed: the player's seed carries a 5,000 bonus above it, and a float equal to the seed paid
+        /// nothing while any goods were aboard.
+        /// </summary>
+        internal const int ClanPayoutFloat = 10000 * PriceScale;
+
+        /// <summary>
+        /// Caps one category's buying budget so a clan-owned caravan keeps its cash at
+        /// <see cref="ClanPayoutFloat"/>. The payout only counts cash, and with the raised per-category
+        /// budget five purchases a visit took nearly all of it, so profit was always re-bought as cargo
+        /// and the owner was paid 0. Notables' caravans (paid down their own path) and RBM supply
+        /// caravans are left alone; pack animals are exempt so a caravan can still carry its cargo.
+        /// </summary>
+        internal static int LimitToPayoutFloat(MobileParty caravan, ItemCategory category, int budget)
+        {
+            if (caravan == null || !caravan.IsCaravan || category == DefaultItemCategories.PackAnimal)
+            {
+                return budget;
+            }
+
+            Hero owner = caravan.Party.Owner;
+            if (owner == null || owner.IsNotable || RBMCaravanRegister.IsManaged(caravan))
+            {
+                return budget;
+            }
+
+            // Below the float it still trades on a share of its cash (5 categories spend up to ~40%),
+            // or a caravan drained by wages would never buy again and walk itself broke.
+            int cash = caravan.PartyTradeGold;
+            int limit = cash - ClanPayoutFloat;
+            int minimum = (int)(cash * MinBudgetShare);
+            if (limit < minimum)
+            {
+                limit = minimum;
+            }
+            return limit < budget ? limit : budget;
+        }
+
+        private const float MinBudgetShare = 0.1f;
+
+        /// <summary>
         /// Moves the payout float for clan-owned caravans onto the model, which is where the rest of the
         /// game already reads it from.
         ///
@@ -149,8 +191,8 @@ namespace RBMCampaign
         /// of the goods this work exists to let caravans carry, so a player caravan could never trade
         /// them however rich its owner was.
         ///
-        /// The replacement is vanilla's arithmetic with the constant read from the model, taking the same
-        /// figure for the same caravan that the notable path would. Vanilla's tenth is kept: the two
+        /// The replacement is vanilla's arithmetic with the constant scaled like the seed, so a player
+        /// caravan keeps vanilla's head start (seed 150,000 over a 100,000 float). Vanilla's tenth is kept: the two
         /// paths differing is the game's own choice, not something this is trying to correct. Only
         /// caravans are handled -- lord parties and garrisons come through here too and fall straight
         /// through to the original, constant and all.
@@ -187,8 +229,7 @@ namespace RBMCampaign
                     return false;
                 }
 
-                int floatGold = Campaign.Current.Models.CaravanModel.GetInitialTradeGold(
-                    party.Owner, party.HasNavalNavigationCapability, eliteCaravan: false);
+                int floatGold = ClanPayoutFloat;
 
                 int purse = party.PartyTradeGold;
                 if (purse <= floatGold)
